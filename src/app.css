@@ -161,7 +161,6 @@
 	--color-success: #10b981;
 	--color-active: rgba(255, 217, 0, 0.413);
 	--active-soft: rgba(255, 217, 0, 0.169);
-
 }
 
 .app-shell {
@@ -345,7 +344,7 @@
 }
 
 .btn {
-	@apply w-full rounded-md bg-[var(--color-bold-red)] px-2 py-2 text-white shadow transition duration-200 hover:bg-[var(--color-red-text)];
+	@apply w-full rounded-md bg-[var(--color-bold-red)] px-2 py-2 text-white shadow transition duration-200 hover:bg-[var(--color-bold-red)];
 }
 
 .selectcode {
@@ -466,4 +465,44 @@ tr {
 
 .table-heading {
 	@apply py-3 text-left text-sm font-semibold sm:pl-3;
+}
+
+/* .overlay {
+	@apply fixed inset-0 flex items-center justify-center;
+} */
+
+.modal {
+	@apply mx-4 w-full rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] p-6 shadow-md sm:mx-auto sm:w-11/12 md:max-w-md lg:max-w-lg;
+}
+
+.modal-title {
+	@apply text-lg font-semibold text-[var(--color-info)] sm:text-xl;
+}
+
+.modal-message {
+	@apply mt-4 text-sm text-[var(--color-info)];
+}
+
+.modal-actions {
+	@apply mt-6 flex flex-col justify-end gap-4 sm:flex-row;
+}
+
+.cancel-btn {
+	@apply cursor-pointer rounded-md border border-[var(--color-outline)] px-4 py-2 text-sm text-[var(--color-info)];
+}
+
+.cancel-btn:hover {
+	@apply bg-[var(--color-secondary)];
+}
+
+.confirm-btn {
+	@apply cursor-pointer rounded-md bg-[var(--color-error)] px-4 py-2 text-sm text-[var(--color-info)] transition-colors duration-200 sm:text-[var(--color-base)];
+}
+
+.confirm-btn:hover {
+	@apply bg-[var(--color-error)];
+}
+
+.overlay {
+	@apply fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.5)];
 }

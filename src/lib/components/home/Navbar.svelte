@@ -1,20 +1,19 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
+	import ConfirmModal from '../modal/confirm.modal.svelte';
 	import { onMount } from 'svelte';
+	import Image from '$lib/components/image.svelte';
+	import { getPublicLogoImageSource } from '$lib/themes/theme.selector';
 
-	
+	let { logout, userId, imageUrl, userName } = $props();
 
 	let showConfirmDelete_ = false;
-	let showConfirmLogout_ = false;
-	$: showModal = showConfirmDelete_ || showConfirmLogout_;
+	let showConfirmLogout_ = $state(false);
 
-	const deleteMessage_ =
-		'Are you sure you want to delete your account? This action is irreversible, and all associated data will be permanently removed.';
 	const logoutMessage_ = 'Are you sure you want to sign out?';
-	$: deleteMessage = deleteMessage_;
-	$: logoutMessage = logoutMessage_;
-	let showUserMenu = false;
-	let showThemeMenu = false;
+	let logoutMessage = $state(logoutMessage_);
+	let showUserMenu = $state(false);
+	let showThemeMenu = $state(false);
 
 	const themeModes = ['Light', 'Dark'];
 	const themeOptions = [
@@ -25,18 +24,20 @@
 		{ name: 'Gold', color: 'rgba(255, 215, 0, 0.1)', borderColor: 'rgba(255, 215, 0, 1)' }
 	];
 
-	let selectedMode = 'Light';
-	let selectedOption = '';
+	let selectedMode = $state('Light');
+	let selectedOption = $state('Blue');
 
 	const userMenuItems = [
 		{
 			label: 'User Profile',
 			icon: 'material-symbols:person-outline',
+			href: `/users/${userId}/my-profile`
 		},
 		{ label: 'Themes', icon: 'mdi:palette-outline' },
-	
+		{ label: 'Sign Out', icon: 'material-symbols:logout', action: openLogoutModal }
 	];
 
+	const logoImageSource = getPublicLogoImageSource();
 
 	const handleModeChange = (theme: string) => {
 		selectedMode = theme;
@@ -46,7 +47,7 @@
 
 	const handleOptionChange = (option: string) => {
 		selectedOption = option;
-		localStorage.setItem('themeOption', option); 
+		localStorage.setItem('themeOption', option);
 		applyThemeOption();
 	};
 
@@ -78,57 +79,91 @@
 		}
 	});
 
-	
+
+
+	function openLogoutModal() {
+		showConfirmLogout_ = true;
+	}
+
+	function handleLogoutConfirm() {
+		// selectedMode = 'Light';
+		selectedOption = '';
+		localStorage.setItem('themeMode', 'Light');
+		localStorage.removeItem('themeOption');
+		applyThemeOption();
+
+		if (logout) logout();
+		showConfirmLogout_ = false;
+	}
+
+	function handleCancel() {
+		showConfirmDelete_ = false;
+		showConfirmLogout_ = false;
+	}
+
 	const closeThemeMenu = () => {
 		showThemeMenu = false;
 	};
 
-	const userInitials = 'userName'
+	const userInitials = userName
 		.split(' ')
-		.map((word) => word[0])
+		.map((word: any[]) => word[0])
 		.join('');
 </script>
 
 <header class="navbar">
-	<div class="flex items-center justify-between sm:px-4 h-14 w-full">
+	<div class="flex h-14 w-full items-center justify-between sm:px-4">
 		<div class="flex items-center">
-			<!-- <img src="/patient.png" alt="Logo" class="logo" /> -->
-			<!-- <img src={logoImageSource} alt="Logo" class="px-4" width="100" height="100" /> -->
+			<img src={logoImageSource} alt="Logo" class="px-4" width="100" height="100" />
 		</div>
 
 		<div class="relative ml-auto flex items-center">
 			<button
 				class=" user-profile-btn"
 				aria-label="Toggle user menu"
-				on:click={() => {
+				onclick={() => {
 					showUserMenu = !showUserMenu;
 					if (showUserMenu) showThemeMenu = false;
 				}}
 			>
-				
+				{#if imageUrl}
+					<Image cls="initial-icon" source={imageUrl} w="24" h="24" />
+				{:else}
 					<span class="initial-icon">{userInitials}</span>
+				{/if}
 			</button>
 			{#if showUserMenu}
 				<div class="user-menu">
-					<button class="user-menu-close" on:click={() => (showUserMenu = false)}>
+					<button class="user-menu-close" onclick={() => (showUserMenu = false)}>
 						<Icon icon="ant-design:close-outlined" class="h-5 w-5" />
 					</button>
 					<div class="user-name">
-						<!-- <div class="initial-icon">
-							{userInitials}
-						</div> -->
-					
+						{#if imageUrl}
+							<Image cls="initial-icon" source={imageUrl} w="24" h="24" />
+						{:else}
 							<div class="initial-icon">{userInitials}</div>
+						{/if}
+						<span>{userName}</span>
 					</div>
 					<hr class="user-menu-divider" />
 
 					{#each userMenuItems as item}
 						{#if item.label === 'Themes'}
-							<button class="user-menu-item" on:click={() => (showThemeMenu = !showThemeMenu)}>
+							<button class="user-menu-item" onclick={() => (showThemeMenu = !showThemeMenu)}>
 								<Icon icon={item.icon} class="menu-icon" />
 								<span>{item.label}</span>
 							</button>
-						
+						{:else if item.label === 'Sign Out'}
+							<button class="user-menu-item" onclick={item.action}>
+								<Icon icon={item.icon} class="menu-icon" />
+								<span>{item.label}</span>
+							</button>
+							<hr class="user-menu-divider" />
+						{:else}
+							<a href={item.href} class="user-menu-item">
+								<Icon icon={item.icon} class="menu-icon" />
+								<span>{item.label}</span>
+							</a>
 						{/if}
 					{/each}
 				</div>
@@ -136,7 +171,7 @@
 
 			{#if showThemeMenu}
 				<div class="theme-menu">
-					<button class="themes-close-button" on:click={closeThemeMenu}>
+					<button class="themes-close-button" onclick={closeThemeMenu}>
 						<Icon icon="ant-design:close-outlined" class="h-5 w-5" />
 					</button>
 
@@ -146,7 +181,7 @@
 							{#each themeModes as theme}
 								<div class="flex flex-col items-center">
 									<button
-										class={`relative  px-8 py-4 rounded-md border-2 ${
+										class={`relative  rounded-md border-2 px-8 py-4 ${
 											theme === selectedMode
 												? 'border-[var(--theme-border-color)]'
 												: 'border-transparent'
@@ -154,10 +189,10 @@
 										style={`background-color: ${theme === 'Light' ? '#ffffff' : '#1a1a1a'}; color: ${
 											theme === 'Light' ? '#000000' : '#ffffff'
 										};`}
-										on:click={() => handleModeChange(theme)}
+										onclick={() => handleModeChange(theme)}
 									>
 										<!-- Text inside the button -->
-										<span class="flex items-center justify-center w-full h-full">
+										<span class="flex h-full w-full items-center justify-center">
 											{theme}
 										</span>
 									</button>
@@ -179,18 +214,18 @@
 									style="background-color: {color}; border: 1px solid {selectedOption === name
 										? borderColor
 										: 'grey'};"
-									on:click={() => handleOptionChange(name)}
+									onclick={() => handleOptionChange(name)}
 								>
 									<div
-										class="flex-shrink-0 rounded-full flex items-center justify-center border"
+										class="flex flex-shrink-0 items-center justify-center rounded-full border"
 										style="background-color: {borderColor}; width: 1rem; height: 1rem; sm:width: 1.5rem; sm:height: 1.5rem;"
 									>
 										{#if selectedOption === name}
-											<Icon icon="mdi:check" class="w-2 h-2 sm:w-3 sm:h-3 text-info" />
+											<Icon icon="mdi:check" class="text-info h-2 w-2 sm:h-3 sm:w-3" />
 										{/if}
 									</div>
 
-									<div class="ml-1 sm:ml-2 text-info">{name}</div>
+									<div class="text-info ml-1 sm:ml-2">{name}</div>
 								</button>
 							{/each}
 						</div>
@@ -200,5 +235,12 @@
 		</div>
 	</div>
 
-	
+	<ConfirmModal
+		show={showConfirmLogout_}
+		title="Sign Out"
+		message={logoutMessage}
+		close={handleCancel}
+		confirm={handleLogoutConfirm}
+		confirmButtonText="Sign Out"
+	/>
 </header>
