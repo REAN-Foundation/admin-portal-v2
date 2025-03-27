@@ -9,7 +9,7 @@
 	let { children, data } = $props();
 
 	const systemName = getSystemName();
-	let title;
+	let title =$state();
 	console.log('data', data);
 
 	title = systemName + (page.data.title ? `- ${page.data.title}` : '');
