@@ -3,8 +3,6 @@ import z from 'zod';
 import type { Actions, RequestEvent } from '@sveltejs/kit';
 // import { redirect } from 'sveltekit-flash-message';
 import { loginAsUser } from './api/services/reancare/user';
-import { SessionManager } from './api/sessions/session.manager';
-import type { Session } from './api/sessions/session';
 import { CookieUtils } from '$lib/helper/cookie.utils';
 import { redirect } from 'sveltekit-flash-message/server';
 import type { PageServerLoad } from './$types';
@@ -13,6 +11,9 @@ import { getUserRoles } from './api/services/reancare/types';
 import { UserRoles } from '$lib/system.types';
 import { getPersonRolesForEmail, getPersonRolesForPhone } from './api/services/person';
 import { errorMessage,successMessage } from '$lib/utils/message.utils';
+import { SessionManager } from './api/cache/session/session.manager';
+import type { Session } from './api/cache/session';
+
 /////////////////////////////////////////////////////////////
 
 export const load: PageServerLoad = async (event: RequestEvent) => {

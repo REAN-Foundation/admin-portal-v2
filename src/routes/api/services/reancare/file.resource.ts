@@ -1,9 +1,9 @@
 import { API_CLIENT_INTERNAL_KEY, BACKEND_API_URL } from '$env/static/private';
-import { SessionManager } from '../../sessions/session.manager';
 import { error } from '@sveltejs/kit';
 import { ServerHelper } from '$lib/server/server.helper';
 import axios from 'axios';
 import { del, get } from './common.reancare';
+import { SessionManager } from '../../cache/session/session.manager';
 
 ////////////////////////////////////////////////////////////////
 

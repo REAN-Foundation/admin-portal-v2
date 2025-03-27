@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { error } from '@sveltejs/kit';
 import { API_CLIENT_INTERNAL_KEY, BACKEND_API_URL } from '$env/static/private';
-import { SessionManager } from '../sessions/session.manager';
+import { SessionManager } from '../cache/session/session.manager';
 
 /////////////////////////////////////////////////////////////////////////////
 //Base URL
