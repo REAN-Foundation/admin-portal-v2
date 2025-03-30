@@ -34,6 +34,6 @@ declare global {
 			flash?: { type: 'success' | 'error'; message: string };
 		}
 	}
-}
 
+}
 export {};
