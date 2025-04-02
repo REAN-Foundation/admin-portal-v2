@@ -123,91 +123,74 @@
 	}
 </script>
 
-<div class="mt-8 py-2">
-	<p class="text py-3 pr-3 pl-4 text-left text-sm sm:pl-3">
-		Demographics provide an understanding of the user base by categorizing them into age, gender,
-		location, and other key attributes. These groupings help identify user diversity and engagement
-		patterns.
-	</p>
-</div>
-<div class="text flex flex-col justify-center">
-	<p class="py-3 pr-3 pl-4 text-left text-lg font-semibold sm:pl-3">Age Distribution</p>
-	<!-- <DistributionTable
+<p class="demographics-para">
+    Demographics provide an understanding of the user base by categorizing them into age, gender,
+    location, and other key attributes. These groupings help identify user diversity and engagement
+    patterns.
+</p>
+<div class="  distribution-container">
+    <p class=" distribution-title">Age Distribution</p>
+    <DistributionTable
         title="Age Distribution"
         tableHeaders={['Age Group', 'Count', 'Percentage']}
         tableData={ageGroup}
-        chartData={ageGroupData}
-        chartLabels={ageGroupLabels}
-    /> -->
-	<DistributionTable
-		title="Age Distribution"
-		tableHeaders={['Age Group', 'Count', 'Percentage']}
-		tableData={ageGroup}
-		labelKey="age_group"
-		countKey="count"
-	/>
-	<p class="py-3 pt-10 pr-3 pl-4 text-left text-lg font-semibold sm:pl-3">Gender Distribution</p>
-	<DistributionTable
-		title="Gender Distribution"
-		tableHeaders={['Gender', 'Count', 'Percentage']}
-		tableData={genderGroups}
-		labelKey="gender"
-		countKey="count"
-	/>
-	<p class="py-3 pt-10 pr-3 pl-4 text-left text-lg font-semibold sm:pl-3">Ethnicity Distribution</p>
-	<DistributionTable
-		title="Ethnicity Distribution"
-		tableHeaders={['Ethnicity', 'Count', 'Percentage']}
-		tableData={ethinicityGroups}
-		labelKey="ethnicity"
-		countKey="count"
-	/>
-	<p class="py-3 pt-10 pr-3 pl-4 text-left text-lg font-semibold sm:pl-3">
-		Survivor or Caregiver Distribution
-	</p>
-	<DistributionTable
-		title="Survivor or Caregiver Distribution"
-		tableHeaders={['Caregiver Status', 'Count', 'Percentage']}
-		tableData={survivorOrCaregiverDistribution}
-		labelKey="caregiver_status"
-		countKey="count"
-	/>
-	<p class="py-3 pt-10 pr-3 pl-4 text-left text-lg font-semibold sm:pl-3">Race Distribution</p>
-
-	<DistributionTable
-		title="Race Distribution"
-		tableHeaders={['Race', 'Count', 'Percentage']}
-		tableData={raceGroups}
-		labelKey="race"
-		countKey="count"
-	/>
-	<p class="py-3 pt-10 pr-3 pl-4 text-left text-lg font-semibold sm:pl-3">
-		Health System Distribution
-	</p>
-
-	<DistributionTable
-		title="Health System Distribution"
-		tableHeaders={['Health System', 'Count', 'Percentage']}
-		tableData={healthSystemsDistribution}
-		labelKey="health_system"
-		countKey="count"
-	/>
-	<p class="py-3 pt-10 pr-3 pl-4 text-left text-lg font-semibold sm:pl-3">Hospital Distribution</p>
-
-	<DistributionTable
-		title="Hospital Distribution"
-		tableHeaders={['Hospital', 'Count', 'Percentage']}
-		tableData={hospitalDistribution}
-		labelKey="hospital"
-		countKey="count"
-	/>
-	<p class="py-3 pt-10 pr-3 pl-4 text-left text-lg font-semibold sm:pl-3">Location Distribution</p>
-
-	<DistributionTable
-		title=" Location Distribution"
-		tableHeaders={['Location', 'Count', 'Percentage']}
-		tableData={locationGroups}
-		labelKey="location"
-		countKey="count"
-	/>
+        labelKey="age_group"
+        countKey="count"
+    />
+    <p class="distribution-title">Gender Distribution</p>
+    <DistributionTable
+        title="Gender Distribution"
+        tableHeaders={['Gender', 'Count', 'Percentage']}
+        tableData={genderGroups}
+        labelKey="gender"
+        countKey="count"
+    />
+    <p class="distribution-title">Ethnicity Distribution</p>
+    <DistributionTable
+        title="Ethnicity Distribution"
+        tableHeaders={['Ethnicity', 'Count', 'Percentage']}
+        tableData={ethinicityGroups}
+        labelKey="ethnicity"
+        countKey="count"
+    />
+    <p class="distribution-title">Survivor or Caregiver Distribution</p>
+    <DistributionTable
+        title="Survivor or Caregiver Distribution"
+        tableHeaders={['Caregiver Status', 'Count', 'Percentage']}
+        tableData={survivorOrCaregiverDistribution}
+        labelKey="caregiver_status"
+        countKey="count"
+    />
+    <p class="distribution-title">Race Distribution</p>
+    <DistributionTable
+        title="Race Distribution"
+        tableHeaders={['Race', 'Count', 'Percentage']}
+        tableData={raceGroups}
+        labelKey="race"
+        countKey="count"
+    />
+    <p class="distribution-title">Health System Distribution</p>
+    <DistributionTable
+        title="Health System Distribution"
+        tableHeaders={['Health System', 'Count', 'Percentage']}
+        tableData={healthSystemsDistribution}
+        labelKey="health_system"
+        countKey="count"
+    />
+    <p class="distribution-title">Hospital Distribution</p>
+    <DistributionTable
+        title="Hospital Distribution"
+        tableHeaders={['Hospital', 'Count', 'Percentage']}
+        tableData={hospitalDistribution}
+        labelKey="hospital"
+        countKey="count"
+    />
+    <p class="distribution-title">Location Distribution</p>
+    <DistributionTable
+        title=" Location Distribution"
+        tableHeaders={['Location', 'Count', 'Percentage']}
+        tableData={locationGroups}
+        labelKey="location"
+        countKey="count"
+    />
 </div>
