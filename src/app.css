@@ -506,3 +506,89 @@ tr {
 .overlay {
 	@apply fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.5)];
 }
+
+
+/* user-stats */
+.users-stat-container {
+    @apply grid grid-cols-1 justify-center gap-8 rounded-lg py-8;
+}
+.user-table {
+    @apply min-w-full;
+}
+.select-year{
+    @apply   mx-5 w-2/3 md:mx-0;
+}
+.piechart{
+    @apply mx-5 h-64 w-64 md:mx-0;
+}
+.stats-heading{
+    @apply px-3 text-left;
+}
+/* analytics-overview */
+.basic-container{
+    @apply flex flex-col justify-center p-8;
+}
+.basic-stat{
+    @apply text-lg font-bold ;
+}
+.basic-des{
+    @apply text-sm text-gray-600;
+}
+.history-container{
+    @apply  w-full overflow-x-auto px-4 pt-4 sm:px-4; 
+}
+.history-head{
+    @apply  pl-4 text-left text-lg font-bold sm:pl-3; 
+}
+.history-title{
+    @apply flex items-center justify-center text-2xl;
+}
+.history-para{
+    @apply pb-2 pl-4 text-left text-sm sm:pl-3; 
+}
+.not-available{
+    @apply mt-28 flex items-center justify-center text-xl leading-3;
+}
+.users-head{
+    @apply mr-4 ml-4 justify-center py-3 text-center text-lg sm:pl-3;
+}
+.user-roles-container{
+    @apply my-10 flex-col gap-10 md:flex-row;
+}
+.active-users-container{
+    @apply flex min-h-full w-1/2 items-center justify-center overflow-x-auto shadow-xl sm:px-4;
+}
+.patient-history-container{
+    @apply text-sm text-[var(--color-info)] flex flex-col justify-center;
+}
+/* demographics */
+.demographics-para{
+    @apply text-sm text-[var(--color-info)] py-3 pr-3 pl-4 text-left  sm:pl-3 my-2;
+}
+.distribution-title{
+    @apply py-3 pr-3 pl-4 text-left text-lg font-semibold sm:pl-3;
+}
+.distribution-container{
+    @apply flex flex-col justify-center text-sm text-[var(--color-info)];
+}
+.data-not-available{
+    @apply text-center text-lg font-semibold;
+}
+.data-not-available-container{
+    @apply flex items-center justify-center border p-4 shadow-xl sm:px-4;
+}
+.distribution-card-container{
+    @apply grid grid-cols-2 border sm:px-4 md:grid-cols-3;
+}
+.distribution-card-content{
+    @apply -mx-4 -my-2 mt-4 overflow-x-auto sm:-mx-6 lg:-mx-8;
+}
+.card-header{
+    @apply w-[30%] border py-3 pr-3 pl-4 text-left text-sm font-semibold sm:pl-3;
+}
+.chart-details{
+    @apply border px-3 py-2 text-sm whitespace-nowrap;
+}
+.chart-view{
+    @apply col-span-1 flex justify-center p-4;
+}
