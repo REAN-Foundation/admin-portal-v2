@@ -134,228 +134,199 @@
 	});
 </script>
 
-<div class=" flex flex-col justify-center">
-	<div class="grid-layout py-8">
-		<div class="centered-flex h-full gap-10">
-			<div class=" centered-flex overflow-x-auto rounded-lg border shadow-xl sm:px-4">
-				<div class="w-full">
-					<div class="text flex flex-col items-center">
-						<h4 class="table-heading mr-4 ml-4 justify-center !text-lg">
-							{selectedGraph === 'daily'
-								? 'Daily Active Users'
-								: selectedGraph === 'weekly'
-									? 'Weekly Active Users'
-									: 'Monthly Active Users'}
-						</h4>
-						<p class="mr-4 ml-4 justify-center pb-1 text-left text-sm sm:pl-3">
-							{selectedGraph === 'daily'
-								? 'Total number of unique users who interact with the platform on a given day.'
-								: selectedGraph === 'weekly'
-									? 'Total number of unique users who interact with the platform during a week.'
-									: 'Total number of unique users who interact with the platform during a month.'}
-						</p>
-					</div>
-					<div class="flex w-full justify-end">
-						<select
-							class="select mb-4 w-fit border px-10"
-							onchange={(e: any) => {
-								selectedGraph = e.target.value;
-							}}
-						>
-							<option value="daily">Daily</option>
-							<option value="weekly">Weekly</option>
-							<option value="monthly">Monthly</option>
-						</select>
-					</div>
-					{#if selectedGraph === 'daily' && dailyActiveUsersData.length > 0}
-						<GenericChart
-							type="bar"
-							data={dailyActiveUsersData}
-							labels={dailyActiveUsersLabels}
-							title="Daily Active Users"
-						/>
-					{:else if selectedGraph === 'daily'}
-						<div class="h-[400px] w-[400px] p-4">
-							<p class="justify-left flex items-center text-2xl"></p>
-							<p class="centered-flex mt-28 text-xl leading-3">Data Not Available</p>
-						</div>
-					{/if}
-					{#if selectedGraph === 'weekly' && weeklyActiveUsersData.length > 0}
-						<GenericChart
-							type="bar"
-							data={weeklyActiveUsersData}
-							labels={weeklyActiveUsersLabels}
-							title="Weekly Active Users"
-						/>
-					{:else if selectedGraph === 'weekly'}
-						<div class="h-[400px] w-[400px] p-4">
-							<p class="justify-left flex items-center text-2xl"></p>
-							<p class="centered-flex mt-28 text-xl leading-3">Data Not Available</p>
-						</div>
-					{/if}
-					{#if selectedGraph === 'monthly' && monthlyActiveUsersData.length > 0}
-						<GenericChart
-							type="bar"
-							data={monthlyActiveUsersData}
-							labels={monthlyActiveUsersLabels}
-							title="Monthly Active Users"
-						/>
-					{:else if selectedGraph === 'monthly'}
-						<div class="h-[400px] w-[400px] p-4">
-							<p class="justify-left flex items-center text-2xl"></p>
-							<p class="centerd-flex mt-28 flex text-xl leading-3">Data Not Available</p>
-						</div>
-					{/if}
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
 
-<div class="centered-flex !min-w-full">
-	<div
-		class="centered-flex !min-w-full overflow-hidden overflow-x-auto rounded-lg border shadow-xl sm:px-4"
-	>
-		<div class="text w-full">
-			<div class="relative flex flex-col items-center">
-				<h4 class="mt-3 table-heading !text-lg">
-					Commonly Visited Features
-				</h4>
-				<div class="absolute top-3 right-4 mt-8 flex items-center">
-					<label for="year-select" class="mr-2">Year: </label>
-					<select id="year-select" bind:value={selectedYear} class="select rounded border">
-						{#each years as year}
-							<option value={year}>{year}</option>
-						{/each}
-					</select>
-				</div>
-			</div>
-			<div class="col-span-2 my-5 items-center justify-center px-2 sm:px-6 lg:px-8">
-				<div class="flow-root">
-					<div class="-mx-4 -my-2 mt-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-						<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-							<table class=" min-w-full rounded-lg border">
-								<thead>
-									<tr class=" border">
-										{#each tableHeaders as header}
-											<th class=" table-heading border">
-												{header}
-											</th>
-										{/each}
-									</tr>
-								</thead>
-								<tbody>
-									{#each filteredData as row}
-										<tr class="  border transition">
-											<td class=" row-content border">
-												{formatMonthLabel(row.month)}
-											</td>
-											<td class=" row-content border">
-												{row.mostUsedFeature}
-											</td>
-											<td class=" row-content border">
-												{row.usageCount}
-											</td>
-											<td class=" row-content border">
-												{row.totalUsage}
-											</td>
-											<td class=" row-content border">
-												{row.percentage}
-											</td>
-										</tr>
-									{/each}
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+<div class=" user-graph-container">
+    <div class=" user-graph-wrapper">
+        <div class=" user-graph-card">
+            <div class="w-full">
+                <div class=" user-graph-texts">
+                    <h4 class=" user-graph-title">
+                        {selectedGraph === 'daily'
+                            ? 'Daily Active Users'
+                            : selectedGraph === 'weekly'
+                                ? 'Weekly Active Users'
+                                : 'Monthly Active Users'}
+                    </h4>
+                    <p class=" user-graph-des">
+                        {selectedGraph === 'daily'
+                            ? 'Total number of unique users who interact with the platform on a given day.'
+                            : selectedGraph === 'weekly'
+                                ? 'Total number of unique users who interact with the platform during a week.'
+                                : 'Total number of unique users who interact with the platform during a month.'}
+                    </p>
+                </div>
+                <div class="flex w-full justify-end">
+                    <select
+                        class="select mb-4 w-fit border px-10"
+                        onchange={(e: any) => {
+                            selectedGraph = e.target.value;
+                        }}
+                    >
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                </div>
+                {#if selectedGraph === 'daily' && dailyActiveUsersData.length > 0}
+                    <GenericChart
+                        type="bar"
+                        data={dailyActiveUsersData}
+                        labels={dailyActiveUsersLabels}
+                        title="Daily Active Users"
+                    />
+                {:else if selectedGraph === 'daily'}
+                    <div class=" active-users-graph">
+                        <p class=" user-data-not-available">Data Not Available</p>
+                    </div>
+                {/if}
+                {#if selectedGraph === 'weekly' && weeklyActiveUsersData.length > 0}
+                    <GenericChart
+                        type="bar"
+                        data={weeklyActiveUsersData}
+                        labels={weeklyActiveUsersLabels}
+                        title="Weekly Active Users"
+                    />
+                {:else if selectedGraph === 'weekly'}
+                    <div class="active-users-graph p-4">
+                        <p class=" user-data-not-available">Data Not Available</p>
+                    </div>
+                {/if}
+                {#if selectedGraph === 'monthly' && monthlyActiveUsersData.length > 0}
+                    <GenericChart
+                        type="bar"
+                        data={monthlyActiveUsersData}
+                        labels={monthlyActiveUsersLabels}
+                        title="Monthly Active Users"
+                    />
+                {:else if selectedGraph === 'monthly'}
+                    <div class="active-users-graph p-4">
+                        <p class=" user-data-not-available">Data Not Available</p>
+                    </div>
+                {/if}
+            </div>
+        </div>
+    </div>
 </div>
-
-<div class="centered-flex mt-10 !min-w-full">
-	<div
-		class=" centered-flex !min-w-full overflow-hidden overflow-x-auto rounded-lg border shadow-xl sm:px-4"
-	>
-		<div class="text my-5 w-full">
-			<div class="flex flex-col items-center">
-				<h4 class=" mx-4 justify-center py-3 text-left text-lg font-semibold sm:pl-3">
-					Most Fired Events
-				</h4>
-			</div>
-			<div class="col-span-2 items-center justify-center px-2 sm:px-6 lg:px-8">
-				<div class="flow-root">
-					<div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-						<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-							<table class="my-3 table border">
-								<thead>
-									<tr class="border">
-										<th class="table-heading border">Event Name</th>
-										<th class="table-heading">Event Count</th>
-									</tr>
-								</thead>
-								<tbody>
-									{#each mostFiredEvents as event}
-										<tr class=" border transition">
-											<td class=" row-content border">
-												{event.EventName}
-											</td>
-											<td class=" row-content border">
-												{event.event_count}
-											</td>
-										</tr>
-									{/each}
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="  generic-tables-conatiner">
+    <div class="text w-full">
+        <div class="relative flex flex-col items-center">
+            <h4 class="generic-table-heading">Commonly Visited Features</h4>
+            <div class=" select-container">
+                <label for="year-select" class="mr-2">Year: </label>
+                <select id="year-select" bind:value={selectedYear} class="select rounded border">
+                    {#each years as year}
+                        <option value={year}>{year}</option>
+                    {/each}
+                </select>
+            </div>
+        </div>
+        <div class="generic-table-conntainer">
+            <div class="generic-table-wrapper">
+                <div class="generic-table-content">
+                    <table class=" w-full rounded-lg border">
+                        <thead>
+                            <tr class=" border">
+                                {#each tableHeaders as header}
+                                    <th class=" table-heading border">
+                                        {header}
+                                    </th>
+                                {/each}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {#each filteredData as row}
+                                <tr class="  border transition">
+                                    <td class=" row-content border">
+                                        {formatMonthLabel(row.month)}
+                                    </td>
+                                    <td class=" row-content border">
+                                        {row.mostUsedFeature}
+                                    </td>
+                                    <td class=" row-content border">
+                                        {row.usageCount}
+                                    </td>
+                                    <td class=" row-content border">
+                                        {row.totalUsage}
+                                    </td>
+                                    <td class=" row-content border">
+                                        {row.percentage}
+                                    </td>
+                                </tr>
+                            {/each}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<div class="centered-flex mt-10 !min-w-full">
-	<div
-		class=" centered-flex !min-w-full overflow-hidden overflow-x-auto rounded-lg border shadow-xl sm:px-4"
-	>
-		<div class="text my-5 w-full">
-			<div class="flex flex-col items-center">
-				<h4 class=" table-heading mx-4 justify-center !text-lg">Most Fired Events by Category</h4>
-			</div>
-			<div class="col-span-2 items-center justify-center px-2 sm:px-6 lg:px-8">
-				<div class="flow-root">
-					<div class="-mx-4 my-3 overflow-x-auto sm:-mx-6 lg:-mx-8">
-						<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-							<table class="table border">
-								<thead>
-									<tr class=" border">
-										<th class=" table-heading border">Event Name</th>
-										<th class=" table-heading border">Event Category</th>
-										<th class=" table-heading border">Event Count</th>
-									</tr>
-								</thead>
-								<tbody>
-									{#each mostFiredEventsByEventCategory as event}
-										<tr class=" border transition">
-											<td class=" row-content border">
-												{event.EventCategory}
-											</td>
-											<td class=" row-content border">
-												{event.EventName}
-											</td>
-											<td class=" row-content border">
-												{event.event_count}
-											</td>
-										</tr>
-									{/each}
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="generic-table-conatiner">
+    <div class="text my-5 w-full">
+        <div class="flex flex-col items-center">
+            <h4 class="generic-table-heading">Most Fired Events</h4>
+        </div>
+        <div class="generic-table-container">
+            <div class="generic-table-wrapper">
+                <div class="generic-table-content">
+                    <table class="my-3 table border">
+                        <thead>
+                            <tr class="border">
+                                <th class="table-heading border">Event Name</th>
+                                <th class="table-heading">Event Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {#each mostFiredEvents as event}
+                                <tr class=" border transition">
+                                    <td class=" row-content border">
+                                        {event.EventName}
+                                    </td>
+                                    <td class=" row-content border">
+                                        {event.event_count}
+                                    </td>
+                                </tr>
+                            {/each}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="  generic-table-conatiner">
+    <div class="text my-5 w-full">
+        <div class="flex flex-col items-center">
+            <h4 class=" generic-table-heading">Most Fired Events by Category</h4>
+        </div>
+        <div class="generic-table-container">
+            <div class="generic-table-wrapper">
+                <div class="generic-table-content">
+                    <table class="table border">
+                        <thead>
+                            <tr class=" border">
+                                <th class=" table-heading border">Event Name</th>
+                                <th class=" table-heading border">Event Category</th>
+                                <th class=" table-heading border">Event Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {#each mostFiredEventsByEventCategory as event}
+                                <tr class=" border transition">
+                                    <td class=" row-content border">
+                                        {event.EventCategory}
+                                    </td>
+                                    <td class=" row-content border">
+                                        {event.EventName}
+                                    </td>
+                                    <td class=" row-content border">
+                                        {event.event_count}
+                                    </td>
+                                </tr>
+                            {/each}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
