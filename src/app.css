@@ -592,3 +592,100 @@ tr {
 .chart-view{
     @apply col-span-1 flex justify-center p-4;
 }
+
+
+/*  generic-engagement */
+.user-graph-container {
+	@apply py-8;
+}
+.user-graph-wrapper {
+	@apply flex h-full w-full items-center justify-center gap-10;
+}
+.active-users-graph {
+	@apply h-[400px] w-[400px] p-4;
+}
+.user-graph-card {
+	@apply flex w-full items-center justify-center overflow-x-auto rounded-lg shadow-xl sm:px-4;
+}
+.user-graph-texts {
+	@apply flex flex-col items-center text-sm text-[var(--color-info)];
+}
+.user-graph-title {
+	@apply mr-4 ml-4 justify-center py-3 text-left !text-lg font-semibold sm:pl-3;
+}
+.user-graph-dec {
+	@apply mr-4 ml-4 justify-center pb-1 text-left text-sm sm:pl-3;
+}
+.user-data-not-available {
+	@apply mt-28 flex w-full items-center justify-center text-xl leading-3;
+}
+.generic-tables-conatiner {
+	@apply mt-8 flex w-full !min-w-full items-center justify-center overflow-hidden overflow-x-auto rounded-lg sm:px-4;
+}
+.select-container {
+	@apply absolute top-3 right-24 mt-8 flex items-center;
+}
+
+.generic-table-conntainer {
+	@apply col-span-2 my-5 items-center justify-center px-2 sm:px-6 lg:px-8;
+}
+.generic-table-wrapper {
+	@apply mx-4 my-2 overflow-x-auto sm:-mx-6 lg:mx-8;
+}
+.generic-table-content {
+	@apply inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8;
+}
+.generic-table-heading {
+	@apply mt-3 py-3 text-left !text-lg font-semibold sm:pl-3;
+}
+
+/* home/overall */
+.dashboard-cards {
+	@apply mx-auto grid grid-cols-1 gap-4 py-8 md:w-full md:grid-cols-2 lg:grid-cols-3;
+}
+.dashboard-subcards {
+	@apply m-5 mx-auto flex h-80 flex-col gap-10 md:w-full lg:flex-row;
+}
+
+/* feature-loginsession */
+
+.access-card {
+	@apply my-5 flex max-w-sm flex-col justify-center rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-md sm:px-4 md:my-0 md:max-w-lg;
+}
+.engagement-card {
+	@apply flex max-w-sm flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-md md:max-w-lg;
+}
+.retention-card {
+	@apply my-5 flex max-w-[95%] flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-md md:my-0 md:max-w-lg;
+}
+.features-cards-layout {
+	@apply grid grid-cols-1 justify-center gap-8 rounded-lg py-8;
+}
+.features-cards-wrapper {
+	@apply h-full w-full items-center justify-center gap-10 md:flex;
+}
+.feature-card-heading {
+	@apply mx-4 justify-center py-1 pt-3 text-left text-lg font-semibold sm:pl-3;
+}
+.feature-card-subheading {
+	@apply mx-5 mt-[-4px] flex justify-start text-sm font-semibold sm:pl-3;
+}
+.features-container {
+	@apply flex flex-col justify-center;
+}
+.feature-card-des {
+	@apply mx-2 my-2 pb-1 text-left text-sm sm:pl-3;
+}
+.feature-table-heading {
+	@apply border-b border-gray-200 px-4 py-2 text-left font-semibold;
+}
+.feature-table-data {
+	@apply border-b border-gray-200 px-4 py-2;
+}
+.dropoff-card {
+	@apply flex flex-col items-center py-3 text-lg sm:pl-3;
+}
+
+.feature-cards {
+	@apply my-5 flex max-w-[95%] flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-md md:my-0 md:max-w-lg;
+}

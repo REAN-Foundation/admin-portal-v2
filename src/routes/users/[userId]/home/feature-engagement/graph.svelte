@@ -172,16 +172,14 @@
 	updateVitalsData();
 </script>
 
-<div class="flex flex-col justify-center">
-	<div class="grid grid-cols-1 justify-center gap-8 rounded-lg py-8">
-		<div class="h-full w-full items-center justify-center gap-10 md:flex">
-			<div class=" status-card my-5 max-w-sm border sm:px-4 md:my-0 md:max-w-lg">
+<div class=" features-container">
+	<div class=" features-cards-layout">
+		<div class=" features-cards-wrapper">
+			<div class=" access-card">
 				<div class="">
 					<div class="flex flex-col items-center">
-						<h4 class="mx-4 justify-center py-1 pt-3 text-left text-lg font-semibold sm:pl-3">
-							Access Frequency
-						</h4>
-						<p class="justify-left mx-2 my-2 pb-1 text-left text-sm sm:pl-3">
+						<h4 class=" feature-card-heading">Access Frequency</h4>
+						<p class=" feature-card-des">
 							The number of times users access a particular feature over time. This metric helps
 							identify the popularity and utility of features among users.
 						</p>
@@ -206,13 +204,11 @@
 					{/if}
 				</div>
 			</div>
-			<div class="status-card max-w-sm overflow-x-auto border md:max-w-lg">
+			<div class=" engagement-card">
 				<div class="">
 					<div class="flex flex-col items-center">
-						<h4 class="mx-4 justify-center py-1 pt-3 text-left text-lg font-semibold sm:pl-3">
-							Engagement Rate
-						</h4>
-						<p class="justify-left mx-2 my-2 pb-1 text-left text-sm sm:pl-3">
+						<h4 class="feature-card-heading">Engagement Rate</h4>
+						<p class="feature-card-des">
 							This is the ratio of number of unique users engaging with each feature per month to
 							the total number of active users per month.
 						</p>
@@ -241,17 +237,13 @@
 		</div>
 	</div>
 	<div class="h-full w-full items-stretch justify-center gap-8 md:flex">
-		<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
+		<div class=" retention-card">
 			<div class="">
 				<div class="flex flex-col items-center">
-					<h4 class="mx-4 justify-center py-1 pt-3 text-lg font-semibold sm:pl-3">
-						Retention After Registration
-					</h4>
-					<h5 class="mx-5 mt-[-4px] flex justify-center text-sm font-semibold sm:pl-3">
-						(Days After Registration)
-					</h5>
+					<h4 class="feature-card-heading">Retention After Registration</h4>
+					<h5 class=" feature-card-subheading">(Days After Registration)</h5>
 					<div class="h-fit w-full">
-						<p class="justify-left mx-2 my-2 pb-1 text-left text-sm sm:pl-3">
+						<p class="feature-card-des">
 							The percentage of users who return to a feature after their first use at specific
 							intervals (day 1, day 7, day 30). Retention rates measure user loyalty and the ability
 							of the feature to keep users engaged over time.
@@ -295,17 +287,13 @@
 			</div>
 		</div>
 
-		<div class="status-card max-w-[95%] overflow-x-auto border md:max-w-lg">
+		<div class="retention-card">
 			<div class="">
 				<div class="flex flex-col items-center text-center">
-					<h4 class="mx-4 justify-center py-1 pt-3 text-lg font-semibold sm:pl-3">
-						Retention After Registration
-					</h4>
-					<h5 class="mx-5 mt-[-4px] flex justify-start text-sm font-semibold sm:pl-3">
-						(Interval After Registration)
-					</h5>
+					<h4 class="feature-card-heading">Retention After Registration</h4>
+					<h5 class=" feature-card-subheading">(Interval After Registration)</h5>
 					<div class="h-fit w-full">
-						<p class="justify-left mx-2 my-2 pb-1 text-left text-sm sm:pl-3">
+						<p class="feature-card-des">
 							The percentage of users who return to a feature after their first use at specific
 							intervals (0-1 days, 1-3 days, 3-7 days, etc). This is just another way to look at the
 							retention on specific days.
@@ -350,15 +338,13 @@
 		</div>
 	</div>
 	{#if feature === 'Medication'}
-		<div class="mt-10 md:flex h-full w-full items-stretch justify-center gap-10">
-			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
+		<div class="mt-10 h-full w-full items-stretch justify-center gap-10 md:flex">
+			<div class=" feature-cards">
 				<div class="w-full">
 					<div class="flex flex-col items-center">
-						<h4 class="mx-4 justify-center py-1 pt-3 text-lg font-semibold sm:pl-3">
-							Medication Management
-						</h4>
+						<h4 class="feature-card-heading">Medication Management</h4>
 						<div class="h-fit w-full">
-							<p class="justify-left mx-2 my-2 pb-1 text-left text-sm sm:pl-3">
+							<p class="feature-card-des">
 								The medication adherence showing the percentage of scheduled doses taken on time,
 								alongside the number and percentage of missed doses.
 							</p>
@@ -382,7 +368,7 @@
 			</div>
 			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
 				<div class="w-full">
-					<div class="justify-left flex flex-col items-center py-3 text-lg sm:pl-3">
+					<div class="dropoff-card">
 						{#if dropOffPointsData && dropOffPointsLabels}
 							<p class="font-semibold">DropOff Points</p>
 							<p class="justify-left my-2 pb-1 text-left text-sm sm:pl-3">
@@ -400,15 +386,15 @@
 						>
 							<thead>
 								<tr>
-									<th class="border-b border-gray-200 px-4 py-2 text-left font-semibold">Action</th>
-									<th class="border-b border-gray-200 px-4 py-2 text-left font-semibold">Count</th>
+									<th class="feature-table-heading">Action</th>
+									<th class="feature-table-heading">Count</th>
 								</tr>
 							</thead>
 							<tbody class="justify-center">
 								{#each sortedData as { value, label }}
 									<tr>
-										<td class="border-b border-gray-200 px-4 py-2">{label}</td>
-										<td class="border-b border-gray-200 px-4 py-2">{value}</td>
+										<td class="feature-table-data">{label}</td>
+										<td class="feature-table-data">{value}</td>
 									</tr>
 								{/each}
 							</tbody>
@@ -424,15 +410,13 @@
 			</div>
 		</div>
 	{:else if feature === 'Careplan'}
-		<div class="mt-10 md:flex h-full w-full items-stretch justify-center gap-10">
-			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
+		<div class="mt-10 h-full w-full items-stretch justify-center gap-10 md:flex">
+			<div class=" feature-cards">
 				<div class="w-full">
 					<div class="flex flex-col items-center">
-						<h4 class="mx-4 justify-center py-1 pt-3 text-lg font-semibold sm:pl-3">
-							Health Journey Task Metrics
-						</h4>
+						<h4 class="feature-card-heading">Health Journey Task Metrics</h4>
 						<div class="h-fit w-full">
-							<p class="justify-left mx-2 my-2 pb-1 text-left text-sm sm:pl-3">
+							<p class="feature-card-des">
 								This shows the completion rate of health journey tasks, comparing completed tasks
 								and created tasks for both overall and individual care plans.
 							</p>
@@ -468,10 +452,10 @@
 			</div>
 			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
 				<div class="w-full">
-					<div class="justify-left flex flex-col items-center py-3 text-lg sm:pl-3">
+					<div class="dropoff-card">
 						{#if dropOffPointsData && dropOffPointsLabels}
 							<p class="font-semibold">DropOff Points</p>
-							<p class="justify-left my-2 pb-1 text-left text-sm sm:pl-3">
+							<p class="feature-card-des">
 								Points in the user flow where users most frequently stop using a feature.
 								Identifying drop-off points helps in optimizing the user journey and addressing
 								usability challenges to improve feature completion rates.
@@ -486,15 +470,15 @@
 						>
 							<thead>
 								<tr>
-									<th class="border-b border-gray-200 px-4 py-2 text-left font-semibold">Action</th>
-									<th class="border-b border-gray-200 px-4 py-2 text-left font-semibold">Count</th>
+									<th class="feature-table-heading">Action</th>
+									<th class="feature-table-heading">Count</th>
 								</tr>
 							</thead>
 							<tbody class="justify-center">
 								{#each sortedData as { value, label }}
 									<tr>
-										<td class="border-b border-gray-200 px-4 py-2">{label}</td>
-										<td class="border-b border-gray-200 px-4 py-2">{value}</td>
+										<td class="feature-table-data">{label}</td>
+										<td class="feature-table-data">{value}</td>
 									</tr>
 								{/each}
 							</tbody>
@@ -510,15 +494,13 @@
 			</div>
 		</div>
 	{:else if feature === 'User Tasks'}
-		<div class="mt-10 md:flex h-full w-full items-stretch justify-center gap-10">
-			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
+		<div class="mt-10 h-full w-full items-stretch justify-center gap-10 md:flex">
+			<div class=" feature-cards">
 				<div class="w-full">
 					<div class="flex flex-col items-center">
-						<h4 class="mx-4 justify-center py-1 pt-3 text-lg font-semibold sm:pl-3">
-							Patient Task Metrics
-						</h4>
+						<h4 class="feature-card-heading">Patient Task Metrics</h4>
 						<div class="h-fit w-full">
-							<p class="justify-left mx-2 my-2 pb-1 text-left text-sm sm:pl-3">
+							<p class="feature-card-des">
 								This shows the completion rate of patient tasks, comparing completed tasks and
 								created tasks for both overall and individual task category.
 							</p>
@@ -555,10 +537,10 @@
 			</div>
 			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
 				<div class="w-full">
-					<div class="justify-left flex flex-col items-center py-3 text-lg sm:pl-3">
+					<div class="dropoff-card">
 						{#if dropOffPointsData && dropOffPointsLabels}
 							<p class="font-semibold">DropOff Points</p>
-							<p class="justify-left my-2 pb-1 text-left text-sm sm:pl-3">
+							<p class="feature-card-des">
 								Points in the user flow where users most frequently stop using a feature.
 								Identifying drop-off points helps in optimizing the user journey and addressing
 								usability challenges to improve feature completion rates.
@@ -573,15 +555,15 @@
 						>
 							<thead>
 								<tr>
-									<th class="border-b border-gray-200 px-4 py-2 text-left font-semibold">Action</th>
-									<th class="border-b border-gray-200 px-4 py-2 text-left font-semibold">Count</th>
+									<th class="feature-table-heading">Action</th>
+									<th class="feature-table-heading">Count</th>
 								</tr>
 							</thead>
 							<tbody class="justify-center">
 								{#each sortedData as { value, label }}
 									<tr>
-										<td class="border-b border-gray-200 px-4 py-2">{label}</td>
-										<td class="border-b border-gray-200 px-4 py-2">{value}</td>
+										<td class="feature-table-data">{label}</td>
+										<td class="feature-table-data">{value}</td>
 									</tr>
 								{/each}
 							</tbody>
@@ -597,7 +579,7 @@
 			</div>
 		</div>
 		<div class="flex h-full min-w-full items-center justify-center py-10">
-			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
+			<div class=" feature-cards">
 				<div class="w-full">
 					<div class="flex flex-col items-center justify-between py-4">
 						<h4 class="flex-grow text-center text-lg font-semibold">
@@ -654,15 +636,13 @@
 			</div>
 		</div>
 	{:else if feature === 'Vitals'}
-		<div class="mt-10 md:flex h-full w-full items-stretch justify-center gap-10">
-			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
+		<div class="mt-10 h-full w-full items-stretch justify-center gap-10 md:flex">
+			<div class=" feature-cards">
 				<div class="w-full">
 					<div class="flex flex-col items-center">
-						<h4 class="mx-4 justify-center py-1 pt-3 text-lg font-semibold sm:pl-3">
-							Vitals Task Metrics
-						</h4>
+						<h4 class="feature-card-heading">Vitals Task Metrics</h4>
 						<div class="h-fit w-full">
-							<p class="justify-left mx-2 my-2 pb-1 text-left text-sm sm:pl-3">
+							<p class="feature-card-des">
 								This shows the addition rate of vital metrics, comparing the total events logged for
 								each vital metric and their breakdown into manual entries and device-based entries.
 							</p>
@@ -697,10 +677,10 @@
 			</div>
 			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
 				<div class="w-full">
-					<div class="justify-left flex flex-col items-center py-3 text-lg sm:pl-3">
+					<div class="dropoff-card">
 						{#if dropOffPointsData && dropOffPointsLabels}
 							<p class="font-semibold">DropOff Points</p>
-							<p class="justify-left my-2 pb-1 text-left text-sm sm:pl-3">
+							<p class="feature-card-des">
 								Points in the user flow where users most frequently stop using a feature.
 								Identifying drop-off points helps in optimizing the user journey and addressing
 								usability challenges to improve feature completion rates.
@@ -715,15 +695,15 @@
 						>
 							<thead>
 								<tr>
-									<th class="border-b border-gray-200 px-4 py-2 text-left font-semibold">Action</th>
-									<th class="border-b border-gray-200 px-4 py-2 text-left font-semibold">Count</th>
+									<th class="feature-table-heading">Action</th>
+									<th class="feature-table-heading">Count</th>
 								</tr>
 							</thead>
 							<tbody class="justify-center">
 								{#each sortedData as { value, label }}
 									<tr>
-										<td class="border-b border-gray-200 px-4 py-2">{label}</td>
-										<td class="border-b border-gray-200 px-4 py-2">{value}</td>
+										<td class="feature-table-data">{label}</td>
+										<td class="feature-table-data">{value}</td>
 									</tr>
 								{/each}
 							</tbody>
@@ -742,10 +722,10 @@
 		<div class="mt-10 flex h-full w-full items-center justify-center gap-10">
 			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
 				<div class="h-fit w-full">
-					<div class="justify-left flex flex-col items-center py-3 text-lg sm:pl-3">
+					<div class=" dropoff-card">
 						{#if dropOffPointsData && dropOffPointsLabels}
 							<p class="font-semibold">DropOff Points</p>
-							<p class="justify-left my-2 pb-1 text-left text-sm sm:pl-3">
+							<p class="feature-card-des">
 								Points in the user flow where users most frequently stop using a feature.
 								Identifying drop-off points helps in optimizing the user journey and addressing
 								usability challenges to improve feature completion rates.
@@ -760,15 +740,15 @@
 						>
 							<thead>
 								<tr>
-									<th class="border-b border-gray-200 px-4 py-2 text-left font-semibold">Action</th>
-									<th class="border-b border-gray-200 px-4 py-2 text-left font-semibold">Count</th>
+									<th class=" feature-table-heading">Action</th>
+									<th class=" feature-table-heading">Count</th>
 								</tr>
 							</thead>
 							<tbody class="justify-center">
 								{#each sortedData as { value, label }}
 									<tr>
-										<td class="border-b border-gray-200 px-4 py-2">{label}</td>
-										<td class="border-b border-gray-200 px-4 py-2">{value}</td>
+										<td class=" feature-table-data">{label}</td>
+										<td class="feature-table-data">{value}</td>
 									</tr>
 								{/each}
 							</tbody>
