@@ -38,10 +38,10 @@
 		{#each dataPoints as dp}
 			<div class="flex w-full gap-4 py-1">
 				<div class="mt-1 h-3 w-3 border" style="background-color: {dp.color};"></div>
-				<div class="text-primary-500 dark:text-primary-100 w-2/3 text-sm font-normal">
+				<div class="text">
 					{dp.label}
 				</div>
-				<div class="text-primary-500 dark:text-primary-100 w-1/3 text-sm font-normal">
+				<div class="text">
 					{dp.count}
 				</div>
 			</div>

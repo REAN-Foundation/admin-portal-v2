@@ -1,20 +1,25 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Chart from 'chart.js/auto';
-	import { getTickColorLight, getTickColorDark } from '$lib/themes/theme.selector';
 
 	/////////////////////////////////////////////////////////////////////////////
 
-	const tickColorLight = getTickColorLight();
-	const tickColorDark = getTickColorDark();
+	function getThemeColor(): { textColor: string; gridColor: string } {
+		const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+		return {
+			textColor: isDarkMode ? '#d9dee9' : '#1c252a', 
+			gridColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' 
+		};
+	}
 
 	let { lables, totalUsers, androidUsers, iOSUsers } = $props();
 
-	
 	let barChart: any;
 	let ctx;
 
 	onMount(() => {
+		const { textColor, gridColor } = getThemeColor();
+
 		ctx = barChart.getContext('2d');
 		barChart = new Chart(ctx, {
 			type: 'line',
@@ -47,22 +52,20 @@
 				scales: {
 					x: {
 						grid: {
-							display: false
+							display: false,
+							color: gridColor
 						},
 						ticks: {
-							color: document.documentElement.classList.contains('dark')
-								? tickColorDark
-								: tickColorLight // set x-axis label color here
+							color: textColor // set x-axis label color here
 						}
 					},
 					y: {
 						grid: {
-							display: false
+							display: false,
+							color: gridColor
 						},
 						ticks: {
-							color: document.documentElement.classList.contains('dark')
-								? tickColorDark
-								: tickColorLight // set y-axis label color here
+							color: textColor // set y-axis label color here
 						}
 					}
 				},
@@ -77,9 +80,7 @@
 						position: 'top',
 						align: 'center',
 						labels: {
-							color: document.documentElement.classList.contains('dark')
-								? tickColorDark
-								: tickColorLight,
+							color: textColor,
 							boxWidth: 10,
 							boxHeight: 10
 						}

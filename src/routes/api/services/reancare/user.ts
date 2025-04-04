@@ -2,7 +2,8 @@
 import { API_CLIENT_INTERNAL_KEY, BACKEND_API_URL } from '$env/static/private';
 import Password from '$lib/components/input/password.input.svelte';
 import type { LoginModel } from '$lib/types/domain.models';
-import { post_, get_, delete_ } from '../common';
+import { Helper } from '$lib/utils/helper';
+import { post_, get_, delete_, put_ } from '../common';
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -98,6 +99,36 @@ export const resetPassword = async (
 };
 
 export const getUserById = async (sessionId: string, userId: string) => {
-    const url = BACKEND_API_URL + `/users/${userId}`;
-    return await get_(url, true, sessionId);
+	const url = BACKEND_API_URL + `/users/${userId}`;
+	return await get_(url, true, sessionId);
+};
+
+export const updateUser = async (
+	sessionId: string,
+	userId: string,
+	firstName: string,
+	lastName: string,
+	phone: string,
+	email: string,
+	roleId: string,
+	defaultTimeZone: string,
+	currentTimeZone: string,
+	imageResourceId?: string
+) => {
+	const body = {
+		FirstName: firstName,
+		LastName: lastName,
+		RoleId: roleId,
+		Phone: phone ? phone : null,
+		Email: email ? email : null,
+		DefaultTimeZone: defaultTimeZone ? defaultTimeZone : null,
+		CurrentTimeZone: currentTimeZone ? currentTimeZone : null,
+		ImageResourceId: imageResourceId ? imageResourceId : undefined
+	};
+	if (Helper.isPhone(phone)) {
+		body.Phone = Helper.sanitizePhone(phone);
+	}
+	console.log('body.....', body);
+	const url = BACKEND_API_URL + `/users/${userId}`;
+	return await put_(url, body, true, sessionId);
 };

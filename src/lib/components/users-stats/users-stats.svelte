@@ -68,54 +68,16 @@
 		genderWiseUsers.length > 0 ? genderWiseUsers.map((x: { Ratio: any }) => x.Ratio) : ''
 	);
 
-	// if (genderWiseUsers) {
-	// 	genderDistributionLabels = false;
-	// 	genderDistributionData = false;
-
-	// 	tick().then(() => {
-	// 		genderDistributionLabels = genderWiseUsers.map((x: { Gender: any }) => x.Gender);
-	// 		genderDistributionData = genderWiseUsers.map((x: { Ratio: any }) => x.Ratio);
-	// 	});
-	// }
-
 	let ageDistributionLabels: any = $derived(
 		ageWiseUsers.length > 0 ? ageWiseUsers.map((x: { Status: any }) => x.Status) : ''
 	);
-	//  if (ageWiseUsers) {
-	// // 		// ageDistributionData = false;
-	// // 		// ageDistributionLabels = false;
-	// // 		// tick().then(() => {
-	// 	ageWiseUsers.map((x: { Status: any }) => x.Status))
-	// // 			// ageDistributionData = ageWiseUsers.map((x: { Ratio: any }) => x.Ratio);
-	// // 		// });
-	// }
-	//  });
 
 	let ageDistributionData: any = $derived(
 		ageWiseUsers.length > 0 ? ageWiseUsers.map((x: { Ratio: any }) => x.Ratio) : false
 	);
-	// let ageDistributionData: any = $derived(ageWiseUsers.map((x: { Ratio: any }) => x.Ratio));
-	// 	() => {
-	// 	// if (ageWiseUsers) {
-	// 		// ageDistributionData = false;
-	// 		// ageDistributionLabels = false;
-	// 		// tick().then(() => {
-	// 			// ageWiseUsers.map((x: { Status: any }) => x.Status);
-	// 			// ageWiseUsers.map((x: { Ratio: any }) => x.Ratio);
-	// 		// });
-	// 	// }
-	// });
+
 	let ageLabels;
 	let ageData;
-
-	// if (ageWiseUsers) {
-	// 	// ageDistributionData = false;
-	// 	// ageDistributionLabels = false;
-	// 	tick().then(() => {
-	// 		ageDistributionLabels = ageWiseUsers.map((x: { Status: any }) => x.Status);
-	// 		ageDistributionData = ageWiseUsers.map((x: { Ratio: any }) => x.Ratio);
-	// 	});
-	// }
 
 	$inspect('ageDistributionData', ageDistributionData);
 	// let maritalStatusDistributionLabels = $state();
@@ -311,13 +273,18 @@
 				</div>
 			</div>
 			<div>
-				<select name="year" id="" class="select w-2/3 mx-5 md:mx-0" onchange={handlelSelectYearForAge}>
+				<select
+					name="year"
+					id=""
+					class="select mx-5 w-2/3 md:mx-0"
+					onchange={handlelSelectYearForAge}
+				>
 					<option selected disabled>All the years</option>
 					{#each years as year}
 						<option value={year.year}>{year.year}</option>
 					{/each}
 				</select>
-				<div class="h-64 w-64 mx-5 md:mx-0">
+				<div class="mx-5 h-64 w-64 md:mx-0">
 					{#if ageDistributionData}
 						<PieChart labels={ageDistributionLabels} data={ageDistributionData} title="Age" />
 					{/if}
@@ -358,13 +325,18 @@
 				</div>
 			</div>
 			<div>
-				<select name="year" id="" class="select mt-3 w-2/3 mx-5 md:mx-0" onchange={handlelSelectYearForGender}>
+				<select
+					name="year"
+					id=""
+					class="select mx-5 mt-3 w-2/3 md:mx-0"
+					onchange={handlelSelectYearForGender}
+				>
 					<option selected disabled>All the years</option>
 					{#each years as year}
 						<option value={year.year}>{year.year}</option>
 					{/each}
 				</select>
-				<div class="h-64 w-64 pt-0 mx-5 md:mx-0">
+				<div class="mx-5 h-64 w-64 pt-0 md:mx-0">
 					{#if genderDistributionData}
 						<PieChart
 							labels={genderDistributionLabels}

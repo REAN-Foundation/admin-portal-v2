@@ -147,13 +147,11 @@
 					</div>
 					{#if forgotPasswordActiveTab === 'email'}
 						<label class="label" for="email">
-							<span class="text-primary-500">Email</span>
 							<span class="label-text-alt"></span>
 						</label>
 						<input type="email" name="email" placeholder="Enter your email" bind:value={email} required class="input mb-4" />
 					{/if}
 					{#if forgotPasswordActiveTab === 'phone'}
-						<label for="phone" class="label">Phone</label>
 						<div class="mb-4 flex gap-2">
 							<div class="w-1/3">
 								<select name="countryCode" class="input" bind:value={countryCode} required>
@@ -245,6 +243,6 @@
 	{/if}
 </div>
 
-<footer class="variant-filled-secondary fixed bottom-0 w-full p-2 text-center">
+<!-- <footer class="footer fixed bottom-0 w-full p-2 text-center">
 	<a href={footerLink} class="!text-white">{footerText}</a>
-</footer>
+</footer> -->

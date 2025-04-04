@@ -3,14 +3,22 @@
     import Chart from 'chart.js/auto';
     import { getDoughnutColors, getTickColorLight, getTickColorDark } from '$lib/themes/theme.selector';
     /////////////////////////////////////////////////////////////////////////////
-    const tickColorLight = getTickColorLight();
-    const tickColorDark = getTickColorDark();
+
     let {labels,dataSource,title} =$props();
     // export let rate;
     console.log('this is title=============', title);
 
     let barChart:any;
     let ctx;
+
+    function getThemeColor(): { textColor: string; gridColor: string } {
+		const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+		return {
+			textColor: isDarkMode ? '#d9dee9' : '#1c252a', // Text color
+			gridColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' // Grid color
+		};
+	}
+
 
     let xLabel: string;
     let yLabel: string;
@@ -54,6 +62,7 @@
         }
     }
     onMount(() => {
+        const { textColor, gridColor } = getThemeColor();
         selectAxisLabel(title);
         ctx = barChart.getContext('2d');
         barChart = new Chart(ctx, {
@@ -83,27 +92,29 @@
                             display: false
                         },
                         ticks: {
-                            color: document.documentElement.classList.contains('dark') ? tickColorDark : tickColorLight
+                            color:textColor,
                         },
                         title: {
                             display: true,
                             text: xLabel,
-                            color: document.documentElement.classList.contains('dark') ? tickColorDark : tickColorLight
+                            color:textColor
                         }
                     },
                     y: {
                         max: MAX_INDEX,
                         beginAtZero: true,
                         grid: {
-                            display: true
+                            display: true,
+                            color:gridColor
+
                         },
                         ticks: {
-                            color: document.documentElement.classList.contains('dark') ? tickColorDark : tickColorLight,
+                            color:textColor,
                         },
                         title: {
                             display: true,
                             text: yLabel,
-                            color: document.documentElement.classList.contains('dark') ? tickColorDark : tickColorLight
+                            color:textColor
                         }
                     }
                 },
@@ -118,14 +129,14 @@
                         position: 'top',
                         align: 'center',
                         labels: {
-                            color: document.documentElement.classList.contains('dark') ? tickColorDark : tickColorLight
+                            color:textColor
                         }
                     },
                     title: {
                         display: false,
                         text: title,
                         position: 'top',
-                        color: document.documentElement.classList.contains('dark') ? tickColorDark : tickColorLight,
+                        color:textColor,
                         align: 'start',
                         padding: 20,
                         font: {
