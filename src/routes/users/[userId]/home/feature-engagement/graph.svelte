@@ -193,13 +193,11 @@
 							/>
 						</div>
 					{:else}
-						<div class="h-[400px] w-[400px] p-4">
-							<p class="justify-left flex items-center text-2xl">
+						<div class=" chart-empty-state">
+							<p class=" chart-empty-heading">
 								<!-- Access Frequency -->
 							</p>
-							<p class="mt-28 flex items-center justify-center text-xl leading-3">
-								Data Not Available
-							</p>
+							<p class=" chart-empty-message">Data Not Available</p>
 						</div>
 					{/if}
 				</div>
@@ -223,13 +221,11 @@
 							/>
 						</div>
 					{:else}
-						<div class="h-[400px] w-[400px] p-4">
-							<p class="justify-left flex items-center text-2xl">
+						<div class=" chart-empty-state">
+							<p class="chart-empty-heading">
 								<!-- Engagement Rate (%) -->
 							</p>
-							<p class="mt-28 flex items-center justify-center text-xl leading-3">
-								Data Not Available
-							</p>
+							<p class="chart-emty-message">Data Not Available</p>
 						</div>
 					{/if}
 				</div>
@@ -270,7 +266,7 @@
 						/>
 					</div>
 				{:else if selectedGraph === 'graph1'}
-					<div class="h-[400px] w-[400px] p-4">
+					<div class=" chart-empty-state">
 						<p class="mt-28 flex items-center justify-center text-xl leading-3">
 							Data Not Available
 						</p>
@@ -338,7 +334,7 @@
 		</div>
 	</div>
 	{#if feature === 'Medication'}
-		<div class="mt-10 h-full w-full items-stretch justify-center gap-10 md:flex">
+		<div class="feature-card-container">
 			<div class=" feature-cards">
 				<div class="w-full">
 					<div class="flex flex-col items-center">
@@ -366,7 +362,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
+			<div class=" dropoff-card-container">
 				<div class="w-full">
 					<div class="dropoff-card">
 						{#if dropOffPointsData && dropOffPointsLabels}
@@ -401,16 +397,14 @@
 						</table>
 					{:else}
 						<div class="w-full p-4">
-							<p class="mt-28 flex items-center justify-center leading-3 font-semibold">
-								Data Not Available
-							</p>
+							<p class="feature-data-not-available">Data Not Available</p>
 						</div>
 					{/if}
 				</div>
 			</div>
 		</div>
 	{:else if feature === 'Careplan'}
-		<div class="mt-10 h-full w-full items-stretch justify-center gap-10 md:flex">
+		<div class="feature-card-container">
 			<div class=" feature-cards">
 				<div class="w-full">
 					<div class="flex flex-col items-center">
@@ -450,7 +444,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
+			<div class="dropoff-card-container">
 				<div class="w-full">
 					<div class="dropoff-card">
 						{#if dropOffPointsData && dropOffPointsLabels}
@@ -485,16 +479,14 @@
 						</table>
 					{:else}
 						<div class="w-full p-4">
-							<p class="mt-28 flex items-center justify-center leading-3 font-semibold">
-								Data Not Available
-							</p>
+							<p class="feature-data-not-available">Data Not Available</p>
 						</div>
 					{/if}
 				</div>
 			</div>
 		</div>
 	{:else if feature === 'User Tasks'}
-		<div class="mt-10 h-full w-full items-stretch justify-center gap-10 md:flex">
+		<div class="feature-card-container">
 			<div class=" feature-cards">
 				<div class="w-full">
 					<div class="flex flex-col items-center">
@@ -535,7 +527,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
+			<div class="dropoff-card-container">
 				<div class="w-full">
 					<div class="dropoff-card">
 						{#if dropOffPointsData && dropOffPointsLabels}
@@ -570,9 +562,7 @@
 						</table>
 					{:else}
 						<div class="w-full p-4">
-							<p class="mt-28 flex items-center justify-center leading-3 font-semibold">
-								Data Not Available
-							</p>
+							<p class="feature-data-not-available">Data Not Available</p>
 						</div>
 					{/if}
 				</div>
@@ -636,7 +626,7 @@
 			</div>
 		</div>
 	{:else if feature === 'Vitals'}
-		<div class="mt-10 h-full w-full items-stretch justify-center gap-10 md:flex">
+		<div class=" feature-card-container">
 			<div class=" feature-cards">
 				<div class="w-full">
 					<div class="flex flex-col items-center">
@@ -675,7 +665,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
+			<div class="dropoff-card-container">
 				<div class="w-full">
 					<div class="dropoff-card">
 						{#if dropOffPointsData && dropOffPointsLabels}
@@ -710,9 +700,7 @@
 						</table>
 					{:else}
 						<div class="w-full p-4">
-							<p class="mt-28 flex items-center justify-center leading-3 font-semibold">
-								Data Not Available
-							</p>
+							<p class="feature-data-not-available">Data Not Available</p>
 						</div>
 					{/if}
 				</div>
@@ -720,7 +708,7 @@
 		</div>
 	{:else}
 		<div class="mt-10 flex h-full w-full items-center justify-center gap-10">
-			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
+			<div class="dropoff-card-container">
 				<div class="h-fit w-full">
 					<div class=" dropoff-card">
 						{#if dropOffPointsData && dropOffPointsLabels}

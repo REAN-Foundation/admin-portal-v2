@@ -689,3 +689,24 @@ tr {
 .feature-cards {
 	@apply my-5 flex max-w-[95%] flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-md md:my-0 md:max-w-lg;
 }
+
+.chart-empty-state{
+	@apply h-[400px] w-[400px] p-4;
+}
+.chart-empty-heading{
+	@apply  flex items-center text-2xl;
+}
+.chart-empty-message{
+	@apply mt-28 flex items-center justify-center text-xl leading-3;
+}
+
+.dropoff-card-container{
+	@apply flex flex-col justify-center rounded-lg  border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-md my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg;
+}
+.feature-data-not-available{
+	@apply mt-28 flex items-center justify-center leading-3 font-semibold;
+}
+
+.feature-card-container{
+	@apply mt-10 h-full w-full items-stretch justify-center gap-10 md:flex;
+}
