@@ -161,6 +161,3 @@
 	</form>
 </div>
 
-<footer class="footer">
-	<a href={footerLink} class="!text-white">{footerText}</a>
-</footer>

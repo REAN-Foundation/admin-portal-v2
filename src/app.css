@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 :root {
-	--theme-border-color: rgb(173, 11, 11); /* Default Blue */
+	--theme-border-color: rgba(32, 108, 207, 0.989); /* Default Blue */
 	--color-primary: #ffffff;
 	--color-secondary: #fbfbfb;
 	--color-outline: #cacadb;
@@ -203,13 +203,13 @@
 	@apply flex-1 p-4 pt-20; /* Ensures content doesn't overlap AppBar */
 }
 .sidebar {
-	@apply fixed top-14 left-0 min-h-screen w-16 border-r border-[var(--color-outline)] bg-[var(--color-secondary)] px-4 py-4 text-[var(--color-info)] sm:w-56;
+	@apply fixed top-14 left-0 min-h-screen w-50 border-r border-[var(--color-outline)] bg-[var(--color-secondary)] px-4 py-4 text-[var(--color-info)] sm:w-56;
 }
 .sidebar-list {
-	@apply space-y-2;
+	@apply space-y-2 ;
 }
 .sidebar-item {
-	@apply flex rounded-md border-[var(--color-outline)] px-2 py-2 hover:bg-[var(--color-primary)];
+	@apply flex rounded-md border-[var(--color-outline)] px-2 py-2 hover:bg-[var(--color-primary)] w-full cursor-pointer;
 }
 .sidebar-item span {
 	@apply ml-2;
@@ -217,9 +217,9 @@
 .sidebar-icon {
 	@apply mr-3 h-5 w-5;
 }
-.sidebar-text {
+/* .sidebar-text {
 	@apply hidden text-[var(--color-info)] sm:inline;
-}
+} */
 .iconsize {
 	@apply h-5 w-5;
 }
@@ -282,7 +282,7 @@
 }
 
 .main-content {
-	@apply flex-1 bg-[var(--color-primary)] p-4 sm:ml-56;
+	@apply flex-1 bg-[var(--color-secondary)] p-4 sm:ml-56;
 }
 
 .status-card {
@@ -296,7 +296,7 @@
 	@apply mb-4 text-sm font-semibold text-[var(--color-info)] lg:text-lg;
 }
 .label {
-	@apply mt-2 mb-2 block text-sm font-medium text-[var(--color-bold-red)];
+	@apply mt-2 mb-2 block text-sm font-medium;
 }
 
 .text {
@@ -344,7 +344,7 @@
 }
 
 .btn {
-	@apply w-full rounded-md bg-[var(--color-bold-red)] px-2 py-2 text-white shadow transition duration-200 hover:bg-[var(--color-bold-red)];
+	@apply w-full rounded-md bg-blue-500 px-2 py-2 text-white shadow transition duration-200 hover:bg-blue-400 cursor-pointer;
 }
 
 .selectcode {
@@ -373,9 +373,6 @@
 	@apply w-full rounded bg-[var(--theme-border-color)] py-2 text-white transition;
 }
 
-.btn-primary:hover {
-	@apply bg-[var(--color-blue)];
-}
 
 .link {
 	@apply text-sm font-semibold text-[var(--color-red-text)] transition hover:underline;
@@ -444,7 +441,7 @@ tr {
 }
 
 .footer {
-	@apply fixed bottom-0 w-full bg-[var(--color-bold-red)] p-2 text-center text-[var(--color-info)] hover:bg-[var(--color-bold-red)];
+	@apply fixed bottom-0 w-full bg-blue-500 p-2 text-center text-[var(--color-info)] hover:bg-blue-400;
 }
 
 .border {

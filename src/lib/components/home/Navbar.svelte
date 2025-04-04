@@ -4,8 +4,9 @@
 	import { onMount } from 'svelte';
 	import Image from '$lib/components/image.svelte';
 	import { getPublicLogoImageSource } from '$lib/themes/theme.selector';
+	import Sidebar from './Sidebar.svelte';
 
-	let { logout, userId, imageUrl, userName } = $props();
+	let { logout, userId, imageUrl, userName, tenantSettings, userRole, email } = $props();
 
 	let showConfirmDelete_ = false;
 	let showConfirmLogout_ = $state(false);
@@ -26,6 +27,8 @@
 
 	let selectedMode = $state('Light');
 	let selectedOption = $state('Blue');
+	let showSidebar = $state(false);
+
 
 	const userMenuItems = [
 		{
@@ -79,8 +82,6 @@
 		}
 	});
 
-
-
 	function openLogoutModal() {
 		showConfirmLogout_ = true;
 	}
@@ -109,6 +110,7 @@
 		.split(' ')
 		.map((word: any[]) => word[0])
 		.join('');
+
 </script>
 
 <header class="navbar">
@@ -118,6 +120,12 @@
 		</div>
 
 		<div class="relative ml-auto flex items-center">
+			<button
+				onclick={() => (showSidebar = !showSidebar)}
+				class=" btn-icon mx-4 rounded p-1 text-white hover:bg-white/10 md:hidden"
+			>
+				<Icon icon="material-symbols:menu-rounded" class="!text-3xl text " />
+			</button>
 			<button
 				class=" user-profile-btn"
 				aria-label="Toggle user menu"
@@ -234,6 +242,8 @@
 			{/if}
 		</div>
 	</div>
+
+	<Sidebar bind:showSidebar userId={userId} tenantSettings={tenantSettings} userRole={userRole} />
 
 	<ConfirmModal
 		show={showConfirmLogout_}
