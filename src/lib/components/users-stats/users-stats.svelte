@@ -167,186 +167,152 @@
 		});
 	};
 </script>
-
 <!-- <BreadCrumbs crumbs={breadCrumbs} /> -->
 
-<div class="flex flex-col justify-center">
-	<div class="grid grid-cols-1 justify-center gap-8 rounded-lg py-8">
-		<div class="stats-container grid-cols-1">
-			<div class="px-4 sm:px-6 lg:px-8">
-				<div class="flow-root">
-					<div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-						<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-							<table class="min-w-full">
-								<thead>
-									<tr>
-										<th scope="col" class="heading px-3 text-left"> Users </th>
-										<th scope="col" class="heading px-2 text-left"> Count </th>
-										<th scope="col" class="heading px-2 text-left"> Percentage </th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 transition">
-										<td style="width:10%;" class="text-custom">Onboarded Users</td>
-										<td style="width:10%;" class="text-custom">{usersCount.TotalUsers.Count}</td>
-										<td style="width:15%;" class="text-custom">- </td>
-									</tr>
-									{#each usersData as data}
-										<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 transition">
-											<td style="width:10%;" class="text-custom">{data.usersDetail}</td>
-											<td style="width:10%;" class="text-custom">
-												{data.count}
-											</td>
-											<td style="width:15%;" class="text-custom">
-												<div class="flex items-center">
-													<div class="progress-bar">
-														<div class="progress" style="width:{data.ratio}%"></div>
-													</div>
-													<span class="text-primary-500 dark:text-primary-100">{data.ratio}</span>
-													<span class="text-primary-500 dark:text-primary-100 text-xs">%</span>
-												</div>
-											</td>
-										</tr>
-									{/each}
-									{#each deviceDetailWiseUsers as data}
-										<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 transition">
-											<td style="width:10%;" class="text-custom">{data.OSType}</td>
-											<td style="width:10%;" class="text-custom">{data.Count}</td>
-											<td style="width:15%;" class="text-custom">
-												<div class="flex items-center">
-													<div class="bg-primary-200 mr-2 h-2 w-1/4 rounded-full">
-														<div
-															class="bg-primary-500 h-2 rounded-full"
-															style="width:{Math.ceil(
-																(data.Count / usersCount.TotalUsers.Count) * 100
-															).toFixed(2)}%"
-														></div>
-													</div>
-													<span class="text-primary-500 dark:text-primary-100"
-														>{Math.ceil((data.Count / usersCount.TotalUsers.Count) * 100).toFixed(
-															0
-														)}</span
-													>
-													<span class="text-primary-500 dark:text-primary-100 text-xs">%</span>
-												</div>
-											</td>
-										</tr>
-									{/each}
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="stats-container grid-cols-3">
-			<div class="col-span-2 px-4 sm:px-6 lg:px-8">
-				<div class="flow-root">
-					<div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-						<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-							<table class="min-w-full">
-								<thead>
-									<tr>
-										<th scope="col" class="heading px-3 text-left">Age</th>
-									</tr>
-								</thead>
-								<tbody>
-									{#each ageWiseUsers as data}
-										<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 transition">
-											<td style="width:10%;" class="text-custom">{data.Status}</td>
-											<td style="width:10%;" class="text-custom">{data.Count}</td>
-											<td style="width:15%;" class="text-custom">
-												<div class="flex items-center">
-													<div class="progress-bar">
-														<div class="progress" style="width:{data.Ratio}%"></div>
-													</div>
-													<span class="text-primary-500 dark:text-primary-100">{data.Ratio}</span>
-													<span class="text-primary-500 dark:text-primary-100 text-xs">%</span>
-												</div>
-											</td>
-										</tr>
-									{/each}
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div>
-				<select
-					name="year"
-					id=""
-					class="select mx-5 w-2/3 md:mx-0"
-					onchange={handlelSelectYearForAge}
-				>
-					<option selected disabled>All the years</option>
-					{#each years as year}
-						<option value={year.year}>{year.year}</option>
+
+<div class=" users-stat-container">
+	<div class="stats-container grid-cols-1">
+		<!-- User -->
+		<table class=" user-table">
+			<thead>
+				<tr>
+					<th scope="col" class="heading stats-heading">Users</th>
+					<th scope="col" class="heading px-2 text-left">Count</th>
+					<th scope="col" class="heading px-2 text-left">Percentage</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 transition">
+					<td class="text-custom w-[10%]">Onboarded Users</td>
+					<td class="text-custom w-[10%]">{usersCount.TotalUsers.Count}</td>
+					<td class="text-custom w-[15%]">-</td>
+				</tr>
+				{#each usersData as data}
+					<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 transition">
+						<td class="text-custom w-[10%]">{data.usersDetail}</td>
+						<td class="text-custom w-[10%]">{data.count}</td>
+						<td class="text-custom flex items-center">
+							<div class="progress-bar">
+								<div class="progress" style="width:{data.ratio}%"></div>
+							</div>
+							<span class="text-primary-500 dark:text-primary-100 stats-span">{data.ratio}</span>
+							<span class="text-primary-500 dark:text-primary-100 text-xs">%</span>
+						</td>
+					</tr>
+				{/each}
+				{#each deviceDetailWiseUsers as data}
+					<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 transition">
+						<td class="text-custom w-[10%]">{data.OSType}</td>
+						<td class="text-custom w-[10%]">{data.Count}</td>
+						<td class="text-custom flex w-[15%] items-center">
+							<div class="bg-primary-200 mr-2 h-2 w-1/4 rounded-full">
+								<div
+									class="bg-primary-500 h-2 rounded-full"
+									style="width:{Math.ceil((data.Count / usersCount.TotalUsers.Count) * 100).toFixed(
+										2
+									)}%"
+								></div>
+							</div>
+							<span class="text-primary-500 dark:text-primary-100">
+								{Math.ceil((data.Count / usersCount.TotalUsers.Count) * 100).toFixed(0)}
+							</span>
+							<span class="text-primary-500 dark:text-primary-100 text-xs">%</span>
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+
+	<div class="stats-container grid-cols-3">
+		<div class="col-span-2">
+			<!-- age -->
+			<table class="min-w-full">
+				<thead>
+					<tr>
+						<th scope="col" class="heading stats-heading">Age</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each ageWiseUsers as data}
+						<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 transition">
+							<td class=" text-custom w-[30%]">{data.Status}</td>
+							<td class=" text-custom w-[10%]">{data.Count}</td>
+							<td class=" text-custom flex w-[50%] items-center">
+								<div class="progress-bar">
+									<div class="progress" style="width:{data.Ratio}%"></div>
+								</div>
+								<span class="text-primary-500 dark:text-primary-100">{data.Ratio}</span>
+								<span class="text-primary-500 dark:text-primary-100 text-xs">%</span>
+							</td>
+						</tr>
 					{/each}
-				</select>
-				<div class="mx-5 h-64 w-64 md:mx-0">
-					{#if ageDistributionData}
-						<PieChart labels={ageDistributionLabels} data={ageDistributionData} title="Age" />
-					{/if}
-				</div>
-			</div>
+				</tbody>
+			</table>
+
 		</div>
-		<div class="stats-container grid-cols-3">
-			<div class="col-span-2 px-4 sm:px-6 lg:px-8">
-				<div class="flow-root">
-					<div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-						<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-							<table class="min-w-full">
-								<thead>
-									<tr>
-										<th scope="col" class="heading px-3 text-left">Gender</th>
-									</tr>
-								</thead>
-								<tbody>
-									{#each genderWiseUsers as data}
-										<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 transition">
-											<td style="width:10%;" class="text-custom">{data.Gender}</td>
-											<td style="width:10%;" class="text-custom">{data.Count}</td>
-											<td style="width:15%;" class="text-custom">
-												<div class="flex items-center">
-													<div class="progress-bar">
-														<div class="progress" style="width:{data.Ratio}%"></div>
-													</div>
-													<span class="text-primary-500 dark:text-primary-100">{data.Ratio}</span>
-													<span class="text-primary-500 dark:text-primary-100 text-xs">%</span>
-												</div>
-											</td>
-										</tr>
-									{/each}
-								</tbody>
-							</table>
-						</div>
-					</div>
+		<div>
+			<select name="year" class="select select-year" onchange={handlelSelectYearForAge}>
+				<option selected disabled>All the years</option>
+				{#each years as year}
+					<option value={year.year}>{year.year}</option>
+				{/each}
+			</select>
+			{#if ageDistributionData}
+				<div class=" piechart">
+					<PieChart labels={ageDistributionLabels} data={ageDistributionData} title="Age" />
 				</div>
-			</div>
-			<div>
-				<select
-					name="year"
-					id=""
-					class="select mx-5 mt-3 w-2/3 md:mx-0"
-					onchange={handlelSelectYearForGender}
-				>
-					<option selected disabled>All the years</option>
-					{#each years as year}
-						<option value={year.year}>{year.year}</option>
+
+			{/if}
+		</div>
+	</div>
+
+	<div class="stats-container grid-cols-3">
+		<div class="col-span-2">
+			<!-- gender -->
+			<table class="min-w-full">
+				<thead>
+					<tr>
+						<th scope="col" class="heading stats-heading">Gender</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each genderWiseUsers as data}
+						<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 transition">
+							<td class=" text-custom w-[30%]">{data.Gender}</td>
+							<td class=" text-custom w-[10%]">{data.Count}</td>
+							<td class=" text-custom flex w-[50%] items-center">
+								<div class="progress-bar">
+									<div class="progress" style="width:{data.Ratio}%"></div>
+								</div>
+								<span class="text-primary-500 dark:text-primary-100">{data.Ratio}</span>
+								<span class="text-primary-500 dark:text-primary-100 text-xs">%</span>
+							</td>
+						</tr>
 					{/each}
-				</select>
-				<div class="mx-5 h-64 w-64 pt-0 md:mx-0">
-					{#if genderDistributionData}
-						<PieChart
-							labels={genderDistributionLabels}
-							data={genderDistributionData}
-							title="Gender"
-						/>
-					{/if}
-				</div>
-			</div>
+				</tbody>
+			</table>
 		</div>
+		<div>
+			<select name="year" class="select select-year" onchange={handlelSelectYearForGender}>
+				<option selected disabled>All the years</option>
+				{#each years as year}
+					<option value={year.year}>{year.year}</option>
+				{/each}
+			</select>
+			{#if genderDistributionData}
+				<div class="piechart">
+					<PieChart
+						labels={genderDistributionLabels}
+						data={genderDistributionData}
+						title="Gender"
+					/>
+
+				</div>
+			{/if}
+		</div>
+	</div>
+</div>
 
 		<!-- <div
 			class="grid grid-cols-3 overflow-x-auto justify-center rounded-lg  shadow-xl border border-secondary-100 dark:border-surface-700 sm:px-4 w-full h-full gap-3 "
@@ -424,7 +390,7 @@
 				</div>
 			</div>
 		</div>-->
-	</div>
+	
 
 	<!-- <div class="flex justify-center items-center h-full gap-10 w-full">
 		<div
@@ -580,4 +546,3 @@
 			</div>
 		</div>
 	</div> -->
-</div>
