@@ -17,7 +17,16 @@
 	let pieChart: any = $state();
 	let ctx;
 
+	function getThemeColor(): { textColor: string} {
+		const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+		return {
+			textColor: isDarkMode ? '#d9dee9' : '#1c252a', 
+		};
+	}
+
 	onMount(async () => {
+		const { textColor } = getThemeColor();
+
 		ctx = pieChart.getContext('2d');
 
 		pieChart = new Chart(ctx, {
@@ -49,9 +58,7 @@
 						labels: {
 							boxWidth: 10,
 							boxHeight: 10,
-							color: document.documentElement.classList.contains('dark')
-								? tickColorDark
-								: tickColorLight
+							color:textColor
 						}
 					},
 					tooltip: {
@@ -69,9 +76,7 @@
 						display: false,
 						text: title,
 						position: 'top',
-						color: document.documentElement.classList.contains('dark')
-							? tickColorDark
-							: tickColorLight,
+						color:textColor,
 						align: 'center',
 						padding: 20,
 						font: {

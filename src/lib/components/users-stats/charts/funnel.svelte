@@ -15,7 +15,15 @@
 	let funnelChart:any;
 	let ctx;
 
+	function getThemeColor(): { textColor: string} {
+		const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+		return {
+			textColor: isDarkMode ? '#d9dee9' : '#1c252a', 
+		};
+	}
+
 	onMount(() => {
+		const { textColor } = getThemeColor();
 		ctx = funnelChart.getContext('2d');
 		funnelChart = new Chart(ctx, {
 			type: 'funnel',

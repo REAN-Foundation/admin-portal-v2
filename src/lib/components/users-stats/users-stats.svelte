@@ -68,54 +68,16 @@
 		genderWiseUsers.length > 0 ? genderWiseUsers.map((x: { Ratio: any }) => x.Ratio) : ''
 	);
 
-	// if (genderWiseUsers) {
-	// 	genderDistributionLabels = false;
-	// 	genderDistributionData = false;
-
-	// 	tick().then(() => {
-	// 		genderDistributionLabels = genderWiseUsers.map((x: { Gender: any }) => x.Gender);
-	// 		genderDistributionData = genderWiseUsers.map((x: { Ratio: any }) => x.Ratio);
-	// 	});
-	// }
-
 	let ageDistributionLabels: any = $derived(
 		ageWiseUsers.length > 0 ? ageWiseUsers.map((x: { Status: any }) => x.Status) : ''
 	);
-	//  if (ageWiseUsers) {
-	// // 		// ageDistributionData = false;
-	// // 		// ageDistributionLabels = false;
-	// // 		// tick().then(() => {
-	// 	ageWiseUsers.map((x: { Status: any }) => x.Status))
-	// // 			// ageDistributionData = ageWiseUsers.map((x: { Ratio: any }) => x.Ratio);
-	// // 		// });
-	// }
-	//  });
 
 	let ageDistributionData: any = $derived(
 		ageWiseUsers.length > 0 ? ageWiseUsers.map((x: { Ratio: any }) => x.Ratio) : false
 	);
-	// let ageDistributionData: any = $derived(ageWiseUsers.map((x: { Ratio: any }) => x.Ratio));
-	// 	() => {
-	// 	// if (ageWiseUsers) {
-	// 		// ageDistributionData = false;
-	// 		// ageDistributionLabels = false;
-	// 		// tick().then(() => {
-	// 			// ageWiseUsers.map((x: { Status: any }) => x.Status);
-	// 			// ageWiseUsers.map((x: { Ratio: any }) => x.Ratio);
-	// 		// });
-	// 	// }
-	// });
+
 	let ageLabels;
 	let ageData;
-
-	// if (ageWiseUsers) {
-	// 	// ageDistributionData = false;
-	// 	// ageDistributionLabels = false;
-	// 	tick().then(() => {
-	// 		ageDistributionLabels = ageWiseUsers.map((x: { Status: any }) => x.Status);
-	// 		ageDistributionData = ageWiseUsers.map((x: { Ratio: any }) => x.Ratio);
-	// 	});
-	// }
 
 	$inspect('ageDistributionData', ageDistributionData);
 	// let maritalStatusDistributionLabels = $state();
@@ -207,6 +169,7 @@
 </script>
 <!-- <BreadCrumbs crumbs={breadCrumbs} /> -->
 
+
 <div class=" users-stat-container">
 	<div class="stats-container grid-cols-1">
 		<!-- User -->
@@ -286,6 +249,7 @@
 					{/each}
 				</tbody>
 			</table>
+
 		</div>
 		<div>
 			<select name="year" class="select select-year" onchange={handlelSelectYearForAge}>
@@ -298,6 +262,7 @@
 				<div class=" piechart">
 					<PieChart labels={ageDistributionLabels} data={ageDistributionData} title="Age" />
 				</div>
+
 			{/if}
 		</div>
 	</div>
@@ -342,6 +307,7 @@
 						data={genderDistributionData}
 						title="Gender"
 					/>
+
 				</div>
 			{/if}
 		</div>

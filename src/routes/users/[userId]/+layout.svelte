@@ -16,6 +16,8 @@
 	let username = $state(data.user.Person.DisplayName);
 	let email = $state(data.user.Person.Email);
 	let imageUrl = $state(data.user.Person.ProfileImageURL);
+	let userRole = $state(data.sessionUser.roleName);
+	let tenantSettings = $state(data.tenantSettings);
 	const footerText = `© ${new Date().getFullYear()} ${getPublicFooterText()}`;
 	const footerLink = getPublicFooterLink();
 
@@ -50,11 +52,18 @@
 </script>
 
 <div class="flex min-h-screen flex-col">
-	<Navbar {userId} logout={onLogout} userName={username} {imageUrl}  />
+	<Navbar
+		{userId}
+		logout={onLogout}
+		userName={username}
+		{imageUrl}
+		{tenantSettings}
+		{userRole}
+		{email}
+	/>
 
 	<div class="flex min-h-screen">
-		<Sidebar />
-		<div class="main-content">
+		<div class="main-content ">
 			{@render children()}
 		</div>
 	</div>
