@@ -238,7 +238,7 @@
 							<th class=" w-20 text-center">Actions</th>
 						</tr>
 					</thead>
-					<tbody class="divide-y divide-gray-200">
+					<tbody class="">
 						{#if retrivedHealthSystems <= 0}
 							<tr>
 								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>

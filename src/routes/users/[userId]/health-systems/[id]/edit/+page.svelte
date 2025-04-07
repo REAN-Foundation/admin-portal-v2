@@ -47,19 +47,22 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
+<div class="p-6">
+	<div class="mx-auto">
+		<div class="mb-6 rounded-lg bg-white shadow dark:bg-neutral-800">
+
 <form
 	method="post"
 	action="?/updateHealthSystemAction"
-	class="health-system-table-container border-secondary-100 dark:!border-surface-700 my-2 border"
 	use:enhance
 	onsubmit={handleSubmit}
 >
 	<table class="health-system-table">
-		<thead class="!variant-soft-secondary">
+		<thead >
 			<tr>
 				<th>Edit Health System</th>
 				<th class="text-end">
-					<a href={viewRoute} class="health-system-btn">
+					<a href={viewRoute} class="health-system-btn variant-soft-secondary">
 						<Icon icon="material-symbols:close-rounded" />
 					</a>
 				</th>
@@ -67,11 +70,11 @@
 		</thead>
 		<tbody class="!bg-white dark:!bg-inherit">
 			<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
-				<td>Name *</td>
+				<td>Name <span class=" text-red-600">*</span></td>
 				<td>
 					<input
 						type="text"
-						class="input {form?.errors?.healthSystemName ? 'border-error-300 text-error-500' : ''}"
+						class="health-system-input {form?.errors?.healthSystemName ? 'border-error-300 text-error-500' : ''}"
 						name="healthSystemName"
 						placeholder="Enter name here..."
 						bind:value={healthSystemName}
@@ -97,3 +100,7 @@
 		</button>
 	</div>
 </form>
+
+</div>
+</div>
+</div>

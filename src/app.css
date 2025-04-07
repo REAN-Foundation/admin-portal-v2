@@ -701,7 +701,7 @@ tr {
 }
 
 .health-system-table thead th {
-	@apply table-cell py-2 px-5 font-semibold;
+	@apply table-cell px-5 py-2 font-semibold;
 }
 
 .health-system-table tbody {
@@ -713,11 +713,15 @@ tr {
 } */
 
 .health-system-table tbody td {
-	@apply px-5 py-2;
+	@apply border-b-1 border-gray-200 px-5 py-2;
 }
 
 .health-system-btn {
-	@apply inline-flex text-sm cursor-pointer items-center justify-center rounded-md px-3 py-2 hover:bg-[var(--color-active)] text-center whitespace-nowrap transition-all duration-150 ease-in-out;
+	@apply inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-2 text-center text-sm whitespace-nowrap transition-all duration-150 ease-in-out hover:bg-[var(--color-active)];
+}
+
+.health-system-input {
+	@apply w-full border-gray-200 rounded-lg border px-2 py-2 outline-[var(--color-active)];
 }
 
 .breadcrumbs {
