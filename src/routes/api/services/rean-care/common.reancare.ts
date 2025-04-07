@@ -4,6 +4,7 @@ export const get = async (
 	sessionId: string,
 	url: string,
 	authorizeUser = false,
+	xApiKey?: string
 ) => {
 	return await get_(url, authorizeUser, sessionId);
 };
@@ -13,9 +14,9 @@ export const post = async (
 	url: string,
 	bodyObj: unknown,
 	authorizeUser = false,
-    xApiKey?: string
+	xApiKey?: string
 ) => {
-	return await post_(sessionId, url, bodyObj, authorizeUser, xApiKey);
+	return await post_(url, bodyObj, authorizeUser, sessionId);
 };
 
 export const put = async (
@@ -23,16 +24,16 @@ export const put = async (
 	url: string,
 	bodyObj: unknown,
 	authorizeUser = false,
-    xApiKey?: string
+	xApiKey?: string
 ) => {
-	return await put_(sessionId, url, bodyObj, authorizeUser, xApiKey);
+	return await put_(url, bodyObj, authorizeUser, sessionId);
 };
 
 export const del = async (
 	sessionId: string,
 	url: string,
 	authorizeUser = false,
-    xApiKey?: string
+	xApiKey?: string
 ) => {
-	return await delete_(sessionId, url, authorizeUser, xApiKey);
+	return await delete_(url, authorizeUser, sessionId);
 };
