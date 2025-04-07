@@ -18,39 +18,39 @@
 	function toggleDropdown(tabName) {
 		openTab = openTab === tabName ? null : tabName;
 	}
-
-	// let homeLink = `/users/${userId}/careplan`;
 </script>
 
-<div class=" {showSidebar ? 'z-10 max-md:fixed' : 'hidden'}  transition-all md:block">
+<div class="{showSidebar ? 'z-10 max-md:fixed' : 'hidden'} transition-all md:block">
 	<div class="sidebar">
 		<ul class="sidebar-list">
-			<!-- {#each sidebarTabs as tab}
-				<li>
-					<a
-						href="#"
-						class="sidebar-item"
-						class:!bg-active={page.url.pathname.startsWith(tab.path)}
-					>
-						<span class="sidebar-text">{tab.name}</span>
-					</a>
-				</li>
-			{/each} -->
 			{#each navData as navParent, idx}
-				<button class="sidebar-item items-center" onclick={() => toggleDropdown(navParent.title)}>
-					<Icon icon={navParent.icon} class="mx-1 text-2xl" />
-					<span class="sidebar-text">{navParent.title}</span>
-					<Icon icon="gridicons:dropdown" width="16" height="16" class=" h-5 w-5" />
-				</button>
-				{#if openTab == navParent.title}
+				{#if navParent.title === 'Analytics'}
+					<a
+						href={`/users/${userId}/analytics`}
+						class="sidebar-item items-center"
+					>
+						<Icon icon={navParent.icon} class="mx-1 text-2xl" />
+						<span class="sidebar-text">{navParent.title}</span>
+					</a>
+				{:else}
+					<button
+						class="sidebar-item items-center"
+						onclick={() => toggleDropdown(navParent.title)}
+					>
+						<Icon icon={navParent.icon} class="mx-1 text-2xl" />
+						<span class="sidebar-text">{navParent.title}</span>
+						<Icon icon="gridicons:dropdown" width="16" height="16" class="h-5 w-5" />
+					</button>
+				{/if}
+
+				{#if openTab == navParent.title && navParent.title !== 'Analytics'}
 					<div class="mx-4">
-						<nav class=" space-y-1">
+						<nav class="space-y-1">
 							{#each navParent.childNav as navItem}
-								<!-- if no navItem.link but navItem.child -->
 								{#if navItem.link}
 									<a
 										href={navItem.link}
-										class=" sidebar-item items-center"
+										class="sidebar-item items-center"
 										class:variant-soft-secondary={page.url.pathname === navItem.link}
 									>
 										{#if navItem.icon.endsWith('.png')}
@@ -69,9 +69,7 @@
 									<div>
 										<Icon icon={navItem.icon} class="text-2xl" />
 									</div>
-									<div>
-										{navItem.title}
-									</div>
+									<div>{navItem.title}</div>
 									<div>
 										<nav class="list-nav space-y-1">
 											{#each navItem.childNav as childItem}

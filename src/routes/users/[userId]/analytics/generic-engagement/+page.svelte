@@ -134,80 +134,79 @@
 	});
 </script>
 
-
 <div class=" user-graph-container">
-    <div class=" user-graph-wrapper">
-        <div class=" user-graph-card">
-            <div class="w-full">
-                <div class=" user-graph-texts">
-                    <h4 class=" user-graph-title">
-                        {selectedGraph === 'daily'
-                            ? 'Daily Active Users'
-                            : selectedGraph === 'weekly'
-                                ? 'Weekly Active Users'
-                                : 'Monthly Active Users'}
-                    </h4>
-                    <p class=" user-graph-des">
-                        {selectedGraph === 'daily'
-                            ? 'Total number of unique users who interact with the platform on a given day.'
-                            : selectedGraph === 'weekly'
-                                ? 'Total number of unique users who interact with the platform during a week.'
-                                : 'Total number of unique users who interact with the platform during a month.'}
-                    </p>
-                </div>
-                <div class="flex w-full justify-end">
-                    <select
-                        class="select mb-4 w-fit border px-10"
-                        onchange={(e: any) => {
-                            selectedGraph = e.target.value;
-                        }}
-                    >
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                    </select>
-                </div>
-                {#if selectedGraph === 'daily' && dailyActiveUsersData.length > 0}
-                    <GenericChart
-                        type="bar"
-                        data={dailyActiveUsersData}
-                        labels={dailyActiveUsersLabels}
-                        title="Daily Active Users"
-                    />
-                {:else if selectedGraph === 'daily'}
-                    <div class=" active-users-graph">
-                        <p class=" user-data-not-available">Data Not Available</p>
-                    </div>
-                {/if}
-                {#if selectedGraph === 'weekly' && weeklyActiveUsersData.length > 0}
-                    <GenericChart
-                        type="bar"
-                        data={weeklyActiveUsersData}
-                        labels={weeklyActiveUsersLabels}
-                        title="Weekly Active Users"
-                    />
-                {:else if selectedGraph === 'weekly'}
-                    <div class="active-users-graph p-4">
-                        <p class=" user-data-not-available">Data Not Available</p>
-                    </div>
-                {/if}
-                {#if selectedGraph === 'monthly' && monthlyActiveUsersData.length > 0}
-                    <GenericChart
-                        type="bar"
-                        data={monthlyActiveUsersData}
-                        labels={monthlyActiveUsersLabels}
-                        title="Monthly Active Users"
-                    />
-                {:else if selectedGraph === 'monthly'}
-                    <div class="active-users-graph p-4">
-                        <p class=" user-data-not-available">Data Not Available</p>
-                    </div>
-                {/if}
-            </div>
-        </div>
-    </div>
+	<div class=" user-graph-wrapper">
+		<div class=" user-graph-card">
+			<div class="w-full">
+				<div class=" user-graph-texts">
+					<h4 class=" user-graph-title">
+						{selectedGraph === 'daily'
+							? 'Daily Active Users'
+							: selectedGraph === 'weekly'
+								? 'Weekly Active Users'
+								: 'Monthly Active Users'}
+					</h4>
+					<p class=" user-graph-des">
+						{selectedGraph === 'daily'
+							? 'Total number of unique users who interact with the platform on a given day.'
+							: selectedGraph === 'weekly'
+								? 'Total number of unique users who interact with the platform during a week.'
+								: 'Total number of unique users who interact with the platform during a month.'}
+					</p>
+				</div>
+				<div class="flex w-full justify-end">
+					<select
+						class="select my-4 w-fit border px-10"
+						onchange={(e: any) => {
+							selectedGraph = e.target.value;
+						}}
+					>
+						<option value="daily">Daily</option>
+						<option value="weekly">Weekly</option>
+						<option value="monthly">Monthly</option>
+					</select>
+				</div>
+				{#if selectedGraph === 'daily' && dailyActiveUsersData.length > 0}
+					<GenericChart
+						type="bar"
+						data={dailyActiveUsersData}
+						labels={dailyActiveUsersLabels}
+						title="Daily Active Users"
+					/>
+				{:else if selectedGraph === 'daily'}
+					<div class=" active-users-graph">
+						<p class=" user-data-not-available">Data Not Available</p>
+					</div>
+				{/if}
+				{#if selectedGraph === 'weekly' && weeklyActiveUsersData.length > 0}
+					<GenericChart
+						type="bar"
+						data={weeklyActiveUsersData}
+						labels={weeklyActiveUsersLabels}
+						title="Weekly Active Users"
+					/>
+				{:else if selectedGraph === 'weekly'}
+					<div class="active-users-graph p-4">
+						<p class=" user-data-not-available">Data Not Available</p>
+					</div>
+				{/if}
+				{#if selectedGraph === 'monthly' && monthlyActiveUsersData.length > 0}
+					<GenericChart
+						type="bar"
+						data={monthlyActiveUsersData}
+						labels={monthlyActiveUsersLabels}
+						title="Monthly Active Users"
+					/>
+				{:else if selectedGraph === 'monthly'}
+					<div class="active-users-graph p-4">
+						<p class=" user-data-not-available">Data Not Available</p>
+					</div>
+				{/if}
+			</div>
+		</div>
+	</div>
 </div>
-<div class="  generic-tables-conatiner">
+ <div class="generic-tables-conatiner">
     <div class="text w-full">
         <div class="relative flex flex-col items-center">
             <h4 class="generic-table-heading">Commonly Visited Features</h4>
@@ -329,4 +328,4 @@
             </div>
         </div>
     </div>
-</div>
+</div> 

@@ -513,47 +513,45 @@ tr {
     @apply min-w-full;
 }
 .select-year{
-    @apply   mx-5 w-2/3 md:mx-0;
+    @apply  mt-5 mx-5 w-32 md:mx-0;
 }
 .piechart{
     @apply mx-5 h-64 w-64 md:mx-0;
 }
 .stats-heading{
-    @apply px-3 text-left;
+    @apply px-3 text-left lg:text-lg;
 }
 /* analytics-overview */
-.basic-container{
-    @apply flex flex-col justify-center p-8;
-}
+
 .basic-stat{
     @apply text-lg font-bold ;
 }
 .basic-des{
-    @apply text-sm text-gray-600;
+    @apply text-sm md:text-base text-gray-600;
 }
 .history-container{
     @apply  w-full overflow-x-auto px-4 pt-4 sm:px-4; 
 }
 .history-head{
-    @apply  pl-4 text-left text-lg font-bold sm:pl-3; 
+    @apply   text-left text-lg font-bold sm:pl-3; 
 }
 .history-title{
     @apply flex items-center justify-center text-2xl;
 }
 .history-para{
-    @apply pb-2 pl-4 text-left text-sm sm:pl-3; 
+    @apply pb-2  text-left text-sm sm:pl-3; 
 }
 .not-available{
     @apply mt-28 flex items-center justify-center text-xl leading-3;
 }
 .users-head{
-    @apply mr-4 ml-4 justify-center py-3 text-center text-lg sm:pl-3;
+    @apply mr-4 ml-4 justify-center  text-center text-lg sm:pl-3 my-2;
 }
 .user-roles-container{
-    @apply my-10 flex-col gap-10 md:flex-row;
+    @apply my-10 flex-col gap-10 ;
 }
 .active-users-container{
-    @apply flex min-h-full w-1/2 items-center justify-center overflow-x-auto shadow-xl sm:px-4;
+    @apply flex  w-3/4 items-center justify-center  shadow-xl;
 }
 .patient-history-container{
     @apply text-sm text-[var(--color-info)] flex flex-col justify-center;
@@ -575,7 +573,7 @@ tr {
     @apply flex items-center justify-center border p-4 shadow-xl sm:px-4;
 }
 .distribution-card-container{
-    @apply grid grid-cols-2 border sm:px-4 md:grid-cols-3;
+    @apply grid grid-cols-2 xl:grid-cols-3 border sm:px-4 ;
 }
 .distribution-card-content{
     @apply -mx-4 -my-2 mt-4 overflow-x-auto sm:-mx-6 lg:-mx-8;
@@ -587,7 +585,7 @@ tr {
     @apply border px-3 py-2 text-sm whitespace-nowrap;
 }
 .chart-view{
-    @apply col-span-1 flex justify-center p-4;
+    @apply col-span-1 flex justify-center p-4 ml-36 md:ml-72 lg:ml-86  xl:ml-0 my-4;
 }
 
 
@@ -596,13 +594,13 @@ tr {
 	@apply py-8;
 }
 .user-graph-wrapper {
-	@apply flex h-full w-full items-center justify-center gap-10;
+	@apply flex  w-3/3 items-center justify-center gap-10;
 }
 .active-users-graph {
 	@apply h-[400px] w-[400px] p-4;
 }
 .user-graph-card {
-	@apply flex w-full items-center justify-center overflow-x-auto rounded-lg shadow-xl sm:px-4;
+	@apply flex w-full items-center justify-center overflow-x-auto rounded-lg   p-4 shadow-xl sm:px-4;
 }
 .user-graph-texts {
 	@apply flex flex-col items-center text-sm text-[var(--color-info)];
@@ -653,7 +651,7 @@ tr {
 	@apply flex max-w-sm flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-md md:max-w-lg;
 }
 .retention-card {
-	@apply my-5 flex max-w-[95%] flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-md md:my-0 md:max-w-lg;
+	@apply flex max-w-sm flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-md md:max-w-lg;
 }
 .features-cards-layout {
 	@apply grid grid-cols-1 justify-center gap-8 rounded-lg py-8;

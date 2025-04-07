@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
+	import DashboardTabs from '$lib/components/navbar/dashboard.tabs.svelte';
 	import { getSystemName } from '$lib/themes/theme.selector';
 	import type { PageServerData, LayoutServerData } from './$types';
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,5 +118,12 @@
 	<meta name="description" content="" />
 </svelte:head>
 
-
+<!-- <DashboardTabs on:downloadReport={handleDownloadReportClick} {userId} /> -->
+<DashboardTabs
+	downloadAnalyticsJSONReport={handleDownloadAnalyticsReportInJSONClick}
+	downloadAnalyticsExcelReport={handleDownloadAnalyticsReportInExcelClick}
+	downloadAnalyticsPdfReport={handleDownloadAnalyticsReportInPdfClick}
+	{userId}
+	{tenantCode}
+/>
 {@render children()}

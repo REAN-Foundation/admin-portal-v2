@@ -130,6 +130,10 @@ export const Options: FeatureOptions[] = [
         Enabled: true
     },
     {
+        Name: 'Main-Analytics',
+        Enabled: true
+    },
+    {
         Name: 'Organizations',
         Enabled: false
     },

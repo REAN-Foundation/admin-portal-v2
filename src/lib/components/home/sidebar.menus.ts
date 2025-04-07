@@ -336,6 +336,13 @@ export const buildSidebarMenu = (
 		tenantSettings,
 		options
 	);
+	sidebarNaviagation = addMainAnalyticsMenu(
+		sidebarNaviagation,
+		userId,
+		userRole,
+		tenantSettings,
+		options
+	);
 	sidebarNaviagation = addGamificationMenus(
 		sidebarNaviagation,
 		userId,
@@ -350,6 +357,38 @@ export const buildSidebarMenu = (
 
 	return sidebarNaviagation;
 };
+
+function addMainAnalyticsMenu(
+	sidebarNaviagation: NavigationMenu[],
+	userId: string,
+	userRole: string,
+	tenantSettings: any,
+	options: FeatureOptions
+): NavigationMenu[] {
+	const menuList: SidebarMenu[] = [];
+
+	const analytics: SidebarMenu = {
+		name: 'Main-Analytics',
+		title: 'Analytics',
+		icon: 'pixel:analytics-solid',
+		link: `/users/${userId}/analytics`,
+		children: []
+	};
+	menuList.push(analytics);
+
+	const mainAnalytics: SidebarMenu = getMenu(menuList, 'Main-Analytics');
+
+	const mainAnalyticsNavigation: NavigationMenu | null = toNavigation(
+		mainAnalytics,
+		userRole,
+		tenantSettings,
+		options
+	);
+	if (mainAnalyticsNavigation) {
+		sidebarNaviagation.push(mainAnalyticsNavigation);
+	}
+	return sidebarNaviagation;
+}
 
 function addMainDashboardMenu(
 	sidebarNaviagation: NavigationMenu[],
