@@ -12,8 +12,10 @@
     const viewRoute = `/users/${userId}/health-systems/${healthSystemId}/view`;
     const healthSystemRoute = `/users/${userId}/health-systems`;
 
-    export let data: PageServerData;
-    let healthSystem = data.healthSystem;
+    // export let data: PageServerData;
+    let {data}: {data:PageServerData} =$props()
+
+    let healthSystem = $state(data.healthSystem);
     let healthSystemName = healthSystem.Name;
     let tags_ = data.healthSystem.Tags;
     let tags = tags_.join(', ');
@@ -35,22 +37,22 @@
 <div class="flex flex-wrap gap-2">
     <a
         href={editRoute}
-        class="btn variant-filled-secondary ml-auto"
+        class="health-system-btn variant-filled-secondary ml-auto my-2"
     >
         <Icon icon="material-symbols:edit-outline" />
         <span>Edit</span>
     </a>
 </div>
 
-<div class="table-container my-2 border border-secondary-100 dark:border-surface-700">
-    <table class="table">
+<div class="health-system-table-container">
+    <table class="health-system-table">
         <thead class="!variant-soft-secondary">
             <tr>
                 <th>View Health System</th>
                 <th class="text-end">
                     <a
                         href={healthSystemRoute}
-                        class="btn p-2 -my-2 variant-soft-secondary"
+                        class="health-system-btn p-2 -my-2 variant-soft-secondary"
                     >
                         <Icon
                             icon="material-symbols:close-rounded"
