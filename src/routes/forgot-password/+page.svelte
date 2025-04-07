@@ -1,8 +1,9 @@
 <script lang="ts">
-	import toast from 'svelte-french-toast';
 	import { z } from 'zod';
 	import Password from '$lib/components/input/password.input.svelte';
 	import { getPublicFooterLink, getPublicFooterText, getPublicLogoImageSource } from '$lib/themes/theme.selector';
+	import { toasts } from '$lib/components/toast/toast.store';
+	import { showMessage } from '$lib/components/toast/message.utils';
 	let showResetPassword = false;
 	let showForgotPassword = true;
 
@@ -97,20 +98,20 @@
 			});
 			const res = await response.json();
 			if (res.Status === 'success') {
-				toast.success(res.Message);
+				showMessage(res.Message, 'success', false, 3000);
 				showResetPassword = false;
 				showForgotPassword = false;
 				email = undefined;
 				phone = undefined;
 			} else {
-				toast.error(res.Message);
+				showMessage(res.Message, 'error', false, 3000);
 			}
 			window.location.href = '/';
 		} catch (err) {
 			if (err instanceof z.ZodError) {
 				errors = err.flatten().fieldErrors;
 			} else {
-				toast.error('An unexpected error occurred');
+				showMessage('An unexpected error occurred', 'error', false, 3000);
 			}
 		}
 	}

@@ -61,11 +61,11 @@ export const actions: Actions = {
 
 		if (result?.phone && result.countryCode) {
 			phone = result.countryCode + '-' + result.phone;
-			var res_ = (availableRoles = await getPersonRolesForPhone(phone));
+			const res_ = (availableRoles = await getPersonRolesForPhone(phone));
 			console.log(phone);
 			availableRoles = res_.Data?.Roles ?? [];
 		} else if (result?.email) {
-			var res_ = await getPersonRolesForEmail(result.email);
+			const res_ = await getPersonRolesForEmail(result.email);
 			availableRoles = res_.Data?.Roles ?? [];
 		}
 
@@ -163,8 +163,8 @@ export const actions: Actions = {
 };
 
 const loginSchema = z.object({
-	username: z.string().trim().min(1, { message: "name can't be empty" }).optional(),
-	password: z.string().trim().min(1, { message: 'password can/`t be empty' }),
+	username: z.string().trim().min(1, { message: "Name can't be empty" }).optional(),
+	password: z.string().trim().min(1, { message: 'Password can`t be empty' }),
 	email: z.string().optional(),
 	phone: z.string().optional(),
 	countryCode: z.string().optional()
