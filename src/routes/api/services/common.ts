@@ -143,13 +143,11 @@ export const delete_ = async (url: string, authorizeUser: boolean = false, sessi
 
 const setHeaders = async (authorizeUser: boolean, sessionId?: string, isFormData = false) => {
 	try {
-		const headers: Record<string, string> = {
+		const headers = {
 			'x-api-key': API_CLIENT_INTERNAL_KEY
 		};
 
-		if (!isFormData) {
-			headers['Content-Type'] = 'application/json';
-		}
+		headers['Content-Type'] = 'application/json';
 
 		if (authorizeUser && sessionId) {
 			const session = await SessionManager.getSession(sessionId);

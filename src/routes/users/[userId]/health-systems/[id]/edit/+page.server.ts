@@ -6,8 +6,8 @@ import { errorMessage, successMessage } from '$lib/utils/message.utils';
 import type { PageServerLoad } from './$types';
 
 import type { ServerLoadEvent } from '@sveltejs/kit';
-import { getHealthSystemById, updateHealthSystem } from '../../../../services/rean-care/health.systems';
 import { updateSchema } from '$lib/validation/health.system.schema';
+import { getHealthSystemById, updateHealthSystem } from '../../../../../api/services/rean-care/health.systems';
 
 /////////////////////////////////////////////////////////////////////////
 

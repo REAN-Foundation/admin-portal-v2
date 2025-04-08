@@ -279,6 +279,7 @@ export const buildSidebarMenu = (
 		tenantSettings,
 		options
 	);
+
 	sidebarNaviagation = addAdministrationMenus(
 		sidebarNaviagation,
 		userId,
@@ -406,6 +407,15 @@ function addMainDashboardMenu(
 		children: []
 	};
 	menuList.push(dashbord);
+
+	const analytics: SidebarMenu = {
+		name: 'Main-Analytics',
+		title: 'Analytics',
+		icon: 'material-symbols:dashboard-outline-rounded',
+		link: null,
+		children: []
+	};
+	menuList.push(analytics);
 
 	const rhg: SidebarMenu = {
 		name: 'Main-Home',
