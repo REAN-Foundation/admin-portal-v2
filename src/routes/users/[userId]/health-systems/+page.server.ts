@@ -15,6 +15,8 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     );
 
     const healthSystems = response?.Data?.HealthSystems || [];
+	console.log("healthSystems==>",healthSystems);
+    
 
     return {
         healthSystems,

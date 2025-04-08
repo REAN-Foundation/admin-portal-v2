@@ -86,16 +86,16 @@
 				</td>
 			</tr>
 			<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
-				<td class="align-top">Tags</td>
+				<td class="align-top !py-3">Tags</td>
 				<td>
 					<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" bind:value={tags} /> -->
 				</td>
 			</tr>
 		</tbody>
 	</table>
-	<div class="flex justify-end gap-2 p-2">
+	<div class="flex justify-end gap-2 px-4 py-2">
 		<button type="button" onclick={handleReset} class="health-system-btn variant-soft-secondary">Reset</button>
-		<button type="submit" class="health-system-btn variant-filled-secondary" disabled={isSubmitting}>
+		<button type="submit" class="health-system-btn variant-soft-secondary" disabled={isSubmitting}>
 			{isSubmitting ? 'Submitting...' : 'Submit'}
 		</button>
 	</div>

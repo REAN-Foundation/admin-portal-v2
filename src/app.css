@@ -685,7 +685,7 @@ tr {
 }
 
 .health-system-table-container {
-	@apply w-full overflow-x-auto rounded-lg border;
+	@apply w-full overflow-x-auto rounded-lg bg-[var(--color-primary)] text-[var(--color-info)];
 }
 
 .health-system-table {
@@ -693,7 +693,7 @@ tr {
 }
 
 .health-system-table thead {
-	@apply table-header-group border-b-1 border-gray-200 align-middle;
+	@apply table-header-group border-b-1 border-[var(--color-outline)] align-middle;
 }
 
 .health-system-table thead tr {
@@ -708,22 +708,34 @@ tr {
 	@apply table-row-group align-middle;
 }
 
-/* .health-system-table tbody tr {
-	@apply p-4;
-} */
+.health-system-table tbody tr:hover {
+	@apply bg-gray-50 text-black;
+}
+
+.health-system-table tbody tr:hover .health-system-btn {
+	@apply text-black;
+}
 
 .health-system-table tbody td {
-	@apply border-b-1 border-gray-200 px-5 py-2;
+	@apply border-b-1 border-[var(--color-outline)] px-5 py-2 text-sm;
 }
 
 .health-system-btn {
-	@apply inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-2 text-center text-sm whitespace-nowrap transition-all duration-150 ease-in-out hover:bg-[var(--color-active)];
+	@apply inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-2 text-center text-sm whitespace-nowrap text-[var(--color-info)] transition-all duration-150 ease-in-out hover:bg-[var(--color-active)] ;
 }
 
+/* .health-system-icon{
+	@apply group-hover:text-[var(--color-active)]
+} */
+
 .health-system-input {
-	@apply w-full border-gray-200 rounded-lg border px-2 py-2 outline-[var(--color-active)];
+	@apply w-full rounded-lg border border-gray-200 px-2 py-2 outline-[var(--color-active)];
 }
 
 .breadcrumbs {
 	@apply my-1 flex gap-2 text-xl text-[var(--color-info)] md:my-2;
+}
+
+.health-system-search-border{
+	@apply border-b-1 border-[var(--color-outline)]
 }

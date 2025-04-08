@@ -71,7 +71,7 @@
 							</td>
 						</tr>
 						<tr class="">
-							<td class="align-top">Tags</td>
+							<td class="align-top !py-3 ">Tags</td>
 							<td>
 								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
 							</td>
@@ -81,7 +81,7 @@
 				<div class="flex justify-end gap-2 p-2">
 					<button
 						type="submit"
-						class="health-system-btn variant-filled-secondary"
+						class="health-system-btn variant-soft-secondary"
 						disabled={isSubmitting}
 					>
 						{isSubmitting ? 'Submitting...' : 'Submit'}
