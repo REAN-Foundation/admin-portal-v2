@@ -167,8 +167,8 @@
 		});
 	};
 </script>
-<!-- <BreadCrumbs crumbs={breadCrumbs} /> -->
 
+<!-- <BreadCrumbs crumbs={breadCrumbs} /> -->
 
 <div class=" users-stat-container">
 	<div class="stats-container grid-cols-1">
@@ -176,9 +176,9 @@
 		<table class=" user-table">
 			<thead>
 				<tr>
-					<th scope="col" class="heading stats-heading">Users</th>
-					<th scope="col" class="heading px-2 text-left">Count</th>
-					<th scope="col" class="heading px-2 text-left">Percentage</th>
+					<th scope="col" class=" stats-heading">Users</th>
+					<th scope="col" class=" px-2 text-left text-base lg:text-lg">Count</th>
+					<th scope="col" class=" px-2 text-left text-base lg:text-lg">Percentage</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -225,19 +225,19 @@
 	</div>
 
 	<div class="stats-container grid-cols-3">
-		<div class="col-span-2">
+		<div class="col-span-3 md:col-span-2">
 			<!-- age -->
 			<table class="min-w-full">
 				<thead>
 					<tr>
-						<th scope="col" class="heading stats-heading">Age</th>
+						<th scope="col" class=" stats-heading">Age</th>
 					</tr>
 				</thead>
 				<tbody>
 					{#each ageWiseUsers as data}
 						<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 transition">
-							<td class=" text-custom w-[30%]">{data.Status}</td>
-							<td class=" text-custom w-[10%]">{data.Count}</td>
+							<td class=" text-custom w-[48%] md:w-[20%]">{data.Status}</td>
+							<td class=" text-custom w-[18%] md:w-[20%]">{data.Count}</td>
 							<td class=" text-custom flex w-[50%] items-center">
 								<div class="progress-bar">
 									<div class="progress" style="width:{data.Ratio}%"></div>
@@ -249,7 +249,6 @@
 					{/each}
 				</tbody>
 			</table>
-
 		</div>
 		<div>
 			<select name="year" class="select select-year" onchange={handlelSelectYearForAge}>
@@ -262,25 +261,24 @@
 				<div class=" piechart">
 					<PieChart labels={ageDistributionLabels} data={ageDistributionData} title="Age" />
 				</div>
-
 			{/if}
 		</div>
 	</div>
 
 	<div class="stats-container grid-cols-3">
-		<div class="col-span-2">
+		<div class="col-span-3 md:col-span-2">
 			<!-- gender -->
 			<table class="min-w-full">
 				<thead>
 					<tr>
-						<th scope="col" class="heading stats-heading">Gender</th>
+						<th scope="col" class=" stats-heading">Gender</th>
 					</tr>
 				</thead>
 				<tbody>
 					{#each genderWiseUsers as data}
 						<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 transition">
-							<td class=" text-custom w-[30%]">{data.Gender}</td>
-							<td class=" text-custom w-[10%]">{data.Count}</td>
+							<td class=" text-custom w-[48%] md:w-[25%] lg:w-[22%] xl:w-[20%]">{data.Gender}</td>
+							<td class=" text-custom w-[18%] md:w-[20%]">{data.Count}</td>
 							<td class=" text-custom flex w-[50%] items-center">
 								<div class="progress-bar">
 									<div class="progress" style="width:{data.Ratio}%"></div>
@@ -307,14 +305,13 @@
 						data={genderDistributionData}
 						title="Gender"
 					/>
-
 				</div>
 			{/if}
 		</div>
 	</div>
 </div>
 
-		<!-- <div
+<!-- <div
 			class="grid grid-cols-3 overflow-x-auto justify-center rounded-lg  shadow-xl border border-secondary-100 dark:border-surface-700 sm:px-4 w-full h-full gap-3 "
 		>
 			<div class="px-4 sm:px-6 lg:px-8 col-span-2">
@@ -332,7 +329,7 @@
 									</tr>
 								</thead>
 								<tbody> -->
-		<!-- {#each countryWiseUsers as data}
+<!-- {#each countryWiseUsers as data}
 										<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 transition">
 											<td
 												style="width:10%;"
@@ -361,7 +358,7 @@
 											</td>
 										</tr>
 									{/each} -->
-		<!-- </tbody>
+<!-- </tbody>
 							</table>
 						</div>
 					</div>
@@ -390,9 +387,8 @@
 				</div>
 			</div>
 		</div>-->
-	
 
-	<!-- <div class="flex justify-center items-center h-full gap-10 w-full">
+<!-- <div class="flex justify-center items-center h-full gap-10 w-full">
 		<div
 			class="flex overflow-x-auto justify-center items-center rounded-lg  shadow-xl border border-secondary-100 dark:border-surface-700 sm:px-4 w-1/2"
 		>
@@ -445,8 +441,8 @@
 		</div>
 	</div> -->
 
-	<!-- <div class="flex justify-start items-center h-96 gap-10 w-full mt-10"> -->
-	<!-- <div
+<!-- <div class="flex justify-start items-center h-96 gap-10 w-full mt-10"> -->
+<!-- <div
 			class="flex overflow-x-auto justify-center items-center rounded-lg  shadow-xl border border-secondary-100 dark:border-surface-700 sm:px-4 w-1/2"
 		>
 			<div class="w-full">
@@ -471,17 +467,17 @@
 				{/if}
 			</div>
 		</div> -->
-	<!-- <div
+<!-- <div
 			class="flex overflow-x-auto justify-center items-center rounded-lg shadow-xl border border-secondary-100 dark:border-surface-700 sm:px-4 w-1/2"
 		> -->
-	<!-- <div class="h-96 w-full">
+<!-- <div class="h-96 w-full">
 				<BarChart
 					dataSource={addictionDistributionData}
 					labels={addictionDistributionLabels}
 					title="Addiction"
 				/>
 			</div> -->
-	<!-- <div class="w-full">
+<!-- <div class="w-full">
 				<div class="flex items-center">
 					<h4 class="mr-4 w-2/3 text-left justify-center py-3 ml-4 text-lg font-semibold text-primary-500 dark:text-primary-100 sm:pl-3">Addiction</h4>
 					<select name="year" id="" class="select w-1/3 mt-3" on:change={handlelSelectYearForAddiction}>
@@ -502,10 +498,10 @@
 					</div>
 				{/if}
 			</div> -->
-	<!-- </div> -->
-	<!-- </div> -->
+<!-- </div> -->
+<!-- </div> -->
 
-	<!-- <div class="flex justify-center items-center h-96 gap-10 w-full mt-10">
+<!-- <div class="flex justify-center items-center h-96 gap-10 w-full mt-10">
 		<div
 			class="flex overflow-x-auto justify-center items-center rounded-lg  shadow-xl border border-secondary-100 dark:border-surface-700 sm:px-4 w-1/2"
 		>
@@ -525,7 +521,7 @@
 			</div>
 		</div>
 	</div> -->
-	<!--
+<!--
 	<div class="flex justify-center items-center h-96 gap-10 w-full mt-10">
 		<div
 			class="flex overflow-x-auto justify-center items-center rounded-lg  shadow-xl border border-secondary-100 dark:border-surface-700 sm:px-4 w-1/2"

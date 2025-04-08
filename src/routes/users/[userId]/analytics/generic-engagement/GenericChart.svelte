@@ -6,9 +6,7 @@
     $inspect("data",data, "labels",labels)
 </script>
 
-<!-- <div
-    class="flex overflow-x-auto justify-center items-center rounded-lg shadow-xl border border-secondary-100 dark:border-surface-700 sm:px-4 w-1/2"
-> -->
+
 {#if data}
 	{#if type === 'bar'}
 		<div class="h-96">
@@ -27,4 +25,4 @@
 		<p class="mt-28 flex items-center justify-center text-xl leading-3">Data Not Available</p>
 	</div>
 {/if}
-<!-- </div> -->
+

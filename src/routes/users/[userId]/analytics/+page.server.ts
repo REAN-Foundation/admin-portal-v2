@@ -6,7 +6,7 @@ import {
 } from '../../../api/services/reancare/statistics';
 import { TimeHelper } from '$lib/utils/time.helper';
 import { DateStringFormat } from '$lib/types/time.types';
-import { getUserAnalytics } from '../../../api/services/user-analytics/user-analytics';
+// import { getUserAnalytics } from '../../../api/services/user-analytics/user-analytics';
 
 //////////////////////////////////////////////////////////////////////////
 
