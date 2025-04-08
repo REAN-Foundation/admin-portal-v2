@@ -26,7 +26,7 @@
 			{#each navData as navParent, idx}
 				{#if navParent.title === 'Analytics'}
 					<a
-						href={`/users/${userId}/analytics`}
+						href={`/users/${userId}/analytics/analytics-overview`}
 						class="sidebar-item items-center"
 					>
 						<Icon icon={navParent.icon} class="mx-1 text-2xl" />

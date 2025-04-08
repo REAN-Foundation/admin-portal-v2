@@ -137,7 +137,7 @@
 <div class=" user-graph-container">
 	<div class=" user-graph-wrapper">
 		<div class=" user-graph-card">
-			<div class="w-full">
+			<div class="w-3/3">
 				<div class=" user-graph-texts">
 					<h4 class=" user-graph-title">
 						{selectedGraph === 'daily'
@@ -206,126 +206,113 @@
 		</div>
 	</div>
 </div>
- <div class="generic-tables-conatiner">
-    <div class="text w-full">
-        <div class="relative flex flex-col items-center">
-            <h4 class="generic-table-heading">Commonly Visited Features</h4>
-            <div class=" select-container">
-                <label for="year-select" class="mr-2">Year: </label>
-                <select id="year-select" bind:value={selectedYear} class="select rounded border">
-                    {#each years as year}
-                        <option value={year}>{year}</option>
-                    {/each}
-                </select>
-            </div>
-        </div>
-        <div class="generic-table-conntainer">
-            <div class="generic-table-wrapper">
-                <div class="generic-table-content">
-                    <table class=" w-full rounded-lg border">
-                        <thead>
-                            <tr class=" border">
-                                {#each tableHeaders as header}
-                                    <th class=" table-heading border">
-                                        {header}
-                                    </th>
-                                {/each}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {#each filteredData as row}
-                                <tr class="  border transition">
-                                    <td class=" row-content border">
-                                        {formatMonthLabel(row.month)}
-                                    </td>
-                                    <td class=" row-content border">
-                                        {row.mostUsedFeature}
-                                    </td>
-                                    <td class=" row-content border">
-                                        {row.usageCount}
-                                    </td>
-                                    <td class=" row-content border">
-                                        {row.totalUsage}
-                                    </td>
-                                    <td class=" row-content border">
-                                        {row.percentage}
-                                    </td>
-                                </tr>
-                            {/each}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="generic-tables-conatiner">
+	<div class="text w-full">
+		<div class="relative flex flex-col items-center">
+			<h4 class="generic-table-heading">Commonly Visited Features</h4>
+			<div class=" select-container">
+				<label for="year-select" class="mr-2">Year: </label>
+				<select id="year-select" bind:value={selectedYear} class="select rounded border">
+					{#each years as year}
+						<option value={year}>{year}</option>
+					{/each}
+				</select>
+			</div>
+		</div>
+
+		<table class=" w-full rounded-lg border">
+			<thead>
+				<tr class=" border">
+					{#each tableHeaders as header}
+						<th class=" table-heading border p-2">
+							{header}
+						</th>
+					{/each}
+				</tr>
+			</thead>
+			<tbody>
+				{#each filteredData as row}
+					<tr class="  border transition">
+						<td class="  border p-1">
+							{formatMonthLabel(row.month)}
+						</td>
+						<td class="  border p-1">
+							{row.mostUsedFeature}
+						</td>
+						<td class="  border p-1">
+							{row.usageCount}
+						</td>
+						<td class="  border p-1">
+							{row.totalUsage}
+						</td>
+						<td class="  border p-1">
+							{row.percentage}
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 </div>
+
 <div class="generic-table-conatiner">
-    <div class="text my-5 w-full">
-        <div class="flex flex-col items-center">
-            <h4 class="generic-table-heading">Most Fired Events</h4>
-        </div>
-        <div class="generic-table-container">
-            <div class="generic-table-wrapper">
-                <div class="generic-table-content">
-                    <table class="my-3 table border">
-                        <thead>
-                            <tr class="border">
-                                <th class="table-heading border">Event Name</th>
-                                <th class="table-heading">Event Count</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {#each mostFiredEvents as event}
-                                <tr class=" border transition">
-                                    <td class=" row-content border">
-                                        {event.EventName}
-                                    </td>
-                                    <td class=" row-content border">
-                                        {event.event_count}
-                                    </td>
-                                </tr>
-                            {/each}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="text my-5 w-full">
+		<div class="flex flex-col items-center">
+			<h4 class="my-4 text-left !text-lg font-semibold">Most Fired Events</h4>
+		</div>
+
+		<table class="my-3 table border">
+			<thead>
+				<tr class="border">
+					<th class="border p-2 text-left text-sm font-semibold">Event Name</th>
+					<th class="p-2 text-left text-sm font-semibold">Event Count</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each mostFiredEvents as event}
+					<tr class=" border transition">
+						<td class=" border p-2">
+							{event.EventName}
+						</td>
+						<td class=" border p-2">
+							{event.event_count}
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 </div>
+
 <div class="  generic-table-conatiner">
-    <div class="text my-5 w-full">
-        <div class="flex flex-col items-center">
-            <h4 class=" generic-table-heading">Most Fired Events by Category</h4>
-        </div>
-        <div class="generic-table-container">
-            <div class="generic-table-wrapper">
-                <div class="generic-table-content">
-                    <table class="table border">
-                        <thead>
-                            <tr class=" border">
-                                <th class=" table-heading border">Event Name</th>
-                                <th class=" table-heading border">Event Category</th>
-                                <th class=" table-heading border">Event Count</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {#each mostFiredEventsByEventCategory as event}
-                                <tr class=" border transition">
-                                    <td class=" row-content border">
-                                        {event.EventCategory}
-                                    </td>
-                                    <td class=" row-content border">
-                                        {event.EventName}
-                                    </td>
-                                    <td class=" row-content border">
-                                        {event.event_count}
-                                    </td>
-                                </tr>
-                            {/each}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div> 
+	<div class="text my-5 w-full">
+		<div class="flex flex-col items-center">
+			<h4 class=" my-8 text-left !text-lg font-semibold">Most Fired Events by Category</h4>
+		</div>
+
+		<table class="table border">
+			<thead>
+				<tr class=" border">
+					<th class=" p-2 text-left text-sm font-semibold  border">Event Name</th>
+					<th class="  p-2 text-left text-sm font-semibold border">Event Category</th>
+					<th class="  p-2 text-left text-sm font-semibold  border">Event Count</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each mostFiredEventsByEventCategory as event}
+					<tr class=" border transition">
+						<td class="    p-2  border">
+							{event.EventCategory}
+						</td>
+						<td class=" p-2 border">
+							{event.EventName}
+						</td>
+						<td class=" p-2 border">
+							{event.event_count}
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+</div>

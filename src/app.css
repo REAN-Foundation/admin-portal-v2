@@ -510,46 +510,46 @@ tr {
 .user-table {
 	@apply min-w-full;
 }
-.select-year{
-    @apply  mt-5 mx-5 w-32 md:mx-0;
+.select-year {
+	@apply mx-5 mt-5 w-32 md:mx-0;
 }
 .piechart {
 	@apply mx-5 h-64 w-64 md:mx-0;
 }
-.stats-heading{
-    @apply px-3 text-left lg:text-lg;
+.stats-heading {
+	@apply px-3 text-left lg:text-lg;
 }
 /* analytics-overview */
 
-.basic-stat{
-    @apply text-lg font-bold ;
+.basic-stat {
+	@apply text-lg font-bold;
 }
-.basic-des{
-    @apply text-sm md:text-base text-gray-600;
+.basic-des {
+	@apply text-sm text-[var(--color-info)] md:text-base;
 }
 .history-container {
 	@apply w-full overflow-x-auto px-4 pt-4 sm:px-4;
 }
-.history-head{
-    @apply   text-left text-lg font-bold sm:pl-3; 
+.history-head {
+	@apply text-left text-lg font-bold sm:pl-3;
 }
 .history-title {
 	@apply flex items-center justify-center text-2xl;
 }
-.history-para{
-    @apply pb-2  text-left text-sm sm:pl-3; 
+.history-para {
+	@apply pb-2 text-left text-sm sm:pl-3;
 }
 .not-available {
 	@apply mt-28 flex items-center justify-center text-xl leading-3;
 }
-.users-head{
-    @apply mr-4 ml-4 justify-center  text-center text-lg sm:pl-3 my-2;
+.users-head {
+	@apply my-2 mr-4 ml-4 justify-center text-center text-lg sm:pl-3;
 }
-.user-roles-container{
-    @apply my-10 flex-col gap-10 ;
+.user-roles-container {
+	@apply my-10 flex-col gap-10;
 }
-.active-users-container{
-    @apply flex  w-3/4 items-center justify-center  shadow-xl;
+.active-users-container {
+	@apply flex w-3/4 items-center justify-center shadow-xl;
 }
 .patient-history-container {
 	@apply flex flex-col justify-center text-sm text-[var(--color-info)];
@@ -570,8 +570,8 @@ tr {
 .data-not-available-container {
 	@apply flex items-center justify-center border p-4 shadow-xl sm:px-4;
 }
-.distribution-card-container{
-    @apply grid grid-cols-2 xl:grid-cols-3 border sm:px-4 ;
+.distribution-card-container {
+	@apply grid grid-cols-2 border sm:px-4 xl:grid-cols-3;
 }
 .distribution-card-content {
 	@apply -mx-4 -my-2 mt-4 overflow-x-auto sm:-mx-6 lg:-mx-8;
@@ -582,8 +582,8 @@ tr {
 .chart-details {
 	@apply border px-3 py-2 text-sm whitespace-nowrap;
 }
-.chart-view{
-    @apply col-span-1 flex justify-center p-4 ml-36 md:ml-72 lg:ml-86  xl:ml-0 my-4;
+.chart-view {
+	@apply col-span-1 my-4 ml-36 flex justify-center p-4 md:ml-72 lg:ml-86 xl:ml-0;
 }
 
 /*  generic-engagement */
@@ -591,13 +591,13 @@ tr {
 	@apply py-8;
 }
 .user-graph-wrapper {
-	@apply flex  w-3/3 items-center justify-center gap-10;
+	@apply flex w-3/3 items-center justify-center gap-10;
 }
 .active-users-graph {
 	@apply h-[400px] w-[400px] p-4;
 }
 .user-graph-card {
-	@apply flex w-full items-center justify-center overflow-x-auto rounded-lg   p-4 shadow-xl sm:px-4;
+	@apply flex w-full items-center justify-center overflow-x-auto rounded-lg p-4 shadow-xl;
 }
 .user-graph-texts {
 	@apply flex flex-col items-center text-sm text-[var(--color-info)];
@@ -615,20 +615,11 @@ tr {
 	@apply mt-8 flex w-full !min-w-full items-center justify-center overflow-hidden overflow-x-auto rounded-lg sm:px-4;
 }
 .select-container {
-	@apply absolute top-3 right-24 mt-8 flex items-center;
+	@apply absolute right-0 my-10 flex items-center;
 }
 
-.generic-table-conntainer {
-	@apply col-span-2 my-5 items-center justify-center px-2 sm:px-6 lg:px-8;
-}
-.generic-table-wrapper {
-	@apply mx-4 my-2 overflow-x-auto sm:-mx-6 lg:mx-8;
-}
-.generic-table-content {
-	@apply inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8;
-}
 .generic-table-heading {
-	@apply mt-3 py-3 text-left !text-lg font-semibold sm:pl-3;
+	@apply mb-16 text-left !text-lg font-semibold;
 }
 
 /* home/overall */
@@ -651,19 +642,19 @@ tr {
 	@apply flex max-w-sm flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-md md:max-w-lg;
 }
 .features-cards-layout {
-	@apply grid grid-cols-1 justify-center gap-8 rounded-lg py-8;
+	@apply mx-auto grid grid-cols-1 justify-center gap-8 rounded-lg py-4 xl:grid xl:grid-cols-2;
 }
 .features-cards-wrapper {
-	@apply h-full w-full items-center justify-center gap-10 md:flex;
+	@apply h-full w-full items-center gap-10 md:flex;
 }
 .feature-card-heading {
-	@apply mx-4 justify-center py-1 pt-3 text-left text-lg font-semibold sm:pl-3;
+	@apply mx-4 justify-center py-1 pt-3 text-left text-lg font-semibold text-[var(--color-info)] sm:pl-3;
 }
 .feature-card-subheading {
 	@apply mx-5 mt-[-4px] flex justify-start text-sm font-semibold sm:pl-3;
 }
 .features-container {
-	@apply flex flex-col justify-center;
+	@apply flex flex-col text-[var(--color-info)];
 }
 .feature-card-des {
 	@apply mx-2 my-2 pb-1 text-left text-sm sm:pl-3;
@@ -719,7 +710,7 @@ tr {
 }
 
 .health-system-input {
-	@apply w-full border-gray-200 rounded-lg border px-2 py-2 outline-[var(--color-active)];
+	@apply w-full rounded-lg border border-gray-200 px-2 py-2 outline-[var(--color-active)];
 }
 
 .breadcrumbs {

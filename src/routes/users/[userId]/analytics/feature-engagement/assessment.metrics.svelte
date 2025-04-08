@@ -60,85 +60,72 @@
 	getSelectedAssessmentData();
 </script>
 
-<div class="flex w-full items-center justify-center py-10">
-	<div
-		class="status-card w-full overflow-hidden overflow-x-auto rounded-lg border shadow-xl sm:px-4"
+<div class="my-5">
+	<h4 class="mb-4 text-lg font-semibold">Careplan Assessment Metrics</h4>
+	<p>
+		It shows the count of users who completed or are in progress with assessments, segmented by care
+		plan code.
+	</p>
+</div>
+<div class="my-5 ml-auto flex items-center">
+	<select
+		id="select-Plan"
+		bind:value={selectedCode}
+		onchange={getSelectedCareplanAssessmentData}
+		class="select border-secondary-100 dark:border-surface-700 mr-8 rounded border"
 	>
-		<div class="w-full">
-			<div class="flex flex-col items-center justify-between py-4">
-				<h4 class="flex-grow text-center text-lg font-semibold">Careplan Assessment Metrics</h4>
-				<div class="h-fit w-full">
-					<p class="mx-2 justify-center pb-5 text-center text-sm sm:pl-3">
-						It shows the count of users who completed or are in progress with assessments, segmented
-						by care plan code.
-					</p>
-				</div>
-				<div class="ml-auto flex items-center">
-					<!-- <label
-                        for="select-Plan"
-                        class="mr-2">Select</label
-                    > -->
-					<select
-						id="select-Plan"
-						bind:value={selectedCode}
-						onchange={getSelectedCareplanAssessmentData}
-						class="select border-secondary-100 dark:border-surface-700 mr-8 rounded border"
+		{#each uniqueCodes as code}
+			<option value={code}>{code}</option>
+		{/each}
+	</select>
+</div>
+<div class="">
+	<table class="w-3/3">
+		<thead class="">
+			<tr class="border-secondary-100 dark:border-surface-700 border">
+				{#each careplanTableHeaders as header}
+					<th
+						class="border-secondary-100 dark:border-surface-700 border p-2 text-left text-sm font-semibold sm:pl-3"
 					>
-						{#each uniqueCodes as code}
-							<option value={code}>{code}</option>
-						{/each}
-					</select>
-				</div>
-			</div>
-			<div class="col-span-2 items-center justify-center pb-8 sm:px-6 lg:px-8">
-				<table class="border-secondary-100 dark:border-surface-700 min-w-full rounded-lg border">
-					<thead>
-						<tr class="border-secondary-100 dark:border-surface-700 border">
-							{#each careplanTableHeaders as header}
-								<th
-									class="border-secondary-100 dark:border-surface-700 border py-3 text-left text-sm font-semibold sm:pl-3"
-								>
-									{header}
-								</th>
-							{/each}
-						</tr>
-					</thead>
-					<tbody>
-						{#if selectedCareplanAssessmentData.length > 0}
-							{#each selectedCareplanAssessmentData as row}
-								<tr
-									class="hover:bg-secondary-50 dark:hover:bg-surface-800 border-secondary-100 dark:border-surface-700 border transition"
-								>
-									<td
-										class="border-secondary-100 dark:border-surface-700 border px-3 py-2 text-sm whitespace-nowrap"
-									>
-										{row.completed_assessment_count}
-									</td>
-									<td
-										class="border-secondary-100 dark:border-surface-700 border px-3 py-2 text-sm whitespace-nowrap"
-									>
-										{row.in_progress_assessment_count}
-									</td>
-								</tr>
-							{/each}
-						{:else}
-							<tr>
-								<td
-									colspan={assessmentTableHeaders.length}
-									class="py-4 text-center text-sm text-gray-500"
-								>
-									Data not available for the selected title.
-								</td>
-							</tr>
-						{/if}
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
+						{header}
+					</th>
+				{/each}
+			</tr>
+		</thead>
+		<tbody>
+			{#if selectedCareplanAssessmentData.length > 0}
+				{#each selectedCareplanAssessmentData as row}
+					<tr
+						class="hover:bg-secondary-50 dark:hover:bg-surface-800 border-secondary-100 dark:border-surface-700 border transition"
+					>
+						<td
+							class="border-secondary-100 dark:border-surface-700 border px-3 py-2 text-sm whitespace-nowrap"
+						>
+							{row.completed_assessment_count}
+						</td>
+						<td
+							class="border-secondary-100 dark:border-surface-700 border px-3 py-2 text-sm whitespace-nowrap"
+						>
+							{row.in_progress_assessment_count}
+						</td>
+					</tr>
+				{/each}
+			{:else}
+				<tr>
+					<td
+						colspan={assessmentTableHeaders.length}
+						class="py-4 text-center text-sm text-gray-500"
+					>
+						Data not available for the selected title.
+					</td>
+				</tr>
+			{/if}
+		</tbody>
+	</table>
 </div>
 
-<div class="flex w-full items-center justify-center">
+
+<div class="flex w-full items-center justify-center my-10">
 	<div
 		class="status-card w-full overflow-hidden overflow-x-auto border shadow-xl sm:px-4"
 	>
@@ -151,10 +138,7 @@
 					</p>
 				</div>
 				<div class="my-2 mx-auto flex items-center">
-					<!-- <label
-                        for="select-Plan"
-                        class="mr-2">Select Assessment</label
-                    > -->
+					
 					<select
 						id="select-Plan"
 						bind:value={selectedAssessment}
@@ -194,8 +178,7 @@
 												<td
 													class="border-secondary-100 dark:border-surface-700 border px-3 py-2 text-sm whitespace-nowrap"
 												>
-													<!-- {row.node_title} -->
-													<!-- {Helper.truncateText(row.node_title, 50)} -->
+													
 													<Tooltip text={row.node_title || 'Not specified'}>
 														<span class="cursor-pointer">
 															{row.node_title !== null
@@ -212,8 +195,7 @@
 												<td
 													class="border-secondary-100 dark:border-surface-700 border px-3 py-2 text-sm whitespace-nowrap"
 												>
-													<!-- {Helper.truncateText(row.response_option_text, 40)} -->
-													<!-- {row.response_option_text} -->
+													
 													<Tooltip text={row.response_option_text || 'Not specified'}>
 														<span class="cursor-pointer">
 															{row.response_option_text !== null
@@ -247,4 +229,4 @@
 			</div>
 		</div>
 	</div>
-</div>
+</div> 

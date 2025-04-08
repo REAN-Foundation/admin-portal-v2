@@ -83,27 +83,27 @@
 	<table class=" ">
 		<tbody class="">
 			<tr class="border text-sm">
-				<td class="  p-2 md:px-8 xl:px-16">Tenant Name</td>
-				<td class=" p-2 md:px-8 xl:px-16">American Heart Association</td>
-				<td class=" p-2 md:px-8 xl:px-16">Name of the tenant/organization.</td>
+				<td class="  p-2 md:px-8 xl:px-16 text-[var(--color-info)]">Tenant Name</td>
+				<td class=" p-2 md:px-8 xl:px-16 text-[var(--color-info)]">American Heart Association</td>
+				<td class=" p-2 md:px-8 xl:px-16 text-[var(--color-info)]">Name of the tenant/organization.</td>
 			</tr>
 			<tr class="border text-sm">
-				<td class=" p-2 md:px-8 xl:px-16">Start Date</td>
-				<td class=" p-2 md:px-8 xl:px-16">{formatDate(data.basicStatistics.StartDate)}</td>
-				<td class=" p-2 md:px-8 xl:px-16">Start date of the analysis period.</td>
+				<td class=" p-2 md:px-8 xl:px-16 text-[var(--color-info)]">Start Date</td>
+				<td class=" p-2 md:px-8 xl:px-16 text-[var(--color-info)]">{formatDate(data.basicStatistics.StartDate)}</td>
+				<td class=" p-2 md:px-8 xl:px-16 text-[var(--color-info)]">Start date of the analysis period.</td>
 			</tr>
 			<tr class="border text-sm">
-				<td class=" p-2 md:px-8 xl:px-16">End Date</td>
-				<td class=" p-2 md:px-8 xl:px-16">{formatDate(data.basicStatistics.EndDate)}</td>
-				<td class=" p-2 md:px-8 xl:px-16">End date of the analysis period.</td>
+				<td class=" p-2 md:px-8 xl:px-16 text-[var(--color-info)]">End Date</td>
+				<td class=" p-2 md:px-8 xl:px-16 text-[var(--color-info)]">{formatDate(data.basicStatistics.EndDate)}</td>
+				<td class=" p-2 md:px-8 xl:px-16 text-[var(--color-info)]">End date of the analysis period.</td>
 			</tr>
 		</tbody>
 	</table>
 </div>
 
 <div class=" my-8">
-	<p class="basic-stat">Basic Statistics</p>
-	<p class=" basic-des">
+	<p class="basic-stat text-[var(--color-info)]">Basic Statistics</p>
+	<p class=" basic-des ">
 		This section provides an overview of the basic analytics related to the tenant, including the
 		total number of users, patient statistics, and registration/deregistration history.
 	</p>
@@ -112,28 +112,28 @@
 	<table class=" ">
 		<tbody class=" ">
 			<tr class="border text-sm">
-				<td class="  p-2 md:px-8 xl:px-16">Total Users</td>
-				<td class="  p-2 md:px-8 xl:px-16">{data.basicStatistics.TotalUsers}</td>
-				<td class="  p-2 md:px-8 xl:px-16">Overall count of users associated with the tenant.</td>
+				<td class="  p-2 md:px-8 xl:px-16 text-[var(--color-info)]">Total Users</td>
+				<td class="  p-2 md:px-8 xl:px-16 text-[var(--color-info)]">{data.basicStatistics.TotalUsers}</td>
+				<td class="  p-2 md:px-8 xl:px-16 text-[var(--color-info)]">Overall count of users associated with the tenant.</td>
 			</tr>
 			<tr class="border text-sm">
-				<td class=" p-2 md:px-8 xl:px-16">Total Patients</td>
-				<td class=" p-2 md:px-8 xl:px-16">{data.basicStatistics.TotalPatients}</td>
-				<td class=" p-2 md:px-8 xl:px-16">Total number of patients registered within the system.</td
+				<td class=" p-2 md:px-8 xl:px-16 text-[var(--color-info)]">Total Patients</td>
+				<td class=" p-2 md:px-8 xl:px-16 text-[var(--color-info)]">{data.basicStatistics.TotalPatients}</td>
+				<td class=" p-2 md:px-8 xl:px-16 text-[var(--color-info)]">Total number of patients registered within the system.</td
 				>
 			</tr>
 			<tr class="border text-sm">
-				<td class="  p-2 md:px-8 xl:px-16">Total Active Patients</td>
-				<td class=" p-2 md:px-8 xl:px-16">{data.basicStatistics.TotalActivePatients}</td>
-				<td class="  p-2 md:px-8 xl:px-16">Total number of active (Not-deleted) patients.</td>
+				<td class="  p-2 md:px-8 xl:px-16 text-[var(--color-info)]">Total Active Patients</td>
+				<td class=" p-2 md:px-8 xl:px-16 text-[var(--color-info)]">{data.basicStatistics.TotalActivePatients}</td>
+				<td class="  p-2 md:px-8 xl:px-16 text-[var(--color-info)]">Total number of active (Not-deleted) patients.</td>
 			</tr>
 		</tbody>
 	</table>
 </div>
 
 <div class=" my-8">
-	<p class="history-head">Registration / Deregistration History</p>
-	<p class=" history-para">
+	<p class="history-head  text-[var(--color-info)]">Registration / Deregistration History</p>
+	<p class=" history-para text-[var(--color-info)]">
 		Trends of how many users registered or deregistered from the system on a given day, in a given
 		week or a month.
 	</p>
@@ -157,7 +157,7 @@
 						</div>
 					{:else}
 						<div class="h-[400px] w-full p-4">
-							<p class=" history-title">Patient Registration / Deregistration History</p>
+							<p class=" history-title ">Patient Registration / Deregistration History</p>
 							<p class="not-available">Data Not Available</p>
 						</div>
 					{/if}
@@ -168,7 +168,7 @@
 
 	<div class=" my-8 border shadow-xl sm:px-4 w-86 md:w-3/3 mx-auto ">
 		<div class="centered-flex flex-col">
-			<h4 class=" users-head">User Distribution By Roles</h4>
+			<h4 class=" users-head text-[var(--color-info)]">User Distribution By Roles</h4>
 			{#if usersDistributionByRoleData}
 				<div class="">
 					<PieChart
@@ -180,7 +180,7 @@
 				</div>
 			{:else}
 				<div class="h-[400px] w-full p-4">
-					<p class=" not-available">Data Not Available</p>
+					<p class=" not-available text-[var(--color-info)]">Data Not Available</p>
 				</div>
 			{/if}
 		</div>
@@ -188,7 +188,7 @@
 </div>
 <div class="  border shadow-xl sm:px-4 w-86 md:w-3/3 mx-auto">
 	<div class="centered-flex">
-		<h4 class="users-head">Active Users For Month</h4>
+		<h4 class="users-head text-[var(--color-info)]">Active Users For Month</h4>
 	</div>
 	{#if patientDeRegistrationHistoryData}
 		<div class="h-96">

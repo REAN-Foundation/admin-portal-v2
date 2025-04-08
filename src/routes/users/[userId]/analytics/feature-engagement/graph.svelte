@@ -204,89 +204,91 @@
 					{/if}
 				</div>
 			</div>
-			<div class=" engagement-card">
-				<div class="">
-					<div class="flex flex-col items-center">
-						<h4 class="feature-card-heading">Engagement Rate</h4>
-						<p class="feature-card-des">
-							This is the ratio of number of unique users engaging with each feature per month to
-							the total number of active users per month.
+		</div>
+
+		<div class=" engagement-card">
+			<div class="">
+				<div class="flex flex-col items-center">
+					<h4 class="feature-card-heading">Engagement Rate</h4>
+					<p class="feature-card-des">
+						This is the ratio of number of unique users engaging with each feature per month to the
+						total number of active users per month.
+					</p>
+				</div>
+				{#if engagementRateData.length > 0}
+					<div class="h-96">
+						<RetentionGraphs
+							dataSource={engagementRateData}
+							labels={engagementRateLabels}
+							title="Engagement Rate (%)"
+						/>
+					</div>
+				{:else}
+					<div class="h-[400px] w-[400px] p-4">
+						<p class="justify-left flex items-center text-2xl"></p>
+						<p class="mt-28 flex items-center justify-center text-xl leading-3">
+							Data Not Available
 						</p>
 					</div>
-					{#if engagementRateData.length > 0}
+				{/if}
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class=" features-container">
+	<div class=" features-cards-layout">
+		<div class=" features-cards-wrapper">
+			<div class=" access-card">
+				<div class="">
+					<div class="flex flex-col items-center">
+						<h4 class="feature-card-heading">Retention After Registration</h4>
+						<h5 class=" feature-card-subheading">(Days After Registration)</h5>
+						<div class="h-fit w-full">
+							<p class="feature-card-des">
+								The percentage of users who return to a feature after their first use at specific
+								intervals (day 1, day 7, day 30). Retention rates measure user loyalty and the
+								ability of the feature to keep users engaged over time.
+							</p>
+						</div>
+						<div class="flex w-full justify-end">
+							<select
+								class="select border-secondary-100 dark:border-surface-700 w-fit rounded-lg border pl-2"
+								onchange={(e: any) => {
+									selectedGraph = e.target.value;
+								}}
+							>
+								<option value="graph1">User Count</option>
+								<option value="graph2">Percentage</option>
+							</select>
+						</div>
+					</div>
+					{#if selectedGraph === 'graph1' && retentionRateDaysData.length > 0}
 						<div class="h-96">
-							<!-- rate={engagementRateRate} -->
 							<RetentionGraphs
-								dataSource={engagementRateData}
-								labels={engagementRateLabels}
-								title="Engagement Rate (%)"
+								dataSource={retentionRateDaysData}
+								labels={retentionRateDaysLabels}
+								title="Retention User Count On Specific Days"
 							/>
 						</div>
-					{:else}
+					{:else if selectedGraph === 'graph1'}
 						<div class="h-[400px] w-[400px] p-4">
-							<p class="justify-left flex items-center text-2xl">
-								<!-- Engagement Rate (%) -->
-							</p>
 							<p class="mt-28 flex items-center justify-center text-xl leading-3">
 								Data Not Available
 							</p>
+						</div>
+					{:else if selectedGraph === 'graph2'}
+						<div class="h-96">
+							<RetentionGraphs
+								dataSource={retentionRateDaysRate}
+								labels={retentionRateDaysLabels}
+								title="Retention User Count On Specific Days (%)"
+							/>
 						</div>
 					{/if}
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="h-full w-full items-stretch justify-center gap-8 md:flex">
-		<div class=" retention-card">
-			<div class="">
-				<div class="flex flex-col items-center">
-					<h4 class="feature-card-heading">Retention After Registration</h4>
-					<h5 class=" feature-card-subheading">(Days After Registration)</h5>
-					<div class="h-fit w-full">
-						<p class="feature-card-des">
-							The percentage of users who return to a feature after their first use at specific
-							intervals (day 1, day 7, day 30). Retention rates measure user loyalty and the ability
-							of the feature to keep users engaged over time.
-						</p>
-					</div>
-					<div class="flex w-full justify-end">
-						<select
-							class="select border-secondary-100 dark:border-surface-700 w-fit rounded-lg border pl-2"
-							onchange={(e: any) => {
-								selectedGraph = e.target.value;
-							}}
-						>
-							<option value="graph1">User Count</option>
-							<option value="graph2">Percentage</option>
-						</select>
-					</div>
-				</div>
-				{#if selectedGraph === 'graph1' && retentionRateDaysData.length > 0}
-					<div class="h-96">
-						<RetentionGraphs
-							dataSource={retentionRateDaysData}
-							labels={retentionRateDaysLabels}
-							title="Retention User Count On Specific Days"
-						/>
-					</div>
-				{:else if selectedGraph === 'graph1'}
-					<div class="h-[400px] w-[400px] p-4">
-						<p class="mt-28 flex items-center justify-center text-xl leading-3">
-							Data Not Available
-						</p>
-					</div>
-				{:else if selectedGraph === 'graph2'}
-					<div class="h-96">
-						<RetentionGraphs
-							dataSource={retentionRateDaysRate}
-							labels={retentionRateDaysLabels}
-							title="Retention User Count On Specific Days (%)"
-						/>
-					</div>
-				{/if}
-			</div>
-		</div>
-
 		<div class="retention-card">
 			<div class="">
 				<div class="flex flex-col items-center text-center">
@@ -337,13 +339,16 @@
 			</div>
 		</div>
 	</div>
-	{#if feature === 'Medication'}
-		<div class="mt-10 h-full w-full items-stretch justify-center gap-10 md:flex">
-			<div class=" feature-cards">
-				<div class="w-full">
-					<div class="flex flex-col items-center">
-						<h4 class="feature-card-heading">Medication Management</h4>
-						<div class="h-fit w-full">
+</div>
+{#if feature === 'Medication'}
+	<div class="features-container">
+		<div class="features-cards-layout">
+			<!-- Medication Management Card -->
+			<div class="features-cards-wrapper">
+				<div class="access-card">
+					<div class="">
+						<div class="flex flex-col items-center">
+							<h4 class="feature-card-heading">Medication Management</h4>
 							<p class="feature-card-des">
 								The medication adherence showing the percentage of scheduled doses taken on time,
 								alongside the number and percentage of missed doses.
@@ -351,78 +356,87 @@
 						</div>
 						<div class="justify-center pb-6">
 							{#if hasMedicationManagementData}
-								<PieChart
-									data={medicationData}
-									labels={medicationLabels}
-									title=""
-									showLegendData={true}
-								/>
-							{:else}
-								<div class="h-96 w-full items-center justify-center pl-10 font-semibold">
-									Data not available
+								<div class="h-96 w-full">
+									<PieChart
+										data={medicationData}
+										labels={medicationLabels}
+										title=""
+										showLegendData={true}
+									/>
 								</div>
+							{:else}
+							<div class="flex h-[400px] w-full items-center justify-center p-4">
+								<p class="text-center text-xl ">
+									Data Not Available
+								</p>
+							</div>
 							{/if}
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
-				<div class="w-full">
-					<div class="dropoff-card">
-						{#if dropOffPointsData && dropOffPointsLabels}
-							<p class="font-semibold">DropOff Points</p>
-							<p class="justify-left my-2 pb-1 text-left text-sm sm:pl-3">
-								Points in the user flow where users most frequently stop using a feature.
-								Identifying drop-off points helps in optimizing the user journey and addressing
-								usability challenges to improve feature completion rates.
-							</p>
-						{:else}
-							DropOff Points (%) (Data not available)
-						{/if}
+
+			<!-- DropOff Points Card -->
+			<div class="engagement-card">
+				<div class="">
+					<div class="flex flex-col items-center">
+						<h4 class="feature-card-heading">DropOff Points</h4>
+						<p class="feature-card-des">
+							Points in the user flow where users most frequently stop using a feature. Identifying
+							drop-off points helps in optimizing the user journey and addressing usability
+							challenges to improve feature completion rates.
+						</p>
 					</div>
+
 					{#if dropOffPointsData.length > 0 && dropOffPointsLabels.length > 0}
-						<table
-							class="border-secondary-100 dark:border-surface-70 mt-2 mb-10 min-w-full rounded-lg border"
-						>
-							<thead>
-								<tr>
-									<th class="feature-table-heading">Action</th>
-									<th class="feature-table-heading">Count</th>
-								</tr>
-							</thead>
-							<tbody class="justify-center">
-								{#each sortedData as { value, label }}
+						<div class="w-full overflow-x-auto px-4 py-2">
+							<table
+								class="border-secondary-100 dark:border-surface-70 mt-2 mb-10 min-w-full rounded-lg border"
+							>
+								<thead>
 									<tr>
-										<td class="feature-table-data">{label}</td>
-										<td class="feature-table-data">{value}</td>
+										<th class="feature-table-heading">Action</th>
+										<th class="feature-table-heading">Count</th>
 									</tr>
-								{/each}
-							</tbody>
-						</table>
-					{:else}
-						<div class="w-full p-4">
-							<p class="mt-28 flex items-center justify-center leading-3 font-semibold">
-								Data Not Available
-							</p>
+								</thead>
+								<tbody class="justify-center">
+									{#each sortedData as { value, label }}
+										<tr>
+											<td class="feature-table-data">{label}</td>
+											<td class="feature-table-data">{value}</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
 						</div>
+					{:else}
+					<div class="flex h-[400px] w-full items-center justify-center p-4">
+						<p class="text-center text-xl ">
+							Data Not Available
+						</p>
+					</div>
 					{/if}
 				</div>
 			</div>
 		</div>
+	</div>
 	{:else if feature === 'Careplan'}
-		<div class="mt-10 h-full w-full items-stretch justify-center gap-10 md:flex">
-			<div class=" feature-cards">
-				<div class="w-full">
-					<div class="flex flex-col items-center">
-						<h4 class="feature-card-heading">Health Journey Task Metrics</h4>
-						<div class="h-fit w-full">
+	<div class="features-container">
+		<div class="features-cards-layout">
+			<!-- Health Journey Task Metrics Card -->
+			<div class="features-cards-wrapper">
+				<div class="access-card">
+					<div class="">
+						<div class="flex flex-col items-center">
+							<h4 class="feature-card-heading">Health Journey Task Metrics</h4>
 							<p class="feature-card-des">
-								This shows the completion rate of health journey tasks, comparing completed tasks
-								and created tasks for both overall and individual care plans.
+								This shows the completion rate of health journey tasks, comparing completed tasks and
+								created tasks for both overall and individual care plans.
 							</p>
 						</div>
+
 						{#if healthJourneyWiseTask?.length > 0 && planCodes?.length > 0}
-							<div class="0 flex w-full justify-end">
+							<div class="flex w-full justify-end px-4">
 								<select
 									class="select mb-2 border pl-2"
 									bind:value={selectedPlanCode}
@@ -433,8 +447,7 @@
 									{/each}
 								</select>
 							</div>
-							<div class="justify-center pb-6">
-								<!-- {#if healthJourneyMetricsData.length > 0} -->
+							<div class="h-96 w-full">
 								<PieChart
 									data={healthJourneyMetricsData}
 									labels={taskMetricsLabels}
@@ -443,70 +456,74 @@
 								/>
 							</div>
 						{:else}
-							<div class="flex h-96 w-full justify-center pl-10 font-semibold">
-								Data not available
-							</div>
+						<div class="flex h-[400px] w-full items-center justify-center p-4">
+							<p class="text-center text-xl ">
+								Data Not Available
+							</p>
+						</div>
 						{/if}
 					</div>
 				</div>
 			</div>
-			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
-				<div class="w-full">
-					<div class="dropoff-card">
-						{#if dropOffPointsData && dropOffPointsLabels}
-							<p class="font-semibold">DropOff Points</p>
-							<p class="feature-card-des">
-								Points in the user flow where users most frequently stop using a feature.
-								Identifying drop-off points helps in optimizing the user journey and addressing
-								usability challenges to improve feature completion rates.
-							</p>
-						{:else}
-							DropOff Points (%) (Data not available)
-						{/if}
+
+			<!-- DropOff Points Card -->
+			<div class="engagement-card">
+				<div class="">
+					<div class="flex flex-col items-center">
+						<h4 class="feature-card-heading">DropOff Points</h4>
+						<p class="feature-card-des">
+							Points in the user flow where users most frequently stop using a feature. Identifying
+							drop-off points helps in optimizing the user journey and addressing usability
+							challenges to improve feature completion rates.
+						</p>
 					</div>
+
 					{#if dropOffPointsData.length > 0 && dropOffPointsLabels.length > 0}
-						<table
-							class="border-secondary-100 dark:border-surface-70 mt-2 mb-10 min-w-full rounded-lg border"
-						>
-							<thead>
-								<tr>
-									<th class="feature-table-heading">Action</th>
-									<th class="feature-table-heading">Count</th>
-								</tr>
-							</thead>
-							<tbody class="justify-center">
-								{#each sortedData as { value, label }}
+						<div class="w-full overflow-x-auto px-4 py-2">
+							<table
+								class="border-secondary-100 dark:border-surface-70 mt-2 mb-10 min-w-full rounded-lg border"
+							>
+								<thead>
 									<tr>
-										<td class="feature-table-data">{label}</td>
-										<td class="feature-table-data">{value}</td>
+										<th class="feature-table-heading">Action</th>
+										<th class="feature-table-heading">Count</th>
 									</tr>
-								{/each}
-							</tbody>
-						</table>
-					{:else}
-						<div class="w-full p-4">
-							<p class="mt-28 flex items-center justify-center leading-3 font-semibold">
-								Data Not Available
-							</p>
+								</thead>
+								<tbody class="justify-center">
+									{#each sortedData as { value, label }}
+										<tr>
+											<td class="feature-table-data">{label}</td>
+											<td class="feature-table-data">{value}</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
 						</div>
+					{:else}
+					<div class="flex h-[400px] w-full items-center justify-center p-4">
+						<p class="text-center text-xl ">
+							Data Not Available
+						</p>
+					</div>
 					{/if}
 				</div>
 			</div>
 		</div>
+	</div>
 	{:else if feature === 'User Tasks'}
-		<div class="mt-10 h-full w-full items-stretch justify-center gap-10 md:flex">
-			<div class=" feature-cards">
-				<div class="w-full">
+	<div class="features-container">
+		<div class="features-cards-layout">
+			<!-- Patient Task Metrics Card -->
+			<div class="features-cards-wrapper">
+				<div class="access-card">
 					<div class="flex flex-col items-center">
 						<h4 class="feature-card-heading">Patient Task Metrics</h4>
-						<div class="h-fit w-full">
-							<p class="feature-card-des">
-								This shows the completion rate of patient tasks, comparing completed tasks and
-								created tasks for both overall and individual task category.
-							</p>
-						</div>
+						<p class="feature-card-des">
+							This shows the completion rate of patient tasks, comparing completed tasks and created
+							tasks for both overall and individual task category.
+						</p>
 						{#if categorySpecificData?.length > 0 && taskCategories?.length > 0}
-							<div class="0 flex w-full justify-end">
+							<div class="flex w-full justify-end px-4">
 								<select
 									class="select mb-2 border pl-2"
 									bind:value={selectedTaskCategory}
@@ -517,60 +534,61 @@
 									{/each}
 								</select>
 							</div>
-							<div class="justify-center pb-6">
-								{#if taskCategoriesData.length > 0}
+							{#if taskCategoriesData.length > 0}
+								<div class="h-96 w-full">
 									<PieChart
 										data={taskCategoriesData}
 										labels={taskMetricsLabels}
 										title=""
 										showLegendData={true}
 									/>
-								{/if}
-							</div>
+								</div>
+							{/if}
 						{:else}
-							<div class="flex h-96 w-full justify-center pl-10 font-semibold">
-								Data not available
+							<div class="h-[400px] w-[400px] p-4">
+								<p class="mt-28 flex items-center justify-center text-xl leading-3">
+									Data Not Available
+								</p>
 							</div>
 						{/if}
 					</div>
 				</div>
 			</div>
-			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
-				<div class="w-full">
-					<div class="dropoff-card">
-						{#if dropOffPointsData && dropOffPointsLabels}
-							<p class="font-semibold">DropOff Points</p>
-							<p class="feature-card-des">
-								Points in the user flow where users most frequently stop using a feature.
-								Identifying drop-off points helps in optimizing the user journey and addressing
-								usability challenges to improve feature completion rates.
-							</p>
-						{:else}
-							DropOff Points (%) (Data not available)
-						{/if}
-					</div>
+
+			<!-- DropOff Points Card -->
+			<div class="engagement-card">
+				<div class="flex flex-col items-center">
+					<h4 class="feature-card-heading">DropOff Points</h4>
+					<p class="feature-card-des">
+						Points in the user flow where users most frequently stop using a feature. Identifying
+						drop-off points helps in optimizing the user journey and addressing usability
+						challenges to improve feature completion rates.
+					</p>
+
 					{#if dropOffPointsData.length > 0 && dropOffPointsLabels.length > 0}
-						<table
-							class="border-secondary-100 dark:border-surface-70 mt-2 mb-10 min-w-full rounded-lg border"
-						>
-							<thead>
-								<tr>
-									<th class="feature-table-heading">Action</th>
-									<th class="feature-table-heading">Count</th>
-								</tr>
-							</thead>
-							<tbody class="justify-center">
-								{#each sortedData as { value, label }}
+						<div class="w-full overflow-x-auto px-4 py-2">
+							<table
+								class="border-secondary-100 dark:border-surface-70 mt-2 mb-10 min-w-full rounded-lg border"
+							>
+								<thead>
 									<tr>
-										<td class="feature-table-data">{label}</td>
-										<td class="feature-table-data">{value}</td>
+										<th class="feature-table-heading">Action</th>
+										<th class="feature-table-heading">Count</th>
 									</tr>
-								{/each}
-							</tbody>
-						</table>
+								</thead>
+								<tbody class="justify-center">
+									{#each sortedData as { value, label }}
+										<tr>
+											<td class="feature-table-data">{label}</td>
+											<td class="feature-table-data">{value}</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						</div>
 					{:else}
-						<div class="w-full p-4">
-							<p class="mt-28 flex items-center justify-center leading-3 font-semibold">
+						<div class="h-[400px] w-[400px] p-4">
+							<p class="mt-28 flex items-center justify-center text-xl leading-3">
 								Data Not Available
 							</p>
 						</div>
@@ -578,77 +596,66 @@
 				</div>
 			</div>
 		</div>
-		<div class="flex h-full min-w-full items-center justify-center py-10">
-			<div class=" feature-cards">
-				<div class="w-full">
-					<div class="flex flex-col items-center justify-between py-4">
-						<h4 class="flex-grow text-center text-lg font-semibold">
-							Quarterwise Task Completion Metrics
-						</h4>
-						<div class="h-fit w-full">
-							<p class="mx-2 justify-center pb-5 text-center text-sm sm:pl-3">
-								This shows the count of users grouped by task completion percentage ranges.
-							</p>
-						</div>
-					</div>
-					<div class="col-span-2 items-center justify-center pb-8 sm:px-6 lg:px-8">
-						<table
-							class="border-secondary-100 dark:border-surface-700 min-w-full rounded-lg border"
-						>
-							<thead>
-								<tr class="border-secondary-100 dark:border-surface-700 border">
-									{#each taskCompletionTableHeaders as header}
-										<th
-											class="border-secondary-100 dark:border-surface-700 w-1/2 border py-3 text-left text-sm font-semibold sm:pl-3"
-										>
-											{header}
-										</th>
-									{/each}
-								</tr>
-							</thead>
-							<tbody>
-								{#if quarterWiseTaskCompletionData.length > 0}
-									{#each quarterWiseTaskCompletionData as row}
-										<tr
-											class="hover:bg-secondary-50 dark:hover:bg-surface-800 border-secondary-100 dark:border-surface-700 border transition"
-										>
-											<td
-												class="border-secondary-100 dark:border-surface-700 border px-3 py-2 text-sm whitespace-nowrap"
-											>
-												{row.percentage_range}
-											</td>
-											<td
-												class="border-secondary-100 dark:border-surface-700 border px-3 py-2 text-sm whitespace-nowrap"
-											>
-												{row.user_count}
+
+		<!-- Quarterwise Task Completion Card -->
+		<div class="features-cards-layout my-5">
+			<div class="features-cards-wrapper">
+				<div class="status-card">
+					<div class="flex flex-col items-center">
+						<h4 class="feature-card-heading">Quarterwise Task Completion Metrics</h4>
+						<p class="feature-card-des">
+							This shows the count of users grouped by task completion percentage ranges.
+						</p>
+
+						<div class="w-full overflow-x-auto px-4 py-2">
+							<table class="border-secondary-100 dark:border-surface-700 min-w-full rounded-lg border">
+								<thead>
+									<tr class="border-secondary-100 dark:border-surface-700 border">
+										{#each taskCompletionTableHeaders as header}
+											<th class="feature-table-heading">
+												{header}
+											</th>
+										{/each}
+									</tr>
+								</thead>
+								<tbody>
+									{#if quarterWiseTaskCompletionData.length > 0}
+										{#each quarterWiseTaskCompletionData as row}
+											<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 border-secondary-100 dark:border-surface-700 border transition">
+												<td class="feature-table-data">{row.percentage_range}</td>
+												<td class="feature-table-data">{row.user_count}</td>
+											</tr>
+										{/each}
+									{:else}
+										<tr>
+											<td class="py-4 text-center text-sm text-gray-500" colspan="2">
+												Data not available.
 											</td>
 										</tr>
-									{/each}
-								{:else}
-									<tr>
-										<td class="py-4 text-center text-sm text-gray-500"> Data not available. </td>
-									</tr>
-								{/if}
-							</tbody>
-						</table>
+									{/if}
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+	</div>
 	{:else if feature === 'Vitals'}
-		<div class="mt-10 h-full w-full items-stretch justify-center gap-10 md:flex">
-			<div class=" feature-cards">
-				<div class="w-full">
+	<div class="features-container">
+		<div class="features-cards-layout">
+			<!-- Vitals Task Metrics Card -->
+			<div class="features-cards-wrapper">
+				<div class="access-card">
 					<div class="flex flex-col items-center">
 						<h4 class="feature-card-heading">Vitals Task Metrics</h4>
-						<div class="h-fit w-full">
-							<p class="feature-card-des">
-								This shows the addition rate of vital metrics, comparing the total events logged for
-								each vital metric and their breakdown into manual entries and device-based entries.
-							</p>
-						</div>
+						<p class="feature-card-des">
+							This shows the addition rate of vital metrics, comparing the total events logged for
+							each vital metric and their breakdown into manual entries and device-based entries.
+						</p>
+
 						{#if vitalMetricsData?.length > 0 && vitalNames?.length > 0}
-							<div class="0 flex w-full justify-end">
+							<div class="flex w-full justify-end px-4">
 								<select
 									class="select mb-2 border pl-2"
 									bind:value={selectedVitalName}
@@ -659,7 +666,7 @@
 									{/each}
 								</select>
 							</div>
-							<div class="justify-center pb-6">
+							<div class="h-96 w-full">
 								<PieChart
 									data={vitalMetricsData}
 									labels={vitalLabels}
@@ -668,49 +675,50 @@
 								/>
 							</div>
 						{:else}
-							<div class="flex h-96 w-full justify-center pl-10 font-semibold">
-								Data not available
+							<div class="h-[400px] w-[400px] p-4">
+								<p class="mt-28 flex items-center justify-center text-xl leading-3">
+									Data Not Available
+								</p>
 							</div>
 						{/if}
 					</div>
 				</div>
 			</div>
-			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
-				<div class="w-full">
-					<div class="dropoff-card">
-						{#if dropOffPointsData && dropOffPointsLabels}
-							<p class="font-semibold">DropOff Points</p>
-							<p class="feature-card-des">
-								Points in the user flow where users most frequently stop using a feature.
-								Identifying drop-off points helps in optimizing the user journey and addressing
-								usability challenges to improve feature completion rates.
-							</p>
-						{:else}
-							DropOff Points (%) (Data not available)
-						{/if}
-					</div>
+
+			<!-- DropOff Points Card -->
+			<div class="engagement-card">
+				<div class="flex flex-col items-center">
+					<h4 class="feature-card-heading">DropOff Points</h4>
+					<p class="feature-card-des">
+						Points in the user flow where users most frequently stop using a feature. Identifying
+						drop-off points helps in optimizing the user journey and addressing usability
+						challenges to improve feature completion rates.
+					</p>
+
 					{#if dropOffPointsData.length > 0 && dropOffPointsLabels.length > 0}
-						<table
-							class="border-secondary-100 dark:border-surface-70 mt-2 mb-10 min-w-full rounded-lg border"
-						>
-							<thead>
-								<tr>
-									<th class="feature-table-heading">Action</th>
-									<th class="feature-table-heading">Count</th>
-								</tr>
-							</thead>
-							<tbody class="justify-center">
-								{#each sortedData as { value, label }}
+						<div class="w-full overflow-x-auto px-4 py-2">
+							<table
+								class="border-secondary-100 dark:border-surface-70 mt-2 mb-10 min-w-full rounded-lg border"
+							>
+								<thead>
 									<tr>
-										<td class="feature-table-data">{label}</td>
-										<td class="feature-table-data">{value}</td>
+										<th class="feature-table-heading">Action</th>
+										<th class="feature-table-heading">Count</th>
 									</tr>
-								{/each}
-							</tbody>
-						</table>
+								</thead>
+								<tbody class="justify-center">
+									{#each sortedData as { value, label }}
+										<tr>
+											<td class="feature-table-data">{label}</td>
+											<td class="feature-table-data">{value}</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						</div>
 					{:else}
-						<div class="w-full p-4">
-							<p class="mt-28 flex items-center justify-center leading-3 font-semibold">
+						<div class="h-[400px] w-[400px] p-4">
+							<p class="mt-28 flex items-center justify-center text-xl leading-3">
 								Data Not Available
 							</p>
 						</div>
@@ -718,50 +726,52 @@
 				</div>
 			</div>
 		</div>
-	{:else}
-		<div class="mt-10 flex h-full w-full items-center justify-center gap-10">
-			<div class="status-card my-5 max-w-[95%] overflow-x-auto border md:my-0 md:max-w-lg">
-				<div class="h-fit w-full">
-					<div class=" dropoff-card">
-						{#if dropOffPointsData && dropOffPointsLabels}
-							<p class="font-semibold">DropOff Points</p>
-							<p class="feature-card-des">
-								Points in the user flow where users most frequently stop using a feature.
-								Identifying drop-off points helps in optimizing the user journey and addressing
-								usability challenges to improve feature completion rates.
-							</p>
+	</div>
+{:else}
+	<!-- Default DropOff Points Card -->
+	<div class="features-container">
+		<div class="features-cards-layout">
+			<div class="features-cards-wrapper">
+				<div class="engagement-card">
+					<div class="flex flex-col items-center">
+						<h4 class="feature-card-heading">DropOff Points</h4>
+						<p class="feature-card-des">
+							Points in the user flow where users most frequently stop using a feature. Identifying
+							drop-off points helps in optimizing the user journey and addressing usability
+							challenges to improve feature completion rates.
+						</p>
+
+						{#if dropOffPointsData.length > 0 && dropOffPointsLabels.length > 0}
+							<div class="w-full overflow-x-auto px-4 py-2">
+								<table
+									class="border-secondary-100 dark:border-surface-70 mt-2 mb-10 min-w-full rounded-lg border"
+								>
+									<thead>
+										<tr>
+											<th class="feature-table-heading">Action</th>
+											<th class="feature-table-heading">Count</th>
+										</tr>
+									</thead>
+									<tbody class="justify-center">
+										{#each sortedData as { value, label }}
+											<tr>
+												<td class="feature-table-data">{label}</td>
+												<td class="feature-table-data">{value}</td>
+											</tr>
+										{/each}
+									</tbody>
+								</table>
+							</div>
 						{:else}
-							DropOff Points (%) (No Data available)
+							<div class="h-[400px] w-[400px] p-4">
+								<p class="mt-28 flex items-center justify-center text-xl leading-3">
+									Data Not Available
+								</p>
+							</div>
 						{/if}
 					</div>
-					{#if dropOffPointsData.length > 0 && dropOffPointsLabels.length > 0}
-						<table
-							class="border-secondary-100 dark:border-surface-70 mt-2 mb-10 min-w-full rounded-lg border"
-						>
-							<thead>
-								<tr>
-									<th class=" feature-table-heading">Action</th>
-									<th class=" feature-table-heading">Count</th>
-								</tr>
-							</thead>
-							<tbody class="justify-center">
-								{#each sortedData as { value, label }}
-									<tr>
-										<td class=" feature-table-data">{label}</td>
-										<td class="feature-table-data">{value}</td>
-									</tr>
-								{/each}
-							</tbody>
-						</table>
-					{:else}
-						<div class="h-fit w-full p-4">
-							<p class="my-12 flex items-center justify-center leading-3 font-semibold">
-								Data Not Available
-							</p>
-						</div>
-					{/if}
 				</div>
 			</div>
 		</div>
-	{/if}
-</div>
+	</div>
+{/if}
