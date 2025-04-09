@@ -48,7 +48,7 @@
 </script>
 {#if hasData}
     <div class="stats-container distribution-card-container">
-        <div class="col-span-2 px-4 sm:px-6 lg:px-8">
+        <div class="col-span-2 px-2 sm:px-6 lg:px-8">
             <div class=" distribution-card-content">
                 <table class="min-w-full">
                     <thead>
