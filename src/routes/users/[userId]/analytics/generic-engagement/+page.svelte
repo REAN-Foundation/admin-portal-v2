@@ -137,7 +137,7 @@
 <div class=" user-graph-container">
 	<div class=" user-graph-wrapper">
 		<div class=" user-graph-card">
-			<div class="w-3/3">
+			<div class="w-3/3 ">
 				<div class=" user-graph-texts">
 					<h4 class=" user-graph-title">
 						{selectedGraph === 'daily'
@@ -224,7 +224,7 @@
 			<thead>
 				<tr class=" border">
 					{#each tableHeaders as header}
-						<th class=" table-heading border p-2">
+						<th class=" table-heading border p-1 xl:p-2">
 							{header}
 						</th>
 					{/each}
@@ -233,19 +233,19 @@
 			<tbody>
 				{#each filteredData as row}
 					<tr class="  border transition">
-						<td class="  border p-1">
+						<td class="  border p-2">
 							{formatMonthLabel(row.month)}
 						</td>
-						<td class="  border p-1">
+						<td class="  border p-2">
 							{row.mostUsedFeature}
 						</td>
-						<td class="  border p-1">
+						<td class="  border p-2">
 							{row.usageCount}
 						</td>
-						<td class="  border p-1">
+						<td class="  border p-2">
 							{row.totalUsage}
 						</td>
-						<td class="  border p-1">
+						<td class="  border p-2">
 							{row.percentage}
 						</td>
 					</tr>
@@ -255,7 +255,7 @@
 	</div>
 </div>
 
-<div class="generic-table-conatiner">
+<div class="generic-tables-conatiner">
 	<div class="text my-5 w-full">
 		<div class="flex flex-col items-center">
 			<h4 class="my-4 text-left !text-lg font-semibold">Most Fired Events</h4>
@@ -293,21 +293,21 @@
 		<table class="table border">
 			<thead>
 				<tr class=" border">
-					<th class=" p-2 text-left text-sm font-semibold  border">Event Name</th>
-					<th class="  p-2 text-left text-sm font-semibold border">Event Category</th>
-					<th class="  p-2 text-left text-sm font-semibold  border">Event Count</th>
+					<th class=" border p-2 text-left text-sm font-semibold">Event Name</th>
+					<th class="  border p-2 text-left text-sm font-semibold">Event Category</th>
+					<th class="  border p-2 text-left text-sm font-semibold">Event Count</th>
 				</tr>
 			</thead>
 			<tbody>
 				{#each mostFiredEventsByEventCategory as event}
 					<tr class=" border transition">
-						<td class="    p-2  border">
+						<td class="    border p-2">
 							{event.EventCategory}
 						</td>
-						<td class=" p-2 border">
+						<td class=" border p-2">
 							{event.EventName}
 						</td>
-						<td class=" p-2 border">
+						<td class=" border p-2">
 							{event.event_count}
 						</td>
 					</tr>

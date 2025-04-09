@@ -34,12 +34,21 @@
 					</a>
 				{:else}
 					<button
-						class="sidebar-item items-center"
+						class="sidebar-item flex w-full items-center justify-between"
 						onclick={() => toggleDropdown(navParent.title)}
 					>
-						<Icon icon={navParent.icon} class="mx-1 text-2xl" />
-						<span class="sidebar-text">{navParent.title}</span>
-						<Icon icon="gridicons:dropdown" width="16" height="16" class="h-5 w-5" />
+						<div class="flex items-center gap-2">
+							<Icon icon={navParent.icon} class="text-2xl" />
+							<span class="sidebar-text">{navParent.title}</span>
+						</div>
+
+						<!-- Right-aligned dropdown icon with rotation -->
+						<span
+							class="transition-transform duration-300"
+							class:rotate-180={openTab === navParent.title}
+						>
+							<Icon icon="icon-park-outline:down" width="16" height="16" class="h-5 w-5" />
+						</span>
 					</button>
 				{/if}
 

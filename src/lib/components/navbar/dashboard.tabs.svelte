@@ -72,7 +72,7 @@
 <div class="w-full md:flex md:items-center md:space-x-4">
 	<!-- Button Group in Grid -->
 	<div
-		class="grid w-full grid-cols-2 gap-2 text-center md:grid md:grid-cols-3 md:space-x-4 xl:flex xl:w-full"
+		class=" mt-2 grid w-full grid-cols-2 gap-2 text-center md:grid md:grid-cols-3 md:space-x-4 xl:flex xl:w-full"
 	>
 		<!-- Row 1 -->
 		<a
@@ -124,11 +124,13 @@
 			<div class="relative">
 				<button
 					type="button"
-					class="btn variant-filled-secondary inline-flex w-full justify-center"
+					class="btn variant-soft-secondary inline-flex w-full items-center justify-center"
 					onclick={toggleDropdown}
 				>
 					{buttonLabel}
-					<Icon icon="gridicons:dropdown" width="16" height="16" class="-mr-1 ml-2 h-5 w-5" />
+					<span class=" ml-2 h-4 w-4 transition-transform duration-300" class:rotate-180={isOpen}>
+						<Icon icon="icon-park-outline:down" width="16" height="16" class="h-5 w-5" />
+					</span>
 				</button>
 
 				{#if isOpen}

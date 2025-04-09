@@ -598,7 +598,7 @@
 		</div>
 
 		<!-- Quarterwise Task Completion Card -->
-		<div class="features-cards-layout my-5">
+		<div class="features-cards-layout ">
 			<div class="features-cards-wrapper">
 				<div class="status-card">
 					<div class="flex flex-col items-center">

@@ -60,14 +60,14 @@
 	getSelectedAssessmentData();
 </script>
 
-<div class="my-5">
-	<h4 class="mb-4 text-lg font-semibold">Careplan Assessment Metrics</h4>
+<div class="mt-5 xl:ml-29">
+	<h4 class="mb-2 text-lg font-semibold">Careplan Assessment Metrics</h4>
 	<p>
 		It shows the count of users who completed or are in progress with assessments, segmented by care
 		plan code.
 	</p>
 </div>
-<div class="my-5 ml-auto flex items-center">
+<div class="my-5 ml-auto flex items-center xl:ml-29">
 	<select
 		id="select-Plan"
 		bind:value={selectedCode}
@@ -79,8 +79,8 @@
 		{/each}
 	</select>
 </div>
-<div class="">
-	<table class="w-3/3">
+<div class=" xl:ml-29">
+	<table class="w-3/3 xl:w-3/4">
 		<thead class="">
 			<tr class="border-secondary-100 dark:border-surface-700 border">
 				{#each careplanTableHeaders as header}
@@ -124,109 +124,88 @@
 	</table>
 </div>
 
-
-<div class="flex w-full items-center justify-center my-10">
-	<div
-		class="status-card w-full overflow-hidden overflow-x-auto border shadow-xl sm:px-4"
+<div class="mt-10 xl:ml-29">
+	<h4 class="mb-2 text-lg font-semibold">Assessment Metrics</h4>
+	<p>Analyzes user responses to identify trends and patterns for each assessment question.</p>
+</div>
+<div class="my-5 ml-auto flex items-center xl:ml-29">
+	<select
+		id="select-Plan"
+		bind:value={selectedAssessment}
+		onchange={getSelectedAssessmentData}
+		class="select border-secondary-100 dark:border-surface-700 mr-8 rounded border"
 	>
-		<div class="w-full">
-			<div class="flex flex-col items-center justify-between py-4">
-				<h4 class="flex-grow text-center text-lg font-semibold">Assessment Metrics</h4>
-				<div class="h-fit w-full">
-					<p class="mx-2 justify-center pb-5 text-center text-sm sm:pl-3">
-						Analyzes user responses to identify trends and patterns for each assessment question.
-					</p>
-				</div>
-				<div class="my-2 mx-auto flex items-center">
-					
-					<select
-						id="select-Plan"
-						bind:value={selectedAssessment}
-						onchange={getSelectedAssessmentData}
-						class="select border-secondary-100 dark:border-surface-700 mr-8 rounded border"
+		{#each uniqueTitles as title}
+			<option value={title}>{title}</option>
+		{/each}
+	</select>
+</div>
+
+<div class=" xl:ml-29">
+	<table
+		class="border-secondary-100 dark:border-surface-700 w-3/3 min-w-full rounded-lg border xl:w-3/4"
+	>
+		<thead>
+			<tr class="border-secondary-100 dark:border-surface-700 border">
+				{#each assessmentTableHeaders as header}
+					<th
+						class="border-secondary-100 dark:border-surface-700 border p-2 text-left text-sm font-semibold"
 					>
-						{#each uniqueTitles as title}
-							<option value={title}>{title}</option>
-						{/each}
-					</select>
-				</div>
-			</div>
-			<div class="col-span-2 items-center justify-center px-2 pb-8 sm:px-6 lg:px-8">
-				<div class="flow-root">
-					<div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-						<div class="inline-block min-w-full align-middle sm:px-6 lg:px-8">
-							<table
-								class="border-secondary-100 dark:border-surface-700 min-w-full rounded-lg border"
-							>
-								<thead>
-									<tr class="border-secondary-100 dark:border-surface-700 border">
-										{#each assessmentTableHeaders as header}
-											<th
-												class="border-secondary-100 dark:border-surface-700 border px-2 py-3 text-left text-sm font-semibold"
-											>
-												{header}
-											</th>
-										{/each}
-									</tr>
-								</thead>
-								<tbody>
-									{#if selectedAssessmentData.length > 0}
-										{#each selectedAssessmentData as row}
-											<tr
-												class="hover:bg-secondary-50 dark:hover:bg-surface-800 border-secondary-100 dark:border-surface-700 border transition"
-											>
-												<td
-													class="border-secondary-100 dark:border-surface-700 border px-3 py-2 text-sm whitespace-nowrap"
-												>
-													
-													<Tooltip text={row.node_title || 'Not specified'}>
-														<span class="cursor-pointer">
-															{row.node_title !== null
-																? Helper.truncateText(row.node_title, 40)
-																: 'Not specified'}
-														</span>
-													</Tooltip>
-												</td>
-												<td
-													class="border-secondary-100 dark:border-surface-700 border px-3 py-2 text-sm whitespace-nowrap"
-												>
-													{row.query_response_type}
-												</td>
-												<td
-													class="border-secondary-100 dark:border-surface-700 border px-3 py-2 text-sm whitespace-nowrap"
-												>
-													
-													<Tooltip text={row.response_option_text || 'Not specified'}>
-														<span class="cursor-pointer">
-															{row.response_option_text !== null
-																? Helper.truncateText(row.response_option_text, 40)
-																: 'Not specified'}
-														</span>
-													</Tooltip>
-												</td>
-												<td
-													class="border-secondary-100 dark:border-surface-700 border px-3 py-2 text-sm whitespace-nowrap"
-												>
-													{row.response_count}
-												</td>
-											</tr>
-										{/each}
-									{:else}
-										<tr>
-											<td
-												colspan={assessmentTableHeaders.length}
-												class="py-4 text-center text-sm text-gray-500"
-											>
-												Data not available for the selected title.
-											</td>
-										</tr>
-									{/if}
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div> 
+						{header}
+					</th>
+				{/each}
+			</tr>
+		</thead>
+		<tbody>
+			{#if selectedAssessmentData.length > 0}
+				{#each selectedAssessmentData as row}
+					<tr
+						class="hover:bg-secondary-50 dark:hover:bg-surface-800 border-secondary-100 dark:border-surface-700 border transition"
+					>
+						<td
+							class="border-secondary-100 dark:border-surface-700 border p-2 text-sm whitespace-nowrap"
+						>
+							<Tooltip text={row.node_title || 'Not specified'}>
+								<span class="cursor-pointer">
+									{row.node_title !== null
+										? Helper.truncateText(row.node_title, 40)
+										: 'Not specified'}
+								</span>
+							</Tooltip>
+						</td>
+						<td
+							class="border-secondary-100 dark:border-surface-700 border p-2 text-sm whitespace-nowrap"
+						>
+							{row.query_response_type}
+						</td>
+						<td
+							class="border-secondary-100 dark:border-surface-700 border p-2 text-sm whitespace-nowrap"
+						>
+							<Tooltip text={row.response_option_text || 'Not specified'}>
+								<span class="cursor-pointer">
+									{row.response_option_text !== null
+										? Helper.truncateText(row.response_option_text, 40)
+										: 'Not specified'}
+								</span>
+							</Tooltip>
+						</td>
+						<td
+							class="border-secondary-100 dark:border-surface-700 border p-2 text-sm whitespace-nowrap"
+						>
+							{row.response_count}
+						</td>
+					</tr>
+				{/each}
+			{:else}
+				<tr>
+					<td
+						colspan={assessmentTableHeaders.length}
+						class="py-4 text-center text-sm text-gray-500"
+					>
+						Data not available for the selected title.
+					</td>
+				</tr>
+			{/if}
+		</tbody>
+	</table>
+</div>

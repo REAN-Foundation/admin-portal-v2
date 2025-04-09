@@ -344,7 +344,7 @@
 }
 
 .btn {
-	@apply w-full cursor-pointer rounded-md bg-blue-500 px-2 py-2 text-white shadow transition duration-200 hover:bg-blue-400;
+	@apply w-full cursor-pointer rounded-md bg-blue-500 px-8 py-2 text-white shadow transition duration-200 hover:bg-blue-400;
 }
 
 .selectcode {
@@ -416,7 +416,7 @@ tr {
 }
 
 .tabs-btn {
-	@apply rounded-lg border-[var(--color-outline)] px-4 py-2 transition;
+	@apply rounded-lg border-[var(--color-outline)] px-4 py-2 transition w-full;
 }
 
 .variant-filled-secondary {
@@ -522,22 +522,22 @@ tr {
 /* analytics-overview */
 
 .basic-stat {
-	@apply text-lg font-bold;
+	@apply text-lg font-bold xl:ml-29 ;
 }
 .basic-des {
-	@apply text-sm text-[var(--color-info)] md:text-base;
+	@apply text-sm text-[var(--color-info)] md:text-base xl:ml-29  xl:w-3/4;
 }
 .history-container {
 	@apply w-full overflow-x-auto px-4 pt-4 sm:px-4;
 }
 .history-head {
-	@apply text-left text-lg font-bold sm:pl-3;
+	@apply text-left text-lg font-bold sm:pl-3 xl:ml-26;
 }
 .history-title {
 	@apply flex items-center justify-center text-2xl;
 }
 .history-para {
-	@apply pb-2 text-left text-sm sm:pl-3;
+	@apply pb-2 text-left text-sm sm:pl-3 xl:ml-26  xl:w-3/4;
 }
 .not-available {
 	@apply mt-28 flex items-center justify-center text-xl leading-3;
@@ -559,7 +559,7 @@ tr {
 	@apply my-2 py-3 pr-3 pl-4 text-left text-sm text-[var(--color-info)] sm:pl-3;
 }
 .distribution-title {
-	@apply py-3 pr-3 pl-4 text-left text-lg font-semibold sm:pl-3;
+	@apply py-6 pr-3 pl-4 text-left text-lg font-semibold sm:pl-3;
 }
 .distribution-container {
 	@apply flex flex-col justify-center text-sm text-[var(--color-info)];
@@ -612,7 +612,7 @@ tr {
 	@apply mt-28 flex w-full items-center justify-center text-xl leading-3;
 }
 .generic-tables-conatiner {
-	@apply mt-8 flex w-full !min-w-full items-center justify-center overflow-hidden overflow-x-auto rounded-lg sm:px-4;
+	@apply mt-8 flex w-full !min-w-full items-center justify-center overflow-hidden overflow-x-auto  ;
 }
 .select-container {
 	@apply absolute right-0 my-10 flex items-center;
@@ -633,16 +633,16 @@ tr {
 /* feature-loginsession */
 
 .access-card {
-	@apply my-5 flex max-w-sm flex-col justify-center rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-md sm:px-4 md:my-0 md:max-w-lg;
+	@apply my-5 flex  max-w-sm flex-col justify-center rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-6 shadow-md sm:px-4 md:my-0 md:max-w-lg 2xl:max-w-xl;
 }
 .engagement-card {
-	@apply flex max-w-sm flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-md md:max-w-lg;
+	@apply flex max-w-sm flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-6 shadow-md md:max-w-lg 2xl:max-w-xl;
 }
 .retention-card {
-	@apply flex max-w-sm flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-md md:max-w-lg;
+	@apply flex max-w-sm flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-6 shadow-md md:max-w-lg 2xl:max-w-xl;
 }
 .features-cards-layout {
-	@apply mx-auto grid grid-cols-1 justify-center gap-8 rounded-lg py-4 xl:grid xl:grid-cols-2;
+	@apply mx-auto grid grid-cols-1 justify-center  gap-8 xl:gap-14 rounded-lg py-4 xl:py-8 xl:grid xl:grid-cols-2;
 }
 .features-cards-wrapper {
 	@apply h-full w-full items-center gap-10 md:flex;

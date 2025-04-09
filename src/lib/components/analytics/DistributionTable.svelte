@@ -50,7 +50,7 @@
     <div class="stats-container distribution-card-container">
         <div class="col-span-2 px-2 sm:px-6 lg:px-8">
             <div class=" distribution-card-content">
-                <table class="min-w-full">
+                <table class="min-w-full xl:min-w-30 xl:ml-6">
                     <thead>
                         <tr class="w-full">
                             {#each tableHeaders as header}
