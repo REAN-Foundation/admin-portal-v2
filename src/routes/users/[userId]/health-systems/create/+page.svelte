@@ -32,9 +32,9 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="p-6">
+<div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="mb-6 rounded-lg bg-white shadow dark:bg-neutral-800">
+		<div class="health-system-table-container">
 			<form
 				method="post"
 				action="?/createHealthSystemAction"
@@ -71,17 +71,17 @@
 							</td>
 						</tr>
 						<tr class="">
-							<td class="align-top">Tags</td>
+							<td class="align-top !py-3 ">Tags</td>
 							<td>
 								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
 							</td>
 						</tr>
 					</tbody>
 				</table>
-				<div class="flex justify-end gap-2 p-2">
+				<div class="button-container">
 					<button
 						type="submit"
-						class="health-system-btn variant-filled-secondary"
+						class="health-system-btn variant-soft-secondary"
 						disabled={isSubmitting}
 					>
 						{isSubmitting ? 'Submitting...' : 'Submit'}

@@ -1,9 +1,9 @@
 <script lang="ts">
-	let { children, text } = $props();
+	let { children, text,forceShow = false } = $props();
 
 	let showTooltip = $state(false);
 	let tooltipElement: HTMLSpanElement|undefined =$state();
-	let shouldShowTooltip = $derived(text.length > 40);
+	let shouldShowTooltip = $derived(forceShow||text.length > 50);
 
 	function handleMouseEnter() {
 		if (shouldShowTooltip) {
@@ -31,7 +31,7 @@
 		<span
 			bind:this={tooltipElement}
 			class="absolute z-10 rounded-lg text-xs shadow-lg"
-			style="bottom: 100%; left: 50%; transform: translateX(-50%); background-color: rgba(71, 85, 105, 0.95); border: 1px solid rgba(51, 65, 85, 0.1); color: #ffffff; margin-top: 10px; padding: 8px; font-size: 12px; min-width: 200px; max-width: 400px; text-align: left; white-space: normal; word-wrap: break-word; overflow-wrap: break-word; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);"
+			style="bottom: 100%; left: 50%; transform: translateX(-50%); background-color: rgba(71, 85, 105, 0.95); border: 1px solid rgba(51, 65, 85, 0.1); color: #ffffff; margin-bottom: 8px; padding: 10px; font-size: 12px; width:full; text-align: left; white-space: normal; word-wrap: break-word; overflow-wrap: break-word; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);"
 		>
 			{text}
 			<span

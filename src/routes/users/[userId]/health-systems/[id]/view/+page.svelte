@@ -44,11 +44,11 @@
     </a>
 </div> -->
 
-<div class="p-6">
+<div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="mb-6 rounded-lg bg-white shadow dark:bg-neutral-800">
+		<div class="health-system-table-container">
 			<table class="health-system-table">
-				<thead class="">
+				<thead>
 					<tr>
 						<th>View Health System</th>
 						<th class="text-end">
@@ -61,12 +61,12 @@
 						</th>
 					</tr>
 				</thead>
-				<tbody class="">
-					<tr class="">
+				<tbody>
+					<tr>
 						<td>Name</td>
 						<td>{healthSystemName}</td>
 					</tr>
-					<tr class="">
+					<tr>
 						<td>Tags</td>
 						<td>
 							{#if tags.length <= 0}
