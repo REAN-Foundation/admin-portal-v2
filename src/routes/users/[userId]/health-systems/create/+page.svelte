@@ -32,9 +32,9 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="p-6">
+<div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="mb-6 rounded-lg bg-white shadow dark:bg-neutral-800">
+		<div class="health-system-table-container">
 			<form
 				method="post"
 				action="?/createHealthSystemAction"
@@ -78,7 +78,7 @@
 						</tr>
 					</tbody>
 				</table>
-				<div class="flex justify-end gap-2 p-2">
+				<div class="button-container">
 					<button
 						type="submit"
 						class="health-system-btn variant-soft-secondary"

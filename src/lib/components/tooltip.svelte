@@ -3,7 +3,7 @@
 
 	let showTooltip = $state(false);
 	let tooltipElement: HTMLSpanElement|undefined =$state();
-	let shouldShowTooltip = $derived(forceShow||text.length > 60);
+	let shouldShowTooltip = $derived(forceShow||text.length > 50);
 
 	function handleMouseEnter() {
 		if (shouldShowTooltip) {
