@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
@@ -8,15 +8,15 @@
 
 	//////////////////////////////////////////////////////////////////////
 
-	const userId = $page.params.userId;
-	var healthSystemId = $page.params.id;
+	const userId = page.params.userId;
+	var healthSystemId = page.params.id;
 	const editRoute = `/users/${userId}/health-systems/${healthSystemId}/edit`;
 	const viewRoute = `/users/${userId}/health-systems/${healthSystemId}/view`;
 	const healthSystemsRoute = `/users/${userId}/health-systems`;
 
 	// export let form;
 	// export let data: PageServerData;
-	let { form, data } = $props();
+	let { data, form }: { data: PageServerData; form: any } = $props();
 	let healthSystemName = $state(data.healthSystem.Name);
 	let tags = $state(data.healthSystem.Tags);
 	//Original data
@@ -47,60 +47,63 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="p-6">
+<div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="mb-6 rounded-lg bg-white shadow dark:bg-neutral-800">
-
-<form
-	method="post"
-	action="?/updateHealthSystemAction"
-	use:enhance
-	onsubmit={handleSubmit}
->
-	<table class="health-system-table">
-		<thead >
-			<tr>
-				<th>Edit Health System</th>
-				<th class="text-end">
-					<a href={viewRoute} class="health-system-btn variant-soft-secondary">
-						<Icon icon="material-symbols:close-rounded" />
-					</a>
-				</th>
-			</tr>
-		</thead>
-		<tbody class="!bg-white dark:!bg-inherit">
-			<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
-				<td>Name <span class=" text-red-600">*</span></td>
-				<td>
-					<input
-						type="text"
-						class="health-system-input {form?.errors?.healthSystemName ? 'border-error-300 text-error-500' : ''}"
-						name="healthSystemName"
-						placeholder="Enter name here..."
-						bind:value={healthSystemName}
-						required
-					/>
-					{#if form?.errors?.healthSystemName}
-						<p class="text-error-500 text-xs">{form?.errors?.healthSystemName[0]}</p>
-					{/if}
-				</td>
-			</tr>
-			<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
-				<td class="align-top">Tags</td>
-				<td>
-					<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" bind:value={tags} /> -->
-				</td>
-			</tr>
-		</tbody>
-	</table>
-	<div class="flex justify-end gap-2 p-2">
-		<button type="button" onclick={handleReset} class="health-system-btn variant-soft-secondary">Reset</button>
-		<button type="submit" class="health-system-btn variant-filled-secondary" disabled={isSubmitting}>
-			{isSubmitting ? 'Submitting...' : 'Submit'}
-		</button>
+		<div class="health-system-table-container">
+			<form method="post" action="?/updateHealthSystemAction" use:enhance onsubmit={handleSubmit}>
+				<table class="health-system-table">
+					<thead>
+						<tr>
+							<th>Edit Health System</th>
+							<th class="text-end">
+								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
+									<Icon icon="material-symbols:close-rounded" />
+								</a>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Name <span class=" text-red-600">*</span></td>
+							<td>
+								<input
+									type="text"
+									class="health-system-input {form?.errors?.healthSystemName
+										? 'border-error-300 text-error-500'
+										: ''}"
+									name="healthSystemName"
+									placeholder="Enter name here..."
+									bind:value={healthSystemName}
+									required
+								/>
+								{#if form?.errors?.healthSystemName}
+									<p class="text-error-500 text-xs">{form?.errors?.healthSystemName[0]}</p>
+								{/if}
+							</td>
+						</tr>
+						<tr>
+							<td class="!py-3">Tags</td>
+							<td>
+								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" bind:value={tags} /> -->
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="button-container">
+					<button
+						type="button"
+						onclick={handleReset}
+						class="health-system-btn variant-soft-secondary">Reset</button
+					>
+					<button
+						type="submit"
+						class="health-system-btn variant-soft-secondary"
+						disabled={isSubmitting}
+					>
+						{isSubmitting ? 'Submitting...' : 'Submit'}
+					</button>
+				</div>
+			</form>
+		</div>
 	</div>
-</form>
-
-</div>
-</div>
 </div>

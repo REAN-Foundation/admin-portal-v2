@@ -673,16 +673,17 @@ tr {
 	@apply my-5 flex max-w-[95%] flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-md md:my-0 md:max-w-lg;
 }
 
+/* Health system */
 .health-system-table-container {
-	@apply w-full overflow-x-auto rounded-lg border;
+	@apply w-full overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-secondary)] text-[var(--color-info)];
 }
 
 .health-system-table {
-	@apply table w-full table-auto overflow-hidden;
+	@apply table w-full table-auto;
 }
 
 .health-system-table thead {
-	@apply table-header-group border-b-1 border-gray-200 align-middle;
+	@apply table-header-group border-b-1 border-[var(--color-outline)] align-middle;
 }
 
 .health-system-table thead tr {
@@ -697,22 +698,96 @@ tr {
 	@apply table-row-group align-middle;
 }
 
-/* .health-system-table tbody tr {
-	@apply p-4;
-} */
+.health-system-table tbody tr:hover {
+	@apply bg-gray-50 text-black;
+}
+
+.health-system-table tbody tr:hover .health-system-btn {
+	@apply text-black;
+}
 
 .health-system-table tbody td {
-	@apply border-b-1 border-gray-200 px-5 py-2;
+	@apply border-b-1 border-[var(--color-outline)] px-5 py-2 text-sm;
 }
 
 .health-system-btn {
-	@apply inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-2 text-center text-sm whitespace-nowrap transition-all duration-150 ease-in-out hover:bg-[var(--color-active)];
+	@apply inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-2 text-center text-sm whitespace-nowrap text-[var(--color-info)] transition-all duration-150 ease-in-out hover:bg-[var(--color-active)];
 }
 
+/* .health-system-icon{
+	@apply group-hover:text-[var(--color-active)]
+} */
+
 .health-system-input {
+
 	@apply w-full rounded-lg border border-gray-200 px-2 py-2 outline-[var(--color-active)];
+
 }
 
 .breadcrumbs {
-	@apply my-1 flex gap-2 text-xl text-[var(--color-info)] md:my-2;
+	@apply mx-6 my-1 flex gap-2 text-lg text-[var(--color-info)] md:my-2;
+}
+
+.health-system-search-border {
+	@apply border-b-1 border-[var(--color-outline)];
+}
+
+.close-btn {
+	@apply absolute top-1/2 right-4 -translate-y-1/2 transform cursor-pointer border-0 bg-transparent;
+}
+
+/* pagination */
+.pagination-container {
+	@apply flex flex-col items-center justify-between gap-6 px-6 sm:flex-row;
+}
+.pagination-select {
+	@apply appearance-none rounded-md border border-gray-300 bg-white px-4 py-2 pr-10 text-sm shadow-sm focus:border-[var(--color-active)] focus:ring-1 focus:outline-none;
+}
+
+.button-container {
+	@apply flex justify-end gap-2 px-5 py-2;
+}
+
+.input-text-error {
+	@apply border-red-600 text-red-500;
+}
+
+.text-error {
+	@apply text-xs text-red-500;
+}
+
+.confirm-modal-overlay {
+	@apply fixed inset-0 z-50 bg-black/50 backdrop-blur-sm;
+}
+
+.confirm-modal-container {
+	@apply fixed inset-0 z-50 flex items-center justify-center px-4;
+}
+
+.confirm-modal-subcontainer {
+	@apply w-full max-w-lg rounded-xl border border-[var(--color-outline)] bg-[var(--color-secondary)] p-6 shadow-xl;
+}
+
+.confirm-card-container {
+	@apply text-center sm:text-left;
+}
+
+.confirm-card-heading {
+	@apply text-lg font-semibold text-[var(--color-info)];
+}
+
+.confirm-card-paragraph {
+	@apply mt-2 text-sm text-[var(--color-info)];
+}
+
+.confirm-card-btn-container {
+	@apply mt-6 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2;
+}
+
+.confirm-card-cancel-btn {
+	@apply mt-2 inline-flex cursor-pointer justify-center rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-4 py-2 text-sm font-medium text-[var(--color-info)] hover:bg-[var(--color-primary)] sm:mt-0;
+}
+
+.confirm-card-delete-btn {
+	@apply inline-flex cursor-pointer justify-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700;
 }
