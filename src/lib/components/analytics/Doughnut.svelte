@@ -97,7 +97,7 @@
 </script>
 
 <!-- Canvas for the Doughnut chart -->
-<div class="h-80 w-fit">
+<div class=" hauto  w-fit">
 	{#if data}
 		<canvas bind:this={doughnutChart}></canvas>
 	{:else}
