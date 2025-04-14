@@ -5,7 +5,7 @@
 		formatMonth,
 		formatMonthLabel,
 		formatDateToDDMMYYYY
-	} from '../analytics-overview/components/functions';
+	} from '../basic/components/functions';
 
 	////////////////////////////////////////////////////////////////////////
 
@@ -137,7 +137,7 @@
 <div class=" user-graph-container">
 	<div class=" user-graph-wrapper">
 		<div class=" user-graph-card">
-			<div class="w-3/3 ">
+			<div class="w-3/3">
 				<div class=" user-graph-texts">
 					<h4 class=" user-graph-title">
 						{selectedGraph === 'daily'
@@ -206,6 +206,7 @@
 		</div>
 	</div>
 </div>
+
 <div class="generic-tables-conatiner">
 	<div class="text w-full">
 		<div class="relative flex flex-col items-center">
@@ -232,20 +233,20 @@
 			</thead>
 			<tbody>
 				{#each filteredData as row}
-					<tr class="  border transition">
-						<td class="  border p-2">
+					<tr class="border transition">
+						<td class="border p-2">
 							{formatMonthLabel(row.month)}
 						</td>
-						<td class="  border p-2">
+						<td class="border p-2">
 							{row.mostUsedFeature}
 						</td>
-						<td class="  border p-2">
+						<td class="border p-2">
 							{row.usageCount}
 						</td>
-						<td class="  border p-2">
+						<td class="border p-2">
 							{row.totalUsage}
 						</td>
-						<td class="  border p-2">
+						<td class="border p-2">
 							{row.percentage}
 						</td>
 					</tr>
@@ -258,7 +259,7 @@
 <div class="generic-tables-conatiner">
 	<div class="text my-5 w-full">
 		<div class="flex flex-col items-center">
-			<h4 class="my-4 text-left !text-lg font-semibold">Most Fired Events</h4>
+			<h4 class="my-2 text-left !text-lg font-semibold">Most Fired Events</h4>
 		</div>
 
 		<table class="my-3 table border">
@@ -271,10 +272,10 @@
 			<tbody>
 				{#each mostFiredEvents as event}
 					<tr class=" border transition">
-						<td class=" border p-2">
+						<td class="border p-2">
 							{event.EventName}
 						</td>
-						<td class=" border p-2">
+						<td class="border p-2">
 							{event.event_count}
 						</td>
 					</tr>
@@ -287,27 +288,27 @@
 <div class="  generic-table-conatiner">
 	<div class="text my-5 w-full">
 		<div class="flex flex-col items-center">
-			<h4 class=" my-8 text-left !text-lg font-semibold">Most Fired Events by Category</h4>
+			<h4 class=" my-4 text-left !text-lg font-semibold">Most Fired Events by Category</h4>
 		</div>
 
 		<table class="table border">
 			<thead>
 				<tr class=" border">
 					<th class=" border p-2 text-left text-sm font-semibold">Event Name</th>
-					<th class="  border p-2 text-left text-sm font-semibold">Event Category</th>
-					<th class="  border p-2 text-left text-sm font-semibold">Event Count</th>
+					<th class=" border p-2 text-left text-sm font-semibold">Event Category</th>
+					<th class=" border p-2 text-left text-sm font-semibold">Event Count</th>
 				</tr>
 			</thead>
 			<tbody>
 				{#each mostFiredEventsByEventCategory as event}
 					<tr class=" border transition">
-						<td class="    border p-2">
+						<td class="border p-2">
 							{event.EventCategory}
 						</td>
-						<td class=" border p-2">
+						<td class="border p-2">
 							{event.EventName}
 						</td>
-						<td class=" border p-2">
+						<td class="border p-2">
 							{event.event_count}
 						</td>
 					</tr>

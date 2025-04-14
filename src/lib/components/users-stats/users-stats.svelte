@@ -177,8 +177,12 @@
 			<thead>
 				<tr>
 					<th scope="col" class=" stats-heading text-[var(--color-info)]">Users</th>
-					<th scope="col" class=" px-2 text-left text-base lg:text-lg text-[var(--color-info)]">Count</th>
-					<th scope="col" class=" px-2 text-left text-base lg:text-lg text-[var(--color-info)]">Percentage</th>
+					<th scope="col" class=" px-2 text-left text-base text-[var(--color-info)] lg:text-lg"
+						>Count</th
+					>
+					<th scope="col" class=" px-2 text-left text-base text-[var(--color-info)] lg:text-lg"
+						>Percentage</th
+					>
 				</tr>
 			</thead>
 			<tbody>
@@ -271,7 +275,7 @@
 			<table class="min-w-full">
 				<thead>
 					<tr>
-						<th scope="col" class=" stats-heading  text-[var(--color-info)]">Gender</th>
+						<th scope="col" class=" stats-heading text-[var(--color-info)]">Gender</th>
 					</tr>
 				</thead>
 				<tbody>

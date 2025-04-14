@@ -79,41 +79,31 @@
 	$inspect('this is formatted result', result);
 </script>
 
-<div class=" my-8">
+<div class=" my-6">
 	<table class="flex justify-center">
-		<tbody class="">
+		<tbody class=" ">
 			<tr class="border text-sm">
-				<td class="  p-2 text-[var(--color-info)] md:px-8 xl:px-24">Tenant Name</td>
-				<td class=" p-2 text-[var(--color-info)] md:px-8 xl:px-24">American Heart Association</td>
-				<td class=" p-2 text-[var(--color-info)] md:px-8 xl:px-24"
-					>Name of the tenant/organization.</td
-				>
+				<td class=" table-data">Tenant Name</td>
+				<td class=" table-data">American Heart Association</td>
+				<td class=" table-data">Name of the tenant/organization.</td>
 			</tr>
 			<tr class="border text-sm">
-				<td class=" p-2 text-[var(--color-info)] md:px-8 xl:px-24">Start Date</td>
-				<td class=" p-2 text-[var(--color-info)] md:px-8 xl:px-24"
-					>{formatDate(data.basicStatistics.StartDate)}</td
-				>
-				<td class=" p-2 text-[var(--color-info)] md:px-8 xl:px-24"
-					>Start date of the analysis period.</td
-				>
+				<td class=" table-data">Start Date</td>
+				<td class=" table-data">{formatDate(data.basicStatistics.StartDate)}</td>
+				<td class=" table-data">Start date of the analysis period.</td>
 			</tr>
 			<tr class="border text-sm">
-				<td class=" p-2 text-[var(--color-info)] md:px-8 xl:px-24">End Date</td>
-				<td class=" p-2 text-[var(--color-info)] md:px-8 xl:px-24"
-					>{formatDate(data.basicStatistics.EndDate)}</td
-				>
-				<td class=" p-2 text-[var(--color-info)] md:px-8 xl:px-24"
-					>End date of the analysis period.</td
-				>
+				<td class=" table-data">End Date</td>
+				<td class=" table-data">{formatDate(data.basicStatistics.EndDate)}</td>
+				<td class=" table-data">End date of the analysis period.</td>
 			</tr>
 		</tbody>
 	</table>
 </div>
 
-<div class=" my-8">
-	<p class="basic-stat text-[var(--color-info)]">Basic Statistics</p>
-	<p class=" basic-des">
+<div class=" my-6">
+	<p class=" basic-stat">Basic Statistics</p>
+	<p class="basic-des">
 		This section provides an overview of the basic analytics related to the tenant, including the
 		total number of users, patient statistics, and registration/deregistration history.
 	</p>
@@ -122,39 +112,27 @@
 	<table class=" flex justify-center">
 		<tbody class=" ">
 			<tr class="border text-sm">
-				<td class="  p-2 text-[var(--color-info)] md:px-8 xl:px-23">Total Users</td>
-				<td class="  p-2 text-[var(--color-info)] md:px-8 xl:px-23"
-					>{data.basicStatistics.TotalUsers}</td
-				>
-				<td class="  p-2 text-[var(--color-info)] md:px-8 xl:px-23"
-					>Overall count of users associated with the tenant.</td
-				>
+				<td class="  basic-table-data">Total Users</td>
+				<td class="  basic-table-data">{data.basicStatistics.TotalUsers}</td>
+				<td class="  basic-table-data">Overall count of users associated with the tenant.</td>
 			</tr>
 			<tr class="border text-sm">
-				<td class=" p-2 text-[var(--color-info)] md:px-8 xl:px-23">Total Patients</td>
-				<td class=" p-2 text-[var(--color-info)] md:px-8 xl:px-23"
-					>{data.basicStatistics.TotalPatients}</td
-				>
-				<td class=" p-2 text-[var(--color-info)] md:px-8 xl:px-23"
-					>Total number of patients registered within the system.</td
-				>
+				<td class=" basic-table-data">Total Patients</td>
+				<td class=" basic-table-data">{data.basicStatistics.TotalPatients}</td>
+				<td class=" basic-table-data">Total number of patients registered within the system.</td>
 			</tr>
 			<tr class="border text-sm">
-				<td class="  p-2 text-[var(--color-info)] md:px-8 xl:px-23">Total Active Patients</td>
-				<td class=" p-2 text-[var(--color-info)] md:px-8 xl:px-23"
-					>{data.basicStatistics.TotalActivePatients}</td
-				>
-				<td class="  p-2 text-[var(--color-info)] md:px-8 xl:px-23"
-					>Total number of active (Not-deleted) patients.</td
-				>
+				<td class=" basic-table-data">Total Active Patients</td>
+				<td class=" basic-table-data">{data.basicStatistics.TotalActivePatients}</td>
+				<td class=" basic-table-data">Total number of active (Not-deleted) patients.</td>
 			</tr>
 		</tbody>
 	</table>
 </div>
 
-<div class=" my-8">
-	<p class="history-head text-[var(--color-info)]">Registration / Deregistration History</p>
-	<p class=" history-para text-[var(--color-info)]">
+<div class=" my-6">
+	<p class="history-head">Registration / Deregistration History</p>
+	<p class=" history-para">
 		Trends of how many users registered or deregistered from the system on a given day, in a given
 		week or a month.
 	</p>
@@ -162,7 +140,7 @@
 <div class=" patient-history-container">
 	<div class="grid-layout gap-8">
 		<div class="centered-flex gap-10">
-			<div class=" centered-flex overflow-x-auto shadow-xl sm:px-4 xl:mx-28">
+			<div class=" centered-flex overflow-x-auto shadow-xl sm:px-4">
 				<div class="w-full">
 					<div class="centered-flex">
 						<h4 class=" users-head">Patient Registration / Deregistration History</h4>
@@ -187,7 +165,7 @@
 		</div>
 	</div>
 	<!-- Wrapper to align both charts in a row on xl screens -->
-	<div class="my-10 flex flex-col xl:mx-28 xl:flex-row xl:gap-6">
+	<div class="mt-6 flex flex-col xl:flex-row xl:gap-12">
 		<!-- User Distribution By Roles -->
 		<div class="mx-auto w-86 border shadow-xl sm:px-4 md:w-3/3 xl:w-1/2">
 			<div class="centered-flex flex-col">

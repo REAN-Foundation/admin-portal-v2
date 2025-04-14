@@ -18,6 +18,8 @@
 	function toggleDropdown(tabName) {
 		openTab = openTab === tabName ? null : tabName;
 	}
+
+	let activeTab = $state('');
 </script>
 
 <div class="{showSidebar ? 'z-10 max-md:fixed' : 'hidden'} transition-all md:block">
@@ -26,8 +28,11 @@
 			{#each navData as navParent, idx}
 				{#if navParent.title === 'Analytics'}
 					<a
-						href={`/users/${userId}/analytics/analytics-overview`}
-						class="sidebar-item items-center"
+						href={`/users/${userId}/analytics/basic`}
+						class="sidebar-item items-center {activeTab === 'Analytics'
+							? 'variant-soft-secondary'
+							: ''}"
+						onclick={() => (activeTab = 'Analytics')}
 					>
 						<Icon icon={navParent.icon} class="mx-1 text-2xl" />
 						<span class="sidebar-text">{navParent.title}</span>
@@ -61,6 +66,7 @@
 										href={navItem.link}
 										class="sidebar-item items-center"
 										class:variant-soft-secondary={page.url.pathname === navItem.link}
+										onclick={() => (activeTab = navItem.title)}
 									>
 										{#if navItem.icon.endsWith('.png')}
 											<img src={navItem.icon} alt="" class="h-6 w-6 invert dark:filter-none" />
@@ -85,6 +91,7 @@
 												<a
 													href={childItem.link}
 													class:!variant-soft-secondary={page.url.pathname === childItem.link}
+													onclick={() => (activeTab = childItem.title)}
 												>
 													<Icon
 														icon={page.url.pathname === childItem.link

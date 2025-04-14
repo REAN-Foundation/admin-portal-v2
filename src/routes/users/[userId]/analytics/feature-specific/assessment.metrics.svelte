@@ -60,14 +60,14 @@
 	getSelectedAssessmentData();
 </script>
 
-<div class="mt-5 xl:ml-29">
+<div class="mt-5 ">
 	<h4 class="mb-2 text-lg font-semibold">Careplan Assessment Metrics</h4>
 	<p>
 		It shows the count of users who completed or are in progress with assessments, segmented by care
 		plan code.
 	</p>
 </div>
-<div class="my-5 ml-auto flex items-center xl:ml-29">
+<div class="my-5 ml-auto flex items-center">
 	<select
 		id="select-Plan"
 		bind:value={selectedCode}
@@ -79,8 +79,8 @@
 		{/each}
 	</select>
 </div>
-<div class=" xl:ml-29">
-	<table class="w-3/3 xl:w-3/4">
+<div class=" ">
+	<table class="w-3/3 ">
 		<thead class="">
 			<tr class="border-secondary-100 dark:border-surface-700 border">
 				{#each careplanTableHeaders as header}
@@ -124,16 +124,16 @@
 	</table>
 </div>
 
-<div class="mt-10 xl:ml-29">
+<div class="mt-10 ">
 	<h4 class="mb-2 text-lg font-semibold">Assessment Metrics</h4>
 	<p>Analyzes user responses to identify trends and patterns for each assessment question.</p>
 </div>
-<div class="my-5 ml-auto flex items-center xl:ml-29">
+<div class="my-5  flex items-center ">
 	<select
 		id="select-Plan"
 		bind:value={selectedAssessment}
 		onchange={getSelectedAssessmentData}
-		class="select border-secondary-100 dark:border-surface-700 mr-8 rounded border"
+		class="select border-secondary-100 dark:border-surface-700 mr-8 rounded border w-58 xl:w-1/2"
 	>
 		{#each uniqueTitles as title}
 			<option value={title}>{title}</option>
@@ -141,9 +141,8 @@
 	</select>
 </div>
 
-<div class=" xl:ml-29">
 	<table
-		class="border-secondary-100 dark:border-surface-700 w-3/3 min-w-full rounded-lg border xl:w-3/4"
+		class="border-secondary-100 dark:border-surface-700 w-3/3 min-w-full rounded-lg border"
 	>
 		<thead>
 			<tr class="border-secondary-100 dark:border-surface-700 border">
@@ -208,4 +207,4 @@
 			{/if}
 		</tbody>
 	</table>
-</div>
+

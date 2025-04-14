@@ -600,7 +600,7 @@
 		<!-- Quarterwise Task Completion Card -->
 		<div class="features-cards-layout ">
 			<div class="features-cards-wrapper">
-				<div class="status-card">
+				<div class="engagement-card">
 					<div class="flex flex-col items-center">
 						<h4 class="feature-card-heading">Quarterwise Task Completion Metrics</h4>
 						<p class="feature-card-des">

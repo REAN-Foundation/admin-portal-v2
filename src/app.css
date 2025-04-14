@@ -282,7 +282,7 @@
 }
 
 .main-content {
-	@apply flex-1 bg-[var(--color-secondary)] p-4 sm:ml-56;
+	@apply flex-1 bg-[var(--color-secondary)] p-5 sm:ml-56;
 }
 
 .status-card {
@@ -340,7 +340,7 @@
 }
 
 .card {
-	@apply w-full max-w-sm rounded-md border border-[var(--color-outline)] shadow-md;
+	@apply w-full max-w-sm rounded-md border border-[var(--color-outline)] shadow-lg;
 }
 
 .btn {
@@ -394,11 +394,11 @@
 }
 
 .shadow-bottom-right {
-	@apply rounded-lg border border-slate-300 bg-[var(--color-secondary)] shadow-xl;
+	@apply rounded-lg border border-slate-300 bg-[var(--color-secondary)] shadow-lg;
 }
 
 .stats-container {
-	@apply grid h-full w-full justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] px-4 py-4 shadow-xl sm:px-4;
+	@apply grid h-full w-full justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-6 shadow-xl;
 }
 
 /* thead,
@@ -416,7 +416,7 @@ tr {
 }
 
 .tabs-btn {
-	@apply rounded-lg border-[var(--color-outline)] px-4 py-2 transition w-full;
+	@apply w-full rounded-lg border-[var(--color-outline)] text-[var(--color-info)]  px-4 py-2 transition;
 }
 
 .variant-filled-secondary {
@@ -468,7 +468,7 @@ tr {
 } */
 
 .modal {
-	@apply mx-4 w-full rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] p-6 shadow-md sm:mx-auto sm:w-11/12 md:max-w-md lg:max-w-lg;
+	@apply mx-4 w-full rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] p-6 shadow-lg sm:mx-auto sm:w-11/12 md:max-w-md lg:max-w-lg;
 }
 
 .modal-title {
@@ -520,24 +520,29 @@ tr {
 	@apply px-3 text-left lg:text-lg;
 }
 /* analytics-overview */
-
+.table-data {
+	@apply p-2 text-[var(--color-info)] lg:px-13 xl:px-33;
+}
+.basic-table-data {
+	@apply p-2 text-[var(--color-info)] lg:px-13 xl:px-32;
+}
 .basic-stat {
-	@apply text-lg font-bold xl:ml-29 ;
+	@apply text-lg font-bold text-[var(--color-info)];
 }
 .basic-des {
-	@apply text-sm text-[var(--color-info)] md:text-base xl:ml-29  xl:w-3/4;
+	@apply text-sm text-[var(--color-info)] md:text-base xl:w-3/4;
 }
 .history-container {
 	@apply w-full overflow-x-auto px-4 pt-4 sm:px-4;
 }
 .history-head {
-	@apply text-left text-lg font-bold sm:pl-3 xl:ml-26;
+	@apply text-left text-lg font-bold text-[var(--color-info)];
 }
 .history-title {
 	@apply flex items-center justify-center text-2xl;
 }
 .history-para {
-	@apply pb-2 text-left text-sm sm:pl-3 xl:ml-26  xl:w-3/4;
+	@apply pb-2 text-left text-sm text-[var(--color-info)] md:text-base xl:w-3/4;
 }
 .not-available {
 	@apply mt-28 flex items-center justify-center text-xl leading-3;
@@ -549,41 +554,44 @@ tr {
 	@apply my-10 flex-col gap-10;
 }
 .active-users-container {
-	@apply flex w-3/4 items-center justify-center shadow-xl;
+	@apply flex w-3/4 items-center justify-center shadow-lg;
 }
 .patient-history-container {
 	@apply flex flex-col justify-center text-sm text-[var(--color-info)];
 }
 /* demographics */
 .demographics-para {
-	@apply my-2 py-3 pr-3 pl-4 text-left text-sm text-[var(--color-info)] sm:pl-3;
+	@apply my-6 text-left text-sm text-[var(--color-info)] md:text-base xl:w-3/4;
 }
 .distribution-title {
-	@apply py-6 pr-3 pl-4 text-left text-lg font-semibold sm:pl-3;
+	@apply mb-3 text-left text-lg font-semibold;
 }
 .distribution-container {
-	@apply flex flex-col justify-center text-sm text-[var(--color-info)];
+	@apply text-[var(--color-info)];
 }
 .data-not-available {
 	@apply text-center text-lg font-semibold;
 }
 .data-not-available-container {
-	@apply flex items-center justify-center border p-4 shadow-xl sm:px-4;
+	@apply flex items-center justify-center border p-4 shadow-lg sm:px-4;
 }
 .distribution-card-container {
-	@apply grid grid-cols-2 border sm:px-4 xl:grid-cols-3;
+	@apply mb-8 grid grid-cols-2 border sm:px-4;
 }
 .distribution-card-content {
-	@apply -mx-4 -my-2 mt-4 overflow-x-auto sm:-mx-6 lg:-mx-8;
+	@apply overflow-x-auto;
 }
 .card-header {
-	@apply w-[30%] border py-3 pr-3 pl-4 text-left text-sm font-semibold sm:pl-3;
+	@apply w-[30%] border border-[var(--color-outline)] py-3 pr-3 pl-4 text-left text-sm font-semibold sm:pl-3;
 }
 .chart-details {
-	@apply border px-3 py-2 text-sm whitespace-nowrap;
+	@apply border border-[var(--color-outline)] px-3 py-2 text-sm;
+}
+.chart-container {
+	@apply flex w-full justify-center pt-6 xl:w-fit xl:justify-end xl:pt-0 xl:pl-6;
 }
 .chart-view {
-	@apply col-span-1 my-4 ml-36 flex justify-center p-4 md:ml-72 lg:ml-86 xl:ml-0;
+	@apply my-3 flex w-full max-w-xs justify-center sm:max-w-sm md:max-w-md lg:max-w-lg xl:my-0;
 }
 
 /*  generic-engagement */
@@ -597,7 +605,7 @@ tr {
 	@apply h-[400px] w-[400px] p-4;
 }
 .user-graph-card {
-	@apply flex w-full items-center justify-center overflow-x-auto rounded-lg p-4 shadow-xl;
+	@apply flex w-full items-center justify-center overflow-x-auto rounded-lg p-4 shadow-lg;
 }
 .user-graph-texts {
 	@apply flex flex-col items-center text-sm text-[var(--color-info)];
@@ -612,7 +620,7 @@ tr {
 	@apply mt-28 flex w-full items-center justify-center text-xl leading-3;
 }
 .generic-tables-conatiner {
-	@apply mt-8 flex w-full !min-w-full items-center justify-center overflow-hidden overflow-x-auto  ;
+	@apply mt-8 flex w-full !min-w-full items-center justify-center overflow-hidden overflow-x-auto;
 }
 .select-container {
 	@apply absolute right-0 my-10 flex items-center;
@@ -633,16 +641,16 @@ tr {
 /* feature-loginsession */
 
 .access-card {
-	@apply my-5 flex  max-w-sm flex-col justify-center rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-6 shadow-md sm:px-4 md:my-0 md:max-w-lg 2xl:max-w-xl;
+	@apply my-5 flex max-w-sm flex-col justify-center rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-8 shadow-lg sm:px-4 md:my-0 md:max-w-lg 2xl:max-w-xl;
 }
 .engagement-card {
-	@apply flex max-w-sm flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-6 shadow-md md:max-w-lg 2xl:max-w-xl;
+	@apply flex max-w-sm flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-8 shadow-lg md:max-w-lg 2xl:max-w-xl;
 }
 .retention-card {
-	@apply flex max-w-sm flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-6 shadow-md md:max-w-lg 2xl:max-w-xl;
+	@apply flex max-w-sm flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-6 shadow-lg md:max-w-lg 2xl:max-w-xl;
 }
 .features-cards-layout {
-	@apply mx-auto grid grid-cols-1 justify-center  gap-8 xl:gap-14 rounded-lg py-4 xl:py-8 xl:grid xl:grid-cols-2;
+	@apply mx-auto grid grid-cols-1 justify-center gap-8 rounded-lg md:mb-12 xl:grid xl:grid-cols-2 xl:gap-26 ;
 }
 .features-cards-wrapper {
 	@apply h-full w-full items-center gap-10 md:flex;
@@ -670,7 +678,7 @@ tr {
 }
 
 .feature-cards {
-	@apply my-5 flex max-w-[95%] flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-md md:my-0 md:max-w-lg;
+	@apply my-5 flex max-w-[95%] flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-lg md:my-0 md:max-w-lg;
 }
 
 /* Health system */
@@ -719,9 +727,7 @@ tr {
 } */
 
 .health-system-input {
-
 	@apply w-full rounded-lg border border-gray-200 px-2 py-2 outline-[var(--color-active)];
-
 }
 
 .breadcrumbs {

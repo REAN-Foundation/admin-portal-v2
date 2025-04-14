@@ -28,7 +28,7 @@
 				datasets: [
 					{
 						data: firstDataSource,
-						backgroundColor: '#68d33d',
+						backgroundColor: '#31b31c',
 						borderColor: '#5EC009',
 						borderWidth: 1,
 						label: 'Patient Registration Moth',
@@ -39,7 +39,7 @@
 					},
 					{
 						data: secondDataSource,
-						backgroundColor: '#f86565',
+						backgroundColor: '#e72212',
 						borderColor: '#5EC1E9',
 						borderWidth: 1,
 						label: 'Patient Deregistration Month',
