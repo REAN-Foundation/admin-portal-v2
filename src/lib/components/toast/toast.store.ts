@@ -22,12 +22,20 @@ export const dismissToast = (id) => {
 };
 
 export const toastMessage = (response = null) => {
-  const { HttpCode, Message } = response;
-  const isSuccess = HttpCode === 201 || HttpCode === 200;
+    if (!response) {
+        addToast({
+          message: 'Something went wrong',
+          type: 'error',
+          timeout: 3000
+        });
+        return;
+      }
+    const { HttpCode, Message } = response;
+    const isSuccess = HttpCode === 201 || HttpCode === 200;
 
-  addToast({
-      message: Message || 'Something went wrong',
-      type: isSuccess ? 'success' : 'error',
-      timeout: 3000
-  });
+    addToast({
+        message: Message || 'Something went wrong',
+        type: isSuccess ? 'success' : 'error',
+        timeout: 3000
+    });
 };
