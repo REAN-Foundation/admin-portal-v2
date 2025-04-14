@@ -2,32 +2,77 @@
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
-	import InputChip from '$lib/components/input-chips.svelte';
-	import { enhance } from '$app/forms';
+	import { createOrUpdateSchema } from '$lib/validation/health.system.schema.js';
+	import { toastMessage } from '$lib/components/toast/toast.store.js';
+	import type { HealthSystemCreateModel } from '$lib/types/health.system.types.js';
+	import { goto } from '$app/navigation';
 
-	////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////
 
-	// export let data;
-	// export let form;
-	let { data, form } = $props();
+    let { data, form } = $props();
+
+    let errors: Record<string, string> = $state({});
+    let healthSystemName = $state(undefined);
+    let tags = $state(undefined);
+    let promise = $state();
+
 	data.title = 'Hospital Systems-Health Systems Create';
 	const userId = page.params.userId;
 	const createRoute = `/users/${userId}/health-systems/create`;
 	const healthSystemsRoute = `/users/${userId}/health-systems`;
-	let isSubmitting = $state(false);
 
 	const breadCrumbs = [
 		{ name: 'Health Systems', path: healthSystemsRoute },
 		{ name: 'Create', path: createRoute }
 	];
 
-	function handleSubmit() {
-		isSubmitting = true;
+	const handleSubmit = async (event: Event) => {
+        try {
+            event.preventDefault();
+            errors = {}
+
+            const healthSystemCreateModel: HealthSystemCreateModel  = {
+                Name: healthSystemName,
+                Tags: tags
+            }
+
+            const validationResult = createOrUpdateSchema.safeParse(healthSystemCreateModel);
+
+            if (!validationResult.success) {
+                errors = Object.fromEntries(
+                    Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+                        key,
+                        val?.[0] || 'This field is required'
+                    ])
+                );
+                return;
+            }
+
+            const res = await fetch(`/api/server/health-systems`, {
+                method: 'POST',
+                body: JSON.stringify(healthSystemCreateModel),
+                headers: { 'content-type': 'application/json' } 
+            })
+
+            const response = await res.json();
+
+            if (response.HttpCode === 201 || response.HttpCode === 200) {
+                toastMessage(response);
+                goto(`${healthSystemsRoute}/${response?.Data?.HealthSystem?.id}/view`);
+                return;
+            }
+
+            if (response.Errors) {
+                errors = response?.Errors || {};
+            } else {
+                toastMessage(response);
+            }
+        } catch (error) {
+            toastMessage();
+        }
+        
 	}
 
-	if (form) {
-		isSubmitting = false;
-	}
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -36,10 +81,7 @@
 	<div class="mx-auto">
 		<div class="health-system-table-container">
 			<form
-				method="post"
-				action="?/createHealthSystemAction"
-				use:enhance
-				onsubmit={handleSubmit}
+				onsubmit={async (event) => promise = handleSubmit(event)}
 			>
 				<table class="health-system-table">
 					<thead class="">
@@ -63,10 +105,10 @@
 										: ''}"
 									name="healthSystemName"
 									placeholder="Enter name here..."
-									required
+                                    bind:value={healthSystemName}
 								/>
-								{#if form?.errors?.healthSystemName}
-									<p class="text-error-500 text-xs">{form?.errors?.healthSystemName[0]}</p>
+								{#if errors?.Name}
+									<p class="text-error-500 text-xs">{errors?.Name}</p>
 								{/if}
 							</td>
 						</tr>
@@ -79,13 +121,23 @@
 					</tbody>
 				</table>
 				<div class="button-container">
-					<button
-						type="submit"
-						class="health-system-btn variant-soft-secondary"
-						disabled={isSubmitting}
-					>
-						{isSubmitting ? 'Submitting...' : 'Submit'}
-					</button>
+                    {#await promise }
+                        <button
+                            type="submit"
+                            class="health-system-btn variant-soft-secondary"
+                            disabled
+                            >
+                            Submiting
+                        </button>
+                    {:then data} 
+                        <button
+                        type="submit"
+                        class="health-system-btn variant-soft-secondary"
+                        >
+                        Submit
+                        </button>
+                    {/await}
+					
 				</div>
 			</form>
 		</div>

@@ -3,46 +3,86 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-	import { enhance } from '$app/forms';
-	import InputChip from '$lib/components/input-chips.svelte';
+	import { toastMessage } from '$lib/components/toast/toast.store';
+	import type { HealthSystemUpdateModel } from '$lib/types/health.system.types';
+	import { createOrUpdateSchema } from '$lib/validation/health.system.schema';
+	import { goto } from '$app/navigation';
+	
+	///////////////////////////////////////////////////////////////////////////
 
-	//////////////////////////////////////////////////////////////////////
+    let { data, form }: { data: PageServerData; form: any } = $props();
+
+    let healthSystemName = $state(data.healthSystem.Name);
+	let tags = $state(data.healthSystem.Tags);
+    let errors: Record<string, string> = $state({});
+    let promise = $state();
 
 	const userId = page.params.userId;
 	var healthSystemId = page.params.id;
+
 	const editRoute = `/users/${userId}/health-systems/${healthSystemId}/edit`;
 	const viewRoute = `/users/${userId}/health-systems/${healthSystemId}/view`;
 	const healthSystemsRoute = `/users/${userId}/health-systems`;
-
-	// export let form;
-	// export let data: PageServerData;
-	let { data, form }: { data: PageServerData; form: any } = $props();
-	let healthSystemName = $state(data.healthSystem.Name);
-	let tags = $state(data.healthSystem.Tags);
-	//Original data
-	let _healthSystemName = $derived(healthSystemName);
-	let _healthSystemId = healthSystemId;
-	let _tags = $derived(JSON.stringify(tags));
-	let isSubmitting = $state(false);
-
-	function handleReset() {
-		healthSystemName = _healthSystemName;
-		healthSystemId = _healthSystemId;
-		tags = JSON.parse(_tags);
-	}
 
 	const breadCrumbs = [
 		{ name: 'Health Systems', path: healthSystemsRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
-	function handleSubmit() {
-		isSubmitting = true;
+    const handleReset = () => {
+		healthSystemName = data?.healthSystem?.Name;
+		healthSystemId = page.params.id;;
+		tags = data?.healthSystem?.Tags;
+        errors = {};
 	}
 
-	if (form) {
-		isSubmitting = false;
+	const handleSubmit = async (event: Event) => {
+        try {
+            event.preventDefault();
+            errors = {}
+
+            const healthSystemUpdateModel: HealthSystemUpdateModel  = {
+                Name: healthSystemName,
+                Tags: tags
+            }
+
+            const validationResult = createOrUpdateSchema.safeParse(healthSystemUpdateModel);
+
+            if (!validationResult.success) {
+                errors = Object.fromEntries(
+                    Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+                        key,
+                        val?.[0] || 'This field is required'
+                    ])
+                );
+                return;
+            }
+
+            const res = await fetch(`/api/server/health-systems/${healthSystemId}`, {
+                method: 'PUT',
+                body: JSON.stringify(healthSystemUpdateModel),
+                headers: { 'content-type': 'application/json' } 
+            })
+
+            const response = await res.json();
+            
+            if (response.HttpCode === 201 || response.HttpCode === 200) {
+                toastMessage(response);
+                goto(`${healthSystemsRoute}/${response?.Data?.HealthSystem?.id}/view`);
+                return;
+            }
+
+            if (response.Errors) {
+                errors = response?.Errors || {};
+            } else {
+                toastMessage(response);
+            }
+
+        } catch (error) {
+            toastMessage();
+        }
 	}
+
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -50,7 +90,7 @@
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container">
-			<form method="post" action="?/updateHealthSystemAction" use:enhance onsubmit={handleSubmit}>
+			<form onsubmit={(event) => promise = handleSubmit(event)}>
 				<table class="health-system-table">
 					<thead>
 						<tr>
@@ -74,10 +114,9 @@
 									name="healthSystemName"
 									placeholder="Enter name here..."
 									bind:value={healthSystemName}
-									required
 								/>
-								{#if form?.errors?.healthSystemName}
-									<p class="text-error-500 text-xs">{form?.errors?.healthSystemName[0]}</p>
+								{#if errors?.Name}
+									<p class="text-error-500 text-xs">{errors?.Name}</p>
 								{/if}
 							</td>
 						</tr>
@@ -95,13 +134,22 @@
 						onclick={handleReset}
 						class="health-system-btn variant-soft-secondary">Reset</button
 					>
-					<button
-						type="submit"
-						class="health-system-btn variant-soft-secondary"
-						disabled={isSubmitting}
-					>
-						{isSubmitting ? 'Submitting...' : 'Submit'}
-					</button>
+                    {#await promise }
+                        <button
+                            type="submit"
+                            class="health-system-btn variant-soft-secondary"
+                            disabled
+                        >
+                            Submiting
+                        </button>
+                    {:then data} 
+                        <button
+                        type="submit"
+                        class="health-system-btn variant-soft-secondary"
+                        >
+                        Submit
+                        </button>
+                    {/await}
 				</div>
 			</form>
 		</div>
