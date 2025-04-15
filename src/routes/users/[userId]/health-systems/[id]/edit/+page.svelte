@@ -109,7 +109,7 @@
 								<input
 									type="text"
 									class="health-system-input {form?.errors?.healthSystemName
-										? 'border-error-300 text-error-500'
+										? 'input-text-error'
 										: ''}"
 									name="healthSystemName"
 									placeholder="Enter name here..."

@@ -735,7 +735,7 @@ tr {
 }
 
 .health-system-search-border {
-	@apply border-b-1 border-[var(--color-outline)];
+	@apply border-b-1 border-[var(--color-outline)] px-5 py-4;
 }
 
 .close-btn {

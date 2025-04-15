@@ -6,6 +6,7 @@
 
 	let { showSidebar = $bindable(), userId, tenantSettings, userRole } = $props();
 
+	let activeTab = $state('');
 	const navData = buildSidebarMenu(userId, tenantSettings, userRole);
 	console.log('Tenant Setting', tenantSettings);
 
@@ -19,7 +20,6 @@
 		openTab = openTab === tabName ? null : tabName;
 	}
 
-	let activeTab = $state('');
 </script>
 
 <div class="{showSidebar ? 'z-10 max-md:fixed' : 'hidden'} transition-all md:block">

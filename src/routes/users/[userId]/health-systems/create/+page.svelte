@@ -84,7 +84,7 @@
 				onsubmit={async (event) => promise = handleSubmit(event)}
 			>
 				<table class="health-system-table">
-					<thead class="">
+					<thead>
 						<tr>
 							<th>Create Health System</th>
 							<th class="text-end">
@@ -94,14 +94,14 @@
 							</th>
 						</tr>
 					</thead>
-					<tbody class="">
-						<tr class="">
-							<td>Name *</td>
+					<tbody>
+						<tr>
+							<td>Name <span class="text-red-700">*</span></td>
 							<td>
 								<input
 									type="text"
 									class="health-system-input {form?.errors?.healthSystemName
-										? 'border-error-300 text-error-500'
+										? 'input-text-error'
 										: ''}"
 									name="healthSystemName"
 									placeholder="Enter name here..."

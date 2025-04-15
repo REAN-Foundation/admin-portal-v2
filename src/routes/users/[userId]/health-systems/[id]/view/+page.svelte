@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
 
 	////////////////////////////////////////////////////////
 
-	const userId = $page.params.userId;
-	var healthSystemId = $page.params.id;
+	const userId = page.params.userId;
+	var healthSystemId = page.params.id;
 	const editRoute = `/users/${userId}/health-systems/${healthSystemId}/edit`;
 	const viewRoute = `/users/${userId}/health-systems/${healthSystemId}/view`;
 	const healthSystemRoute = `/users/${userId}/health-systems`;
