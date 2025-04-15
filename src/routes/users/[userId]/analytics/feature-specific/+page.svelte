@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Graph from './graph.svelte';
 	import { onMount } from 'svelte';
-	import { formatMonth, generateMonthSequence } from '../analytics-overview/components/functions';
+	import { formatMonth, generateMonthSequence } from '../basic/components/functions';
 	import AssessmentMetrics from './assessment.metrics.svelte';
 	// //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -162,13 +162,16 @@
 </script>
 
 <!-- <div class="mt-4 mr-2 sm:mr-8 flex flex-wrap gap-2 sm:gap-4 justify-center md:justify-start"> -->
-<div class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:flex lg:gap-2">
+<div class="my-6 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:flex lg:gap-6">
 	{#each features as feature}
 		<button
 			onclick={() => setActiveFeature(feature)}
-			class="tabs-btn {activeFeature === feature
-				? 'variant-filled-secondary'
-				: 'border'} hover:variant-soft-secondary"
+			class="tabs-btn
+					{activeFeature === feature ? 'border outline-2 ' : 'border border-transparent'} 
+					"
+			style={activeFeature === feature
+				? ' border-color: var(--color-active); outline-color: var(--color-outline);'
+				: ''}
 		>
 			{feature}
 		</button>

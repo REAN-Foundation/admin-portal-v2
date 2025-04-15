@@ -18,6 +18,8 @@
 	function toggleDropdown(tabName) {
 		openTab = openTab === tabName ? null : tabName;
 	}
+
+	let activeTab = $state('');
 </script>
 
 <div class="{showSidebar ? 'z-10 max-md:fixed' : 'hidden'} transition-all md:block">
@@ -26,20 +28,32 @@
 			{#each navData as navParent, idx}
 				{#if navParent.title === 'Analytics'}
 					<a
-						href={`/users/${userId}/analytics`}
-						class="sidebar-item items-center"
+						href={`/users/${userId}/analytics/basic`}
+						class="sidebar-item items-center {activeTab === 'Analytics'
+							? 'variant-soft-secondary'
+							: ''}"
+						onclick={() => (activeTab = 'Analytics')}
 					>
 						<Icon icon={navParent.icon} class="mx-1 text-2xl" />
 						<span class="sidebar-text">{navParent.title}</span>
 					</a>
 				{:else}
 					<button
-						class="sidebar-item items-center"
+						class="sidebar-item flex w-full items-center justify-between"
 						onclick={() => toggleDropdown(navParent.title)}
 					>
-						<Icon icon={navParent.icon} class="mx-1 text-2xl" />
-						<span class="sidebar-text">{navParent.title}</span>
-						<Icon icon="gridicons:dropdown" width="16" height="16" class="h-5 w-5" />
+						<div class="flex items-center gap-2">
+							<Icon icon={navParent.icon} class="text-2xl" />
+							<span class="sidebar-text">{navParent.title}</span>
+						</div>
+
+						<!-- Right-aligned dropdown icon with rotation -->
+						<span
+							class="transition-transform duration-300"
+							class:rotate-180={openTab === navParent.title}
+						>
+							<Icon icon="icon-park-outline:down" width="16" height="16" class="h-5 w-5" />
+						</span>
 					</button>
 				{/if}
 
@@ -52,6 +66,7 @@
 										href={navItem.link}
 										class="sidebar-item items-center"
 										class:variant-soft-secondary={page.url.pathname === navItem.link}
+										onclick={() => (activeTab = navItem.title)}
 									>
 										{#if navItem.icon.endsWith('.png')}
 											<img src={navItem.icon} alt="" class="h-6 w-6 invert dark:filter-none" />
@@ -76,6 +91,7 @@
 												<a
 													href={childItem.link}
 													class:!variant-soft-secondary={page.url.pathname === childItem.link}
+													onclick={() => (activeTab = childItem.title)}
 												>
 													<Icon
 														icon={page.url.pathname === childItem.link
