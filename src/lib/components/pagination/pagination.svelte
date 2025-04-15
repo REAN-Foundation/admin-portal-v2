@@ -44,7 +44,7 @@
 		</button>
 
 		<span class=" text-xs text-gray-500 dark:text-gray-400">
-			{`${paginationSettings.page + 1}-${(((paginationSettings.page + 1) * paginationSettings.limit) >= paginationSettings.size ? paginationSettings.size : (paginationSettings.page + 1) * paginationSettings.limit)}`} of {paginationSettings.size}
+			{`${(paginationSettings.page * paginationSettings.limit) + 1}-${(((paginationSettings.page + 1) * paginationSettings.limit) >= paginationSettings.size ? paginationSettings.size : (paginationSettings.page + 1) * paginationSettings.limit)}`} of {paginationSettings.size}
 		</span>
 		<button
 			onclick={() =>{
