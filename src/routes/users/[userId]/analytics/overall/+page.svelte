@@ -207,113 +207,108 @@
 	</div>
 </div>
 
-<div class="generic-tables-conatiner">
-	<div class="text w-full">
-		<div class="relative flex flex-col items-center">
-			<h4 class="generic-table-heading">Commonly Visited Features</h4>
-			<div class=" select-container">
-				<label for="year-select" class="mr-2">Year: </label>
-				<select id="year-select" bind:value={selectedYear} class="select rounded border">
-					{#each years as year}
-						<option value={year}>{year}</option>
-					{/each}
-				</select>
-			</div>
-		</div>
-
-		<table class=" w-full rounded-lg border">
-			<thead>
-				<tr class=" border">
-					{#each tableHeaders as header}
-						<th class=" table-heading border p-1 xl:p-2">
-							{header}
-						</th>
-					{/each}
-				</tr>
-			</thead>
-			<tbody>
-				{#each filteredData as row}
-					<tr class="border transition">
-						<td class="border p-2">
-							{formatMonthLabel(row.month)}
-						</td>
-						<td class="border p-2">
-							{row.mostUsedFeature}
-						</td>
-						<td class="border p-2">
-							{row.usageCount}
-						</td>
-						<td class="border p-2">
-							{row.totalUsage}
-						</td>
-						<td class="border p-2">
-							{row.percentage}
-						</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
+<div class="mt-6 mb-3 flex items-center justify-between">
+	<h4 class="text-lg font-semibold text-[var(--color-info)]">Commonly Visited Features</h4>
+	<div class="flex items-center gap-2 px-3 py-2 text-[var(--color-info)]">
+		<label for="year" class="text-base">Year</label>
+		<select id="year" bind:value={selectedYear} class="rounded border px-2 py-1 text-base">
+			{#each years as year}
+				<option value={year}>{year}</option>
+			{/each}
+		</select>
 	</div>
 </div>
 
-<div class="generic-tables-conatiner">
-	<div class="text my-5 w-full">
-		<div class="flex flex-col items-center">
-			<h4 class="my-2 text-left !text-lg font-semibold">Most Fired Events</h4>
-		</div>
-
-		<table class="my-3 table border">
-			<thead>
-				<tr class="border">
-					<th class="border p-2 text-left text-sm font-semibold">Event Name</th>
-					<th class="p-2 text-left text-sm font-semibold">Event Count</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each mostFiredEvents as event}
-					<tr class=" border transition">
-						<td class="border p-2">
-							{event.EventName}
-						</td>
-						<td class="border p-2">
-							{event.event_count}
-						</td>
-					</tr>
+<div class=" overflow-x-auto rounded-lg border border-[var(--color-outline)] shadow-lg">
+	<table class="w-full table-fixed text-[var(--color-info)]">
+		<thead>
+			<tr class="bg-[var(--color-accent)]">
+				{#each tableHeaders as header}
+					<th class="w-1/4 px-6 py-2 text-left text-sm font-normal md:text-base">
+						{header}
+					</th>
 				{/each}
-			</tbody>
-		</table>
-	</div>
+			</tr>
+		</thead>
+		<tbody class="">
+			{#each filteredData as row}
+				<tr>
+					<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
+						{formatMonthLabel(row.month)}
+					</td>
+					<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
+						{row.mostUsedFeature}
+					</td>
+					<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
+						{row.usageCount}
+					</td>
+					<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
+						{row.totalUsage}
+					</td>
+					<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
+						{row.percentage}
+					</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
 </div>
 
-<div class="  generic-table-conatiner">
-	<div class="text my-5 w-full">
-		<div class="flex flex-col items-center">
-			<h4 class=" my-4 text-left !text-lg font-semibold">Most Fired Events by Category</h4>
-		</div>
+<h4 class="mt-9 mb-3 text-lg font-semibold text-[var(--color-info)]">Most Fired Events</h4>
 
-		<table class="table border">
-			<thead>
-				<tr class=" border">
-					<th class=" border p-2 text-left text-sm font-semibold">Event Name</th>
-					<th class=" border p-2 text-left text-sm font-semibold">Event Category</th>
-					<th class=" border p-2 text-left text-sm font-semibold">Event Count</th>
+<div class="overflow-x-auto rounded-lg border border-[var(--color-outline)] shadow-lg">
+	<table class="w-full table-auto text-[var(--color-info)]">
+		<thead class="bg-[var(--color-accent)]">
+			<tr>
+				<th class="px-6 py-2 text-left text-sm font-normal whitespace-nowrap md:text-base"
+					>Event Name</th
+				>
+				<th class="px-6 py-2 text-left text-sm font-normal md:text-base xl:w-[80%]">Event Count</th>
+			</tr>
+		</thead>
+		<tbody>
+			{#each mostFiredEvents.slice(0, 15) as event}
+				<tr>
+					<td
+						class="border-b border-[var(--color-outline)] px-6 py-2 text-xs whitespace-nowrap md:text-sm"
+						>{event.EventName}</td
+					>
+					<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm"
+						>{event.event_count}</td
+					>
 				</tr>
-			</thead>
-			<tbody>
-				{#each mostFiredEventsByEventCategory as event}
-					<tr class=" border transition">
-						<td class="border p-2">
-							{event.EventCategory}
-						</td>
-						<td class="border p-2">
-							{event.EventName}
-						</td>
-						<td class="border p-2">
-							{event.event_count}
-						</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
+			{/each}
+		</tbody>
+	</table>
+</div>
+
+<h4 class="mt-9 mb-3 text-lg font-semibold text-[var(--color-info)]">
+	Most Fired Events by Category
+</h4>
+
+<div class="overflow-x-auto rounded-lg border border-[var(--color-outline)] shadow-lg">
+	<table class="w-full table-fixed text-[var(--color-info)]">
+		<thead class="bg-[var(--color-accent)]">
+			<tr class="">
+				<th class=" px-6 py-2 text-left text-sm font-normal md:text-base">Event Name</th>
+				<th class=" px-6 py-2 text-left text-sm font-normal md:text-base">Event Category</th>
+				<th class="px-6 py-2 text-left text-sm font-normal md:text-base xl:w-[60%]">Event Count</th>
+			</tr>
+		</thead>
+		<tbody>
+			{#each mostFiredEventsByEventCategory.slice(0, 15) as event}
+				<tr>
+					<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm"
+						>{event.EventCategory}</td
+					>
+					<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm"
+						>{event.EventName}</td
+					>
+					<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm"
+						>{event.event_count}</td
+					>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
 </div>

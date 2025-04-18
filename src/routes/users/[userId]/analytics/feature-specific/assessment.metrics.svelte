@@ -60,9 +60,9 @@
 	getSelectedAssessmentData();
 </script>
 
-<div class="mt-5 ">
-	<h4 class="mb-2 text-lg font-semibold">Careplan Assessment Metrics</h4>
-	<p>
+<div class="mt-5">
+	<h4 class="mb-2 text-lg font-semibold text-[var(--color-info)]">Careplan Assessment Metrics</h4>
+	<p class="text-[var(--color-info)]">
 		It shows the count of users who completed or are in progress with assessments, segmented by care
 		plan code.
 	</p>
@@ -79,13 +79,13 @@
 		{/each}
 	</select>
 </div>
-<div class=" ">
-	<table class="w-3/3 ">
-		<thead class="">
-			<tr class="border-secondary-100 dark:border-surface-700 border">
+<div class="mb-6 overflow-x-auto rounded-lg border border-[var(--color-outline)] shadow-lg">
+	<table class=" w-full table-auto text-[var(--color-info)]">
+		<thead class="bg-[var(--color-accent)]">
+			<tr>
 				{#each careplanTableHeaders as header}
 					<th
-						class="border-secondary-100 dark:border-surface-700 border p-2 text-left text-sm font-semibold sm:pl-3"
+						class=" border-b border-[var(--color-outline)] px-6 py-2 text-left text-sm font-normal whitespace-nowrap md:text-base xl:w-[20%]"
 					>
 						{header}
 					</th>
@@ -96,15 +96,13 @@
 			{#if selectedCareplanAssessmentData.length > 0}
 				{#each selectedCareplanAssessmentData as row}
 					<tr
-						class="hover:bg-secondary-50 dark:hover:bg-surface-800 border-secondary-100 dark:border-surface-700 border transition"
+						class="border-b border-[var(--color-outline)] px-6 py-2 text-xs whitespace-nowrap md:text-sm"
 					>
-						<td
-							class="border-secondary-100 dark:border-surface-700 border px-3 py-2 text-sm whitespace-nowrap"
-						>
+						<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
 							{row.completed_assessment_count}
 						</td>
 						<td
-							class="border-secondary-100 dark:border-surface-700 border px-3 py-2 text-sm whitespace-nowrap"
+							class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm xl:w-[80%]"
 						>
 							{row.in_progress_assessment_count}
 						</td>
@@ -124,32 +122,30 @@
 	</table>
 </div>
 
-<div class="mt-10 ">
-	<h4 class="mb-2 text-lg font-semibold">Assessment Metrics</h4>
-	<p>Analyzes user responses to identify trends and patterns for each assessment question.</p>
+<div class="my-6">
+	<h4 class=" text-lg font-semibold text-[var(--color-info)]">Assessment Metrics</h4>
+	<p class="text-[var(--color-info)]">
+		Analyzes user responses to identify trends and patterns for each assessment question.
+	</p>
 </div>
-<div class="my-5  flex items-center ">
+<div class="my-6 flex flex-col items-center sm:flex-row">
 	<select
 		id="select-Plan"
 		bind:value={selectedAssessment}
 		onchange={getSelectedAssessmentData}
-		class="select border-secondary-100 dark:border-surface-700 mr-8 rounded border w-58 xl:w-1/2"
+		class="select border-secondary-100 dark:border-surface-700 w-full rounded border px-2 py-2 sm:w-1/2"
 	>
 		{#each uniqueTitles as title}
 			<option value={title}>{title}</option>
 		{/each}
 	</select>
 </div>
-
-	<table
-		class="border-secondary-100 dark:border-surface-700 w-3/3 min-w-full rounded-lg border"
-	>
-		<thead>
-			<tr class="border-secondary-100 dark:border-surface-700 border">
+<div class="overflow-x-auto rounded-lg border border-[var(--color-outline)] shadow-lg">
+	<table class="min-w-full table-auto">
+ 		<thead class="bg-[var(--color-accent)]">
+			<tr>
 				{#each assessmentTableHeaders as header}
-					<th
-						class="border-secondary-100 dark:border-surface-700 border p-2 text-left text-sm font-semibold"
-					>
+					<th class="px-2 py-2 md:px-6 text-left border-b border-[var(--color-outline)] font-normal  text-sm md:text-base ">
 						{header}
 					</th>
 				{/each}
@@ -158,12 +154,8 @@
 		<tbody>
 			{#if selectedAssessmentData.length > 0}
 				{#each selectedAssessmentData as row}
-					<tr
-						class="hover:bg-secondary-50 dark:hover:bg-surface-800 border-secondary-100 dark:border-surface-700 border transition"
-					>
-						<td
-							class="border-secondary-100 dark:border-surface-700 border p-2 text-sm whitespace-nowrap"
-						>
+					<tr>
+						<td class="px-2 py-2  md:px-6 md:text-sm text-xs border-b border-[var(--color-outline)] ">
 							<Tooltip text={row.node_title || 'Not specified'}>
 								<span class="cursor-pointer">
 									{row.node_title !== null
@@ -172,14 +164,10 @@
 								</span>
 							</Tooltip>
 						</td>
-						<td
-							class="border-secondary-100 dark:border-surface-700 border p-2 text-sm whitespace-nowrap"
-						>
+						<td class="px-2 py-2  md:px-6 md:text-sm text-xs border-b border-[var(--color-outline)] xl:whitespace-nowrap ">
 							{row.query_response_type}
 						</td>
-						<td
-							class="border-secondary-100 dark:border-surface-700 border p-2 text-sm whitespace-nowrap"
-						>
+						<td class="px-2 py-2 md:px-6 md:text-sm text-xs border-b border-[var(--color-outline)] xl:whitespace-nowrap">
 							<Tooltip text={row.response_option_text || 'Not specified'}>
 								<span class="cursor-pointer">
 									{row.response_option_text !== null
@@ -188,23 +176,18 @@
 								</span>
 							</Tooltip>
 						</td>
-						<td
-							class="border-secondary-100 dark:border-surface-700 border p-2 text-sm whitespace-nowrap"
-						>
+						<td class="px-2 py-2 md:px-6 md:text-sm text-xs border-b border-[var(--color-outline)] xl:whitespace-nowrap">
 							{row.response_count}
 						</td>
 					</tr>
 				{/each}
 			{:else}
 				<tr>
-					<td
-						colspan={assessmentTableHeaders.length}
-						class="py-4 text-center text-sm text-gray-500"
-					>
+					<td colspan={assessmentTableHeaders.length} class=" py-4 text-center text-sm text-gray-500">
 						Data not available for the selected title.
 					</td>
 				</tr>
 			{/if}
 		</tbody>
 	</table>
-
+</div>

@@ -168,93 +168,83 @@
 	};
 </script>
 
-<!-- <BreadCrumbs crumbs={breadCrumbs} /> -->
-
-<div class=" users-stat-container">
-	<div class="stats-container grid-cols-1">
-		<!-- User -->
-		<table class=" user-table">
-			<thead>
-				<tr>
-					<th scope="col" class=" stats-heading text-[var(--color-info)]">Users</th>
-					<th scope="col" class=" px-2 text-left text-base text-[var(--color-info)] lg:text-lg"
-						>Count</th
-					>
-					<th scope="col" class=" px-2 text-left text-base text-[var(--color-info)] lg:text-lg"
-						>Percentage</th
-					>
-				</tr>
-			</thead>
-			<tbody>
+<div class="my-6 overflow-x-auto rounded-lg border border-[var(--color-outline)] shadow-lg">
+	<table class="w-full table-fixed text-[var(--color-info)]">
+		<thead class=" bg-[var(--color-accent)]">
+			<tr class="">
+				<th
+					class="border-b border-[var(--color-outline)] px-6 py-2 text-left text-sm font-normal whitespace-nowrap md:text-base"
+					>Users</th
+				>
+				<th
+					class="border-b border-[var(--color-outline)] px-6 py-2 text-left text-sm font-normal md:text-base xl:w-[80%]"
+					>Count</th
+				>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td
+					class="border-b border-[var(--color-outline)] px-6 py-2 text-xs whitespace-nowrap md:text-sm"
+					>Onboarded Users</td
+				>
+				<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm"
+					>{usersCount.TotalUsers.Count}</td
+				>
+			</tr>
+			{#each usersData as data}
 				<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 transition">
-					<td class="text-custom w-[10%]">Onboarded Users</td>
-					<td class="text-custom w-[10%]">{usersCount.TotalUsers.Count}</td>
-					<td class="text-custom w-[15%]">-</td>
+					<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm"
+						>{data.usersDetail}</td
+					>
+					<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm"
+						>{data.count}</td
+					>
 				</tr>
-				{#each usersData as data}
-					<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 transition">
-						<td class="text-custom w-[10%]">{data.usersDetail}</td>
-						<td class="text-custom w-[10%]">{data.count}</td>
-						<td class="text-custom flex items-center">
-							<div class="progress-bar">
-								<div class="progress" style="width:{data.ratio}%"></div>
-							</div>
-							<span class="text-primary-500 dark:text-primary-100 stats-span">{data.ratio}</span>
-							<span class="text-primary-500 dark:text-primary-100 text-xs">%</span>
-						</td>
-					</tr>
-				{/each}
-				{#each deviceDetailWiseUsers as data}
-					<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 transition">
-						<td class="text-custom w-[10%]">{data.OSType}</td>
-						<td class="text-custom w-[10%]">{data.Count}</td>
-						<td class="text-custom flex w-[15%] items-center">
-							<div class="bg-primary-200 mr-2 h-2 w-1/4 rounded-full">
-								<div
-									class="bg-primary-500 h-2 rounded-full"
-									style="width:{Math.ceil((data.Count / usersCount.TotalUsers.Count) * 100).toFixed(
-										2
-									)}%"
-								></div>
-							</div>
-							<span class="text-primary-500 dark:text-primary-100">
-								{Math.ceil((data.Count / usersCount.TotalUsers.Count) * 100).toFixed(0)}
-							</span>
-							<span class="text-primary-500 dark:text-primary-100 text-xs">%</span>
-						</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
-
-	<div class="stats-container grid-cols-3">
-		<div class="col-span-3 md:col-span-2">
-			<!-- age -->
-			<table class="min-w-full">
-				<thead>
-					<tr>
-						<th scope="col" class=" stats-heading text-[var(--color-info)]">Age</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each ageWiseUsers as data}
-						<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 transition">
-							<td class=" text-custom w-[48%] md:w-[20%]">{data.Status}</td>
-							<td class=" text-custom w-[18%] md:w-[20%]">{data.Count}</td>
-							<td class=" text-custom flex w-[50%] items-center">
-								<div class="progress-bar">
-									<div class="progress" style="width:{data.Ratio}%"></div>
-								</div>
-								<span class="text-primary-500 dark:text-primary-100">{data.Ratio}</span>
-								<span class="text-primary-500 dark:text-primary-100 text-xs">%</span>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
-		<div>
+			{/each}
+			{#each deviceDetailWiseUsers as data}
+				<tr>
+					<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm"
+						>{data.OSType}</td
+					>
+					<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm"
+						>{data.Count}</td
+					>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
+</div>
+<div class="my-6 overflow-x-auto rounded-lg border border-[var(--color-outline)] shadow-lg">
+	<table class="w-full table-fixed text-[var(--color-info)]">
+		<thead class=" bg-[var(--color-accent)]">
+			<tr>
+				<th
+					class="border-b border-[var(--color-outline)] px-6 py-2 text-left text-sm font-normal whitespace-nowrap md:text-base"
+					>Age</th
+				>
+				<th
+					class=" border-b border-[var(--color-outline)] px-6 py-2 text-left text-sm font-normal md:text-base xl:w-[80%]"
+					>Count</th
+				>
+			</tr>
+		</thead>
+		<tbody>
+			{#each ageWiseUsers as data}
+				<tr>
+					<td
+						class=" border-b border-[var(--color-outline)] px-6 py-2 text-xs whitespace-nowrap md:text-sm"
+						>{data.Status}</td
+					>
+					<td class=" border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm"
+						>{data.Count}</td
+					>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
+</div>
+<!-- <div>
 			<select name="year" class="select select-year" onchange={handlelSelectYearForAge}>
 				<option selected disabled>All the years</option>
 				{#each years as year}
@@ -266,36 +256,39 @@
 					<PieChart labels={ageDistributionLabels} data={ageDistributionData} title="Age" />
 				</div>
 			{/if}
-		</div>
-	</div>
+		</div> -->
 
-	<div class="stats-container grid-cols-3">
-		<div class="col-span-3 md:col-span-2">
-			<!-- gender -->
-			<table class="min-w-full">
-				<thead>
+		<div class="my-6 overflow-x-auto rounded-lg border border-[var(--color-outline)] shadow-lg">
+			<table class="w-full table-fixed text-[var(--color-info)]">
+				<thead class=" bg-[var(--color-accent)]">
 					<tr>
-						<th scope="col" class=" stats-heading text-[var(--color-info)]">Gender</th>
+						<th
+							class="border-b border-[var(--color-outline)] px-6 py-2 text-left text-sm font-normal whitespace-nowrap md:text-base"
+							>Gender</th
+						>
+						<th
+							class=" border-b border-[var(--color-outline)] px-6 py-2 text-left text-sm font-normal md:text-base xl:w-[80%]"
+							>Count</th
+						>
 					</tr>
 				</thead>
-				<tbody>
-					{#each genderWiseUsers as data}
-						<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 transition">
-							<td class=" text-custom w-[48%] md:w-[25%] lg:w-[22%] xl:w-[20%]">{data.Gender}</td>
-							<td class=" text-custom w-[18%] md:w-[20%]">{data.Count}</td>
-							<td class=" text-custom flex w-[50%] items-center">
-								<div class="progress-bar">
-									<div class="progress" style="width:{data.Ratio}%"></div>
-								</div>
-								<span class="text-primary-500 dark:text-primary-100">{data.Ratio}</span>
-								<span class="text-primary-500 dark:text-primary-100 text-xs">%</span>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
-		<div>
+		<tbody>
+			{#each genderWiseUsers as data}
+				<tr>
+					<td
+						class="border-b border-[var(--color-outline)] px-6 py-2 text-xs whitespace-nowrap md:text-sm"
+						>{data.Gender}</td
+					>
+					<td class=" border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm"
+						>{data.Count}</td
+					>
+					
+				</tr>
+			{/each}
+		</tbody>
+	</table>
+</div>
+<!-- <div>
 			<select name="year" class="select select-year" onchange={handlelSelectYearForGender}>
 				<option selected disabled>All the years</option>
 				{#each years as year}
@@ -311,9 +304,7 @@
 					/>
 				</div>
 			{/if}
-		</div>
-	</div>
-</div>
+		</div> -->
 
 <!-- <div
 			class="grid grid-cols-3 overflow-x-auto justify-center rounded-lg  shadow-xl border border-secondary-100 dark:border-surface-700 sm:px-4 w-full h-full gap-3 "

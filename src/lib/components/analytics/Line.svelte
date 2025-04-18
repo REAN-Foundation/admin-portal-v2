@@ -92,9 +92,9 @@
 
 </script>
 
-<div class="h-80 w-full p-2">
+<div class="h-96 w-full p-2 border shadow-lg border-[var(--color-outline)]">
     {#if data && data.length > 0}
-        <canvas bind:this={barChart} ></canvas>
+        <canvas bind:this={barChart} class="w-64 mx-auto  h-auto" ></canvas>
     {:else}
         <p>No data available.</p>
     {/if}
