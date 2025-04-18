@@ -1,26 +1,33 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import {
-		getDoughnutColors,
 		getTickColorLight,
 		getTickColorDark
 	} from '$lib/themes/theme.selector';
 
 	/////////////////////////////////////////////////////////////////////////////
 
-	const tickColorLight = getTickColorLight();
-	const tickColorDark = getTickColorDark();
-
 	let { labels, firstDataSource, secondDataSource, title } = $props();
 
-	let barChart: any = $state();
-	let ctx;
+	let barChart: Chart;
+	let canvas: HTMLCanvasElement;
 
 	let xLabel = 'Month';
 	let yLabel = 'User Count';
-	onMount(() => {
-		ctx = barChart.getContext('2d');
+
+	function getTickColor(): string {
+		return document.documentElement.getAttribute('data-theme') === 'dark'
+			? getTickColorDark()
+			: '#00000';
+	}
+
+	function createChart() {
+		const ctx = canvas.getContext('2d');
+		if (!ctx) return;
+
+		if (barChart) barChart.destroy();
+
 		barChart = new Chart(ctx, {
 			type: 'bar',
 			data: {
@@ -31,7 +38,7 @@
 						backgroundColor: '#31b31c',
 						borderColor: '#5EC009',
 						borderWidth: 1,
-						label: 'Patient Registration Moth',
+						label: 'Patient Registration Month',
 						borderRadius: {
 							topLeft: 4,
 							topRight: 4
@@ -60,16 +67,12 @@
 							display: false
 						},
 						ticks: {
-							color: document.documentElement.classList.contains('dark')
-								? tickColorDark
-								: tickColorLight
+							color: getTickColor()
 						},
 						title: {
 							display: true,
 							text: xLabel,
-							color: document.documentElement.classList.contains('dark')
-								? tickColorDark
-								: tickColorLight
+							color: getTickColor()
 						}
 					},
 					y: {
@@ -78,16 +81,12 @@
 							display: true
 						},
 						ticks: {
-							color: document.documentElement.classList.contains('dark')
-								? tickColorDark
-								: tickColorLight
+							color: getTickColor()
 						},
 						title: {
 							display: true,
 							text: yLabel,
-							color: document.documentElement.classList.contains('dark')
-								? tickColorDark
-								: tickColorLight
+							color: getTickColor()
 						}
 					}
 				},
@@ -102,18 +101,14 @@
 						position: 'top',
 						align: 'center',
 						labels: {
-							color: document.documentElement.classList.contains('dark')
-								? tickColorDark
-								: tickColorLight
+							color: getTickColor()
 						}
 					},
 					title: {
 						display: false,
 						text: title,
 						position: 'top',
-						color: document.documentElement.classList.contains('dark')
-							? tickColorDark
-							: tickColorLight,
+						color: getTickColor(),
 						align: 'start',
 						padding: 20,
 						font: {
@@ -125,21 +120,11 @@
 					tooltip: {
 						callbacks: {
 							label: function (context) {
-								// Get the label for the dataset
 								let label = context.dataset.label || '';
-
-								// Add the x-axis value (label)
 								let xLabel = labels[context.dataIndex] || 'No label';
-
-								// Add the y-axis value (data point value)
 								let yValue = context.parsed.y !== null ? context.parsed.y : 'No value';
-
-								// Customizing the tooltip text
-								if (label) {
-									label += ': ';
-								}
-								label += `${xLabel} , Value: ${yValue}`;
-
+								if (label) label += ': ';
+								label += `${xLabel}, Value: ${yValue}`;
 								return label;
 							}
 						}
@@ -147,7 +132,30 @@
 				}
 			}
 		});
+	}
+
+	onMount(() => {
+		createChart();
+
+		// Theme change observer
+		const observer = new MutationObserver(() => {
+			createChart(); // Re-create chart on theme change
+		});
+
+		observer.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ['data-theme']
+		});
+
+		return () => {
+			if (barChart) barChart.destroy();
+			observer.disconnect();
+		};
+	});
+
+	onDestroy(() => {
+		if (barChart) barChart.destroy();
 	});
 </script>
 
-<canvas class=" " bind:this={barChart}></canvas>
+<canvas bind:this={canvas} class="w-full h-auto"></canvas>

@@ -55,6 +55,6 @@
 </dl>
 
 <div class=" dashboard-subcards">
-	<FunnelCard {labels} dataSource={funnelChartData} />
+	<!-- <FunnelCard {labels} dataSource={funnelChartData} /> -->
 	<PlatformStatsCard {deviceDetails} />
 </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import {
 		getDoughnutColors,
@@ -9,27 +9,21 @@
 
 	/////////////////////////////////////////////////////////////////////////////
 
-	const tickColorLight = getTickColorLight();
-	const tickColorDark = getTickColorDark();
-
 	let { updatedChartData, updatedChartLabels, title } = $props();
+	let data = updatedChartData;
+	let labels = updatedChartLabels;
 
-	let data = updatedChartData,
-		labels = updatedChartLabels;
-
-	$inspect(data, labels);
-	let doughnutChart: any = $state();
-	let ctx;
+	let doughnutChart: Chart;
+	let canvas: HTMLCanvasElement;
 
 	const colorPalette = getDoughnutColors();
 
 	function getColor(value: number, totalSum: number, index: number): string {
-		const localIndex = index % 8; // This will ensure that the index always stays within 0 to 7
-		return colorPalette[localIndex];
+		return colorPalette[index % colorPalette.length];
 	}
 
 	function getDynamicColors(data: number[]): string[] {
-		const totalSum = data.reduce((acc, curr) => acc + curr, 0); // Sum of all values
+		const totalSum = data.reduce((acc, curr) => acc + curr, 0);
 		return data.map((value, index) => getColor(value, totalSum, index));
 	}
 
@@ -37,24 +31,32 @@
 		return label.length > maxLength ? label.slice(0, maxLength) + '...' : label;
 	}
 
-	let dynamicColors: string[], truncatedLabels;
+	function getTickColor(): string {
+		return document.documentElement.getAttribute('data-theme') === 'dark'
+			? getTickColorDark()
+			: '#00000'
+	}
 
-	$effect(() => {
+	let dynamicColors: string[] = [];
+	let truncatedLabels: string[] = [];
+
+	function createChart() {
+		const ctx = canvas.getContext('2d');
+		if (!ctx) return;
+
+		if (doughnutChart) doughnutChart.destroy();
+
 		dynamicColors = getDynamicColors(data);
-		truncatedLabels = labels.map((label: string) => truncateLabel(label));
-	});
-
-	onMount(async() => {
-		ctx = doughnutChart.getContext('2d');
+		truncatedLabels = labels.map((label) => truncateLabel(label));
 
 		doughnutChart = new Chart(ctx, {
 			type: 'doughnut',
 			data: {
-				labels: labels,
+				labels: truncatedLabels,
 				datasets: [
 					{
 						data: data,
-						backgroundColor: dynamicColors, // Dynamic colors for the doughnut chart
+						backgroundColor: dynamicColors,
 						hoverBackgroundColor: dynamicColors
 					}
 				]
@@ -68,18 +70,14 @@
 						labels: {
 							boxWidth: 10,
 							boxHeight: 10,
-							color: document.documentElement.classList.contains('dark')
-								? tickColorDark
-								: tickColorLight
+							color: getTickColor()
 						}
 					},
 					title: {
 						display: false,
 						text: title,
 						position: 'top',
-						color: document.documentElement.classList.contains('dark')
-							? tickColorDark
-							: tickColorLight,
+						color: getTickColor(),
 						align: 'start',
 						padding: 20,
 						font: {
@@ -91,15 +89,37 @@
 				}
 			}
 		});
+	}
+
+	function updateChartOnThemeChange() {
+		createChart();
+	}
+
+	onMount(() => {
+		createChart();
+
+		// Observe changes to data-theme
+		const observer = new MutationObserver(updateChartOnThemeChange);
+		observer.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ['data-theme']
+		});
+
+		return () => {
+			if (doughnutChart) doughnutChart.destroy();
+			observer.disconnect();
+		};
 	});
 
-	$inspect('Doughnut', doughnutChart);
+	onDestroy(() => {
+		if (doughnutChart) doughnutChart.destroy();
+	});
 </script>
 
 <!-- Canvas for the Doughnut chart -->
-<div class=" hauto  w-fit">
+<div class=" h-auto  w-fit">
 	{#if data}
-		<canvas bind:this={doughnutChart}></canvas>
+		<canvas bind:this={canvas}></canvas>
 	{:else}
 		<p>No data available.</p>
 	{/if}

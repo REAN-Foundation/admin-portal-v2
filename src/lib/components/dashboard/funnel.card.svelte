@@ -25,26 +25,38 @@
 	});
 </script>
 
-<div class="status-card w-auto md:w-full h-auto !flex-row items-center  border sm:p-6">
+<!-- <div class="status-card w-auto md:w-full h-auto !flex-row items-center  border sm:p-6">
 	<div class="w-1/2 items-center justify-center">
-		<h4 class="sub-heading mb-5 text-center">App Users</h4>
+		
 
 		<div class="">
 			<Funnel {labels} {dataSource} />
 		</div>
+	</div> -->
+	<div class="my-6 overflow-x-auto rounded-lg border border-[var(--color-outline)] shadow-lg">
+		<table class="w-full table-fixed text-[var(--color-info)]">
+			<thead class=" bg-[var(--color-accent)]">
+				<tr>
+					<th
+						class="border-b border-[var(--color-outline)] px-6 py-2 text-left text-sm font-normal whitespace-nowrap md:text-base"
+						>App Users</th
+					>
+					<th
+						class=" border-b border-[var(--color-outline)] px-6 py-2 text-left text-sm font-normal md:text-base xl:w-[80%]"
+						>Count</th
+					>
+				</tr>
+			</thead>
+			<tbody>
+				{#each dataPoints as dp}
+					<tr>
+				
+						<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">{dp.label}</td>
+						<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">{dp.count}</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
 	</div>
-
-	<div class="my-10 w-1/2 px-4">
-		{#each dataPoints as dp}
-			<div class="flex w-full gap-4 py-1">
-				<div class="mt-1 h-3 w-3 border" style="background-color: {dp.color};"></div>
-				<div class="text">
-					{dp.label}
-				</div>
-				<div class="text">
-					{dp.count}
-				</div>
-			</div>
-		{/each}
-	</div>
-</div>
+	
+<!-- </div> -->

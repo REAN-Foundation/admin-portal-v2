@@ -142,9 +142,9 @@
 	}
 </script>
 
-<div class="h-96 w-full items-center justify-center">
+<div class="h-96 w-full p-2 border shadow-lg border-[var(--color-outline)]">
 	{#if data.length > 0 && labels.length > 0}
-		<canvas id="myPieChart" bind:this={pieChart} height="400" width="400"></canvas>
+		<canvas id="myPieChart" bind:this={pieChart}  class="w-64 mx-auto h-auto"></canvas>
 	{:else}
 		<p>No data available.</p>
 	{/if}
