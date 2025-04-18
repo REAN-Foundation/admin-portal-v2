@@ -10,6 +10,7 @@
     import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
     import Pagination from '$lib/components/pagination/pagination.svelte';
+	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -38,8 +39,6 @@
 	let isSortingName = $state(false);
 	let sortBy = $state('Name');
 	let sortOrder = $state('ascending');
-	let itemsPerPage = $state(10);
-	let currentPage = $state(0);
 
 	let paginationSettings: PaginationSettings = $state({
 		page: 0,
@@ -57,8 +56,8 @@
 		let url = `/api/server/health-systems/search?`;
 		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
 		url += `&sortBy=${model.sortBy ?? sortBy}`;
-		url += `&itemsPerPage=${model.itemsPerPage ?? itemsPerPage}`;
-		url += `&pageIndex=${model.pageIndex ?? currentPage}`;
+		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
 		if (healthSystemName) url += `&name=${model.healthSystemName}`;
 
 		try {
@@ -206,7 +205,7 @@
 									</td>
 									<td role="gridcell" aria-colindex={5} tabindex="0">
 										<!-- {date.format(new Date(row.CreatedAt), 'DD-MMM-YYYY')} -->
-										{Helper.formatDate(row.CreatedAt)}
+										{TimeHelper.formatDateToReadable(row.CreatedAt, LocaleIdentifier.EN_US)}
 									</td>
 
 									<td>
