@@ -48,12 +48,11 @@
 </script>
 
 {#if hasData}
-	<div class="distribution-container mb-8 w-full max-w-full rounded-lg border p-6 shadow-lg">
+	<div class="distribution-container mb-8 w-full max-w-full">
 		<div class="flex flex-col xl:flex-row">
-			<!-- Table Section -->
-			<div class="w-full overflow-x-auto">
-				<table class="min-w-full table-auto">
-					<thead>
+			<div class="w-full overflow-x-auto rounded-lg border border-[var(--color-outline)] shadow-lg">
+				<table class="w-full table-auto text-[var(--color-info)]">
+					<thead class="bg-[var(--color-accent)]">
 						<tr>
 							{#each tableHeaders as header}
 								<th class="card-header">{header}</th>
@@ -62,7 +61,7 @@
 					</thead>
 					<tbody>
 						{#each processedData as data}
-							<tr class="transition">
+							<tr >
 								<td class=" chart-details">{data.label}</td>
 								<td class=" chart-details">{data.count}</td>
 								<td class=" chart-details">{data.percentage}%</td>

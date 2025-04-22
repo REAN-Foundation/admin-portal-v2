@@ -21,7 +21,6 @@
 	}
 
 </script>
-
 <div class="{showSidebar ? 'z-10 max-md:fixed' : 'hidden'} transition-all md:block">
 	<div class="sidebar">
 		<ul class="sidebar-list">
@@ -33,6 +32,17 @@
 							? 'variant-soft-secondary'
 							: ''}"
 						onclick={() => (activeTab = 'Analytics')}
+					>
+						<Icon icon={navParent.icon} class="mx-1 text-2xl" />
+						<span class="sidebar-text">{navParent.title}</span>
+					</a>
+				{:else if navParent.title === 'Home'}
+					<a
+						href={navParent.link}
+						class="sidebar-item items-center {activeTab === 'Home'
+							? 'variant-soft-secondary'
+							: ''}"
+						onclick={() => (activeTab = 'Home')}
 					>
 						<Icon icon={navParent.icon} class="mx-1 text-2xl" />
 						<span class="sidebar-text">{navParent.title}</span>
@@ -57,7 +67,7 @@
 					</button>
 				{/if}
 
-				{#if openTab == navParent.title && navParent.title !== 'Analytics'}
+				{#if openTab == navParent.title && navParent.title !== 'Analytics' && navParent.title !== 'Home'}
 					<div class="mx-4">
 						<nav class="space-y-1">
 							{#each navParent.childNav as navItem}

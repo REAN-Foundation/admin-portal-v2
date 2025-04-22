@@ -282,7 +282,7 @@
 }
 
 .main-content {
-	@apply flex-1 bg-[var(--color-secondary)] p-5 sm:ml-56;
+	@apply flex-1 bg-[var(--color-secondary)] p-6 sm:ml-56;
 }
 
 .status-card {
@@ -527,7 +527,7 @@ tr {
 	@apply p-2 text-[var(--color-info)] lg:px-13 xl:px-32;
 }
 .basic-stat {
-	@apply text-lg font-bold text-[var(--color-info)];
+	@apply text-lg font-semibold text-[var(--color-info)];
 }
 .basic-des {
 	@apply text-sm text-[var(--color-info)] md:text-base xl:w-3/4;
@@ -536,7 +536,7 @@ tr {
 	@apply w-full overflow-x-auto px-4 pt-4 sm:px-4;
 }
 .history-head {
-	@apply text-left text-lg font-bold text-[var(--color-info)];
+	@apply text-left text-lg font-semibold text-[var(--color-info)];
 }
 .history-title {
 	@apply flex items-center justify-center text-2xl;
@@ -596,7 +596,7 @@ tr {
 
 /*  generic-engagement */
 .user-graph-container {
-	@apply py-8;
+	@apply my-6;
 }
 .user-graph-wrapper {
 	@apply flex w-3/3 items-center justify-center gap-10;
@@ -635,25 +635,20 @@ tr {
 	@apply mx-auto grid grid-cols-1 gap-4 py-8 md:w-full md:grid-cols-2 lg:grid-cols-3;
 }
 .dashboard-subcards {
-	@apply m-5 mx-auto flex h-80 flex-col gap-10 md:w-full lg:flex-row;
+	@apply my-6 mx-auto flex h-96 flex-col gap-10 md:w-full lg:flex-row;
 }
 
 /* feature-loginsession */
 
 .access-card {
-	@apply my-5 flex max-w-sm flex-col justify-center rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-8 shadow-lg sm:px-4 md:my-0 md:max-w-lg 2xl:max-w-xl;
+	@apply mb-6 flex max-w-sm flex-col justify-center rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-8 shadow-lg sm:px-4  md:max-w-lg 2xl:max-w-2xl;
 }
-.engagement-card {
-	@apply flex max-w-sm flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-8 shadow-lg md:max-w-lg 2xl:max-w-xl;
-}
-.retention-card {
-	@apply flex max-w-sm flex-col justify-center overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-6 shadow-lg md:max-w-lg 2xl:max-w-xl;
-}
+
 .features-cards-layout {
-	@apply mx-auto grid grid-cols-1 justify-center gap-8 rounded-lg md:mb-12 xl:grid xl:grid-cols-2 xl:gap-26 ;
+	@apply mx-auto xl:mx-0  grid grid-cols-1 justify-center  rounded-lg  xl:grid xl:grid-cols-2 xl:gap-8 ;
 }
 .features-cards-wrapper {
-	@apply h-full w-full items-center gap-10 md:flex;
+	@apply h-full w-full items-center gap-10 ;
 }
 .feature-card-heading {
 	@apply mx-4 justify-center py-1 pt-3 text-left text-lg font-semibold text-[var(--color-info)] sm:pl-3;

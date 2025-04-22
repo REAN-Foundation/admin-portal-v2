@@ -206,7 +206,7 @@
 			</div>
 		</div>
 
-		<div class=" engagement-card">
+		<div class="access-card">
 			<div class="">
 				<div class="flex flex-col items-center">
 					<h4 class="feature-card-heading">Engagement Rate</h4>
@@ -236,64 +236,63 @@
 	</div>
 </div>
 
-<div class=" features-container">
-	<div class=" features-cards-layout">
-		<div class=" features-cards-wrapper">
-			<div class=" access-card">
-				<div class="">
-					<div class="flex flex-col items-center">
-						<h4 class="feature-card-heading">Retention After Registration</h4>
-						<h5 class=" feature-card-subheading">(Days After Registration)</h5>
-						<div class="h-fit w-full">
-							<p class="feature-card-des">
-								The percentage of users who return to a feature after their first use at specific
-								intervals (day 1, day 7, day 30). Retention rates measure user loyalty and the
-								ability of the feature to keep users engaged over time.
-							</p>
-						</div>
-						<div class="flex w-full justify-end">
-							<select
-								class="select border-secondary-100 dark:border-surface-700 w-fit rounded-lg border pl-2"
-								onchange={(e: any) => {
-									selectedGraph = e.target.value;
-								}}
-							>
-								<option value="graph1">User Count</option>
-								<option value="graph2">Percentage</option>
-							</select>
-						</div>
+<div class="features-container">
+	<div class="features-cards-layout flex flex-wrap xl:gap-6">
+		<div class="access-card">
+			<div class="">
+				<div class="flex flex-col items-center">
+					<h4 class="feature-card-heading">Retention After Registration</h4>
+					<h5 class="feature-card-subheading">(Days After Registration)</h5>
+					<div class="h-fit w-full">
+						<p class="feature-card-des">
+							The percentage of users who return to a feature after their first use at specific
+							intervals (day 1, day 7, day 30). Retention rates measure user loyalty and the
+							ability of the feature to keep users engaged over time.
+						</p>
 					</div>
-					{#if selectedGraph === 'graph1' && retentionRateDaysData.length > 0}
-						<div class="h-96">
-							<RetentionGraphs
-								dataSource={retentionRateDaysData}
-								labels={retentionRateDaysLabels}
-								title="Retention User Count On Specific Days"
-							/>
-						</div>
-					{:else if selectedGraph === 'graph1'}
-						<div class="h-[400px] w-[400px] p-4">
-							<p class="mt-28 flex items-center justify-center text-xl leading-3">
-								Data Not Available
-							</p>
-						</div>
-					{:else if selectedGraph === 'graph2'}
-						<div class="h-96">
-							<RetentionGraphs
-								dataSource={retentionRateDaysRate}
-								labels={retentionRateDaysLabels}
-								title="Retention User Count On Specific Days (%)"
-							/>
-						</div>
-					{/if}
+					<div class="flex w-full justify-end">
+						<select
+							class="select border-secondary-100 dark:border-surface-700 w-fit rounded-lg border pl-2"
+							onchange={(e: any) => {
+								selectedGraph = e.target.value;
+							}}
+						>
+							<option value="graph1">User Count</option>
+							<option value="graph2">Percentage</option>
+						</select>
+					</div>
 				</div>
+				{#if selectedGraph === 'graph1' && retentionRateDaysData.length > 0}
+					<div class="h-96">
+						<RetentionGraphs
+							dataSource={retentionRateDaysData}
+							labels={retentionRateDaysLabels}
+							title="Retention User Count On Specific Days"
+						/>
+					</div>
+				{:else if selectedGraph === 'graph1'}
+					<div class="h-[400px] w-[400px] p-4">
+						<p class="mt-28 flex items-center justify-center text-xl leading-3">
+							Data Not Available
+						</p>
+					</div>
+				{:else if selectedGraph === 'graph2'}
+					<div class="h-96">
+						<RetentionGraphs
+							dataSource={retentionRateDaysRate}
+							labels={retentionRateDaysLabels}
+							title="Retention User Count On Specific Days (%)"
+						/>
+					</div>
+				{/if}
 			</div>
 		</div>
-		<div class="retention-card">
+
+		<div class="access-card">
 			<div class="">
 				<div class="flex flex-col items-center text-center">
 					<h4 class="feature-card-heading">Retention After Registration</h4>
-					<h5 class=" feature-card-subheading">(Interval After Registration)</h5>
+					<h5 class="feature-card-subheading">(Interval After Registration)</h5>
 					<div class="h-fit w-full">
 						<p class="feature-card-des">
 							The percentage of users who return to a feature after their first use at specific
@@ -301,7 +300,7 @@
 							retention on specific days.
 						</p>
 					</div>
-					<div class="0 flex w-full justify-end">
+					<div class="flex w-full justify-end">
 						<select
 							class="select border-secondary-100 dark:border-surface-700 w-fit rounded-lg border pl-2"
 							onchange={(e: any) => {
@@ -322,7 +321,7 @@
 						/>
 					</div>
 				{:else if percentageGraph === 'graph1'}
-					<div class=" p-4">
+					<div class="p-4">
 						<p class="mt-28 flex items-center justify-center text-xl leading-3">
 							Data Not Available
 						</p>
@@ -340,6 +339,7 @@
 		</div>
 	</div>
 </div>
+
 {#if feature === 'Medication'}
 	<div class="features-container">
 		<div class="features-cards-layout">
@@ -377,7 +377,7 @@
 			</div>
 
 			<!-- DropOff Points Card -->
-			<div class="engagement-card">
+			<div class="access-card">
 				<div class="">
 					<div class="flex flex-col items-center">
 						<h4 class="feature-card-heading">DropOff Points</h4>
@@ -467,7 +467,7 @@
 			</div>
 
 			<!-- DropOff Points Card -->
-			<div class="engagement-card">
+			<div class="access-card">
 				<div class="">
 					<div class="flex flex-col items-center">
 						<h4 class="feature-card-heading">DropOff Points</h4>
@@ -556,7 +556,7 @@
 			</div>
 
 			<!-- DropOff Points Card -->
-			<div class="engagement-card">
+			<div class="access-card">
 				<div class="flex flex-col items-center">
 					<h4 class="feature-card-heading">DropOff Points</h4>
 					<p class="feature-card-des">
@@ -600,19 +600,19 @@
 		<!-- Quarterwise Task Completion Card -->
 		<div class="features-cards-layout ">
 			<div class="features-cards-wrapper">
-				<div class="engagement-card">
+				<div class="access-card">
 					<div class="flex flex-col items-center">
 						<h4 class="feature-card-heading">Quarterwise Task Completion Metrics</h4>
 						<p class="feature-card-des">
 							This shows the count of users grouped by task completion percentage ranges.
 						</p>
 
-						<div class="w-full overflow-x-auto px-4 py-2">
-							<table class="border-secondary-100 dark:border-surface-700 min-w-full rounded-lg border">
-								<thead>
-									<tr class="border-secondary-100 dark:border-surface-700 border">
+						<div class="w-full overflow-x-auto  rounded-lg border border-[var(--color-outline)] shadow-lg">
+							<table class="  w-full table-auto text-[var(--color-info)]">
+								<thead class="bg-[var(--color-accent)]">
+									<tr >
 										{#each taskCompletionTableHeaders as header}
-											<th class="feature-table-heading">
+											<th class="border-b border-[var(--color-outline)] px-6 py-2 text-left text-sm font-normal whitespace-nowrap md:text-base xl:w-[20%]">
 												{header}
 											</th>
 										{/each}
@@ -621,9 +621,9 @@
 								<tbody>
 									{#if quarterWiseTaskCompletionData.length > 0}
 										{#each quarterWiseTaskCompletionData as row}
-											<tr class="hover:bg-secondary-50 dark:hover:bg-surface-800 border-secondary-100 dark:border-surface-700 border transition">
-												<td class="feature-table-data">{row.percentage_range}</td>
-												<td class="feature-table-data">{row.user_count}</td>
+											<tr>
+												<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs whitespace-nowrap md:text-sm">{row.percentage_range}</td>
+												<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs whitespace-nowrap md:text-sm">{row.user_count}</td>
 											</tr>
 										{/each}
 									{:else}
@@ -686,7 +686,7 @@
 			</div>
 
 			<!-- DropOff Points Card -->
-			<div class="engagement-card">
+			<div class="access-card">
 				<div class="flex flex-col items-center">
 					<h4 class="feature-card-heading">DropOff Points</h4>
 					<p class="feature-card-des">
@@ -732,7 +732,7 @@
 	<div class="features-container">
 		<div class="features-cards-layout">
 			<div class="features-cards-wrapper">
-				<div class="engagement-card">
+				<div class="access-card">
 					<div class="flex flex-col items-center">
 						<h4 class="feature-card-heading">DropOff Points</h4>
 						<p class="feature-card-des">

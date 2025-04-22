@@ -372,7 +372,7 @@ function addMainAnalyticsMenu(
 		name: 'Main-Analytics',
 		title: 'Analytics',
 		icon: 'pixel:analytics-solid',
-		link: `/users/${userId}/analytics`,
+		link: `/users/${userId}/analytics/basic`,
 		children: []
 	};
 	menuList.push(analytics);
@@ -390,7 +390,6 @@ function addMainAnalyticsMenu(
 	}
 	return sidebarNaviagation;
 }
-
 function addMainDashboardMenu(
 	sidebarNaviagation: NavigationMenu[],
 	userId: string,
@@ -399,46 +398,27 @@ function addMainDashboardMenu(
 	options: FeatureOptions
 ): NavigationMenu[] {
 	const menuList: SidebarMenu[] = [];
-	const dashbord: SidebarMenu = {
-		name: 'Main-Dashboard',
-		title: 'Dashboard',
-		icon: 'material-symbols:dashboard-outline-rounded',
-		link: null,
-		children: []
-	};
-	menuList.push(dashbord);
 
-	const analytics: SidebarMenu = {
-		name: 'Main-Analytics',
-		title: 'Analytics',
-		icon: 'material-symbols:dashboard-outline-rounded',
-		link: null,
-		children: []
-	};
-	menuList.push(analytics);
-
-	const rhg: SidebarMenu = {
+	const homeMenu: SidebarMenu = {
 		name: 'Main-Home',
 		title: 'Home',
 		icon: 'material-symbols:home-outline-rounded',
 		link: `/users/${userId}/home`,
 		children: []
 	};
-	menuList.push(rhg);
+	menuList.push(homeMenu);
 
-	const mainDashboard: SidebarMenu = getMenu(menuList, 'Main-Dashboard');
-	const mainHome: SidebarMenu = getMenu(menuList, 'Main-Home');
-	mainDashboard?.children.push(mainHome);
-
-	const mainDashboardNavigation: NavigationMenu | null = toNavigation(
-		mainDashboard,
+	const navigationItem: NavigationMenu | null = toNavigation(
+		homeMenu,
 		userRole,
 		tenantSettings,
 		options
 	);
-	if (mainDashboardNavigation) {
-		sidebarNaviagation.push(mainDashboardNavigation);
+
+	if (navigationItem) {
+		sidebarNaviagation.push(navigationItem);
 	}
+
 	return sidebarNaviagation;
 }
 
