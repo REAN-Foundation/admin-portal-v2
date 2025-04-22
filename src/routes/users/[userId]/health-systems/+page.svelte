@@ -135,10 +135,10 @@
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container mb-6 shadow">
-			<div class="health-system-search-border p-4">
+			<div class="health-system-search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="flex-1">
-						<div class="relative px-1.5">
+						<div class="relative pr-1.5">
 							<Icon
 								icon="heroicons:magnifying-glass"
 								class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
