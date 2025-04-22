@@ -68,7 +68,7 @@
 		<!-- Row 1 -->
 		<a
 			class="btn {$page.url.pathname === basicStatsLink
-				? ''
+				? 'variant-filled-secondary'
 				: 'variant-soft-secondary'} flex items-center justify-center gap-2"
 			href={basicStatsLink}
 		>
@@ -78,7 +78,7 @@
 
 		<a
 			class="btn {$page.url.pathname === demographicsLink
-				? ''
+				? 'variant-filled-secondary'
 				: 'variant-soft-secondary'} flex items-center justify-center gap-2"
 			href={demographicsLink}
 		>
@@ -89,7 +89,7 @@
 		<!-- Row 2 -->
 		<a
 			class="btn {$page.url.pathname === genericLink
-				? ''
+				? 'variant-filled-secondary'
 				: 'variant-soft-secondary'} flex items-center justify-center gap-2"
 			href={genericLink}
 		>
@@ -99,7 +99,7 @@
 
 		<a
 			class="btn {$page.url.pathname === featureLink
-				? ''
+				? 'variant-filled-secondary'
 				: 'variant-soft-secondary'} flex items-center justify-center gap-2 whitespace-nowrap"
 			href={featureLink}
 		>
@@ -136,7 +136,7 @@
 						>
 							{#each options as option}
 								<button
-									class=" text-primary-500 dark:text-primary-100 block flex w-full items-center justify-center gap-2 px-4 py-2 text-center text-sm hover:cursor-pointer hover:bg-gray-100 hover:text-gray-900"
+									class=" text-[var(--color-info)] block flex w-full items-center justify-center gap-2 px-4 py-2 text-center text-sm hover:cursor-pointer hover:bg-gray-100 hover:text-gray-900"
 									role="menuitem"
 									onclick={() => handleSelect(option)}
 								>
