@@ -25,7 +25,7 @@
 	let profileImage = $state();
 	let errorMessage = {
 		Text: 'Max file upload size 150 KB',
-		Colour: 'border-b-surface-700'
+		Colour: 'text-[var(--color-info)]'
 	};
 	const MAX_FILE_SIZE = 1024 * 150;
 
@@ -111,13 +111,13 @@
 	method="post"
 	action="?/updateProfileAction"
 	enctype="multipart/form-data"
-	class="my-2 border"
+	class="my-2  "
 	use:enhance
 >
 	<table class="w-full">
-		<thead class="variant-soft-secondary">
+		<thead class=" ">
 			<tr>
-				<th class="text-start px-4">My Profile</th>
+				<th class="text-start text-lg md:text-xl font-semibold px-4 text-[var(--color-info)]">My Profile</th>
 				<th class="flex justify-end ">
 					<a href={userRoute} class=" p-4">
 						<Icon icon="material-symbols:close-rounded" />
@@ -125,14 +125,14 @@
 				</th>
 			</tr>
 		</thead>
-		<tbody class="!bg-white dark:!bg-inherit">
+		<tbody class="!">
 			<tr>
 				<td>
 					<input type="text" hidden name="roleId" bind:value={roleId} />
 				</td>
 			</tr>
-			<tr class="border-b ">
-				<td class="px-4 py-4">First Name *</td>
+			<tr class=" ">
+				<td class="px-4 py-4 text-[var(--color-info)]">First Name *</td>
 				<td class="px-4 py-4">
 					<input
 						type="text"
@@ -149,8 +149,8 @@
 					{/if}
 				</td>
 			</tr>
-			<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
-				<td class="px-4 py-4">Last Name *</td>
+			<tr class="">
+				<td class="px-4 py-4 text-[var(--color-info)]">Last Name *</td>
 				<td class="px-4 py-4">
 					<input
 						type="text"
@@ -167,8 +167,8 @@
 					{/if}
 				</td>
 			</tr>
-			<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
-				<td class="px-4 py-4">Contact Number *</td>
+			<tr class="">
+				<td class="px-4 py-4 text-[var(--color-info)]">Contact Number *</td>
 				<td class="flex gap-2 px-4 py-4">
 					<select
 						name="countryCode"
@@ -191,8 +191,8 @@
 					{/if}
 				</td>
 			</tr>
-			<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
-				<td class="px-4 py-4">Email *</td>
+			<tr class="">
+				<td class="px-4 py-4 text-[var(--color-info)]">Email *</td>
 				<td class="px-4 py-4">
 					<input
 						type="email"
@@ -207,19 +207,19 @@
 					{/if}
 				</td>
 			</tr>
-			<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
-				<td class="align-top px-4 py-4">Profile Image</td>
+			<tr class="">
+				<td class="align-top px-4 py-4 text-[var(--color-info)]">Profile Image</td>
 				<td class="px-4 py-4">
 					{#if imageUrl === undefined}
 						<input
 							name="fileinput"
 							type="file"
-							class="true input w-full"
+							class="true input   w-full"
 							placeholder="Image"
 							onchange={async (e) => await onFileSelected(e)}
 						/>
 						{#if errorMessage}
-							<p class={`${errorMessage.Colour}`}>{errorMessage.Text}</p>
+							<p class={`${errorMessage.Colour} text-sm my-1`}>{errorMessage.Text}</p>
 						{/if}
 					{:else}
 						<Image cls="flex h-24 w-24 rounded-lg" source={imageUrl} w="24" h="24" />
@@ -232,7 +232,7 @@
 							onchange={async (e) => await onFileSelected(e)}
 						/>
 						{#if errorMessage}
-							<p class={`${errorMessage.Colour}`}>{errorMessage.Text}</p>
+							<p class= {`${errorMessage.Colour} `} >{errorMessage.Text}</p>
 						{/if}
 					{/if}
 					<input type="hidden" name="imageResourceId" value={imageResourceId} />
@@ -244,7 +244,7 @@
 		</tbody>
 	</table>
 	<div class="flex justify-end gap-2 p-2">
-		<button type="button" onclick={handleReset} class=" btn !w-1/5 variant-soft-secondary">Reset</button>
-		<button type="submit" class="!w-1/5 btn variant-filled-secondary">Submit</button>
+		<button type="button" onclick={handleReset} class=" btn w-1/5 md:!w-1/5 variant-soft-secondary">Reset</button>
+		<button type="submit" class="w-1/5 md:!w-1/5 btn variant-filled-secondary">Submit</button>
 	</div>
 </form>

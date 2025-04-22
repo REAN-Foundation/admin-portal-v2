@@ -260,7 +260,7 @@
 }
 
 .theme-divider {
-	@apply my-4 border bg-[var(--color-secondary)];
+	@apply my-4  bg-[var(--color-secondary)];
 }
 
 .theme-option {
@@ -278,7 +278,7 @@
 	@apply absolute top-2 right-2 text-[var(--color-info)];
 }
 .para {
-	@apply mb-2 text-left text-sm text-[var(--color-info)];
+	@apply my-2 text-left text-base text-[var(--color-info)];
 }
 
 .main-content {
@@ -351,7 +351,7 @@
 	@apply min-w-max cursor-pointer appearance-none rounded-md border border-[var(--color-info)] px-4 py-2 pr-8 text-[var(--color-info)] md:text-sm;
 }
 .input {
-	@apply w-full rounded border border-[var(--color-outline)] bg-[var(--color-base)] p-2 focus:outline-none;
+	@apply w-full rounded border border-[var(--color-outline)]  bg-[var(--color-accent)] text-[var(--color-info)] p-2 focus:outline-none;
 }
 .mobileinput {
 	@apply w-full appearance-none rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-3 py-2 text-[var(--color-info)] md:text-sm;
@@ -412,7 +412,7 @@ tr {
 }
 
 .select {
-	@apply rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-2 text-[var(--color-info)];
+	@apply rounded-lg border border-[var(--color-outline)]  bg-[var(--color-accent)] p-2 text-[var(--color-info)];
 }
 
 .tabs-btn {
@@ -420,7 +420,7 @@ tr {
 }
 
 .variant-filled-secondary {
-	@apply bg-[var(--color-active)] text-[var(--color-info)] hover:bg-[var(--color-active)];
+	@apply bg-[var(--color-active)] text-white hover:bg-[var(--color-active)];
 }
 
 .variant-soft-secondary {
@@ -632,10 +632,10 @@ tr {
 
 /* home/overall */
 .dashboard-cards {
-	@apply mx-auto grid grid-cols-1 gap-4 py-8 md:w-full md:grid-cols-2 lg:grid-cols-3;
+	@apply mx-auto grid grid-cols-1 gap-4  md:w-full md:grid-cols-2 lg:grid-cols-3;
 }
 .dashboard-subcards {
-	@apply my-6 mx-auto flex h-96 flex-col gap-10 md:w-full lg:flex-row;
+	@apply my-6 mx-auto flex h-96 flex-col  md:w-full lg:flex-row;
 }
 
 /* feature-loginsession */

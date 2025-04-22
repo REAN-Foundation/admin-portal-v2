@@ -166,7 +166,7 @@
 								<Icon icon={item.icon} class="menu-icon" />
 								<span>{item.label}</span>
 							</button>
-							<hr class="user-menu-divider" />
+							<!-- <hr class="user-menu-divider" /> -->
 						{:else}
 							<a href={item.href} class="user-menu-item">
 								<Icon icon={item.icon} class="menu-icon" />
@@ -209,7 +209,7 @@
 						</div>
 					</div>
 
-					<hr class="theme-divider" />
+					<!-- <hr class="theme-divider" /> -->
 
 					<div>
 						<p class="para">Themes</p>
@@ -233,7 +233,7 @@
 										{/if}
 									</div>
 
-									<div class="text-info ml-1 sm:ml-2">{name}</div>
+									<div class="text-info ml-1 sm:ml-2 text-[var(--color-info)]">{name}</div>
 								</button>
 							{/each}
 						</div>
