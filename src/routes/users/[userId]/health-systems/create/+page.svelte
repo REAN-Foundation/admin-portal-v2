@@ -6,15 +6,18 @@
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
 	import type { HealthSystemCreateModel } from '$lib/types/health.system.types.js';
 	import { goto } from '$app/navigation';
+	import InputChips from '$lib/components/input-chips.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
-    let { data, form } = $props();
+	let { data, form } = $props();
 
-    let errors: Record<string, string> = $state({});
-    let healthSystemName = $state(undefined);
-    let tags = $state(undefined);
-    let promise = $state();
+	let errors: Record<string, string> = $state({});
+	let healthSystemName = $state(undefined);
+	// let tags = $state(undefined);
+	let promise = $state();
+	let keywords: string[] = $state([]);
+	let keywordsStr = $state('');
 
 	data.title = 'Hospital Systems-Health Systems Create';
 	const userId = page.params.userId;
@@ -27,52 +30,55 @@
 	];
 
 	const handleSubmit = async (event: Event) => {
-        try {
-            event.preventDefault();
-            errors = {}
+		try {
+			event.preventDefault();
+			errors = {};
 
-            const healthSystemCreateModel: HealthSystemCreateModel  = {
-                Name: healthSystemName,
-                Tags: tags
-            }
+			const healthSystemCreateModel: HealthSystemCreateModel = {
+				Name: healthSystemName,
+				Tags: keywords
+			};
 
-            const validationResult = createOrUpdateSchema.safeParse(healthSystemCreateModel);
+			const validationResult = createOrUpdateSchema.safeParse(healthSystemCreateModel);
 
-            if (!validationResult.success) {
-                errors = Object.fromEntries(
-                    Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-                        key,
-                        val?.[0] || 'This field is required'
-                    ])
-                );
-                return;
-            }
+			if (!validationResult.success) {
+				errors = Object.fromEntries(
+					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				);
+				return;
+			}
 
-            const res = await fetch(`/api/server/health-systems`, {
-                method: 'POST',
-                body: JSON.stringify(healthSystemCreateModel),
-                headers: { 'content-type': 'application/json' } 
-            })
+			const res = await fetch(`/api/server/health-systems`, {
+				method: 'POST',
+				body: JSON.stringify(healthSystemCreateModel),
+				headers: { 'content-type': 'application/json' }
+			});
 
-            const response = await res.json();
+			const response = await res.json();
 
-            if (response.HttpCode === 201 || response.HttpCode === 200) {
-                toastMessage(response);
-                goto(`${healthSystemsRoute}/${response?.Data?.HealthSystem?.id}/view`);
-                return;
-            }
+			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				toastMessage(response);
+				goto(`${healthSystemsRoute}/${response?.Data?.HealthSystem?.id}/view`);
+				return;
+			}
 
-            if (response.Errors) {
-                errors = response?.Errors || {};
-            } else {
-                toastMessage(response);
-            }
-        } catch (error) {
-            toastMessage();
-        }
-        
-	}
+			if (response.Errors) {
+				errors = response?.Errors || {};
+			} else {
+				toastMessage(response);
+			}
+		} catch (error) {
+			toastMessage();
+		}
+	};
 
+	const onUpdateKeywords = (e: any) => {
+		keywords = e.detail;
+		keywordsStr = keywords?.join(', ');
+	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -80,16 +86,14 @@
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container">
-			<form
-				onsubmit={async (event) => promise = handleSubmit(event)}
-			>
+			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 				<table class="health-system-table">
 					<thead>
 						<tr>
 							<th>Create Health System</th>
 							<th class="text-end">
 								<a href={healthSystemsRoute} class="health-system-btn variant-soft-secondary">
-									<Icon icon="material-symbols:close-rounded"  />
+									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
 						</tr>
@@ -105,7 +109,7 @@
 										: ''}"
 									name="healthSystemName"
 									placeholder="Enter name here..."
-                                    bind:value={healthSystemName}
+									bind:value={healthSystemName}
 								/>
 								{#if errors?.Name}
 									<p class="text-error-500 text-xs">{errors?.Name}</p>
@@ -113,31 +117,28 @@
 							</td>
 						</tr>
 						<tr class="">
-							<td class="align-top !py-3 ">Tags</td>
+							<td class="!py-3 align-top">Tags</td>
 							<td>
+								<InputChips
+									bind:keywords
+									name="keywords"
+									id="keywords"
+									keywordsChanged={onUpdateKeywords}
+								/>
+								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
 							</td>
 						</tr>
 					</tbody>
 				</table>
 				<div class="button-container">
-                    {#await promise }
-                        <button
-                            type="submit"
-                            class="health-system-btn variant-soft-secondary"
-                            disabled
-                            >
-                            Submiting
-                        </button>
-                    {:then data} 
-                        <button
-                        type="submit"
-                        class="health-system-btn variant-soft-secondary"
-                        >
-                        Submit
-                        </button>
-                    {/await}
-					
+					{#await promise}
+						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+							Submiting
+						</button>
+					{:then data}
+						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+					{/await}
 				</div>
 			</form>
 		</div>
