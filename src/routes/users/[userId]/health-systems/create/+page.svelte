@@ -112,7 +112,7 @@
 									bind:value={healthSystemName}
 								/>
 								{#if errors?.Name}
-									<p class="text-error-500 text-xs">{errors?.Name}</p>
+									<p class="text-error">{errors?.Name}</p>
 								{/if}
 							</td>
 						</tr>

@@ -483,13 +483,13 @@ tr {
 	@apply mt-6 flex flex-col justify-end gap-4 sm:flex-row;
 }
 
-.cancel-btn {
+/* .cancel-btn {
 	@apply cursor-pointer rounded-md border border-[var(--color-outline)] px-4 py-2 text-sm text-[var(--color-info)];
 }
 
 .cancel-btn:hover {
 	@apply bg-[var(--color-secondary)];
-}
+} */
 
 .confirm-btn {
 	@apply cursor-pointer rounded-md bg-[var(--color-error)] px-4 py-2 text-sm text-[var(--color-info)] transition-colors duration-200 sm:text-[var(--color-base)];
@@ -750,11 +750,11 @@ tr {
 }
 
 .input-text-error {
-	@apply border-red-600 text-red-500;
+	@apply border-red-600  text-[var(--color-error)];
 }
 
 .text-error {
-	@apply text-xs text-red-500;
+	@apply text-xs text-[var(--color-error)];
 }
 
 .confirm-modal-overlay {
@@ -791,4 +791,8 @@ tr {
 
 .confirm-card-delete-btn {
 	@apply inline-flex cursor-pointer justify-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700;
+}
+
+.cancel-btn {
+	@apply inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-2 text-center text-sm whitespace-nowrap text-[var(--color-error)] transition-all duration-150 ease-in-out hover:bg-[var(--active-soft)];
 }

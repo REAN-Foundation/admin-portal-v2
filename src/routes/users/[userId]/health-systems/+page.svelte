@@ -7,24 +7,24 @@
 	import { invalidate } from '$app/navigation';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
-    import Confirmation from '$lib/components/confirmation.modal.svelte';
+	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
-    import Pagination from '$lib/components/pagination/pagination.svelte';
+	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 
-    ///////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 
 	let isLoading = $state(false);
 	let healthSystems = $state(data.healthSystems.Items);
 	let retrivedHealthSystems = $derived(healthSystems);
-    let openDeleteModal = $state(false);
-    let idToBeDeleted = $state(null);
-    let isDeleting = $state(false);
-    let searchKeyword = $state(undefined);
+	let openDeleteModal = $state(false);
+	let idToBeDeleted = $state(null);
+	let isDeleting = $state(false);
+	let searchKeyword = $state(undefined);
 
-    const userId = page.params.userId;
+	const userId = page.params.userId;
 	const healthSystemRoute = `/users/${userId}/health-systems`;
 	const editRoute = (id) => `/users/${userId}/health-systems/${id}/edit`;
 	const viewRoute = (id) => `/users/${userId}/health-systems/${id}/view`;
@@ -35,7 +35,7 @@
 	let healthSystemName = $state(undefined);
 
 	let totalHealthSystemsCount = $state(data.healthSystems.TotalCount);
-    $inspect('totalHealthSystemsCount', totalHealthSystemsCount);
+	$inspect('totalHealthSystemsCount', totalHealthSystemsCount);
 	let isSortingName = $state(false);
 	let sortBy = $state('Name');
 	let sortOrder = $state('ascending');
@@ -50,9 +50,9 @@
 	$inspect('retrivedHealth', healthSystems);
 
 	async function searchHealthSystem(model) {
-        if (searchKeyword !== model.healthSystemName) {
-            paginationSettings.page = 0
-        }
+		if (searchKeyword !== model.healthSystemName) {
+			paginationSettings.page = 0;
+		}
 		let url = `/api/server/health-systems/search?`;
 		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
 		url += `&sortBy=${model.sortBy ?? sortBy}`;
@@ -61,20 +61,20 @@
 		if (healthSystemName) url += `&name=${model.healthSystemName}`;
 
 		try {
-			const res  = await fetch(url, {
+			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
 			});
 			const searchResult = await res.json();
-            console.log("searchResult", searchResult);
+			console.log('searchResult', searchResult);
 			totalHealthSystemsCount = searchResult.Data.HealthSystems.TotalCount;
-            paginationSettings.size = totalHealthSystemsCount;
+			paginationSettings.size = totalHealthSystemsCount;
 
-            healthSystems = searchResult.Data.HealthSystems.Items.map((item, index) => ({
+			healthSystems = searchResult.Data.HealthSystems.Items.map((item, index) => ({
 				...item,
 				index: index + 1
 			}));
-            searchKeyword = model.healthSystemName;
+			searchKeyword = model.healthSystemName;
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -82,20 +82,20 @@
 		}
 	}
 
-    $effect(() => {
-            searchHealthSystem({
+	$effect(() => {
+		searchHealthSystem({
 			healthSystemName,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
-        });
+		});
 
-       if (isDeleting) {
-            retrivedHealthSystems
-            isDeleting = false
-        }
-    });
+		if (isDeleting) {
+			retrivedHealthSystems;
+			isDeleting = false;
+		}
+	});
 
 	function sortTable(columnName) {
 		isSortingName = false;
@@ -106,28 +106,26 @@
 		sortBy = columnName;
 	}
 
-    const handleDeleteClick = (id: string) => {
-        openDeleteModal = true;
-        idToBeDeleted = id;
-        
-    }
+	const handleDeleteClick = (id: string) => {
+		openDeleteModal = true;
+		idToBeDeleted = id;
+	};
 
-    const  handleHealthSystemDelete = async (id) => {
-        console.log('Inside handleHealthSystemDelete', id);
+	const handleHealthSystemDelete = async (id) => {
+		console.log('Inside handleHealthSystemDelete', id);
 		const response = await fetch(`/api/server/health-systems/${id}`, {
 			method: 'DELETE',
 			headers: { 'content-type': 'application/json' }
 		});
 
-        const res = await response.json();
-        console.log('deleted Response',res);
-        if (res.HttpCode === 200) {
-            isDeleting = true;
-            toastMessage(res);
-        }
-        invalidate('app:healthSystem');
-	}
-
+		const res = await response.json();
+		console.log('deleted Response', res);
+		if (res.HttpCode === 200) {
+			isDeleting = true;
+			toastMessage(res);
+		}
+		invalidate('app:healthSystem');
+	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -175,7 +173,13 @@
 							<th class="w-12"></th>
 							<th class=" text-start">
 								<button onclick={() => sortTable('Name')}>
-									Name {isSortingName ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
+									Name {#if isSortingName}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
+									{/if}
 								</button>
 							</th>
 							<th class=" w-40">Created </th>
@@ -183,12 +187,12 @@
 						</tr>
 					</thead>
 					<tbody class="">
-                            {#if retrivedHealthSystems.length <= 0}
-                                <tr>
-                                    <td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
-                                </tr>
-                            {:else}
-							    {#each retrivedHealthSystems as row, index}
+						{#if retrivedHealthSystems.length <= 0}
+							<tr>
+								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
+							</tr>
+						{:else}
+							{#each retrivedHealthSystems as row, index}
 								<tr>
 									<td>
 										{paginationSettings.page * paginationSettings.limit + index + 1}
@@ -243,15 +247,17 @@
 							{/each}
 						{/if}
 					</tbody>
-                  
 				</table>
 			</div>
 		</div>
 	</div>
 </div>
 
-<Confirmation bind:isOpen={openDeleteModal} title="Delete Health System@@@" onConfirm={handleHealthSystemDelete} id={idToBeDeleted} />
+<Confirmation
+	bind:isOpen={openDeleteModal}
+	title="Delete Health System@@@"
+	onConfirm={handleHealthSystemDelete}
+	id={idToBeDeleted}
+/>
 
-<Pagination
-    bind:paginationSettings
-/>      
+<Pagination bind:paginationSettings />
