@@ -6,15 +6,17 @@
 	import { goto } from '$app/navigation';
 	import type { PrioritiesTypeCreateModel } from '$lib/types/priorities.types.js';
 	import { createOrUpdateSchema } from '$lib/validation/priorities.schema.js';
+	import InputChips from '$lib/components/input-chips.svelte';
 
 	////////////////////////////////////////////////////////////////////
 	let { data, form } = $props();
 
 	let errors: Record<string, string> = $state({});
 	let type = $state(undefined);
-	let tags = $state(undefined);
 	let promise = $state();
-
+	let keywords: string[] = $state([]);
+	let keywordsStr = $state('');
+	
 	data.title = 'Types-Priorities Create';
 	const userId = page.params.userId;
 	const createRoute = `/users/${userId}/priorities/create`;
@@ -38,7 +40,7 @@
 
 			const prioritiesTypeCreateModel: PrioritiesTypeCreateModel = {
 				Type: type,
-				Tags: tags
+				Tags: keywords
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(prioritiesTypeCreateModel);
@@ -74,6 +76,11 @@
 		} catch (error) {
 			toastMessage();
 		}
+	};
+	
+	const onUpdateKeywords = (e: any) => {
+		keywords = e.detail;
+		keywordsStr = keywords?.join(', ');
 	};
 </script>
 
@@ -113,7 +120,14 @@
 						<tr>
 							<td class="!py-3 align-top">Tags</td>
 							<td>
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" /> -->
+								<InputChips
+									bind:keywords
+									name="keywords"
+									id="keywords"
+									keywordsChanged={onUpdateKeywords}
+								/>
+								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
 							</td>
 						</tr>
 					</tbody>

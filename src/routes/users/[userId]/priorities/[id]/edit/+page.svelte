@@ -7,6 +7,7 @@
 	import { createOrUpdateSchema } from '$lib/validation/priorities.schema';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
+	import InputChips from '$lib/components/input-chips.svelte';
 
 	////////////////////////////////////////////////////////////////////
 
@@ -14,9 +15,10 @@
 
 	let id = data.priority.id;
 	let type = $state(data.priority.Type);
-	let tags = $state(data.priority.Tags);
+	let keywords: string[] = $state(data.priority.Keywords);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
+	let keywordsStr: string = $state('');
 
 	const userId = page.params.userId;
 	const editRoute = `/users/${userId}/priorities/${id}/edit`;
@@ -44,7 +46,7 @@
 	const handleReset = () => {
 		type = data?.priority?.Type;
 		id = page.params.id;
-		tags = data?.priority?.Tags;
+		keywords = data?.priority?.Keywords;
 		errors = {};
 	};
 
@@ -55,7 +57,7 @@
 
 			const prioritiesTypeUpdateModel: PrioritiesTypeUpdateModel = {
 				Type: type,
-				Tags: tags
+				Tags: keywords
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(prioritiesTypeUpdateModel);
@@ -92,6 +94,11 @@
 		} catch (error) {
 			toastMessage();
 		}
+	};
+
+	const onUpdateKeywords = (e: any) => {
+		keywords = e.detail;
+		keywordsStr = keywords?.join(', ');
 	};
 </script>
 
@@ -133,6 +140,18 @@
 						<tr>
 							<td class="!py-3">Tags</td>
 							<td>
+								<InputChips
+								bind:keywords
+								name="keywords"
+								id="keywords"
+								keywordsChanged={onUpdateKeywords}
+							/>
+							<input
+								type="hidden"
+								name="keywordsStr"
+								id="keywordsStr"
+								bind:value={keywordsStr}
+							/>
 								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" bind:value={tags} /> -->
 							</td>
 						</tr>
