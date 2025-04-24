@@ -15,7 +15,7 @@
 
 	let id = data.priority.id;
 	let type = $state(data.priority.Type);
-	let keywords: string[] = $state(data.priority.Keywords);
+	let keywords: string[] = $state(data.priority.Tags);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let keywordsStr: string = $state('');
