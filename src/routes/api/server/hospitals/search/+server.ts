@@ -14,19 +14,16 @@ export const GET = async (event: RequestEvent) => {
 		const searchFilters = {
 			name: searchParams.get('name') ?? undefined,
 			tags: searchParams.get('tags') ?? undefined,
-			//  healthSystemName : searchParams.get('healthSystemName') ?? undefined;
-			sortBy: searchParams.get('sortBy') ?? 'CreatedAt',
-			sortOrder: searchParams.get('sortOrder') ?? 'ascending',
-			itemsPerPage_: searchParams.get('itemsPerPage'),
+		//  healthSystemName : searchParams.get('healthSystemName') ?? undefined,
+			orderBy: searchParams.get('sortBy') ?? 'CreatedAt',
+			order: searchParams.get('sortOrder') ?? 'ascending',
 			itemsPerPage: parseInt(searchParams.get('itemsPerPage') ?? '10'),
 			pageIndex: parseInt(searchParams.get('pageIndex') ?? '0')
 		};
 
 		console.log('Search parms: ', searchFilters);
 		const response = await searchHospitals(sessionId, searchFilters);
-		const hospitals = response.Data.Hospitals;
-		console.log('hospitals', JSON.stringify(response, null, 2));
-		return new Response(JSON.stringify(hospitals));
+		return new Response(JSON.stringify(response));
 	} catch (err) {
 		console.error(`Error retriving careplans: ${err.message}`);
 		return new Response(err.message);
