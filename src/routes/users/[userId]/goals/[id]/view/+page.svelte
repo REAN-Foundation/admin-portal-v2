@@ -34,13 +34,13 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="admin-portal-v2-table-container">
-			<table class="health-system-table">
+		<div class="table-container">
+			<table class="table-c">
 				<thead>
 					<tr>
 						<th>View Goal</th>
 						<th class="text-end">
-							<a href={goalRoute} class="health-system-btn variant-soft-secondary">
+							<a href={goalRoute} class="table-btn variant-soft-secondary">
 								<Icon icon="material-symbols:close-rounded" class="" />
 							</a>
 						</th>

@@ -100,14 +100,14 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="admin-portal-v2-table-container">
+		<div class="table-container">
 			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
+				<table class="table-c">
 					<thead>
 						<tr>
 							<th>Edit Goal</th>
 							<th class="text-end">
-								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
+								<a href={viewRoute} class="table-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -155,14 +155,14 @@
 					<button
 						type="button"
 						onclick={handleReset}
-						class="health-system-btn variant-soft-secondary">Reset</button
+						class="table-btn variant-soft-secondary">Reset</button
 					>
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+						<button type="submit" class="table-btn variant-soft-secondary" disabled>
 							Submiting
 						</button>
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
 					{/await}
 				</div>
 			</form>

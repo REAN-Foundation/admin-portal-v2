@@ -793,13 +793,55 @@ tr {
 	@apply inline-flex cursor-pointer justify-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700;
 }
 
-/* Table specific */
-.admin-portal-v2-table-container {
+/* Table specifiic */
+.table-container {
 	@apply w-full overflow-x-auto rounded-lg border border-[var(--color-outline)] bg-[var(--color-secondary)] text-[var(--color-info)];
 }
+
+.table-c {
+	@apply table w-full table-auto;
+}
+
+.table-c thead {
+	@apply table-header-group border-b-1 border-[var(--color-outline)] align-middle;
+}
+
+.table-c thead tr {
+	@apply table-row border-spacing-2 text-left capitalize;
+}
+
+.table-c thead th {
+	@apply table-cell px-5 py-2 font-semibold;
+}
+
+.table-c tbody {
+	@apply table-row-group align-middle;
+}
+
+.table-c tbody tr:hover {
+	@apply bg-gray-50 text-black;
+}
+
+.table-c tbody tr:hover .table-btn {
+	@apply text-black;
+}
+
+.table-c tbody td {
+	@apply border-b-1 border-[var(--color-outline)] px-5 py-2 text-sm;
+}
+
+.table-btn {
+	@apply inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-2 text-center text-sm whitespace-nowrap text-[var(--color-info)] transition-all duration-150 ease-in-out hover:bg-[var(--color-active)];
+}
+
+.table-input-field {
+	@apply w-full rounded-lg border border-gray-200 px-2 py-2 outline-[var(--color-active)];
+}
+
 .search-border {
 	@apply border-b-1 border-[var(--color-outline)] px-5 py-4;
 }
-.table-input-field {
-	@apply w-full rounded-lg border border-gray-200 px-2 py-2 outline-[var(--color-active)];
+
+.close-btn {
+	@apply absolute top-1/2 right-4 -translate-y-1/2 transform cursor-pointer border-0 bg-transparent;
 }

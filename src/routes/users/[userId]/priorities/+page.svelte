@@ -138,7 +138,7 @@
 <BreadCrumbs crumbs={breadCrumbs} />
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="admin-portal-v2-table-container mb-6 shadow">
+		<div class="table-container mb-6 shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative flex-1 pr-1.5">
@@ -179,14 +179,14 @@
 						{/if}
 					</div>
 
-					<button class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary">
+					<button class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
 						<a href={createRoute} class="">Add New</a>
 					</button>
 				</div>
 			</div>
 
 			<div class="overflow-x-auto">
-				<table class="health-system-table min-w-full">
+				<table class="table-c min-w-full">
 					<thead class="">
 						<tr>
 							<th class="w-12"></th>
@@ -239,7 +239,7 @@
 										<div class="flex">
 											<Tooltip text="Edit" forceShow={true}>
 												<button>
-													<a href={editRoute(row.id)} class="health-system-btn group">
+													<a href={editRoute(row.id)} class="table-btn group">
 														<Icon icon="material-symbols:edit-outline" class="health-system-icon" />
 													</a>
 												</button>
@@ -247,7 +247,7 @@
 
 											<Tooltip text="View" forceShow={true}>
 												<button>
-													<a href={viewRoute(row.id)} class="health-system-btn group">
+													<a href={viewRoute(row.id)} class="table-btn group">
 														<Icon
 															icon="icon-park-outline:preview-open"
 															class="health-system-icon"
@@ -258,7 +258,7 @@
 
 											<Tooltip text="Delete" forceShow={true}>
 												<button
-													class="health-system-btn !text-red-600"
+													class="table-btn !text-red-600"
 													onclick={() => handleDeleteClick(row.id)}
 												>
 													<Icon icon="material-symbols:delete-outline-rounded" />
