@@ -26,7 +26,7 @@
 </script>
 <div class="flex flex-col gap-2 rounded">
     <input
-        class="input"
+        class="health-system-input"
         type="text"
         placeholder="Type and press enter to add a keyword"
         bind:value={input}

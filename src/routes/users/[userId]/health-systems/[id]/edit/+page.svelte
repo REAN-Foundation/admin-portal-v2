@@ -11,7 +11,7 @@
 
 	///////////////////////////////////////////////////////////////////////////
 
-    let { data, form }: { data: PageServerData; form: any } = $props();
+	let { data, form }: { data: PageServerData; form: any } = $props();
 
     let healthSystemName = $state(data.healthSystem.Name);
 	let keywords: string[] = $state(data.healthSystem.Tags);
@@ -32,7 +32,7 @@
 		{ name: 'Edit', path: editRoute }
 	];
 
-    const handleReset = () => {
+	const handleReset = () => {
 		healthSystemName = data?.healthSystem?.Name;
 		healthSystemId = page.params.id;;
 		keywords = data?.healthSystem?.Tags;
@@ -40,52 +40,50 @@
 	}
 
 	const handleSubmit = async (event: Event) => {
-        try {
-            event.preventDefault();
-            errors = {}
+		try {
+			event.preventDefault();
+			errors = {};
 
             const healthSystemUpdateModel: HealthSystemUpdateModel  = {
                 Name: healthSystemName,
                 Tags: keywords
             }
 
-            const validationResult = createOrUpdateSchema.safeParse(healthSystemUpdateModel);
+			const validationResult = createOrUpdateSchema.safeParse(healthSystemUpdateModel);
 
-            if (!validationResult.success) {
-                errors = Object.fromEntries(
-                    Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-                        key,
-                        val?.[0] || 'This field is required'
-                    ])
-                );
-                return;
-            }
+			if (!validationResult.success) {
+				errors = Object.fromEntries(
+					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				);
+				return;
+			}
 
-            const res = await fetch(`/api/server/health-systems/${healthSystemId}`, {
-                method: 'PUT',
-                body: JSON.stringify(healthSystemUpdateModel),
-                headers: { 'content-type': 'application/json' } 
-            })
+			const res = await fetch(`/api/server/health-systems/${healthSystemId}`, {
+				method: 'PUT',
+				body: JSON.stringify(healthSystemUpdateModel),
+				headers: { 'content-type': 'application/json' }
+			});
 
-            const response = await res.json();
-            
-            if (response.HttpCode === 201 || response.HttpCode === 200) {
-                toastMessage(response);
-                goto(`${healthSystemsRoute}/${response?.Data?.HealthSystem?.id}/view`);
-                return;
-            }
+			const response = await res.json();
 
-            if (response.Errors) {
-                errors = response?.Errors || {};
-            } else {
-                toastMessage(response);
-            }
-
-        } catch (error) {
-            toastMessage();
-        }
-	}
-
+			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				toastMessage(response);
+				goto(`${healthSystemsRoute}/${response?.Data?.HealthSystem?.id}/view`);
+				return;
+			}
+			if (response.Errors) {
+                 errors = response?.Errors || {};
+             } else {
+                 toastMessage(response);
+             }
+ 
+         } catch (error) {
+             toastMessage();
+         }
+ 	}
 	const onUpdateKeywords = (e: any) => {
 		keywords = e.detail;
 		keywordsStr = keywords?.join(', ');
@@ -98,13 +96,13 @@
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container">
-			<form onsubmit={(event) => promise = handleSubmit(event)}>
+			<form onsubmit={(event) => (promise = handleSubmit(event))}>
 				<table class="health-system-table">
 					<thead>
 						<tr>
 							<th>Edit Health System</th>
 							<th class="text-end">
-								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
+								<a href={viewRoute} class=" cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -154,22 +152,13 @@
 						onclick={handleReset}
 						class="health-system-btn variant-soft-secondary">Reset</button
 					>
-                    {#await promise }
-                        <button
-                            type="submit"
-                            class="health-system-btn variant-soft-secondary"
-                            disabled
-                        >
-                            Submiting
-                        </button>
-                    {:then data} 
-                        <button
-                        type="submit"
-                        class="health-system-btn variant-soft-secondary"
-                        >
-                        Submit
-                        </button>
-                    {/await}
+					{#await promise}
+						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+							Submiting
+						</button>
+					{:then data}
+						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+					{/await}
 				</div>
 			</form>
 		</div>

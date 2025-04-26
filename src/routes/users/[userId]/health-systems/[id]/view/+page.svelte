@@ -34,17 +34,16 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<!-- <div class="flex flex-wrap gap-2">
-    <a
-        href={editRoute}
-        class="health-system-btn variant-filled-secondary ml-auto my-2"
-    >
-        <Icon icon="material-symbols:edit-outline" />
-        <span>Edit</span>
-    </a>
-</div> -->
-
 <div class="px-6 py-4">
+	<div class="flex flex-wrap justify-end gap-2 py-2">
+		<a
+			href={editRoute}
+			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
+		>
+			<Icon icon="material-symbols:edit-outline" />
+			<span>Edit</span>
+		</a>
+	</div>
 	<div class="mx-auto">
 		<div class="health-system-table-container">
 			<table class="health-system-table">
@@ -52,10 +51,7 @@
 					<tr>
 						<th>View Health System</th>
 						<th class="text-end">
-							<a
-								href={healthSystemRoute}
-								class="health-system-btn variant-soft-secondary"
-							>
+							<a href={healthSystemRoute} class=" cancel-btn">
 								<Icon icon="material-symbols:close-rounded" class="" />
 							</a>
 						</th>

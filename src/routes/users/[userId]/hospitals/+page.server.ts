@@ -13,8 +13,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	});
 
 	const hospitals = response?.Data?.Hospitals || [];
-	// const hospitals = hospitals_ ? hospitals_.Items : [];
-	// console.log(`Hospitals: ${JSON.stringify(hospitals, null, 2)}`);
+	
 	return {
 		hospitals,
 		sessionId,

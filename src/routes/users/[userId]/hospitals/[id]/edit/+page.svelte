@@ -5,8 +5,24 @@
 	import type { PageServerData } from './$types';
 	import InputChip from '$lib/components/input-chips.svelte';
 	import { enhance } from '$app/forms';
+	import { toastMessage } from '$lib/components/toast/toast.store';
+	import { goto } from '$app/navigation';
+	import type { HospitalUpdateModel } from '$lib/types/hospital.types';
+	import { createOrUpdateSchema } from '$lib/validation/hospital.schemas';
+	import InputChips from '$lib/components/input-chips.svelte';
 
 	//////////////////////////////////////////////////////////////////////
+
+	let { data, form }: { data: PageServerData; form: any } = $props();
+
+	let hospitalName = $state(data.hospital.Name);
+	let healthSystemId = $state(data.hospital.HealthSystemId);
+	let healthSystemName = $state(data.hospital.HealthSystemName);
+	let keywords: string[] = $state(data.hospital.Tags);
+	let healthSystems = $state(data.healthSystems);
+	let errors: Record<string, string> = $state({});
+	let promise = $state();
+	let keywordsStr: string = $state('');
 
 	const userId = page.params.userId;
 	const hospitalId = page.params.id;
@@ -14,30 +30,13 @@
 	const viewRoute = `/users/${userId}/hospitals/${hospitalId}/view`;
 	const hospitalsRoute = `/users/${userId}/hospitals`;
 
-	// export let form;
-	// export let data: PageServerData;
-	let { data, form }: { data: PageServerData; form: any } = $props();
-	console.log('data ===> ', data);
-
-	let hospitalName = $state(data.hospital.Name);
-	let healthSystemId = $state(data.hospital.HealthSystemId);
-	let healthSystemName = data.hospital.HealthSystemName;
-	let tags = $state(data.hospital.Tags);
-	let healthSystems = $state(data.healthSystems);
-	let isSubmitting = $state(false);
-
 	function sortHealthSystemsByName(healthSystems) {
 		return healthSystems.sort((a, b) => a.Name.localeCompare(b.Name));
 	}
-	// console.log('hospital name  ->', hospitalName);
-	// console.log('healthSystemId ->', healthSystemId);
-	// console.log('tags           ->', tags);
-	// console.log('healthSystem   ->', healthSystemName);
 
-	//Original data
 	let _hospitalName = $derived(hospitalName);
 	let _healthSystemId = $derived(healthSystemId);
-	let _tags = $derived(JSON.stringify(tags));
+	let _tags = $derived(JSON.stringify(keywords));
 	const r = $derived(
 		healthSystems.filter((hs) => {
 			return hs.id === healthSystemId;
@@ -45,9 +44,11 @@
 	);
 
 	function handleReset() {
-		hospitalName = _hospitalName;
+		hospitalName = data?.hospital?.Name;
 		healthSystemId = _healthSystemId;
-		tags = JSON.parse(_tags);
+		healthSystemName = data?.hospital?.HealthSystemName;
+		keywords = data?.hospital?.Tags;
+		errors = {};
 	}
 
 	const breadCrumbs = [
@@ -55,21 +56,61 @@
 		{ name: 'Edit', path: editRoute }
 	];
 
-	function handleHealthSystemChange(event) {
-		healthSystemId = event.target.value;
-	}
+	const handleSubmit = async (event: Event) => {
+		try {
+			event.preventDefault();
+			errors = {};
 
-	function handleSubmit() {
-		isSubmitting = true;
-	}
+			const hospitalUpdateModel: HospitalUpdateModel = {
+				Name: hospitalName,
+				HealthSystemId: healthSystemId,
+				Tags: keywords
+			};
+
+			const validationResult = createOrUpdateSchema.safeParse(hospitalUpdateModel);
+
+			if (!validationResult.success) {
+				errors = Object.fromEntries(
+					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				);
+				return;
+			}
+
+			const res = await fetch(`/api/server/hospitals/${hospitalId}`, {
+				method: 'PUT',
+				body: JSON.stringify(hospitalUpdateModel),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			const response = await res.json();
+
+			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				toastMessage(response);
+				goto(`${hospitalsRoute}/${response?.Data?.Hospital?.id}/view`);
+				return;
+			}
+
+			if (response.Errors) {
+				errors = response?.Errors || {};
+			} else {
+				toastMessage(response);
+			}
+		} catch (error) {
+			toastMessage();
+		}
+	};
 
 	$effect(() => {
 		healthSystems = sortHealthSystemsByName(healthSystems);
 	});
 
-	if (form) {
-		isSubmitting = false;
-	}
+	const onUpdateKeywords = (e: any) => {
+		keywords = e.detail;
+		keywordsStr = keywords?.join(', ');
+	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -77,13 +118,13 @@
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container">
-			<form method="post" action="?/updateHospitalAction" use:enhance onsubmit={handleSubmit}>
+			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 				<table class="health-system-table">
 					<thead>
 						<tr>
 							<th>Edit Hospital</th>
 							<th class="text-end">
-								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
+								<a href={viewRoute} class=" cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -111,9 +152,9 @@
 							<td>Health System <span class=" text-red-600">*</span></td>
 							<td>
 								<select name="healthSystemId" class=" health-system-input">
-									<option value={_healthSystemId}>{healthSystemName}</option>
+									<option value={healthSystemId}>{healthSystemName}</option>
 									{#each healthSystems as healthSystem}
-										{#if _healthSystemId !== healthSystem.id}
+										{#if healthSystemId !== healthSystem.id}
 											<option value={healthSystem.id}>{healthSystem.Name}</option>
 										{/if}
 									{/each}
@@ -125,7 +166,19 @@
 							<td class="!py-3">Tags</td>
 
 							<td>
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" bind:value={tags} /> -->
+								<InputChips
+								bind:keywords
+								name="keywords"
+								id="keywords"
+								keywordsChanged={onUpdateKeywords}
+							/>
+							<input
+								type="hidden"
+								name="keywordsStr"
+								id="keywordsStr"
+								class="health-system-input"
+								bind:value={keywordsStr}
+							/>
 							</td>
 						</tr>
 					</tbody>
@@ -136,13 +189,13 @@
 						onclick={handleReset}
 						class="health-system-btn variant-soft-secondary">Reset</button
 					>
-					<button
-						type="submit"
-						class="health-system-btn variant-soft-secondary"
-						disabled={isSubmitting}
-					>
-						{isSubmitting ? 'Submitting...' : 'Submit'}
-					</button>
+					{#await promise}
+						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+							Submiting
+						</button>
+					{:then data}
+						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+					{/await}
 				</div>
 			</form>
 		</div>
