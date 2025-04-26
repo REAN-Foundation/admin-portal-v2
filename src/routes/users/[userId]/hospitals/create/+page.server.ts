@@ -17,7 +17,6 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
             itemsPerPage: 200
         });
         const healthSystems = response.Data.HealthSystems.Items;
-        // console.log(`Health systems = ${JSON.stringify(healthSystems)}`);
         return {
             healthSystems: healthSystems,
             title: 'Hospital Systems-Hospitals Create'

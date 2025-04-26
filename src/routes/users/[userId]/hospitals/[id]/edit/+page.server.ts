@@ -31,12 +31,6 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	};
 };
 
-// const updateHospitalSchema = zfd.formData({
-//     hospitalName: z.string().max(128),
-//     healthSystemId: z.string().optional(),
-//     tags: z.array(z.string()).optional()
-// });
-
 export const actions = {
 	updateHospitalAction: async (event: RequestEvent) => {
 		const userId = event.params.userId;
@@ -55,34 +49,6 @@ export const actions = {
 				)
 			});
 		}
-
-		// const request = event.request;
-		// const userId = event.params.userId;
-		// const hospitalId = event.params.id;
-		// const sessionId = event.cookies.get('sessionId');
-		// const data = await request.formData();
-		// const formData = Object.fromEntries(data);
-
-		// const tags = data.has('tags') ? data.getAll('tags') : [];
-		// const formDataValue = { ...formData, tags: tags };
-
-		// console.log('formData', JSON.stringify(formDataValue, null, 2));
-
-		// type HospitalSchema = z.infer<typeof updateHospitalSchema>;
-
-		// let result: HospitalSchema = {};
-		// try {
-		// 	result = updateHospitalSchema.parse(formDataValue);
-		// 	console.log('result', result);
-		// } catch (err) {
-		// 	const { fieldErrors: errors } = err.flatten();
-		// 	console.log(errors);
-		// 	const { ...rest } = formData;
-		// 	return {
-		// 		data: rest,
-		// 		errors
-		// 	};
-		// }
 
 		let response;
 		try {

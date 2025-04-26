@@ -10,6 +10,11 @@
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import { onMount } from 'svelte';
 	import { redirect } from 'sveltekit-flash-message/server';
+	import type { PaginationSettings } from '$lib/types/common.types';
+	import { toastMessage } from '$lib/components/toast/toast.store';
+	import Confirmation from '$lib/components/confirmation.modal.svelte';
+	import Pagination from '$lib/components/pagination/pagination.svelte';
+	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -17,7 +22,12 @@
 
 	let isLoading = $state(false);
 	let hospitals = $state(data.hospitals.Items);
-	let retrivedHospitals = $state();
+	let retrivedHospitals = $derived(hospitals);
+	let openDeleteModal = $state(false);
+	let idToBeDeleted = $state(null);
+	let isDeleting = $state(false);
+	let searchKeyword = $state(undefined);
+
 	const userId = page.params.userId;
 	const hospitalRoute = `/users/${userId}/hospitals`;
 	const editRoute = (id) => `/users/${userId}/hospitals/${id}/edit`;
@@ -28,95 +38,74 @@
 
 	let hospitalName = $state(undefined);
 	let tags = $state(undefined);
-	let sortBy = 'Name';
-	let sortOrder = $state('ascending');
-	let itemsPerPage = 10;
-	let offset = 0;
+
 	let totalHospitalsCount = $state(data.hospitals.TotalCount);
 	let isSortingName = $state(false);
+	let sortBy = $state('Name');
+	let sortOrder = $state('ascending');
 	let isSortingHealthSystemName = $state(false);
-	let isSortingTags = false;
-	let items = 10;
-	let deleteButtonClicked = $state(false);
-	let cardToDelete = $state('');
+	let isSortingTags = $state(false);
 
-	let paginationSettings = $derived({
+	let paginationSettings: PaginationSettings = $state({
 		page: 0,
 		limit: 10,
 		size: totalHospitalsCount,
 		amounts: [10, 20, 30, 50]
 	});
 
-	$effect(() => {
-		if (hospitalName || tags) {
+	async function searchHospital(model) {
+		if (searchKeyword !== model.hospitalName) {
 			paginationSettings.page = 0;
 		}
-	});
-
-	async function searchHospital(model) {
 		let url = `/api/server/hospitals/search?`;
-		if (sortOrder) url += `sortOrder=${sortOrder}`;
-		else url += `sortOrder=ascending`;
+		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+		url += `&sortBy=${model.sortBy ?? sortBy}`;
+		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
 
-		if (sortBy) url += `&sortBy=${sortBy}`;
-		if (itemsPerPage) url += `&itemsPerPage=${model.itemsPerPage}`;
-		if (offset) url += `&pageIndex=${model.pageIndex}`;
 		if (hospitalName) url += `&name=${model.hospitalName}`;
-		// if (healthSystemName) url += `&healthSystemName=${healthSystemName}`;
 		if (tags) url += `&tags=${tags}`;
-		const res = await fetch(url, {
-			method: 'GET',
-			headers: { 'content-type': 'application/json' }
-		});
-		const searchResult = await res.json();
-		totalHospitalsCount = searchResult.TotalCount;
-		hospitals = searchResult.Items.map((item, index) => ({ ...item, index: index + 1 }));
-		if (totalHospitalsCount > 0) {
+
+		try {
+			const res = await fetch(url, {
+				method: 'GET',
+				headers: { 'content-type': 'application/json' }
+			});
+
+			const searchResult = await res.json();
+
+			console.log('searchResult=>', searchResult);
+
+			totalHospitalsCount = searchResult.Data.Hospitals.TotalCount;
+			paginationSettings.size = totalHospitalsCount;
+
+			hospitals = searchResult.Data.Hospitals.Items.map((item, index) => ({
+				...item,
+				index: index + 1
+			}));
+			searchKeyword = model.hospitalName;
+		} catch (err) {
+			console.error('Search failed:', err);
+		} finally {
 			isLoading = false;
 		}
 	}
-
-	onMount(() => {
-		hospitals = hospitals.map((item, index) => ({ ...item, index: index + 1 }));
-		paginationSettings.size = totalHospitalsCount;
-		retrivedHospitals = hospitals.slice(
-			paginationSettings.page * paginationSettings.limit,
-			paginationSettings.page * paginationSettings.limit + paginationSettings.limit
-		);
-		if (retrivedHospitals.length > 0) {
-			isLoading = false;
-		}
-	});
-
-	// $: console.log('retrivedHospitals', retrivedHospitals);
 
 	$effect(() => {
-		if (!browser) return;
 		searchHospital({
-			hospitalName: hospitalName,
-			tags: tags,
-			// healthSystemName: healthSystemName,
-			itemsPerPage: itemsPerPage,
-			pageIndex: offset,
-			sortOrder: sortOrder,
-			sortBy: sortBy
+			hospitalName,
+			tags,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortOrder,
+			sortBy
 		});
-	});
 
-	function onPageChange(e: CustomEvent): void {
-		isLoading = true;
-		let pageIndex = e.detail;
-		itemsPerPage = items * (pageIndex + 1);
-	}
-
-	function onAmountChange(e: CustomEvent): void {
-		if (hospitalName || tags) {
-			isLoading = true;
-			hospitals = [];
+		if (isDeleting) {
+			retrivedHospitals;
+			isDeleting = false;
 		}
-		itemsPerPage = e.detail * (paginationSettings.page + 1);
-		items = itemsPerPage;
-	}
+	});
 
 	function sortTable(columnName) {
 		isSortingName = false;
@@ -128,39 +117,27 @@
 		} else if (columnName === 'Tags') {
 			isSortingTags = true;
 		}
-		// else if (columnName === 'HealthSystemName') {
-		//     isSortingHealthSystemName = true;
-		// }
 		sortBy = columnName;
 	}
 
-	const handleHospitalDelete = async (id) => {
-		const hospitalId = id;
-		await Delete({
-			sessionId: data.sessionId,
-			hospitalId
-		});
-		invalidate('app:hospitals');
+	const handleDeleteClick = (id: string) => {
+		openDeleteModal = true;
+		idToBeDeleted = id;
 	};
 
-	async function Delete(model) {
-		closeDeleteModal();
-
-		await fetch(`/api/server/hospitals/${model.hospitalId}`, {
+	const handleHospitalDelete = async (id) => {
+		const response = await fetch(`/api/server/hospitals/${id}`, {
 			method: 'DELETE',
-			body: JSON.stringify(model),
 			headers: { 'content-type': 'application/json' }
 		});
-	}
-
-	function closeDeleteModal() {
-		deleteButtonClicked = false;
-		cardToDelete = null;
-	}
-	function openDeleteModal(id) {
-		deleteButtonClicked = true;
-		cardToDelete = id;
-	}
+		const res = await response.json();
+		console.log('deleted Response', res);
+		if (res.HttpCode === 200) {
+			isDeleting = true;
+			toastMessage(res);
+		}
+		invalidate('app:hospitals');
+	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -171,12 +148,16 @@
 			<div class="health-system-search-border p-4">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow pl-1.5">
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
 						<input
 							type="text"
 							name="hospitalName"
 							placeholder="Search by name"
 							bind:value={hospitalName}
-							class="health-system-input"
+							class="health-system-input !pr-4 !pl-10"
 						/>
 						{#if hospitalName}
 							<button
@@ -191,12 +172,16 @@
 						{/if}
 					</div>
 					<div class="relative w-auto grow">
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
 						<input
 							type="text"
 							name="tags"
 							placeholder="Search by tags"
 							bind:value={tags}
-							class="health-system-input"
+							class="health-system-input !pr-4 !pl-10"
 						/>
 						{#if tags}
 							<button
@@ -220,34 +205,48 @@
 							<th data-sort="index" class="w-10"></th>
 							<th class=" w-72 text-start">
 								<button onclick={() => sortTable('Name')}>
-									Name {isSortingName ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
+									Name
+									{#if isSortingName}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
+									{/if}
 								</button>
 							</th>
 							<th class=" w-72">
-								<button onclick={() => sortTable('HealthSystemName')}>
-									Health System {isSortingHealthSystemName
-										? sortOrder === 'ascending'
-											? '▲'
-											: '▼'
-										: ''}
+								<button> Health System </button>
+							</th>
+							<th class=" w-64">
+								<button onclick={() => sortTable('Tags')}>
+									Tags
+									{#if isSortingTags}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
+									{/if}
 								</button>
 							</th>
-							<th class=" w-64">Tags</th>
 							<th class="w-32">Created </th>
 							<th class="w-16"></th>
 						</tr>
 					</thead>
 					<tbody>
-						{#if retrivedHospitals <= 0}
+						{#if retrivedHospitals.length <= 0}
 							<tr>
 								<td colspan="6" class="text-center"
 									>{isLoading ? 'Loading...' : 'No records found'}</td
 								>
 							</tr>
 						{:else}
-							{#each retrivedHospitals as row}
+							{#each retrivedHospitals as row, index}
 								<tr>
-									<td role="gridcell" aria-colindex={1} tabindex="0">{row.index}</td>
+									<td>
+										{paginationSettings.page * paginationSettings.limit + index + 1}
+									</td>
 									<td role="gridcell" aria-colindex={2} tabindex="0">
 										<Tooltip text={row.Name || 'Not specified'}>
 											<a href={viewRoute(row.id)}>
@@ -268,14 +267,9 @@
 										>{row.Tags.length > 0 ? row.Tags : 'Not specified'}</td
 									>
 									<td role="gridcell" aria-colindex={5} tabindex="0">
-										<!-- {date.format(new Date(row.CreatedAt), 'DD-MMM-YYYY')} -->
-										{Helper.formatDate(row.CreatedAt)}
+										{TimeHelper.formatDateToReadable(row.CreatedAt, LocaleIdentifier.EN_US)}
 									</td>
-									<!-- <td>
-										<a href={editRoute(row.id)} class="btn hover:variant-soft-primary -my-1 p-2">
-											<Icon icon="material-symbols:edit-outline" class="text-lg" />
-										</a>
-									</td> -->
+
 									<td>
 										<div class="flex">
 											<Tooltip text="Edit" forceShow={true}>
@@ -300,7 +294,7 @@
 											<Tooltip text="Delete" forceShow={true}>
 												<button
 													class="health-system-btn !text-red-600"
-													onclick={() => openDeleteModal(row.id)}
+													onclick={() => handleDeleteClick(row.id)}
 												>
 													<Icon icon="material-symbols:delete-outline-rounded" />
 												</button>
@@ -316,84 +310,12 @@
 		</div>
 	</div>
 </div>
-{#if deleteButtonClicked}
-	<div class="confirm-modal-overlay"></div>
 
-	<div class="confirm-modal-container">
-		<div class="confirm-modal-subcontainer">
-			<div class="confirm-card-container">
-				<h1 class="confirm-card-heading">Are you absolutely sure?</h1>
-				<p class="confirm-card-paragraph">
-					This action cannot be undone. This will permanently delete your question and remove your
-					data from our servers.
-				</p>
-			</div>
+<Confirmation
+	bind:isOpen={openDeleteModal}
+	title="Delete Hospital @@@"
+	onConfirm={handleHospitalDelete}
+	id={idToBeDeleted}
+/>
 
-			<div class="confirm-card-btn-container">
-				<button class="confirm-card-cancel-btn" onclick={closeDeleteModal}> Cancel </button>
-				<button class="confirm-card-delete-btn" onclick={() => handleHospitalDelete(cardToDelete)}>
-					Delete
-				</button>
-			</div>
-		</div>
-	</div>
-{/if}
-
-<!-- pagination -->
-<!-- <div class="pagination-container">
-	<div class="flex flex-col items-start text-sm text-gray-700 dark:text-gray-300">
-		<div class="relative">
-			<select
-				id="itemsPerPage"
-				class="pagination-select"
-				onchange={changeAmount}
-				bind:value={items}
-			>
-				<option class="" value={5}>5 records per page</option>
-				<option class="" value={10}>10 records per page</option>
-				<option class="" value={15}>15 records per page</option>
-				<option class="" value={20}>20 records per page</option>
-			</select>
-			<div
-				class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400"
-			>
-				<Icon icon="mdi:chevron-down" class="h-4 w-4" />
-			</div>
-		</div>
-	</div>
-
-	<div class="flex items-center space-x-2">
-		<button
-			class="health-system-btn"
-			onclick={() => changePage(paginationSettings.page - 1)}
-			disabled={paginationSettings.page <= 0}
-		>
-			<Icon icon="material-symbols:chevron-left-rounded" width="20" height="20" />
-		</button>
-
-		<span class=" text-xs text-gray-500 dark:text-gray-400">
-			{paginationSettings.page + 1} of {Math.ceil(
-				totalHealthSystemsCount / paginationSettings.limit
-			)}
-		</span>
-		<button
-			class="health-system-btn"
-			onclick={() => changePage(paginationSettings.page + 1)}
-			disabled={(paginationSettings.page + 1) * paginationSettings.limit >= totalHealthSystemsCount}
-		>
-			<Icon icon="material-symbols:chevron-right-rounded" width="20" height="20" />
-		</button>
-	</div>
-</div> -->
-
-<!-- <div class="variant-soft-secondary w-full rounded-lg p-2"> -->
-<!-- <Paginator
-		bind:settings={paginationSettings}
-		on:page={onPageChange}
-		on:amount={onAmountChange}
-		buttonClasses=" text-primary-500"
-		regionControl="bg-surface-100 rounded-lg btn-group text-primary-500 border border-primary-200"
-		controlVariant="rounded-full text-primary-500 "
-		controlSeparator="fill-primary-400"
-	/> -->
-<!-- </div> -->
+<Pagination bind:paginationSettings />
