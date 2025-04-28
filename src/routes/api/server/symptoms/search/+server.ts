@@ -16,28 +16,18 @@ export const GET = async (event: RequestEvent) => {
 		const searchParams: URLSearchParams = event.url.searchParams;
 		const searchFilters = {
 			symptom: searchParams.get('symptom') ?? undefined,
-			tags: searchParams.get('tags') ?? undefined,
-			sortBy: searchParams.get('sortBy') ?? 'CreatedAt',
-			sortOrder: searchParams.get('sortOrder') ?? 'ascending',
-			itemsPerPage: parseInt(searchParams.get('itemsPerPage') ?? '10'),
-			pageIndex: parseInt(searchParams.get('pageIndex') ?? '0')
+			// tags: searchParams.get('tags') ?? undefined,
+			orderBy: searchParams.get("sortBy") ?? "CreatedAt",
+			order: searchParams.get("sortOrder") ?? "ascending",
+			itemsPerPage: parseInt(searchParams.get("itemsPerPage") ?? "10"),
+			pageIndex: parseInt(searchParams.get("pageIndex") ?? "0"),
 		};
 
 		console.log('Search parms: ', searchParams);
 		const response = await searchSymptoms(sessionId, searchFilters);
-		const symptoms = response.Data.SymptomTypes;
+		return ResponseHandler.success(response);
 
-		// for (const symptom of symptoms.Items) {
-		// 	if (symptom.ImageResourceId) {
-		// 		symptom['ImageUrl'] =
-		// 			BACKEND_API_URL +
-		// 			`/file-resources/${symptom.ImageResourceId}/download?disposition=inline`;
-		// 	} else {
-		// 		symptom['ImageUrl'] = null;
-		// 	}
-		// }
-
-		return new Response(JSON.stringify(symptoms));
+		
 	} catch (err) {
 		console.error(`Error retriving symptom: ${err.message}`);
 		return new Response(err.message);

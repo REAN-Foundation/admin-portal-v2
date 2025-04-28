@@ -3,17 +3,32 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import InputChip from '$lib/components/input-chips.svelte';
-	import { enhance } from '$app/forms';
+	// import { createOrUpdateSchema } from '$lib/validation/health.system.schema.js';
+	import { toastMessage } from '$lib/components/toast/toast.store.js';
+	// import type { HealthSystemCreateModel } from '$lib/types/health.system.types.js';
+	import { goto } from '$app/navigation';
+	import { createOrUpdateSchema } from '$lib/validation/symptoms.schema.js';
+	import type { SymptomCreateModel } from '$lib/types/symptoms.types.js';
+	import InputChips from '$lib/components/input-chips.svelte';
 
 	////////////////////////////////////////////////////////////////////////
-	//   export let data;
-	// 	export let form;
+
 	let { data, form } = $props();
+	let errors: Record<string, string> = $state({});
+	let symptom = $state(undefined);
+	let description = $state(undefined);
+	let tags = $state(undefined);
+	let language = $state(undefined);
+	let imageResourceId = $state(undefined);
+
+	let promise = $state();
+	let keywords: string[] = $state([]);
+	let keywordsStr = $state('');
+
 	data.title = 'Clinical-Symptoms Create';
 	const userId = page.params.userId;
-	let imageResourceId = $state(undefined);
+	// let imageResourceId = $state(undefined);
 	let symptomImage;
-	let isSubmitting = $state(false);
 
 	let errorMessage = {
 		Text: 'Max file upload size 150 KB',
@@ -148,13 +163,62 @@
 		}
 	};
 
-	function handleSubmit() {
-		isSubmitting = true;
-	}
+	const handleSubmit = async (event: Event) => {
+		try {
+			event.preventDefault();
+			errors = {};
 
-	if (form) {
-		isSubmitting = false;
-	}
+			const symptomCreateModel: SymptomCreateModel = {
+				Symptom: symptom,
+				Description: description,
+				Tags: keywords,
+				Language: language,
+				ImageResourceId: imageResourceId
+			};
+
+			const validationResult = createOrUpdateSchema.safeParse(symptomCreateModel);
+
+			if (!validationResult.success) {
+				errors = Object.fromEntries(
+					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				);
+				return;
+			}
+
+			const res = await fetch(`/api/server/symptoms`, {
+				method: 'POST',
+				body: JSON.stringify(symptomCreateModel),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			const response = await res.json();
+			console.log(response);
+
+			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				toastMessage(response);
+				goto(`${symptomRoute}/${response?.Data?.SymptomType?.id}/view`);
+				return;
+			}
+
+			if (response.Errors) {
+				errors = response?.Errors || {};
+			} else {
+				toastMessage(response);
+			}
+		} catch (error) {
+			toastMessage();
+		}
+	};
+
+	const onUpdateKeywords = (e: any) => {
+		keywords = e.detail;
+		keywordsStr = keywords?.join(', ');
+	};
+
+	$inspect(errors);
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -162,13 +226,7 @@
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container">
-			<form
-				method="post"
-				enctype="multipart/form-data"
-				action="?/createSymptomAction"
-				use:enhance
-				onsubmit={handleSubmit}
-			>
+			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 				<table class="health-system-table">
 					<thead>
 						<tr>
@@ -185,14 +243,14 @@
 							<td>Symptom <span class="text-red-700">*</span></td>
 							<td>
 								<input
+									bind:value={symptom}
 									type="text"
 									name="symptom"
-									required
 									placeholder="Enter symptom here..."
-									class="health-system-input {form?.errors?.symptom ? 'input-text-error' : ''}"
+									class="health-system-input"
 								/>
-								{#if form?.errors?.symptom}
-									<p class="text-error">{form?.errors?.symptom[0]}</p>
+								{#if errors?.Symptom}
+									<p class="text-error">{errors?.Symptom}</p>
 								{/if}
 							</td>
 						</tr>
@@ -200,30 +258,37 @@
 							<td>Description</td>
 							<td>
 								<textarea
+									bind:value={description}
 									name="description"
 									placeholder="Enter description here..."
 									class="health-system-input"
-								/>
+								></textarea>
 							</td>
 						</tr>
 						<tr>
 							<td>Tags</td>
 							<td>
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" /> -->
+								<InputChips
+									bind:keywords
+									name="keywords"
+									id="keywords"
+									keywordsChanged={onUpdateKeywords}
+								/>
+								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 							</td>
 						</tr>
 						<tr>
-							<td>Language *</td>
+							<td>Language <span class="text-red-700">*</span></td>
 							<td>
 								<input
 									type="text"
 									name="language"
-									required
 									placeholder="Enter language here..."
-									class="health-system-input {form?.errors?.language ? 'input-text-error' : ''}"
+									bind:value={language}
+									class="health-system-input"
 								/>
-								{#if form?.errors?.language}
-									<p class="text-error">{form?.errors?.language[0]}</p>
+								{#if errors?.Language}
+									<p class="text-error">{errors?.Language}</p>
 								{/if}
 							</td>
 						</tr>
@@ -233,7 +298,6 @@
 								<input
 									name="fileinput"
 									type="file"
-									required
 									class="true health-system-input"
 									placeholder="Image"
 									bind:this={symptomImage}
@@ -248,13 +312,13 @@
 					</tbody>
 				</table>
 				<div class="button-container">
-					<button
-						type="submit"
-						class="health-system-btn variant-soft-secondary"
-						disabled={isSubmitting}
-					>
-						{isSubmitting ? 'Submitting...' : 'Submit'}
-					</button>
+					{#await promise}
+						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+							Submiting
+						</button>
+					{:then data}
+						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+					{/await}
 				</div>
 			</form>
 		</div>

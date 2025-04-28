@@ -7,7 +7,7 @@
 	////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
-	let drug = data.drug;
+	let drug = $state(data.drug);
 	let id = drug.id;
 	let drugName = drug.DrugName;
 	let genericName =
@@ -45,13 +45,6 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<!-- <div class="flex flex-wrap gap-2">
-	<a href={editRoute} class="btn variant-filled-secondary ml-auto">
-		<Icon icon="material-symbols:edit-outline" />
-		<span>Edit</span>
-	</a>
-</div> -->
-
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container">
@@ -66,7 +59,7 @@
 						</th>
 					</tr>
 				</thead>
-				<tbody >
+				<tbody>
 					<tr>
 						<td>Name</td>
 						<td>{drugName}</td>

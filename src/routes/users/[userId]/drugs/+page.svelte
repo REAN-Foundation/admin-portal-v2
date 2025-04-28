@@ -1,20 +1,30 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
 	import { invalidate } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import Tooltip from '$lib/components/tooltip.svelte';
+	import type { PaginationSettings } from '$lib/types/common.types';
+	import { toastMessage } from '$lib/components/toast/toast.store';
+	import Confirmation from '$lib/components/confirmation.modal.svelte';
+	import Pagination from '$lib/components/pagination/pagination.svelte';
+	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
-	let promise;
-	let retrivedDrugs = $state();
+
+	let isLoading = $state(false);
 	let drugs = $state(data.drugs.Items);
+	let retrivedDrugs = $derived(drugs);
+
+	let openDeleteModal = $state(false);
+	let idToBeDeleted = $state(null);
+	let isDeleting = $state(false);
+	let searchKeyword = $state(undefined);
+
 	const userId = page.params.userId;
 	const drugRoute = `/users/${userId}/drugs`;
 	const editRoute = (id) => `/users/${userId}/drugs/${id}/edit`;
@@ -25,24 +35,14 @@
 
 	let drugName = $state(undefined);
 	let genericName = $state(undefined);
-	let sortBy = 'DrugName';
-	let sortOrder = $state('ascending');
-	let itemsPerPage = 10;
-	let offset = 0;
+
 	let totalDrugsCount = $state(data.drugs.TotalCount);
 	let isSortingName = $state(false);
 	let isSortingGenericName = $state(false);
-	let items = 10;
-	let deleteButtonClicked = $state(false);
-	let cardToDelete = $state('');
+	let sortBy = $state('DrugName');
+	let sortOrder = $state('ascending');
 
-	$effect(() => {
-		if (drugName || genericName) {
-			paginationSettings.page = 0;
-		}
-	});
-
-	let paginationSettings = $derived({
+	let paginationSettings: PaginationSettings = $state({
 		page: 0,
 		limit: 10,
 		size: totalDrugsCount,
@@ -50,59 +50,57 @@
 	});
 
 	async function searchDrug(model) {
+		if (searchKeyword !== model.drugName) {
+			paginationSettings.page = 0;
+		}
+		if (searchKeyword !== model.genericName) {
+			paginationSettings.page = 0;
+		}
 		let url = `/api/server/drugs/search?`;
-		if (sortOrder) url += `sortOrder=${sortOrder}`;
-		else url += `sortOrder=ascending`;
+		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+		url += `&sortBy=${model.sortBy ?? sortBy}`;
+		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
 
-		if (sortBy) url += `&sortBy=${sortBy}`;
-		if (itemsPerPage) url += `&itemsPerPage=${itemsPerPage}`;
-		if (offset) url += `&pageIndex=${offset}`;
 		if (drugName) url += `&drugName=${model.drugName}`;
 		if (genericName) url += `&genericName=${model.genericName}`;
-		const res = await fetch(url, {
-			method: 'GET',
-			headers: { 'content-type': 'application/json' }
-		});
-		const searchResult = await res.json();
-		totalDrugsCount = searchResult.TotalCount;
-		drugs = searchResult.Items.map((item, index) => ({ ...item, index: index + 1 }));
-	}
 
-	onMount(() => {
-		drugs = drugs.map((item, index) => ({ ...item, index: index + 1 }));
-		paginationSettings.size = totalDrugsCount;
-		retrivedDrugs = drugs.slice(
-			paginationSettings.page * paginationSettings.limit,
-			paginationSettings.page * paginationSettings.limit + paginationSettings.limit
-		);
-	});
+		try {
+			const res = await fetch(url, {
+				method: 'GET',
+				headers: { 'content-type': 'application/json' }
+			});
+			const searchResult = await res.json();
+			console.log('searchResult', searchResult);
+			totalDrugsCount = searchResult.Data.Drugs.TotalCount;
+			paginationSettings.size = totalDrugsCount;
+			drugs = searchResult.Data.Drugs.Items.map((item, index) => ({
+				...item,
+				index: index + 1
+			}));
+			// searchKeyword = model.drugName;
+			// searchKeyword = model.genericName;
+		} catch (err) {
+			console.error('Search failed:', err);
+		} finally {
+			isLoading = false;
+		}
+	}
 
 	$effect(() => {
-		if (!browser) return;
-		promise = searchDrug({
-			drugName: drugName,
-			genericName: genericName,
-			itemsPerPage: itemsPerPage,
-			pageIndex: offset,
-			sortOrder: sortOrder,
-			sortBy: sortBy
+		searchDrug({
+			drugName,
+			genericName,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortBy,
+			sortOrder
 		});
-	});
-
-	function onPageChange(e: CustomEvent): void {
-		let pageIndex = e.detail;
-		itemsPerPage = items * (pageIndex + 1);
-	}
-
-	function onAmountChange(e: CustomEvent): void {
-		if (drugName || genericName) {
-			drugs = [];
+		if (isDeleting) {
+			retrivedDrugs;
+			isDeleting = false;
 		}
-		paginationSettings.page = 0;
-		offset = 0;
-		itemsPerPage = e.detail * (paginationSettings.page + 1);
-		items = itemsPerPage;
-	}
+	});
 
 	function sortTable(columnName) {
 		isSortingName = false;
@@ -116,55 +114,45 @@
 		sortBy = columnName;
 	}
 
-	function resetSearch() {
-		drugName = undefined;
-		genericName = undefined;
-		paginationSettings.page = 0;
-	}
-
-	const handleDrugDelete = async (id) => {
-		const drugId = id;
-		await Delete({
-			sessionId: data.sessionId,
-			drugId
-		});
-		drugName = undefined;
-		genericName = undefined;
-		invalidate('app:drugs');
+	const handleDeleteClick = (id: string) => {
+		openDeleteModal = true;
+		idToBeDeleted = id;
 	};
 
-	async function Delete(model) {
-		await fetch(`/api/server/drugs`, {
+	const handleDrugDelete = async (id) => {
+		const response = await fetch(`/api/server/drugs/${id}`, {
 			method: 'DELETE',
-			body: JSON.stringify(model),
 			headers: { 'content-type': 'application/json' }
 		});
-	}
 
-	function closeDeleteModal() {
-		deleteButtonClicked = false;
-		cardToDelete = null;
-	}
-	function openDeleteModal(id) {
-		deleteButtonClicked = true;
-		cardToDelete = id;
-	}
+		const res = await response.json();
+		console.log('deleted Response', res);
+		if (res.HttpCode === 200) {
+			isDeleting = true;
+			toastMessage(res);
+		}
+		invalidate('app:drugs');
+	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container z-0 shadow">
+		<div class="health-system-table-container mb-6 shadow">
 			<div class="health-system-search-border p-4">
-				<div class="mt-1 flex flex-wrap gap-2">
-					<div class="relative w-auto grow pl-1.5">
+				<div class="flex flex-col gap-4 md:flex-row">
+					<div class="relative w-auto grow">
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
 						<input
 							type="text"
 							name="drugName"
 							placeholder="Search by name"
 							bind:value={drugName}
-							class="health-system-input"
+							class="health-system-input !pr-4 !pl-10"
 						/>
 						{#if drugName}
 							<button
@@ -172,19 +160,23 @@
 								onclick={() => {
 									drugName = '';
 								}}
-								class="absolute top-1/2 right-2 -translate-y-1/2 transform cursor-pointer border-0 bg-transparent"
+								class="close-btn"
 							>
-								<Icon icon="material-symbols:close" class="text-lg" />
+								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
 					</div>
 					<div class="relative w-auto grow">
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
 						<input
 							type="text"
 							name="genericName"
 							placeholder="Search by generic name"
 							bind:value={genericName}
-							class="health-system-input"
+							class="health-system-input !pr-4 !pl-10"
 						/>
 						{#if genericName}
 							<button
@@ -192,13 +184,15 @@
 								onclick={() => {
 									genericName = '';
 								}}
-								class="absolute top-1/2 right-2 -translate-y-1/2 transform cursor-pointer border-0 bg-transparent"
+								class="close-btn"
 							>
-								<Icon icon="material-symbols:close" class="text-lg" />
+								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
 					</div>
-					<a href={createRoute} class="health-system-btn variant-filled-secondary">Add New</a>
+					<button class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary">
+						<a href={createRoute}>Add New</a>
+					</button>
 				</div>
 			</div>
 
@@ -206,44 +200,42 @@
 				<table class="health-system-table min-w-full">
 					<thead>
 						<tr>
-							<th data-sort="index">Id</th>
-							<th class="w-72">
+							<th class="w-12"></th>
+							<th class=" w-70">
 								<button onclick={() => sortTable('DrugName')}>
 									Name {isSortingName ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
 								</button>
 							</th>
-							<th class="w-72">
+							<th class="w-64">
 								<button onclick={() => sortTable('GenericName')}>
 									Generic Name {isSortingGenericName ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
 								</button>
 							</th>
-							<th class="w-52">Ingredients</th>
+							<th class="w-24">Ingredients</th>
 							<th class="w-32">Created</th>
-							<th></th>
+							<th class="w-20"></th>
 						</tr>
 					</thead>
 					<tbody>
-						<!-- {#await promise}
-							<tr>
-								<td colspan="7">Loading...</td>
-							</tr>
-						{:then data} -->
 						{#if retrivedDrugs <= 0}
 							<tr>
-								<td colspan="6">No records found</td>
+								<td aria-colindex={1} colspan="8"
+									>{isLoading ? 'Loading...' : 'No records found'}</td
+								>
 							</tr>
 						{:else}
-							{#each retrivedDrugs as row}
+							{#each retrivedDrugs as row, index}
 								<tr>
-									<td role="gridcell" aria-colindex={1} tabindex="0">{row.index}</td>
+									<td>
+										{paginationSettings.page * paginationSettings.limit + index + 1}
+									</td>
 									<td role="gridcell" aria-colindex={2} tabindex="0">
 										<Tooltip text={row.DrugName || 'Not specified'}>
-										
-										<a href={viewRoute(row.id)}>
-											{row.DrugName !== null && row.DrugName !== ''
-												? Helper.truncateText(row.DrugName, 50)
-												: 'Not specified'}
-										</a>
+											<a href={viewRoute(row.id)}>
+												{row.DrugName !== null && row.DrugName !== ''
+													? Helper.truncateText(row.DrugName, 50)
+													: 'Not specified'}
+											</a>
 										</Tooltip>
 									</td>
 									<td role="gridcell" aria-colindex={3} tabindex="0">
@@ -261,25 +253,10 @@
 										</Tooltip>
 									</td>
 									<td role="gridcell" aria-colindex={5} tabindex="0">
-										<!-- {date.format(new Date(row.CreatedAt), 'DD-MMM-YYYY')}</td -->
-										{Helper.formatDate(row.CreatedAt)}
+										{TimeHelper.formatDateToReadable(row.CreatedAt, LocaleIdentifier.EN_US)}
 									</td>
-									<!-- <td>
-											<a href={editRoute(row.id)} class="btn hover:variant-soft-primary -my-1 p-2">
-												<Icon icon="material-symbols:edit-outline" class="text-lg" />
-											</a>
-										</td> -->
+
 									<td>
-										<!-- <Confirm confirmTitle="Delete" cancelTitle="Cancel" let:confirm={confirmThis}>
-									<button
-										onclick={() => confirmThis(handleDrugDelete, row.id)}
-										class="btn hover:variant-soft-error -my-1 p-2"
-									>
-										<Icon icon="material-symbols:delete-outline-rounded" class="text-lg" />
-									</button>
-									<span slot="title"> Delete </span>
-									<span slot="description"> Are you sure you want to delete a drug? </span>
-								</Confirm> -->
 										<div class="flex">
 											<Tooltip text="Edit" forceShow={true}>
 												<button class="">
@@ -303,7 +280,7 @@
 											<Tooltip text="Delete" forceShow={true}>
 												<button
 													class="health-system-btn !text-red-600"
-													onclick={() => openDeleteModal(row.id)}
+													onclick={() => handleDeleteClick(row.id)}
 												>
 													<Icon icon="material-symbols:delete-outline-rounded" />
 												</button>
@@ -313,44 +290,17 @@
 								</tr>
 							{/each}
 						{/if}
-						<!-- {/await} -->
 					</tbody>
 				</table>
 			</div>
 		</div>
 	</div>
 </div>
-{#if deleteButtonClicked}
-	<div class="confirm-modal-overlay"></div>
+<Confirmation
+	bind:isOpen={openDeleteModal}
+	title="Delete Drugs"
+	onConfirm={handleDrugDelete}
+	id={idToBeDeleted}
+/>
 
-	<div class="confirm-modal-container">
-		<div class="confirm-modal-subcontainer">
-			<div class="confirm-card-container">
-				<h1 class="confirm-card-heading">Are you absolutely sure?</h1>
-				<p class="confirm-card-paragraph">
-					This action cannot be undone. This will permanently delete your question and remove your
-					data from our servers.
-				</p>
-			</div>
-
-			<div class="confirm-card-btn-container">
-				<button class="confirm-card-cancel-btn" onclick={closeDeleteModal}> Cancel </button>
-				<button class="confirm-card-delete-btn" onclick={() => handleDrugDelete(cardToDelete)}>
-					Delete
-				</button>
-			</div>
-		</div>
-	</div>
-{/if}
-
-<div class="variant-soft-secondary w-full rounded-lg p-2">
-	<!-- <Paginator
-		bind:settings={paginationSettings}
-		on:page={onPageChange}
-		on:amount={onAmountChange}
-		buttonClasses=" text-primary-500"
-		regionControl="bg-surface-100 rounded-lg btn-group text-primary-500 border border-primary-200"
-		controlVariant="rounded-full text-primary-500 "
-		controlSeparator="fill-primary-400"
-	/> -->
-</div>
+<Pagination bind:paginationSettings />
