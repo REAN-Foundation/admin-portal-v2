@@ -1,13 +1,19 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { addPermissionMatrix, searchUsers } from '../../../services/reancare/user';
+import { ResponseHandler } from '$lib/utils/response.handler';
 //////////////////////////////////////////////////////////////
 
 export const GET = async (event: RequestEvent) => {
 	try {
-		const sessionId = event.locals.sessionUser.sessionId;
-		const tenantId = event.locals.sessionUser.tenantId;
-		const userRole = event.locals.sessionUser.roleName;
-		const userId = event.locals.sessionUser.userId;
+		const sessionId = event.locals?.sessionUser?.sessionId;
+		if (!sessionId) {
+			return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session.'));
+		}
+
+		const tenantId = event.locals?.sessionUser?.tenantId;
+		const userRole = event.locals?.sessionUser?.roleName;
+
+		const userId = event.locals?.sessionUser?.userId;
 		const userRoleId = event.locals.sessionUser.roleId;
 		const searchParams: URLSearchParams = event.url.searchParams;
 
@@ -16,8 +22,8 @@ export const GET = async (event: RequestEvent) => {
 			email: searchParams.get('email') ?? undefined,
 			phone: searchParams.get('phone') ?? undefined,
 			roleIds: searchParams.get('roleIds') ?? undefined,
-			sortBy: searchParams.get('sortBy') ?? 'CreatedAt',
-			sortOrder: searchParams.get('sortOrder') ?? 'ascending',
+			orderBy: searchParams.get('sortBy') ?? 'CreatedAt',
+			order: searchParams.get('sortOrder') ?? 'ascending',
 			itemsPerPage: parseInt(searchParams.get('itemsPerPage') ?? '10'),
 			pageIndex: parseInt(searchParams.get('pageIndex') ?? '0')
 		};

@@ -58,38 +58,3 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 		title: 'Administration-Users'
 	};
 };
-
-// const addPermissionMatrix = async (userRoleList: any[], userRole?: string, userId?: string, tenantId?: string, roleId?: string) => {
-//   console.log('User Role',userRole);
-//   const permissionMatrix: any[] = [];
-
-//   if (userRole === 'System admin') {
-//     userRoleList.forEach((userRole) => {
-//       permissionMatrix.push({...userRole, IsPermitted: 1});
-//     })
-//   }
-
-//   if (userRole === 'Tenant admin') {
-//       userRoleList.forEach((userRole) => {
-//       console.log('Role',userRole.RoleId, '-', roleId);
-//       console.log('Tenant Id',userRole.TenantId, '-', tenantId);
-//       console.log('User Id',userRole.id, '-', userId);
-//       console.log('Role',typeof userRole.RoleId, '-', typeof roleId);
-//       console.log('Tenant Id',typeof userRole.TenantId, '-', typeof tenantId);
-//       console.log('User Id',typeof userRole.id, '-', typeof userId);
-//       console.log('COND1',userRole.RoleId === roleId )
-//       console.log('COND2',userRole.TenantId === tenantId )
-//       console.log('COND3',userRole.id === userId)
-//       console.log('COND4',userRole.RoleId === roleId && userRole.id === userId && userRole.TenantId === tenantId)
-//       if (userRole.RoleId === roleId &&
-//         userRole.TenantId === tenantId &&
-//         userRole.id === userId) {
-//         permissionMatrix.push({...userRole, IsPermitted: 1});
-//       } else {
-//         permissionMatrix.push({...userRole, IsPermitted: 0});
-//       }
-//     })
-//   }
-//   console.log('--', permissionMatrix);
-//   return permissionMatrix.length > 0  ? permissionMatrix : userRoleList;
-// }

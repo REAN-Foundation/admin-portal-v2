@@ -6,6 +6,10 @@
 	import { LocalStorageUtils } from '$lib/utils/local.storage.utils';
 	import type { PageServerData } from '../$types.ts';
 	import PasswordInput from '$lib/components/input/password.input.svelte';
+	import { toastMessage } from '$lib/components/toast/toast.store.js';
+	import { goto } from '$app/navigation';
+	import type { UserCreateModel } from '$lib/types/user.types.js';
+	import { createSchema } from '$lib/validation/user.schemas.js';
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -14,8 +18,20 @@
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let userRoles = data.UserRoles;
+
+	let firstName = $state(undefined);
+	let lastName = $state(undefined);
+	let role = $state(undefined);
+	let countryCode = $state('+1');
+	let email = $state(undefined);
+	let phone = $state(undefined);
+	let password = $state(undefined);
+
 	const userId = page.params.userId;
 	let selectedUserRoleId = $state(undefined);
+	let errors: Record<string, string> = $state({});
+	let promise = $state();
+
 	const createRoute = `/users/${userId}/users/create`;
 	const userRoute = `/users/${userId}/users`;
 
@@ -23,47 +39,6 @@
 		{ name: 'Users', path: userRoute },
 		{ name: 'Create', path: createRoute }
 	];
-
-	// const upload = async (imgBase64, filename) => {
-	// 	const data = {};
-	// 	console.log(imgBase64);
-	// 	const imgData = imgBase64.split(',');
-	// 	data['image'] = imgData[1];
-	// 	console.log(JSON.stringify(data));
-	// 	const res = await fetch(`/api/server/file-resources/upload`, {
-	// 		method: 'POST',
-	// 		headers: {
-	// 			'Content-Type': 'application/json',
-	// 			Accept: 'application/json',
-	// 			filename: filename
-	// 		},
-	// 		body: JSON.stringify(data)
-	// 	});
-	// 	console.log(Date.now().toString());
-	// 	const response = await res.json();
-	// 	if (response.Status === 'success' && response.HttpCode === 201) {
-	// 		// const imageUrl_ = response.Data.FileResources[0].Url;
-	// 		console.log('imageUrl', imageUrl);
-	// 		const imageResourceId_ = response.Data.FileResources[0].id;
-	// 		console.log('imageResourceId_', imageUrl);
-	// 		if (imageResourceId_) {
-	// 			imageResourceId = imageResourceId_;
-	// 		}
-	// 	} else {
-	// 		showMessage(response.Message, 'error');
-	// 	}
-	// };
-
-	// const onFileSelected = async (e) => {
-	// 	let f = e.target.files[0];
-	// 	const filename = f.name;
-	// 	let reader = new FileReader();
-	// 	reader.readAsDataURL(f);
-	// 	reader.onload = async (e) => {
-	// 		fileinput = e.target.result;
-	// 		await upload(e.target.result, filename);
-	// 	};
-	// };
 
 	function getRoleIdByRoleName(event) {
 		const selectedUserRole = event.target.value;
@@ -76,13 +51,58 @@
 		}
 	}
 
-	function handleSubmit() {
-		isSubmitting = true;
-	}
-	let isSubmitting = $state(false);
-	if (form) {
-		isSubmitting = false;
-	}
+	const handleSubmit = async (event: Event) => {
+		try {
+			event.preventDefault();
+			errors = {};
+
+			const usersCreateModel: UserCreateModel = {
+				FirstName: firstName,
+				LastName: lastName,
+				Phone: phone,
+				Email: email,
+				Role: role,
+				Password: password,
+				CountryCode: countryCode,
+				SelectedUserRoleId: selectedUserRoleId
+			};
+
+			const validationResult = createSchema.safeParse(usersCreateModel);
+			console.log(validationResult);
+
+			if (!validationResult.success) {
+				errors = Object.fromEntries(
+					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				);
+				return;
+			}
+
+			const res = await fetch(`/api/server/users`, {
+				method: 'POST',
+				body: JSON.stringify(usersCreateModel),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			const response = await res.json();
+
+			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				toastMessage(response);
+				goto(`${userRoute}/${response?.Data?.User?.id}/view`);
+				return;
+			}
+
+			if (response.Errors) {
+				errors = response?.Errors || {};
+			} else {
+				toastMessage(response);
+			}
+		} catch (error) {
+			toastMessage();
+		}
+	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -90,19 +110,13 @@
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container">
-			<form
-				method="post"
-				action="?/createUserAction"
-				enctype="multipart/form-data"
-				use:enhance
-				onsubmit={handleSubmit}
-			>
+			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 				<table class="health-system-table">
 					<thead>
 						<tr>
 							<th>Create User</th>
 							<th class="text-end">
-								<a href={userRoute} class="health-system-btn variant-soft-secondary">
+								<a href={userRoute} class="cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -115,13 +129,12 @@
 								<input
 									type="text"
 									name="firstName"
-									required
-									value={form?.data?.firstName ?? ''}
+									bind:value={firstName}
 									placeholder="Enter first name here..."
-									class="health-system-input {form?.errors?.firstName ? 'input-text-error' : ''}"
+									class="health-system-input"
 								/>
-								{#if form?.errors?.firstName}
-									<p class="text-error">{form?.errors?.firstName[0]}</p>
+								{#if errors?.FirstName}
+									<p class="text-error ml-1">{errors?.FirstName}</p>
 								{/if}
 							</td>
 						</tr>
@@ -131,39 +144,21 @@
 								<input
 									type="text"
 									name="lastName"
-									required
-									value={form?.data?.lastName ?? ''}
+									bind:value={lastName}
 									placeholder="Enter last name here..."
-									class="health-system-input {form?.errors?.lastName
-										? 'input-text-error'
-										: 'border-primary-200'}"
+									class="health-system-input"
 								/>
-								{#if form?.errors?.lastName}
-									<p class="text-error">{form?.errors?.lastName[0]}</p>
+								{#if errors?.LastName}
+									<p class="text-error ml-1">{errors?.LastName}</p>
 								{/if}
 							</td>
 						</tr>
-						<!-- <tr >
-				<td>Contact Number *</td>
-				<td>
-					<input
-						type="text"
-						name="phone"
-						required
-						placeholder="Enter phone here..."
-						class="health-system-input {form?.errors?.phone ? 'input-text-error' : 'border-primary-200'}"
-					/>
-					{#if form?.errors?.phone}
-						<p class="text-error">{form?.errors?.phone[0]}</p>
-					{/if}
-				</td>
-			</tr> -->
 						<tr>
 							<td>Contact Number <span class="text-red-700">*</span></td>
 							<td class="flex gap-2">
 								<select
 									name="countryCode"
-									value={form?.data?.countryCode ?? '+1'}
+									bind:value={countryCode}
 									class="health-system-input !w-20"
 								>
 									<option>+1</option>
@@ -172,14 +167,13 @@
 								<input
 									type="text"
 									name="phone"
-									value={form?.data?.phone ?? ''}
+									bind:value={phone}
 									pattern="[0-9]*"
-									required
 									placeholder="Enter contact number here..."
-									class="health-system-input {form?.errors?.phone ? 'input-text-error' : ''}"
+									class="health-system-input"
 								/>
-								{#if form?.errors?.phone}
-									<p class="text-error">{form?.errors?.phone[0]}</p>
+								{#if errors?.Phone}
+									<p class="text-error">{errors?.Phone}</p>
 								{/if}
 							</td>
 						</tr>
@@ -189,15 +183,12 @@
 								<input
 									type="email"
 									name="email"
-									value={form?.data?.email ?? ''}
+									bind:value={email}
 									placeholder="Enter email here..."
-									required
-									class="health-system-input {form?.errors?.email
-										? 'input-text-error'
-										: 'border-primary-200'}"
+									class="health-system-input"
 								/>
-								{#if form?.errors?.email}
-									<p class="text-error">{form?.errors?.email[0]}</p>
+								{#if errors?.Email}
+									<p class="text-error">{errors?.Email}</p>
 								{/if}
 							</td>
 						</tr>
@@ -206,9 +197,8 @@
 							<td>
 								<select
 									name="role"
+									bind:value={role}
 									class="health-system-input"
-									required
-									value=""
 									onchange={getRoleIdByRoleName}
 									placeholder="Select role here..."
 								>
@@ -222,51 +212,27 @@
 						<tr>
 							<td>Password <span class="text-red-700">*</span></td>
 							<td>
-								<!-- <input
-						type="password"
-						name="password"
-						placeholder="Enter password here..."
-						class="health-system-input {form?.errors?.password
-							? 'input-text-error'
-							: 'border-primary-200'}"
-					/> -->
-								<PasswordInput />
-								{#if form?.errors?.password}
-									<p class="text-error">{form?.errors?.password[0]}</p>
+								<PasswordInput bind:password />
+								{#if errors?.Password}
+									<p class="text-error">{errors?.Password}</p>
 								{:else}
 									<p class="text-error">
 										The password should be at least 8 characters long and must contain at least 1
 										capital letter, 1 small letter, 1 digit, and 1 special character.
 									</p>
 								{/if}
-								<!-- {#if form?.errors?.password} -->
-								<!-- <p class="border-b-surface-700">Password should be of minimum 8 characters & contain at least 1 capital letter , 1 digit & 1 special character</p> -->
-								<!-- {/if} -->
 							</td>
 						</tr>
-						<!-- <tr >
-				<td>Image</td>
-				<td>
-					<input
-						name="fileinput"
-						type="file"
-						class="true input w-full"
-						placeholder="Image"
-						on:change={async (e) => await onFileSelected(e)}
-					/>
-					<input type="hidden" name="imageResourceId" bind:value={imageResourceId} />
-				</td>
-			</tr> -->
 					</tbody>
 				</table>
 				<div class="button-container">
-					<button
-						type="submit"
-						class="health-system-btn variant-soft-secondary"
-						disabled={isSubmitting}
-					>
-						{isSubmitting ? 'Submitting...' : 'Submit'}
-					</button>
+					{#await promise}
+						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+							Submiting
+						</button>
+					{:then data}
+						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+					{/await}
 				</div>
 			</form>
 		</div>
