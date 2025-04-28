@@ -5,22 +5,22 @@ import { searchLabRecordTypes } from '../../../api/services/reancare/lab-record-
 ////////////////////////////////////////////////////////////////////////////
 
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
-	const sessionId = event.cookies.get('sessionId');
-	event.depends('app:lab-records')
-	let labRecordTypes=[]
+    const sessionId = event.cookies.get('sessionId');
+    event.depends('app:lab-records')
     const response = await searchLabRecordTypes(sessionId, {
         orderBy: "TypeName",
         order: "ascending"
     });
+
     if (response.Status === 'failure' || response.HttpCode !== 200) {
         throw error(response.HttpCode, response.Message);
     }
-    labRecordTypes = response.Data.LabRecordTypes;
+    const labRecordTypes = response.Data.LabRecordTypes;
+
     return {
         labRecordTypes,
         sessionId,
         message: response.Message,
-        title:'Clinical-Lab Records'
+        title: 'Clinical-Lab Records'
     };
-		
 };

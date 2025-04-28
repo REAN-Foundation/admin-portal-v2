@@ -6,10 +6,10 @@
 
 	///////////////////////////////////////////////////////////////////////
 
-	// export let data: PageServerData;
 	let { data }: { data: PageServerData } = $props();
 
-	let labRecordType = data.labRecordType;
+	let labRecordType = $state(data.labRecordType);
+
 	let id = labRecordType.id;
 	let typeName = labRecordType.TypeName;
 	let displayName =
@@ -49,13 +49,6 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
-<!-- <div class="flex flex-wrap gap-2">
-	<a href={editRoute} class="btn variant-filled-secondary ml-auto">
-		<Icon icon="material-symbols:edit-outline" />
-		<span>Edit</span>
-	</a>
-</div> -->
 
 <div class="px-6 py-4">
 	<div class="mx-auto">

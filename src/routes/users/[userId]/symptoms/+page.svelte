@@ -1,27 +1,32 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
-	import Image from '$lib/components/image.svelte';
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
-
 	import type { PageServerData } from './$types';
 	import { invalidate } from '$app/navigation';
-	import { db } from '$lib/utils/local.db';
-	import { onMount } from 'svelte';
 	import Tooltip from '$lib/components/tooltip.svelte';
+	import type { PaginationSettings } from '$lib/types/common.types';
+	import Confirmation from '$lib/components/confirmation.modal.svelte';
+	import { toastMessage } from '$lib/components/toast/toast.store';
+	import Pagination from '$lib/components/pagination/pagination.svelte';
+	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
+	import Image from '$lib/components/image.svelte';
+	import { db } from '$lib/utils/local.db';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	// export let data: PageServerData;
 	let { data }: { data: PageServerData } = $props();
 
 	let isLoading = $state(false);
-	let retrivedSymptoms = $state();
-	let symptoms = $state(data.symptoms);
+	let symptoms = $state(data.symptoms.Items);
+	let retrivedSymptoms = $derived(symptoms);
+	let openDeleteModal = $state(false);
+	let idToBeDeleted = $state(null);
+	let isDeleting = $state(false);
+	let searchKeyword = $state(undefined);
 
-	const userId = $page.params.userId;
+	const userId = page.params.userId;
 	const symptomRoute = `/users/${userId}/symptoms`;
 	const editRoute = (id) => `/users/${userId}/symptoms/${id}/edit`;
 	const viewRoute = (id) => `/users/${userId}/symptoms/${id}/view`;
@@ -31,90 +36,70 @@
 
 	let symptom = $state(undefined);
 	let tags = $state(undefined);
-	let sortBy = 'Symptom';
-	let sortOrder = $state('ascending');
-	let itemsPerPage = 10;
-	let offset = 0;
-	let totalSymptomsCount = $state(data.symptomsCount);
+	let totalSymptomsCount = $state(data.symptoms.TotalCount);
 	let isSortingSymptom = $state(false);
 	let isSortingTags = $state(false);
-	let items = 10;
-	let deleteButtonClicked = $state(false);
-	let cardToDelete = $state('');
+	let sortBy = $state('Symptom');
+	let sortOrder = $state('ascending');
 
-	// $: {
-	// 	if (symptom || tags) {
-	// 		paginationSettings.page = 0;
-	// 	}
-	// }
-
-	let paginationSettings = $derived({
+	let paginationSettings: PaginationSettings = $state({
 		page: 0,
 		limit: 10,
 		size: totalSymptomsCount,
 		amounts: [10, 20, 30, 50]
 	});
+
 	async function searchSymptom(model) {
+		if (searchKeyword !== model.symptom) {
+			paginationSettings.page = 0;
+		}
+		// if (searchKeyword !== model.tags) {
+		// 	paginationSettings.page = 0;
+		// }
 		let url = `/api/server/symptoms/search?`;
-		if (sortOrder) url += `sortOrder=${sortOrder}`;
-		else url += `sortOrder=ascending`;
-
-		if (sortBy) url += `&sortBy=${sortBy}`;
-		if (itemsPerPage) url += `&itemsPerPage=${itemsPerPage}`;
-		if (offset) url += `&pageIndex=${offset}`;
+		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+		url += `&sortBy=${model.sortBy ?? sortBy}`;
+		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
 		if (symptom) url += `&symptom=${model.symptom}`;
-		if (tags) url += `&tags=${model.tags}`;
+		// if (tags) url += `&tags=${tags}`;
 
-		const res = await fetch(url, {
-			method: 'GET',
-			headers: { 'content-type': 'application/json' }
-		});
-		const searchResult = await res.json();
-		totalSymptomsCount = searchResult.TotalCount;
-		symptoms = searchResult.Items;
-		if (totalSymptomsCount > 0) {
+		try {
+			const res = await fetch(url, {
+				method: 'GET',
+				headers: { 'content-type': 'application/json' }
+			});
+			const searchResult = await res.json();
+			console.log('searchResult', searchResult);
+			console.log('url', url);
+			totalSymptomsCount = searchResult.Data.SymptomTypes.TotalCount;
+			paginationSettings.size = totalSymptomsCount;
+			symptoms = searchResult.Data.SymptomTypes.Items.map((item, index) => ({
+				...item,
+				index: index + 1
+			}));
+			searchKeyword = model.symptom;
+		} catch (err) {
+			console.error('Search failed:', err);
+		} finally {
 			isLoading = false;
 		}
 	}
 
-	onMount(() => {
-		symptoms = symptoms.map((item, index) => ({ ...item, index: index + 1 }));
-		paginationSettings.size = totalSymptomsCount;
-		retrivedSymptoms = symptoms.slice(
-			paginationSettings.page * paginationSettings.limit,
-			paginationSettings.page * paginationSettings.limit + paginationSettings.limit
-		);
-		if (retrivedSymptoms.length > 0) {
-			isLoading = false;
-		}
-	});
-
 	$effect(() => {
-		if (!browser) return;
 		searchSymptom({
 			symptom,
 			tags,
-			itemsPerPage: itemsPerPage,
-			pageIndex: offset,
-			sortOrder: sortOrder,
-			sortBy: sortBy
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortBy,
+			sortOrder
 		});
-	});
-
-	function onPageChange(e: CustomEvent): void {
-		isLoading = true;
-		let pageIndex = e.detail;
-		itemsPerPage = items * (pageIndex + 1);
-	}
-
-	function onAmountChange(e: CustomEvent): void {
-		if (symptom || tags) {
-			isLoading = true;
-			symptoms = [];
+		if (isDeleting) {
+			retrivedSymptoms;
+			isDeleting = false;
 		}
-		itemsPerPage = e.detail * (paginationSettings.page + 1);
-		items = itemsPerPage;
-	}
+	});
 
 	function sortTable(columnName) {
 		isSortingSymptom = false;
@@ -128,35 +113,6 @@
 		sortBy = columnName;
 	}
 
-	const handleSymptomDelete = async (id) => {
-		const symptomId = id;
-		// console.log(`ImageUrl : ${imageResourceId}`);
-		// if (imageResourceId) {
-		//     // await db.imageCache.where({ srcUrl: imageUrl}).delete();
-		// 		await db.imageCache.where({ srcUrl: getImageUrl(imageResourceId)}).delete();
-		//     console.log(`Removed cached image for ${imageResourceId}`);
-		// }
-		await Delete({
-			sessionId: data.sessionId,
-			symptomId: symptomId
-			// ImageUrl : imageUrl
-		});
-		invalidate('app:symptoms');
-		window.location.href = symptomRoute;
-	};
-
-	async function Delete(model) {
-		await fetch(`/api/server/symptoms/${model.id}`, {
-			method: 'DELETE',
-			body: JSON.stringify(model),
-			headers: { 'content-type': 'application/json' }
-		});
-	}
-
-	// function getImageUrl(id:string):string{
-	// 	return data.backendUrl+`/file-resources/${id}/download?disposition=inline`
-	// }
-
 	async function getImageUrl(id: string): Promise<string> {
 		const cachedImage = await db.imageCache
 			.where({ srcUrl: `/file-resources/${id}/download?disposition=inline` })
@@ -167,14 +123,26 @@
 		return `${data.backendUrl}/file-resources/${id}/download?disposition=inline`;
 	}
 
-	function closeDeleteModal() {
-		deleteButtonClicked = false;
-		cardToDelete = null;
-	}
-	function openDeleteModal(id) {
-		deleteButtonClicked = true;
-		cardToDelete = id;
-	}
+	const handleDeleteClick = (id: string) => {
+		openDeleteModal = true;
+		idToBeDeleted = id;
+	};
+
+	const handleHealthSystemDelete = async (id) => {
+		console.log('Inside handleHealthSystemDelete', id);
+		const response = await fetch(`/api/server/symptoms/${id}`, {
+			method: 'DELETE',
+			headers: { 'content-type': 'application/json' }
+		});
+
+		const res = await response.json();
+		console.log('deleted Response', res);
+		if (res.HttpCode === 200) {
+			isDeleting = true;
+			toastMessage(res);
+		}
+		invalidate('app:symptoms');
+	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -208,7 +176,7 @@
 							</button>
 						{/if}
 					</div>
-					<div class="relative w-auto grow">
+					<!-- <div class="relative w-auto grow">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
@@ -231,7 +199,7 @@
 								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
-					</div>
+					</div> -->
 					<button class="health-system-btn variant-filled-secondary">
 						<a href={createRoute}>Add New</a>
 					</button>
@@ -245,12 +213,24 @@
 							<th class="w-10"></th>
 							<th class=" w-70">
 								<button onclick={() => sortTable('Symptom')}>
-									Symptom {isSortingSymptom ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
+									Symptom {#if isSortingSymptom}
+									{#if sortOrder === 'ascending'}
+										<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+									{:else}
+										<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+									{/if}
+								{/if}
 								</button>
 							</th>
 							<th class="w-64">
 								<button onclick={() => sortTable('Tags')}>
-									Tags {isSortingTags ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
+									Tags  {#if isSortingTags}
+									{#if sortOrder === 'ascending'}
+										<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+									{:else}
+										<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+									{/if}
+								{/if}
 								</button>
 							</th>
 							<th class="w-24">Image</th>
@@ -259,34 +239,26 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#if retrivedSymptoms <= 0}
+						{#if retrivedSymptoms.length <= 0}
 							<tr>
 								<td colspan="7">{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}
-							{#each retrivedSymptoms as row}
+							{#each retrivedSymptoms as row, index}
 								<tr>
-									<td tabindex="0">{row.index}</td>
+									<td>
+										{paginationSettings.page * paginationSettings.limit + index + 1}
+									</td>
 									<td tabindex="0">
 										<Tooltip text={row.Name || 'Not specified'}>
-											<a href={viewRoute(row.id)}>{Helper.truncateText(row.Symptom, 60)}</a>
+											<a href={viewRoute(row.id)}
+												>{row.Name !== null && row.Name !== ''
+													? Helper.truncateText(row.Symptom, 60)
+													: 'Not specified'}</a
+											>
 										</Tooltip>
 									</td>
 									<td tabindex="0">{row.Tags.length > 0 ? row.Tags : 'Not specified'}</td>
-									<!-- <td role="gridcell" aria-colindex="{4}" tabindex="0">
-							{#if row.ImageResourceId === undefined || row.ImageResourceId===null}
-							Not specified
-							{:else}
-							<Image cls="flex h-8 w-8 rounded-lg" source="{getImageUrl(row.ImageResourceId)}" w="24" h="24" />
-							{/if}
-						</td> -->
-									<!-- <td role="gridcell" aria-colindex="{4}" tabindex="0">
-							{#if row.ImageUrl === undefined || row.ImageUrl===null}
-							Not specified
-							{:else}
-							<Image cls="flex h-8 w-8 rounded-lg" source="{row.ImageUrl}" w="24" h="24" />
-							{/if}
-							</td> -->
 									<td tabindex="0">
 										{#if row.ImageResourceId === undefined || row.ImageResourceId === null}
 											Not specified
@@ -298,28 +270,11 @@
 											{/await}
 										{/if}
 									</td>
-									<td tabindex="0">
-										<!-- {date.format(new Date(row.CreatedAt), 'DD-MMM-YYYY')} -->
-										{Helper.formatDate(row.CreatedAt)}
+									<td role="gridcell" aria-colindex={5} tabindex="0">
+										{TimeHelper.formatDateToReadable(row.CreatedAt, LocaleIdentifier.EN_US)}
 									</td>
-									<!-- <td>
-										<a href={editRoute(row.id)} class="btn hover:variant-soft-primary -my-1 p-2">
-											<Icon icon="material-symbols:edit-outline" />
-										</a>
-									</td> -->
-									<td>
-										<!-- <Confirm confirmTitle="Delete" cancelTitle="Cancel" let:confirm={confirmThis}>
-								<button
-									on:click|preventDefault={() =>
-										confirmThis(handleSymptomDelete, row.id, row.imageResourceId)}
-									class="btn hover:variant-soft-error -my-1 p-2"
-								>
-									<Icon icon="material-symbols:delete-outline-rounded" class="text-lg" />
-								</button>
-								<span slot="title">Delete</span>
-								<span slot="description">Are you sure you want to delete a symptom?</span>
-							</Confirm> -->
 
+									<td>
 										<div class="flex">
 											<Tooltip text="Edit" forceShow={true}>
 												<button class="">
@@ -343,7 +298,7 @@
 											<Tooltip text="Delete" forceShow={true}>
 												<button
 													class="health-system-btn !text-red-600"
-													onclick={() => openDeleteModal(row.id)}
+													onclick={() => handleDeleteClick(row.id)}
 												>
 													<Icon icon="material-symbols:delete-outline-rounded" />
 												</button>
@@ -360,37 +315,11 @@
 	</div>
 </div>
 
-{#if deleteButtonClicked}
-	<div class="confirm-modal-overlay"></div>
+<Confirmation
+	bind:isOpen={openDeleteModal}
+	title="Delete Symptom"
+	onConfirm={handleHealthSystemDelete}
+	id={idToBeDeleted}
+/>
 
-	<div class="confirm-modal-container">
-		<div class="confirm-modal-subcontainer">
-			<div class="confirm-card-container">
-				<h1 class="confirm-card-heading">Are you absolutely sure?</h1>
-				<p class="confirm-card-paragraph">
-					This action cannot be undone. This will permanently delete your question and remove your
-					data from our servers.
-				</p>
-			</div>
-
-			<div class="confirm-card-btn-container">
-				<button class="confirm-card-cancel-btn" onclick={closeDeleteModal}> Cancel </button>
-				<button class="confirm-card-delete-btn" onclick={() => handleSymptomDelete(cardToDelete)}>
-					Delete
-				</button>
-			</div>
-		</div>
-	</div>
-{/if}
-
-<!-- <div class="variant-soft-secondary w-full rounded-lg p-2">
-	<Paginator
-		bind:settings={paginationSettings}
-		on:page={onPageChange}
-		on:amount={onAmountChange}
-		buttonClasses=" text-primary-500"
-		regionControl="bg-surface-100 rounded-lg btn-group text-primary-500 border border-primary-200"
-		controlVariant="rounded-full text-primary-500 "
-		controlSeparator="fill-primary-400"
-	/>
-</div> -->
+<Pagination bind:paginationSettings />

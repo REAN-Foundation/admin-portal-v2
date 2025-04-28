@@ -3,114 +3,109 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
-
 	import type { PageServerData } from './$types';
 	import { invalidate } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import { onMount } from 'svelte';
+	import type { PaginationSettings } from '$lib/types/common.types';
+	import { toastMessage } from '$lib/components/toast/toast.store';
+	import Confirmation from '$lib/components/confirmation.modal.svelte';
+	import Pagination from '$lib/components/pagination/pagination.svelte';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	// export let data: PageServerData;
 	let { data }: { data: PageServerData } = $props();
 
 	let isLoading = $state(false);
 	let labRecords = $state(data.labRecordTypes.Items);
-	let retrivedLabRecords = $state();
+	let retrivedLabRecords = $derived(labRecords);
+
+	let openDeleteModal = $state(false);
+	let idToBeDeleted = $state(null);
+	let isDeleting = $state(false);
+	let searchKeyword = $state(undefined);
+
 	const userId = page.params.userId;
 	const createRoute = `/users/${userId}/lab-records/create`;
 	const editRoute = (id) => `/users/${userId}/lab-records/${id}/edit`;
 	const viewRoute = (id) => `/users/${userId}/lab-records/${id}/view`;
 	const labRecordTypesRoute = `/users/${userId}/lab-records`;
+
 	const breadCrumbs = [{ name: 'Lab Records', path: labRecordTypesRoute }];
 
 	let typeName = $state(undefined);
 	let displayName = $state(undefined);
-	let sortBy = 'TypeName';
-	let sortOrder = $state('ascending');
-	let itemsPerPage = 10;
-	let offset = 0;
+
 	let totalLabRecordsCount = $state(data.labRecordTypes.TotalCount);
+	let isSortingName = $state(false);
+
+	let sortBy = $state('TypeName');
+	let sortOrder = $state('ascending');
 	let isSortingTypeName = $state(false);
 	let isSortingDisplayName = $state(false);
-	let items = 10;
-	let deleteButtonClicked = $state(false);
-	let cardToDelete = $state('');
 
-	let paginationSettings = $derived({
+	let paginationSettings: PaginationSettings = $state({
 		page: 0,
 		limit: 10,
 		size: totalLabRecordsCount,
 		amounts: [10, 20, 30, 50]
 	});
 
-	// $: {
-	// 	if (typeName || displayName) {
-	// 		paginationSettings.page = 0;
-	// 	}
-	// }
 	async function searchLabRecords(model) {
+		if (searchKeyword !== model.typeName) {
+			paginationSettings.page = 0;
+		}
+		if (searchKeyword !== model.displayName) {
+			paginationSettings.page = 0;
+		}
 		let url = `/api/server/lab-record-types/search?`;
-		if (sortOrder) url += `sortOrder=${sortOrder}`;
-		else url += `sortOrder=ascending`;
+		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+		url += `&sortBy=${model.sortBy ?? sortBy}`;
+		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
 
-		if (sortBy) url += `&sortBy=${sortBy}`;
-		if (itemsPerPage) url += `&itemsPerPage=${itemsPerPage}`;
-		if (offset) url += `&pageIndex=${offset}`;
-		if (typeName) url += `&typeName=${typeName}`;
-		if (displayName) url += `&displayName=${displayName}`;
+		if (typeName) url += `&typeName=${model.typeName}`;
+		if (displayName) url += `&displayName=${model.displayName}`;
 
-		const res = await fetch(url, {
-			method: 'GET',
-			headers: { 'content-type': 'application/json' }
-		});
-		const searchResult = await res.json();
-		totalLabRecordsCount = searchResult.TotalCount;
-		labRecords = searchResult.Items.map((item, index) => ({ ...item, index: index + 1 }));
-		if (totalLabRecordsCount > 0) {
+		try {
+			const res = await fetch(url, {
+				method: 'GET',
+				headers: { 'content-type': 'application/json' }
+			});
+			const searchResult = await res.json();
+			console.log('searchResult', searchResult);
+			totalLabRecordsCount = searchResult.Data.LabRecordTypes.TotalCount;
+			paginationSettings.size = totalLabRecordsCount;
+
+			labRecords = searchResult.Data.LabRecordTypes.Items.map((item, index) => ({
+				...item,
+				index: index + 1
+			}));
+			// searchKeyword = model.typeName;
+			// searchKeyword = model.displayName;
+		} catch (err) {
+			console.error('Search failed:', err);
+		} finally {
 			isLoading = false;
 		}
 	}
-
-	onMount(() => {
-		labRecords = labRecords.map((item, index) => ({ ...item, index: index + 1 }));
-		paginationSettings.size = totalLabRecordsCount;
-		retrivedLabRecords = labRecords.slice(
-			paginationSettings.page * paginationSettings.limit,
-			paginationSettings.page * paginationSettings.limit + paginationSettings.limit
-		);
-		if (retrivedLabRecords.length > 0) {
-			isLoading = false;
-		}
-	});
 
 	$effect(() => {
-		if (!browser) return;
 		searchLabRecords({
-			typeName: typeName,
-			displayName: displayName,
-			itemsPerPage: itemsPerPage,
-			pageIndex: offset,
-			sortOrder: sortOrder,
-			sortBy: sortBy
+			typeName,
+			displayName,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortBy,
+			sortOrder
 		});
-	});
 
-	function onPageChange(e: CustomEvent): void {
-		isLoading = true;
-		let pageIndex = e.detail;
-		itemsPerPage = items * (pageIndex + 1);
-	}
-
-	function onAmountChange(e: CustomEvent): void {
-		if (typeName || displayName) {
-			isLoading = true;
-			labRecords = [];
+		if (isDeleting) {
+			retrivedLabRecords;
+			isDeleting = false;
 		}
-		itemsPerPage = e.detail * (paginationSettings.page + 1);
-		items = itemsPerPage;
-	}
+	});
 
 	function sortTable(columnName) {
 		isSortingTypeName = false;
@@ -118,40 +113,33 @@
 		sortOrder = sortOrder === 'ascending' ? 'descending' : 'ascending';
 		if (columnName === 'TypeName') {
 			isSortingTypeName = true;
-		} else if (columnName === 'DisplayName') {
+		}
+		if (columnName === 'DisplayName') {
 			isSortingDisplayName = true;
 		}
 		sortBy = columnName;
 	}
 
-	const handleLabRecordTypeDelete = async (id) => {
-		const labRecordTypeId = id;
-		await Delete({
-			sessionId: data.sessionId,
-			labRecordTypeId: labRecordTypeId
-		});
-		invalidate('app:lab-records');
+	const handleDeleteClick = (id: string) => {
+		openDeleteModal = true;
+		idToBeDeleted = id;
 	};
 
-	async function Delete(model) {
-		await fetch(`/api/server/lab-record-types/${model.labRecordTypeId}`, {
+	const handleHealthSystemDelete = async (id) => {
+		console.log('Inside handleHealthSystemDelete', id);
+		const response = await fetch(`/api/server/lab-record-types/${id}`, {
 			method: 'DELETE',
-			body: JSON.stringify(model),
 			headers: { 'content-type': 'application/json' }
 		});
 
-		window.location.href = labRecordTypesRoute;
-
-	}
-
-	function closeDeleteModal() {
-		deleteButtonClicked = false;
-		cardToDelete = null;
-	}
-	function openDeleteModal(id) {
-		deleteButtonClicked = true;
-		cardToDelete = id;
-	}
+		const res = await response.json();
+		console.log('deleted Response', res);
+		if (res.HttpCode === 200) {
+			isDeleting = true;
+			toastMessage(res);
+		}
+		invalidate('app:lab-records');
+	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -162,10 +150,6 @@
 			<div class="health-system-search-border p-4">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow">
-						<Icon
-							icon="heroicons:magnifying-glass"
-							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
-						/>
 						<input
 							type="text"
 							name="typeName"
@@ -186,10 +170,6 @@
 						{/if}
 					</div>
 					<div class="relative w-auto grow">
-						<Icon
-							icon="heroicons:magnifying-glass"
-							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
-						/>
 						<input
 							type="text"
 							name="displayName"
@@ -222,12 +202,25 @@
 							<th class="w-12"></th>
 							<th class="w-52">
 								<button onclick={() => sortTable('TypeName')}>
-									Type Name {isSortingTypeName ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
+									Type Name {#if isSortingTypeName}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
+									{/if}
 								</button>
 							</th>
 							<th class="w-44">
 								<button onclick={() => sortTable('DisplayName')}>
-									Display Name {isSortingDisplayName ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
+									Display Name
+									{#if isSortingDisplayName}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
+									{/if}
 								</button>
 							</th>
 							<th class="w-32">Minimum</th>
@@ -242,12 +235,19 @@
 								<td colspan="8">{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}
-							{#each retrivedLabRecords as row}
+							{#each retrivedLabRecords as row, index}
 								<tr>
-									<td tabindex="0">{row.index}</td>
-									<td tabindex="0">
+									<!-- <td tabindex="0">{row.index}</td> -->
+									<td>
+										{paginationSettings.page * paginationSettings.limit + index + 1}
+									</td>
+									<td>
 										<Tooltip text={row.TypeName || 'Not specified'}>
-											<a href={viewRoute(row.id)}>{Helper.truncateText(row.TypeName, 20)} </a>
+											<a href={viewRoute(row.id)}
+												>{row.TypeName !== null && row.TypeName !== ''
+													? Helper.truncateText(row.TypeName, 50)
+													: 'Not specified'}
+											</a>
 										</Tooltip>
 									</td>
 									<td tabindex="0">
@@ -264,23 +264,7 @@
 									<td tabindex="0"
 										>{row.Unit !== null && row.Unit !== '' ? row.Unit : 'Not specified'}</td
 									>
-									<!-- <td>
-										<a href={editRoute(row.id)} class="btn hover:variant-soft-primary -my-1 p-2">
-											<Icon icon="material-symbols:edit-outline" class="text-lg" />
-										</a>
-									</td> -->
 									<td>
-										<!-- <Confirm confirmTitle="Delete" cancelTitle="Cancel" let:confirm={confirmThis}>
-								<button
-									on:click|preventDefault={() => confirmThis(handleLabRecordTypeDelete, row.id)}
-									class="btn hover:variant-soft-error -my-1 p-2"
-								>
-									<Icon icon="material-symbols:delete-outline-rounded" class="text-lg" />
-								</button>
-								<span slot="title"> Delete </span>
-								<span slot="description"> Are you sure you want to delete a lab record? </span>
-							</Confirm> -->
-
 										<div class="flex">
 											<Tooltip text="Edit" forceShow={true}>
 												<button class="">
@@ -304,7 +288,7 @@
 											<Tooltip text="Delete" forceShow={true}>
 												<button
 													class="health-system-btn !text-red-600"
-													onclick={() => openDeleteModal(row.id)}
+													onclick={() => handleDeleteClick(row.id)}
 												>
 													<Icon icon="material-symbols:delete-outline-rounded" />
 												</button>
@@ -321,40 +305,11 @@
 	</div>
 </div>
 
-{#if deleteButtonClicked}
-	<div class="confirm-modal-overlay"></div>
+<Confirmation
+	bind:isOpen={openDeleteModal}
+	title="Delete Health System"
+	onConfirm={handleHealthSystemDelete}
+	id={idToBeDeleted}
+/>
 
-	<div class="confirm-modal-container">
-		<div class="confirm-modal-subcontainer">
-			<div class="confirm-card-container">
-				<h1 class="confirm-card-heading">Are you absolutely sure?</h1>
-				<p class="confirm-card-paragraph">
-					This action cannot be undone. This will permanently delete your question and remove your
-					data from our servers.
-				</p>
-			</div>
-
-			<div class="confirm-card-btn-container">
-				<button class="confirm-card-cancel-btn" onclick={closeDeleteModal}> Cancel </button>
-				<button
-					class="confirm-card-delete-btn"
-					onclick={() => handleLabRecordTypeDelete(cardToDelete)}
-				>
-					Delete
-				</button>
-			</div>
-		</div>
-	</div>
-{/if}
-
-<!-- <div class="variant-soft-secondary w-full rounded-lg p-2">
-	<Paginator
-		bind:settings={paginationSettings}
-		on:page={onPageChange}
-		on:amount={onAmountChange}
-		buttonClasses=" text-primary-500"
-		regionControl="bg-surface-100 rounded-lg btn-group text-primary-500 border border-primary-200"
-		controlVariant="rounded-full text-primary-500 "
-		controlSeparator="fill-primary-400"
-	/>
-</div> -->
+<Pagination bind:paginationSettings />

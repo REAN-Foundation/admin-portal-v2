@@ -6,47 +6,56 @@
 	import InputChip from '$lib/components/input-chips.svelte';
 	import type { PageServerData } from './$types';
 	import { enhance } from '$app/forms';
+	import { toastMessage } from '$lib/components/toast/toast.store';
+	import { goto } from '$app/navigation';
+	import type { SymptomUpdateModel } from '$lib/types/symptoms.types';
+	import { createOrUpdateSchema } from '$lib/validation/symptoms.schema';
+	import InputChips from '$lib/components/input-chips.svelte';
+
+	///////////////////////////////////////////////////////////////////////////
+
+	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	const MAX_FILE_SIZE = 1024 * 150;
 	let symptomImage = $state();
-
-	// export let form;
-	// export let data: PageServerData;
-	let { data, form }: { data: PageServerData; form: any } = $props();
+	console.log(data, 'data');
+	// let keywords: string[] = $state(data.symptom.Tags);
+	let errors: Record<string, string> = $state({});
+	let promise = $state();
+	let keywords: string[] = $state(data.symptom.Tags);
+	let keywordsStr: string = $state('');
 
 	let id = data.symptom.id;
+
 	let symptom = $state(data.symptom.Symptom);
 	let description = $state(data.symptom.Description);
-	let tags = $state(data.symptom.Tags);
+	// let tags = $state(data.symptom.Tags);
 	let language = $state(data.symptom.Language);
 	let imageUrl = data.symptom.ImageUrl ?? undefined;
 	let imageResourceId = $state(data.symptom.ImageResourceId ?? undefined);
-	let isSubmitting = $state(false);
+	// let isSubmitting = $state(false);
+
+	var symptomId = page.params.id;
+	const userId = page.params.userId;
+	const editRoute = `/users/${userId}/symptoms/${id}/edit`;
+	const viewRoute = `/users/${userId}/symptoms/${id}/view`;
+	const symptomRoute = `/users/${userId}/symptoms`;
 
 	let errorMessage = {
 		Text: 'Max file upload size 150 KB',
 		Colour: 'border-b-surface-700'
 	};
 
-	//Original data
-	let _symptom = $derived(symptom);
-	let _description = $derived(description);
-	let _tags = $derived(tags);
-	let _language = $derived(language);
-	let _imageResourceId = $derived(imageResourceId);
 
 	function handleReset() {
-		symptom = _symptom;
-		description = _description;
-		tags = _tags;
-		language = _language;
-		imageResourceId = _imageResourceId;
+		symptomId = page.params.id;
+		symptom = data?.symptom?.Symptom;
+		description = data?.symptom?.Description;
+		keywords = data?.symptom?.Tags;
+		language = data?.symptom?.Language;
+		imageResourceId = data?.symptom?.ImageResourceId;
+		errors = {};
 	}
-
-	const userId = page.params.userId;
-	const editRoute = `/users/${userId}/symptoms/${id}/edit`;
-	const viewRoute = `/users/${userId}/symptoms/${id}/view`;
-	const symptomRoute = `/users/${userId}/symptoms`;
 
 	const breadCrumbs = [
 		{
@@ -146,13 +155,62 @@
 		}
 	};
 
-	function handleSubmit() {
-		isSubmitting = true;
-	}
+	$inspect('this is keywords', keywords);
+	const handleSubmit = async (event: Event) => {
+		try {
+			event.preventDefault();
+			errors = {};
 
-	if (form) {
-		isSubmitting = false;
-	}
+			const symptomUpdateModel: SymptomUpdateModel = {
+				Symptom: symptom,
+				Description: description,
+				Tags: keywords,
+				Language: language,
+				ImageResourceId: imageResourceId
+			};
+
+			console.log(symptomUpdateModel, 'symptomUpdateModel');
+			const validationResult = createOrUpdateSchema.safeParse(symptomUpdateModel);
+
+			console.log(validationResult, 'validationResult');
+			if (!validationResult.success) {
+				errors = Object.fromEntries(
+					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				);
+				return;
+			}
+
+			const res = await fetch(`/api/server/symptoms/${symptomId}`, {
+				method: 'PUT',
+				body: JSON.stringify(symptomUpdateModel),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			const response = await res.json();
+			console.log(response, 'response');
+			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				toastMessage(response);
+				goto(`${symptomRoute}/${response?.Data?.SymptomType?.id}/view`);
+				return;
+			}
+
+			if (response.Errors) {
+				errors = response?.Errors || {};
+			} else {
+				toastMessage(response);
+			}
+		} catch (error) {
+			toastMessage();
+		}
+	};
+
+	const onUpdateKeywords = (e: any) => {
+		keywords = e.detail;
+		keywordsStr = keywords?.join(', ');
+	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -160,13 +218,7 @@
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container">
-			<form
-				method="post"
-				action="?/updateSymptomAction"
-				enctype="multipart/form-data"
-				use:enhance
-				onsubmit={handleSubmit}
-			>
+			<form onsubmit={(event) => (promise = handleSubmit(event))}>
 				<table class="health-system-table">
 					<thead>
 						<tr>
@@ -185,13 +237,12 @@
 								<input
 									type="text"
 									name="symptom"
-									required
 									bind:value={symptom}
 									placeholder="Enter symptom here..."
-									class="health-system-input {form?.errors?.symptom ? 'input-text-error' : ''}"
+									class="health-system-input "
 								/>
-								{#if form?.errors?.symptom}
-									<p class="text-error">{form?.errors?.symptom[0]}</p>
+								{#if errors?.Symptom}
+									<p class="text-error">{errors?.Symptom}</p>
 								{/if}
 							</td>
 						</tr>
@@ -203,19 +254,23 @@
 									bind:value={description}
 									placeholder="Enter description here..."
 									class="health-system-input {form?.errors?.description ? 'input-text-error' : ''}"
-								/>
-								{#if form?.errors?.description}
-									<p class="text-error">{form?.errors?.description[0]}</p>
+								></textarea>
+								{#if errors?.Description}
+									<p class="text-error">{errors?.Description}</p>
 								{/if}
 							</td>
 						</tr>
 						<tr>
 							<td class="align-top">Tags</td>
 							<td>
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" bind:value={tags} /> -->
-								{#if form?.errors?.tags}
-									<p class="text-error">{form?.errors?.tags[0]}</p>
-								{/if}
+								<InputChips
+									bind:keywords
+									name="keywords"
+									id="keywords"
+									keywordsChanged={onUpdateKeywords}
+								/>
+								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+								
 							</td>
 						</tr>
 						<tr>
@@ -224,13 +279,12 @@
 								<input
 									type="text"
 									name="language"
-									required
 									bind:value={language}
 									placeholder="Enter language here..."
-									class="health-system-input {form?.errors?.language ? 'input-text-error' : ''}"
+									class="health-system-input"
 								/>
-								{#if form?.errors?.language}
-									<p class="text-error">{form?.errors?.language[0]}</p>
+								{#if errors?.Language}
+									<p class="text-error">{errors?.Language}</p>
 								{/if}
 							</td>
 						</tr>
@@ -261,8 +315,8 @@
 									{/if}
 								{/if}
 								<input type="hidden" name="imageResourceId" value={imageResourceId} />
-								{#if form?.errors?.imageResourceId}
-									<p class="text-error">{form?.errors?.imageResourceId[0]}</p>
+								{#if errors?.ImageResourceId}
+									<p class="text-error">{errors?.ImageResourceId}</p>
 								{/if}
 							</td>
 						</tr>
@@ -274,13 +328,13 @@
 						onclick={handleReset}
 						class="health-system-btn variant-soft-secondary">Reset</button
 					>
-					<button
-						type="submit"
-						class="health-system-btn variant-soft-secondary"
-						disabled={isSubmitting}
-					>
-						{isSubmitting ? 'Submitting...' : 'Submit'}
-					</button>
+					{#await promise}
+						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+							Submiting
+						</button>
+					{:then data}
+						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+					{/await}
 				</div>
 			</form>
 		</div>
