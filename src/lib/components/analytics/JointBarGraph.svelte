@@ -1,0 +1,161 @@
+<script lang="ts">
+	import { onMount, onDestroy } from 'svelte';
+	import Chart from 'chart.js/auto';
+	import {
+		getTickColorLight,
+		getTickColorDark
+	} from '$lib/themes/theme.selector';
+
+	/////////////////////////////////////////////////////////////////////////////
+
+	let { labels, firstDataSource, secondDataSource, title } = $props();
+
+	let barChart: Chart;
+	let canvas: HTMLCanvasElement;
+
+	let xLabel = 'Month';
+	let yLabel = 'User Count';
+
+	function getTickColor(): string {
+		return document.documentElement.getAttribute('data-theme') === 'dark'
+			? getTickColorDark()
+			: '#00000';
+	}
+
+	function createChart() {
+		const ctx = canvas.getContext('2d');
+		if (!ctx) return;
+
+		if (barChart) barChart.destroy();
+
+		barChart = new Chart(ctx, {
+			type: 'bar',
+			data: {
+				labels: labels,
+				datasets: [
+					{
+						data: firstDataSource,
+						backgroundColor: '#31b31c',
+						borderColor: '#5EC009',
+						borderWidth: 1,
+						label: 'Patient Registration Month',
+						borderRadius: {
+							topLeft: 4,
+							topRight: 4
+						}
+					},
+					{
+						data: secondDataSource,
+						backgroundColor: '#e72212',
+						borderColor: '#5EC1E9',
+						borderWidth: 1,
+						label: 'Patient Deregistration Month',
+						borderRadius: {
+							topLeft: 4,
+							topRight: 4
+						}
+					}
+				]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				indexAxis: 'x',
+				scales: {
+					x: {
+						grid: {
+							display: false
+						},
+						ticks: {
+							color: getTickColor()
+						},
+						title: {
+							display: true,
+							text: xLabel,
+							color: getTickColor()
+						}
+					},
+					y: {
+						beginAtZero: true,
+						grid: {
+							display: true
+						},
+						ticks: {
+							color: getTickColor()
+						},
+						title: {
+							display: true,
+							text: yLabel,
+							color: getTickColor()
+						}
+					}
+				},
+				layout: {
+					padding: {
+						bottom: 20
+					}
+				},
+				plugins: {
+					legend: {
+						display: true,
+						position: 'top',
+						align: 'center',
+						labels: {
+							color: getTickColor()
+						}
+					},
+					title: {
+						display: false,
+						text: title,
+						position: 'top',
+						color: getTickColor(),
+						align: 'start',
+						padding: 20,
+						font: {
+							size: 22,
+							weight: 'normal',
+							lineHeight: 1.2
+						}
+					},
+					tooltip: {
+						callbacks: {
+							label: function (context) {
+								let label = context.dataset.label || '';
+								let xLabel = labels[context.dataIndex] || 'No label';
+								let yValue = context.parsed.y !== null ? context.parsed.y : 'No value';
+								if (label) label += ': ';
+								label += `${xLabel}, Value: ${yValue}`;
+								return label;
+							}
+						}
+					}
+				}
+			}
+		});
+	}
+
+	onMount(() => {
+		createChart();
+
+		// Theme change observer
+		const observer = new MutationObserver(() => {
+			createChart(); // Re-create chart on theme change
+		});
+
+		observer.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ['data-theme']
+		});
+
+		return () => {
+			if (barChart) barChart.destroy();
+			observer.disconnect();
+		};
+	});
+
+	onDestroy(() => {
+		if (barChart) barChart.destroy();
+	});
+</script>
+
+<canvas bind:this={canvas} class="w-full h-auto"></canvas>
