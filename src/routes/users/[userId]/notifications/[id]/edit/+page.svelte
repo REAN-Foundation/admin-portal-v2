@@ -98,9 +98,6 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
 			
 <form
 	method="post"
