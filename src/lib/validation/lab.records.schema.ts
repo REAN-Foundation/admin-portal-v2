@@ -1,12 +1,48 @@
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
-export const updateLabRecordSchema = zfd.formData({
-    typeName: z.string().max(128),
-    displayName: z.string().optional(),
-    snowmedCode: z.string().optional(),
-    loincCode: z.string().optional(),
-    normalRangeMin: zfd.numeric(z.number().optional()),
-    normalRangeMax: zfd.numeric(z.number().optional()),
-    unit: z.string().optional()
+export const createOrUpdateSchema = zfd.formData({
+    TypeName: z
+        .string({
+            required_error: "Type Name is required.",
+            invalid_type_error: "Type Name must be a string.",
+        })
+        .min(5, { message: "Type Name cannot be empty." })
+        .max(128, { message: "Type Name must be at most 128 characters long." }),
+
+    DisplayName: z
+        .string()
+        .max(256, { message: "Display Name must be at most 256 characters long." })
+        .optional(),
+
+    SnowmedCode: z
+        .string()
+        .max(128, { message: "Snowmed Code must be at most 128 characters long." })
+        .optional(),
+
+    LoincCode: z
+        .string()
+        .max(128, { message: "Loinc Code must be at most 128 characters long." })
+        .optional(),
+
+    NormalRangeMin: zfd
+        .numeric(
+            z
+                .number()
+                .nonnegative({ message: "Normal Range Min must be a positive number." })
+                .optional()
+        ),
+
+    NormalRangeMax: zfd
+        .numeric(
+            z
+                .number()
+                .nonnegative({ message: "Normal Range Max must be a positive number." })
+                .optional()
+        ),
+
+    Unit: z
+        .string()
+        .max(64, { message: "Unit must be at most 64 characters long." })
+        .optional()
 });

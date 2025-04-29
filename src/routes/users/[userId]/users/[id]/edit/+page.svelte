@@ -3,13 +3,14 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-	import { enhance } from '$app/forms';
 	import { LocalStorageUtils } from '$lib/utils/local.storage.utils';
+	import { toastMessage } from '$lib/components/toast/toast.store';
+	import type { UserUpdateModel } from '$lib/types/user.types';
+	import { goto } from '$app/navigation';
+	import { updateSchema } from '$lib/validation/user.schemas';
 
 	//////////////////////////////////////////////////////////////////////
 
-	// export let form;
-	// export let data: PageServerData;
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let firstName = $state(data.user.Person.FirstName);
@@ -17,28 +18,18 @@
 	let phone = $state(data.user.Person.Phone);
 	let email = $state(data.user.Person.Email);
 	let role = $state(data.user.Role.RoleName);
-	let isSubmitting = $state(false);
+	let errors: Record<string, string> = $state({});
+	let promise = $state();
 
-	// let imageUrl = data.user.ImageUrl;
-	// $: avatarSource = imageUrl;
 	let splitPhoneNumber = $derived(phone.split('-'));
-	//Original data
-	let _firstName = $derived(firstName);
-	let _lastName = $derived(lastName);
-	let _role = $derived(role);
-	let _phone = $derived(phone);
-	let _email = $derived(email);
-	// let _imageUrl = imageUrl;
 	let selectedUserRoleId = $state(data.user.Role.id);
 
-	// console.log("phone",phone)
 	function handleReset() {
-		firstName = _firstName;
-		lastName = _lastName;
-		role = _role;
-		phone = _phone;
-		email = _email;
-		// imageUrl = _imageUrl
+		firstName = data?.user?.Person?.FirstName;
+		lastName = data?.user?.Person?.LastName;
+		role = data?.user?.Role?.RoleName;
+		phone = data?.user?.Person?.Phone;
+		email = data?.user?.Person?.Email;
 	}
 
 	const userId = page.params.userId;
@@ -58,45 +49,6 @@
 		}
 	];
 
-	// const upload = async (imgBase64, filename) => {
-	// 	const data = {};
-	// 	console.log(imgBase64);
-	// 	const imgData = imgBase64.split(',');
-	// 	data['image'] = imgData[1];
-	// 	console.log(JSON.stringify(data));
-	// 	const res = await fetch(`/api/server/file-resources/upload`, {
-	// 		method: 'POST',
-	// 		headers: {
-	// 			'Content-Type': 'application/json',
-	// 			Accept: 'application/json',
-	// 			filename: filename
-	// 		},
-	// 		body: JSON.stringify(data)
-	// 	});
-	// 	console.log(Date.now().toString());
-	// 	const response = await res.json();
-	// 	if (response.Status === 'success' && response.HttpCode === 201) {
-	// 		const imageUrl_ = response.Data.FileResources[0].Url;
-	// 		console.log('imageUrl_', imageUrl_);
-	// 		if (imageUrl_) {
-	// 			imageUrl = imageUrl_;
-	// 		}
-	// 		console.log(imageUrl);
-	// 	} else {
-	// 		showMessage(response.Message, 'error');
-	// 	}
-	// };
-
-	// const onFileSelected = async (e) => {
-	// 	let f = e.target.files[0];
-	// 	const filename = f.name;
-	// 	let reader = new FileReader();
-	// 	reader.readAsDataURL(f);
-	// 	reader.onload = async (e) => {
-	// 		avatarSource = e.target.result;
-	// 		await upload(e.target.result, filename);
-	// 	};
-	// };
 	function getRoleIdByRoleName(event) {
 		const selectedUserRole = event.target.value;
 		const tmp = LocalStorageUtils.getItem('personRoles');
@@ -107,12 +59,58 @@
 		}
 	}
 
-	function handleSubmit() {
-		isSubmitting = true;
-	}
-	if (form) {
-		isSubmitting = false;
-	}
+	const handleSubmit = async (event: Event) => {
+		try {
+			event.preventDefault();
+			errors = {};
+
+			const usersUpdateModel: UserUpdateModel = {
+				FirstName: firstName,
+				LastName: lastName,
+				Phone: splitPhoneNumber[1],
+				Email: email,
+				Role: role,
+				CountryCode: splitPhoneNumber[0],
+				SelectedUserRoleId: selectedUserRoleId
+			};
+
+			const validationResult = updateSchema.safeParse(usersUpdateModel);
+			console.log(validationResult);
+
+			if (!validationResult.success) {
+				errors = Object.fromEntries(
+					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				);
+				return;
+			}
+
+			const res = await fetch(`/api/server/users/${id}`, {
+				method: 'PUT',
+				body: JSON.stringify(usersUpdateModel),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			const response = await res.json();
+			console.log('response', response);
+
+			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				toastMessage(response);
+				goto(`${userRoute}/${response?.Data?.User?.id}/view`);
+				return;
+			}
+
+			if (response.Errors) {
+				errors = response?.Errors || {};
+			} else {
+				toastMessage(response);
+			}
+		} catch (error) {
+			toastMessage();
+		}
+	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -120,13 +118,13 @@
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container">
-			<form method="post" action="?/updateUserAction" use:enhance onsubmit={handleSubmit}>
+			<form onsubmit={(event) => (promise = handleSubmit(event))}>
 				<table class="health-system-table">
 					<thead>
 						<tr>
 							<th>Edit User</th>
 							<th class="text-end">
-								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
+								<a href={viewRoute} class="cancel-btn ">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -141,14 +139,11 @@
 									type="text"
 									name="firstName"
 									bind:value={firstName}
-									required
 									placeholder="Enter first name here..."
-									class="health-system-input {form?.errors?.firstName
-										? 'input-text-error'
-										: 'border-primary-200'}"
+									class="health-system-input "
 								/>
-								{#if form?.errors?.firstName}
-									<p class="text-error">{form?.errors?.firstName[0]}</p>
+								{#if errors?.FirstName}
+									<p class="text-error">{errors?.FirstName}</p>
 								{/if}
 							</td>
 						</tr>
@@ -160,30 +155,14 @@
 									type="text"
 									name="lastName"
 									bind:value={lastName}
-									required
 									placeholder="Enter last name here..."
-									class="health-system-input {form?.errors?.lastName
-										? 'input-text-error'
-										: 'border-primary-200'}"
+									class="health-system-input "
 								/>
-								{#if form?.errors?.lastName}
-									<p class="text-error">{form?.errors?.lastName[0]}</p>
+								{#if errors?.LastName}
+									<p class="text-error">{errors?.LastName}</p>
 								{/if}
 							</td>
 						</tr>
-						<!-- <tr>
-				<td>Contact Number *</td>
-				<td>
-					<input
-						type="text"
-						name="phone"
-						required
-						bind:value={phone}
-						placeholder="Enter phone here..."
-						class="input"
-					/>
-				</td>
-			</tr> -->
 						<tr>
 							<td>Contact Number <span class="text-red-700">*</span></td>
 
@@ -191,7 +170,7 @@
 								<select
 									name="countryCode"
 									bind:value={splitPhoneNumber[0]}
-									class="health-system-input"
+									class="health-system-input !w-20"
 								>
 									<option>+1</option>
 									<option>+91</option>
@@ -199,14 +178,13 @@
 								<input
 									type="text"
 									name="phone"
-									required
 									pattern="[0-9]*"
 									bind:value={splitPhoneNumber[1]}
 									placeholder="Enter contact number here..."
-									class="health-system-input {form?.errors?.phone ? 'input-text-error' : ''}"
+									class="health-system-input {errors?.Phone ? 'input-text-error' : ''}"
 								/>
-								{#if form?.errors?.phone}
-									<p class="text-error">{form?.errors?.phone[0]}</p>
+								{#if errors?.Phone}
+									<p class="text-error">{errors?.Phone}</p>
 								{/if}
 							</td>
 						</tr>
@@ -217,13 +195,12 @@
 								<input
 									type="email"
 									name="email"
-									required
 									bind:value={email}
 									placeholder="Enter email here..."
 									class="health-system-input"
 								/>
-								{#if form?.errors?.email}
-									<p class="text-error">{form?.errors?.email[0]}</p>
+								{#if errors?.Email}
+									<p class="text-error">{errors?.Email}</p>
 								{/if}
 							</td>
 						</tr>
@@ -247,47 +224,6 @@
 								<input type="hidden" name="selectedUserRoleId" bind:value={selectedUserRoleId} />
 							</td>
 						</tr>
-						<!-- <tr>
-				<td>Password</td>
-				<td>
-					<input
-						type="password"
-						name="password"
-						bind:value={password}
-						placeholder="Enter password here..."
-						class="input w-full {form?.errors?.password
-							? 'border-error-300'
-							: 'border-primary-200'}"
-					/>
-					{#if form?.errors?.password}
-						<p class="text-error">{form?.errors?.password[0]}</p>
-					{/if}
-				</td>
-			</tr>	 -->
-						<!-- <tr>
-				<td class="align-top">Image</td>
-				<td>
-					{#if imageUrl === 'undefined'}
-						<input
-							name="fileinput"
-							type="file"
-							class="true input w-full"
-							placeholder="Image"
-							on:change={async (e) => await onFileSelected(e)}
-						/>
-					{:else}
-						<Image cls="flex h-24 w-24 rounded-lg mb-2" source={imageUrl} w="24" h="24" />
-						<input
-							name="fileinput"
-							type="file"
-							class="true input w-full"
-							placeholder="Image"
-							on:change={async (e) => await onFileSelected(e)}
-						/>
-					{/if}
-					<input type="hidden" name="imageUrl" value={imageUrl} />
-				</td>
-			</tr>	 -->
 					</tbody>
 				</table>
 				<div class="button-container">
@@ -296,13 +232,13 @@
 						onclick={handleReset}
 						class="health-system-btn variant-soft-secondary">Reset</button
 					>
-					<button
-						type="submit"
-						class="health-system-btn variant-soft-secondary"
-						disabled={isSubmitting}
-					>
-						{isSubmitting ? 'Submitting...' : 'Submit'}
-					</button>
+					{#await promise}
+						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+							Submiting
+						</button>
+					{:then data}
+						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+					{/await}
 				</div>
 			</form>
 		</div>

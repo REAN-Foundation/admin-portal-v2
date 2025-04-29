@@ -3,9 +3,11 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { z } from 'zod';
 import { zfd } from 'zod-form-data';
 import { errorMessage, successMessage } from '$lib/utils/message.utils';
-import { validateFormData } from '$lib/utils/formValidation';
+// import { validateFormData } from '$lib/utils/formValidation';
 import { createLabRecordType } from '../../../../api/services/reancare/lab-record-types';
+
 /////////////////////////////////////////////////////////////////////////
+
 const createLabRecordSchema = zfd.formData({
     typeName: z.string().max(128),
     displayName: z.string().optional(),
@@ -20,11 +22,34 @@ export const actions = {
         const request = event.request;
         const userId = event.params.userId;
         const sessionId = event.cookies.get('sessionId');
-        const { result, errors } = await validateFormData(request, createLabRecordSchema);
+        const data = await request.formData();
+        const formData = Object.fromEntries(data);
+        // const tags = data.has('tags') ? data.getAll('tags') : [];
+        const formDataValue = { ...formData };
 
-        if (errors) {
-            return { data: result, errors };
+        // const { result, errors } = await validateFormData(request, createLabRecordSchema);
+
+        // if (errors) {
+        //     return { data: result, errors };
+        // }
+
+
+        type LabRecordSchema = z.infer<typeof createLabRecordSchema>;
+
+        let result: LabRecordSchema = {};
+        try {
+            result = createLabRecordSchema.parse(formDataValue);
+            console.log('result', result);
+        } catch (err) {
+            const { fieldErrors: errors } = err.flatten();
+            console.log(errors);
+            const { ...rest } = formData;
+            return {
+                data: rest,
+                errors
+            };
         }
+
         let response;
         try {
             response = await createLabRecordType(

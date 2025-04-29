@@ -1,16 +1,22 @@
 <script lang="ts">
-	import { applyAction, deserialize, enhance } from '$app/forms';
+	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
+	import { toastMessage } from '$lib/components/toast/toast.store.js';
+	import type { PersonRoleCreateModel } from '$lib/types/person.role.types.js';
+	import { createOrUpdateSchema } from '$lib/validation/person.role.schemas.js';
 	import Icon from '@iconify/svelte';
-	import type { ActionResult } from '@sveltejs/kit';
-	import toast from 'svelte-french-toast';
 
 	///////////////////////////////////////////////////////////////////
 
-	// export let form;
-	// export let data;
 	let { data, form } = $props();
+
+	let roleName = $state(undefined);
+	let description = $state(undefined);
+	let errors: Record<string, string> = $state({});
+	
+	let promise = $state();
 
 	data.title = 'Administration-User Roles Create';
 	const userId = page.params.userId;
@@ -29,15 +35,55 @@
 		}
 	];
 
-	function handleSubmit() {
-		isSubmitting = true;
-	}
+	const handleSubmit = async (event: Event) => {
+		try {
+			event.preventDefault();
+			errors = {};
 
-	let isSubmitting = $state(false);
+			const personRoleCreateModel: PersonRoleCreateModel = {
+				Name: roleName,
+				Description: description
+			};
 
-	if (form) {
-		isSubmitting = false;
-	}
+			const validationResult = createOrUpdateSchema.safeParse(personRoleCreateModel);
+
+			if (!validationResult.success) {
+				errors = Object.fromEntries(
+					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+					
+				);
+
+				return;
+			}
+
+			const res = await fetch(`/api/server/person-role-types`, {
+				method: 'POST',
+				body: JSON.stringify(personRoleCreateModel),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			const response = await res.json();
+
+			console.log(response);
+
+			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				toastMessage(response);
+				goto(`${personRoleTypesRoute}/${response?.Data?.RoleType?.id}/view`);
+				return;
+			}
+
+			if (response.Errors) {
+				errors = response?.Errors || {};
+			} else {
+				toastMessage(response);
+			}
+		} catch (error) {
+			toastMessage();
+		}
+	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -45,13 +91,13 @@
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container">
-			<form method="post" action="?/createPersonRoleTypeAction" use:enhance onsubmit={handleSubmit}>
+			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 				<table class="health-system-table">
 					<thead>
 						<tr>
 							<th>Create User Role</th>
 							<th class="text-end">
-								<a href={personRoleTypesRoute} class="health-system-btn variant-soft-secondary">
+								<a href={personRoleTypesRoute} class="cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -64,12 +110,12 @@
 								<input
 									type="text"
 									name="roleName"
-									required
+									bind:value={roleName}
 									placeholder="Enter role name here..."
-									class="health-system-input {form?.errors?.roleName ? 'input-text-error' : ''}"
+									class="health-system-input "
 								/>
-								{#if form?.errors?.roleName}
-									<p class="text-error">{form?.errors?.roleName[0]}</p>
+								{#if errors?.Name}
+									<p class="text-error">{errors?.Name}</p>
 								{/if}
 							</td>
 						</tr>
@@ -78,21 +124,25 @@
 							<td>
 								<textarea
 									name="description"
+									bind:value={description}
 									placeholder="Enter description here..."
 									class="health-system-input"
-								/>
+								></textarea>
+								{#if errors?.Description}
+									<p class="text-error">{errors?.Description}</p>
+								{/if}
 							</td>
 						</tr>
 					</tbody>
 				</table>
 				<div class="button-container">
-					<button
-						type="submit"
-						class="health-system-btn variant-soft-secondary"
-						disabled={isSubmitting}
-					>
-						{isSubmitting ? 'Submitting...' : 'Submit'}
-					</button>
+					{#await promise}
+						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+							Submiting
+						</button>
+					{:then data}
+						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+					{/await}
 				</div>
 			</form>
 		</div>

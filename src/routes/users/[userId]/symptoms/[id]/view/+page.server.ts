@@ -1,4 +1,4 @@
-import { error, type RequestEvent, type ServerLoadEvent } from '@sveltejs/kit';
+import {type ServerLoadEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { BACKEND_API_URL } from '$env/static/private';
 import { getSymptomById } from '../../../../../api/services/reancare/symptoms';

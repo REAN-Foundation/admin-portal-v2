@@ -2,26 +2,36 @@
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
-	// import Confirm from '$lib/components/modal/confirmModal.svelte';
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
-	// import { Paginator, type PaginationSettings } from '@skeletonlabs/skeleton';
 	import type { PageServerData } from './$types';
 	import { invalidate } from '$app/navigation';
 	import { LocalStorageUtils } from '$lib/utils/local.storage.utils';
 	import Tooltip from '$lib/components/tooltip.svelte';
-	import { onMount } from 'svelte';
+	import type { PaginationSettings } from '$lib/types/common.types';
+	import Confirmation from '$lib/components/confirmation.modal.svelte';
+	import Pagination from '$lib/components/pagination/pagination.svelte';
+	import { toastMessage } from '$lib/components/toast/toast.store';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	// export let data: PageServerData;
 
 	let { data }: { data: PageServerData } = $props();
 
 	let isLoading = $state(false);
-	let retrivedUsers = $state();
 	let users = $state(data.users.Items);
-	console.log('retrivedUsers@', data.users.Items);
+	const tmp = LocalStorageUtils.getItem('personRoles');
+	const personRoles = JSON.parse(tmp);
+	let retrivedUsers = $derived(
+		users.map((user) => ({
+			...user,
+			RoleName: getRoleNameById(user.RoleId)
+		}))
+	);
+	let openDeleteModal = $state(false);
+	let idToBeDeleted = $state(null);
+	let isDeleting = $state(false);
+	let searchKeyword = $state(undefined);
+
 	const userId = page.params.userId;
 	const userRoute = `/users/${userId}/users`;
 	const editRoute = (id) => `/users/${userId}/users/${id}/edit`;
@@ -33,126 +43,81 @@
 	let firstName = undefined;
 	let email = $state(undefined);
 	let phone = $state(undefined);
-	let sortBy = 'FirstName';
+	let sortBy = $state('FirstName');
 	let sortOrder = $state('ascending');
-	let itemsPerPage = 10;
-	let offset = 0;
+
 	let totalUsersCount = $state(data.users.TotalCount);
 	let isSortingName = $state(false);
 	let isSortingCode = $state(false);
-	let isSortingEmail = false;
+	let isSortingEmail = $state(false);
 	let isSortingPhone = false;
-	let items = 10;
 	let selectedRoles = data.selectedRoles;
-	let deleteButtonClicked = $state(false);
-	let cardToDelete = $state('');
 
-	let paginationSettings = $derived({
+	let paginationSettings: PaginationSettings = $state({
 		page: 0,
 		limit: 10,
 		size: totalUsersCount,
 		amounts: [10, 20, 30, 50]
 	});
 
-	// $effect(() => {
-	// 	if (phone || email) {
-	// 		paginationSettings.page = 0;
-	// 	}
-	// });
-
-	// const tmp = LocalStorageUtils.getItem('personRoles');
-	// const personRoles = JSON.parse(tmp);
-	// personRoles?.map((x) => {
-	//     if (x.RoleName === "System admin" ||
-	//         x.RoleName === "System user"  ||
-	//         x.RoleName === "Tenant admin" ||
-	//         x.RoleName === "Tenant user") {
-	//             selectedRoles.push(x.id);
-	//         }});
-	const tmp = LocalStorageUtils.getItem('personRoles');
-	const personRoles = JSON.parse(tmp);
-	// $: console.log('personRoles', personRoles);
+	console.log('personRoles', personRoles);
 	function getRoleNameById(roleId) {
 		if (Array.isArray(personRoles) && personRoles.length > 0) {
 			const role = personRoles.find((role) => role.id === roleId);
+
 			return role ? role.RoleName : 'Not Specified';
 		}
 		return 'Not Specified';
 	}
 
-	users = users.map((user) => {
-		return {
-			...user,
-			RoleName: getRoleNameById(user.RoleId)
-		};
-	});
-
 	async function searchUser(model) {
+		if (searchKeyword !== model.phone || searchKeyword !== model.email) {
+			paginationSettings.page = 0;
+		}
 		console.log(model);
 		let url = `/api/server/users/search?`;
-		if (sortOrder) url += `sortOrder=${sortOrder}`;
-		else url += `sortOrder=ascending`;
-		if (sortBy) url += `&sortBy=${sortBy}`;
-		if (itemsPerPage) url += `&itemsPerPage=${itemsPerPage}`;
-		if (offset) url += `&pageIndex=${offset}`;
+		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+		url += `&sortBy=${model.sortBy ?? sortBy}`;
+		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+
 		if (firstName) url += `&firstName=${firstName}`;
 		if (email) url += `&email=${email}`;
 		if (phone) url += `&phone=${phone}`;
 		if (selectedRoles.length > 0) url += `&roleIds=${selectedRoles}`;
-		console.log('URL: ' + url);
-		const res = await fetch(url, {
-			method: 'GET',
-			headers: { 'content-type': 'application/json' }
-		});
-		const searchResult = await res.json();
-		console.log('URL  : ' + url);
-		console.log('Response: ' + JSON.stringify(searchResult));
-		totalUsersCount = searchResult.TotalCount;
-		users = searchResult.Items.map((item, index) => ({ ...item, index: index + 1 }));
-		if (totalUsersCount > 0) {
+
+		try {
+			const res = await fetch(url, {
+				method: 'GET',
+				headers: { 'content-type': 'application/json' }
+			});
+			const searchResult = await res.json();
+			totalUsersCount = searchResult.TotalCount;
+			users = searchResult.Items.map((item, index) => ({ ...item, index: index + 1 }));
+			searchKeyword = model.phone;
+		} catch (err) {
+			console.error('Search failed:', err);
+		} finally {
 			isLoading = false;
 		}
 	}
-
-	onMount(() => {
-		users = users.map((item, index) => ({ ...item, index: index + 1 }));
-		paginationSettings.size = totalUsersCount;
-		retrivedUsers = users.slice(
-			paginationSettings.page * paginationSettings.limit,
-			paginationSettings.page * paginationSettings.limit + paginationSettings.limit
-		);
-		if (retrivedUsers.length > 0) {
-			isLoading = false;
-		}
-	});
 
 	$effect(() => {
-		if (!browser) return;
 		searchUser({
-			firstName: firstName,
-			email: email,
-			phone: phone,
-			itemsPerPage: itemsPerPage,
-			pageIndex: offset,
-			sortOrder: sortOrder,
-			sortBy: sortBy
+			firstName,
+			email,
+			phone,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortOrder,
+			sortBy
 		});
-	});
 
-	function onPageChange(e: CustomEvent): void {
-		isLoading = true;
-		let pageIndex = e.detail;
-		itemsPerPage = items * (pageIndex + 1);
-	}
-
-	function onAmountChange(e: CustomEvent): void {
-		if (phone || email) {
-			isLoading = true;
-			users = [];
+		if (isDeleting) {
+			retrivedUsers;
+			isDeleting = false;
 		}
-		itemsPerPage = e.detail * (paginationSettings.page + 1);
-		items = itemsPerPage;
-	}
+	});
 
 	function sortTable(columnName) {
 		isSortingName = false;
@@ -160,8 +125,10 @@
 		isSortingEmail = false;
 		isSortingPhone = false;
 		sortOrder = sortOrder === 'ascending' ? 'descending' : 'ascending';
-		if (columnName === 'First Name') {
+		if (columnName === 'FirstName') {
 			isSortingName = true;
+		} else if (columnName === 'LastName') {
+			isSortingCode = true;
 		} else if (columnName === 'Email') {
 			isSortingEmail = true;
 		} else if (columnName === 'Phone') {
@@ -170,33 +137,26 @@
 		sortBy = columnName;
 	}
 
-	const handleUserDelete = async (id) => {
-		const userId = id;
-		await Delete({
-			sessionId: data.sessionId,
-			userId
-		});
-		invalidate('app:users');
+	const handleDeleteClick = (id: string) => {
+		openDeleteModal = true;
+		idToBeDeleted = id;
 	};
 
-	async function Delete(model) {
-		await fetch(`/api/server/users/${model.userId}`, {
+	const handleUserDelete = async (id) => {
+		const response = await fetch(`/api/server/users/${id}`, {
 			method: 'DELETE',
-			body: JSON.stringify(model),
 			headers: { 'content-type': 'application/json' }
 		});
 
-		window.location.href = userRoute;
-	}
+		const res = await response.json();
+		console.log('deleted Response', res);
+		if (res.HttpCode === 200) {
+			isDeleting = true;
+			toastMessage(res);
+		}
 
-	function closeDeleteModal() {
-		deleteButtonClicked = false;
-		cardToDelete = null;
-	}
-	function openDeleteModal(id) {
-		deleteButtonClicked = true;
-		cardToDelete = id;
-	}
+		invalidate('app:users');
+	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -265,31 +225,56 @@
 					<thead>
 						<tr>
 							<th class=" w-12"></th>
-							<th class="w-32">
+							<th class=" w-36">
 								<button onclick={() => sortTable('FirstName')}>
-									First Name {isSortingName ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
+									First Name {#if isSortingName}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class=" inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="inline" width="16" />
+										{/if}
+									{/if}
 								</button>
 							</th>
-							<th class="w-32">
+							<th class="w-36">
 								<button onclick={() => sortTable('LastName')}>
-									Last Name {isSortingCode ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
+									Last Name
+									{#if isSortingCode}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
+									{/if}
 								</button>
 							</th>
-							<th data-sort="Phone" class=" w-32">Contact Number</th>
-							<th class=" w-32">Email</th>
+							<th data-sort="Phone" class=" w-32">Contact</th>
+							<th class=" w-32">
+								<button onclick={() => sortTable('Email')}>
+									Email {#if isSortingEmail}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
+									{/if}
+								</button></th
+							>
 							<th class=" w-28">Role</th>
 							<th class="w-20"></th>
 						</tr>
 					</thead>
 					<tbody>
-						{#if retrivedUsers <= 0}
-							<tr>
+						{#if retrivedUsers.length <= 0}
+							<tr class="text-center">
 								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}
-							{#each retrivedUsers as row}
+							{#each retrivedUsers as row, index}
 								<tr>
-									<td tabindex="0">{row.index}</td>
+									<td>
+										{paginationSettings.page * paginationSettings.limit + index + 1}
+									</td>
 									<td tabindex="0">
 										<Tooltip text={row.Person.FirstName || 'Not specified'}>
 											<a href={!row.IsPermitted ? null : viewRoute(row.id)}
@@ -303,44 +288,8 @@
 									<td tabindex="0">{row.Person.Phone || 'Not specified'} </td>
 									<td tabindex="0">{row.Person.Email || 'Not specified'}</td>
 									<td tabindex="0">{row.RoleName || 'Not specified'}</td>
-									<!-- <td>
-							<button>
-								<a
-									href={!row.IsPermitted ? null : editRoute(row.id)}
-									class="btn hover:variant-soft-primary -my-1 p-2"
-								>
-									{#if row.IsPermitted}
-										<Icon icon="material-symbols:edit-outline" class="text-lg" />
-									{:else}
-										<Icon
-											icon="material-symbols:edit-outline"
-											class="text-lg"
-											style="color: #808b96"
-										/>
-									{/if}
-								</a>
-							</button>
-						</td> -->
+
 									<td>
-										<!-- <Confirm confirmTitle="Delete" cancelTitle="Cancel" let:confirm={confirmThis}>
-								<button
-									disabled={userId === row.id || !row.IsPermitted ? true : false}
-									on:click|preventDefault={() => {
-										if (!row.IsPermitted) {
-											toast.error(
-												'Permission denied: Only resource owner & system admin are allowed to delete'
-											);
-										} else {
-											confirmThis(handleUserDelete, row.id);
-										}
-									}}
-									class="btn hover:variant-soft-error -my-1 p-2"
-								>
-									<Icon icon="material-symbols:delete-outline-rounded" class="text-lg" />
-								</button>
-								<span slot="title"> Delete </span>
-								<span slot="description"> Are you sure you want to delete a user? </span>
-							</Confirm> -->
 										<div class="flex">
 											<Tooltip text="Edit" forceShow={true}>
 												<button class="">
@@ -364,7 +313,7 @@
 											<Tooltip text="Delete" forceShow={true}>
 												<button
 													class="health-system-btn !text-red-600"
-													onclick={() => openDeleteModal(row.id)}
+													onclick={() => handleDeleteClick(row.id)}
 												>
 													<Icon icon="material-symbols:delete-outline-rounded" />
 												</button>
@@ -381,37 +330,11 @@
 	</div>
 </div>
 
-{#if deleteButtonClicked}
-	<div class="confirm-modal-overlay"></div>
+<Confirmation
+	bind:isOpen={openDeleteModal}
+	title="Delete Users"
+	onConfirm={handleUserDelete}
+	id={idToBeDeleted}
+/>
 
-	<div class="confirm-modal-container">
-		<div class="confirm-modal-subcontainer">
-			<div class="confirm-card-container">
-				<h1 class="confirm-card-heading">Are you absolutely sure?</h1>
-				<p class="confirm-card-paragraph">
-					This action cannot be undone. This will permanently delete your question and remove your
-					data from our servers.
-				</p>
-			</div>
-
-			<div class="confirm-card-btn-container">
-				<button class="confirm-card-cancel-btn" onclick={closeDeleteModal}> Cancel </button>
-				<button class="confirm-card-delete-btn" onclick={() => handleUserDelete(cardToDelete)}>
-					Delete
-				</button>
-			</div>
-		</div>
-	</div>
-{/if}
-
-<!-- <div class="variant-soft-secondary w-full rounded-lg p-2">
-	<Paginator
-		bind:settings={paginationSettings}
-		on:page={onPageChange}
-		on:amount={onAmountChange}
-		buttonClasses=" text-primary-500"
-		regionControl="bg-surface-100 rounded-lg btn-group text-primary-500 border border-primary-200"
-		controlVariant="rounded-full text-primary-500 "
-		controlSeparator="fill-primary-400"
-	/>
-</div> -->
+<Pagination bind:paginationSettings />

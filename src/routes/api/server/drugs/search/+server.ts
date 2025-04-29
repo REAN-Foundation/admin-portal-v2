@@ -13,18 +13,16 @@ export const GET = async (event: RequestEvent) => {
 
 		const searchParams: URLSearchParams = event.url.searchParams;
 		const searchFilters = {
-			drugName: searchParams.get('drugName') ?? undefined,
+			name: searchParams.get('drugName') ?? undefined,
 			genericName: searchParams.get('genericName') ?? undefined,
-			sortBy: searchParams.get('sortBy') ?? 'CreatedAt',
-			sortOrder: searchParams.get('sortOrder') ?? 'ascending',
-			itemsPerPage: parseInt(searchParams.get('itemsPerPage') ?? '25'),
-			pageIndex: parseInt(searchParams.get('pageIndex') ?? '0')
+			orderBy: searchParams.get("sortBy") ?? "CreatedAt",
+			order: searchParams.get("sortOrder") ?? "ascending",
+			itemsPerPage: parseInt(searchParams.get("itemsPerPage") ?? "10"),
+			pageIndex: parseInt(searchParams.get("pageIndex") ?? "0"),
 		};
 
 		console.log('Search parms: ', searchParams);
 		const response = await searchDrugs(sessionId, searchFilters);
-		// const items = response.Data.Drugs;
-		// console.log('res==', response);
 
 		return ResponseHandler.success(response);
 	} catch (err) {
