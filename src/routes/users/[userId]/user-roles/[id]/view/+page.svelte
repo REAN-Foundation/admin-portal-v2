@@ -31,14 +31,15 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<!-- <div class="flex flex-wrap gap-2">
-	<a href={editRoute} class="btn variant-filled-secondary ml-auto">
-		<Icon icon="material-symbols:edit-outline" />
-		<span>Edit</span>
-	</a>
-</div> -->
+
 
 <div class="px-6 py-4">
+	<div class="flex flex-wrap justify-end py-2 gap-2">
+		<a href={editRoute} class="health-system-btn variant-filled-secondary">
+			<Icon icon="material-symbols:edit-outline" />
+			<span>Edit</span>
+		</a>
+	</div>
 	<div class="mx-auto">
 		<div class="health-system-table-container">
 			<table class="health-system-table">
@@ -46,7 +47,7 @@
 					<tr>
 						<th>View User Role</th>
 						<th class="text-end">
-							<a href={personRoleTypesRoute} class="health-system-btn variant-soft-secondary">
+							<a href={personRoleTypesRoute} class="cancel-btn">
 								<Icon icon="material-symbols:close-rounded" />
 							</a>
 						</th>

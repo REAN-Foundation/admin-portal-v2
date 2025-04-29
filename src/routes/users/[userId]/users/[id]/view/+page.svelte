@@ -35,14 +35,15 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<!-- <div class="flex w-full flex-wrap justify-end gap-2">
-	<a href={editRoute} class="btn variant-filled-secondary">
-		<Icon icon="material-symbols:edit-outline" />
-		<span>Edit</span>
-	</a>
-</div> -->
+
 
 <div class="px-6 py-4">
+	<div class="flex flex-wrap justify-end py-2 gap-2">
+		<a href={editRoute} class="health-system-btn variant-filled-secondary">
+			<Icon icon="material-symbols:edit-outline" />
+			<span>Edit</span>
+		</a>
+	</div>
 	<div class="mx-auto">
 		<div class="health-system-table-container">
 			<table class="health-system-table">
@@ -50,7 +51,7 @@
 					<tr>
 						<th>View User</th>
 						<th class="text-end">
-							<a href={userRoute} class="health-system-btn variant-soft-secondary">
+							<a href={userRoute} class="cancel-btn">
 								<Icon icon="material-symbols:close-rounded" />
 							</a>
 						</th>
@@ -77,16 +78,7 @@
 						<td>Role</td>
 						<td>{role}</td>
 					</tr>
-					<!-- <tr class="!border-b !border-b-secondary-100 dark:!border-b-surface-700">
-				<td class="align-top">Image</td>
-				<td>
-					{#if imageUrl == 'undefined' || imageUrl == null}
-						Not specified
-					{:else}
-						<Image cls="flex h-24 w-24 rounded-lg" source={imageUrl} w="24" h="24" />
-					{/if}
-				</td>
-			</tr> -->
+				
 				</tbody>
 			</table>
 		</div>
