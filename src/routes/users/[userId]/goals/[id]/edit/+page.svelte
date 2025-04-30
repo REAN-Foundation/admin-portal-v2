@@ -119,7 +119,7 @@
 							<td>
 								<input
 									type="text"
-									class="table-input-field {form?.errors?.healthSystemName
+									class="table-input-field {form?.errors?.type
 										? 'input-text-error'
 										: ''}"
 									name="type"
