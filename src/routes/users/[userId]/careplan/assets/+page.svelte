@@ -1,0 +1,332 @@
+<script lang="ts">
+	import { page } from '$app/state';
+	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
+	import { Helper } from '$lib/utils/helper';
+	import Icon from '@iconify/svelte';
+	import type { PageServerData } from './$types';
+	import { invalidate } from '$app/navigation';
+	import Tooltip from '$lib/components/tooltip.svelte';
+	import type { PaginationSettings } from '$lib/types/common.types';
+	import Confirmation from '$lib/components/confirmation.modal.svelte';
+	import { toastMessage } from '$lib/components/toast/toast.store';
+	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
+
+	import Pagination from '$lib/components/pagination/pagination.svelte';
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	let { data }: { data: PageServerData } = $props();
+
+	let isLoading = $state(false);
+	let assets = $state(data.assets.Items);
+	let retrivedAssets = $derived(assets);
+	let openDeleteModal = $state(false);
+	let idToBeDeleted = $state(null);
+	let isDeleting = $state(false);
+
+	const userId = page.params.userId;
+	const assetType = data.assetTypes;
+
+	let types = assetType.Data.AssetTypes;
+	let selectedAssetType = 'Action plan';
+
+	let nameAssetSearch = $state(undefined);
+	let codeAssetSearch = $state(undefined);
+
+	let totalAssetsCount = $state(data.assets.TotalCount);
+	$inspect('totalAssetsCount', totalAssetsCount);
+	let isSortingName = $state(false);
+	let isSortingCode = $state(false);
+	let sortBy = $state('Name');
+	let sortOrder = $state('ascending');
+
+	let paginationSettings = {
+		page: 0,
+		limit: 10,
+		size: totalAssetsCount,
+		amounts: [10, 20, 30, 50]
+	} satisfies PaginationSettings;
+
+	const assetRouteMap = {
+		'Action plan': 'action-plans',
+		Animation: 'animations',
+		Appointment: 'appointments',
+		Article: 'articles',
+		Assessment: 'assessments',
+		Audio: 'audio',
+		Biometrics: 'biometrics',
+		Challenge: 'challenges',
+		Checkup: 'checkups',
+		Consultation: 'consultations',
+		Exercise: 'exercises',
+		Goal: 'goals',
+		Infographics: 'infographics',
+		Medication: 'medications',
+		Meditation: 'meditations',
+		Message: 'messages',
+		Nutrition: 'nutritions',
+		Physiotherapy: 'physiotherapy',
+		Priority: 'priorities',
+		Reflection: 'reflections',
+		Reminder: 'reminders',
+		Video: 'video',
+		'Web link': 'web-links',
+		'Web newsfeed': 'web-newsfeeds',
+		'Word power': 'word-power'
+	};
+	const createRoute = `/users/${userId}/careplan/assets/${assetRouteMap[selectedAssetType]}/create/`;
+	const assetRoute = () => `/users/${userId}/careplan/assets`;
+	const editRoute = (rowId) => `${assetRoute()}/${assetRouteMap[selectedAssetType]}/${rowId}/edit`;
+	const viewRoute = (rowId) => `${assetRoute()}/${assetRouteMap[selectedAssetType]}/${rowId}/view`;
+
+	async function searchAssets(filters) {
+		if (nameAssetSearch || codeAssetSearch) {
+			paginationSettings.page = 0;
+		}
+		const selectedAssetRoute = assetRouteMap[selectedAssetType];
+		let url = `/api/server/careplan/assets/search?assetType=${selectedAssetRoute}`;
+		url += `sortOrder=${filters.sortOrder ?? sortOrder}`;
+		url += `&sortBy=${filters.sortBy ?? sortBy}`;
+		url += `&itemsPerPage=${filters.itemsPerPage ?? paginationSettings.limit}`;
+		url += `&pageIndex=${filters.pageIndex ?? paginationSettings.page}`;
+		if (nameAssetSearch) url += `&name=${filters.name}`;
+		if (codeAssetSearch) url += `&code=${filters.code}`;
+
+		try {
+			const res = await fetch(url, {
+				method: 'GET',
+				headers: { 'content-type': 'application/json' }
+			});
+			const searchResult = await res.json();
+			console.log('searchResult', searchResult);
+			totalAssetsCount = searchResult.Data.Assets.TotalCount;
+			paginationSettings.size = totalAssetsCount;
+
+			assets = searchResult.Data.Assets.Items.map((item, index) => ({
+				...item,
+				index: index + 1
+			}));
+		} catch (err) {
+			console.error('Search failed:', err);
+		} finally {
+			isLoading = false;
+		}
+	}
+
+	$effect(() => {
+		searchAssets({
+			name: nameAssetSearch,
+			code: codeAssetSearch,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortBy,
+			sortOrder
+		});
+
+		if (isDeleting) {
+			retrivedAssets;
+			isDeleting = false;
+		}
+	});
+
+	function sortTable(columnName) {
+		isSortingName = false;
+		isSortingCode = false;
+
+		sortOrder = sortOrder === 'ascending' ? 'descending' : 'ascending';
+		if (columnName === 'Name') {
+			isSortingName = true;
+		}
+		if (columnName === 'Code') {
+			isSortingCode = true;
+		}
+		sortBy = columnName;
+	}
+
+	const onSelectAssetType = async (e) => {
+		selectedAssetType = e.currentTarget.value;
+		await searchAssets({
+			sessionId: data.sessionId,
+			selectedAssetType
+		});
+	};
+
+	const handleDeleteClick = (id: string) => {
+		openDeleteModal = true;
+		idToBeDeleted = id;
+	};
+
+	const handleAssetsDelete = async (id) => {
+		console.log('Inside handleAssetsDelete', id);
+		const response = await fetch(`/api/server/careplan/assets/${id}`, {
+			method: 'DELETE',
+			headers: { 'content-type': 'application/json' }
+		});
+
+		const res = await response.json();
+		console.log('deleted Response', res);
+		if (res.HttpCode === 200) {
+			isDeleting = true;
+			toastMessage(res);
+		}
+		invalidate('app:Assets');
+	};
+
+	const breadCrumbs = [
+		{
+			name: 'Assets',
+			path: assetRoute()
+		}
+	];
+</script>
+
+<BreadCrumbs crumbs={breadCrumbs} />
+
+<div class="px-6 py-4">
+	<div class="mx-auto">
+		<select id="height" class="select mb-4 w-full" onchange={onSelectAssetType}>
+			{#each types as val}
+				<option value={val}>
+					{val}
+				</option>
+			{/each}
+		</select>
+		<div class="table-container mb-6 shadow">
+			<div class="search-border">
+				<div class="flex flex-col gap-4 md:flex-row">
+					<div class="relative flex-1 pr-1.5">
+						<input
+							type="text"
+							name="name"
+							placeholder="Search by name"
+							bind:value={nameAssetSearch}
+							class="table-input-field !pr-4 !pl-10"
+						/>
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
+						{#if nameAssetSearch}
+							<button type="button" onclick={() => (nameAssetSearch = '')} class="close-btn">
+								<Icon icon="material-symbols:close" />
+							</button>
+						{/if}
+					</div>
+
+					<div class="relative flex-1 pr-1.5">
+						<input
+							type="text"
+							name="code"
+							placeholder="Search by code"
+							bind:value={codeAssetSearch}
+							class="table-input-field !pr-4 !pl-10"
+						/>
+						<Icon
+							icon="heroicons:tag"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
+						{#if codeAssetSearch}
+							<button type="button" onclick={() => (codeAssetSearch = '')} class="close-btn">
+								<Icon icon="material-symbols:close" />
+							</button>
+						{/if}
+					</div>
+
+					<button class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
+						<a href={createRoute} class="">Add New</a>
+					</button>
+				</div>
+			</div>
+			<div class="overflow-x-auto">
+				<table class="table-c min-w-full">
+					<thead class="">
+						<tr>
+							<th class="w-12"></th>
+							<th class="text-start">
+								<button onclick={() => sortTable('Name')}>
+									Name {isSortingName ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
+								</button>
+							</th>
+							<th class="text-start">
+								<button onclick={() => sortTable('Code')}>
+									Code {isSortingCode ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
+								</button>
+							</th>
+							<th>Type</th>
+							<th>Created Date</th>
+							<th />
+							<th />
+						</tr>
+					</thead>
+					<tbody>
+						{#if retrivedAssets.length <= 0}
+							<tr>
+								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
+							</tr>
+						{:else}
+							{#each retrivedAssets as row, index}
+								<tr>
+									<td>
+										{paginationSettings.page * paginationSettings.limit + index + 1}
+									</td>
+									<td>
+										<Tooltip text={row.Code || 'Not specified'}>
+											<a href={viewRoute(row.id)}>{Helper.truncateText(row.Name, 20)}</a>
+										</Tooltip>
+									</td>
+									<td role="gridcell" aria-colindex={4} tabindex="0"
+										>{row.AssetCode !== null ? row.AssetCode : 'Not specified'}</td
+									><td role="gridcell" aria-colindex={4} tabindex="0"
+										>{row.AssetCategory !== null ? row.AssetCategory : 'Not specified'}</td
+									>
+									<td role="gridcell" aria-colindex={5} tabindex="0">
+										{TimeHelper.formatDateToReadable(row.CreatedAt, LocaleIdentifier.EN_US)}
+									</td>
+									<td>
+										<div class="flex">
+											<Tooltip text="Edit" forceShow={true}>
+												<button>
+													<a href={editRoute(row.id)} class="table-btn group">
+														<Icon icon="material-symbols:edit-outline" class="health-system-icon" />
+													</a>
+												</button>
+											</Tooltip>
+
+											<Tooltip text="View" forceShow={true}>
+												<button>
+													<a href={viewRoute(row.id)} class="table-btn group">
+														<Icon
+															icon="icon-park-outline:preview-open"
+															class="health-system-icon"
+														/>
+													</a>
+												</button>
+											</Tooltip>
+
+											<Tooltip text="Delete" forceShow={true}>
+												<button
+													class="table-btn !text-red-600"
+													onclick={() => handleDeleteClick(row.id)}
+												>
+													<Icon icon="material-symbols:delete-outline-rounded" />
+												</button>
+											</Tooltip>
+										</div>
+									</td>
+								</tr>
+							{/each}
+						{/if}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<Confirmation
+	bind:isOpen={openDeleteModal}
+	title="Delete Asset"
+	onConfirm={handleAssetsDelete}
+	id={idToBeDeleted}
+/>
+
+<Pagination bind:paginationSettings />
