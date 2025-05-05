@@ -83,7 +83,7 @@
 			paginationSettings.page = 0;
 		}
 		const selectedAssetRoute = assetRouteMap[selectedAssetType];
-		let url = `/api/server/careplan/assets/search?assetType=${selectedAssetRoute}`;
+		let url = `/api/server/careplan/assets/action-plans/search?`;
 		url += `sortOrder=${filters.sortOrder ?? sortOrder}`;
 		url += `&sortBy=${filters.sortBy ?? sortBy}`;
 		url += `&itemsPerPage=${filters.itemsPerPage ?? paginationSettings.limit}`;
@@ -157,7 +157,7 @@
 
 	const handleAssetsDelete = async (id) => {
 		console.log('Inside handleAssetsDelete', id);
-		const response = await fetch(`/api/server/careplan/assets/${id}`, {
+		const response = await fetch(`/api/server/careplan/assets/action-plans/${id}`, {
 			method: 'DELETE',
 			headers: { 'content-type': 'application/json' }
 		});
@@ -253,8 +253,6 @@
 							</th>
 							<th>Type</th>
 							<th>Created Date</th>
-							<th />
-							<th />
 						</tr>
 					</thead>
 					<tbody>
