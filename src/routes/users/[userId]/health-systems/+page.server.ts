@@ -10,7 +10,8 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     const response = await searchHealthSystems(sessionId, 
         {
             orderBy: "Name",
-            order: "ascending"
+            order: "ascending",
+            itemsPerPage: 10
         }
     );
 
