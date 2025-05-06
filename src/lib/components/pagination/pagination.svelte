@@ -2,6 +2,8 @@
 	import Icon from "@iconify/svelte";
     let { 
         paginationSettings=$bindable(),
+        onItemsPerPageChange,
+        onPageChange,
         } = $props();
 
     const onAmountChange = (event: Event) => {
@@ -9,6 +11,7 @@
         console.log('changeAmount', value);
         paginationSettings.limit = value;
         paginationSettings.page = 0;
+        onItemsPerPageChange();
 	}
 
 </script>
@@ -37,7 +40,11 @@
 	<!-- Pagination Buttons -->
 	<div class="flex items-center space-x-2">
 		<button
-			onclick={() => paginationSettings.page = paginationSettings.page - 1}
+			onclick={() => {
+                paginationSettings.page = paginationSettings.page - 1;
+                onPageChange();
+                } 
+            }
 			disabled={paginationSettings.page === 0}
 		>
 			<Icon icon="material-symbols:chevron-left-rounded" width="20" height="20" />
@@ -49,7 +56,9 @@
 		<button
 			onclick={() =>{
                 paginationSettings.page = paginationSettings.page + 1;
-            } }
+                onPageChange();
+                } 
+            }
             disabled={((paginationSettings.page + 1) * paginationSettings.limit) >= paginationSettings.size}
 		>
 			<Icon icon="material-symbols:chevron-right-rounded" width="20" height="20" />
