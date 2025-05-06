@@ -1,6 +1,6 @@
 import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY } from '$env/static/private';
 import { del, get, post, put } from './common.reancare';
-
+import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 ////////////////////////////////////////////////////////////////
 
 export const createHealthSystem = async (
@@ -13,12 +13,25 @@ export const createHealthSystem = async (
 		Tags: tags ? tags : []
 	};
 	const url = BACKEND_API_URL + '/health-systems';
-	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+
+    const findAndClearKeys = [
+        `session-${sessionId}:req-searchHealthSystems`
+    ];
+    await DashboardManager.findAndClear(findAndClearKeys);
+
+    return result;
 };
 
 export const getHealthSystemById = async (sessionId: string, healthSystemId: string) => {
 	const url = BACKEND_API_URL + `/health-systems/${healthSystemId}`;
-	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+    const cacheKey = `session-${sessionId}:req-getHealthSystemById-${healthSystemId}`;
+    if (await DashboardManager.has(cacheKey)) {
+        return await DashboardManager.get(cacheKey);
+    }
+	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+    await DashboardManager.set(cacheKey, result);
+    return result;
 };
 
 export const searchHealthSystems = async (sessionId: string, searchParams?) => {
@@ -38,7 +51,14 @@ export const searchHealthSystems = async (sessionId: string, searchParams?) => {
 		}
 	}
 	const url = BACKEND_API_URL + `/health-systems/search${searchString}`;
-	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+    const cacheKey = `session-${sessionId}:req-searchHealthSystems:${searchString}`;
+    if (await DashboardManager.has(cacheKey)) {
+        return await DashboardManager.get(cacheKey);
+    }
+
+	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+    await DashboardManager.set(cacheKey, result);
+    return result;
 };
 
 export const updateHealthSystem = async (
@@ -53,12 +73,34 @@ export const updateHealthSystem = async (
 		Tags: tags ? tags : null
 	};
 	const url = BACKEND_API_URL + `/health-systems/${healthSystemId}`;
-	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+    const keysToBeDeleted = [
+        `session-${sessionId}:req-getHealthSystemById-${healthSystemId}`,
+    ];
+    await DashboardManager.deleteMany(keysToBeDeleted);
+    const findAndClearKeys = [
+        `session-${sessionId}:req-searchHealthSystems`,
+    ];
+    await DashboardManager.findAndClear(findAndClearKeys);
+
+    return result;
 };
 
 export const deleteHealthSystem = async (sessionId: string, healthSystemId: string) => {
 	const url = BACKEND_API_URL + `/health-systems/${healthSystemId}`;
-	return await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	const result = await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+
+    const keysToBeDeleted = [
+        `session-${sessionId}:req-getHealthSystemById-${healthSystemId}`,
+    ];
+    await DashboardManager.deleteMany(keysToBeDeleted);
+
+    const findAndClearKeys = [
+        `session-${sessionId}:req-searchHealthSystems`,
+    ];
+    await DashboardManager.findAndClear(findAndClearKeys);
+
+    return result;
 };
 
 export const getHealthSystemsForTags = async (sessionId: string, tag: string) => {

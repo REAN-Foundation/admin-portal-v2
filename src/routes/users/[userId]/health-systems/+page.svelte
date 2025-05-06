@@ -4,7 +4,6 @@
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-	import { invalidate } from '$app/navigation';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
@@ -16,6 +15,7 @@
 
 	let { data }: { data: PageServerData } = $props();
 
+    let debounceTimeout;
 	let isLoading = $state(false);
 	let healthSystems = $state(data.healthSystems.Items);
 	let retrivedHealthSystems = $derived(healthSystems);
@@ -23,6 +23,7 @@
 	let idToBeDeleted = $state(null);
 	let isDeleting = $state(false);
 	let searchKeyword = $state(undefined);
+    let promise = $state();
 
 	const userId = page.params.userId;
 	const healthSystemRoute = `/users/${userId}/health-systems`;
@@ -50,31 +51,29 @@
 	$inspect('retrivedHealth', healthSystems);
 
 	async function searchHealthSystem(model) {
-		if (searchKeyword !== model.healthSystemName) {
-			paginationSettings.page = 0;
-		}
-		let url = `/api/server/health-systems/search?`;
-		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
-		url += `&sortBy=${model.sortBy ?? sortBy}`;
-		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
-		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-		if (healthSystemName) url += `&name=${model.healthSystemName}`;
+        try {
+            let url = `/api/server/health-systems/search?`;
+            url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+            url += `&sortBy=${model.sortBy ?? sortBy}`;
+            url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+            url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+            if (model.healthSystemName) url += `&name=${model.healthSystemName}`;
+            
+            const res = await fetch(url, {
+            method: 'GET',
+            headers: { 'content-type': 'application/json' }
+            });
+            const searchResult = await res.json();
+            console.log('searchResult', searchResult);
+            totalHealthSystemsCount = searchResult.Data.HealthSystems.TotalCount;
+            paginationSettings.size = totalHealthSystemsCount;
 
-		try {
-			const res = await fetch(url, {
-				method: 'GET',
-				headers: { 'content-type': 'application/json' }
-			});
-			const searchResult = await res.json();
-			console.log('searchResult', searchResult);
-			totalHealthSystemsCount = searchResult.Data.HealthSystems.TotalCount;
-			paginationSettings.size = totalHealthSystemsCount;
-
-			healthSystems = searchResult.Data.HealthSystems.Items.map((item, index) => ({
-				...item,
-				index: index + 1
-			}));
-			searchKeyword = model.healthSystemName;
+            healthSystems = searchResult.Data.HealthSystems.Items.map((item, index) => ({
+                ...item,
+                index: index + 1
+            }));
+            searchKeyword = model.healthSystemName;
+		
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -82,20 +81,21 @@
 		}
 	}
 
-	$effect(() => {
-		searchHealthSystem({
-			healthSystemName,
-			itemsPerPage: paginationSettings.limit,
-			pageIndex: paginationSettings.page,
-			sortBy,
-			sortOrder
-		});
-
-		if (isDeleting) {
-			retrivedHealthSystems;
-			isDeleting = false;
-		}
-	});
+    async function onSearchInput(e) {
+        clearTimeout(debounceTimeout);
+        let searchKeyword = e.target.value;
+        console.log('healthSystemName**', healthSystemName);
+        debounceTimeout = setTimeout(() => {
+            paginationSettings.page = 0; // reset page when typing new search
+            searchHealthSystem({
+                healthSystemName : searchKeyword,
+                itemsPerPage: paginationSettings.limit,
+                pageIndex: 0,
+                sortBy,
+                sortOrder
+            });
+        }, 400);
+    }
 
 	function sortTable(columnName) {
 		isSortingName = false;
@@ -104,12 +104,40 @@
 			isSortingName = true;
 		}
 		sortBy = columnName;
+        searchHealthSystem({
+            healthSystemName: searchKeyword,
+            itemsPerPage: paginationSettings.limit,
+            pageIndex: paginationSettings.page,
+            sortBy,
+            sortOrder
+        });
 	}
 
 	const handleDeleteClick = (id: string) => {
 		openDeleteModal = true;
 		idToBeDeleted = id;
 	};
+
+    function onItemsPerPageChange() {
+        paginationSettings.page = 0; // reset to first page
+        searchHealthSystem({ 
+            healthSystemName: searchKeyword, 
+            itemsPerPage: paginationSettings.limit, 
+            pageIndex: 0 ,
+            sortBy,
+            sortOrder
+        });
+}
+
+function onPageChange() {
+    searchHealthSystem({ 
+        healthSystemName: searchKeyword, 
+            itemsPerPage: paginationSettings.limit, 
+            pageIndex: paginationSettings.page ,
+            sortBy,
+            sortOrder
+    });
+}
 
 	const handleHealthSystemDelete = async (id) => {
 		console.log('Inside handleHealthSystemDelete', id);
@@ -123,8 +151,16 @@
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
-		}
-		invalidate('app:healthSystem');
+		} else {
+            toastMessage(res);
+        }
+		searchHealthSystem({
+            healthSystemName: searchKeyword,
+            itemsPerPage: paginationSettings.limit,
+            pageIndex: paginationSettings.page,
+            sortBy,
+            sortOrder
+        }); 
 	};
 </script>
 
@@ -144,7 +180,7 @@
 							<input
 								name="healthSystemName"
 								type="text"
-								bind:value={healthSystemName}
+								oninput={(event) => onSearchInput(event)}
 								placeholder="Search by name"
 								class="health-system-input !pr-4 !pl-10"
 							/>
@@ -260,4 +296,4 @@
 	id={idToBeDeleted}
 />
 
-<Pagination bind:paginationSettings />
+<Pagination bind:paginationSettings onItemsPerPageChange={onItemsPerPageChange} onPageChange = {onPageChange} />

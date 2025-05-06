@@ -5,4 +5,5 @@ export interface ICache<T> {
     delete(key: string): Promise<boolean>;
     clear(): Promise<void>;
     size(): Promise<number>;
+    findAndClear(searchPattern: string): Promise<string[]>;
 }

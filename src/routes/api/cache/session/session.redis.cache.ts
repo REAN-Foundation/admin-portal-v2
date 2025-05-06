@@ -115,6 +115,17 @@ export class RedisSessionCache implements ICache<Session> {
         
     };
 
+    findAndClear = async (searchPattern: string): Promise<string[]> => {
+        if (this._client) {
+            const keys = await this._client.keys(searchPattern);
+            if (keys.length > 0) {
+                await this._client.del(keys);
+            }
+            return keys;
+        }
+        return [];
+    }
+    
     size = async (): Promise<number> => {
         try {
             if (this._client) {
