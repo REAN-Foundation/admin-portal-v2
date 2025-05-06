@@ -4,10 +4,10 @@ import type { ICache } from "../cache.interface";
 
 export class InMemorySessionCache implements ICache<Session> {
 
-    private cache: CacheMap<string, Session>;
+    private cache: CacheMap<Session>;
 
     constructor() {
-        this.cache = new CacheMap<string, Session>();
+        this.cache = new CacheMap<Session>();
     }
 
     set = async (key: string, value: Session): Promise<void> => {
@@ -53,6 +53,10 @@ export class InMemorySessionCache implements ICache<Session> {
         }
 
     };
+
+    findAndClear = async (searchPattern: string): Promise<string[]> => {
+        return this.cache.findAndClear(searchPattern);
+    }
 
     size = async (): Promise<number> => {
         try {

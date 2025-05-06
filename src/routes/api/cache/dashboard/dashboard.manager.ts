@@ -48,6 +48,16 @@ export class DashboardManager {
         return result;
     }
 
+    static findAndClear = async (searchPatterns: string[]): Promise<string[]> => {
+        const keys: string[] = [];
+        for (const substr of searchPatterns)
+        {
+            const removedKeys = await DashboardManager._cache.findAndClear(substr);
+            keys.push(...removedKeys);
+        }
+        return keys;
+    }
+
     static clear = async (): Promise<void> => {
         await DashboardManager._cache.clear();
     }

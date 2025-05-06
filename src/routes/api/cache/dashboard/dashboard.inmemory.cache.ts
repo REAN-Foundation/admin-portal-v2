@@ -3,10 +3,10 @@ import type { ICache } from "../cache.interface";
 
 export class InMemoryDashboardCache implements ICache<any> {
 
-    private cache: CacheMap<string, any>;
+    private cache: CacheMap<any>;
 
     constructor() {
-        this.cache = new CacheMap<string, any>();
+        this.cache = new CacheMap<any>();
     }
 
     set = async (key: string, value: any): Promise<void> => {
@@ -52,6 +52,10 @@ export class InMemoryDashboardCache implements ICache<any> {
         }
 
     };
+
+    findAndClear = async (searchPattern: string): Promise<string[]> => {
+        return this.cache.findAndClear(searchPattern);
+    }
 
     size = async (): Promise<number> => {
         try {
