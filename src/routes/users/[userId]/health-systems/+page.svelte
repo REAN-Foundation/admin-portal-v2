@@ -51,31 +51,29 @@
 	$inspect('retrivedHealth', healthSystems);
 
 	async function searchHealthSystem(model) {
-		let url = `/api/server/health-systems/search?`;
-		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
-		url += `&sortBy=${model.sortBy ?? sortBy}`;
-		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
-		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-		if (model.healthSystemName) url += `&name=${model.healthSystemName}`;
+        try {
+            let url = `/api/server/health-systems/search?`;
+            url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+            url += `&sortBy=${model.sortBy ?? sortBy}`;
+            url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+            url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+            if (model.healthSystemName) url += `&name=${model.healthSystemName}`;
+            
+            const res = await fetch(url, {
+            method: 'GET',
+            headers: { 'content-type': 'application/json' }
+            });
+            const searchResult = await res.json();
+            console.log('searchResult', searchResult);
+            totalHealthSystemsCount = searchResult.Data.HealthSystems.TotalCount;
+            paginationSettings.size = totalHealthSystemsCount;
 
-		try {
-            debounceTimeout = setTimeout(async () => {
-                const res = await fetch(url, {
-				method: 'GET',
-				headers: { 'content-type': 'application/json' }
-			});
-			const searchResult = await res.json();
-			console.log('searchResult', searchResult);
-			totalHealthSystemsCount = searchResult.Data.HealthSystems.TotalCount;
-			paginationSettings.size = totalHealthSystemsCount;
-
-			healthSystems = searchResult.Data.HealthSystems.Items.map((item, index) => ({
-				...item,
-				index: index + 1
-			}));
-			searchKeyword = model.healthSystemName;
-    }, 400); 
-			
+            healthSystems = searchResult.Data.HealthSystems.Items.map((item, index) => ({
+                ...item,
+                index: index + 1
+            }));
+            searchKeyword = model.healthSystemName;
+		
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
