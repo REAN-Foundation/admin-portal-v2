@@ -26,5 +26,3 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 		throw redirect(303, `/users/${userId}/home`, errorMessage('Error retriving assets'), event);
 	}
 };
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
