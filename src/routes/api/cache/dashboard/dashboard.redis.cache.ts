@@ -127,14 +127,20 @@ export class RedisDashboardCache implements ICache<any> {
     };
 
     findAndClear = async (searchPattern: string): Promise<string[]> => {
-        if (this._client) {
-            const keys = await this._client.keys(searchPattern);
-            if (keys.length > 0) {
-                await this._client.del(keys);
-            }
-            return keys;
+        try {
+            if (this._client) {
+                const keys = await this._client.keys(`${searchPattern}*`); 
+                    if (keys.length > 0) {
+                        await this._client.del(keys);
+                    }
+                    return keys;
+                }
+                return [];
+        } catch (error) {
+            console.error('Error finding and clearing dashboard cache:', error);
+            return [];
         }
-        return [];
+        
     }
 
     private async connectRedis(): Promise<void> {
