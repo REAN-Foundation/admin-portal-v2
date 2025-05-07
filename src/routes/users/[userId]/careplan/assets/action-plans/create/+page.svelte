@@ -4,28 +4,35 @@
 	import Icon from '@iconify/svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
 	import { goto } from '$app/navigation';
-	import type { PrioritiesTypeCreateModel } from '$lib/types/priorities.types.js';
-	import { createOrUpdateSchema } from '$lib/validation/priorities.schema.js';
 	import InputChips from '$lib/components/input-chips.svelte';
+	import type { ActionPlanCreateModel } from '$lib/types/action.plan.js';
+	import { createOrUpdateSchema } from '$lib/validation/action.plan.schema.js';
 
-	////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////
 	let { data, form } = $props();
 
 	let errors: Record<string, string> = $state({});
-	let type = $state(undefined);
+	let name = $state(undefined);
 	let promise = $state();
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
+	let description = $state(undefined);
+	let version = $state(undefined);
 
-	data.title = 'Types-Priorities Create';
+	data.title = 'Action-plan Create';
 	const userId = page.params.userId;
-	const createRoute = `/users/${userId}/priorities/create`;
-	const priorityRoute = `/users/${userId}/priorities`;
+	const assetRoute = `/users/${userId}/careplan/assets`;
+	const createRoute = `/users/${userId}/careplan/assets/action-plans/create`;
+	const actionPlanRoute = `/users/${userId}/careplan/assets/action-plans`;
 
 	const breadCrumbs = [
 		{
-			name: 'Priorities',
-			path: priorityRoute
+			name: 'Assets',
+			path: assetRoute
+		},
+		{
+			name: 'Action-Plan',
+			path: actionPlanRoute
 		},
 		{
 			name: 'Create',
@@ -38,12 +45,14 @@
 			event.preventDefault();
 			errors = {};
 
-			const prioritiesTypeCreateModel: PrioritiesTypeCreateModel = {
-				Type: type,
-				Tags: keywords
+			const actionPlanCreateModel: ActionPlanCreateModel = {
+				Name: name,
+				Description: description,
+				Tags: keywords,
+				Version: version
 			};
 
-			const validationResult = createOrUpdateSchema.safeParse(prioritiesTypeCreateModel);
+			const validationResult = createOrUpdateSchema.safeParse(actionPlanCreateModel);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -54,9 +63,9 @@
 				);
 				return;
 			}
-			const res = await fetch(`/api/server/priorities`, {
+			const res = await fetch(`/api/server/careplan/assets/action-plans`, {
 				method: 'POST',
-				body: JSON.stringify(prioritiesTypeCreateModel),
+				body: JSON.stringify(actionPlanCreateModel),
 				headers: { 'content-type': 'application/json' }
 			});
 
@@ -64,7 +73,7 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				goto(`${priorityRoute}/${response?.Data?.PriorityType?.id}/view`);
+				goto(`${actionPlanRoute}/${response?.Data?.id}/view`);
 				return;
 			}
 
@@ -93,9 +102,9 @@
 				<table class="table-c">
 					<thead>
 						<tr>
-							<th>Create Priority</th>
+							<th>Create Action Plan</th>
 							<th class="text-end">
-								<a href={priorityRoute} class="table-btn variant-soft-secondary">
+								<a href={actionPlanRoute} class="table-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -103,18 +112,31 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td>Type *</td>
+							<td>Name *</td>
 							<td>
 								<input
 									type="text"
-									class="table-input-field {form?.errors?.type ? 'input-text-error' : ''}"
-									name="type"
+									class="table-input-field {form?.errors?.name ? 'input-text-error' : ''}"
+									name="name"
 									placeholder="Enter name here..."
-									bind:value={type}
+									bind:value={name}
 								/>
-								{#if errors?.Type}
-									<p class="text-error-500 text-xs">{errors?.Type}</p>
+								{#if errors?.Name}
+									<p class="text-error-500 text-xs">{errors?.Name}</p>
 								{/if}
+							</td>
+						</tr>
+						<tr>
+							<td class="align-top">Description</td>
+							<td>
+								<textarea
+									name="description"
+									class="input w-full {errors?.Description
+										? 'border-error-300'
+										: 'border-primary-200'}"
+									bind:value={description}
+									placeholder="Enter description here..."
+								></textarea>
 							</td>
 						</tr>
 						<tr>
@@ -128,6 +150,21 @@
 								/>
 								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
+							</td>
+						</tr>
+						<tr>
+							<td>Version</td>
+							<td>
+								<input
+									type="text"
+									class="table-input-field {form?.errors?.version ? 'input-text-error' : ''}"
+									name="version"
+									placeholder="V 1.0"
+									bind:value={version}
+								/>
+								{#if errors?.Version}
+									<p class="text-error-500 text-xs">{errors?.Version}</p>
+								{/if}
 							</td>
 						</tr>
 					</tbody>

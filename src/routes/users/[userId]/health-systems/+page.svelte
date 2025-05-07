@@ -291,7 +291,7 @@ function onPageChange() {
 
 <Confirmation
 	bind:isOpen={openDeleteModal}
-	title="Delete Health System@@@"
+	title="Delete Health System"
 	onConfirm={handleHealthSystemDelete}
 	id={idToBeDeleted}
 />

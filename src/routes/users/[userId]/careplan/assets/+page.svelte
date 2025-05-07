@@ -9,59 +9,87 @@
 	import type { PaginationSettings } from '$lib/types/common.types';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
-	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	import Pagination from '$lib/components/pagination/pagination.svelte';
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 
 	let isLoading = $state(false);
-	let goalTypes = $state(data.goalTypes.Items);
-	let retrivedGoalTypes = $derived(goalTypes);
+	let assets = $state(data.assets.Items);
+	let retrivedAssets = $derived(assets);
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
 	let isDeleting = $state(false);
-	let searchKeyword = $state(undefined);
 
 	const userId = page.params.userId;
-	const goalRoute = `/users/${userId}/goals`;
-	const editRoute = (id) => `/users/${userId}/goals/${id}/edit`;
-	const viewRoute = (id) => `/users/${userId}/goals/${id}/view`;
-	const createRoute = `/users/${userId}/goals/create`;
+	const assetType = data.assetTypes;
 
-	const breadCrumbs = [{ name: 'Goals', path: goalRoute }];
+	let types = assetType.Data.AssetTypes;
+	let selectedAssetType = 'Action plan';
 
-	let type = $state(undefined);
-	let tags = $state(undefined);
+	let nameAssetSearch = $state(undefined);
+	let codeAssetSearch = $state(undefined);
 
-	let totalGoalTypesCount = $state(data.goalTypes.TotalCount);
-	$inspect('totalGoalTypesCount', totalGoalTypesCount);
-	let isSortingType = $state(false);
-	let isSortingTags = $state(false);
-	let sortBy = $state('Type');
+	let totalAssetsCount = $state(data.assets.TotalCount);
+	$inspect('totalAssetsCount', totalAssetsCount);
+	let isSortingName = $state(false);
+	let isSortingCode = $state(false);
+	let sortBy = $state('Name');
 	let sortOrder = $state('ascending');
 
-	let paginationSettings: PaginationSettings = $state({
+	let paginationSettings = {
 		page: 0,
 		limit: 10,
-		size: totalGoalTypesCount,
+		size: totalAssetsCount,
 		amounts: [10, 20, 30, 50]
-	});
+	} satisfies PaginationSettings;
 
-	$inspect('retrivedGoal', goalTypes);
-	
-	async function searchGoalTypes(model) {
-		if (searchKeyword !== model.type || searchKeyword !== model.tags) {
+	const assetRouteMap = {
+		'Action plan': 'action-plans',
+		Animation: 'animations',
+		Appointment: 'appointments',
+		Article: 'articles',
+		Assessment: 'assessments',
+		Audio: 'audio',
+		Biometrics: 'biometrics',
+		Challenge: 'challenges',
+		Checkup: 'checkups',
+		Consultation: 'consultations',
+		Exercise: 'exercises',
+		Goal: 'goals',
+		Infographics: 'infographics',
+		Medication: 'medications',
+		Meditation: 'meditations',
+		Message: 'messages',
+		Nutrition: 'nutritions',
+		Physiotherapy: 'physiotherapy',
+		Priority: 'priorities',
+		Reflection: 'reflections',
+		Reminder: 'reminders',
+		Video: 'video',
+		'Web link': 'web-links',
+		'Web newsfeed': 'web-newsfeeds',
+		'Word power': 'word-power'
+	};
+	const createRoute = `/users/${userId}/careplan/assets/${assetRouteMap[selectedAssetType]}/create/`;
+	const assetRoute = () => `/users/${userId}/careplan/assets`;
+	const editRoute = (rowId) => `${assetRoute()}/${assetRouteMap[selectedAssetType]}/${rowId}/edit`;
+	const viewRoute = (rowId) => `${assetRoute()}/${assetRouteMap[selectedAssetType]}/${rowId}/view`;
+
+	async function searchAssets(filters) {
+		if (nameAssetSearch || codeAssetSearch) {
 			paginationSettings.page = 0;
 		}
-		let url = `/api/server/goals/search?`;
-		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
-		url += `&sortBy=${model.sortBy ?? sortBy}`;
-		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
-		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-		if (type) url += `&type=${model.type}`;
-		if (tags) url += `&tags=${model.tags}`;
+		const selectedAssetRoute = assetRouteMap[selectedAssetType];
+		let url = `/api/server/careplan/assets/action-plans/search?`;
+		url += `sortOrder=${filters.sortOrder ?? sortOrder}`;
+		url += `&sortBy=${filters.sortBy ?? sortBy}`;
+		url += `&itemsPerPage=${filters.itemsPerPage ?? paginationSettings.limit}`;
+		url += `&pageIndex=${filters.pageIndex ?? paginationSettings.page}`;
+		if (nameAssetSearch) url += `&name=${filters.name}`;
+		if (codeAssetSearch) url += `&code=${filters.code}`;
 
 		try {
 			const res = await fetch(url, {
@@ -70,14 +98,13 @@
 			});
 			const searchResult = await res.json();
 			console.log('searchResult', searchResult);
-			totalGoalTypesCount = searchResult.Data.GoalTypes.TotalCount;
-			paginationSettings.size = totalGoalTypesCount;
+			totalAssetsCount = searchResult.Data.Assets.TotalCount;
+			paginationSettings.size = totalAssetsCount;
 
-			goalTypes = searchResult.Data.GoalTypes.Items.map((item, index) => ({
+			assets = searchResult.Data.Assets.Items.map((item, index) => ({
 				...item,
 				index: index + 1
 			}));
-			searchKeyword = model.type;
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -86,9 +113,9 @@
 	}
 
 	$effect(() => {
-		searchGoalTypes({
-			type,
-			tags,
+		searchAssets({
+			name: nameAssetSearch,
+			code: codeAssetSearch,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -96,34 +123,41 @@
 		});
 
 		if (isDeleting) {
-			retrivedGoalTypes;
+			retrivedAssets;
 			isDeleting = false;
 		}
 	});
 
-
 	function sortTable(columnName) {
-		isSortingType = false;
-		isSortingTags = false;
+		isSortingName = false;
+		isSortingCode = false;
 
 		sortOrder = sortOrder === 'ascending' ? 'descending' : 'ascending';
-		if (columnName === 'Type') {
-			isSortingType = true;
+		if (columnName === 'Name') {
+			isSortingName = true;
 		}
-		if (columnName === 'Tags') {
-			isSortingTags = true;
+		if (columnName === 'Code') {
+			isSortingCode = true;
 		}
 		sortBy = columnName;
 	}
 
+	const onSelectAssetType = async (e) => {
+		selectedAssetType = e.currentTarget.value;
+		await searchAssets({
+			sessionId: data.sessionId,
+			selectedAssetType
+		});
+	};
 
 	const handleDeleteClick = (id: string) => {
 		openDeleteModal = true;
 		idToBeDeleted = id;
 	};
-	const handleGoalTypeDelete = async (id) => {
-		console.log('Inside handleGoalTypeDelete', id);
-		const response = await fetch(`/api/server/goals/${id}`, {
+
+	const handleAssetsDelete = async (id) => {
+		console.log('Inside handleAssetsDelete', id);
+		const response = await fetch(`/api/server/careplan/assets/action-plans/${id}`, {
 			method: 'DELETE',
 			headers: { 'content-type': 'application/json' }
 		});
@@ -134,51 +168,64 @@
 			isDeleting = true;
 			toastMessage(res);
 		}
-		invalidate('app:GoalType');
+		invalidate('app:Assets');
 	};
+
+	const breadCrumbs = [
+		{
+			name: 'Assets',
+			path: assetRoute()
+		}
+	];
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
+		<select id="height" class="select mb-4 w-full" onchange={onSelectAssetType}>
+			{#each types as val}
+				<option value={val}>
+					{val}
+				</option>
+			{/each}
+		</select>
 		<div class="table-container mb-6 shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative flex-1 pr-1.5">
 						<input
 							type="text"
-							name="type"
-							placeholder="Search by type"
-							bind:value={type}
+							name="name"
+							placeholder="Search by name"
+							bind:value={nameAssetSearch}
 							class="table-input-field !pr-4 !pl-10"
 						/>
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
 						/>
-						{#if type}
-							<button type="button" onclick={() => (type = '')} class="close-btn">
+						{#if nameAssetSearch}
+							<button type="button" onclick={() => (nameAssetSearch = '')} class="close-btn">
 								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
 					</div>
 
-	
 					<div class="relative flex-1 pr-1.5">
 						<input
 							type="text"
-							name="tags"
-							placeholder="Search by tags"
-							bind:value={tags}
+							name="code"
+							placeholder="Search by code"
+							bind:value={codeAssetSearch}
 							class="table-input-field !pr-4 !pl-10"
 						/>
 						<Icon
 							icon="heroicons:tag"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
 						/>
-						{#if tags}
-							<button type="button" onclick={() => (tags = '')} class="close-btn">
+						{#if codeAssetSearch}
+							<button type="button" onclick={() => (codeAssetSearch = '')} class="close-btn">
 								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
@@ -189,57 +236,49 @@
 					</button>
 				</div>
 			</div>
-
 			<div class="overflow-x-auto">
 				<table class="table-c min-w-full">
 					<thead class="">
 						<tr>
 							<th class="w-12"></th>
 							<th class="text-start">
-								<button onclick={() => sortTable('Type')}>
-									Type {isSortingType ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
+								<button onclick={() => sortTable('Name')}>
+									Name {isSortingName ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
 								</button>
 							</th>
 							<th class="text-start">
-								<button onclick={() => sortTable('Tags')}>
-									Tags {isSortingTags ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
+								<button onclick={() => sortTable('Code')}>
+									Code {isSortingCode ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
 								</button>
 							</th>
-							<th class="w-40">Created</th>
-							<th class="w-20 text-center"></th>
+							<th>Type</th>
+							<th>Created Date</th>
 						</tr>
 					</thead>
-
 					<tbody>
-						{#if retrivedGoalTypes.length <= 0}
+						{#if retrivedAssets.length <= 0}
 							<tr>
 								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}
-							{#each retrivedGoalTypes as row, index}
+							{#each retrivedAssets as row, index}
 								<tr>
 									<td>
 										{paginationSettings.page * paginationSettings.limit + index + 1}
 									</td>
-
 									<td>
-										<Tooltip text={row.Type || 'Not specified'}>
-											<a href={viewRoute(row.id)}>
-												{row.Type !== null && row.Type !== ''
-													? Helper.truncateText(row.Type, 50)
-													: 'Not specified'}
-											</a>
+										<Tooltip text={row.Code || 'Not specified'}>
+											<a href={viewRoute(row.id)}>{Helper.truncateText(row.Name, 20)}</a>
 										</Tooltip>
 									</td>
-
-									<td>
-										{row.Tags || 'Not specified'}
-									</td>
-
-									<td>
+									<td role="gridcell" aria-colindex={4} tabindex="0"
+										>{row.AssetCode !== null ? row.AssetCode : 'Not specified'}</td
+									><td role="gridcell" aria-colindex={4} tabindex="0"
+										>{row.AssetCategory !== null ? row.AssetCategory : 'Not specified'}</td
+									>
+									<td role="gridcell" aria-colindex={5} tabindex="0">
 										{TimeHelper.formatDateToReadable(row.CreatedAt, LocaleIdentifier.EN_US)}
 									</td>
-
 									<td>
 										<div class="flex">
 											<Tooltip text="Edit" forceShow={true}>
@@ -283,8 +322,8 @@
 
 <Confirmation
 	bind:isOpen={openDeleteModal}
-	title="Delete goal Types@@@"
-	onConfirm={handleGoalTypeDelete}
+	title="Delete Asset"
+	onConfirm={handleAssetsDelete}
 	id={idToBeDeleted}
 />
 
