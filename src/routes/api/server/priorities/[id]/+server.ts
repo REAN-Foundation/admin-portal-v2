@@ -1,7 +1,7 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
 import { uuidSchema } from "$lib/validation/common.schema";
 import type { RequestEvent } from "@sveltejs/kit";
-import { deletePriority, getPriorityById, updatePriority } from "../../../services/rean-care/priorities";
+import { deletePriority, getPriorityById, updatePriority } from "../../../services/reancare/priorities";
 import type { PrioritiesTypeUpdateModel } from "$lib/types/priorities.types";
 import { createOrUpdateSchema } from "$lib/validation/priorities.schema";
 

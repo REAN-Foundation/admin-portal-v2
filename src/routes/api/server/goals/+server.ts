@@ -2,7 +2,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { ResponseHandler } from '$lib/utils/response.handler';
 import { createOrUpdateSchema } from '$lib/validation/goal.schema';
 import type { GoalTypeCreateModel } from '$lib/types/goal.types';
-import { createGoal } from '../../services/rean-care/goals';
+import { createGoal } from '../../services/reancare/goals';
 
 //////////////////////////////////////////////////////////////
 

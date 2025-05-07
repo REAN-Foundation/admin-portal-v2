@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { zfd } from 'zod-form-data';
 import { errorMessage, successMessage } from '$lib/utils/message.utils';
 import type { PageServerLoad } from './$types';
-import { getPriorityById, updatePriority } from '../../../../../api/services/rean-care/priorities';
+import { getPriorityById, updatePriority } from '../../../../../api/services/reancare/priorities';
 
 /////////////////////////////////////////////////////////////////////////
 

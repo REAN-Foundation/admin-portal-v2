@@ -1,5 +1,5 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import { createPriority } from '../../services/rean-care/priorities';
+import { createPriority } from '../../services/reancare/priorities';
 import { ResponseHandler } from '$lib/utils/response.handler';
 import type { PrioritiesTypeCreateModel } from '$lib/types/priorities.types.js';
 import { createOrUpdateSchema } from '$lib/validation/priorities.schema';

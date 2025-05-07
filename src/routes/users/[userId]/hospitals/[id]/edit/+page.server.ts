@@ -6,7 +6,7 @@ import { zfd } from 'zod-form-data';
 import { errorMessage, successMessage } from '$lib/utils/message.utils';
 import type { PageServerLoad } from './$types';
 import { getHospitalById, updateHospital } from '../../../../../api/services/reancare/hospitals';
-import { searchHealthSystems } from '../../../../../api/services/rean-care/health.systems';
+import { searchHealthSystems } from '../../../../../api/services/reancare/health.systems';
 import { updateHospitalSchema } from '$lib/validation/hospital.schemas';
 
 /////////////////////////////////////////////////////////////////////////

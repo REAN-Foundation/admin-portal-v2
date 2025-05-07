@@ -3,7 +3,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { z } from 'zod';
 import { zfd } from 'zod-form-data';
 import { errorMessage, successMessage } from '$lib/utils/message.utils';
-import { createTenant } from '../../../../api/services/rean-care/tenants';
+import { createTenant } from '../../../../api/services/reancare/tenants';
 
 /////////////////////////////////////////////////////////////////////////
 

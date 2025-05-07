@@ -5,7 +5,7 @@ import { zfd } from 'zod-form-data';
 import { errorMessage, successMessage } from '$lib/utils/message.utils';
 
 import type { PageServerLoad } from './$types';
-import { getTenantById, updateTenant } from '../../../../../api/services/rean-care/tenants';
+import { getTenantById, updateTenant } from '../../../../../api/services/reancare/tenants';
 
 /////////////////////////////////////////////////////////////////////////
 

@@ -1,7 +1,7 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
 import { uuidSchema } from "$lib/validation/common.schema";
 import type { RequestEvent } from "@sveltejs/kit";
-import { deleteHealthSystem, getHealthSystemById, updateHealthSystem } from "../../../services/rean-care/health.systems";
+import { deleteHealthSystem, getHealthSystemById, updateHealthSystem } from "../../../services/reancare/health.systems";
 import type { HealthSystemUpdateModel } from "$lib/types/health.system.types";
 import { createOrUpdateSchema } from "$lib/validation/health.system.schema";
 

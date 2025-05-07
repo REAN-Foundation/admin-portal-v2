@@ -1,6 +1,6 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { searchPriorities } from '../../../api/services/rean-care/priorities';
+import { searchPriorities } from '../../../api/services/reancare/priorities';
 
 ////////////////////////////////////////////////////////////////////////////
 

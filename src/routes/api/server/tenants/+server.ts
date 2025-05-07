@@ -2,7 +2,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { ResponseHandler } from '$lib/utils/response.handler';
 import { createOrUpdateSchema } from '$lib/validation/tenants.schema';
 import type { TenantsCreateModel } from '$lib/types/tenants.types';
-import { createTenant } from '../../services/rean-care/tenants';
+import { createTenant } from '../../services/reancare/tenants';
 
 //////////////////////////////////////////////////////////////
 
