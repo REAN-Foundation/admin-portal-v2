@@ -4,7 +4,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { z } from 'zod';
 import { zfd } from 'zod-form-data';
 import { errorMessage, successMessage } from '$lib/utils/message.utils';
-import { searchHealthSystems } from '../../../../api/services/rean-care/health.systems';
+import { searchHealthSystems } from '../../../../api/services/reancare/health.systems';
 import { createHospital } from '../../../../api/services/reancare/hospitals';
 
 /////////////////////////////////////////////////////////////////////////

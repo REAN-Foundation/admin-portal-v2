@@ -4,7 +4,7 @@ import { redirect } from 'sveltekit-flash-message/server';
 import { zfd } from 'zod-form-data';
 import { z } from 'zod';
 import { errorMessage, successMessage } from '$lib/utils/message.utils';
-import { getGoalById, updateGoal } from '../../../../../api/services/rean-care/goals';
+import { getGoalById, updateGoal } from '../../../../../api/services/reancare/goals';
 
 /////////////////////////////////////////////////////////////////////////
 

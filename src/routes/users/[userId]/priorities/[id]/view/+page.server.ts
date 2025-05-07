@@ -1,6 +1,6 @@
 import { error, type RequestEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getPriorityById } from '../../../../../api/services/rean-care/priorities';
+import { getPriorityById } from '../../../../../api/services/reancare/priorities';
 
 ////////////////////////////////////////////////////////////////////////////
 

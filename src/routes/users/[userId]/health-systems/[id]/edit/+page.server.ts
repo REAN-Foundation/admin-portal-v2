@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import type { ServerLoadEvent } from '@sveltejs/kit';
-import { getHealthSystemById } from '../../../../../api/services/rean-care/health.systems';
+import { getHealthSystemById } from '../../../../../api/services/reancare/health.systems';
 
 ///////////////////////////////////////////////////////////////////////////////
 

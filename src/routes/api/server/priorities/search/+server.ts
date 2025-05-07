@@ -1,5 +1,5 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import { searchPriorities } from '../../../services/rean-care/priorities';
+import { searchPriorities } from '../../../services/reancare/priorities';
 import { ResponseHandler } from "$lib/utils/response.handler";
 
 //////////////////////////////////////////////////////////////

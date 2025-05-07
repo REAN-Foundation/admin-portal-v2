@@ -1,6 +1,6 @@
 import { error, type ServerLoadEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { searchTenants } from '../../../api/services/rean-care/tenants';
+import { searchTenants } from '../../../api/services/reancare/tenants';
 
 ////////////////////////////////////////////////////////////////////////////
 
