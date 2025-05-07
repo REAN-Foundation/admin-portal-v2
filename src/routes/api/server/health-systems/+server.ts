@@ -1,6 +1,6 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
 import type { RequestEvent } from "@sveltejs/kit";
-import { createHealthSystem } from "../../services/rean-care/health.systems";
+import { createHealthSystem } from "../../services/reancare/health.systems";
 import type { HealthSystemCreateModel } from "$lib/types/health.system.types";
 import { createOrUpdateSchema } from "$lib/validation/health.system.schema";
 

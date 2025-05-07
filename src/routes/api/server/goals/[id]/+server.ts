@@ -2,7 +2,7 @@ import { ResponseHandler } from "$lib/utils/response.handler";
 import { uuidSchema } from "$lib/validation/common.schema";
 import type { RequestEvent } from "@sveltejs/kit";
 import { createOrUpdateSchema } from "$lib/validation/goal.schema";
-import { deleteGoal, getGoalById, updateGoal } from "../../../services/rean-care/goals";
+import { deleteGoal, getGoalById, updateGoal } from "../../../services/reancare/goals";
 import type { GoalTypeUpdateModel } from "$lib/types/goal.types";
 
 ///////////////////////////////////////////////////////////////////////////////

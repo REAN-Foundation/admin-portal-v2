@@ -1,6 +1,6 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { ResponseHandler } from "$lib/utils/response.handler";
-import { searchGoals } from '../../../services/rean-care/goals';
+import { searchGoals } from '../../../services/reancare/goals';
 
 //////////////////////////////////////////////////////////////
 

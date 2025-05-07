@@ -1,6 +1,6 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
 import type { RequestEvent } from "@sveltejs/kit";
-import { searchHealthSystems } from "../../../services/rean-care/health.systems";
+import { searchHealthSystems } from "../../../services/reancare/health.systems";
 
 ///////////////////////////////////////////////////////////////////////////////
 

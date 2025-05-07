@@ -8,21 +8,21 @@ export const createTenant = async (
 	sessionId: string,
 	name: string,
 	description: string,
-    code: string,
-    phone: string,
-	email: string,
+	code: string,
+	phone: string,
+	email: string
 ) => {
 	const body = {
 		Name: name,
 		Description: description ? description : null,
-    Code: code,
+		Code: code,
 		Phone: phone ? phone : null,
-    Email: email ? email : null
+		Email: email ? email : null
 	};
 
 	if (Helper.isPhone(phone)) {
 		body.Phone = Helper.sanitizePhone(phone);
-	};
+	}
 	const url = BACKEND_API_URL + '/tenants';
 	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 };
@@ -54,23 +54,23 @@ export const searchTenants = async (sessionId: string, searchParams?: any) => {
 
 export const updateTenant = async (
 	sessionId: string,
-  tenantId: string,
+	tenantId: string,
 	name: string,
 	description: string,
-  code: string,
-  phone: string,
-	email: string,
+	code: string,
+	phone: string,
+	email: string
 ) => {
 	const body = {
-    Name: name,
+		Name: name,
 		Description: description ? description : null,
-    Code: code,
+		Code: code,
 		Phone: phone ? phone : null,
-    Email: email ? email : null,
+		Email: email ? email : null
 	};
 	if (Helper.isPhone(phone)) {
 		body.Phone = Helper.sanitizePhone(phone);
-	};
+	}
 	const url = BACKEND_API_URL + `/tenants/${tenantId}`;
 	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 };

@@ -1,6 +1,6 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { ResponseHandler } from '$lib/utils/response.handler';
-import { searchTenants } from '../../../services/rean-care/tenants';
+import { searchTenants } from '../../../services/reancare/tenants';
 
 //////////////////////////////////////////////////////////////
 

@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { searchGoals } from '../../../api/services/rean-care/goals';
+import { searchGoals } from '../../../api/services/reancare/goals';
 import type { ServerLoadEvent } from '@sveltejs/kit';
 
 ////////////////////////////////////////////////////////////////////////////

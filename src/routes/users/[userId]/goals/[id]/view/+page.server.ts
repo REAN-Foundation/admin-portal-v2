@@ -1,6 +1,6 @@
 import { error, type RequestEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getGoalById } from '../../../../../api/services/rean-care/goals';
+import { getGoalById } from '../../../../../api/services/reancare/goals';
 
 ////////////////////////////////////////////////////////////////////////////
 
