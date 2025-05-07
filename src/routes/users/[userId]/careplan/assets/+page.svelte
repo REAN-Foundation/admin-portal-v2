@@ -27,7 +27,7 @@
 	const assetType = data.assetTypes;
 
 	let types = assetType.Data.AssetTypes;
-	let selectedAssetType = 'Action plan';
+	let selectedAssetType = $state('Action plan');
 
 	let nameAssetSearch = $state(undefined);
 	let codeAssetSearch = $state(undefined);
@@ -39,12 +39,12 @@
 	let sortBy = $state('Name');
 	let sortOrder = $state('ascending');
 
-	let paginationSettings = {
+	let paginationSettings: PaginationSettings = $state({
 		page: 0,
 		limit: 10,
 		size: totalAssetsCount,
 		amounts: [10, 20, 30, 50]
-	} satisfies PaginationSettings;
+	});
 
 	const assetRouteMap = {
 		'Action plan': 'action-plans',
@@ -73,18 +73,24 @@
 		'Web newsfeed': 'web-newsfeeds',
 		'Word power': 'word-power'
 	};
-	const createRoute = `/users/${userId}/careplan/assets/${assetRouteMap[selectedAssetType]}/create/`;
-	const assetRoute = () => `/users/${userId}/careplan/assets`;
-	const editRoute = (rowId) => `${assetRoute()}/${assetRouteMap[selectedAssetType]}/${rowId}/edit`;
-	const viewRoute = (rowId) => `${assetRoute()}/${assetRouteMap[selectedAssetType]}/${rowId}/view`;
+
+	let createRoute = $derived(
+		`/users/${userId}/careplan/assets/${assetRouteMap[selectedAssetType]}/create/`
+	);
+	let assetRoute = $derived(`/users/${userId}/careplan/assets`);
+	const editRoute = (rowId: string) =>
+		`/users/${userId}/careplan/assets/${assetRouteMap[selectedAssetType]}/${rowId}/edit`;
+
+	const viewRoute = (rowId: string) =>
+		`/users/${userId}/careplan/assets/${assetRouteMap[selectedAssetType]}/${rowId}/view`;
 
 	async function searchAssets(filters) {
 		if (nameAssetSearch || codeAssetSearch) {
 			paginationSettings.page = 0;
 		}
 		const selectedAssetRoute = assetRouteMap[selectedAssetType];
-		let url = `/api/server/careplan/assets/action-plans/search?`;
-		url += `sortOrder=${filters.sortOrder ?? sortOrder}`;
+		let url = `/api/server/careplan/assets/search?assetType=${selectedAssetRoute}`;
+		url += `&sortOrder=${filters.sortOrder ?? sortOrder}`;
 		url += `&sortBy=${filters.sortBy ?? sortBy}`;
 		url += `&itemsPerPage=${filters.itemsPerPage ?? paginationSettings.limit}`;
 		url += `&pageIndex=${filters.pageIndex ?? paginationSettings.page}`;
@@ -98,13 +104,18 @@
 			});
 			const searchResult = await res.json();
 			console.log('searchResult', searchResult);
-			totalAssetsCount = searchResult.Data.Assets.TotalCount;
-			paginationSettings.size = totalAssetsCount;
 
-			assets = searchResult.Data.Assets.Items.map((item, index) => ({
-				...item,
-				index: index + 1
-			}));
+			if (searchResult && searchResult.Data && Array.isArray(searchResult.Data.Items)) {
+				totalAssetsCount = searchResult.Data.TotalCount;
+				paginationSettings.size = totalAssetsCount;
+
+				assets = searchResult.Data.Items.map((item, index) => ({
+					...item,
+					index: index + 1
+				}));
+			} else {
+				console.error('Unexpected response structure:', searchResult);
+			}
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -157,10 +168,13 @@
 
 	const handleAssetsDelete = async (id) => {
 		console.log('Inside handleAssetsDelete', id);
-		const response = await fetch(`/api/server/careplan/assets/action-plans/${id}`, {
-			method: 'DELETE',
-			headers: { 'content-type': 'application/json' }
-		});
+		const response = await fetch(
+			`/api/server/careplan/assets/${id}?assetType=${selectedAssetType}`,
+			{
+				method: 'DELETE',
+				headers: { 'content-type': 'application/json' }
+			}
+		);
 
 		const res = await response.json();
 		console.log('deleted Response', res);
@@ -171,12 +185,15 @@
 		invalidate('app:Assets');
 	};
 
-	const breadCrumbs = [
-		{
-			name: 'Assets',
-			path: assetRoute()
-		}
-	];
+	let breadCrumbs = $state();
+	$effect(() => {
+		breadCrumbs = [
+			{
+				name: 'Assets',
+				path: assetRoute
+			}
+		];
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />

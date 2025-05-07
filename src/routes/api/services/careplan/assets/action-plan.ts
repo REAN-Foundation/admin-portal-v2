@@ -26,18 +26,29 @@ export const getActionPlanById = async (sessionId: string, actionPlanId: string)
 	return await get_(url, true, sessionId);
 };
 
-export const searchAssets = async (sessionId: string, selectAsset: string, searchParams = '') => {
+export const searchAssets = async (sessionId: string, selectAsset: string, searchParams = {}) => {
 	let searchString = '';
 	const keys = Object.keys(searchParams);
 	if (keys.length > 0) {
-		searchString = '?';
-		for (const key of keys) {
-			searchString += `${key}=${searchParams[key]}`;
-		}
+		searchString = '?' + keys.map(key => `${key}=${encodeURIComponent(searchParams[key])}`).join('&');
 	}
-	const url = CAREPLAN_BACKEND_API_URL + `/assets/${selectAsset}/search${searchString}/`;
+	const url = `${CAREPLAN_BACKEND_API_URL}/assets/${selectAsset}/search${searchString}`;
 	return await get_(url, true, sessionId);
 };
+
+
+// export const searchAssets = async (sessionId: string, selectAsset: string, searchParams = '') => {
+// 	let searchString = '';
+// 	const keys = Object.keys(searchParams);
+// 	if (keys.length > 0) {
+// 		searchString = '?';
+// 		for (const key of keys) {
+// 			searchString += `${key}=${searchParams[key]}`;
+// 		}
+// 	}
+// 	const url = CAREPLAN_BACKEND_API_URL + `/assets/${selectAsset}/search${searchString}/`;
+// 	return await get_(url, true, sessionId);
+// };
 
 export const updateActionPlan = async (
 	sessionId: string,
