@@ -43,12 +43,15 @@
 		"vitest": "^3.0.0"
 	},
 	"dependencies": {
+		"@aws-sdk/client-s3": "^3.804.0",
 		"@iconify/svelte": "^4.2.0",
+		"axios": "^1.9.0",
 		"chart.js": "^4.4.8",
 		"chartjs-chart-funnel": "^4.2.4",
 		"chartjs-plugin-datalabels": "^2.2.0",
 		"dayjs": "^1.11.13",
 		"dexie": "^4.0.11",
+		"fs": "^0.0.1-security",
 		"redis": "^4.7.0",
 		"sveltekit-flash-message": "^2.4.6",
 		"zod": "^3.24.2",
