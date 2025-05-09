@@ -6,9 +6,9 @@
 	import { goto } from '$app/navigation';
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { ArticlesCreateModel } from '$lib/types/articles.js';
-	import { createOrUpdateSchema } from '$lib/validation/articles.schema.js';
-
-	/////////////////////////////////////////////////////////////////////////////////
+	import type { WordPowerCreateModel } from '$lib/types/word.power';
+	import { createOrUpdateSchema } from '$lib/validation/word.power.schema.js';
+	/////////////////////////////////////////////////////////////////////////////
 	let { data, form } = $props();
 
 	let errors: Record<string, string> = $state({});
@@ -16,14 +16,14 @@
 	let promise = $state();
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
-	let summary = $state(undefined);
-	let pathUrl = $state(undefined);
+	let description = $state(undefined);
+	let additionalResources = $state(undefined);
 	let version = $state(undefined);
 
 	const userId = page.params.userId;
 	const assetRoute = `/users/${userId}/careplan/assets`;
-	const createRoute = `/users/${userId}/careplan/assets/articles/create`;
-	const articleRoute = `/users/${userId}/careplan/assets/articles`;
+	const createRoute = `/users/${userId}/careplan/assets/word-power/create`;
+	const wordpowerRoute = `/users/${userId}/careplan/assets/word-power`;
 
 	const breadCrumbs = [
 		{
@@ -31,29 +31,28 @@
 			path: assetRoute
 		},
 		{
-			name: 'Article',
-			path: articleRoute
+			name: 'Word-Power',
+			path: wordpowerRoute
 		},
 		{
 			name: 'Create',
 			path: createRoute
 		}
 	];
-
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
 			errors = {};
 
-			const articlesCreateModel: ArticlesCreateModel = {
+			const wordPowerCreateModel: WordPowerCreateModel = {
 				Name: name,
-				Summary: summary,
-				PathUrl: pathUrl,
+				Description: description,
+				AdditionalResources: additionalResources,
 				Tags: keywords,
 				Version: version
 			};
 
-			const validationResult = createOrUpdateSchema.safeParse(articlesCreateModel);
+			const validationResult = createOrUpdateSchema.safeParse(wordPowerCreateModel);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -64,9 +63,9 @@
 				);
 				return;
 			}
-			const res = await fetch(`/api/server/careplan/assets/articles`, {
+			const res = await fetch(`/api/server/careplan/assets/word-power`, {
 				method: 'POST',
-				body: JSON.stringify(articlesCreateModel),
+				body: JSON.stringify(wordPowerCreateModel),
 				headers: { 'content-type': 'application/json' }
 			});
 
@@ -74,7 +73,7 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				goto(`${articleRoute}/${response?.Data?.id}/view`);
+				goto(`${wordpowerRoute}/${response?.Data?.id}/view`);
 				return;
 			}
 
@@ -103,7 +102,7 @@
 				<table class="table-c">
 					<thead>
 						<tr>
-							<th>Create Article</th>
+							<th>Create Word power</th>
 							<th class="text-end">
 								<a href={assetRoute} class="table-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
@@ -128,29 +127,29 @@
 							</td>
 						</tr>
 						<tr>
-							<td class="align-top">Summary</td>
+							<td class="align-top">Description</td>
 							<td>
 								<textarea
-									name="summary"
-									class="input w-full {errors?.Summary ? 'border-error-300' : 'border-primary-200'}"
-									bind:value={summary}
-									placeholder="Enter article summary here..."
+									name="description"
+									class="input w-full {errors?.Description
+										? 'border-error-300'
+										: 'border-primary-200'}"
+									bind:value={description}
+									placeholder="Enter description here..."
 								></textarea>
 							</td>
 						</tr>
 						<tr>
-							<td>Url</td>
+							<td class="align-top">Additional Resources</td>
 							<td>
 								<input
-									type="url"
-									class="table-input-field {form?.errors?.Url ? 'input-text-error' : ''}"
-									name="url"
-									placeholder="Enter url here"
-									bind:value={pathUrl}
+									type="text"
+									placeholder="Enter word power additionalresources here..."
+									class="table-input-field {form?.errors?.AdditionalResources
+										? 'input-text-error'
+										: ''}"
+									name="additionalResources"
 								/>
-								{#if errors?.Url}
-									<p class="text-error-500 text-xs">{errors?.Url}</p>
-								{/if}
 							</td>
 						</tr>
 						<tr>
