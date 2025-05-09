@@ -26,6 +26,7 @@
 		"@tailwindcss/vite": "^4.0.0",
 		"@testing-library/jest-dom": "^6.6.3",
 		"@testing-library/svelte": "^5.2.4",
+		"@types/node": "^22.15.3",
 		"eslint": "^9.18.0",
 		"eslint-config-prettier": "^10.0.1",
 		"eslint-plugin-svelte": "^2.46.1",
@@ -44,12 +45,14 @@
 	},
 	"dependencies": {
 		"@iconify/svelte": "^4.2.0",
+		"axios": "^1.9.0",
 		"chart.js": "^4.4.8",
 		"chartjs-chart-funnel": "^4.2.4",
 		"chartjs-plugin-datalabels": "^2.2.0",
 		"dayjs": "^1.11.13",
 		"dexie": "^4.0.11",
 		"redis": "^4.7.0",
+		"svelte-tree-view-component": "^1.0.3",
 		"sveltekit-flash-message": "^2.4.6",
 		"zod": "^3.24.2",
 		"zod-form-data": "^2.0.5"
