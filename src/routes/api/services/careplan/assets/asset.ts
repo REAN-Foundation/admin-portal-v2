@@ -1,7 +1,5 @@
-import { API_CLIENT_INTERNAL_KEY, CAREPLAN_BACKEND_API_URL } from '$env/static/private';
-import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
+import { CAREPLAN_BACKEND_API_URL } from '$env/static/private';
 import { get_ } from '../../common';
-import { get } from '../../reancare/common.reancare';
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -32,14 +30,6 @@ export const searchAssets = async (
 	}
 
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/${assetTypeRoute}/search${searchString}`;
-	console.log('mainurl', url);
 
-	const cacheKey = `session-${sessionId}:req-searchAssets:${searchString}`;
-	if (await DashboardManager.has(cacheKey)) {
-		return await DashboardManager.get(cacheKey);
-	}
-
-	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
-	await DashboardManager.set(cacheKey, result);
-	return result;
+	return await get_(url, true, sessionId);
 };

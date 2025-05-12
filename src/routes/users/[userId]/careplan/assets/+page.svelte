@@ -23,10 +23,6 @@
 	let idToBeDeleted = $state(null);
 	let isDeleting = $state(false);
 
-	let debounceTimeout;
-	let searchKeyword = $state(undefined);
-	let promise = $state();
-
 	const userId = page.params.userId;
 	const assetType = data.assetTypes;
 
@@ -89,15 +85,19 @@
 		`/users/${userId}/careplan/assets/${assetRouteMap[selectedAssetType]}/${rowId}/view`;
 
 	async function searchAssets(filters) {
-		try {
-			const selectedAssetRoute = assetRouteMap[selectedAssetType];
-			let url = `/api/server/careplan/assets/search?assetType=${selectedAssetRoute}`;
-			url += `&sortOrder=${filters.sortOrder ?? sortOrder}`;
-			url += `&sortBy=${filters.sortBy ?? sortBy}`;
-			url += `&itemsPerPage=${filters.itemsPerPage ?? paginationSettings.limit}`;
-			url += `&pageIndex=${filters.pageIndex ?? paginationSettings.page}`;
-			if (filters.nameAssetSearch) url += `&name=${filters.name}`;
+		if (nameAssetSearch || codeAssetSearch) {
+			paginationSettings.page = 0;
+		}
+		const selectedAssetRoute = assetRouteMap[selectedAssetType];
+		let url = `/api/server/careplan/assets/search?assetType=${selectedAssetRoute}`;
+		url += `&sortOrder=${filters.sortOrder ?? sortOrder}`;
+		url += `&sortBy=${filters.sortBy ?? sortBy}`;
+		url += `&itemsPerPage=${filters.itemsPerPage ?? paginationSettings.limit}`;
+		url += `&pageIndex=${filters.pageIndex ?? paginationSettings.page}`;
+		if (nameAssetSearch) url += `&name=${filters.name}`;
+		if (codeAssetSearch) url += `&code=${filters.code}`;
 
+		try {
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
@@ -105,14 +105,17 @@
 			const searchResult = await res.json();
 			console.log('searchResult', searchResult);
 
-			totalAssetsCount = searchResult.Data.TotalCount;
-			paginationSettings.size = totalAssetsCount;
+			if (searchResult && searchResult.Data && Array.isArray(searchResult.Data.Items)) {
+				totalAssetsCount = searchResult.Data.TotalCount;
+				paginationSettings.size = totalAssetsCount;
 
-			assets = searchResult.Data.Items.map((item, index) => ({
-				...item,
-				index: index + 1
-			}));
-			searchKeyword = filters.nameAssetSearch;
+				assets = searchResult.Data.Items.map((item, index) => ({
+					...item,
+					index: index + 1
+				}));
+			} else {
+				console.error('Unexpected response structure:', searchResult);
+			}
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -120,20 +123,21 @@
 		}
 	}
 
-	async function onSearchInput(e) {
-		clearTimeout(debounceTimeout);
-		let searchKeyword = e.target.value;
-		debounceTimeout = setTimeout(() => {
-			paginationSettings.page = 0; // reset page when typing new search
-			searchAssets({
-				nameAssetSearch: searchKeyword,
-				itemsPerPage: paginationSettings.limit,
-				pageIndex: 0,
-				sortBy,
-				sortOrder
-			});
-		}, 400);
-	}
+	$effect(() => {
+		searchAssets({
+			name: nameAssetSearch,
+			code: codeAssetSearch,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortBy,
+			sortOrder
+		});
+
+		if (isDeleting) {
+			retrivedAssets;
+			isDeleting = false;
+		}
+	});
 
 	function sortTable(columnName) {
 		isSortingName = false;
@@ -147,13 +151,6 @@
 			isSortingCode = true;
 		}
 		sortBy = columnName;
-		searchAssets({
-			nameAssetSearch: searchKeyword,
-			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
-			sortBy,
-			sortOrder
-		});
 	}
 
 	const onSelectAssetType = async (e) => {
@@ -168,26 +165,7 @@
 		openDeleteModal = true;
 		idToBeDeleted = id;
 	};
-	function onItemsPerPageChange() {
-		paginationSettings.page = 0; // reset to first page
-		searchAssets({
-			nameAssetSearch: searchKeyword,
-			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
-			sortBy,
-			sortOrder
-		});
-	}
 
-	function onPageChange() {
-		searchAssets({
-			nameAssetSearch: searchKeyword,
-			itemsPerPage: paginationSettings.limit,
-			pageIndex: paginationSettings.page,
-			sortBy,
-			sortOrder
-		});
-	}
 	const handleAssetsDelete = async (id) => {
 		console.log('Inside handleAssetsDelete', id);
 		const response = await fetch(`/api/server/careplan/assets/${id}`, {
@@ -200,16 +178,8 @@
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
-		} else {
-			toastMessage(res);
 		}
-		searchAssets({
-			nameAssetSearch: searchKeyword,
-			itemsPerPage: paginationSettings.limit,
-			pageIndex: paginationSettings.page,
-			sortBy,
-			sortOrder
-		});
+		invalidate('app:Assets');
 	};
 
 	let breadCrumbs = $state();
@@ -242,7 +212,7 @@
 							type="text"
 							name="name"
 							placeholder="Search by name"
-							oninput={(event) => onSearchInput(event)}
+							bind:value={nameAssetSearch}
 							class="table-input-field !pr-4 !pl-10"
 						/>
 						<Icon
@@ -371,4 +341,4 @@
 	id={idToBeDeleted}
 />
 
-<Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />
+<Pagination bind:paginationSettings />
