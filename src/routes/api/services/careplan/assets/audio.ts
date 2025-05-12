@@ -49,7 +49,7 @@ export const searchAudio = async (sessionId: string, searchParams) => {
 };
 
 export const updateAudio = async (
-sessionId: string, audioId: string, name: string, transcript: string, pathUrl: string, PathUrl: string, tags: string[], version: string) => {
+sessionId: string, audioId: string, name: string, transcript: string, pathUrl: string, tags: string[], version: string) => {
 	const body = {
 		Name: name,
 		Transcript: transcript,

@@ -1,9 +1,10 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
 import { uuidSchema } from "$lib/validation/common.schema";
 import type { RequestEvent } from "@sveltejs/kit";
-import { createOrUpdateSchema } from "$lib/validation/health.system.schema";
+// import { createOrUpdateSchema } from "$lib/validation/health.system.schema";
 import { deleteAudio, getAudioById, updateAudio } from "../../../../../services/careplan/assets/audio";
 import type { AudioUpdateModel } from "$lib/types/audio.type";
+import { createOrUpdateSchema } from "$lib/validation/audio.schema";
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -87,7 +88,6 @@ export const PUT = async (event: RequestEvent) => {
 
         const response = await updateAudio(sessionId,
             audioId,
-            sessionId,
             data.Name,
             data.Transcript,     
             data.PathUrl,

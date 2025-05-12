@@ -1,9 +1,9 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
 import { uuidSchema } from "$lib/validation/common.schema";
 import type { RequestEvent } from "@sveltejs/kit";
-import { createOrUpdateSchema } from "$lib/validation/health.system.schema";
 import { deleteBiometrics, getBiometricsById, updateBiometrics } from "../../../../../services/careplan/assets/biometrics";
 import type { BiometricsUpdateModel } from "$lib/types/biometrics.type";
+import { createOrUpdateSchema } from "$lib/validation/biometrics.schema";
 
 ///////////////////////////////////////////////////////////////////////////////
 
