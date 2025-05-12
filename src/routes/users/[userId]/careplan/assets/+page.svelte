@@ -175,7 +175,8 @@
 	const handleAssetsDelete = async (id) => {
 		console.log('Inside handleAssetsDelete', id);
 		const response = await fetch(
-			`/api/server/careplan/assets/${id}?assetType=${selectedAssetType}`,
+			`/api/server/careplan/assets/${id}?assetType=${assetRouteMap[selectedAssetType]}`,
+
 			{
 				method: 'DELETE',
 				headers: { 'content-type': 'application/json' }
