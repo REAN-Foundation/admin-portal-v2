@@ -1,21 +1,21 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getAnimationById } from '$routes/api/services/careplan/assets/animation';
+import { getWebLinkById } from '$routes/api/services/careplan/assets/web-link';
 
 ////////////////////////////////////////////////////////////////////////////
 
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
-	const animationId = event.params.id;
-	const response = await getAnimationById(sessionId, animationId);
+	const webLinkId = event.params.id;
+	const response = await getWebLinkById(sessionId, webLinkId);
 
-	const animation = response?.Data;
+	const webLink = response?.Data;
 	const id = response?.Data?.id;
 
 	return {
 		location: `${id}/edit`,
-		animation,
-		message: response?.Message || 'Animation retrieved successfully',
-		title: 'Animation Edit'
+		webLink,
+		message: response?.Message || 'Web-Link retrieved successfully',
+		title: 'Web-Link Edit'
 	};
 };

@@ -1,21 +1,21 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getAnimationById } from '$routes/api/services/careplan/assets/animation';
+import { getArticleById } from '$routes/api/services/careplan/assets/article';
 
 ////////////////////////////////////////////////////////////////////////////
 
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
-	const animationId = event.params.id;
-	const response = await getAnimationById(sessionId, animationId);
+	const articleId = event.params.id;
+	const response = await getArticleById(sessionId, articleId);
 
-	const animation = response?.Data;
+	const article = response?.Data;
 	const id = response?.Data?.id;
 
 	return {
 		location: `${id}/edit`,
-		animation,
-		message: response?.Message || 'Animation retrieved successfully',
-		title: 'Animation Edit'
+		article,
+		message: response?.Message || 'Article retrieved successfully',
+		title: 'Article Edit'
 	};
 };

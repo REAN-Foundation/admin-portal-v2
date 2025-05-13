@@ -1,21 +1,21 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getAnimationById } from '$routes/api/services/careplan/assets/animation';
+import { getWordPowerById } from '../../../../../../../api/services/careplan/assets/word-power';
 
 ////////////////////////////////////////////////////////////////////////////
 
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
-	const animationId = event.params.id;
-	const response = await getAnimationById(sessionId, animationId);
+	const wordPowerId = event.params.id;
+	const response = await getWordPowerById(sessionId, wordPowerId);
 
-	const animation = response?.Data;
+	const wordPower = response?.Data;
 	const id = response?.Data?.id;
 
 	return {
 		location: `${id}/edit`,
-		animation,
-		message: response?.Message || 'Animation retrieved successfully',
-		title: 'Animation Edit'
+		wordPower,
+		message: response?.Message || 'Word Power retrieved successfully',
+		title: 'Word Power Edit'
 	};
 };

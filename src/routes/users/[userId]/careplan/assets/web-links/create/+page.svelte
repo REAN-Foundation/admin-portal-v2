@@ -4,12 +4,11 @@
 	import Icon from '@iconify/svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
 	import { goto } from '$app/navigation';
-	import type { AnimationsCreateModel } from '$lib/types/animation.js';
-	import { createOrUpdateSchema } from '$lib/validation/animation.schema.js';
 	import InputChips from '$lib/components/input-chips.svelte';
+	import { createOrUpdateSchema } from '$lib/validation/web.links.schema.js';
+	import type { WebLinksCreateModel } from '$lib/types/web.links.js';
 
-	//////////////////////////////////////////////////////////////////////
-
+	/////////////////////////////////////////////////////////////////////////////////
 	let { data, form } = $props();
 
 	let errors: Record<string, string> = $state({});
@@ -17,14 +16,14 @@
 	let promise = $state();
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
-	let transcript = $state(undefined);
+	let description = $state(undefined);
 	let pathUrl = $state(undefined);
 	let version = $state(undefined);
 
 	const userId = page.params.userId;
 	const assetRoute = `/users/${userId}/careplan/assets`;
-	const createRoute = `/users/${userId}/careplan/assets/animations/create`;
-	const animationRoute = `/users/${userId}/careplan/assets/animations`;
+	const createRoute = `/users/${userId}/careplan/assets/web-links/create`;
+	const weblinkRoute = `/users/${userId}/careplan/assets/web-links`;
 
 	const breadCrumbs = [
 		{
@@ -32,8 +31,8 @@
 			path: assetRoute
 		},
 		{
-			name: 'Animation',
-			path: animationRoute
+			name: 'Web-Link',
+			path: weblinkRoute
 		},
 		{
 			name: 'Create',
@@ -46,15 +45,15 @@
 			event.preventDefault();
 			errors = {};
 
-			const animationsCreateModel: AnimationsCreateModel = {
+			const webLinksCreateModels: WebLinksCreateModel = {
 				Name: name,
-				Transcript: transcript,
+				Description: description,
 				PathUrl: pathUrl,
 				Tags: keywords,
 				Version: version
 			};
 
-			const validationResult = createOrUpdateSchema.safeParse(animationsCreateModel);
+			const validationResult = createOrUpdateSchema.safeParse(webLinksCreateModels);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -65,9 +64,9 @@
 				);
 				return;
 			}
-			const res = await fetch(`/api/server/careplan/assets/animation`, {
+			const res = await fetch(`/api/server/careplan/assets/web-links`, {
 				method: 'POST',
-				body: JSON.stringify(animationsCreateModel),
+				body: JSON.stringify(webLinksCreateModels),
 				headers: { 'content-type': 'application/json' }
 			});
 
@@ -75,7 +74,7 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				goto(`${animationRoute}/${response?.Data.id}/view`);
+				goto(`${weblinkRoute}/${response?.Data?.id}/view`);
 				return;
 			}
 
@@ -129,15 +128,15 @@
 							</td>
 						</tr>
 						<tr>
-							<td class="align-top">Transcript</td>
+							<td class="align-top">Description</td>
 							<td>
 								<textarea
-									name="transcript"
-									class="input w-full {errors?.Transcript
+									name="description"
+									class="input w-full {errors?.Description
 										? 'border-error-300'
 										: 'border-primary-200'}"
-									bind:value={transcript}
-									placeholder="Enter transcript here..."
+									bind:value={description}
+									placeholder="Enter description here..."
 								></textarea>
 							</td>
 						</tr>

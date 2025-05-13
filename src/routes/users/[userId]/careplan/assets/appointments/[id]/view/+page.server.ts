@@ -1,30 +1,22 @@
-import { error, type RequestEvent } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
 import { getAppointmentById } from '$routes/api/services/careplan/assets/appointment';
+import type { PageServerLoad } from './$types';
+import type { ServerLoadEvent } from '@sveltejs/kit';
 
 ////////////////////////////////////////////////////////////////////////////
 
-export const load: PageServerLoad = async (event: RequestEvent) => {
+export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
-	console.log('sessionId', sessionId);
+	const appointmentId = event.params.id;
 
-	try {
-		const appointmentId = event.params.id;
-		console.log(appointmentId);
-		const response = await getAppointmentById(sessionId, appointmentId);
+	const response = await getAppointmentById(sessionId, appointmentId);
 
-		if (response.Status === 'failure' || response.HttpCode !== 200) {
-			throw error(response.HttpCode, response.Message);
-		}
-		const appointment = response.Data;
-		console.log('appointment', appointment);
-		const id = response.Data.id;
-		return {
-			location: `${id}/edit`,
-			appointment,
-			message: response.Message
-		};
-	} catch (error) {
-		console.error(`Error retriving appointment ${error.message}`);
-	}
+	const appointment = response?.Data;
+	const id = response?.Data?.id;
+
+	return {
+		location: `${id}/edit`,
+		appointment,
+		message: response?.Message || 'Appointment retrieved successfully',
+		title: 'Appointment View'
+	};
 };

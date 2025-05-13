@@ -3,23 +3,24 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-	///////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////
 
 	const userId = page.params.userId;
-	const animationId = page.params.id;
+	const wordPowerId = page.params.id;
 	const assetRoute = `/users/${userId}/careplan/assets`;
-	const editRoute = `/users/${userId}/careplan/assets/animations/${animationId}/edit`;
-	const viewRoute = `/users/${userId}/careplan/assets/animations/${animationId}/view`;
-	const animationRoute = `/users/${userId}/careplan/assets/animations/create`;
+	const editRoute = `/users/${userId}/careplan/assets/word-power/${wordPowerId}/edit`;
+	const viewRoute = `/users/${userId}/careplan/assets/word-power/${wordPowerId}/view`;
+	const wordpowerRoute = `/users/${userId}/careplan/assets/word-power/create`;
 
 	let { data }: { data: PageServerData } = $props();
 
-	let assetCode = data.animation.AssetCode;
-	let name = data.animation.Name;
-	let transcript = data.animation.Transcript !== null ? data.animation.Transcript : 'Not specified';
-	let pathUrl = data.animation.PathUrl !== null ? data.animation.PathUrl : 'Not specified';
-	let tags_ = data.animation.Tags;
-	let version = data.animation.Version;
+	let assetCode = data.wordPower.AssetCode;
+	let name = data.wordPower.Name;
+	let description =
+		data.wordPower.Description !== null ? data.wordPower.Description : 'Not specified';
+	let additionalResources = data.wordPower.AdditionalResources;
+	let tags_ = data.wordPower.Tags;
+	let version = data.wordPower.Version;
 	let tags = tags_.join(', ');
 
 	const breadCrumbs = [
@@ -28,8 +29,8 @@
 			path: assetRoute
 		},
 		{
-			name: 'Animation',
-			path: animationRoute
+			name: 'Word-Power',
+			path: wordpowerRoute
 		},
 		{
 			name: 'View',
@@ -54,7 +55,7 @@
 			<table class="table-c">
 				<thead>
 					<tr>
-						<th>View Animation</th>
+						<th>View Word power</th>
 						<th class="text-end">
 							<a href={assetRoute} class="table-btn variant-soft-secondary">
 								<Icon icon="material-symbols:close-rounded" class="" />
@@ -72,13 +73,12 @@
 						<td>{name}</td>
 					</tr>
 					<tr>
-						<td>Transcript</td>
-						<td>{transcript}</td>
+						<td>Description</td>
+						<td>{description}</td>
 					</tr>
-
 					<tr>
-						<td>Url</td>
-						<td>{pathUrl}</td>
+						<td>Additional Resources</td>
+						<td>{additionalResources}</td>
 					</tr>
 					<tr>
 						<td>Tags</td>

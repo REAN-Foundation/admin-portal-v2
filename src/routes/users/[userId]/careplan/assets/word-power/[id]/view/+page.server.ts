@@ -1,22 +1,22 @@
+import { getWordPowerById } from '$routes/api/services/careplan/assets/word-power';
 import type { PageServerLoad } from './$types';
 import type { ServerLoadEvent } from '@sveltejs/kit';
-import { getActionPlanById } from '../../../../../../../api/services/careplan/assets/action-plan';
 
 ////////////////////////////////////////////////////////////////////////////
 
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
-	const actionPlanId = event.params.id;
+	const wordPowerId = event.params.id;
 
-	const response = await getActionPlanById(sessionId, actionPlanId);
+	const response = await getWordPowerById(sessionId, wordPowerId);
 
-	const actionPlan = response?.Data;
+	const wordPower = response?.Data;
 	const id = response?.Data?.id;
 
 	return {
 		location: `${id}/edit`,
-		actionPlan,
-		message: response?.Message || 'Action Plan retrieved successfully',
-		title: ' Action Plan View'
+		wordPower,
+		message: response?.Message || 'Word-Power retrieved successfully',
+		title: 'Word-Power View'
 	};
 };

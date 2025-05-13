@@ -1,22 +1,22 @@
+import { getWebLinkById } from '$routes/api/services/careplan/assets/web-link';
 import type { PageServerLoad } from './$types';
 import type { ServerLoadEvent } from '@sveltejs/kit';
-import { getActionPlanById } from '../../../../../../../api/services/careplan/assets/action-plan';
 
 ////////////////////////////////////////////////////////////////////////////
 
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
-	const actionPlanId = event.params.id;
+	const webLinkId = event.params.id;
 
-	const response = await getActionPlanById(sessionId, actionPlanId);
+	const response = await getWebLinkById(sessionId, webLinkId);
 
-	const actionPlan = response?.Data;
+	const webLink = response?.Data;
 	const id = response?.Data?.id;
 
 	return {
 		location: `${id}/edit`,
-		actionPlan,
-		message: response?.Message || 'Action Plan retrieved successfully',
-		title: ' Action Plan View'
+		webLink,
+		message: response?.Message || 'Web-link retrieved successfully',
+		title: 'Web-link View'
 	};
 };

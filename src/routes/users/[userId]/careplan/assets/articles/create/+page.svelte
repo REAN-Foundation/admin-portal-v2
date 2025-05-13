@@ -4,12 +4,11 @@
 	import Icon from '@iconify/svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
 	import { goto } from '$app/navigation';
-	import type { AnimationsCreateModel } from '$lib/types/animation.js';
-	import { createOrUpdateSchema } from '$lib/validation/animation.schema.js';
 	import InputChips from '$lib/components/input-chips.svelte';
+	import type { ArticlesCreateModel } from '$lib/types/articles.js';
+	import { createOrUpdateSchema } from '$lib/validation/articles.schema.js';
 
-	//////////////////////////////////////////////////////////////////////
-
+	/////////////////////////////////////////////////////////////////////////////////
 	let { data, form } = $props();
 
 	let errors: Record<string, string> = $state({});
@@ -17,14 +16,14 @@
 	let promise = $state();
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
-	let transcript = $state(undefined);
+	let summary = $state(undefined);
 	let pathUrl = $state(undefined);
 	let version = $state(undefined);
 
 	const userId = page.params.userId;
 	const assetRoute = `/users/${userId}/careplan/assets`;
-	const createRoute = `/users/${userId}/careplan/assets/animations/create`;
-	const animationRoute = `/users/${userId}/careplan/assets/animations`;
+	const createRoute = `/users/${userId}/careplan/assets/articles/create`;
+	const articleRoute = `/users/${userId}/careplan/assets/articles`;
 
 	const breadCrumbs = [
 		{
@@ -32,8 +31,8 @@
 			path: assetRoute
 		},
 		{
-			name: 'Animation',
-			path: animationRoute
+			name: 'Article',
+			path: articleRoute
 		},
 		{
 			name: 'Create',
@@ -46,15 +45,15 @@
 			event.preventDefault();
 			errors = {};
 
-			const animationsCreateModel: AnimationsCreateModel = {
+			const articlesCreateModel: ArticlesCreateModel = {
 				Name: name,
-				Transcript: transcript,
+				Summary: summary,
 				PathUrl: pathUrl,
 				Tags: keywords,
 				Version: version
 			};
 
-			const validationResult = createOrUpdateSchema.safeParse(animationsCreateModel);
+			const validationResult = createOrUpdateSchema.safeParse(articlesCreateModel);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -65,9 +64,9 @@
 				);
 				return;
 			}
-			const res = await fetch(`/api/server/careplan/assets/animation`, {
+			const res = await fetch(`/api/server/careplan/assets/articles`, {
 				method: 'POST',
-				body: JSON.stringify(animationsCreateModel),
+				body: JSON.stringify(articlesCreateModel),
 				headers: { 'content-type': 'application/json' }
 			});
 
@@ -75,7 +74,7 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				goto(`${animationRoute}/${response?.Data.id}/view`);
+				goto(`${articleRoute}/${response?.Data?.id}/view`);
 				return;
 			}
 
@@ -104,9 +103,9 @@
 				<table class="table-c">
 					<thead>
 						<tr>
-							<th>Create Animation</th>
+							<th>Create Article</th>
 							<th class="text-end">
-								<a href={createRoute} class="table-btn variant-soft-secondary">
+								<a href={assetRoute} class="table-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -129,15 +128,13 @@
 							</td>
 						</tr>
 						<tr>
-							<td class="align-top">Transcript</td>
+							<td class="align-top">Summary</td>
 							<td>
 								<textarea
-									name="transcript"
-									class="input w-full {errors?.Transcript
-										? 'border-error-300'
-										: 'border-primary-200'}"
-									bind:value={transcript}
-									placeholder="Enter transcript here..."
+									name="summary"
+									class="input w-full {errors?.Summary ? 'border-error-300' : 'border-primary-200'}"
+									bind:value={summary}
+									placeholder="Enter article summary here..."
 								></textarea>
 							</td>
 						</tr>

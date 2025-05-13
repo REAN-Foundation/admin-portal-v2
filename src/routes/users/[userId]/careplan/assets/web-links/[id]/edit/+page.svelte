@@ -2,29 +2,35 @@
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
-	import { toastMessage } from '$lib/components/toast/toast.store.js';
+	import type { PageServerData } from './$types';
+	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
-	import type { AnimationsCreateModel } from '$lib/types/animation.js';
-	import { createOrUpdateSchema } from '$lib/validation/animation.schema.js';
 	import InputChips from '$lib/components/input-chips.svelte';
+	import { createOrUpdateSchema } from '$lib/validation/web.links.schema';
+	import type { WebLinksUpdateModel } from '$lib/types/web.links';
 
-	//////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////
 
-	let { data, form } = $props();
+	let { data, form }: { data: PageServerData; form: any } = $props();
 
+	let id = data.webLink.id;
+	let assetCode = data.webLink.AssetCode;
+	let name = $state(data.webLink.Name);
+	let description = $state(data.webLink.Description);
+	let pathUrl = $state(data.webLink.Url);
+	let tags = $state(data.webLink.Tags);
+	let version = $state(data.webLink.Version);
 	let errors: Record<string, string> = $state({});
-	let name = $state(undefined);
 	let promise = $state();
-	let keywords: string[] = $state([]);
-	let keywordsStr = $state('');
-	let transcript = $state(undefined);
-	let pathUrl = $state(undefined);
-	let version = $state(undefined);
+	let keywordsStr: string = $state('');
+	let keywords: string[] = $state(data.webLink.Tags);
 
 	const userId = page.params.userId;
+	const webLinkId = page.params.id;
 	const assetRoute = `/users/${userId}/careplan/assets`;
-	const createRoute = `/users/${userId}/careplan/assets/animations/create`;
-	const animationRoute = `/users/${userId}/careplan/assets/animations`;
+	const editRoute = `/users/${userId}/careplan/assets/web-links/${webLinkId}/edit`;
+	const viewRoute = `/users/${userId}/careplan/assets/web-links/${webLinkId}/view`;
+	const weblinkRoute = `/users/${userId}/careplan/assets/web-links`;
 
 	const breadCrumbs = [
 		{
@@ -32,29 +38,36 @@
 			path: assetRoute
 		},
 		{
-			name: 'Animation',
-			path: animationRoute
+			name: 'Web-Link',
+			path: weblinkRoute
 		},
 		{
-			name: 'Create',
-			path: createRoute
+			name: 'Edit',
+			path: editRoute
 		}
 	];
+	const handleReset = () => {
+		name = data?.webLink?.Name;
+		description = data?.webLink?.Description;
+		pathUrl = data?.webLink?.PathUrl;
+		tags = data?.webLink?.Tags;
+		version = data?.webLink?.Version;
+	};
 
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
 			errors = {};
 
-			const animationsCreateModel: AnimationsCreateModel = {
+			const webLinksUpdateModel: WebLinksUpdateModel = {
 				Name: name,
-				Transcript: transcript,
+				Description: description,
 				PathUrl: pathUrl,
 				Tags: keywords,
 				Version: version
 			};
 
-			const validationResult = createOrUpdateSchema.safeParse(animationsCreateModel);
+			const validationResult = createOrUpdateSchema.safeParse(webLinksUpdateModel);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -65,9 +78,10 @@
 				);
 				return;
 			}
-			const res = await fetch(`/api/server/careplan/assets/animation`, {
-				method: 'POST',
-				body: JSON.stringify(animationsCreateModel),
+
+			const res = await fetch(`/api/server/careplan/assets/web-links/${id}`, {
+				method: 'PUT',
+				body: JSON.stringify(webLinksUpdateModel),
 				headers: { 'content-type': 'application/json' }
 			});
 
@@ -75,7 +89,7 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				goto(`${animationRoute}/${response?.Data.id}/view`);
+				goto(`${weblinkRoute}/${response?.Data?.id}/view`);
 				return;
 			}
 
@@ -88,7 +102,6 @@
 			toastMessage();
 		}
 	};
-
 	const onUpdateKeywords = (e: any) => {
 		keywords = e.detail;
 		keywordsStr = keywords?.join(', ');
@@ -96,17 +109,16 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+			<form onsubmit={(event) => (promise = handleSubmit(event))}>
 				<table class="table-c">
 					<thead>
 						<tr>
-							<th>Create Animation</th>
+							<th>Edit Web link</th>
 							<th class="text-end">
-								<a href={createRoute} class="table-btn variant-soft-secondary">
+								<a href={viewRoute} class="table-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -114,11 +126,15 @@
 					</thead>
 					<tbody>
 						<tr>
+							<td>Asset Code</td>
+							<td>{assetCode}</td>
+						</tr>
+						<tr>
 							<td>Name *</td>
 							<td>
 								<input
 									type="text"
-									class="table-input-field {form?.errors?.name ? 'input-text-error' : ''}"
+									class="table-input-field {form?.errors?.Name ? 'input-text-error' : ''}"
 									name="name"
 									placeholder="Enter name here..."
 									bind:value={name}
@@ -129,35 +145,35 @@
 							</td>
 						</tr>
 						<tr>
-							<td class="align-top">Transcript</td>
+							<td>Description</td>
 							<td>
 								<textarea
 									name="transcript"
-									class="input w-full {errors?.Transcript
+									class="input w-full {errors?.Description
 										? 'border-error-300'
 										: 'border-primary-200'}"
-									bind:value={transcript}
+									bind:value={description}
 									placeholder="Enter transcript here..."
 								></textarea>
 							</td>
 						</tr>
 						<tr>
-							<td>Url</td>
+							<td>Path Url</td>
 							<td>
 								<input
 									type="url"
-									class="table-input-field {form?.errors?.Url ? 'input-text-error' : ''}"
-									name="url"
+									class="table-input-field {form?.errors?.PathUrl ? 'input-text-error' : ''}"
+									name="pathUrl"
 									placeholder="Enter url here"
 									bind:value={pathUrl}
 								/>
 								{#if errors?.Url}
-									<p class="text-error-500 text-xs">{errors?.Url}</p>
+									<p class="text-error-500 text-xs">{errors?.PathUrl}</p>
 								{/if}
 							</td>
 						</tr>
 						<tr>
-							<td class="!py-3 align-top">Tags</td>
+							<td class="!py-3">Tags</td>
 							<td>
 								<InputChips
 									bind:keywords
@@ -166,7 +182,7 @@
 									keywordsChanged={onUpdateKeywords}
 								/>
 								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
+								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" bind:value={tags} /> -->
 							</td>
 						</tr>
 						<tr>
@@ -174,7 +190,7 @@
 							<td>
 								<input
 									type="text"
-									class="table-input-field {form?.errors?.version ? 'input-text-error' : ''}"
+									class="table-input-field {form?.errors?.Version ? 'input-text-error' : ''}"
 									name="version"
 									placeholder="V 1.0"
 									bind:value={version}
@@ -187,6 +203,9 @@
 					</tbody>
 				</table>
 				<div class="button-container">
+					<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary"
+						>Reset</button
+					>
 					{#await promise}
 						<button type="submit" class="table-btn variant-soft-secondary" disabled>
 							Submiting
