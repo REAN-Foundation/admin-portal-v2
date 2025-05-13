@@ -18,7 +18,7 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 		const assetTypes = await getAssetsType(sessionId);
 		return {
 			assets,
-			assetTypes,
+			assetTypes,    
 			sessionId
 		};
 	} catch (error) {
@@ -26,3 +26,6 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 		throw redirect(303, `/users/${userId}/home`, errorMessage('Error retriving assets'), event);
 	}
 };
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
