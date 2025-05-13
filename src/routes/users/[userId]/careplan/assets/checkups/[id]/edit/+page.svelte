@@ -103,7 +103,7 @@
 						<tr>
 							<th>Edit Checkups</th>
 							<th class="text-end">
-								<a href={checkupsRoute} class="health-system-btn variant-soft-secondary">
+								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>

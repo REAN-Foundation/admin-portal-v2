@@ -24,7 +24,7 @@
 	var infographicsId = page.params.id;
 
 	const editRoute = `/users/${userId}/careplan/assets/infographics/${infographicsId}/edit`;
-	const viewRoute = `/users/${userId}/careplan/assets/biometric/${infographicsId}/view`;
+	const viewRoute = `/users/${userId}/careplan/assets/infographics/${infographicsId}/view`;
 	const infographicsRoute = `/users/${userId}/careplan/assets/infographics`;
 
 	const breadCrumbs = [
@@ -107,7 +107,7 @@
 						<tr>
 							<th>Edit Infographics</th>
 							<th class="text-end">
-								<a href={infographicsRoute} class="health-system-btn variant-soft-secondary">
+								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
