@@ -30,7 +30,7 @@
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/video/${videoId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/video/${videoId}/view`;
-	const videoRoute = `/users/${userId}/careplan/assets/video/create`;
+	const videoRoute = `/users/${userId}/careplan/assets/video`;
 
 	const breadCrumbs = [
 		{
