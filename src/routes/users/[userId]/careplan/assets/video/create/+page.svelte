@@ -106,7 +106,7 @@
 						<tr>
 							<th>Create Video</th>
 							<th class="text-end">
-								<a href={createRoute} class="table-btn variant-soft-secondary">
+								<a href={createRoute} class="cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>

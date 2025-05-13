@@ -106,7 +106,7 @@
 						<tr>
 							<th>Create Appointment</th>
 							<th class="text-end">
-								<a href={appointmentRoute} class="table-btn variant-soft-secondary">
+								<a href={appointmentRoute} class="cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>

@@ -14,6 +14,11 @@ export const POST = async (event: RequestEvent) => {
 		}
 
 		const request = event.request;
+		const userId = event.locals?.sessionUser?.userId;
+
+		console.log('userId', userId);
+		console.log(event.params, 'event');
+
 		const data: VideoCreateModel = await request.json();
 
 		console.log('data', data);
@@ -37,6 +42,7 @@ export const POST = async (event: RequestEvent) => {
 			data.Name,
 			data.Transcript,
 			data.PathUrl,
+			userId,
 			data.Tags,
 			data.Version
 		);

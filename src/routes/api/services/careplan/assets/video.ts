@@ -8,6 +8,7 @@ export const createVideo = async (
 	name: string,
 	transcript: string,
 	pathUrl: string,
+	userId: string,
 	tags: string[],
 	version: string
 ) => {
@@ -15,6 +16,7 @@ export const createVideo = async (
 		Name: name,
 		Transcript: transcript,
 		Url: pathUrl,
+		OwnerUserId: userId,
 		Tags: tags,
 		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
