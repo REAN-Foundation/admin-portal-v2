@@ -132,9 +132,7 @@
 							<td>
 								<textarea
 									name="summary"
-									class="input w-full {errors?.Description
-										? 'border-error-300'
-										: 'border-primary-200'}"
+									class="input w-full {errors?.Summary ? 'border-error-300' : 'border-primary-200'}"
 									bind:value={summary}
 									placeholder="Enter article summary here..."
 								></textarea>

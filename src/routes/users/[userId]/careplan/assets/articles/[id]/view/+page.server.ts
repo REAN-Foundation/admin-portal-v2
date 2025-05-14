@@ -1,29 +1,22 @@
-import { error, type RequestEvent } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
 import { getArticleById } from '$routes/api/services/careplan/assets/article';
+import type { PageServerLoad } from './$types';
+import type { ServerLoadEvent } from '@sveltejs/kit';
 
 ////////////////////////////////////////////////////////////////////////////
 
-export const load: PageServerLoad = async (event: RequestEvent) => {
+export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
-	console.log('sessionId', sessionId);
+	const articleId = event.params.id;
 
-	try {
-		const articleId = event.params.id;
-		console.log(articleId);
-		const response = await getArticleById(sessionId, articleId);
+	const response = await getArticleById(sessionId, articleId);
 
-		if (response.Status === 'failure' || response.HttpCode !== 200) {
-			throw error(response.HttpCode, response.Message);
-		}
-		const article = response.Data;
-		const id = response.Data.id;
-		return {
-			location: `${id}/edit`,
-			article,
-			message: response.Message
-		};
-	} catch (error) {
-		console.error(`Error retriving article ${error.message}`);
-	}
+	const article = response?.Data;
+	const id = response?.Data?.id;
+
+	return {
+		location: `${id}/edit`,
+		article,
+		message: response?.Message || 'Article retrieved successfully',
+		title: 'Article View'
+	};
 };

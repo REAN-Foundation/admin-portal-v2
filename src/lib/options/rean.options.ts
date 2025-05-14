@@ -186,5 +186,24 @@ export const Options: FeatureOptions[] = [
 	{
 		Name: 'Appointment-Status-Report',
 		Enabled: true
-	}
+	},
+	//....................................
+	{
+        Name: 'Bot-Content',
+        Enabled: true
+    }, {
+        Name: 'Prompt-Template',
+        Enabled: true
+    }, {
+        Name: 'Prompts',
+        Enabled: false
+    },
+	//........................
+	{
+        Name: 'QNA-Documents',
+        Enabled: true
+    }, {
+        Name: 'Documents',
+        Enabled: true
+    }
 ];
