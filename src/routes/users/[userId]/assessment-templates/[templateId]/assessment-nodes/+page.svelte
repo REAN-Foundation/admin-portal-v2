@@ -1,24 +1,20 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
-	// import Confirm from '$lib/components/modal/confirmModal.svelte';
 	import Icon from '@iconify/svelte';
-	// import { Paginator, type PaginationSettings } from '@skeletonlabs/skeleton';
 	import type { PageServerData } from './$types';
-	import { invalidate } from '$app/navigation';
 	import type { PaginationSettings } from '$lib/types/common.types';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import { Helper } from '$lib/utils/helper';
-	// import toast from 'svelte-french-toast';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 
+	let debounceTimeout;
 	let isLoading = $state(false);
 	let assessmentNodes = $state(data.assessmentNodes.Items);
 	let retrivedAssessmentNodes = $derived(assessmentNodes);
@@ -63,25 +59,25 @@
 	});
 
 	async function searchNode(model) {
-		if (title !== model.title) {
-			paginationSettings.page = 0;
-		}
-		if (nodeType !== model.nodeType) {
-			paginationSettings.page = 0;
-		}
-		if (tags !== model.tags) {
-			paginationSettings.page = 0;
-		}
-
-		let url = `/api/server/assessments/assessment-nodes/search?templateId=${templateId}&`;
-		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
-		url += `&sortBy=${model.sortBy ?? sortBy}`;
-		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
-		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-		if (title) url += `&title=${model.title}`;
-		if (nodeType) url += `&nodeType=${model.nodeType}`;
-		if (tags) url += `&tags=${tags}`;
 		try {
+			// if (title !== model.title) {
+			// 	paginationSettings.page = 0;
+			// }
+			// if (nodeType !== model.nodeType) {
+			// 	paginationSettings.page = 0;
+			// }
+			// if (tags !== model.tags) {
+			// 	paginationSettings.page = 0;
+			// }
+
+			let url = `/api/server/assessments/assessment-nodes/search?templateId=${templateId}&`;
+			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+			url += `&sortBy=${model.sortBy ?? sortBy}`;
+			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+			if (title) url += `&title=${model.title}`;
+			if (nodeType) url += `&nodeType=${model.nodeType}`;
+			if (tags) url += `&tags=${tags}`;
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
@@ -94,6 +90,7 @@
 				...item,
 				index: index + 1
 			}));
+			searchKeyword = model.title;
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -101,22 +98,37 @@
 		}
 	}
 
-	$effect(() => {
-		searchNode({
-			title,
-			nodeType,
-			tags,
-			itemsPerPage: paginationSettings.limit,
-			pageIndex: paginationSettings.page,
-			sortBy,
-			sortOrder
-		});
+	// $effect(() => {
+	// 	searchNode({
+	// 		title,
+	// 		nodeType,
+	// 		tags,
+	// 		itemsPerPage: paginationSettings.limit,
+	// 		pageIndex: paginationSettings.page,
+	// 		sortBy,
+	// 		sortOrder
+	// 	});
 
-		if (isDeleting) {
-			retrivedAssessmentNodes;
-			isDeleting = false;
-		}
-	});
+	// 	if (isDeleting) {
+	// 		retrivedAssessmentNodes;
+	// 		isDeleting = false;
+	// 	}
+	// });
+	async function onSearchInput(e) {
+		clearTimeout(debounceTimeout);
+		let searchKeyword = e.target.value;
+
+		debounceTimeout = setTimeout(() => {
+			paginationSettings.page = 0;
+			searchNode({
+				title: searchKeyword,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortBy,
+				sortOrder
+			});
+		}, 400);
+	}
 
 	function sortTable(columnName) {
 		isSortingTitle = false;
@@ -128,6 +140,34 @@
 			isSortingNodeType = true;
 		}
 		sortBy = columnName;
+		searchNode({
+			title: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
+	function onItemsPerPageChange() {
+		paginationSettings.page = 0; // reset to first page
+		searchNode({
+			title: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
+	function onPageChange() {
+		searchNode({
+			title: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
 	}
 
 	const handleDeleteClick = (id: string) => {
@@ -136,7 +176,7 @@
 	};
 
 	const handleAssessmentNodeDelete = async (id) => {
-		const response = await fetch(`/api/server/assessments/assessment-nodes/${id}`, {
+		const response = await fetch(`/api/server/assessments/assessment-nodes/${id}?templateId=${templateId}`, {
 			method: 'DELETE',
 			headers: { 'content-type': 'application/json' }
 		});
@@ -146,8 +186,16 @@
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
+		} else {
+			toastMessage(res);
 		}
-		invalidate('app:assessment-nodes');
+		searchNode({
+			title: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+            sortBy,
+            sortOrder
+		});
 	};
 </script>
 
@@ -167,6 +215,7 @@
 							type="text"
 							name="title"
 							placeholder="Search by title"
+							oninput={(event) => onSearchInput(event)}
 							bind:value={title}
 							class="health-system-input !pr-4 !pl-10"
 						/>
@@ -191,6 +240,7 @@
 							type="text"
 							name="type"
 							placeholder="Search by node type"
+							oninput={(event) => onSearchInput(event)}
 							bind:value={nodeType}
 							class="health-system-input !pr-4 !pl-10"
 						/>
@@ -215,6 +265,7 @@
 							type="text"
 							name="tags"
 							placeholder="Search by tags"
+							oninput={(event) => onSearchInput(event)}
 							bind:value={tags}
 							class="health-system-input !pr-4 !pl-10"
 						/>
@@ -231,7 +282,7 @@
 						{/if}
 					</div>
 					<button class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary">
-						<a href={createRoute} >Add New</a>
+						<a href={createRoute}>Add New</a>
 					</button>
 				</div>
 			</div>
@@ -354,4 +405,4 @@
 	id={idToBeDeleted}
 />
 
-<Pagination bind:paginationSettings />
+<Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />

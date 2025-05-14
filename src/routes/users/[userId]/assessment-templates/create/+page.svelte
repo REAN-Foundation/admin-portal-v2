@@ -64,13 +64,15 @@
 				return;
 			}
 
-			const res = await fetch(`/api/server/assessments/assessment-template`, {
+			const res = await fetch(`/api/server/assessments/assessment-templates`, {
 				method: 'POST',
 				body: JSON.stringify(assessmentTemplateCreateModel),
 				headers: { 'content-type': 'application/json' }
 			});
 
 			const response = await res.json();
+
+			console.log('response', response);
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
@@ -145,7 +147,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>Type *</td>
+							<td>Type <span class="text-red-700">*</span></td>
 							<td>
 								<select
 									required

@@ -83,6 +83,7 @@
 			const validationResult = createOrUpdateSchema.safeParse(assessmentTemplateUpdateModel);
 
 			console.log('validationResult', validationResult);
+			console.log('validationResult', assessmentTemplateUpdateModel);
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -93,7 +94,7 @@
 				return;
 			}
 
-			console.log('assessment template update model',assessmentTemplateUpdateModel)
+			console.log('assessment template update model', assessmentTemplateUpdateModel);
 
 			const res = await fetch(`/api/server/assessments/assessment-templates/${templateId}`, {
 				method: 'PUT',
@@ -105,7 +106,7 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				goto(`${assessmentsRoutes}/${response?.Data?.HealthSystem?.id}/view`);
+				goto(`${assessmentsRoutes}/${response?.Data?.AssessmentTemplate?.id}/view`);
 				return;
 			}
 			if (response.Errors) {
@@ -157,7 +158,7 @@
 								{/if}
 							</td>
 						</tr>
-						<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
+						<tr>
 							<td class="align-top">Description</td>
 							<td>
 								<textarea
@@ -171,7 +172,7 @@
 								{/if}
 							</td>
 						</tr>
-						<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
+						<tr>
 							<td>Type *</td>
 							<td>
 								<select
@@ -194,7 +195,7 @@
 								{/if}
 							</td>
 						</tr>
-						<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
+						<tr>
 							<td>Provider</td>
 							<td>
 								<input
@@ -209,7 +210,7 @@
 								{/if}
 							</td>
 						</tr>
-						<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
+						<tr>
 							<td>Provider Assessment Code</td>
 							<td>
 								<input
@@ -226,14 +227,15 @@
 								{/if}
 							</td>
 						</tr>
-						<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
+						<tr>
 							<td>Serve List Node Children At Once</td>
 							<td>
 								<input
 									type="checkbox"
 									name="serveListNodeChildrenAtOnce"
 									bind:checked={serveListNodeChildrenAtOnce}
-									class="health-system-input {form?.errors?.serveListNodeChildrenAtOnce
+									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2 {form
+										?.errors?.serveListNodeChildrenAtOnce
 										? 'input-text-error'
 										: ''}"
 								/>
@@ -242,13 +244,14 @@
 								{/if}
 							</td>
 						</tr>
-						<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
+						<tr>
 							<td>Scoring Applicable</td>
 							<td>
 								<input
 									type="checkbox"
 									name="scoringApplicable"
-									class="health-system-input {form?.errors?.scoringApplicable
+									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2 {form
+										?.errors?.scoringApplicable
 										? 'input-text-error'
 										: ''}"
 									bind:checked={scoringApplicable}
@@ -258,7 +261,7 @@
 								{/if}
 							</td>
 						</tr>
-						<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
+						<tr>
 							<td class="align-top">Tags</td>
 							<td>
 								<InputChips

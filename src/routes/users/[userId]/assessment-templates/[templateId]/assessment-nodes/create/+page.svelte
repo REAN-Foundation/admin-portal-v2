@@ -284,7 +284,7 @@
 						</tr>
 						{#if selectedNodeType === 'Question'}
 							<tr>
-								<td class="align-top">Query Response Type *</td>
+								<td class="align-top">Query Response Type <span class=" text-red-600">*</span></td>
 								<td>
 									<select
 										id="mySelect"
@@ -455,7 +455,7 @@
 										required
 										placeholder="Enter message here..."
 										class="health-system-input {form?.errors?.message ? 'input-text-error' : ''}"
-									/>
+									></textarea>
 									{#if errors?.Message}
 										<p class="text-error">{errors?.Message}</p>
 									{/if}

@@ -16,7 +16,6 @@ export const POST = async (event: RequestEvent) => {
 		const request = event.request;
 		const data: AssessmentTemplateCreateModel = await request.json();
 
-		console.log("data", data);
 		const validationResult = createOrUpdateSchema.safeParse(data);
 		if (!validationResult.success) {
 			return ResponseHandler.success({

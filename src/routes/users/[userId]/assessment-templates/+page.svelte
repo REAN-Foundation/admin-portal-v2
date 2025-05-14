@@ -4,31 +4,31 @@
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-	import { invalidate } from '$app/navigation';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
-	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
-	let isLoading = $state(false);
+
 	let assessmentTemplates = $state(data.assessmentTemplate.Items);
 	let retrivedAssessmentTemplates = $derived(assessmentTemplates);
-	let debounceTimeout;
-
+	let totalAssessmentTemplatesCount = $state(data.assessmentTemplate.TotalCount);
+	
 	const userId = page.params.userId;
 	const assessmentRoute = `/users/${userId}/assessment-templates`;
 	const editRoute = (id) => `/users/${userId}/assessment-templates/${id}/edit`;
 	const viewRoute = (id) => `/users/${userId}/assessment-templates/${id}/view`;
 	const createRoute = `/users/${userId}/assessment-templates/create`;
 	const importRoute = `/users/${userId}/assessment-templates/import`;
-
+	
 	const breadCrumbs = [{ name: 'Assessments', path: assessmentRoute }];
-
+	
+	let isLoading = $state(false);
+	let debounceTimeout;
 	let title = $state(undefined);
 	let type = $state(undefined);
 	let tags = $state(undefined);
@@ -40,7 +40,6 @@
 	let sortBy = $state('Title');
 	let sortOrder = $state('ascending');
 
-	let totalAssessmentTemplatesCount = $state(data.assessmentTemplate.TotalCount);
 	let isSortingTitle = $state(false);
 	let isSortingType = $state(false);
 
@@ -52,15 +51,7 @@
 	});
 
 	async function searchAssessmentTemplate(model) {
-		if (searchKeyword !== model.title) {
-			paginationSettings.page = 0;
-		}
-		if (searchKeyword !== model.type) {
-			paginationSettings.page = 0;
-		}
-		if (searchKeyword !== model.tags) {
-			paginationSettings.page = 0;
-		}
+		try {
 		let url = `/api/server/assessments/assessment-templates/search?`;
 		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
 		url += `&sortBy=${model.sortBy ?? sortBy}`;
@@ -69,8 +60,7 @@
 		if (title) url += `&title=${model.title}`;
 		if (type) url += `&type=${model.type}`;
 		if (tags) url += `&tags=${tags}`;
-		console.log('URL: ' + url);
-		try {
+		
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
@@ -79,10 +69,13 @@
 			console.log('searchResult', searchResult);
 			totalAssessmentTemplatesCount = searchResult.Data.AssessmentTemplate.TotalCount;
 			paginationSettings.size = totalAssessmentTemplatesCount;
+
 			assessmentTemplates = searchResult.Data.AssessmentTemplate.Items.map((item, index) => ({
 				...item,
 				index: index + 1
 			}));
+
+			searchKeyword = model.title;
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -93,7 +86,7 @@
 	async function onSearchInput(e) {
 		clearTimeout(debounceTimeout);
 		let searchKeyword = e.target.value;
-		console.log('healthSystemName**', title);
+		
 		debounceTimeout = setTimeout(() => {
 			paginationSettings.page = 0; // reset page when typing new search
 			searchAssessmentTemplate({
@@ -105,21 +98,6 @@
 			});
 		}, 400);
 	}
-	// $effect(() => {
-	// 	searchAssessmentTemplate({
-	// 		title,
-	// 		type,
-	// 		tags,
-	// 		itemsPerPage: paginationSettings.limit,
-	// 		pageIndex: paginationSettings.page,
-	// 		sortBy,
-	// 		sortOrder
-	// 	});
-	// 	if (isDeleting) {
-	// 		retrivedAssessmentTemplates;
-	// 		isDeleting = false;
-	// 	}
-	// });
 
 	function onItemsPerPageChange() {
 		paginationSettings.page = 0; // reset to first page
@@ -206,6 +184,7 @@
 						<input
 							type="text"
 							name="title"
+							oninput={(event) => onSearchInput(event)}
 							placeholder="Search by title"
 							bind:value={title}
 							class="health-system-input !pr-4 !pl-10"
@@ -232,6 +211,7 @@
 							type="text"
 							name="type"
 							placeholder="Search by type"
+							oninput={(event) => onSearchInput(event)}
 							bind:value={type}
 							class="health-system-input !pr-4 !pl-10"
 						/>
@@ -255,6 +235,7 @@
 						<input
 							type="text"
 							name="tags"
+							oninput={(event) => onSearchInput(event)}
 							placeholder="Search by tags"
 							bind:value={tags}
 							class="health-system-input !pr-4 !pl-10"

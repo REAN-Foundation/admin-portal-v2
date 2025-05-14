@@ -17,6 +17,7 @@
 
 	let { data }: { data: PageServerData } = $props();
 
+	let debounceTimeout;
 	let isLoading = $state(false);
 	let labRecords = $state(data.labRecordTypes.Items);
 	let retrivedLabRecords = $derived(labRecords);
@@ -53,22 +54,22 @@
 	});
 
 	async function searchLabRecords(model) {
-		if (searchKeyword !== model.typeName) {
-			paginationSettings.page = 0;
-		}
-		if (searchKeyword !== model.displayName) {
-			paginationSettings.page = 0;
-		}
-		let url = `/api/server/lab-record-types/search?`;
-		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
-		url += `&sortBy=${model.sortBy ?? sortBy}`;
-		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
-		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-
-		if (typeName) url += `&typeName=${model.typeName}`;
-		if (displayName) url += `&displayName=${model.displayName}`;
-
 		try {
+			// if (searchKeyword !== model.typeName) {
+			// 	paginationSettings.page = 0;
+			// }
+			// if (searchKeyword !== model.displayName) {
+			// 	paginationSettings.page = 0;
+			// }
+			let url = `/api/server/lab-record-types/search?`;
+			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+			url += `&sortBy=${model.sortBy ?? sortBy}`;
+			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+
+			if (typeName) url += `&typeName=${model.typeName}`;
+			if (displayName) url += `&displayName=${model.displayName}`;
+
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
@@ -82,7 +83,7 @@
 				...item,
 				index: index + 1
 			}));
-			// searchKeyword = model.typeName;
+			searchKeyword = model.typeName;
 			// searchKeyword = model.displayName;
 		} catch (err) {
 			console.error('Search failed:', err);
@@ -91,21 +92,36 @@
 		}
 	}
 
-	$effect(() => {
-		searchLabRecords({
-			typeName,
-			displayName,
-			itemsPerPage: paginationSettings.limit,
-			pageIndex: paginationSettings.page,
-			sortBy,
-			sortOrder
-		});
+	async function onSearchInput(e) {
+		clearTimeout(debounceTimeout);
+		let searchKeyword = e.target.value;
+		debounceTimeout = setTimeout(() => {
+			paginationSettings.page = 0; // reset page when typing new search
+			searchLabRecords({
+				typeName: searchKeyword,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortBy,
+				sortOrder
+			});
+		}, 400);
+	}
 
-		if (isDeleting) {
-			retrivedLabRecords;
-			isDeleting = false;
-		}
-	});
+	// $effect(() => {
+	// 	searchLabRecords({
+	// 		typeName,
+	// 		displayName,
+	// 		itemsPerPage: paginationSettings.limit,
+	// 		pageIndex: paginationSettings.page,
+	// 		sortBy,
+	// 		sortOrder
+	// 	});
+
+	// 	if (isDeleting) {
+	// 		retrivedLabRecords;
+	// 		isDeleting = false;
+	// 	}
+	// });
 
 	function sortTable(columnName) {
 		isSortingTypeName = false;
@@ -118,8 +134,35 @@
 			isSortingDisplayName = true;
 		}
 		sortBy = columnName;
+		searchLabRecords({
+			typeName: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
 	}
 
+	function onItemsPerPageChange() {
+		paginationSettings.page = 0; // reset to first page
+		searchLabRecords({
+			typeName: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
+	function onPageChange() {
+		searchLabRecords({
+			typeName: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortBy,
+			sortOrder
+		});
+	}
 	const handleDeleteClick = (id: string) => {
 		openDeleteModal = true;
 		idToBeDeleted = id;
@@ -137,8 +180,16 @@
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
+		} else {
+			toastMessage(res);
 		}
-		invalidate('app:lab-records');
+		searchLabRecords({
+			typeName: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortBy,
+			sortOrder
+		});
 	};
 </script>
 
@@ -307,9 +358,9 @@
 
 <Confirmation
 	bind:isOpen={openDeleteModal}
-	title="Delete Health System"
+	title="Delete Lab record"
 	onConfirm={handleHealthSystemDelete}
 	id={idToBeDeleted}
 />
 
-<Pagination bind:paginationSettings />
+<Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />

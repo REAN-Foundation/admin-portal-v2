@@ -16,6 +16,7 @@
 
 	let { data }: { data: PageServerData } = $props();
 
+	let debounceTimeout;
 	let isLoading = $state(false);
 	let drugs = $state(data.drugs.Items);
 	let retrivedDrugs = $derived(drugs);
@@ -50,22 +51,22 @@
 	});
 
 	async function searchDrug(model) {
-		if (searchKeyword !== model.drugName) {
-			paginationSettings.page = 0;
-		}
-		if (searchKeyword !== model.genericName) {
-			paginationSettings.page = 0;
-		}
-		let url = `/api/server/drugs/search?`;
-		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
-		url += `&sortBy=${model.sortBy ?? sortBy}`;
-		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
-		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-
-		if (drugName) url += `&drugName=${model.drugName}`;
-		if (genericName) url += `&genericName=${model.genericName}`;
-
 		try {
+			// if (searchKeyword !== model.drugName) {
+			// 	paginationSettings.page = 0;
+			// }
+			// if (searchKeyword !== model.genericName) {
+			// 	paginationSettings.page = 0;
+			// }
+			let url = `/api/server/drugs/search?`;
+			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+			url += `&sortBy=${model.sortBy ?? sortBy}`;
+			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+
+			if (drugName) url += `&drugName=${model.drugName}`;
+			if (genericName) url += `&genericName=${model.genericName}`;
+
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
@@ -78,7 +79,7 @@
 				...item,
 				index: index + 1
 			}));
-			// searchKeyword = model.drugName;
+			searchKeyword = model.drugName;
 			// searchKeyword = model.genericName;
 		} catch (err) {
 			console.error('Search failed:', err);
@@ -87,20 +88,35 @@
 		}
 	}
 
-	$effect(() => {
-		searchDrug({
-			drugName,
-			genericName,
-			itemsPerPage: paginationSettings.limit,
-			pageIndex: paginationSettings.page,
-			sortBy,
-			sortOrder
-		});
-		if (isDeleting) {
-			retrivedDrugs;
-			isDeleting = false;
-		}
-	});
+	async function onSearchInput(e) {
+		clearTimeout(debounceTimeout);
+		let searchKeyword = e.target.value;
+		debounceTimeout = setTimeout(() => {
+			paginationSettings.page = 0; // reset page when typing new search
+			searchDrug({
+				drugName: searchKeyword,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortBy,
+				sortOrder
+			});
+		}, 400);
+	}
+
+	// $effect(() => {
+	// 	searchDrug({
+	// 		drugName,
+	// 		genericName,
+	// 		itemsPerPage: paginationSettings.limit,
+	// 		pageIndex: paginationSettings.page,
+	// 		sortBy,
+	// 		sortOrder
+	// 	});
+	// 	if (isDeleting) {
+	// 		retrivedDrugs;
+	// 		isDeleting = false;
+	// 	}
+	// });
 
 	function sortTable(columnName) {
 		isSortingName = false;
@@ -112,6 +128,34 @@
 			isSortingGenericName = true;
 		}
 		sortBy = columnName;
+		searchDrug({
+			drugName: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
+	function onItemsPerPageChange() {
+		paginationSettings.page = 0; // reset to first page
+		searchDrug({
+			drugName: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
+	function onPageChange() {
+		searchDrug({
+			drugName: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
 	}
 
 	const handleDeleteClick = (id: string) => {
@@ -130,8 +174,16 @@
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
+		} else {
+			toastMessage(res);
 		}
-		invalidate('app:drugs');
+		searchDrug({
+			drugName: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortBy,
+			sortOrder
+		});
 	};
 </script>
 
@@ -151,6 +203,7 @@
 							type="text"
 							name="drugName"
 							placeholder="Search by name"
+							oninput={(event) => onSearchInput(event)}
 							bind:value={drugName}
 							class="health-system-input !pr-4 !pl-10"
 						/>
@@ -175,6 +228,7 @@
 							type="text"
 							name="genericName"
 							placeholder="Search by generic name"
+							oninput={(event) => onSearchInput(event)}
 							bind:value={genericName}
 							class="health-system-input !pr-4 !pl-10"
 						/>
@@ -303,4 +357,4 @@
 	id={idToBeDeleted}
 />
 
-<Pagination bind:paginationSettings />
+<Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />

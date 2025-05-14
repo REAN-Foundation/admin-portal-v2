@@ -69,8 +69,8 @@
 		{ name: 'Assessment-Nodes', path: assessmentNodeRoutes },
 		{ name: 'Edit', path: editRoute }
 	];
-	let selectedNodeType = nodeType;
-	let selectedQueryType = queryType;
+	let selectedNodeType = $derived(nodeType);
+	let selectedQueryType = $derived(queryType);
 
 	const onSelectQueryResponseType = (val) => (selectedQueryType = val.target.value);
 

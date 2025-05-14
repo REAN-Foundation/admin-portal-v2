@@ -18,6 +18,7 @@
 
 	let { data }: { data: PageServerData } = $props();
 
+	let debounceTimeout;
 	let isLoading = $state(false);
 	let symptoms = $state(data.symptoms.Items);
 	let retrivedSymptoms = $derived(symptoms);
@@ -50,21 +51,21 @@
 	});
 
 	async function searchSymptom(model) {
-		if (searchKeyword !== model.symptom) {
-			paginationSettings.page = 0;
-		}
-		// if (searchKeyword !== model.tags) {
-		// 	paginationSettings.page = 0;
-		// }
-		let url = `/api/server/symptoms/search?`;
-		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
-		url += `&sortBy=${model.sortBy ?? sortBy}`;
-		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
-		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-		if (symptom) url += `&symptom=${model.symptom}`;
-		// if (tags) url += `&tags=${tags}`;
-
 		try {
+			// if (searchKeyword !== model.symptom) {
+			// 	paginationSettings.page = 0;
+			// }
+			// if (searchKeyword !== model.tags) {
+			// 	paginationSettings.page = 0;
+			// }
+			let url = `/api/server/symptoms/search?`;
+			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+			url += `&sortBy=${model.sortBy ?? sortBy}`;
+			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+			if (symptom) url += `&symptom=${model.symptom}`;
+			// if (tags) url += `&tags=${tags}`;
+
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
@@ -86,20 +87,35 @@
 		}
 	}
 
-	$effect(() => {
-		searchSymptom({
-			symptom,
-			tags,
-			itemsPerPage: paginationSettings.limit,
-			pageIndex: paginationSettings.page,
-			sortBy,
-			sortOrder
-		});
-		if (isDeleting) {
-			retrivedSymptoms;
-			isDeleting = false;
-		}
-	});
+	// $effect(() => {
+	// 	searchSymptom({
+	// 		symptom,
+	// 		tags,
+	// 		itemsPerPage: paginationSettings.limit,
+	// 		pageIndex: paginationSettings.page,
+	// 		sortBy,
+	// 		sortOrder
+	// 	});
+	// 	if (isDeleting) {
+	// 		retrivedSymptoms;
+	// 		isDeleting = false;
+	// 	}
+	// });
+	async function onSearchInput(e) {
+		clearTimeout(debounceTimeout);
+		let searchKeyword = e.target.value;
+
+		debounceTimeout = setTimeout(() => {
+			paginationSettings.page = 0; // reset page when typing new search
+			searchSymptom({
+				symptom: searchKeyword,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortBy,
+				sortOrder
+			});
+		}, 400);
+	}
 
 	function sortTable(columnName) {
 		isSortingSymptom = false;
@@ -111,6 +127,13 @@
 			isSortingTags = true;
 		}
 		sortBy = columnName;
+		searchSymptom({
+			symptom: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
 	}
 
 	async function getImageUrl(id: string): Promise<string> {
@@ -127,6 +150,26 @@
 		openDeleteModal = true;
 		idToBeDeleted = id;
 	};
+	function onItemsPerPageChange() {
+		paginationSettings.page = 0; // reset to first page
+		searchSymptom({
+			symptom: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
+	function onPageChange() {
+		searchSymptom({
+			symptom: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
 
 	const handleHealthSystemDelete = async (id) => {
 		console.log('Inside handleHealthSystemDelete', id);
@@ -140,8 +183,16 @@
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
+		} else {
+			toastMessage(res);
 		}
-		invalidate('app:symptoms');
+		searchSymptom({
+			symptom: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
 	};
 </script>
 
@@ -161,6 +212,7 @@
 							type="text"
 							name="symptom"
 							placeholder="Search by symptom"
+							oninput={(event) => onSearchInput(event)}
 							bind:value={symptom}
 							class="health-system-input !pr-4 !pl-10"
 						/>
@@ -214,23 +266,23 @@
 							<th class=" w-70">
 								<button onclick={() => sortTable('Symptom')}>
 									Symptom {#if isSortingSymptom}
-									{#if sortOrder === 'ascending'}
-										<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
-									{:else}
-										<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
 									{/if}
-								{/if}
 								</button>
 							</th>
 							<th class="w-64">
 								<button onclick={() => sortTable('Tags')}>
-									Tags  {#if isSortingTags}
-									{#if sortOrder === 'ascending'}
-										<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
-									{:else}
-										<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+									Tags {#if isSortingTags}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
 									{/if}
-								{/if}
 								</button>
 							</th>
 							<th class="w-24">Image</th>
@@ -322,4 +374,4 @@
 	id={idToBeDeleted}
 />
 
-<Pagination bind:paginationSettings />
+<Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />

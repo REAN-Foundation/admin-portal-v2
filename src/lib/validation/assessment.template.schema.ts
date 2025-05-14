@@ -28,7 +28,8 @@ export const createOrUpdateSchema = z.object({
             invalid_type_error: "Provider must be a string."
         })
         .min(1, { message: "Provider cannot be empty." })
-        .max(128, { message: "Provider must be at most 128 characters long." }),
+        .max(128, { message: "Provider must be at most 128 characters long." })
+        .optional(),
 
     ProviderAssessmentCode: z
         .string({
@@ -36,17 +37,20 @@ export const createOrUpdateSchema = z.object({
             invalid_type_error: "Assessment code must be a string."
         })
         .min(1, { message: "Assessment code cannot be empty." })
-        .max(128, { message: "Assessment code must be at most 128 characters long." }),
+        .max(128, { message: "Assessment code must be at most 128 characters long." })
+        .optional(),
 
     ServeListNodeChildrenAtOnce: z
         .boolean({
             required_error: "ServeListNodeChildrenAtOnce must be selected."
-        }),
+        })
+        .optional(),
 
     ScoringApplicable: z
         .boolean({
             required_error: "ScoringApplicable must be selected."
-        }),
+        })
+        .optional(),
 
     Tags: z
         .array(z.string())

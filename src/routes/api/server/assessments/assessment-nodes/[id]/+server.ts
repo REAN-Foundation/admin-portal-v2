@@ -21,11 +21,12 @@ export const DELETE = async (event: RequestEvent) => {
             return ResponseHandler.handleError(400, data, new Error('Validation failed'));
         }
 
-        const id = event.params.id;
-
+        const nodeId = event.params.id;
+        const templateId = event.url.searchParams.get('templateId');
         const response = await deleteAssessmentNode(
             sessionId,
-            id
+            templateId,
+            nodeId
         );
 
         return ResponseHandler.success(response);
