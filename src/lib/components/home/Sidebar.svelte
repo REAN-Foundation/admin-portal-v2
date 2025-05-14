@@ -19,8 +19,8 @@
 	function toggleDropdown(tabName) {
 		openTab = openTab === tabName ? null : tabName;
 	}
-
 </script>
+
 <div class="{showSidebar ? 'z-10 max-md:fixed' : 'hidden'} transition-all md:block">
 	<div class="sidebar">
 		<ul class="sidebar-list">
@@ -36,12 +36,11 @@
 						<Icon icon={navParent.icon} class="mx-1 text-2xl" />
 						<span class="sidebar-text">{navParent.title}</span>
 					</a>
+
 				{:else if navParent.title === 'Home'}
 					<a
 						href={navParent.link}
-						class="sidebar-item items-center {activeTab === 'Home'
-							? 'variant-soft-secondary'
-							: ''}"
+						class="sidebar-item items-center {activeTab === 'Home' ? 'variant-soft-secondary' : ''}"
 						onclick={() => (activeTab = 'Home')}
 					>
 						<Icon icon={navParent.icon} class="mx-1 text-2xl" />

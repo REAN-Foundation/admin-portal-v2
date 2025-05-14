@@ -103,6 +103,12 @@
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
 			});
+			if (!res.ok) {
+	console.error(`Search failed with status ${res.status}`);
+	const errorText = await res.text();  // Get error response body
+	console.error('Error body:', errorText);
+	throw new Error(`Search failed: ${res.status}`);
+}
 			const searchResult = await res.json();
 			console.log('searchResult', searchResult);
 
@@ -197,10 +203,14 @@
 	}
 	const handleAssetsDelete = async (id) => {
 		console.log('Inside handleAssetsDelete', id);
-		const response = await fetch(`/api/server/careplan/assets/${id}`, {
-			method: 'DELETE',
-			headers: { 'content-type': 'application/json' }
-		});
+		const response = await fetch(
+			`/api/server/careplan/assets/${id}?assetType=${assetRouteMap[selectedAssetType]}`,
+
+			{
+				method: 'DELETE',
+				headers: { 'content-type': 'application/json' }
+			}
+		);
 
 		const res = await response.json();
 		console.log('deleted Response', res);
