@@ -50,7 +50,7 @@
 	});
 
 	$inspect('retrivedGoal', goalTypes);
-	
+
 	async function searchGoalTypes(model) {
 		if (searchKeyword !== model.type || searchKeyword !== model.tags) {
 			paginationSettings.page = 0;
@@ -101,7 +101,6 @@
 		}
 	});
 
-
 	function sortTable(columnName) {
 		isSortingType = false;
 		isSortingTags = false;
@@ -115,7 +114,6 @@
 		}
 		sortBy = columnName;
 	}
-
 
 	const handleDeleteClick = (id: string) => {
 		openDeleteModal = true;
@@ -164,7 +162,6 @@
 						{/if}
 					</div>
 
-	
 					<div class="relative flex-1 pr-1.5">
 						<input
 							type="text"
@@ -283,7 +280,7 @@
 
 <Confirmation
 	bind:isOpen={openDeleteModal}
-	title="Delete goal Types@@@"
+	title="Delete goal Types"
 	onConfirm={handleGoalTypeDelete}
 	id={idToBeDeleted}
 />
