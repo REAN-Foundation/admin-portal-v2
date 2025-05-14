@@ -355,14 +355,6 @@ export const buildSidebarMenu = (
 		options
 	);
 
-	sidebarNaviagation = addQnaDocumentsMenu(
-		sidebarNaviagation,
-		userId,
-		userRole,
-		tenantSettings,
-		options
-	);
-
 	sidebarNaviagation = addGamificationMenus(
 		sidebarNaviagation,
 		userId,
@@ -421,7 +413,7 @@ function addBotContentMenu(
 	const botContent: SidebarMenu = {
 		name: 'Bot-Content',
 		title: 'Bot Content',
-		icon: 'pixel:analytics-solid',
+		icon: 'pixel:robot-solid',
 		link: `/users/${userId}/bot-content`,
 		children: []
 	};
@@ -445,11 +437,25 @@ function addBotContentMenu(
 	};
 	menuList.push(prompt);
 
+	const qnaDocument: SidebarMenu = {
+		name: 'QNA-Documents',
+		title: 'Q&A Documents',
+		icon: 'material-symbols:fact-check-outline' ,
+		link: `/users/${userId}/qna-documents/documents`,
+
+		children: []
+	};
+	menuList.push(qnaDocument);
+
 	const botContent_: SidebarMenu = getMenu(menuList, 'Bot-Content');
+
 	const promtTemplates: SidebarMenu = getMenu(menuList, 'Prompt-Template');
 	const prompts: SidebarMenu = getMenu(menuList, 'Prompts');
+	const qnaDocument_: SidebarMenu = getMenu(menuList, 'QNA-Documents');
+
 	botContent_?.children.push(promtTemplates);
 	botContent_?.children.push(prompts);
+	botContent_?.children.push(qnaDocument_);
 
 	const botContentsNavigation: NavigationMenu | null = toNavigation(
 		botContent_,
@@ -459,49 +465,6 @@ function addBotContentMenu(
 	);
 	if (botContentsNavigation) {
 		sidebarNaviagation.push(botContentsNavigation);
-	}
-	return sidebarNaviagation;
-}
-
-function addQnaDocumentsMenu(
-	sidebarNaviagation: NavigationMenu[],
-	userId: string,
-	userRole: string,
-	tenantSettings: any,
-	options: FeatureOptions
-): NavigationMenu[] {
-	const menuList: SidebarMenu[] = [];
-
-	const qnaDocument: SidebarMenu = {
-		name: 'QNA-Documents',
-		title: 'QNA Documents',
-		icon: 'pixel:analytics-solid',
-		link: `/users/${userId}/qna-documents`,
-		children: []
-	};
-	menuList.push(qnaDocument);
-
-	const documents: SidebarMenu = {
-		name: 'Documents',
-		title: 'Documents',
-		icon: 'material-symbols:frame-person-outline-rounded',
-		link: `/users/${userId}/qna-documents/documents`,
-		children: []
-	};
-	menuList.push(documents);
-
-	const qnaDocument_: SidebarMenu = getMenu(menuList, 'QNA-Documents');
-	const documents_: SidebarMenu = getMenu(menuList, 'Documents');
-	qnaDocument_?.children.push(documents_);
-
-	const qnaNavigation: NavigationMenu | null = toNavigation(
-		qnaDocument_,
-		userRole,
-		tenantSettings,
-		options
-	);
-	if (qnaNavigation) {
-		sidebarNaviagation.push(qnaNavigation);
 	}
 	return sidebarNaviagation;
 }
