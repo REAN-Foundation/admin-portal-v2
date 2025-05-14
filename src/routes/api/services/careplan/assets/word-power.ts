@@ -1,5 +1,6 @@
 import { CAREPLAN_BACKEND_API_URL } from '$env/static/private';
 import { delete_, get_, post_, put_ } from '../../common';
+import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 
 ////////////////////////////////////////////////////////////////
 
@@ -16,29 +17,53 @@ export const createWordPower = async (
 		Description: description,
 		AdditionalResources: additionalResources,
 		Tags: tags,
-		Version: !version || version?.length === 0 ? 'V 1.0' : version
+		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
 	const url = CAREPLAN_BACKEND_API_URL + '/assets/word-power';
-	return await post_(url, body, true, sessionId);
+	const result = await post_(url, body, true, sessionId);
+
+	// Clear asset search caches after creation
+	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
+
+	return result;
 };
 
 export const getWordPowerById = async (sessionId: string, wordPowerId: string) => {
+	const cacheKey = `session-${sessionId}:req-getWordPowerById-${wordPowerId}`;
+	if (await DashboardManager.has(cacheKey)) {
+		return await DashboardManager.get(cacheKey);
+	}
+
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/word-power/${wordPowerId}`;
-	return await get_(url, true, sessionId);
+	const result = await get_(url, true, sessionId);
+
+	await DashboardManager.set(cacheKey, result);
+	return result;
 };
 
-export const searchWordPower = async (sessionId: string, searchParams) => {
+export const searchWordPower = async (
+	sessionId: string,
+	searchParams: Record<string, string> = {}
+) => {
 	let searchString = '';
 	const keys = Object.keys(searchParams);
 	if (keys.length > 0) {
-		searchString = '?';
-		for (const key of keys) {
-			searchString += `${key}=${searchParams[key]}`;
-		}
+		const params = keys
+			.filter((key) => searchParams[key])
+			.map((key) => `${key}=${searchParams[key]}`);
+		searchString = '?' + params.join('&');
+	}
+
+	const cacheKey = `session-${sessionId}:req-searchAssets:word-power:${searchString}`;
+	if (await DashboardManager.has(cacheKey)) {
+		return await DashboardManager.get(cacheKey);
 	}
 
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/word-power/search${searchString}`;
-	return await get_(url, true, sessionId);
+	const result = await get_(url, true, sessionId);
+
+	await DashboardManager.set(cacheKey, result);
+	return result;
 };
 
 export const updateWordPower = async (
@@ -55,13 +80,25 @@ export const updateWordPower = async (
 		Description: description,
 		Tags: tags,
 		AdditionalResources: additionalResources,
-		Version: !version || version?.length === 0 ? 'V 1.0' : version
+		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/word-power/${wordPowerId}`;
-	return await put_(url, body, true, sessionId);
+	const result = await put_(url, body, true, sessionId);
+
+	// Clear cached get-by-id and search results
+	await DashboardManager.deleteMany([`session-${sessionId}:req-getWordPowerById-${wordPowerId}`]);
+	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
+
+	return result;
 };
 
 export const deleteWordPower = async (sessionId: string, wordPowerId: string) => {
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/word-power/${wordPowerId}`;
-	return await delete_(url, true, sessionId);
+	const result = await delete_(url, true, sessionId);
+
+	// Clear cache for that asset and search results
+	await DashboardManager.deleteMany([`session-${sessionId}:req-getWordPowerById-${wordPowerId}`]);
+	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
+
+	return result;
 };
