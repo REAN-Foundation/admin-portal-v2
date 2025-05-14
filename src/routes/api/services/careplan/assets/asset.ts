@@ -1,7 +1,6 @@
 import { CAREPLAN_BACKEND_API_URL } from '$env/static/private';
 import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 import { get_ } from '../../common';
-import { get } from '../common.careplan';
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -12,7 +11,10 @@ export const getAssetsType = async (sessionId: string) => {
 	}
 
 	const url = CAREPLAN_BACKEND_API_URL + `/types/assets`;
-	return await get(sessionId,url, true );
+	const result = await get_(url, true, sessionId);
+
+	await DashboardManager.set(cacheKey, result);
+	return result;
 };
 
 export const searchAssets = async (
@@ -43,5 +45,7 @@ export const searchAssets = async (
 		return await DashboardManager.get(cacheKey);
 	}
 
-	return await get(sessionId, url, true);
+	const result = await get_(url, true, sessionId);
+	await DashboardManager.set(cacheKey, result);
+	return result;
 };
