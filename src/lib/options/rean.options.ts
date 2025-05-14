@@ -24,7 +24,7 @@ export const Options: FeatureOptions[] = [
 	},
 	{
 		Name: 'Tenants',
-		Enabled: false
+		Enabled: true
 	},
 	{
 		Name: 'Person-Role',
@@ -189,21 +189,24 @@ export const Options: FeatureOptions[] = [
 	},
 	//....................................
 	{
-        Name: 'Bot-Content',
-        Enabled: true
-    }, {
-        Name: 'Prompt-Template',
-        Enabled: true
-    }, {
-        Name: 'Prompts',
-        Enabled: false
-    },
+		Name: 'Bot-Content',
+		Enabled: true
+	},
+	{
+		Name: 'Prompt-Template',
+		Enabled: true
+	},
+	{
+		Name: 'Prompts',
+		Enabled: false
+	},
 	//........................
 	{
-        Name: 'QNA-Documents',
-        Enabled: true
-    }, {
-        Name: 'Documents',
-        Enabled: true
-    }
+		Name: 'QNA-Documents',
+		Enabled: true
+	},
+	{
+		Name: 'Documents',
+		Enabled: true
+	}
 ];
