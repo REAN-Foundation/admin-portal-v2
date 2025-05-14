@@ -1,9 +1,10 @@
-import { BACKEND_API_URL, FOLLOW_UP_URL } from '$env/static/private';
-import { get_, post_ } from '../common';
+import { BACKEND_API_URL, FOLLOW_UP_URL } from "$env/static/private";
+import { get_, post_ } from "../common";
+import { get, post } from "./common";
 
 ///////////////////////////////////////////////////////////////////////////////
 
-export const searchReportData = async (tenatCode: string, date: string, searchParams?: any) => {
+export const searchReportData = async (tenatCode: string, searchParams?: any) => {
 	let searchString = '';
 	if (searchParams) {
 		const keys = Object.keys(searchParams);
@@ -20,8 +21,9 @@ export const searchReportData = async (tenatCode: string, date: string, searchPa
 		}
 	}
 	console.log('searchString', searchString);
-	const url = FOLLOW_UP_URL + `/appointment-schedules/${tenatCode}/status-report/${date}`;
-	return await get_(url, false);
+	const url = FOLLOW_UP_URL + `/appointment-schedules/${tenatCode}/status-report/search${searchString}`;
+	console.log('url---', url);
+	return await get(url);
 };
 
 export const createReminder = async (tenantCode: string, date: string) => {
@@ -29,7 +31,7 @@ export const createReminder = async (tenantCode: string, date: string) => {
 		date: date
 	};
 	const url = FOLLOW_UP_URL + `/appointment-schedules/${tenantCode}/fetch-schedules-by-api`;
-	return await post_(url, body, true);
+	return await post(url, body);
 };
 
 export async function cancelReminder(

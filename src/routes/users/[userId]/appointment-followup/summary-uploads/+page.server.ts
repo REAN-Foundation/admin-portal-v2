@@ -7,12 +7,16 @@ import { searchReportData } from "$routes/api/services/follow-up/reminders";
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     const sessionId = event.cookies.get('sessionId');
     const tenatCode = event.locals.sessionUser.tenantCode;
-    event.depends('app:healthSystem');
+    console.log('tenatCode', tenatCode);
+
     const date = new Date();
     const dateString = date.toISOString().split('T')[0];
-    const response = await searchReportData(tenatCode, dateString);
+    const searchParams = {
+        appointment_date: dateString
+    }
+    const response = await searchReportData(tenatCode, searchParams);
     const appointmentRecords = response?.Data || [];
-    console.log("appointmentRecords==>",appointmentRecords);
+    console.log("Appointment Records==>",appointmentRecords);
 
     return {
         appointmentRecords,

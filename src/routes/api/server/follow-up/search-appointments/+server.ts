@@ -6,15 +6,15 @@ import type { RequestEvent } from '@sveltejs/kit';
 
 export const GET = async (event: RequestEvent) => {
     try {
-        const tenantCode = event.locals?.sessionUser?.sessionId;
+        const tenantCode = event.locals?.sessionUser?.tenantCode;
         const searchParams: URLSearchParams = event.url.searchParams;
         const searchFilters = {
-            startDate: searchParams.get('startDate') ?? undefined,
-            endDate: searchParams.get('endDate') ?? undefined
+            appointment_date: searchParams.get('appointmentDate') ?? undefined ,
+            replied_status: searchParams.get('replied_status') ?? undefined
         };
-        const appointmentDate = searchParams.get('appointmentDate') ?? undefined;
+        // const appointmentDate = searchParams.get('appointmentDate') ?? undefined;
         console.log('Search Parameters:', searchFilters);
-        const response = await searchReportData(tenantCode, appointmentDate, searchFilters);
+        const response = await searchReportData(tenantCode, searchFilters);
         return ResponseHandler.success(response);
     } catch (error) {
         console.error('Error retrieving appointments:', error);
