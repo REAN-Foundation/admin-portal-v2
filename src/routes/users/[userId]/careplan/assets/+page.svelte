@@ -97,6 +97,7 @@
 			url += `&itemsPerPage=${filters.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${filters.pageIndex ?? paginationSettings.page}`;
 			if (filters.nameAssetSearch) url += `&name=${filters.nameAssetSearch}`;
+			if (filters.codeAssetSearch) url += `&code=${filters.codeAssetSearch}`;
 
 			const res = await fetch(url, {
 				method: 'GET',
@@ -120,13 +121,19 @@
 		}
 	}
 
-	async function onSearchInput(e) {
+	function onSearchInput(e, field: 'name' | 'code') {
 		clearTimeout(debounceTimeout);
-		let searchKeyword = e.target.value;
+		const keyword = e.target.value;
+
 		debounceTimeout = setTimeout(() => {
-			paginationSettings.page = 0; // reset page when typing new search
+			paginationSettings.page = 0;
+
+			if (field === 'name') nameAssetSearch = keyword;
+			if (field === 'code') codeAssetSearch = keyword;
+
 			searchAssets({
-				nameAssetSearch: searchKeyword,
+				nameAssetSearch,
+				codeAssetSearch,
 				itemsPerPage: paginationSettings.limit,
 				pageIndex: 0,
 				sortBy,
@@ -242,7 +249,7 @@
 							type="text"
 							name="name"
 							placeholder="Search by name"
-							oninput={(event) => onSearchInput(event)}
+							oninput={(event) => onSearchInput(event, 'name')}
 							class="table-input-field !pr-4 !pl-10"
 						/>
 						<Icon
@@ -261,7 +268,7 @@
 							type="text"
 							name="code"
 							placeholder="Search by code"
-							bind:value={codeAssetSearch}
+							oninput={(event) => onSearchInput(event, 'code')}
 							class="table-input-field !pr-4 !pl-10"
 						/>
 						<Icon
