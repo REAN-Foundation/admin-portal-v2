@@ -7,11 +7,13 @@
 	import Icon from '@iconify/svelte';
 	import { showMessage } from '$lib/utils/message.utils.js';
 	import type { PageServerData } from './$types';
-	import type { DocumentsUpdateModel, FileUploadModel } from '$lib/types/documents.types';
-	import { createOrUpdateSchema, fileUploadSchema } from '$lib/validation/documents.schema';
+	import type { DocumentsUpdateModel } from '$lib/types/documents.types';
+	import { createOrUpdateSchema } from '$lib/validation/documents.schema';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
 	import InputChips from '$lib/components/input-chips.svelte';
+	import type { FileUploadModel } from '$lib/types/file.upload.types';
+	import { fileUploadSchema } from '$lib/validation/file.upload.schema';
 
 	///////////////////////////////////////////////////////////////////
 	let { data, form }: { data: PageServerData; form: any } = $props();
@@ -35,6 +37,7 @@
 	let documentType = $state(data.documents.DocumentType);
 	let version: string = $state(data.documents.DocumentVersion.map((row) => row.Version).join(', '));
 
+	$inspect("version", version)
 	let imageUrl = $state('');
 	let fileinput = $state();
 	let resourceId = $state(data.documents.ResourceId);
@@ -200,6 +203,8 @@
 			});
 
 			const response = await res.json();
+			console.log("response", response);
+			
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
