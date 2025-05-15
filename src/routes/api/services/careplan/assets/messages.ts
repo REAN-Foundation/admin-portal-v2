@@ -11,13 +11,15 @@ export const createMessage = async (
     templateName: string,
     pathUrl: string,
     tags: string[],
-    version: string 
+    version: string,
+    templateVariables?: { [key: string]: any }
 ) => {
     const body = {
         Name: name,
         Description: description,
         MessageType: messageType,
         TemplateName: templateName,
+        TemplateVariables: templateVariables || {},
         Url: pathUrl,
         Tags: tags,
         Version: !version || version?.length === 0 ? 'V 1.0' : version,
@@ -53,12 +55,23 @@ export const searchMessages = async (sessionId: string, searchParams) => {
 };
 
 export const updateMessage = async (
-sessionId: string, messageId: string, name: string, description: string, messageType: string, templateName: string, pathUrl: string, tags: string[], version: string) => {
+sessionId: string, 
+messageId: string, 
+name: string, 
+description: string, 
+messageType: string, 
+templateName: string, 
+pathUrl: string, 
+tags: string[], 
+version: string,
+templateVariables?: { [key: string]: any }
+) => {
     const body = {
         Name: name,
         Description: description,
         MessageType: messageType,
         TemplateName: templateName,
+        TemplateVariables: templateVariables || {},
         Url: pathUrl,
         Tags: tags,
         Version: !version || version?.length === 0 ? 'V 1.0' : version,

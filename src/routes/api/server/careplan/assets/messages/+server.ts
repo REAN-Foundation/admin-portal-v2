@@ -35,7 +35,9 @@ export const POST = async (event: RequestEvent) => {
             data.TemplateName,   
             data.PathUrl,
             data.Tags,
-            data.Version ?? '');
+            data.Version ?? '',
+            data.TemplateVariables
+        );
 
         return ResponseHandler.success(response);
     } catch (error) {

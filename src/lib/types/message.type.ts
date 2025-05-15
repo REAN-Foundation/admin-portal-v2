@@ -3,6 +3,7 @@ export interface MessageCreateModel {
 	Description?: string;
     MessageType?: string;
     TemplateName?: string;
+	TemplateVariables?: { [key: string]: any };
 	PathUrl?: string;
 	Tags?: string[];
 	Version?: string;
@@ -13,6 +14,7 @@ export interface MessageUpdateModel {
 	Description?: string;
     MessageType?: string;
     TemplateName?: string;
+	TemplateVariables?: { [key: string]: any };
 	PathUrl?: string;
 	Tags?: string[];
 	Version?: string;

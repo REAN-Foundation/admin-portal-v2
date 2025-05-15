@@ -23,6 +23,9 @@ export const createOrUpdateSchema = z.object({
         .max(1024, { message: 'Template Name must be at most 1024 characters long.' })
         .optional(),
 
+    TemplateVariables: z
+		.record(z.union([z.string(), z.number(), z.boolean(), z.null()]))
+		.optional(),
     PathUrl: z
         .string({
             invalid_type_error: 'Path URL must be a string.'

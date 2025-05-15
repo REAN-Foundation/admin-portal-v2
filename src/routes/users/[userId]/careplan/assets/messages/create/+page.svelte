@@ -20,6 +20,8 @@
 	let version = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
+	let templateVariablesText = $state('');
+	let templateVariables: { [key: string]: any } = $state({});
 
 	data.title = 'Create Message';
 	const userId = page.params.userId;
@@ -38,6 +40,12 @@
 			event.preventDefault();
 			errors = {};
 
+			const parsedTemplateVars = parseTemplateVariables(templateVariablesText);
+			if (!parsedTemplateVars) {
+			// If parse failed, do not continue
+			return;
+		}
+
 			const messageCreateModel: MessageCreateModel = {
 				Name: name,
 				Description: description,
@@ -45,7 +53,11 @@
 				TemplateName: templateName,
 				PathUrl: pathUrl,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				// TemplateVariables: templateVariables
+				// TemplateVariables: parseTemplateVariables(templateVariablesText)
+				TemplateVariables: parsedTemplateVars
+
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(messageCreateModel);
@@ -81,6 +93,40 @@
 			toastMessage();
 		}
 	};
+
+	function parseTemplateVariables(text: string): Record<string, any> | null {
+	try {
+		const parsed = JSON.parse(text);
+		if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+			throw new Error('Invalid object');
+		}
+		return parsed;
+	} catch (e) {
+		errors = {
+			...errors,
+			TemplateVariables: 'TemplateVariables must be a valid JSON object with key-value pairs'
+		};
+		return null;
+	}
+}
+
+
+// 	function parseTemplateVariables(text: string): Record<string, any> | null {
+// 		try {
+// 		const parsed = JSON.parse(text);
+// 		if (
+// 			typeof parsed !== 'object' ||
+// 			parsed === null ||
+// 			Array.isArray(parsed)
+// 		) {
+// 			throw new Error('Not a valid object');
+// 		}
+// 		return parsed;
+// 	} catch (e) {
+// 		errors['TemplateVariables'] = 'TemplateVariables must be a valid JSON object with key-value pairs';
+// 		return null;
+// 	}
+// }
 
 	const onUpdateKeywords = (e: any) => {
 		keywords = e.detail;
@@ -134,7 +180,7 @@
 							</td>
 						</tr>
 						<tr>
-						<td>Message Type</td>
+						<td>Message Type<span class="text-red-700">*</span></td>
 						<td>
 							<select class="health-system-input" bind:value={messageType}>
 								<option disabled value>Select message type</option>
@@ -145,7 +191,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td>Template Name</td>
+						<td>Template Name<span class="text-red-700">*</span></td>
 						<td>
 							<input
 								type="text"
@@ -156,6 +202,29 @@
 							{#if errors?.TemplateName}<p class="text-error">{errors?.TemplateName}</p>{/if}
 						</td>
 					</tr>
+					<!-- <tr>
+						<td>Template Variables</td>
+						<td>
+							<input
+								type="text"
+								bind:value={templateVariablesText}
+								placeholder="Enter Template Variables..."
+								class="health-system-input {errors?.TemplateVariables ? 'input-text-error' : ''}"
+							/>
+							{#if errors?.TemplateVariables}<p class="text-error">{errors?.TemplateVariables}</p>{/if}
+						</td>
+					</tr> -->
+					<tr>
+							<td class="align-top">Template Variables</td>
+							<td>
+								<textarea
+									name="templateVariablesText"
+									class="input w-full {errors.TemplateVariables ? 'border-error-300' : 'border-primary-200'}"
+									bind:value={templateVariablesText}
+									placeholder="Enter Template Variables here..."
+								></textarea>
+							</td>
+						</tr>
 
 					<tr>
 						<td>Url</td>

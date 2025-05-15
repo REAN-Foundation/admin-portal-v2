@@ -8,7 +8,7 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { MessageUpdateModel } from '$lib/types/message.type';
 	import { createOrUpdateSchema } from '$lib/validation/message.schema';
-	
+
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let errors: Record<string, string> = $state({});
@@ -21,6 +21,9 @@
 	let version = $state(data.message.Version);
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
+	let templateVariablesText = $state(
+		data.message.TemplateVariables ? JSON.stringify(data.message.TemplateVariables, null, 2) : ''
+	);
 
 	const userId = page.params.userId;
 	var messageId = page.params.id;
@@ -38,9 +41,14 @@
 		name = data?.message?.Name;
 		messageId = page.params.id;
 		description = data?.message?.Description;
+		templateName = data?.message?.TemplateName;
+		templateVariablesText = data.message.TemplateVariables
+			? JSON.stringify(data.message.TemplateVariables, null, 2)
+			: '';
 		pathUrl = data?.message?.PathUrl;
 		version = data?.message?.Version;
 		keywords = data?.message?.Tags;
+
 		errors = {};
 	};
 
@@ -56,7 +64,8 @@
 				MessageType: messageType,
 				TemplateName: templateName,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TemplateVariables: parseTemplateVariables(templateVariablesText)
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(messageUpdateModel);
@@ -92,6 +101,22 @@
 			toastMessage();
 		}
 	};
+
+	function parseTemplateVariables(text: string): Record<string, any> | null {
+	try {
+		const parsed = JSON.parse(text);
+		if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+			throw new Error('Invalid object');
+		}
+		return parsed;
+	} catch (e) {
+		errors = {
+			...errors,
+			TemplateVariables: 'TemplateVariables must be a valid JSON object with key-value pairs'
+		};
+		return null;
+	}
+}
 
 	const onUpdateKeywords = (e: any) => {
 		keywords = e.detail;
@@ -137,57 +162,66 @@
 							<td>Description</td>
 							<td>
 								<input
-										type="textarea"
-										class="health-system-input {form?.errors?.Name
-											? 'input-text-error'
-											: ''}"
-										name="description"
-										placeholder="Enter description here..."
-										bind:value={description}
-									/>
+									type="textarea"
+									class="health-system-input {form?.errors?.Name ? 'input-text-error' : ''}"
+									name="description"
+									placeholder="Enter description here..."
+									bind:value={description}
+								/>
 								{#if errors?.Name}
-								<p class="text-error">{errors?.Name}</p>
+									<p class="text-error">{errors?.Name}</p>
 								{/if}
 							</td>
 						</tr>
 						<tr>
-						<td>Message Type</td>
-						<td>
-							<select class="health-system-input" bind:value={messageType}>
-								<option disabled value>Select message type</option>
-								<option>Educational</option>
-								<option>Status</option>
-								<option>Unknown</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>Template Name</td>
-						<td>
-							<input
-								type="text"
-								bind:value={templateName}
-								placeholder="Enter Template Name..."
-								class="health-system-input {errors?.TemplateName ? 'input-text-error' : ''}"
-							/>
-							{#if errors?.TemplateName}<p class="text-error">{errors?.TemplateName}</p>{/if}
-						</td>
-					</tr>
+							<td>Message Type</td>
+							<td>
+								<select class="health-system-input" bind:value={messageType}>
+									<option disabled value>Select message type</option>
+									<option>Educational</option>
+									<option>Status</option>
+									<option>Unknown</option>
+								</select>
+							</td>
+						</tr>
 						<tr>
-                            <td>Url</td>
-                            <td>
-                                <input
-                                    type="url"
+							<td>Template Name</td>
+							<td>
+								<input
+									type="text"
+									bind:value={templateName}
+									placeholder="Enter Template Name..."
+									class="health-system-input {errors?.TemplateName ? 'input-text-error' : ''}"
+								/>
+								{#if errors?.TemplateName}<p class="text-error">{errors?.TemplateName}</p>{/if}
+							</td>
+						</tr>
+						<tr>
+							<td class="align-top">Template Variables</td>
+							<td>
+								<textarea
+									name="templateVariablesText"
+									class="input w-full {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
+									bind:value={templateVariablesText}
+									placeholder="Enter Template Variables here..."
+								></textarea>
+							</td>
+						</tr>
+						<tr>
+							<td>Url</td>
+							<td>
+								<input
+									type="url"
 									name="url"
 									bind:value={pathUrl}
 									placeholder="Enter url here"
-                                    class="health-system-input {errors?.Url ? 'input-text-error' : ''}"
-                                />
-                                {#if errors?.Url}
-                                    <p class="text-error">{errors?.Url}</p>
-                                {/if}
-                            </td>
-                        </tr>
+									class="health-system-input {errors?.Url ? 'input-text-error' : ''}"
+								/>
+								{#if errors?.Url}
+									<p class="text-error">{errors?.Url}</p>
+								{/if}
+							</td>
+						</tr>
 
 						<tr class="">
 							<td class="!py-3 align-top">Tags</td>
@@ -205,7 +239,12 @@
 						<tr>
 							<td>Version</td>
 							<td>
-								<input type="text" bind:value={version} class="health-system-input" placeholder="V 1.0" />
+								<input
+									type="text"
+									bind:value={version}
+									class="health-system-input"
+									placeholder="V 1.0"
+								/>
 							</td>
 						</tr>
 					</tbody>

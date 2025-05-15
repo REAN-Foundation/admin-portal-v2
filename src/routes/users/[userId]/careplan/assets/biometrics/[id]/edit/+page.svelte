@@ -7,7 +7,7 @@
 	import { goto } from '$app/navigation';
 	import InputChips from '$lib/components/input-chips.svelte';
 	import { createOrUpdateSchema } from '$lib/validation/biometrics.schema';
-	import type { BiometricsCreateModel, BiometricsUpdateModel } from '$lib/types/biometrics.type';
+	import type { BiometricsUpdateModel } from '$lib/types/biometrics.type';
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
@@ -79,8 +79,7 @@
 			const response = await res.json();
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
-				toastMessage(response);
-				// console.log("Redirecting to:", response?.Data?.id); 
+				toastMessage(response); 
 				console.log("Full response:", response);
 				await goto(`${biometricsRoute}/${response?.Data?.id}/view`); 
 			} else if (response.Errors) {
@@ -111,7 +110,7 @@
 					<tr>
 						<th>Edit Biometric</th>
 						<th class="text-end">
-							<a href={biometricsRoute} class="health-system-btn variant-soft-secondary">
+							<a href={viewRoute} class="health-system-btn variant-soft-secondary">
 								<Icon icon="material-symbols:close-rounded" />
 							</a>
 						</th>

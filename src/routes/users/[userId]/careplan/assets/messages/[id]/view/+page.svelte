@@ -25,6 +25,8 @@
 	let tags_ = message.Tags;
 	let tags = tags_.join(', ');
 	let version = message.Version;
+	let templateVariables = $state(message.TemplateVariables || {});
+	let templateVariablesText = $state(JSON.stringify(templateVariables, null, 2));
 
 	const breadCrumbs = [
 		{
@@ -87,6 +89,10 @@
 				<tr>
 					<td>Template Name</td>
 					<td>{templateName}</td>
+				</tr>
+				<tr>
+					<td>Template Variables</td>
+					<td>{templateVariablesText}</td>
 				</tr>
 				<tr>
 					<td>Path Url</td>
