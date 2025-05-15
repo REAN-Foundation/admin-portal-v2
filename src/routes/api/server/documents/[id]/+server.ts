@@ -118,6 +118,7 @@ export const PUT = async (event: RequestEvent) => {
 			data.Splitter,
 			data.Active,
 			keywords,
+			data.DocumentType,
 			createdByUserId
 		);
 
