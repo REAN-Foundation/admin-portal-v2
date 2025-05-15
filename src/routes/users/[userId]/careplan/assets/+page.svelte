@@ -104,11 +104,11 @@
 				headers: { 'content-type': 'application/json' }
 			});
 			if (!res.ok) {
-	console.error(`Search failed with status ${res.status}`);
-	const errorText = await res.text();  // Get error response body
-	console.error('Error body:', errorText);
-	throw new Error(`Search failed: ${res.status}`);
-}
+				console.error(`Search failed with status ${res.status}`);
+				const errorText = await res.text(); // Get error response body
+				console.error('Error body:', errorText);
+				throw new Error(`Search failed: ${res.status}`);
+			}
 			const searchResult = await res.json();
 			console.log('searchResult', searchResult);
 
@@ -242,16 +242,23 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
+<div class="px-6 py-2">
 	<div class="mx-auto">
-		<select id="height" class="select mb-4 w-full" onchange={onSelectAssetType}>
-			{#each types as val}
-				<option value={val}>
-					{val}
-				</option>
-			{/each}
-		</select>
-		<div class="table-container mb-6 shadow">
+		<div class="relative flex w-full md:w-1/3">
+			<select id="height" class="select" onchange={onSelectAssetType}>
+				{#each types as val}
+					<option value={val}>
+						{val}
+					</option>
+				{/each}
+			</select>
+
+			<div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+				<Icon icon="mdi:chevron-down" class="text-info h-5 w-5" />
+			</div>
+		</div>
+
+		<div class="table-container my-6 shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative flex-1 pr-1.5">
