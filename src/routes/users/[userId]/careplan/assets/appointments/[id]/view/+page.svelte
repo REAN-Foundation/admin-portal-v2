@@ -59,7 +59,7 @@
 					<tr>
 						<th>View Action Plan</th>
 						<th class="text-end">
-							<a href={assetRoute} class="table-btn variant-soft-secondary">
+							<a href={assetRoute} class="cancel-btn">
 								<Icon icon="material-symbols:close-rounded" class="" />
 							</a>
 						</th>

@@ -20,6 +20,7 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 		}
 		return false;
 	}
+
 	if (menuName === 'Clinical') {
 		if (
 			tenantSettings.Common.Clinical.Assessments ||
@@ -222,6 +223,7 @@ const shouldAdd = (
 		return null;
 	}
 	const featureOption = options.find((option) => option.Name === menu.name);
+
 	const isEnabled = featureOption && featureOption.Enabled;
 	if (!isEnabled) {
 		return null;
@@ -344,6 +346,15 @@ export const buildSidebarMenu = (
 		tenantSettings,
 		options
 	);
+
+	sidebarNaviagation = addBotContentMenu(
+		sidebarNaviagation,
+		userId,
+		userRole,
+		tenantSettings,
+		options
+	);
+
 	sidebarNaviagation = addGamificationMenus(
 		sidebarNaviagation,
 		userId,
@@ -390,6 +401,74 @@ function addMainAnalyticsMenu(
 	}
 	return sidebarNaviagation;
 }
+function addBotContentMenu(
+	sidebarNaviagation: NavigationMenu[],
+	userId: string,
+	userRole: string,
+	tenantSettings: any,
+	options: FeatureOptions
+): NavigationMenu[] {
+	const menuList: SidebarMenu[] = [];
+
+	const botContent: SidebarMenu = {
+		name: 'Bot-Content',
+		title: 'Bot Content',
+		icon: 'pixel:robot-solid',
+		link: `/users/${userId}/bot-content`,
+		children: []
+	};
+	menuList.push(botContent);
+
+	const promtTemplate: SidebarMenu = {
+		name: 'Prompt-Template',
+		title: 'Prompt Template',
+		icon: 'material-symbols:frame-person-outline-rounded',
+		link: `/users/${userId}/bot-content/prompt-template`,
+		children: []
+	};
+	menuList.push(promtTemplate);
+
+	const prompt: SidebarMenu = {
+		name: 'Prompts',
+		title: 'Prompts',
+		icon: 'material-symbols:tenancy-outline',
+		link: `/users/${userId}/bot-content`,
+		children: []
+	};
+	menuList.push(prompt);
+
+	const qnaDocument: SidebarMenu = {
+		name: 'QNA-Documents',
+		title: 'Q&A Documents',
+		icon: 'material-symbols:fact-check-outline' ,
+		link: `/users/${userId}/qna-documents/documents`,
+
+		children: []
+	};
+	menuList.push(qnaDocument);
+
+	const botContent_: SidebarMenu = getMenu(menuList, 'Bot-Content');
+
+	const promtTemplates: SidebarMenu = getMenu(menuList, 'Prompt-Template');
+	const prompts: SidebarMenu = getMenu(menuList, 'Prompts');
+	const qnaDocument_: SidebarMenu = getMenu(menuList, 'QNA-Documents');
+
+	botContent_?.children.push(promtTemplates);
+	botContent_?.children.push(prompts);
+	botContent_?.children.push(qnaDocument_);
+
+	const botContentsNavigation: NavigationMenu | null = toNavigation(
+		botContent_,
+		userRole,
+		tenantSettings,
+		options
+	);
+	if (botContentsNavigation) {
+		sidebarNaviagation.push(botContentsNavigation);
+	}
+	return sidebarNaviagation;
+}
+
 function addMainDashboardMenu(
 	sidebarNaviagation: NavigationMenu[],
 	userId: string,

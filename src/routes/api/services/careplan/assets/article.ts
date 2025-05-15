@@ -1,5 +1,6 @@
 import { CAREPLAN_BACKEND_API_URL } from '$env/static/private';
 import { delete_, get_, post_, put_ } from '../../common';
+import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 
 ////////////////////////////////////////////////////////////////
 
@@ -16,28 +17,54 @@ export const createArticle = async (
 		Summary: summary,
 		Url: pathUrl,
 		Tags: tags,
-		Version: !version || version?.length === 0 ? 'V 1.0' : version
+		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
+
 	const url = CAREPLAN_BACKEND_API_URL + '/assets/articles';
-	return await post_(url, body, true, sessionId);
+	const result = await post_(url, body, true, sessionId);
+
+	// Clear article search cache after creation
+	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
+
+	return result;
 };
 
 export const getArticleById = async (sessionId: string, articleId: string) => {
+	const cacheKey = `session-${sessionId}:req-getArticleById-${articleId}`;
+	if (await DashboardManager.has(cacheKey)) {
+		return await DashboardManager.get(cacheKey);
+	}
+
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/articles/${articleId}`;
-	return await get_(url, true, sessionId);
+	const result = await get_(url, true, sessionId);
+
+	await DashboardManager.set(cacheKey, result);
+	return result;
 };
 
-export const searchArticles = async (sessionId: string, searchParams) => {
+export const searchArticles = async (
+	sessionId: string,
+	searchParams: Record<string, string> = {}
+) => {
 	let searchString = '';
 	const keys = Object.keys(searchParams);
 	if (keys.length > 0) {
-		searchString = '?';
-		for (const key of keys) {
-			searchString += `${key}=${searchParams[key]}`;
-		}
+		const params = keys
+			.filter((key) => searchParams[key])
+			.map((key) => `${key}=${searchParams[key]}`);
+		searchString = '?' + params.join('&');
 	}
+
+	const cacheKey = `session-${sessionId}:req-searchAssets:articles:${searchString}`;
+	if (await DashboardManager.has(cacheKey)) {
+		return await DashboardManager.get(cacheKey);
+	}
+
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/articles/search${searchString}`;
-	return await get_(url, true, sessionId);
+	const result = await get_(url, true, sessionId);
+
+	await DashboardManager.set(cacheKey, result);
+	return result;
 };
 
 export const updateArticle = async (
@@ -54,14 +81,26 @@ export const updateArticle = async (
 		Summary: summary,
 		Url: pathUrl,
 		Tags: tags,
-		Version: !version || version?.length === 0 ? 'V 1.0' : version
+		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
 
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/articles/${articleId}`;
-	return await put_(url, body, true, sessionId);
+	const result = await put_(url, body, true, sessionId);
+
+	// Clear cache for this article and search results
+	await DashboardManager.deleteMany([`session-${sessionId}:req-getArticleById-${articleId}`]);
+	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
+
+	return result;
 };
 
 export const deleteArticle = async (sessionId: string, articleId: string) => {
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/articles/${articleId}`;
-	return await delete_(url, true, sessionId);
+	const result = await delete_(url, true, sessionId);
+
+	// Clear cache for this article and search results
+	await DashboardManager.deleteMany([`session-${sessionId}:req-getArticleById-${articleId}`]);
+	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
+
+	return result;
 };
