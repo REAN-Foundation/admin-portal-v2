@@ -5,10 +5,12 @@
 	import Icon from '@iconify/svelte';
 	import { showMessage } from '$lib/utils/message.utils.js';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
-	import type { DocumentsCreateModel, FileUploadModel } from '$lib/types/documents.types.js';
-	import { createOrUpdateSchema, fileUploadSchema } from '$lib/validation/documents.schema.js';
+	import type { DocumentsCreateModel } from '$lib/types/documents.types.js';
+	import { createOrUpdateSchema } from '$lib/validation/documents.schema.js';
 	import { goto } from '$app/navigation';
 	import InputChips from '$lib/components/input-chips.svelte';
+	import type { FileUploadModel } from '$lib/types/file.upload.types.js';
+	import { fileUploadSchema } from '$lib/validation/file.upload.schema.js';
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -317,7 +319,7 @@
 						</tr>
 
 						<tr>
-							<td>Keywords</td>
+							<td>Keywords <span class="text-red-700">*</span></td>
 							<td>
 								<InputChips
 									bind:keywords
@@ -331,7 +333,7 @@
 						</tr>
 
 						<tr>
-							<td>Document Type</td>
+							<td>Document Type <span class="text-red-700">*</span></td>
 							<td>
 								<input
 									type="text"
@@ -418,7 +420,7 @@
 						</tr> -->
 						<!-- Chunking Strategy -->
 						<tr>
-							<td>Chunking Strategy</td>
+							<td>Chunking Strategy <span class="text-red-700">*</span></td>
 							<td>
 								<select
 									class="health-system-input"
@@ -435,7 +437,7 @@
 						</tr>
 						<!-- Chunking Length -->
 						<tr>
-							<td class="text-start">Chunking length</td>
+							<td class="text-start">Chunking length <span class="text-red-700">*</span></td>
 							<td>
 								<input
 									type="number"
@@ -451,7 +453,7 @@
 						</tr>
 						<!-- Chunking Overlap -->
 						<tr>
-							<td class="text-start">Chunking Overlap</td>
+							<td class="text-start">Chunking Overlap <span class="text-red-700">*</span></td>
 							<td>
 								<input
 									type="number"
@@ -468,7 +470,7 @@
 						</tr>
 						<!-- Splitter -->
 						<tr>
-							<td class="text-start">Splitter</td>
+							<td class="text-start">Splitter <span class="text-red-700">*</span></td>
 							<td>
 								<input
 									type="text"

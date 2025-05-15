@@ -1,6 +1,6 @@
-import { API_CLIENT_INTERNAL_KEY, BOT_CONTENT_API_URL } from '$env/static/private'; 
+import { API_CLIENT_INTERNAL_KEY, BOT_CONTENT_API_URL } from '$env/static/private';
 import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
-import { delete_, get_, post_, put_ } from '../common'; 
+import { delete_, get_, post_, put_ } from '../common';
 import { del, get, post, put } from '../reancare/common.reancare';
 
 /////////////////////////////////////////////////////////////////////////
@@ -19,8 +19,8 @@ export const createDocuments = async (
 	chunkOverlap: number,
 	splitter: string,
 	isActive: boolean,
-	keywords :string,
-	documentType:string,
+	keywords: string,
+	documentType: string,
 	createdBy: string
 ) => {
 	const body = {
@@ -108,7 +108,8 @@ export const updateDocuments = async (
 	chunkOverlap: number,
 	splitter: string,
 	isActive: boolean,
-	keywords : string,
+	keywords: string,
+	documentType: string,
 	createdBy: string
 ) => {
 	const body = {
@@ -124,7 +125,8 @@ export const updateDocuments = async (
 		ChunkOverlap: chunkOverlap ? chunkOverlap : null,
 		Splitter: splitter ? splitter : null,
 		IsActive: isActive ? isActive : false,
-		Keyword : keywords ? keywords : null,
+		Keyword: keywords ? keywords : null,
+		DocumentType: documentType ? documentType : null
 		// CreatedBy: createdBy ? createdBy : null
 	};
 
