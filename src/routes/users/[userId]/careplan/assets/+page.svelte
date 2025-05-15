@@ -104,11 +104,11 @@
 				headers: { 'content-type': 'application/json' }
 			});
 			if (!res.ok) {
-	console.error(`Search failed with status ${res.status}`);
-	const errorText = await res.text();  // Get error response body
-	console.error('Error body:', errorText);
-	throw new Error(`Search failed: ${res.status}`);
-}
+				console.error(`Search failed with status ${res.status}`);
+				const errorText = await res.text(); // Get error response body
+				console.error('Error body:', errorText);
+				throw new Error(`Search failed: ${res.status}`);
+			}
 			const searchResult = await res.json();
 			console.log('searchResult', searchResult);
 
