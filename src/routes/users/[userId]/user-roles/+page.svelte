@@ -15,7 +15,7 @@
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
-
+	let debounceTimeout;
 	let isLoading = $state(false);
 	let userRoles = $state(data.userRoles.Items);
 	let retrivedUserRoles = $derived(userRoles);
@@ -37,7 +37,7 @@
 	let sortBy = $state('RoleName');
 	let sortOrder = $state('ascending');
 
-	$inspect("rolename", roleName)
+	$inspect('rolename', roleName);
 	let totalUserRolesCount = $state(data.userRoles.TotalCount);
 	let isSortingRoleName = $state(false);
 	let isSortingTags = $state(false);
@@ -50,17 +50,14 @@
 	});
 
 	async function searchUserRoles(model) {
-		if (searchKeyword !== model.roleName) {
-			paginationSettings.page = 0;
-		}
-		let url = `/api/server/person-role-types/search?`;
-		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
-		url += `&sortBy=${model.sortBy ?? sortBy}`;
-		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
-		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-		if (roleName) url += `&name=${model.roleName}`;		
-
 		try {
+			let url = `/api/server/person-role-types/search?`;
+			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+			url += `&sortBy=${model.sortBy ?? sortBy}`;
+			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+			if (model.roleName) url += `&name=${model.roleName}`;
+
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
@@ -83,21 +80,21 @@
 		}
 	}
 
-
-	$effect(() => {
-		searchUserRoles({
-			roleName,
-			tags,
-			itemsPerPage: paginationSettings.limit,
-			pageIndex: paginationSettings.page,
-			sortOrder,
-			sortBy
-		});
-		if (isDeleting) {
-			retrivedUserRoles;
-			isDeleting = false;
-		}
-	});
+	async function onSearchInput(e) {
+		clearTimeout(debounceTimeout);
+		let searchKeyword = e.target.value;
+		debounceTimeout = setTimeout(() => {
+			paginationSettings.page = 0; // reset page when typing new search
+			searchUserRoles({
+				roleName: searchKeyword,
+				tags,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortOrder,
+				sortBy
+			});
+		}, 400);
+	}
 
 	function sortTable(columnName) {
 		isSortingRoleName = false;
@@ -109,12 +106,45 @@
 			isSortingTags = true;
 		}
 		sortBy = columnName;
+		searchUserRoles({
+			roleName: searchKeyword,
+
+			tags,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortOrder,
+			sortBy
+		});
 	}
 
 	const handleDeleteClick = (id: string) => {
 		openDeleteModal = true;
 		idToBeDeleted = id;
 	};
+
+	function onItemsPerPageChange() {
+		paginationSettings.page = 0; // reset to first page
+		searchUserRoles({
+			roleName: searchKeyword,
+
+			tags,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortOrder,
+			sortBy
+		});
+	}
+
+	function onPageChange() {
+		searchUserRoles({
+			roleName: searchKeyword,
+			tags,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortOrder,
+			sortBy
+		});
+	}
 
 	const handleUserRoleDelete = async (id) => {
 		const response = await fetch(`/api/server/person-role-types/${id}`, {
@@ -127,9 +157,18 @@
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
+		} else {
+			toastMessage(res);
 		}
 
-		invalidate('app:user-roles');
+		searchUserRoles({
+			roleName: searchKeyword,
+			tags,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortOrder,
+			sortBy
+		});
 	};
 </script>
 
@@ -148,8 +187,9 @@
 						<input
 							type="text"
 							name="roleName"
-							placeholder="Search by role name"
 							bind:value={roleName}
+							placeholder="Search by role name"
+							oninput={(event) => onSearchInput(event)}
 							class="health-system-input !pr-4 !pl-10"
 						/>
 						{#if roleName}
@@ -157,6 +197,7 @@
 								type="button"
 								onclick={() => {
 									roleName = '';
+									onSearchInput({ target: { value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -165,11 +206,9 @@
 						{/if}
 					</div>
 					<!-- {#if SYSTEM_ID !== 'AHA'} -->
-						<button
-							class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
-						>
-							<a href={createRoute} class="">Add New</a>
-						</button>
+					<button class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary">
+						<a href={createRoute} class="">Add New</a>
+					</button>
 					<!-- {/if} -->
 				</div>
 			</div>
@@ -182,12 +221,12 @@
 							<th class="w-60">
 								<button onclick={() => sortTable('RoleName')}>
 									Name {#if isSortingRoleName}
-									{#if sortOrder === 'ascending'}
-										<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
-									{:else}
-										<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
 									{/if}
-								{/if}
 								</button>
 							</th>
 							<th class="w-72">Description</th>
@@ -274,4 +313,4 @@
 	id={idToBeDeleted}
 />
 
-<Pagination bind:paginationSettings />
+<Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />

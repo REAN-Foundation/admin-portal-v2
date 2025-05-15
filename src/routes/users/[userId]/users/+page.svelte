@@ -17,6 +17,7 @@
 
 	let { data }: { data: PageServerData } = $props();
 
+	let debounceTimeout;
 	let isLoading = $state(false);
 	let users = $state(data.users.Items);
 	const tmp = LocalStorageUtils.getItem('personRoles');
@@ -71,30 +72,26 @@
 	}
 
 	async function searchUser(model) {
-		if (searchKeyword !== model.phone || searchKeyword !== model.email) {
-			paginationSettings.page = 0;
-		}
-		console.log(model);
-		let url = `/api/server/users/search?`;
-		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
-		url += `&sortBy=${model.sortBy ?? sortBy}`;
-		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
-		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-
-		if (firstName) url += `&firstName=${firstName}`;
-		if (email) url += `&email=${email}`;
-		if (phone) url += `&phone=${phone}`;
-		if (selectedRoles.length > 0) url += `&roleIds=${selectedRoles}`;
-
 		try {
+			console.log(model);
+			let url = `/api/server/users/search?`;
+			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+			url += `&sortBy=${model.sortBy ?? sortBy}`;
+			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+
+			if (phone) url += `&phone=${phone}`;
+			if (email) url += `&email=${email}`;
+
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
 			});
 			const searchResult = await res.json();
 			totalUsersCount = searchResult.TotalCount;
+			paginationSettings.size = totalUsersCount;
+
 			users = searchResult.Items.map((item, index) => ({ ...item, index: index + 1 }));
-			searchKeyword = model.phone;
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -102,22 +99,34 @@
 		}
 	}
 
-	$effect(() => {
-		searchUser({
-			firstName,
-			email,
-			phone,
-			itemsPerPage: paginationSettings.limit,
-			pageIndex: paginationSettings.page,
-			sortOrder,
-			sortBy
-		});
-
-		if (isDeleting) {
-			retrivedUsers;
-			isDeleting = false;
+	function updateSearchField(name, value) {
+		if (name === 'phone') {
+			phone = value;
+		} else if (name === 'email') {
+			email = value;
 		}
-	});
+	}
+
+	async function onSearchInput(e) {
+		clearTimeout(debounceTimeout);
+		const { name, value } = e.target;
+
+		updateSearchField(name, value);
+		// console.log('event', e.target);
+
+		debounceTimeout = setTimeout(() => {
+			paginationSettings.page = 0;
+			searchUser({
+				firstName,
+				email,
+				phone,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortOrder,
+				sortBy
+			});
+		}, 400);
+	}
 
 	function sortTable(columnName) {
 		isSortingName = false;
@@ -135,12 +144,47 @@
 			isSortingPhone = true;
 		}
 		sortBy = columnName;
+
+		searchUser({
+			firstName,
+			email,
+			phone,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortOrder,
+			sortBy
+		});
 	}
 
 	const handleDeleteClick = (id: string) => {
 		openDeleteModal = true;
 		idToBeDeleted = id;
 	};
+
+	function onItemsPerPageChange() {
+		paginationSettings.page = 0; // reset to first page
+		searchUser({
+			firstName,
+			email,
+			phone,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortOrder,
+			sortBy
+		});
+	}
+
+	function onPageChange() {
+		searchUser({
+			firstName,
+			email,
+			phone,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortOrder,
+			sortBy
+		});
+	}
 
 	const handleUserDelete = async (id) => {
 		const response = await fetch(`/api/server/users/${id}`, {
@@ -153,9 +197,19 @@
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
+		} else {
+			toastMessage(res);
 		}
 
-		invalidate('app:users');
+		searchUser({
+			firstName,
+			email,
+			phone,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortOrder,
+			sortBy
+		});
 	};
 </script>
 
@@ -176,6 +230,7 @@
 							name="phone"
 							placeholder="Search by contact number"
 							bind:value={phone}
+							oninput={(event) => onSearchInput(event)}
 							class="health-system-input !pr-4 !pl-10"
 						/>
 						{#if phone}
@@ -183,6 +238,7 @@
 								type="button"
 								onclick={() => {
 									phone = '';
+									onSearchInput({ target: { name: 'phone', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -198,6 +254,7 @@
 						<input
 							type="text"
 							name="email"
+							oninput={(event) => onSearchInput(event)}
 							placeholder="Search by email"
 							bind:value={email}
 							class="health-system-input !pr-4 !pl-10"
@@ -207,6 +264,7 @@
 								type="button"
 								onclick={() => {
 									email = '';
+									onSearchInput({ target: { name: 'email', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -337,4 +395,4 @@
 	id={idToBeDeleted}
 />
 
-<Pagination bind:paginationSettings />
+<Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />
