@@ -95,7 +95,7 @@
 						<tr>
 							<th>Create Goal</th>
 							<th class="text-end">
-								<a href={goalRoute} class="table-btn variant-soft-secondary">
+								<a href={goalRoute} class="cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -107,7 +107,7 @@
 							<td>
 								<input
 									type="text"
-									class="table-input-field {form?.errors?.type ? 'input-text-error' : ''}"
+									class="input {form?.errors?.type ? 'input-text-error' : ''}"
 									name="type"
 									placeholder="Enter name here..."
 									bind:value={type}

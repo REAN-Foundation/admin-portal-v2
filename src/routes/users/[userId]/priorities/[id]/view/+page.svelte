@@ -48,7 +48,7 @@
 					<tr>
 						<th>View Priority</th>
 						<th class="text-end">
-							<a href={priorityRoute} class="table-btn variant-soft-secondary">
+							<a href={priorityRoute} class="cancel-btn">
 								<Icon icon="material-symbols:close-rounded" class="" />
 							</a>
 						</th>

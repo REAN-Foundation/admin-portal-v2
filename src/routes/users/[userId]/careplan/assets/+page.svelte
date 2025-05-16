@@ -242,16 +242,23 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
+<div class="px-6 py-2">
 	<div class="mx-auto">
-		<select id="height" class="select mb-4 w-full" onchange={onSelectAssetType}>
-			{#each types as val}
-				<option value={val}>
-					{val}
-				</option>
-			{/each}
-		</select>
-		<div class="table-container mb-6 shadow">
+		<div class="relative flex w-full md:w-1/3">
+			<select id="height" class="select" onchange={onSelectAssetType}>
+				{#each types as val}
+					<option value={val}>
+						{val}
+					</option>
+				{/each}
+			</select>
+
+			<div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+				<Icon icon="mdi:chevron-down" class="text-info h-5 w-5" />
+			</div>
+		</div>
+
+		<div class="table-container my-6 shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative flex-1 pr-1.5">
@@ -304,12 +311,24 @@
 							<th class="w-12"></th>
 							<th class="text-start">
 								<button onclick={() => sortTable('Name')}>
-									Name {isSortingName ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
+									Name {#if isSortingName}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
+									{/if}
 								</button>
 							</th>
 							<th class="text-start">
 								<button onclick={() => sortTable('Code')}>
-									Code {isSortingCode ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
+									Code {#if isSortingCode}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
+									{/if}
 								</button>
 							</th>
 							<th>Type</th>

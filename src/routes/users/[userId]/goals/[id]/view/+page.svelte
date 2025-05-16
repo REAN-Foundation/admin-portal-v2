@@ -5,7 +5,7 @@
 	import type { PageServerData } from './$types';
 
 	///////////////////////////////////////////////////////////////////////////////
-	
+
 	let { data }: { data: PageServerData } = $props();
 
 	let id = data.goal.id;
@@ -40,7 +40,7 @@
 					<tr>
 						<th>View Goal</th>
 						<th class="text-end">
-							<a href={goalRoute} class="table-btn variant-soft-secondary">
+							<a href={goalRoute} class="cancel-btn">
 								<Icon icon="material-symbols:close-rounded" class="" />
 							</a>
 						</th>
