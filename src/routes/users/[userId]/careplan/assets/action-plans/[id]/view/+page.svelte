@@ -42,6 +42,15 @@
 <BreadCrumbs crumbs={breadCrumbs} />
 
 <div class="px-6 py-4">
+	<div class="flex flex-wrap justify-end gap-2 py-2">
+		<a
+			href={editRoute}
+			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
+		>
+			<Icon icon="material-symbols:edit-outline" />
+			<span>Edit</span>
+		</a>
+	</div>
 	<div class="mx-auto">
 		<div class="table-container">
 			<table class="table-c">
@@ -49,7 +58,7 @@
 					<tr>
 						<th>View Action Plan</th>
 						<th class="text-end">
-							<a href={assetRoute} class="table-btn variant-soft-secondary">
+							<a href={assetRoute} class="cancel-btn">
 								<Icon icon="material-symbols:close-rounded" class="" />
 							</a>
 						</th>

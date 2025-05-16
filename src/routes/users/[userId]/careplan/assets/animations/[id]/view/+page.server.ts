@@ -1,27 +1,22 @@
-import { getAnimationById } from '../../../../../../../api/services/careplan/assets/animation';
+import { getAnimationById } from '$routes/api/services/careplan/assets/animation';
 import type { PageServerLoad } from './$types';
-import { error, type RequestEvent } from '@sveltejs/kit';
+import type { ServerLoadEvent } from '@sveltejs/kit';
 
 ////////////////////////////////////////////////////////////////////////////
 
-export const load: PageServerLoad = async (event: RequestEvent) => {
+export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
-	console.log('sessionId', sessionId);
-	try {
-		const animationId = event.params.id;
-		const response = await getAnimationById(sessionId, animationId);
+	const animationId = event.params.id;
 
-		if (response.Status === 'failure' || response.HttpCode !== 200) {
-			throw error(response.HttpCode, response.Message);
-		}
-		const animation = response.Data;
-		const id = response.Data.id;
-		return {
-			location: `${id}/edit`,
-			animation,
-			message: response.Message
-		};
-	} catch (error) {
-		console.error(`Error retriving animation ${error.message}`);
-	}
+	const response = await getAnimationById(sessionId, animationId);
+
+	const animation = response?.Data;
+	const id = response?.Data?.id;
+
+	return {
+		location: `${id}/edit`,
+		animation,
+		message: response?.Message || 'Animation retrieved successfully',
+		title: 'Animation View'
+	};
 };

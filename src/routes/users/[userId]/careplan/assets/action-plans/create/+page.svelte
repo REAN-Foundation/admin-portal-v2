@@ -104,7 +104,7 @@
 						<tr>
 							<th>Create Action Plan</th>
 							<th class="text-end">
-								<a href={actionPlanRoute} class="table-btn variant-soft-secondary">
+								<a href={actionPlanRoute} class="cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>

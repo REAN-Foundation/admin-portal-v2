@@ -35,6 +35,8 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const response = await searchUsers(sessionId, {
 		orderBy: 'FirstName',
 		order: 'ascending',
+		itemsPerPage: 10,
+
 		roleIds: selectedRoles.length ? (selectedRoles as string[]) : null
 	});
 	if (response.Status === 'failure' || response.HttpCode !== 200) {

@@ -9,6 +9,7 @@ export const Options: FeatureOptions[] = [
         Name: 'Main-Analytics',
         Enabled: true
     },
+
     {
         Name: 'Main-Home',
         Enabled: true
@@ -190,5 +191,22 @@ export const Options: FeatureOptions[] = [
     {
         Name: 'Appointment-Status-Report',
         Enabled: false
+    },
+    //..................................
+  {
+        Name: 'Bot-Content',
+        Enabled: true
+    }, {
+        Name: 'Prompt-Template',
+        Enabled: false
+    }, {
+        Name: 'Prompts',
+        Enabled: false
+    },
+	{
+        Name: 'QNA-Documents',
+        Enabled: true
     }
+   	//........................
+
 ];

@@ -1,5 +1,6 @@
 import { CAREPLAN_BACKEND_API_URL } from '$env/static/private';
 import { delete_, get_, post_, put_ } from '../../common';
+import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 
 ////////////////////////////////////////////////////////////////
 
@@ -14,29 +15,55 @@ export const createActionPlan = async (
 		Name: name,
 		Description: description,
 		Tags: tags,
-		Version: !version || version?.length === 0 ? 'V 1.0' : version
+		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
 
 	const url = CAREPLAN_BACKEND_API_URL + '/assets/action-plans';
-	return await post_(url, body, true, sessionId);
+	const result = await post_(url, body, true, sessionId);
+
+	// Clear asset search caches after creation
+	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
+
+	return result;
 };
 
 export const getActionPlanById = async (sessionId: string, actionPlanId: string) => {
+	const cacheKey = `session-${sessionId}:req-getActionPlanById-${actionPlanId}`;
+	if (await DashboardManager.has(cacheKey)) {
+		return await DashboardManager.get(cacheKey);
+	}
+
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/action-plans/${actionPlanId}`;
-	return await get_(url, true, sessionId);
+	const result = await get_(url, true, sessionId);
+
+	await DashboardManager.set(cacheKey, result);
+	return result;
 };
 
-export const searchAssets = async (sessionId: string, selectAsset: string, searchParams = '') => {
+export const searchAssets = async (
+	sessionId: string,
+	selectAsset: string,
+	searchParams: Record<string, string> = {}
+) => {
 	let searchString = '';
 	const keys = Object.keys(searchParams);
 	if (keys.length > 0) {
-		searchString = '?';
-		for (const key of keys) {
-			searchString += `${key}=${searchParams[key]}`;
-		}
+		const params = keys
+			.filter((key) => searchParams[key])
+			.map((key) => `${key}=${searchParams[key]}`);
+		searchString = '?' + params.join('&');
 	}
+
+	const cacheKey = `session-${sessionId}:req-searchAssets:${selectAsset}:${searchString}`;
+	if (await DashboardManager.has(cacheKey)) {
+		return await DashboardManager.get(cacheKey);
+	}
+
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/${selectAsset}/search${searchString}/`;
-	return await get_(url, true, sessionId);
+	const result = await get_(url, true, sessionId);
+
+	await DashboardManager.set(cacheKey, result);
+	return result;
 };
 
 export const updateActionPlan = async (
@@ -51,14 +78,26 @@ export const updateActionPlan = async (
 		Name: name,
 		Description: description,
 		Tags: tags,
-		Version: !version || version?.length === 0 ? 'V 1.0' : version
+		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
+
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/action-plans/${actionPlanId}`;
-	return await put_(url, body, true, sessionId);
+	const result = await put_(url, body, true, sessionId);
+
+	// Clear cached get-by-id and search results
+	await DashboardManager.deleteMany([`session-${sessionId}:req-getActionPlanById-${actionPlanId}`]);
+	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
+
+	return result;
 };
 
 export const deleteAsset = async (sessionId: string, selectAsset: string, assetId: string) => {
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/${selectAsset}/${assetId}`;
-	console.log('url', url);
-	return await delete_(url, true, sessionId);
+	const result = await delete_(url, true, sessionId);
+
+	// Clear cache for that asset and search results
+	await DashboardManager.deleteMany([`session-${sessionId}:req-getActionPlanById-${assetId}`]);
+	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
+
+	return result;
 };

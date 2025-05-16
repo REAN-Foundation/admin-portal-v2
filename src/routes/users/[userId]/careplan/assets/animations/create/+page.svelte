@@ -75,7 +75,7 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				goto(`${animationRoute}/${response?.Data?.Animations.id}/view`);
+				goto(`${animationRoute}/${response?.Data.id}/view`);
 				return;
 			}
 
@@ -106,7 +106,7 @@
 						<tr>
 							<th>Create Animation</th>
 							<th class="text-end">
-								<a href={createRoute} class="table-btn variant-soft-secondary">
+								<a href={createRoute} class="cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>

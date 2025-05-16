@@ -9,11 +9,12 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	event.depends('app:healthSystem');
 	const response = await searchHospitals(sessionId, {
 		orderBy: 'Name',
-		order: 'ascending'
+		order: 'ascending',
+		itemsPerPage: 10
 	});
 
 	const hospitals = response?.Data?.Hospitals || [];
-	
+
 	return {
 		hospitals,
 		sessionId,

@@ -1,27 +1,22 @@
-import { getActionPlanById } from '../../../../../../../api/services/careplan/assets/action-plan';
 import type { PageServerLoad } from './$types';
-import { error, type RequestEvent } from '@sveltejs/kit';
+import type { ServerLoadEvent } from '@sveltejs/kit';
+import { getActionPlanById } from '../../../../../../../api/services/careplan/assets/action-plan';
 
 ////////////////////////////////////////////////////////////////////////////
 
-export const load: PageServerLoad = async (event: RequestEvent) => {
+export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
-	try {
-		const actionPlanId = event.params.id;
-		const response = await getActionPlanById(sessionId, actionPlanId);
+	const actionPlanId = event.params.id;
 
-		if (response.Status === 'failure' || response.HttpCode !== 200) {
-			throw error(response.HttpCode, response.Message);
-		}
-		const actionPlan = response.Data;
-		console.log('actionPlan', actionPlan);
-		const id = response.Data.id;
-		return {
-			location: `${id}/edit`,
-			actionPlan,
-			message: response.Message
-		};
-	} catch (error) {
-		console.error(`Error retriving action plan: ${error.message}`);
-	}
+	const response = await getActionPlanById(sessionId, actionPlanId);
+
+	const actionPlan = response?.Data;
+	const id = response?.Data?.id;
+
+	return {
+		location: `${id}/edit`,
+		actionPlan,
+		message: response?.Message || 'Action Plan retrieved successfully',
+		title: ' Action Plan View'
+	};
 };
