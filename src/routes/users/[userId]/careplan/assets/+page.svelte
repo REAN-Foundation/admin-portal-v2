@@ -311,12 +311,24 @@
 							<th class="w-12"></th>
 							<th class="text-start">
 								<button onclick={() => sortTable('Name')}>
-									Name {isSortingName ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
+									Name {#if isSortingName}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
+									{/if}
 								</button>
 							</th>
 							<th class="text-start">
 								<button onclick={() => sortTable('Code')}>
-									Code {isSortingCode ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
+									Code {#if isSortingCode}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
+									{/if}
 								</button>
 							</th>
 							<th>Type</th>
