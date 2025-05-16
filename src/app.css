@@ -850,3 +850,32 @@ tr {
 .cancel-btn {
 	@apply inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-2 text-center text-sm whitespace-nowrap text-[var(--color-error)] transition-all duration-150 ease-in-out hover:bg-[var(--active-soft)];
 }
+
+/* form specific  */
+.edit-btn {
+	@apply inline-flex cursor-pointer items-center justify-center gap-1 rounded-md px-3 py-2 text-center text-sm whitespace-nowrap text-[var(--color-info)] transition-all duration-150 ease-in-out hover:bg-[var(--color-active)];
+}
+
+.forms-container {
+	@apply overflow-hidden rounded-md border border-[var(--color-outline)] text-[var(--color-info)] shadow-sm;
+}
+
+.form-header {
+	@apply flex items-center justify-between border-b border-[var(--color-outline)] bg-[var(--color-accent)] px-6 py-2;
+}
+
+.form-title {
+	@apply text-base font-semibold;
+}
+
+.form-table {
+	@apply w-full text-sm;
+}
+
+.form-td-left {
+	@apply w-1/2 border-b border-[var(--color-outline)] px-6 py-2;
+}
+
+.form-td-right {
+	@apply border-b border-[var(--color-outline)] px-6 py-2;
+}
