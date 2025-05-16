@@ -10,11 +10,10 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	event.depends('app:knowledge-nuggests');
 	const response = await searchKnowledgeNuggets(sessionId, {
 		orderBy: 'TopicName',
-		order: 'ascending'
+		order: 'ascending',
+		itemsPerPage: 10
 	});
-	// if (response.Status === 'failure' || response.HttpCode !== 200) {
-	//     throw error(response.HttpCode, response.Message);
-	// }
+
 	const knowledgeNuggets = response?.Data?.KnowledgeNuggetRecords || [];
 	return {
 		knowledgeNuggets,
