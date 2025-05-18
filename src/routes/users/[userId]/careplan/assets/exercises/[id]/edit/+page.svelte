@@ -17,10 +17,9 @@
 	let description = $state(data.exercise.Description);
 	let exerciseType = $state(data.exercise.ExerciseType);
 	let intensityLevel = $state(data.exercise.IntensityLevel);
-	// let recommendedDurationMin = $state();
 	let recommendedDurationMin = $state<number>(data.exercise.RecommendedDurationMin);
 	let version = $state(data.exercise.Version);
-	let keywords: string[] = $state([]);
+	let keywords: string[] = $state(data.exercise.Tags);
 	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
@@ -114,7 +113,7 @@
 					<tr>
 						<th>Edit Biometric</th>
 						<th class="text-end">
-							<a href={exerciseRoute} class="health-system-btn variant-soft-secondary">
+							<a href={viewRoute} class="health-system-btn variant-soft-secondary">
 								<Icon icon="material-symbols:close-rounded" />
 							</a>
 						</th>

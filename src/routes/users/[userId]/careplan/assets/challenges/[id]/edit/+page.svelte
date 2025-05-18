@@ -18,7 +18,7 @@
 	let name = $state(data.challenges.Name);
 	let description = $state(data.challenges.Description);
 	let version = $state(data.challenges.Version);
-	let keywords: string[] = $state([]);
+	let keywords: string[] = $state(data.challenges.Tags);
 	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
@@ -106,7 +106,7 @@
 						<tr>
 							<th>Edit Challenges</th>
 							<th class="text-end">
-								<a href={challengesRoute} class="health-system-btn variant-soft-secondary">
+								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>

@@ -17,7 +17,7 @@
 	let description = $state(data.consultation.Description);
 	let consultationType = $state(data.consultation.ConsultationType);
 	let version = $state(data.consultation.Version);
-	let keywords: string[] = $state([]);
+	let keywords: string[] = $state(data.consultation.Tags);
 	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
@@ -108,7 +108,7 @@
 					<tr>
 						<th>Edit Consultation</th>
 						<th class="text-end">
-							<a href={consultationRoute} class="health-system-btn variant-soft-secondary">
+							<a href={viewRoute} class="health-system-btn variant-soft-secondary">
 								<Icon icon="material-symbols:close-rounded" />
 							</a>
 						</th>

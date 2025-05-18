@@ -7,7 +7,8 @@
 	import { goto } from '$app/navigation';
 	import InputChips from '$lib/components/input-chips.svelte';
 	import { createOrUpdateSchema } from '$lib/validation/biometrics.schema';
-	import type { BiometricsCreateModel, BiometricsUpdateModel } from '$lib/types/biometrics.type';
+	import type { BiometricsUpdateModel } from '$lib/types/biometrics.type';
+	import { formData } from 'zod-form-data';
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
@@ -18,8 +19,9 @@
 	let measurementUnit = $state(data.biometrics.MeasurementUnit);
 	let version = $state(data.biometrics.Version);
 	let biometricsType = $state(data.biometrics.BiometricsType);
-	let keywords: string[] = $state([]);
-	let keywordsStr = $state('');
+	let tags = $state(data.biometrics.Tags);
+	let keywordsStr: string = $state('');
+	let keywords: string[] = $state(data.biometrics.Tags);
 
 	const userId = page.params.userId;
 	var biometricsId = page.params.id;
@@ -40,7 +42,8 @@
 		 measurementUnit = data?.biometrics?.MeasurementUnit
 		 version = data?.biometrics?.Version;
 		 biometricsType = data?.biometrics.BiometricsType;
-		 keywords = data?.biometrics?.Tags;
+		//  keywords = data?.biometrics?.Tags;
+		 tags = data?.biometrics.Tags;
 		 errors = {};
 		}
 
@@ -111,7 +114,7 @@
 					<tr>
 						<th>Edit Biometric</th>
 						<th class="text-end">
-							<a href={biometricsRoute} class="health-system-btn variant-soft-secondary">
+							<a href={viewRoute} class="health-system-btn variant-soft-secondary">
 								<Icon icon="material-symbols:close-rounded" />
 							</a>
 						</th>
@@ -166,7 +169,7 @@
 					</tr>
 
 					<tr>
-						<td>Measurement Unit <span class="text-red-700">*</span></td>
+						<td>Measurement Unit</td>
 						<td>
 							<input
 								type="text"
