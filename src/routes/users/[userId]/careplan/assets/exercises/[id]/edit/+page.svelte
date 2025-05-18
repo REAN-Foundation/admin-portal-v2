@@ -107,9 +107,9 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<table class="health-system-table">
+			<table class="table-c">
 			<thead>
 					<tr>
 						<th>Edit Biometric</th>
@@ -126,7 +126,7 @@
 						<td>
 							<input
 									type="text"
-									class="health-system-input {form?.errors?.Name
+									class="input {form?.errors?.Name
 										? 'input-text-error'
 										: ''}"
 									name="biometricsName"
@@ -153,7 +153,7 @@
 					<tr>
 						<td>Exercise Type</td>
 						<td>
-							<select class="health-system-input" bind:value={exerciseType}>
+							<select class="input" bind:value={exerciseType}>
 								<option disabled value>Select exercise type</option>
 								<option>Strength</option>
 								<option>Aerobic</option>
@@ -169,7 +169,7 @@
 					<tr>
 						<td>Intensity Level</td>
 						<td>
-							<select class="health-system-input" bind:value={intensityLevel}>
+							<select class="input" bind:value={intensityLevel}>
 								<option disabled value>Select Intensity Level</option>
 								<option>None</option>
 								<option>Minimal</option>
@@ -190,7 +190,7 @@
 								type="text"
 								bind:value={recommendedDurationMin}
 								placeholder="Enter recommended duration min..."
-								class="health-system-input {errors?.RecommendedDurationMin ? 'input-text-error' : ''}"
+								class="input {errors?.RecommendedDurationMin ? 'input-text-error' : ''}"
 							/>
 							{#if errors?.RecommendedDurationMin}<p class="text-error">{errors?.RecommendedDurationMin}</p>{/if}
 						</td>
@@ -211,7 +211,7 @@
 					<tr>
 						<td>Version</td>
 						<td>
-							<input type="text" bind:value={version} class="health-system-input" placeholder="V 1.0" />
+							<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
 						</td>
 					</tr>
 				</tbody>

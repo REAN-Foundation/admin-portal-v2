@@ -18,11 +18,12 @@
 	let audio = $state(data.audio);
 	let assetCode = audio.AssetCode;
 	let name = audio.Name;
-	let transcript = audio.Transcript !== null ? audio.Transcript : 'Not specified';
-	let pathUrl = audio.Url !== null && audio.PathUrl !== '' ? audio.PathUrl : 'Not specified';
-	let tags_ = audio.Tags;
+	let transcript = data.audio.Transcript !== null ? data.audio.Transcript : 'Not specified';
+	// let pathUrl = (data.audio.Url !== null && data.audio.PathUrl !== '') ? data.audio.PathUrl : 'Not specified';
+	let pathUrl = data.audio.PathUrl !== null ? data.audio.PathUrl : 'Not specified';
+	let tags_ = data.audio.Tags;
 	let tags = tags_.join(', ');
-	let version = audio.Version;
+	let version = data.audio.Version;
 
 	const breadCrumbs = [
 		{

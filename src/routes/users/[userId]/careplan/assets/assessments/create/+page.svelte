@@ -91,9 +91,9 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<table class="health-system-table">
+			<table class="table-c">
 			<thead>
 					<tr>
 						<th>Create Assessment</th>
@@ -110,7 +110,7 @@
 						<td>
 							<input
 									type="text"
-									class="health-system-input {form?.errors?.Name
+									class="input {form?.errors?.Name
 										? 'input-text-error'
 										: ''}"
 									name="assessmentName"
@@ -141,7 +141,7 @@
 								type="text"
 								bind:value={template}
 								placeholder="Enter template..."
-								class="health-system-input {errors?.Template ? 'input-text-error' : ''}"
+								class="input {errors?.Template ? 'input-text-error' : ''}"
 							/>
 							{#if errors?.Template}<p class="text-error">{errors?.Template}</p>{/if}
 						</td>
@@ -153,7 +153,7 @@
 								type="text"
 								bind:value={templateCode}
 								placeholder="Enter template code..."
-								class="health-system-input {errors?.TemplateCode ? 'input-text-error' : ''}"
+								class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
 							/>
 							{#if errors?.TemplateCode}<p class="text-error">{errors?.TemplateCode}</p>{/if}
 						</td>

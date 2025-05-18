@@ -4,43 +4,41 @@ import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager'
 
 ////////////////////////////////////////////////////////////////
 
-export const createAudio = async (
+export const createMedication = async (
 	sessionId: string,
 	name: string,
-	transcript: string,
-	pathUrl: string,
+	description: string,
 	tags: string[],
 	version: string
 ) => {
 	const body = {
-		Name       : name,
-		Transcript : transcript,
-		Url        : pathUrl,
-		Tags       : tags,
-		Version    : !version || version?.length === 0 ? 'V 1.0' : version
+		Name        : name,
+		Description : description,
+		Tags        : tags,
+		Version     : !version || version?.length === 0 ? 'V 1.0' : version
 	};
 
-	const url = CAREPLAN_BACKEND_API_URL + '/assets/audio';
+	const url = CAREPLAN_BACKEND_API_URL + '/assets/medications';
 	const result = await post(sessionId, url, body, true);
 
 	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
 	return result;
 };
 
-export const getAudioById = async (sessionId: string, audioId: string) => {
-	const cacheKey = `session-${sessionId}:req-getAudioById-${audioId}`;
+export const getMedicationById = async (sessionId: string, medicationsId: string) => {
+	const cacheKey = `session-${sessionId}:req-getMedicationById-${medicationsId}`;
 	if (await DashboardManager.has(cacheKey)) {
 		return await DashboardManager.get(cacheKey);
 	}
 
-	const url = CAREPLAN_BACKEND_API_URL + `/assets/audio/${audioId}`;
+	const url = CAREPLAN_BACKEND_API_URL + `/assets/medications/${medicationsId}`;
 	const result = await get(sessionId, url, true);
 
 	await DashboardManager.set(cacheKey, result);
 	return result;
 };
 
-export const searchAudio = async (sessionId: string, searchParams: Record<string, string> = {}) => {
+export const searchMedications = async (sessionId: string, searchParams: Record<string, string> = {}) => {
 	let searchString = '';
 	const keys = Object.keys(searchParams);
 	if (keys.length > 0) {
@@ -50,49 +48,47 @@ export const searchAudio = async (sessionId: string, searchParams: Record<string
 		searchString = '?' + params.join('&');
 	}
 
-	const cacheKey = `session-${sessionId}:req-searchAssets:audio:${searchString}`;
+	const cacheKey = `session-${sessionId}:req-searchAssets:medication:${searchString}`;
 	if (await DashboardManager.has(cacheKey)) {
 		return await DashboardManager.get(cacheKey);
 	}
 
-	const url = CAREPLAN_BACKEND_API_URL + `/assets/audio/search${searchString}`;
+	const url = CAREPLAN_BACKEND_API_URL + `/assets/medications/search${searchString}`;
 	const result = await get(sessionId, url, true);
 
 	await DashboardManager.set(cacheKey, result);
 	return result;
 };
 
-export const updateAudio = async (
+export const updateMedication = async (
 	sessionId: string,
-	audioId: string,
+	medicationsId: string,
 	name: string,
-	transcript: string,
-	pathUrl: string,
+	description: string,
 	tags: string[],
 	version: string
 ) => {
 	const body = {
-		Name       : name,
-		Transcript : transcript,
-		Url        : pathUrl,
-		Tags       : tags,
-		Version    : !version || version?.length === 0 ? 'V 1.0' : version
+		Name        : name,
+		Description : description,
+		Tags        : tags,
+		Version     : !version || version?.length === 0 ? 'V 1.0' : version
 	};
 
-	const url = CAREPLAN_BACKEND_API_URL + `/assets/audio/${audioId}`;
+	const url = CAREPLAN_BACKEND_API_URL + `/assets/medications/${medicationsId}`;
 	const result = await put(sessionId, url, body, true);
 
-	await DashboardManager.deleteMany([`session-${sessionId}:req-getAudioById-${audioId}`]);
+	await DashboardManager.deleteMany([`session-${sessionId}:req-getMedicationById-${medicationsId}`]);
 	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
 
 	return result;
 };
 
-export const deleteAudio = async (sessionId: string, audioId: string) => {
-	const url = CAREPLAN_BACKEND_API_URL + `/assets/audio/${audioId}`;
+export const deleteMedication = async (sessionId: string, medicationsId: string) => {
+	const url = CAREPLAN_BACKEND_API_URL + `/assets/medications/${medicationsId}`;
 	const result = await del(sessionId, url, true);
 
-	await DashboardManager.deleteMany([`session-${sessionId}:req-getAudioById-${audioId}`]);
+	await DashboardManager.deleteMany([`session-${sessionId}:req-getMedicationById-${medicationsId}`]);
 	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
 
 	return result;

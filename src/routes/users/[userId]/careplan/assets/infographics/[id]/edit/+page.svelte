@@ -6,42 +6,39 @@
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
 	import { goto } from '$app/navigation';
 	import InputChips from '$lib/components/input-chips.svelte';
-	import type { AudioUpdateModel } from '$lib/types/audio.type';
-	import { createOrUpdateSchema } from '$lib/validation/audio.schema';
+	import type { InfographicsUpdateModel } from '$lib/types/infographics.types';
+	import { createOrUpdateSchema } from '$lib/validation/infographics.schema';
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let name = $state(data.audio.Name);
-	let transcript = $state(data.audio.Transcript);
-	let pathUrl = $state(data.audio.PathUrl);
-	let version = $state(data.audio.Version);
-	let tags = $state(data.audio.Tags);
-	// let keywords: string[] = $state([]);
-	let keywordsStr: string = $state('');
-	let keywords: string[] = $state(data.audio.Tags);
-
+	let name = $state(data.infographics.Name);
+	let description = $state(data.infographics.Description);
+	let pathUrl = $state(data.infographics.PathUrl);
+	let version = $state(data.infographics.Version);
+	let keywords: string[] = $state([]);
+	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
-	var audioId = page.params.id;
+	var infographicsId = page.params.id;
 
-	const editRoute = `/users/${userId}/careplan/assets/audio/${audioId}/edit`;
-	const viewRoute = `/users/${userId}/careplan/assets/biometric/${audioId}/view`;
-	const audioRoute = `/users/${userId}/careplan/assets/audio`;
+	const editRoute = `/users/${userId}/careplan/assets/infographics/${infographicsId}/edit`;
+	const viewRoute = `/users/${userId}/careplan/assets/infographics/${infographicsId}/view`;
+	const infographicsRoute = `/users/${userId}/careplan/assets/infographics`;
 
 	const breadCrumbs = [
-		{ name: 'Audio', path: audioRoute },
+		{ name: 'Infographics', path: infographicsRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
 	const handleReset = () => {
-		name = data?.audio?.Name;
-		audioId = page.params.id;
-		transcript = data?.audio?.Transcript;
-		pathUrl = data?.audio?.PathUrl;
-		version = data?.audio?.Version;
-		keywords = data?.audio?.Tags;
+		name = data?.infographics?.Name;
+		infographicsId = page.params.id;
+		description = data?.infographics?.Description;
+		pathUrl = data?.infographics?.PathUrl;
+		version = data?.infographics?.Version;
+		keywords = data?.infographics?.Tags;
 		errors = {};
 	};
 
@@ -50,15 +47,15 @@
 			event.preventDefault();
 			errors = {};
 
-			const audioUpdateModel: AudioUpdateModel = {
+			const infographicsUpdateModel: InfographicsUpdateModel = {
 				Name: name,
-				Transcript: transcript,
+				Description: description,
 				PathUrl: pathUrl,
 				Version: version,
 				Tags: keywords
 			};
 
-			const validationResult = createOrUpdateSchema.safeParse(audioUpdateModel);
+			const validationResult = createOrUpdateSchema.safeParse(infographicsUpdateModel);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -70,9 +67,9 @@
 				return;
 			}
 
-			const res = await fetch(`/api/server/careplan/assets/audio/${audioId}`, {
+			const res = await fetch(`/api/server/careplan/assets/infographics/${infographicsId}`, {
 				method: 'PUT',
-				body: JSON.stringify(audioUpdateModel),
+				body: JSON.stringify(infographicsUpdateModel),
 				headers: { 'content-type': 'application/json' }
 			});
 
@@ -82,7 +79,7 @@
 				toastMessage(response);
 				// console.log("Redirecting to:", response?.Data?.id);
 				console.log('Full response:', response);
-				await goto(`${audioRoute}/${response?.Data?.id}/view`);
+				await goto(`${infographicsRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -108,9 +105,9 @@
 				<table class="table-c">
 					<thead>
 						<tr>
-							<th>Edit Audio</th>
+							<th>Edit Infographics</th>
 							<th class="text-end">
-								<a href={audioRoute} class="health-system-btn variant-soft-secondary">
+								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -134,16 +131,16 @@
 						</tr>
 
 						<tr>
-							<td>Transcript</td>
+							<td>Description</td>
 							<td>
 								<input
 										type="textarea"
 										class="input {form?.errors?.Name
 											? 'input-text-error'
 											: ''}"
-										name="transcript"
-										placeholder="Enter transcript here..."
-										bind:value={transcript}
+										name="description"
+										placeholder="Enter description here..."
+										bind:value={description}
 									/>
 								{#if errors?.Name}
 								<p class="text-error">{errors?.Name}</p>
@@ -159,7 +156,7 @@
 									name="url"
 									bind:value={pathUrl}
 									placeholder="Enter url here"
-                                    class="health-system-input {errors?.Url ? 'input-text-error' : ''}"
+                                    class="input {errors?.Url ? 'input-text-error' : ''}"
                                 />
                                 {#if errors?.Url}
                                     <p class="text-error">{errors?.Url}</p>

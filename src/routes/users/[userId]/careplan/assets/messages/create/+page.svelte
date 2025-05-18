@@ -5,29 +5,33 @@
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
 	import { goto } from '$app/navigation';
 	import InputChips from '$lib/components/input-chips.svelte';
-	import type { AudioCreateModel } from '$lib/types/audio.type.js';
-	import { createOrUpdateSchema } from '$lib/validation/audio.schema.js';
+	import type { MessageCreateModel } from '$lib/types/message.type.js';
+	import { createOrUpdateSchema } from '$lib/validation/message.schema.js';
 
 	let { data, form } = $props();
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let name = $state('');
-	let transcript = $state('');
+	let description = $state('');
+	let messageType = $state('');
+	let templateName = $state('');
 	let pathUrl = $state(undefined);
 	let version = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
+	let templateVariablesText = $state('');
+	let templateVariables: { [key: string]: any } = $state({});
 
-	data.title = 'Create Audio';
+	data.title = 'Create Message';
 	const userId = page.params.userId;
 	const assetRoute = `/users/${userId}/careplan/assets`;
-	const createRoute = `/users/${userId}/careplan/assets/audio/create`;
-	const audioRoute = `/users/${userId}/careplan/assets/audio`;
+	const createRoute = `/users/${userId}/careplan/assets/messages/create`;
+	const messagesRoute = `/users/${userId}/careplan/assets/messages`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
-		{ name: 'Audio', path: audioRoute },
+		{ name: 'Message', path: messagesRoute },
 		{ name: 'Create', path: createRoute }
 	];
 
@@ -36,15 +40,27 @@
 			event.preventDefault();
 			errors = {};
 
-			const audioCreateModel: AudioCreateModel = {
+			const parsedTemplateVars = parseTemplateVariables(templateVariablesText);
+			if (!parsedTemplateVars) {
+			// If parse failed, do not continue
+			return;
+		}
+
+			const messageCreateModel: MessageCreateModel = {
 				Name: name,
-				Transcript: transcript,
+				Description: description,
+				MessageType: messageType,
+				TemplateName: templateName,
 				PathUrl: pathUrl,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				// TemplateVariables: templateVariables
+				// TemplateVariables: parseTemplateVariables(templateVariablesText)
+				TemplateVariables: parsedTemplateVars
+
 			};
 
-			const validationResult = createOrUpdateSchema.safeParse(audioCreateModel);
+			const validationResult = createOrUpdateSchema.safeParse(messageCreateModel);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -55,10 +71,10 @@
 				);
 				return;
 			}
-			console.log(audioCreateModel);
-			const res = await fetch(`/api/server/careplan/assets/audio`, {
+			console.log(messageCreateModel);
+			const res = await fetch(`/api/server/careplan/assets/messages`, {
 				method: 'POST',
-				body: JSON.stringify(audioCreateModel),
+				body: JSON.stringify(messageCreateModel),
 				headers: { 'content-type': 'application/json' }
 			});
 
@@ -66,9 +82,8 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				// console.log("Redirecting to:", response?.Data?.id);
 				console.log('Full response:', response);
-				await goto(`${audioRoute}/${response?.Data?.id}/view`);
+				await goto(`${messagesRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -79,7 +94,23 @@
 		}
 	};
 
-	const onUpdateKeywords = (e: any) => {
+	function parseTemplateVariables(text: string): Record<string, any> | null {
+	try {
+		const parsed = JSON.parse(text);
+		if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+			throw new Error('Invalid object');
+		}
+		return parsed;
+	} catch (e) {
+		errors = {
+			...errors,
+			TemplateVariables: 'TemplateVariables must be a valid JSON object with key-value pairs'
+		};
+		return null;
+	}
+}
+
+const onUpdateKeywords = (e: any) => {
 		keywords = e.detail;
 		keywordsStr = keywords?.join(', ');
 	};
@@ -94,7 +125,7 @@
 				<table class="table-c">
 					<thead>
 						<tr>
-							<th>Create Audio</th>
+							<th>Create Message</th>
 							<th class="text-end">
 								<a href={assetRoute} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
@@ -120,19 +151,53 @@
 						</tr>
 
 						<tr>
-							<td class="align-top">Transcript</td>
+							<td class="align-top">Description</td>
 							<td>
 								<textarea
-									name="transcript"
+									name="description"
 									class="input w-full {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
-									bind:value={transcript}
-									placeholder="Enter transcript here..."
+									bind:value={description}
+									placeholder="Enter description here..."
+								></textarea>
+							</td>
+						</tr>
+						<tr>
+						<td>Message Type<span class="text-red-700">*</span></td>
+						<td>
+							<select class="input" bind:value={messageType}>
+								<option disabled value>Select message type</option>
+								<option>Educational</option>
+								<option>Status</option>
+								<option>Unknown</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>Template Name<span class="text-red-700">*</span></td>
+						<td>
+							<input
+								type="text"
+								bind:value={templateName}
+								placeholder="Enter Template Name..."
+								class="input {errors?.TemplateName ? 'input-text-error' : ''}"
+							/>
+							{#if errors?.TemplateName}<p class="text-error">{errors?.TemplateName}</p>{/if}
+						</td>
+					</tr>
+					<tr>
+							<td class="align-top">Template Variables</td>
+							<td>
+								<textarea
+									name="templateVariablesText"
+									class="input w-full {errors.TemplateVariables ? 'border-error-300' : 'border-primary-200'}"
+									bind:value={templateVariablesText}
+									placeholder="Enter Template Variables here..."
 								></textarea>
 							</td>
 						</tr>
 
-						<tr>
-                            <td>Url</td>
+					<tr>
+						<td>Url</td>
                             <td>
                                 <input
                                     type="url"
@@ -146,19 +211,19 @@
                                 {/if}
                             </td>
                         </tr>
-						<tr>
-                            <td class="!py-3 align-top">Tags</td>
-                            <td>
-                                <InputChips
-                                    bind:keywords
-                                    name="keywords"
-                                    id="keywords"
-                                    keywordsChanged={onUpdateKeywords}
-                                />
-                                <input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-                                <!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
-                            </td>
-                        </tr>
+						<tr class="">
+							<td class="!py-3 align-top">Tags</td>
+							<td>
+								<InputChips
+									bind:keywords
+									name="keywords"
+									id="keywords"
+									keywordsChanged={onUpdateKeywords}
+								/>
+								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
+							</td>
+						</tr>
 						<tr>
 							<td>Version</td>
 							<td>
