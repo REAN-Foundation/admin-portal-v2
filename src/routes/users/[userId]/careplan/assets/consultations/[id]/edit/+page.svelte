@@ -145,18 +145,16 @@
 						</td>
 					</tr>
 					<tr>
-						<td>Consultation Type <span class="text-red-700">*</span></td>
+						<td>Consultation Type</td>
 						<td>
-							<input
-								type="text"
-								bind:value={consultationType}
-								placeholder="Enter unit..."
-								class="health-system-input {errors?.ConsultationType ? 'input-text-error' : ''}"
-							/>
-							{#if errors?.ConsultationType}<p class="text-error">{errors?.ConsultationType}</p>{/if}
+							<select class="health-system-input" bind:value={consultationType}>
+								<option disabled value>Select Consultation type</option>
+								<option>Tele-consultation</option>
+								<option>Visit-consultation</option>
+								<option>Other</option>
+							</select>
 						</td>
 					</tr>
-
 					<tr class="">
 						<td class="!py-3 align-top">Tags</td>
 						<td>

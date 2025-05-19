@@ -91,7 +91,7 @@ export const PUT = async (event: RequestEvent) => {
             data.Name,
             data.Description,     
             data.Template,
-            data.TemplateCode,
+            data.ReferenceTemplateCode,
             data.Tags,
             data.Version ?? '');
         return ResponseHandler.success(response);

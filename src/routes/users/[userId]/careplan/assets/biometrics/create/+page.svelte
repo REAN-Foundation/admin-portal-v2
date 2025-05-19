@@ -135,7 +135,7 @@
 					</tr>
 
 					<tr>
-						<td>Biometrics Type</td>
+						<td>Biometrics Type<span class="text-red-700">*</span></td>
 						<td>
 							<select class="health-system-input" bind:value={biometricsType}>
 								<option disabled value>Select biometrics type</option>
@@ -152,7 +152,7 @@
 					</tr>
 
 					<tr>
-						<td>Measurement Unit </td>
+						<td>Measurement Unit<span class="text-red-700">*</span></td>
 						<td>
 							<input
 								type="text"
