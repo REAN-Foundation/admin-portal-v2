@@ -278,7 +278,7 @@
 
 <Confirmation
 	bind:isOpen={openDeleteModal}
-	title="Delete Priority Types@@@"
+	title="Delete Priority Types"
 	onConfirm={handlePriorityTypeDelete}
 	id={idToBeDeleted}
 />

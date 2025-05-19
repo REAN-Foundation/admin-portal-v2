@@ -113,7 +113,7 @@
 						<tr>
 							<th>Edit Priority</th>
 							<th class="text-end">
-								<a href={viewRoute} class="table-btn variant-soft-secondary">
+								<a href={viewRoute} class="cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -125,9 +125,7 @@
 							<td>
 								<input
 									type="text"
-									class="table-input-field {form?.errors?.healthSystemName
-										? 'input-text-error'
-										: ''}"
+									class="input {form?.errors?.type ? 'input-text-error' : ''}"
 									name="type"
 									placeholder="Enter name here..."
 									bind:value={type}
@@ -141,27 +139,20 @@
 							<td class="!py-3">Tags</td>
 							<td>
 								<InputChips
-								bind:keywords
-								name="keywords"
-								id="keywords"
-								keywordsChanged={onUpdateKeywords}
-							/>
-							<input
-								type="hidden"
-								name="keywordsStr"
-								id="keywordsStr"
-								bind:value={keywordsStr}
-							/>
+									bind:keywords
+									name="keywords"
+									id="keywords"
+									keywordsChanged={onUpdateKeywords}
+								/>
+								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" bind:value={tags} /> -->
 							</td>
 						</tr>
 					</tbody>
 				</table>
 				<div class="button-container">
-					<button
-						type="button"
-						onclick={handleReset}
-						class="table-btn variant-soft-secondary">Reset</button
+					<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary"
+						>Reset</button
 					>
 					{#await promise}
 						<button type="submit" class="table-btn variant-soft-secondary" disabled>

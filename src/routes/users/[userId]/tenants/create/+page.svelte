@@ -89,7 +89,7 @@
 						<tr>
 							<th>Create Tenant</th>
 							<th class="text-end">
-								<a href={tenantRoute} class="table-btn variant-soft-secondary">
+								<a href={tenantRoute} class="cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>

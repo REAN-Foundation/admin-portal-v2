@@ -4,10 +4,7 @@
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-	import { invalidate } from '$app/navigation';
-	import { browser } from '$app/environment';
 	import Tooltip from '$lib/components/tooltip.svelte';
-	import { onMount } from 'svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
@@ -17,6 +14,7 @@
 
 	let { data }: { data: PageServerData } = $props();
 
+	let debounceTimeout;
 	let isLoading = $state(false);
 	let labRecords = $state(data.labRecordTypes.Items);
 	let retrivedLabRecords = $derived(labRecords);
@@ -53,28 +51,22 @@
 	});
 
 	async function searchLabRecords(model) {
-		if (searchKeyword !== model.typeName) {
-			paginationSettings.page = 0;
-		}
-		if (searchKeyword !== model.displayName) {
-			paginationSettings.page = 0;
-		}
-		let url = `/api/server/lab-record-types/search?`;
-		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
-		url += `&sortBy=${model.sortBy ?? sortBy}`;
-		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
-		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-
-		if (typeName) url += `&typeName=${model.typeName}`;
-		if (displayName) url += `&displayName=${model.displayName}`;
-
 		try {
+			let url = `/api/server/lab-record-types/search?`;
+			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+			url += `&sortBy=${model.sortBy ?? sortBy}`;
+			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+
+			if (typeName) url += `&typeName=${model.typeName}`;
+			if (displayName) url += `&displayName=${model.displayName}`;
+
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
 			});
 			const searchResult = await res.json();
-			console.log('searchResult', searchResult);
+			
 			totalLabRecordsCount = searchResult.Data.LabRecordTypes.TotalCount;
 			paginationSettings.size = totalLabRecordsCount;
 
@@ -82,8 +74,8 @@
 				...item,
 				index: index + 1
 			}));
-			// searchKeyword = model.typeName;
-			// searchKeyword = model.displayName;
+			searchKeyword = model.typeName;
+			
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -91,21 +83,20 @@
 		}
 	}
 
-	$effect(() => {
-		searchLabRecords({
-			typeName,
-			displayName,
-			itemsPerPage: paginationSettings.limit,
-			pageIndex: paginationSettings.page,
-			sortBy,
-			sortOrder
-		});
-
-		if (isDeleting) {
-			retrivedLabRecords;
-			isDeleting = false;
-		}
-	});
+	async function onSearchInput(e) {
+		clearTimeout(debounceTimeout);
+		let searchKeyword = e.target.value;
+		debounceTimeout = setTimeout(() => {
+			paginationSettings.page = 0; 
+			searchLabRecords({
+				typeName: searchKeyword,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortBy,
+				sortOrder
+			});
+		}, 400);
+	}
 
 	function sortTable(columnName) {
 		isSortingTypeName = false;
@@ -118,27 +109,61 @@
 			isSortingDisplayName = true;
 		}
 		sortBy = columnName;
+		searchLabRecords({
+			typeName: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
 	}
 
+	function onItemsPerPageChange() {
+		paginationSettings.page = 0; // reset to first page
+		searchLabRecords({
+			typeName: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
+	function onPageChange() {
+		searchLabRecords({
+			typeName: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortBy,
+			sortOrder
+		});
+	}
 	const handleDeleteClick = (id: string) => {
 		openDeleteModal = true;
 		idToBeDeleted = id;
 	};
 
-	const handleHealthSystemDelete = async (id) => {
-		console.log('Inside handleHealthSystemDelete', id);
+	const handleLabRecordDelete = async (id) => {
 		const response = await fetch(`/api/server/lab-record-types/${id}`, {
 			method: 'DELETE',
 			headers: { 'content-type': 'application/json' }
 		});
 
 		const res = await response.json();
-		console.log('deleted Response', res);
+		
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
+		} else {
+			toastMessage(res);
 		}
-		invalidate('app:lab-records');
+		searchLabRecords({
+			typeName: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortBy,
+			sortOrder
+		});
 	};
 </script>
 
@@ -150,6 +175,10 @@
 			<div class="health-system-search-border p-4">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow">
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
 						<input
 							type="text"
 							name="typeName"
@@ -170,6 +199,10 @@
 						{/if}
 					</div>
 					<div class="relative w-auto grow">
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
 						<input
 							type="text"
 							name="displayName"
@@ -307,9 +340,9 @@
 
 <Confirmation
 	bind:isOpen={openDeleteModal}
-	title="Delete Health System"
-	onConfirm={handleHealthSystemDelete}
+	title="Delete Lab record"
+	onConfirm={handleLabRecordDelete}
 	id={idToBeDeleted}
 />
 
-<Pagination bind:paginationSettings />
+<Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />
