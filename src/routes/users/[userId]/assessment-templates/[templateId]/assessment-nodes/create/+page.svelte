@@ -367,6 +367,7 @@
 												{confirmDelete}
 												{showConfirm}
 												optionToDelete=null
+												mode="create"
 											/>
 										</td>
 									</tr>
@@ -417,17 +418,17 @@
 										value={JSON.stringify(correctAnswerString)}
 									/> -->
 								{:else if selectedQueryType === 'Boolean'}
-									<tr>
-										<td>Correct Answer</td>
-										<td>
-											<select name="correctAnswer" class="input w-full" bind:value={correctAnswer}>
-												<option value="" disabled selected>Select correct answer</option>
-												{#each optionValueStore as option}
-													<option value={option.Sequence}>{option.Text}</option>
-												{/each}
-											</select>
-										</td>
-									</tr>
+								<tr>
+									<td>Correct Answer</td>
+									<td>
+										<select name="correctAnswer" class="input w-full" bind:value={correctAnswer}>
+											<option value="" disabled selected>Select correct answer</option>
+											<option value={true}>true</option>
+											<option value={false}>false</option>
+										</select>
+									</td>
+								</tr>
+								
 									<tr>
 										<td>Resolution Score <span class=" text-red-600">*</span></td>
 										<td>
@@ -458,6 +459,7 @@
 											{confirmDelete}
 											{showConfirm}
 											optionToDelete=null
+											mode="create"
 										/>
 									</td>
 								</tr>

@@ -39,11 +39,11 @@
 </div> -->
 
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import type {
-		AssessmentNodeOptionCreateModel,
 		AssessmentNodeOptionUpdateModel
 	} from '$lib/types/assessment-node-option.types';
 	import { createOrUpdateSchema } from '$lib/validation/assessment-node-option.schema';
@@ -55,15 +55,16 @@
 	// export let optionValueStore = [];
 	// export let readonly = false;
 	let {
-		optionValueStore = $bindable(),
-		readonly = false,
-		updateSequences,
-		addOptionField,
-		removeOptionField,
-		confirmDelete,
-		showConfirm,
-		optionToDelete
-	} = $props();
+	optionValueStore = $bindable(),
+	readonly = false,
+	updateSequences,
+	addOptionField,
+	removeOptionField,
+	confirmDelete,
+	showConfirm,
+	optionToDelete,
+	mode 
+} = $props();
 
 	const templateId = page.params.templateId;
 	const nodeId = page.params.nodeId;
@@ -178,6 +179,7 @@
 	// API call stub
 	const updateOptionOnServer = async (option) => {
 		try {
+			errors = {};
 			console.log('Updating option...', option);
 
 			const optionCreateModel: AssessmentNodeOptionUpdateModel = {
@@ -209,9 +211,18 @@
 			);
 
 			const response = await res.json();
-			console.log('response', response);
-		} catch (err) {
-			console.error('Failed to update', err);
+			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				toastMessage(response);
+				return;
+			}
+
+			if (response.Errors) {
+				errors = response?.Errors || {};
+			} else {
+				toastMessage(response);
+			}
+		} catch (error) {
+			toastMessage();
 		}
 	};
 
@@ -267,8 +278,8 @@
 		<div
 			role="group"
 			class="group flex items-center gap-2"
-			onmouseenter={() => (hoveredIndex = i)}
-			onmouseleave={() => (hoveredIndex = null)}
+			onmouseenter={() => mode === 'edit' && (hoveredIndex = i)}
+			onmouseleave={() => mode === 'edit' && (hoveredIndex = null)}
 		>
 			<input
 				type="text"
@@ -276,23 +287,25 @@
 				name="options"
 				bind:value={optionValueStore[i].Text}
 				placeholder="Add option here..."
-				disabled={readonly || !v.isEditing}
+				disabled={readonly || (mode === 'edit' && !v.isEditing)}
 			/>
 
 			{#if !readonly}
-				<!-- Save button if editing -->
-				{#if v.isEditing}
-					<button
-						class="health-system-btn variant-soft-primary"
-						onclick={() => saveOption(i, event)}
-					>
-						<Icon icon="material-symbols:check" />
-					</button>
-				{:else if hoveredIndex === i}
-					<!-- Show Edit button only on hover -->
-					<button class="health-system-btn variant-soft-secondary" onclick={() => enableEditing(i)}>
-						<Icon icon="material-symbols:edit" />
-					</button>
+				{#if mode === 'edit'}
+					<!-- Save button if editing -->
+					{#if v.isEditing}
+						<button
+							class="health-system-btn variant-soft-primary"
+							onclick={() => saveOption(i, event)}
+						>
+							<Icon icon="material-symbols:check" />
+						</button>
+					{:else if hoveredIndex === i}
+						<!-- Show Edit button only on hover -->
+						<button class="health-system-btn variant-soft-secondary" onclick={() => enableEditing(i)}>
+							<Icon icon="material-symbols:edit" />
+						</button>
+					{/if}
 				{/if}
 
 				<!-- Delete -->
@@ -307,7 +320,7 @@
 	{/each}
 
 	{#if !readonly}
-		<button class="btn btn-sm variant-soft-secondary" onclick={addOption}> Add Option </button>
+		<button class="btn btn-sm variant-soft-secondary" onclick={addOption}>Add Option</button>
 	{/if}
 </div>
 
@@ -317,3 +330,4 @@
 	onConfirm={removeOptionField}
 	id={optionToDelete}
 />
+

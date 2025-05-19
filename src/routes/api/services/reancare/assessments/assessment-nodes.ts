@@ -17,7 +17,7 @@ export const createAssessmentNode = async (
 	queryType?: string,
 	options?: string[],
 	sequence?: number,
-	correctAnswer?: string,
+	correctAnswer?: number|boolean,
 	rawData?: string,
 	required?: boolean,
 	scoringApplicable?: boolean,
@@ -103,7 +103,7 @@ export const updateAssessmentNode = async (
 	message?: string,
 	sequence?: number,
 	serveListNodeChildrenAtOnce?: boolean,
-	correctAnswer?: number,
+	correctAnswer?: number|boolean,
 	rawData?: string
 
 ) => {

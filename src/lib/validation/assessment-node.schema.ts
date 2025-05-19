@@ -99,18 +99,19 @@ export const createOrUpdateSchema = z.object({
             })
         .optional(),
 
-    // Options: z
-    //     .array(z.string())
-    //     .optional(),
-
     Tags: z
         .array(z.string())
         .optional(),
 
     CorrectAnswer: z
-        .number({
-            required_error: "CorrectAnswer is required.",
-            invalid_type_error: "CorrectAnswer must be a number."
-        })
+        .union([
+            z.number({
+                invalid_type_error: "CorrectAnswer must be a number or boolean."
+            }),
+            z.boolean({
+                invalid_type_error: "CorrectAnswer must be a number or boolean."
+            })
+        ])
         .optional()
+    
 });

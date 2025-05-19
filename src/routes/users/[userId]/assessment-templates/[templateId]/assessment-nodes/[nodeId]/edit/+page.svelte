@@ -108,6 +108,7 @@
 		if (id) {
 			// Show confirmation only if it has id (already saved)
 			showConfirm = true;
+			optionValueStore = optionValueStore.filter((opt) => opt !== id);
 		} else {
 			// Delete immediately if not saved yet
 			optionValueStore = optionValueStore.filter((opt) => opt !== id);
@@ -150,6 +151,16 @@
 			event.preventDefault();
 			errors = {};
 
+			let processedCorrectAnswer: string | number | boolean | null = correctAnswer;
+
+			if (selectedQueryType === 'Boolean') {
+				processedCorrectAnswer =
+					correctAnswer === 'true' ? true : correctAnswer === 'false' ? false : null;
+			} else if (selectedQueryType === 'Single Choice Selection') {
+				const parsed = parseInt(correctAnswer);
+				processedCorrectAnswer = isNaN(parsed) ? null : parsed;
+			}
+
 			const assessmentNodeUpdateModel: AssessmentNodeUpdateModel = {
 				ParentNodeId: parentNodeId,
 				NodeType: selectedNodeType,
@@ -162,7 +173,7 @@
 				ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce,
 				ScoringApplicable: scoringApplicable,
 				Options: optionValueStore,
-				CorrectAnswer: correctAnswer,
+				CorrectAnswer: processedCorrectAnswer,
 				Message: message,
 				Tags: keywords,
 				RawData: rawData,
@@ -170,7 +181,7 @@
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentNodeUpdateModel);
-
+			console.log('assessmentNodeUpdateModel', assessmentNodeUpdateModel);
 			console.log('validationResult', validationResult);
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -181,17 +192,20 @@
 				);
 				return;
 			}
-			const res = await fetch(`/api/server/assessments/assessment-nodes/${nodeId}?templateId=${templateId}`, {
-				method: 'PUT',
-				body: JSON.stringify(assessmentNodeUpdateModel),
-				headers: { 'content-type': 'application/json' }
-			});
+			const res = await fetch(
+				`/api/server/assessments/assessment-nodes/${nodeId}?templateId=${templateId}`,
+				{
+					method: 'PUT',
+					body: JSON.stringify(assessmentNodeUpdateModel),
+					headers: { 'content-type': 'application/json' }
+				}
+			);
 
 			const response = await res.json();
-
+			console.log('response', response);
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				goto(`${assessmentsRoutes}/${response?.Data?.AssessmentNode?.id}/view`);
+				goto(`${assessmentNodeRoutes}/${response?.Data?.AssessmentNode?.id}/view`);
 				return;
 			}
 			if (response.Errors) {
@@ -343,6 +357,7 @@
 											{confirmDelete}
 											{showConfirm}
 											{optionToDelete}
+											mode="edit"
 										/>
 									</td>
 								</tr>
