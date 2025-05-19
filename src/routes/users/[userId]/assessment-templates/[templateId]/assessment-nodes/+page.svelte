@@ -60,16 +60,6 @@
 
 	async function searchNode(model) {
 		try {
-			// if (title !== model.title) {
-			// 	paginationSettings.page = 0;
-			// }
-			// if (nodeType !== model.nodeType) {
-			// 	paginationSettings.page = 0;
-			// }
-			// if (tags !== model.tags) {
-			// 	paginationSettings.page = 0;
-			// }
-
 			let url = `/api/server/assessments/assessment-nodes/search?templateId=${templateId}&`;
 			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
@@ -83,13 +73,15 @@
 				headers: { 'content-type': 'application/json' }
 			});
 			const searchResult = await res.json();
-			console.log('searchResult', searchResult);
+			
+			
 			totalAssessmentNodesCount = searchResult.Data.AssessmentNodeRecords.TotalCount;
 			paginationSettings.size = totalAssessmentNodesCount;
 			assessmentNodes = searchResult.Data.AssessmentNodeRecords.Items.map((item, index) => ({
 				...item,
 				index: index + 1
 			}));
+
 			searchKeyword = model.title;
 		} catch (err) {
 			console.error('Search failed:', err);
@@ -98,22 +90,6 @@
 		}
 	}
 
-	// $effect(() => {
-	// 	searchNode({
-	// 		title,
-	// 		nodeType,
-	// 		tags,
-	// 		itemsPerPage: paginationSettings.limit,
-	// 		pageIndex: paginationSettings.page,
-	// 		sortBy,
-	// 		sortOrder
-	// 	});
-
-	// 	if (isDeleting) {
-	// 		retrivedAssessmentNodes;
-	// 		isDeleting = false;
-	// 	}
-	// });
 	async function onSearchInput(e) {
 		clearTimeout(debounceTimeout);
 		let searchKeyword = e.target.value;
@@ -150,7 +126,7 @@
 	}
 
 	function onItemsPerPageChange() {
-		paginationSettings.page = 0; // reset to first page
+		paginationSettings.page = 0; 
 		searchNode({
 			title: searchKeyword,
 			itemsPerPage: paginationSettings.limit,
@@ -182,7 +158,7 @@
 		});
 
 		const res = await response.json();
-		console.log('deleted Response', res);
+		
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);

@@ -7,11 +7,11 @@ import { searchAssessmentTemplates } from '../../../api/services/reancare/assess
 
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     const sessionId = event.cookies.get('sessionId');
-	event.depends('app:assessmentTemplate')
-    const response = await searchAssessmentTemplates(sessionId,{
+    event.depends('app:assessmentTemplate')
+    const response = await searchAssessmentTemplates(sessionId, {
         orderBy: "Title",
         order: "ascending",
-        itemsPerPage:10
+        itemsPerPage: 10
     });
     if (response.Status === 'failure' || response.HttpCode !== 200) {
         throw error(response.HttpCode, response.Message);
@@ -21,6 +21,6 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
         assessmentTemplate,
         sessionId,
         message: response?.Message || 'Assessment Templates retrieved successfully',
-        title:'Clinical-Assessments'
-    };		
+        title: 'Clinical-Assessments'
+    };
 };

@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 
-	const userId = $page.params.userId;
+	///////////////////////////////////////////////////////////////////////////////////////
+
+	const userId = page.params.userId;
 
 	const importRoute = `/users/${userId}/assessment-templates/import`;
 	const assessmentsRoutes = `/users/${userId}/assessment-templates`;
@@ -19,13 +21,7 @@
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container">
-			<form
-				method="post"
-				action="?/importAssessment"
-				use:enhance
-				enctype="multipart/form-data"
-				
-			>
+			<form method="post" action="?/importAssessment" use:enhance enctype="multipart/form-data">
 				<table class="health-system-table">
 					<thead>
 						<tr>

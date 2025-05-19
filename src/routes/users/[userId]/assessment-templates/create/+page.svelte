@@ -72,8 +72,6 @@
 
 			const response = await res.json();
 
-			console.log('response', response);
-
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				goto(`${assessmentsRoutes}/${response?.Data?.AssessmentTemplate?.id}/view`);

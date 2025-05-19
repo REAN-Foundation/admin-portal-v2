@@ -4,9 +4,10 @@
 	import { scoringApplicableCondition } from '$lib/store/general.store';
 	import Icon from '@iconify/svelte';
 	import { onMount } from 'svelte';
-	// import { TreeBranch, TreeLeaf, TreeView } from 'svelte-tree-view-component';
 	import type { PageServerData } from './$types';
 	import TreeView from '$lib/components/tree-view.svelte';
+
+	/////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 	let assessmentNodes = $state(data.assessmentNodes);
@@ -37,8 +38,6 @@
 			return a.Sequence - b.Sequence;
 		});
 	});
-
-	// console.log('assessmentNodes', assessmentNodes);
 
 	onMount(() => {
 		scoringApplicableCondition.set(assessmentTemplate.ScoringApplicable);

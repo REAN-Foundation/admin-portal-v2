@@ -17,16 +17,16 @@
 	let assessmentTemplates = $state(data.assessmentTemplate.Items);
 	let retrivedAssessmentTemplates = $derived(assessmentTemplates);
 	let totalAssessmentTemplatesCount = $state(data.assessmentTemplate.TotalCount);
-	
+
 	const userId = page.params.userId;
 	const assessmentRoute = `/users/${userId}/assessment-templates`;
 	const editRoute = (id) => `/users/${userId}/assessment-templates/${id}/edit`;
 	const viewRoute = (id) => `/users/${userId}/assessment-templates/${id}/view`;
 	const createRoute = `/users/${userId}/assessment-templates/create`;
 	const importRoute = `/users/${userId}/assessment-templates/import`;
-	
+
 	const breadCrumbs = [{ name: 'Assessments', path: assessmentRoute }];
-	
+
 	let isLoading = $state(false);
 	let debounceTimeout;
 	let title = $state(undefined);
@@ -52,21 +52,21 @@
 
 	async function searchAssessmentTemplate(model) {
 		try {
-		let url = `/api/server/assessments/assessment-templates/search?`;
-		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
-		url += `&sortBy=${model.sortBy ?? sortBy}`;
-		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
-		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-		if (title) url += `&title=${model.title}`;
-		if (type) url += `&type=${model.type}`;
-		if (tags) url += `&tags=${model.tags}`;
-		
+			let url = `/api/server/assessments/assessment-templates/search?`;
+			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+			url += `&sortBy=${model.sortBy ?? sortBy}`;
+			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+			if (title) url += `&title=${model.title}`;
+			if (type) url += `&type=${model.type}`;
+			if (tags) url += `&tags=${model.tags}`;
+
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
 			});
 			const searchResult = await res.json();
-			console.log('searchResult', searchResult);
+
 			totalAssessmentTemplatesCount = searchResult.Data.AssessmentTemplate.TotalCount;
 			paginationSettings.size = totalAssessmentTemplatesCount;
 
@@ -86,7 +86,7 @@
 	async function onSearchInput(e) {
 		clearTimeout(debounceTimeout);
 		let searchKeyword = e.target.value;
-		
+
 		debounceTimeout = setTimeout(() => {
 			paginationSettings.page = 0; // reset page when typing new search
 			searchAssessmentTemplate({
@@ -151,7 +151,7 @@
 		});
 
 		const res = await response.json();
-		console.log('deleted Response', res);
+
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);

@@ -10,9 +10,6 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     const symptomId = event.params.id;
     const response = await getSymptomById(sessionId, symptomId);
 
-    // if (response.Status === 'failure' || response.HttpCode !== 200) {
-    //     throw error(response.HttpCode, response.Message);
-    // }
     const symptom = response?.Data?.SymptomType;
     const imageResourceId = symptom?.ImageResourceId;
     const id = response?.Data?.SymptomType?.id;

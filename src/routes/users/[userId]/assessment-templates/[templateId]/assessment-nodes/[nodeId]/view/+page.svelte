@@ -1,15 +1,11 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
-	// import Confirm from '$lib/components/modal/confirmModal.svelte';
-	// import UpdateScoringCondition from '$lib/components/modal/update.scoring.condition.modal.svelte';
 	import { scoringApplicableCondition, showScoringConditionModal } from '$lib/store/general.store';
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-	// import Confirm from '$lib/components/modal/confirm.modal.svelte';
 	import Tooltip from '$lib/components/tooltip.svelte';
-	// import Confirmation from '$lib/components/confirmation.modal.svelte';
+	import { page } from '$app/state';
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -46,9 +42,9 @@
 
 	// console.log('assessmentNode', assessmentNodes);
 
-	const userId = $page.params.userId;
-	const templateId = $page.params.templateId;
-	const nodeId = $page.params.nodeId;
+	const userId = page.params.userId;
+	const templateId = page.params.templateId;
+	const nodeId = page.params.nodeId;
 	const assessmentsRoutes = `/users/${userId}/assessment-templates`;
 	const editRoute = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/edit`;
 	const viewRoute = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/view`;
@@ -92,15 +88,6 @@
 		window.location.href = viewRoute;
 	};
 
-	// async function Delete(model) {
-	// 	await fetch(`/api/server/assessments/assessment-nodes`, {
-	// 		method: 'DELETE',
-	// 		body: JSON.stringify(model),
-	// 		headers: { 'content-type': 'application/json' }
-	// 	});
-	// 	console.log();
-	// }
-
 	const onUpdateScoringCondition = async (resolutionScore: number) => {
 		const scoringId = data.assessmentNode.ScoringCondition.id;
 		console.log(scoringId);
@@ -122,7 +109,6 @@
 		const resp = await response.text();
 		const scoringCondition = JSON.parse(resp);
 		resolutionScore = scoringCondition.ResolutionScore;
-		console.log(response);
 	}
 </script>
 

@@ -29,17 +29,6 @@
 	let promise = $state();
 	let keywordsStr: string = $state('');
 
-	// //Original data
-	// let _title = title;
-	// let _description = description;
-	// let _displayCode = displayCode;
-	// let _assessmentType = assessmentType;
-	// let _provider = provider;
-	// let _providerAssessmentCode = providerAssessmentCode;
-	// let _serveListNodeChildrenAtOnce = serveListNodeChildrenAtOnce;
-	// let _scoringApplicable = scoringApplicable;
-	// let _tags = JSON.stringify(tags);
-
 	function handleReset() {
 		title = data.assessmentTemplate.Title;
 		description = data.assessmentTemplate.Description;
@@ -82,8 +71,6 @@
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentTemplateUpdateModel);
 
-			console.log('validationResult', validationResult);
-			console.log('validationResult', assessmentTemplateUpdateModel);
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -93,8 +80,6 @@
 				);
 				return;
 			}
-
-			console.log('assessment template update model', assessmentTemplateUpdateModel);
 
 			const res = await fetch(`/api/server/assessments/assessment-templates/${templateId}`, {
 				method: 'PUT',

@@ -98,19 +98,13 @@
 	let optionToDelete = $state(null);
 	let showConfirm = $state(false);
 
-	// Triggered when delete button is clicked
 	const confirmDelete = (id) => {
-		console.log('confirmDelete', id);
-		// event.preventDefault();
 		optionToDelete = id;
 
-		console.log('optionToDelete', optionToDelete);
 		if (id) {
-			// Show confirmation only if it has id (already saved)
 			showConfirm = true;
 			optionValueStore = optionValueStore.filter((opt) => opt !== id);
 		} else {
-			// Delete immediately if not saved yet
 			optionValueStore = optionValueStore.filter((opt) => opt !== id);
 			updateSequences();
 		}
@@ -119,7 +113,6 @@
 	let isDeleting = $state(false);
 
 	const removeOptionField = async (id) => {
-		console.log('removeOptionField', id);
 		if (optionToDelete) {
 			const response = await fetch(
 				`/api/server/assessments/options/${id}?nodeId=${nodeId}&templateId=${templateId}`,
@@ -129,7 +122,7 @@
 				}
 			);
 			const res = await response.json();
-			console.log('deleted Response', res);
+
 			if (res.HttpCode === 200) {
 				optionValueStore = optionValueStore.filter((opt) => opt !== optionToDelete);
 				isDeleting = true;
@@ -181,8 +174,7 @@
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentNodeUpdateModel);
-			console.log('assessmentNodeUpdateModel', assessmentNodeUpdateModel);
-			console.log('validationResult', validationResult);
+
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -202,7 +194,7 @@
 			);
 
 			const response = await res.json();
-			console.log('response', response);
+
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				goto(`${assessmentNodeRoutes}/${response?.Data?.AssessmentNode?.id}/view`);

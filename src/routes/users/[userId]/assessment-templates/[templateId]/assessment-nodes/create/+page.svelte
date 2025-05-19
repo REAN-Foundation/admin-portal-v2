@@ -31,7 +31,7 @@
 		serveListNodeChildrenAtOnce = $state(undefined),
 		message = $state(undefined),
 		keywords = $state(undefined),
-		required=$state(undefined),
+		required = $state(undefined),
 		rawData = $state(undefined);
 
 	let errors: Record<string, string> = $state({});
@@ -69,8 +69,6 @@
 			optionValueStore = optionValueStore.filter((opt) => opt.Text !== option.Text);
 		}
 	};
-	// export let optionValueStore = [{ id: null, Text: '', Sequence: 1 }];
-	// export let correctAnswer = '';
 
 	const onSelectNodeType = (val) => {
 		selectedNodeType = val.target.value;
@@ -106,11 +104,12 @@
 		}
 	];
 
-	$inspect(optionValueStore, 'optionValueStore');
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
 			errors = {};
+
+			const finalValue = correctAnswer === '' ? undefined : correctAnswer;
 
 			const assessmentNodeCreateModel: AssessmentNodeCreateModel = {
 				NodeType: selectedNodeType,
@@ -124,7 +123,7 @@
 				ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce,
 				ScoringApplicable: scoringApplicable,
 				Options: optionValueStore,
-				CorrectAnswer: correctAnswer,
+				CorrectAnswer: finalValue,
 				Message: message,
 				Tags: keywords,
 				RawData: rawData,
@@ -132,9 +131,6 @@
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentNodeCreateModel);
-
-			console.log('validationResult', validationResult);
-			console.log('assessmentNodeCreateModel', assessmentNodeCreateModel);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -154,7 +150,6 @@
 
 			const response = await res.json();
 
-			console.log('response', response, assessmentNodeCreateModel);
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				goto(`${assessmentNodeRoutes}/${response?.Data?.AssessmentNode?.id}/view`);
@@ -366,7 +361,7 @@
 												{removeOptionField}
 												{confirmDelete}
 												{showConfirm}
-												optionToDelete=null
+												optionToDelete="null"
 												mode="create"
 											/>
 										</td>
@@ -418,17 +413,17 @@
 										value={JSON.stringify(correctAnswerString)}
 									/> -->
 								{:else if selectedQueryType === 'Boolean'}
-								<tr>
-									<td>Correct Answer</td>
-									<td>
-										<select name="correctAnswer" class="input w-full" bind:value={correctAnswer}>
-											<option value="" disabled selected>Select correct answer</option>
-											<option value={true}>true</option>
-											<option value={false}>false</option>
-										</select>
-									</td>
-								</tr>
-								
+									<tr>
+										<td>Correct Answer</td>
+										<td>
+											<select name="correctAnswer" class="input w-full" bind:value={correctAnswer}>
+												<option value="" disabled selected>Select correct answer</option>
+												<option value={true}>true</option>
+												<option value={false}>false</option>
+											</select>
+										</td>
+									</tr>
+
 									<tr>
 										<td>Resolution Score <span class=" text-red-600">*</span></td>
 										<td>
@@ -458,7 +453,7 @@
 											{removeOptionField}
 											{confirmDelete}
 											{showConfirm}
-											optionToDelete=null
+											optionToDelete="null"
 											mode="create"
 										/>
 									</td>

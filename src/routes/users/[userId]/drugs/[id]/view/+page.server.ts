@@ -9,9 +9,6 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     const drugId = event.params.id;
     const response = await getDrugById(sessionId, drugId);
 
-    // if (response.Status === 'failure' || response.HttpCode !== 200) {
-    //     throw error(response.HttpCode, response.Message);
-    // }
     const drug = response?.Data?.Drug;
     const id = response?.Data?.Drug?.id;
     return {

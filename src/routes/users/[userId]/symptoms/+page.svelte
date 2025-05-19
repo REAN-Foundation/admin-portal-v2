@@ -65,8 +65,7 @@
 				headers: { 'content-type': 'application/json' }
 			});
 			const searchResult = await res.json();
-			console.log('searchResult', searchResult);
-			console.log('url', url);
+			
 			totalSymptomsCount = searchResult.Data.SymptomTypes.TotalCount;
 			paginationSettings.size = totalSymptomsCount;
 			symptoms = searchResult.Data.SymptomTypes.Items.map((item, index) => ({
@@ -159,7 +158,6 @@
 		});
 
 		const res = await response.json();
-		console.log('deleted Response', res);
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);

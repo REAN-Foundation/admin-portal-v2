@@ -45,7 +45,6 @@
 				Unit: unit
 			};
 
-			console.log(labRecordCreateModel, 'labRecordCreateModel');
 			const validationResult = createOrUpdateSchema.safeParse(labRecordCreateModel);
 
 			if (!validationResult.success) {
@@ -58,7 +57,6 @@
 				return;
 			}
 
-			console.log(labRecordCreateModel, 'labRecordCreateModel');
 			const res = await fetch(`/api/server/lab-record-types`, {
 				method: 'POST',
 				body: JSON.stringify(labRecordCreateModel),
@@ -66,7 +64,7 @@
 			});
 
 			const response = await res.json();
-			console.log(response, 'response');
+			
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				goto(`${labRecordTypesRoute}/${response?.Data?.LabRecordType?.id}/view`);

@@ -4,10 +4,7 @@
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-	import { invalidate } from '$app/navigation';
-	import { browser } from '$app/environment';
 	import Tooltip from '$lib/components/tooltip.svelte';
-	import { onMount } from 'svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
@@ -69,7 +66,7 @@
 				headers: { 'content-type': 'application/json' }
 			});
 			const searchResult = await res.json();
-			console.log('searchResult', searchResult);
+			
 			totalLabRecordsCount = searchResult.Data.LabRecordTypes.TotalCount;
 			paginationSettings.size = totalLabRecordsCount;
 
@@ -78,7 +75,7 @@
 				index: index + 1
 			}));
 			searchKeyword = model.typeName;
-			// searchKeyword = model.displayName;
+			
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -90,7 +87,7 @@
 		clearTimeout(debounceTimeout);
 		let searchKeyword = e.target.value;
 		debounceTimeout = setTimeout(() => {
-			paginationSettings.page = 0; // reset page when typing new search
+			paginationSettings.page = 0; 
 			searchLabRecords({
 				typeName: searchKeyword,
 				itemsPerPage: paginationSettings.limit,

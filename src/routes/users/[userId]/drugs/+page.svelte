@@ -4,7 +4,6 @@
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-	import { invalidate } from '$app/navigation';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
 	import { toastMessage } from '$lib/components/toast/toast.store';
@@ -66,7 +65,7 @@
 				headers: { 'content-type': 'application/json' }
 			});
 			const searchResult = await res.json();
-			console.log('searchResult', searchResult);
+			
 			totalDrugsCount = searchResult.Data.Drugs.TotalCount;
 			paginationSettings.size = totalDrugsCount;
 			drugs = searchResult.Data.Drugs.Items.map((item, index) => ({
@@ -74,7 +73,7 @@
 				index: index + 1
 			}));
 			searchKeyword = model.drugName;
-			// searchKeyword = model.genericName;
+			
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -86,7 +85,7 @@
 		clearTimeout(debounceTimeout);
 		let searchKeyword = e.target.value;
 		debounceTimeout = setTimeout(() => {
-			paginationSettings.page = 0; // reset page when typing new search
+			paginationSettings.page = 0; 
 			searchDrug({
 				drugName: searchKeyword,
 				itemsPerPage: paginationSettings.limit,
@@ -149,7 +148,7 @@
 		});
 
 		const res = await response.json();
-		console.log('deleted Response', res);
+		
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
