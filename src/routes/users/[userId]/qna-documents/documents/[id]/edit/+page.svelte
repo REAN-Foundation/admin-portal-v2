@@ -37,7 +37,6 @@
 	let documentType = $state(data.documents.DocumentType);
 	let version: string = $state(data.documents.DocumentVersion.map((row) => row.Version).join(', '));
 
-	$inspect("version", version)
 	let imageUrl = $state('');
 	let fileinput = $state();
 	let resourceId = $state(data.documents.ResourceId);
@@ -56,7 +55,7 @@
 	const viewRoute = `/users/${userId}/qna-documents/documents/${id}/view`;
 	const documentRoute = `/users/${userId}/qna-documents/documents`;
 	const breadCrumbs = [
-		{ name: 'Document', path: documentRoute },
+		{ name: 'Q&A Documents', path: documentRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
@@ -64,7 +63,7 @@
 		name = data?.documents?.Name;
 		description = data?.documents?.Description;
 		fileName = data?.documents?.FileResource?.OriginalFilename;
-		source = data?.documents?.Source;
+		source = data?.documents?.DocumentVersion?.DocumentSource;
 		parentDocument = data?.documents?.ParentDocument;
 		parentDocumentVersion = data?.documents?.ParentDocumentVersion;
 		chunkingStrategy = data?.documents?.ChunkingStrategy;
@@ -203,9 +202,6 @@
 			});
 
 			const response = await res.json();
-			console.log("response", response);
-			
-
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				goto(`${documentRoute}/${response?.Data?.id}/view`);
@@ -313,7 +309,7 @@
 								{/if}
 							</td>
 						</tr>
-	<tr>
+						<tr>
 							<!-- Label Cell -->
 							<td>
 								Upload File <span class="text-red-700">*</span>
@@ -344,7 +340,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>Keywords</td>
+							<td>Keywords <span class="text-red-700">*</span></td>
 							<td>
 								<InputChips
 									bind:keywords
@@ -357,8 +353,8 @@
 							</td>
 						</tr>
 
-						<tr>
-							<td>Document Type</td>
+						<!-- <tr>
+							<td>Document Type <span class="text-red-700">*</span></td>
 							<td>
 								<input
 									type="text"
@@ -371,7 +367,7 @@
 									<p class="text-error">{errors?.DocumentType}</p>
 								{/if}
 							</td>
-						</tr>
+						</tr> -->
 						<!-- Source -->
 						<!-- <tr>
 							<td>Source</td>
@@ -410,7 +406,8 @@
 									name="version"
 									bind:value={version}
 									placeholder="Enter version here..."
-									class="health-system-input"
+									class="health-system-input bg-gray-100 text-gray-700"
+									disabled
 								/>
 							</td>
 						</tr>
@@ -418,11 +415,7 @@
 						<tr>
 							<td>Active</td>
 							<td>
-								<input type="radio" name="active" bind:group={active} value={true} />
-								<label for="activeTrue">True</label>
-
-								<input type="radio" name="active" bind:group={active} value={false} />
-								<label for="activeFalse">False</label>
+								<input class="health-system-input bg-gray-100 text-gray-700" disabled type="text" name="active" bind:value={active} />
 							</td>
 						</tr>
 
@@ -443,7 +436,7 @@
 						</tr> -->
 						<!-- Chunking Strategy -->
 						<tr>
-							<td>Chunking Strategy</td>
+							<td>Chunking Strategy <span class="text-red-700">*</span></td>
 							<td>
 								<select
 									class="health-system-input"
@@ -460,7 +453,7 @@
 						</tr>
 						<!-- Chunking Length -->
 						<tr>
-							<td class="text-start">Chunking length</td>
+							<td class="text-start">Chunking length <span class="text-red-700">*</span></td>
 							<td>
 								<input
 									type="number"
@@ -470,13 +463,13 @@
 									class="health-system-input"
 								/>
 								{#if errors?.ChunkingLength}
-									<p class="text-error">{errors?.ChunkingLenght}</p>
+									<p class="text-error">{errors?.ChunkingLength}</p>
 								{/if}
 							</td>
 						</tr>
 						<!-- Chunking Overlap -->
 						<tr>
-							<td class="text-start">Chunking Overlap</td>
+							<td class="text-start">Chunking Overlap <span class="text-red-700">*</span></td>
 							<td>
 								<input
 									type="number"
@@ -493,7 +486,7 @@
 						</tr>
 						<!-- Splitter -->
 						<tr>
-							<td class="text-start">Splitter</td>
+							<td class="text-start">Splitter <span class="text-red-700">*</span></td>
 							<td>
 								<input
 									type="text"

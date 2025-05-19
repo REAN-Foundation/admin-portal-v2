@@ -31,7 +31,10 @@ export const createOrUpdateSchema = z.object({
 			required_error: 'Chunking length is required.',
 			invalid_type_error: 'Chunking length must be a number.'
 		})
-		.min(1, { message: 'Chunking length cannot be empty.' }),
+		.min(1, { message: 'Chunking length cannot be empty.' })
+		.max(10000, {
+			message: 'Chunking length must not exceed 10000.',
+		}),
 	ChunkingOverlap: z
 		.number({
 			required_error: 'chunking overlap is required.',
@@ -45,7 +48,9 @@ export const createOrUpdateSchema = z.object({
 		})
 		.min(1, { message: 'Splitter cannot be empty.' }),
 	ResourceId: z.string(),
-	Keywords: z.array(z.string()),
+	Keywords: z
+		.array(z.string().min(1, { message: 'Keyword cannot be empty.' }))
+		.nonempty({ message: 'At least one keyword is required.' }),
 	DocumentType: z
 		.string({
 			required_error: 'Document type is required.',
@@ -53,4 +58,3 @@ export const createOrUpdateSchema = z.object({
 		})
 		.min(1, { message: 'Document type cannot be empty.' })
 });
-
