@@ -52,12 +52,6 @@
 
 	async function searchDrug(model) {
 		try {
-			// if (searchKeyword !== model.drugName) {
-			// 	paginationSettings.page = 0;
-			// }
-			// if (searchKeyword !== model.genericName) {
-			// 	paginationSettings.page = 0;
-			// }
 			let url = `/api/server/drugs/search?`;
 			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
@@ -102,21 +96,6 @@
 			});
 		}, 400);
 	}
-
-	// $effect(() => {
-	// 	searchDrug({
-	// 		drugName,
-	// 		genericName,
-	// 		itemsPerPage: paginationSettings.limit,
-	// 		pageIndex: paginationSettings.page,
-	// 		sortBy,
-	// 		sortOrder
-	// 	});
-	// 	if (isDeleting) {
-	// 		retrivedDrugs;
-	// 		isDeleting = false;
-	// 	}
-	// });
 
 	function sortTable(columnName) {
 		isSortingName = false;

@@ -55,12 +55,6 @@
 
 	async function searchLabRecords(model) {
 		try {
-			// if (searchKeyword !== model.typeName) {
-			// 	paginationSettings.page = 0;
-			// }
-			// if (searchKeyword !== model.displayName) {
-			// 	paginationSettings.page = 0;
-			// }
 			let url = `/api/server/lab-record-types/search?`;
 			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
@@ -106,22 +100,6 @@
 			});
 		}, 400);
 	}
-
-	// $effect(() => {
-	// 	searchLabRecords({
-	// 		typeName,
-	// 		displayName,
-	// 		itemsPerPage: paginationSettings.limit,
-	// 		pageIndex: paginationSettings.page,
-	// 		sortBy,
-	// 		sortOrder
-	// 	});
-
-	// 	if (isDeleting) {
-	// 		retrivedLabRecords;
-	// 		isDeleting = false;
-	// 	}
-	// });
 
 	function sortTable(columnName) {
 		isSortingTypeName = false;

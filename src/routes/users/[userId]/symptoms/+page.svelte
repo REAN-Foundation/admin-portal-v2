@@ -52,19 +52,13 @@
 
 	async function searchSymptom(model) {
 		try {
-			// if (searchKeyword !== model.symptom) {
-			// 	paginationSettings.page = 0;
-			// }
-			// if (searchKeyword !== model.tags) {
-			// 	paginationSettings.page = 0;
-			// }
 			let url = `/api/server/symptoms/search?`;
 			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
 			if (symptom) url += `&symptom=${model.symptom}`;
-			// if (tags) url += `&tags=${tags}`;
+			if (tags) url += `&tags=${tags}`;
 
 			const res = await fetch(url, {
 				method: 'GET',
@@ -87,20 +81,6 @@
 		}
 	}
 
-	// $effect(() => {
-	// 	searchSymptom({
-	// 		symptom,
-	// 		tags,
-	// 		itemsPerPage: paginationSettings.limit,
-	// 		pageIndex: paginationSettings.page,
-	// 		sortBy,
-	// 		sortOrder
-	// 	});
-	// 	if (isDeleting) {
-	// 		retrivedSymptoms;
-	// 		isDeleting = false;
-	// 	}
-	// });
 	async function onSearchInput(e) {
 		clearTimeout(debounceTimeout);
 		let searchKeyword = e.target.value;
@@ -228,7 +208,7 @@
 							</button>
 						{/if}
 					</div>
-					<!-- <div class="relative w-auto grow">
+					<div class="relative w-auto grow">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
@@ -251,7 +231,7 @@
 								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
-					</div> -->
+					</div>
 					<button class="health-system-btn variant-filled-secondary">
 						<a href={createRoute}>Add New</a>
 					</button>

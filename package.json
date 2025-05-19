@@ -52,7 +52,6 @@
 		"dayjs": "^1.11.13",
 		"dexie": "^4.0.11",
 		"redis": "^4.7.0",
-		"svelte-tree-view-component": "^1.0.3",
 		"sveltekit-flash-message": "^2.4.6",
 		"zod": "^3.24.2",
 		"zod-form-data": "^2.0.5"
