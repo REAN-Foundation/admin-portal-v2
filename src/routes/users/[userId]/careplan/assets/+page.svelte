@@ -265,16 +265,31 @@
 						<input
 							type="text"
 							name="name"
+							bind:value={nameAssetSearch}
 							placeholder="Search by name"
 							oninput={(event) => onSearchInput(event, 'name')}
-							class="table-input-field !pr-4 !pl-10"
+							class="input !pr-4 !pl-10"
 						/>
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
 						/>
 						{#if nameAssetSearch}
-							<button type="button" onclick={() => (nameAssetSearch = '')} class="close-btn">
+							<button
+								type="button"
+								onclick={() => {
+									nameAssetSearch = '';
+									paginationSettings.page = 0;
+									searchAssets({
+										nameAssetSearch: '',
+										itemsPerPage: paginationSettings.limit,
+										pageIndex: 0,
+										sortBy,
+										sortOrder
+									});
+								}}
+								class="close-btn"
+							>
 								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
@@ -285,8 +300,9 @@
 							type="text"
 							name="code"
 							placeholder="Search by code"
+							bind:value={codeAssetSearch}
 							oninput={(event) => onSearchInput(event, 'code')}
-							class="table-input-field !pr-4 !pl-10"
+							class="input !pr-4 !pl-10"
 						/>
 						<Icon
 							icon="heroicons:tag"
