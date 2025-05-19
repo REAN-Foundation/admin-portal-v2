@@ -57,15 +57,15 @@
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-			if (symptom) url += `&symptom=${model.symptom}`;
-			if (tags) url += `&tags=${tags}`;
+			if (model.symptom) url += `&symptom=${model.symptom}`;
+			if (model.tags) url += `&tags=${tags}`;
 
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
 			});
 			const searchResult = await res.json();
-			
+
 			totalSymptomsCount = searchResult.Data.SymptomTypes.TotalCount;
 			paginationSettings.size = totalSymptomsCount;
 			symptoms = searchResult.Data.SymptomTypes.Items.map((item, index) => ({
@@ -80,14 +80,24 @@
 		}
 	}
 
+	function updateSearchField(name, value) {
+		if (name === 'symptom') {
+			symptom = value;
+		} else if (name === 'tags') {
+			tags = value;
+		}
+	}
+
 	async function onSearchInput(e) {
 		clearTimeout(debounceTimeout);
-		let searchKeyword = e.target.value;
+		const { name, value } = e.target;
+		updateSearchField(name, value);
 
 		debounceTimeout = setTimeout(() => {
 			paginationSettings.page = 0; // reset page when typing new search
 			searchSymptom({
-				symptom: searchKeyword,
+				symptom,
+				tags,
 				itemsPerPage: paginationSettings.limit,
 				pageIndex: 0,
 				sortBy,
@@ -107,9 +117,10 @@
 		}
 		sortBy = columnName;
 		searchSymptom({
-			symptom: searchKeyword,
+			symptom,
+			tags,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex:paginationSettings.page,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -132,7 +143,8 @@
 	function onItemsPerPageChange() {
 		paginationSettings.page = 0; // reset to first page
 		searchSymptom({
-			symptom: searchKeyword,
+			symptom,
+			tags,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -142,9 +154,10 @@
 
 	function onPageChange() {
 		searchSymptom({
-			symptom: searchKeyword,
+			symptom,
+			tags,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex:paginationSettings.page,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -165,9 +178,10 @@
 			toastMessage(res);
 		}
 		searchSymptom({
-			symptom: searchKeyword,
+			symptom,
+			tags,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex:paginationSettings.page,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -199,6 +213,7 @@
 								type="button"
 								onclick={() => {
 									symptom = '';
+									onSearchInput({ target: { name: 'symptom', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -216,6 +231,7 @@
 							name="tags"
 							placeholder="Search by tags"
 							bind:value={tags}
+							oninput={(event) => onSearchInput(event)}
 							class="health-system-input !pr-4 !pl-10"
 						/>
 						{#if tags}
@@ -223,6 +239,7 @@
 								type="button"
 								onclick={() => {
 									tags = '';
+									onSearchInput({ target: { name: 'tags', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -270,7 +287,7 @@
 					</thead>
 					<tbody>
 						{#if retrivedSymptoms.length <= 0}
-							<tr>
+							<tr class="text-center">
 								<td colspan="7">{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}

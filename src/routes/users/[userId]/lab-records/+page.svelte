@@ -66,7 +66,7 @@
 				headers: { 'content-type': 'application/json' }
 			});
 			const searchResult = await res.json();
-			
+
 			totalLabRecordsCount = searchResult.Data.LabRecordTypes.TotalCount;
 			paginationSettings.size = totalLabRecordsCount;
 
@@ -75,7 +75,6 @@
 				index: index + 1
 			}));
 			searchKeyword = model.typeName;
-			
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -93,12 +92,11 @@
 
 	async function onSearchInput(e) {
 		clearTimeout(debounceTimeout);
-		let searchKeyword = e.target.value;
-
-		updateSearchField(name, value)
+		const { name, value } = e.target;
+		updateSearchField(name, value);
 
 		debounceTimeout = setTimeout(() => {
-			paginationSettings.page = 0; 
+			paginationSettings.page = 0;
 			searchLabRecords({
 				typeName,
 				displayName,
@@ -165,7 +163,7 @@
 		});
 
 		const res = await response.json();
-		
+
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
@@ -200,6 +198,7 @@
 							name="typeName"
 							placeholder="Search by type name"
 							bind:value={typeName}
+							oninput={(event) => onSearchInput(event)}
 							class="health-system-input !pr-4 !pl-10"
 						/>
 						{#if typeName}
@@ -225,6 +224,7 @@
 							name="displayName"
 							placeholder="Search by display name"
 							bind:value={displayName}
+							oninput={(event) => onSearchInput(event)}
 							class="health-system-input !pr-4 !pl-10"
 						/>
 						{#if displayName}
@@ -282,7 +282,7 @@
 					</thead>
 					<tbody>
 						{#if retrivedLabRecords <= 0}
-							<tr>
+							<tr class="text-center">
 								<td colspan="8">{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}

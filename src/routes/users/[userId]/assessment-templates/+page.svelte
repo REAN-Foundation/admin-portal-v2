@@ -69,13 +69,15 @@
 
 			const searchResult = await res.json();
 
-			totalAssessmentTemplatesCount = searchResult.Data.AssessmentTemplate.TotalCount;
+			totalAssessmentTemplatesCount = searchResult.Data.AssessmentTemplateRecords.TotalCount;
 			paginationSettings.size = totalAssessmentTemplatesCount;
 
-			assessmentTemplates = searchResult.Data.AssessmentTemplateRecords.Items.map((item, index) => ({
-				...item,
-				index: index + 1
-			}));
+			assessmentTemplates = searchResult.Data.AssessmentTemplateRecords.Items.map(
+				(item, index) => ({
+					...item,
+					index: index + 1
+				})
+			);
 
 			searchKeyword = model.title;
 		} catch (err) {
@@ -96,9 +98,9 @@
 	}
 
 	async function onSearchInput(e) {
-        clearTimeout(debounceTimeout);
-        const { name, value } = e.target;
-        updateSearchField(name, value)
+		clearTimeout(debounceTimeout);
+		const { name, value } = e.target;
+		updateSearchField(name, value);
 
 		debounceTimeout = setTimeout(() => {
 			paginationSettings.page = 0; // reset page when typing new search
@@ -121,7 +123,7 @@
 			type,
 			tags,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex:paginationSettings.page,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -326,7 +328,7 @@
 					</thead>
 					<tbody class="">
 						{#if retrivedAssessmentTemplates <= 0}
-							<tr>
+							<tr class="text-center">
 								<td aria-colindex={1} colspan="8">
 									{isLoading ? 'Loading...' : 'No records found'}
 								</td>

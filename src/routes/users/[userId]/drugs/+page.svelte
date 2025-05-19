@@ -66,7 +66,7 @@
 			});
 
 			const searchResult = await res.json();
-			
+
 			totalDrugsCount = searchResult.Data.Drugs.TotalCount;
 			paginationSettings.size = totalDrugsCount;
 
@@ -75,7 +75,6 @@
 				index: index + 1
 			}));
 			searchKeyword = model.drugName;
-			
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -93,12 +92,11 @@
 
 	async function onSearchInput(e) {
 		clearTimeout(debounceTimeout);
-		let searchKeyword = e.target.value;
-
-		updateSearchField(name, value)
+		const { name, value } = e.target;
+		updateSearchField(name, value);
 
 		debounceTimeout = setTimeout(() => {
-			paginationSettings.page = 0; 
+			paginationSettings.page = 0;
 			searchDrug({
 				drugName,
 				genericName,
@@ -136,7 +134,7 @@
 			drugName,
 			genericName,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex:paginationSettings.page,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -165,7 +163,7 @@
 		});
 
 		const res = await response.json();
-		
+
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
@@ -270,7 +268,7 @@
 					</thead>
 					<tbody>
 						{#if retrivedDrugs <= 0}
-							<tr>
+							<tr class="text-center">
 								<td aria-colindex={1} colspan="8"
 									>{isLoading ? 'Loading...' : 'No records found'}</td
 								>

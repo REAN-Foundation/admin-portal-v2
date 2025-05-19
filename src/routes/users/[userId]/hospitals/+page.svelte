@@ -99,10 +99,8 @@
 
 	async function onSearchInput(e) {
 		clearTimeout(debounceTimeout);
-		let searchKeyword = e.target.value;
-
-		updateSearchField(name, value)
-		// console.log('event', e.target);
+		const { name, value } = e.target;
+		updateSearchField(name, value);
 
 		console.log('healthSystemName**', hospitalName);
 		debounceTimeout = setTimeout(() => {
@@ -293,7 +291,7 @@
 					</thead>
 					<tbody>
 						{#if retrivedHospitals.length <= 0}
-							<tr>
+							<tr class="text-center">
 								<td colspan="6" class="text-center"
 									>{isLoading ? 'Loading...' : 'No records found'}</td
 								>

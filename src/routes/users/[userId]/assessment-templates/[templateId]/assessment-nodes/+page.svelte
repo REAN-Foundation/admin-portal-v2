@@ -74,8 +74,7 @@
 				headers: { 'content-type': 'application/json' }
 			});
 			const searchResult = await res.json();
-			
-			
+
 			totalAssessmentNodesCount = searchResult.Data.AssessmentNodeRecords.TotalCount;
 			paginationSettings.size = totalAssessmentNodesCount;
 			assessmentNodes = searchResult.Data.AssessmentNodeRecords.Items.map((item, index) => ({
@@ -102,9 +101,9 @@
 	}
 
 	async function onSearchInput(e) {
-        clearTimeout(debounceTimeout);
-        const { name, value } = e.target;
-        updateSearchField(name, value)
+		clearTimeout(debounceTimeout);
+		const { name, value } = e.target;
+		updateSearchField(name, value);
 
 		debounceTimeout = setTimeout(() => {
 			paginationSettings.page = 0;
@@ -113,7 +112,7 @@
 				nodeType,
 				tags,
 				itemsPerPage: paginationSettings.limit,
-				pageIndex:paginationSettings.page,
+				pageIndex: paginationSettings.page,
 				sortBy,
 				sortOrder
 			});
@@ -142,13 +141,13 @@
 	}
 
 	function onItemsPerPageChange() {
-		paginationSettings.page = 0; 
+		paginationSettings.page = 0;
 		searchNode({
 			title,
 			nodeType,
 			tags,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex:paginationSettings.page,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -160,7 +159,7 @@
 			nodeType,
 			tags,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex:paginationSettings.page,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -181,7 +180,7 @@
 		);
 
 		const res = await response.json();
-		
+
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
@@ -328,7 +327,7 @@
 					</thead>
 					<tbody class="!bg-white dark:!bg-inherit">
 						{#if retrivedAssessmentNodes.length <= 0}
-							<tr>
+							<tr class="text-center">
 								<td aria-colindex={1} colspan="8">
 									{isLoading ? 'Loading...' : 'No records found'}
 								</td>
