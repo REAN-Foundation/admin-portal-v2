@@ -1,60 +1,48 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import type { PageServerData } from './$types';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
 	import { goto } from '$app/navigation';
 	import InputChips from '$lib/components/input-chips.svelte';
-	// import type { PageServerData } from '../../../$types';
-	import { createOrUpdateSchema } from '$lib/validation/challenges.schema';
-	import type { ChallengesUpdateModel } from '$lib/types/challenges.types';
+	import type { RemindersCreateModel } from '$lib/types/reminders.types.js';
+	import { createOrUpdateSchema } from '$lib/validation/reminders.schema.js';
 
-
-	let { data, form }: { data: PageServerData; form: any } = $props();
+	let { data, form } = $props();
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let name = $state(data.challenges.Name);
-	let description = $state(data.challenges.Description);
-	let version = $state(data.challenges.Version);
-	let keywords: string[] = $state(data.challenges.Tags);
+	let name = $state('');
+	let description = $state('');
+	let version = $state('');
+	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
 
+	data.title = 'Create Reminder';
 	const userId = page.params.userId;
-	var challengesId = page.params.id;
-
-	const editRoute = `/users/${userId}/careplan/assets/challenges/${challengesId}/edit`;
-	const viewRoute = `/users/${userId}/careplan/assets/challenges/${challengesId}/view`;
-	const challengesRoute = `/users/${userId}/careplan/assets/challenges`;
+	const assetRoute = `/users/${userId}/careplan/assets`;
+	const createRoute = `/users/${userId}/careplan/assets/reminders/create`;
+	const remindersRoute = `/users/${userId}/careplan/assets/reminders`;
 
 	const breadCrumbs = [
-		{ name: 'Challenges', path: challengesRoute },
-		{ name: 'Edit', path: editRoute }
+		{ name: 'Assets', path: assetRoute },
+		{ name: 'Reminders', path: remindersRoute },
+		{ name: 'Create', path: createRoute }
 	];
-
-	const handleReset = () => {
-		name = data?.challenges?.Name;
-		challengesId = page.params.id;
-		description = data?.challenges?.Description;
-		version = data?.challenges?.Version;
-		keywords = data?.challenges?.Tags;
-		errors = {};
-	};
 
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
 			errors = {};
 
-			const challengesUpdateModel: ChallengesUpdateModel = {
+			const remindersCreateModel: RemindersCreateModel = {
 				Name: name,
 				Description: description,
 				Version: version,
 				Tags: keywords
 			};
 
-			const validationResult = createOrUpdateSchema.safeParse(challengesUpdateModel);
+			const validationResult = createOrUpdateSchema.safeParse(remindersCreateModel);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -65,10 +53,10 @@
 				);
 				return;
 			}
-
-			const res = await fetch(`/api/server/careplan/assets/challenges/${challengesId}`, {
-				method: 'PUT',
-				body: JSON.stringify(challengesUpdateModel),
+			console.log(remindersCreateModel);
+			const res = await fetch(`/api/server/careplan/assets/reminders`, {
+				method: 'POST',
+				body: JSON.stringify(remindersCreateModel),
 				headers: { 'content-type': 'application/json' }
 			});
 
@@ -76,9 +64,7 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				// console.log("Redirecting to:", response?.Data?.id);
-				console.log('Full response:', response);
-				await goto(`${challengesRoute}/${response?.Data?.id}/view`);
+				await goto(`${remindersRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -104,9 +90,9 @@
 				<table class="table-c">
 					<thead>
 						<tr>
-							<th>Edit Challenges</th>
+							<th>Create Reminder</th>
 							<th class="text-end">
-								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
+								<a href={assetRoute} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -114,7 +100,7 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td>Name</td>
+							<td>Name <span class="text-red-700">*</span></td>
 							<td>
 								<input
 									type="text"
@@ -130,23 +116,16 @@
 						</tr>
 
 						<tr>
-							<td>Description</td>
+							<td class="align-top">Description</td>
 							<td>
-								<input
-										type="textarea"
-										class="input {form?.errors?.Name
-											? 'input-text-error'
-											: ''}"
-										name="description"
-										placeholder="Enter transcript here..."
-										bind:value={description}
-									/>
-								{#if errors?.Name}
-								<p class="text-error">{errors?.Name}</p>
-								{/if}
+								<textarea
+									name="description"
+									class="input w-full {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
+									bind:value={description}
+									placeholder="Enter description here..."
+								></textarea>
 							</td>
 						</tr>
-
 						<tr class="">
 							<td class="!py-3 align-top">Tags</td>
 							<td>
@@ -170,11 +149,6 @@
 				</table>
 
 				<div class="button-container">
-					<button
-						type="button"
-						onclick={handleReset}
-						class="health-system-btn variant-soft-secondary">Reset</button
-					>
 					{#await promise}
 						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
 							Submiting

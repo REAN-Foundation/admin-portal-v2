@@ -6,39 +6,37 @@
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
 	import { goto } from '$app/navigation';
 	import InputChips from '$lib/components/input-chips.svelte';
-	// import type { PageServerData } from '../../../$types';
-	import { createOrUpdateSchema } from '$lib/validation/challenges.schema';
-	import type { ChallengesUpdateModel } from '$lib/types/challenges.types';
-
+	import type { RemindersUpdateModel } from '$lib/types/reminders.types';
+	import { createOrUpdateSchema } from '$lib/validation/reminders.schema';
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let name = $state(data.challenges.Name);
-	let description = $state(data.challenges.Description);
-	let version = $state(data.challenges.Version);
-	let keywords: string[] = $state(data.challenges.Tags);
+	let name = $state(data.reminder.Name);
+	let description = $state(data.reminder.Description);
+	let version = $state(data.reminder.Version);
+	let keywords: string[] = $state(data.reminder.Tags);
 	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
-	var challengesId = page.params.id;
+	var reminderId = page.params.id;
 
-	const editRoute = `/users/${userId}/careplan/assets/challenges/${challengesId}/edit`;
-	const viewRoute = `/users/${userId}/careplan/assets/challenges/${challengesId}/view`;
-	const challengesRoute = `/users/${userId}/careplan/assets/challenges`;
+	const editRoute = `/users/${userId}/careplan/assets/reminders/${reminderId}/edit`;
+	const viewRoute = `/users/${userId}/careplan/assets/reminders/${reminderId}/view`;
+	const reminderRoute = `/users/${userId}/careplan/assets/reminders`;
 
 	const breadCrumbs = [
-		{ name: 'Challenges', path: challengesRoute },
+		{ name: 'Reminder', path: reminderRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
 	const handleReset = () => {
-		name = data?.challenges?.Name;
-		challengesId = page.params.id;
-		description = data?.challenges?.Description;
-		version = data?.challenges?.Version;
-		keywords = data?.challenges?.Tags;
+		name = data?.reminder?.Name;
+		reminderId = page.params.id;
+		description = data?.reminder?.Description;
+		version = data?.reminder?.Version;
+		keywords = data?.reminder?.Tags;
 		errors = {};
 	};
 
@@ -47,14 +45,14 @@
 			event.preventDefault();
 			errors = {};
 
-			const challengesUpdateModel: ChallengesUpdateModel = {
+			const reminderUpdateModel: RemindersUpdateModel = {
 				Name: name,
 				Description: description,
 				Version: version,
 				Tags: keywords
 			};
 
-			const validationResult = createOrUpdateSchema.safeParse(challengesUpdateModel);
+			const validationResult = createOrUpdateSchema.safeParse(reminderUpdateModel);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -66,9 +64,9 @@
 				return;
 			}
 
-			const res = await fetch(`/api/server/careplan/assets/challenges/${challengesId}`, {
+			const res = await fetch(`/api/server/careplan/assets/reminders/${reminderId}`, {
 				method: 'PUT',
-				body: JSON.stringify(challengesUpdateModel),
+				body: JSON.stringify(reminderUpdateModel),
 				headers: { 'content-type': 'application/json' }
 			});
 
@@ -78,7 +76,7 @@
 				toastMessage(response);
 				// console.log("Redirecting to:", response?.Data?.id);
 				console.log('Full response:', response);
-				await goto(`${challengesRoute}/${response?.Data?.id}/view`);
+				await goto(`${reminderRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -104,7 +102,7 @@
 				<table class="table-c">
 					<thead>
 						<tr>
-							<th>Edit Challenges</th>
+							<th>Edit Reminder</th>
 							<th class="text-end">
 								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
