@@ -31,16 +31,16 @@ export const createAssessmentTemplate = async (
 		ScoringApplicable: scoringApplicable ? scoringApplicable : false,
 		Tags: tags ? tags : []
 	};
-	console.log("assessment-body-----",body)
+	console.log("assessment-body-----", body)
 	const url = BACKEND_API_URL + '/clinical/assessment-templates';
 	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 };
 
 export const importAssessmentTemplate = async (
 	sessionId: string,
-	fileName:string,
-	filePath:string,
-	isPublic?:true
+	fileName: string,
+	filePath: string,
+	isPublic?: true
 ) => {
 	const url = BACKEND_API_URL + '/clinical/assessment-templates/import-file';
 	const session = await SessionManager.getSession(sessionId);
@@ -48,25 +48,25 @@ export const importAssessmentTemplate = async (
 	const mimeType = ServerHelper.getMimeTypeFromFileName(fileName);
 	console.log(`mimeType = ${mimeType}`);
 	const form = new FormData();
-    form.append("name", fs.createReadStream(filePath));
+	form.append("name", fs.createReadStream(filePath));
 	form.append("IsPublicResource", isPublic ? "true" : "false");
 
 	const headers = {
-        'Content-Type' : 'multipart/form-data',
-        'x-api-key' : API_CLIENT_INTERNAL_KEY,
-        'Authorization' : `Bearer ${accessToken}`,
-    };
+		'Content-Type': 'multipart/form-data',
+		'x-api-key': API_CLIENT_INTERNAL_KEY,
+		'Authorization': `Bearer ${accessToken}`,
+	};
 
-  	try{
+	try {
 		const res = await axios.post(url, form, { headers });
 		//only for 201 status code
 		const response = res.data;
 		return response;
-	}catch(error){
+	} catch (error) {
 		//other than 201 status code
 		return error.response.data;
 	}
-    
+
 };
 
 export const getAssessmentTemplateById = async (

@@ -59,7 +59,7 @@
 		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
 		if (title) url += `&title=${model.title}`;
 		if (type) url += `&type=${model.type}`;
-		if (tags) url += `&tags=${tags}`;
+		if (tags) url += `&tags=${model.tags}`;
 		
 			const res = await fetch(url, {
 				method: 'GET',

@@ -17,11 +17,10 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
     if (response.Status === 'failure' || response.HttpCode !== 200) {
         throw error(response.HttpCode, response.Message);
     }
-    const assessmentTemplate = response.Data.AssessmentTemplate;
-    const assessmentNodes = _assessmentNodes.Data.AssessmentNodeRecords.Items;
-    const id = response.Data.AssessmentTemplate.id;
-    console.log("assessmentTemplate", assessmentTemplate)
-    console.log("assessmentNodes", assessmentNodes)
+    const assessmentTemplate = response?.Data?.AssessmentTemplate;
+    const assessmentNodes = _assessmentNodes?.Data?.AssessmentNodeRecords?.Items;
+    const id = response?.Data?.AssessmentTemplate?.id;
+
     return {
         location: `${id}/edit`,
         assessmentTemplate,

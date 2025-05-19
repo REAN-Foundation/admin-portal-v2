@@ -40,7 +40,7 @@ export const POST = async (event: RequestEvent) => {
 
 		return ResponseHandler.success(response);
 	} catch (error) {
-		console.error("Error creating health systems:", error);
+		console.error("Error creating assessment node:", error);
 		return ResponseHandler.handleError(500, null, error);
 	}
 };

@@ -3,7 +3,7 @@ export interface AssessmentNodeCreateModel {
     ParentNodeId: string;
     Title: string;
     Description?: string;
-    Sequence: number;
+    Sequence?: number;
     QueryType: string;
     ResolutionScore: number;
     ProviderAssessmentCode: string;
@@ -12,7 +12,9 @@ export interface AssessmentNodeCreateModel {
     ScoringApplicable: boolean;
     Options: string[];
     Tags: string[];
-    CorrectAnswer?: string;
+    CorrectAnswer?: number;
+    RawData?: string;
+    Required?: boolean;
 };
 
 export interface AssessmentNodeUpdateModel {
@@ -29,5 +31,7 @@ export interface AssessmentNodeUpdateModel {
     ScoringApplicable?: boolean;
     Options?: string[];
     Tags?: string[];
-    CorrectAnswer?: string;
+    CorrectAnswer?: number;
+    RawData?: string;
+    Required?: boolean;
 };

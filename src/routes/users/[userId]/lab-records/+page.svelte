@@ -168,15 +168,14 @@
 		idToBeDeleted = id;
 	};
 
-	const handleHealthSystemDelete = async (id) => {
-		console.log('Inside handleHealthSystemDelete', id);
+	const handleLabRecordDelete = async (id) => {
 		const response = await fetch(`/api/server/lab-record-types/${id}`, {
 			method: 'DELETE',
 			headers: { 'content-type': 'application/json' }
 		});
 
 		const res = await response.json();
-		console.log('deleted Response', res);
+		
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
@@ -201,6 +200,10 @@
 			<div class="health-system-search-border p-4">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow">
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
 						<input
 							type="text"
 							name="typeName"
@@ -221,6 +224,10 @@
 						{/if}
 					</div>
 					<div class="relative w-auto grow">
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
 						<input
 							type="text"
 							name="displayName"
@@ -359,7 +366,7 @@
 <Confirmation
 	bind:isOpen={openDeleteModal}
 	title="Delete Lab record"
-	onConfirm={handleHealthSystemDelete}
+	onConfirm={handleLabRecordDelete}
 	id={idToBeDeleted}
 />
 

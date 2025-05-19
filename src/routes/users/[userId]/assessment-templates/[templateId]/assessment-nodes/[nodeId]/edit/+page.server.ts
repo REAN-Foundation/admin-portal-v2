@@ -30,10 +30,10 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     if (response.Status === 'failure' || response.HttpCode !== 200) {
         throw error(response.HttpCode, response.Message);
     }
-    const assessmentNode = response.Data.AssessmentNode;
-    const queryResponseTypes = _queryResponseTypes.Data.QueryResponseTypes;
-    const assessmentNodes = _assessmentNodes.Data.AssessmentNodeRecords.Items;
-    const id = response.Data.AssessmentNode.id;
+    const assessmentNode = response?.Data?.AssessmentNode;
+    const queryResponseTypes = _queryResponseTypes?.Data?.QueryResponseTypes;
+    const assessmentNodes = _assessmentNodes?.Data?.AssessmentNodeRecords?.Items;
+    const id = response?.Data?.AssessmentNode?.id;
     return {
         location: `${id}/edit`,
         assessmentNode,

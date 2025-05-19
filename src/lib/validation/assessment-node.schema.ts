@@ -28,11 +28,17 @@ export const createOrUpdateSchema = z.object({
         .max(1024, { message: "Description must be at most 1024 characters." })
         .optional(),
 
+    RawData: z
+        .string()
+        .max(1024, { message: "Raw Data must be at most 1024 characters." })
+        .optional(),
+
     Sequence: z
         .number({
             required_error: "Sequence is required.",
             invalid_type_error: "Sequence must be a number."
-        }),
+        })
+        .optional(),
 
     QueryType: z
         .string({
@@ -74,20 +80,37 @@ export const createOrUpdateSchema = z.object({
         .optional(),
 
     Options: z
-        .array(z.string(), {
-            required_error: "Options are required.",
-            invalid_type_error: "Options must be an array of strings."
-        })
+        .array(
+            z
+                .object({
+                    Text: z.string({
+                        required_error: "Option value is required.",
+                        invalid_type_error: "Option value must be a string.",
+                    }).min(1, { message: "Option value cannot be empty." }),
+                    Sequence: z.number({
+                        required_error: "Option label is required.",
+                        invalid_type_error: "Option label must be a string.",
+                    }).min(1, { message: "Option label cannot be empty." }),
+                })
+                .optional()
+            , {
+                required_error: "Options are required.",
+                invalid_type_error: "Options must be an array of objects.",
+            })
         .optional(),
+
+    // Options: z
+    //     .array(z.string())
+    //     .optional(),
 
     Tags: z
         .array(z.string())
         .optional(),
 
     CorrectAnswer: z
-        .string({
+        .number({
             required_error: "CorrectAnswer is required.",
-            invalid_type_error: "CorrectAnswer must be a string."
+            invalid_type_error: "CorrectAnswer must be a number."
         })
         .optional()
 });

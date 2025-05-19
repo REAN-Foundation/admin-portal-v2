@@ -1,7 +1,7 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
 import { uuidSchema } from "$lib/validation/common.schema";
 import type { RequestEvent } from "@sveltejs/kit";
-import { deleteAssessmentNode, updateAssessmentNode } from "../../../../services/reancare/assessments/assessment-nodes";
+import { deleteAssessmentNode, getAssessmentNodeById, updateAssessmentNode } from "../../../../services/reancare/assessments/assessment-nodes";
 import type { AssessmentNodeUpdateModel } from "$lib/types/assessment-node.types";
 import { createOrUpdateSchema } from "$lib/validation/assessment-node.schema";
 
@@ -51,9 +51,10 @@ export const GET = async (event: RequestEvent) => {
             return ResponseHandler.handleError(400, data, new Error("Validation failed"));
         }
 
-        const id = event.params.id;
+        const nodeId = event.params.id;
+        const templateId = event.url.searchParams.get('templateId');
 
-        const response = await getAssessmentNodeById(sessionId, id);
+        const response = await getAssessmentNodeById(sessionId, templateId, nodeId);
 
         return ResponseHandler.success(response);
     } catch (error) {
@@ -71,7 +72,7 @@ export const PUT = async (event: RequestEvent) => {
             return ResponseHandler.handleError(401, null, new Error("Access denied: Invalid session."));
         }
 
-        const templateId = event.params.id;
+        const nodeId = event.params.id;
         const request = event.request;
         const data: AssessmentNodeUpdateModel = await request.json();
 
@@ -85,21 +86,25 @@ export const PUT = async (event: RequestEvent) => {
                 Errors: Object.fromEntries(Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [key, val?.[0] || ''])),
             });
         }
+        const templateId = event.url.searchParams.get('templateId');
+
 
         const response = await updateAssessmentNode(
             sessionId,
             templateId,
-            data.ParentNodeId,
+            nodeId,
+            // data.ParentNodeId,
             data.NodeType,
             data.Title,
             data.Description,
             data.Tags,
-            data.Message,
-            data.ServeListNodeChildrenAtOnce,
             data.QueryType,
             data.Options,
+            data.Message,
             data.Sequence,
+            data.ServeListNodeChildrenAtOnce,
             data.CorrectAnswer,
+            data.RawData,
         );
 
         return ResponseHandler.success(response);

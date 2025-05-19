@@ -16,7 +16,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     if (response.Status === 'failure' || response.HttpCode !== 200) {
         throw error(response.HttpCode, response.Message);
     }
-    const assessmentNodes = response.Data.AssessmentNodeRecords;
+    const assessmentNodes = response?.Data?.AssessmentNodeRecords || [];
 
     return {
         assessmentNodes,

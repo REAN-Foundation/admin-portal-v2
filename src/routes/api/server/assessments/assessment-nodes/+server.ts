@@ -16,7 +16,6 @@ export const POST = async (event: RequestEvent) => {
 		const request = event.request;
 		const data: AssessmentNodeCreateModel = await request.json();
 
-		console.log("data", data);
 		const validationResult = createOrUpdateSchema.safeParse(data);
 		if (!validationResult.success) {
 			return ResponseHandler.success({
@@ -37,17 +36,21 @@ export const POST = async (event: RequestEvent) => {
 			data.Description,
 			data.Tags,
 			data.Message,
-			data.ServeListNodeChildrenAtOnce || false,
+			data.ServeListNodeChildrenAtOnce,
 			data.QueryType,
 			data.Options,
 			data.Sequence,
 			data.CorrectAnswer,
-
+			data.RawData,
+			data.Required,
+			data.ScoringApplicable,
+			data.ResolutionScore,
+			data.ProviderAssessmentCode
 		);
 
 		return ResponseHandler.success(response);
 	} catch (error) {
-		console.error("Error creating health systems:", error);
+		console.error("Error creating assessment node:", error);
 		return ResponseHandler.handleError(500, null, error);
 	}
 };

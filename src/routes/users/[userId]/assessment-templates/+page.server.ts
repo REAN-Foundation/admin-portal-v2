@@ -10,7 +10,8 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	event.depends('app:assessmentTemplate')
     const response = await searchAssessmentTemplates(sessionId,{
         orderBy: "Title",
-        order: "ascending"
+        order: "ascending",
+        itemsPerPage:10
     });
     if (response.Status === 'failure' || response.HttpCode !== 200) {
         throw error(response.HttpCode, response.Message);

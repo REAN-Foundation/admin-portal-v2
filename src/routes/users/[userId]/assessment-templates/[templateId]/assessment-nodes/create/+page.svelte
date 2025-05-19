@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import { scoringApplicableCondition } from '$lib/store/general.store';
 	import Icon from '@iconify/svelte';
@@ -11,6 +10,7 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { AssessmentNodeCreateModel } from '$lib/types/assessment-node.types';
 	import { createOrUpdateSchema } from '$lib/validation/assessment-node.schema';
+	import { page } from '$app/state';
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
@@ -30,9 +30,10 @@
 		resolutionScore = $state(undefined),
 		serveListNodeChildrenAtOnce = $state(undefined),
 		message = $state(undefined),
-		keywords = $state(undefined);
+		keywords = $state(undefined),
+		required=$state(undefined),
+		rawData = $state(undefined);
 
-		$inspect(title)
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let keywordsStr: string = $state('');
@@ -50,14 +51,12 @@
 	};
 
 	const addOptionField = () => {
-		const newOption = { id: null, Text: '', Sequence: optionValueStore.length + 1 };
+		const newOption = { Text: '', Sequence: optionValueStore.length + 1 };
 		optionValueStore = [...optionValueStore, newOption];
-		// dispatch('update', optionValueStore);
 	};
 
 	const removeOptionField = (option) => {
 		optionValueStore = optionValueStore.filter((opt) => opt.id !== option.id);
-		// dispatch('update', optionValueStore);
 	};
 
 	let showConfirm = $state(false);
@@ -81,8 +80,8 @@
 		selectedQueryType = val.target.value;
 	};
 
-	const userId = $page.params.userId;
-	const templateId = $page.params.templateId;
+	const userId = page.params.userId;
+	const templateId = page.params.templateId;
 	const createRoute = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/create`;
 	const assessmentNodeRoutes = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes`;
 	const assessmentsRoutes = `/users/${userId}/assessment-templates`;
@@ -107,6 +106,7 @@
 		}
 	];
 
+	$inspect(optionValueStore, 'optionValueStore');
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
@@ -118,7 +118,7 @@
 				Title: title,
 				Description: description,
 				Sequence: sequence,
-				QueryType: selectedQueryType, 
+				QueryType: selectedQueryType,
 				ResolutionScore: resolutionScore,
 				ProviderAssessmentCode: providerAssessmentCode,
 				ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce,
@@ -126,12 +126,16 @@
 				Options: optionValueStore,
 				CorrectAnswer: correctAnswer,
 				Message: message,
-				Tags: keywords
+				Tags: keywords,
+				RawData: rawData,
+				Required: required
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentNodeCreateModel);
 
-			console.log('validationResult', validationResult,assessmentNodeCreateModel);
+			console.log('validationResult', validationResult);
+			console.log('assessmentNodeCreateModel', assessmentNodeCreateModel);
+
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -182,10 +186,10 @@
 				<table class="health-system-table">
 					<thead>
 						<tr>
-							<th class="whitespace-nowrap">Create Assessment Node</th>
+							<th>Create Assessment Node</th>
 							<th class="text-end">
-								<a href={assessmentNodeRoutes} class="btn variant-soft-secondary -my-2 p-2">
-									<Icon icon="material-symbols:close-rounded" class="text-lg" />
+								<a href={assessmentNodeRoutes} class="health-system-btn variant-soft-secondary">
+									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
 						</tr>
@@ -217,9 +221,12 @@
 									bind:value={parentNodeId}
 								>
 									{#each assessmentNodes as node}
-										<option value={node.id}
-											>{node.NodeType} - {node.Title} - {node.DisplayCode}</option
-										>
+										<!-- <option value="">{JSON.stringify(node)}</option> -->
+										{#if node.NodeType === 'Node list'}
+											<option value={node.id}
+												>{node.NodeType} - {node.Title} - {node.DisplayCode}</option
+											>
+										{/if}
 									{/each}
 								</select>
 							</td>
@@ -240,6 +247,21 @@
 							</td>
 						</tr>
 						<tr>
+							<td>Required</td>
+							<td>
+								<input
+									type="checkbox"
+									name="required"
+									bind:checked={required}
+									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2
+									{form?.errors?.required ? 'input-text-error' : ''}"
+								/>
+								{#if errors?.Required}
+									<p class="text-error">{errors?.Required}</p>
+								{/if}
+							</td>
+						</tr>
+						<tr>
 							<td class="align-top">Description</td>
 							<td>
 								<textarea
@@ -250,6 +272,20 @@
 								></textarea>
 								{#if errors?.Description}
 									<p class="text-error">{errors?.Description}</p>
+								{/if}
+							</td>
+						</tr>
+						<tr>
+							<td class="align-top">Raw Data</td>
+							<td>
+								<textarea
+									name="rawData"
+									bind:value={rawData}
+									placeholder="Enter raw data here..."
+									class="health-system-input {form?.errors?.rawData ? 'input-text-error' : ''}"
+								></textarea>
+								{#if errors?.RawData}
+									<p class="text-error">{errors?.RawData}</p>
 								{/if}
 							</td>
 						</tr>
@@ -302,24 +338,24 @@
 							{#if $scoringApplicableCondition === true}
 								{#if selectedQueryType === 'Single Choice Selection' || selectedQueryType === 'Multi Choice Selection'}
 									<!-- <tr>
-							<td class="align-top">Options</td>
-							<td>
-								<Choice />
-							</td>
-						</tr>
-						<tr>
-							<td>Correct Answer</td>
-							<td>
-								<input
-									type="text"
-									name="correctAnswer"
-									placeholder="Enter correct answer here..."
-									class="input w-full
-									 {form?.errors?. correctAnswer? 'border-error-300 text-error-500' : ''}"
-									value={form?.data?.correctAnswer ?? ''}
-								/>
-							</td>
-						</tr> -->
+										<td class="align-top">Options</td>
+										<td>
+											<Choice />
+										</td>
+									</tr>
+									<tr>
+										<td>Correct Answer</td>
+										<td>
+											<input
+												type="text"
+												name="correctAnswer"
+												placeholder="Enter correct answer here..."
+												class="input w-full
+												{form?.errors?. correctAnswer? 'border-error-300 text-error-500' : ''}"
+												value={form?.data?.correctAnswer ?? ''}
+											/>
+										</td>
+									</tr> -->
 									<tr>
 										<td class="align-top">Options</td>
 										<td>
@@ -330,6 +366,7 @@
 												{removeOptionField}
 												{confirmDelete}
 												{showConfirm}
+												optionToDelete=null
 											/>
 										</td>
 									</tr>
@@ -359,7 +396,6 @@
 												placeholder="Enter resolution score here..."
 												min="1"
 												class="input w-full"
-												
 												bind:value={resolutionScore}
 											/>
 											{#if errors?.ResolutionScore}
@@ -369,18 +405,29 @@
 									</tr>
 
 									<!-- <tr>
-							<td class="align-top">Options</td>
-							<Choice
-							bind:correctAnswer
-							queryType={selectedQueryType}
-						/>
-						</tr>
-                        <input
-                            type="hidden"
-                            name="CorrectAnswer"
-                            value={JSON.stringify(correctAnswerString)}
-                        /> -->
+										<td class="align-top">Options</td>
+										<Choice
+										bind:correctAnswer
+										queryType={selectedQueryType}
+									/>
+									</tr>
+									<input
+										type="hidden"
+										name="CorrectAnswer"
+										value={JSON.stringify(correctAnswerString)}
+									/> -->
 								{:else if selectedQueryType === 'Boolean'}
+									<tr>
+										<td>Correct Answer</td>
+										<td>
+											<select name="correctAnswer" class="input w-full" bind:value={correctAnswer}>
+												<option value="" disabled selected>Select correct answer</option>
+												{#each optionValueStore as option}
+													<option value={option.Sequence}>{option.Text}</option>
+												{/each}
+											</select>
+										</td>
+									</tr>
 									<tr>
 										<td>Resolution Score <span class=" text-red-600">*</span></td>
 										<td>
@@ -410,6 +457,7 @@
 											{removeOptionField}
 											{confirmDelete}
 											{showConfirm}
+											optionToDelete=null
 										/>
 									</td>
 								</tr>
@@ -433,18 +481,18 @@
 									</tr>
 								{/if}
 								<!-- <tr>
-                        <td class="align-top">Options</td>
-						<Choice
-						bind:correctAnswer
-						queryType={selectedQueryType}
-					/>
-                    </tr>
-				
-				<input
-					type="hidden"
-					name="CorrectAnswer"
-					value={JSON.stringify(correctAnswerString)}
-				/> -->
+										<td class="align-top">Options</td>
+										<Choice
+										bind:correctAnswer
+										queryType={selectedQueryType}
+									/>
+									</tr>
+								
+								<input
+									type="hidden"
+									name="CorrectAnswer"
+									value={JSON.stringify(correctAnswerString)}
+								/> -->
 							{/if}
 						{:else if selectedNodeType === 'Message'}
 							<tr>
@@ -464,15 +512,13 @@
 						{:else}
 							<tr>
 								<td>Serve List Node Children At Once</td>
-								<td class="flex gap-2">
+								<td>
 									<input
 										type="checkbox"
 										name="serveListNodeChildrenAtOnce"
-										
 										bind:checked={serveListNodeChildrenAtOnce}
-										class="health-system-input {form?.errors?.serveListNodeChildrenAtOnce
-											? 'input-text-error'
-											: ''}"
+										class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2
+									{form?.errors?.serveListNodeChildrenAtOnce ? 'input-text-error' : ''}"
 									/>
 									{#if errors?.ServeListNodeChildrenAtOnce}
 										<p class="text-error">{errors?.ServeListNodeChildrenAtOnce}</p>

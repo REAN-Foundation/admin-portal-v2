@@ -34,6 +34,7 @@
 	let tags_ = Array.isArray(assessmentNodes?.Tags) ? assessmentNodes.Tags : [];
 	let tags = tags_.join(', ');
 	let correctAnswer = assessmentNodes.CorrectAnswer ?? null;
+	let rawData = assessmentNodes.RawData ?? null;
 
 	let resolutionScore = $state();
 
@@ -178,6 +179,10 @@
 					<tr>
 						<td>Description</td>
 						<td>{description}</td>
+					</tr>
+					<tr>
+						<td>Raw Data</td>
+						<td>{rawData}</td>
 					</tr>
 					<tr>
 						<td>Sequence</td>

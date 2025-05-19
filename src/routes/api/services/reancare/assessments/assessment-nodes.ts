@@ -17,7 +17,12 @@ export const createAssessmentNode = async (
 	queryType?: string,
 	options?: string[],
 	sequence?: number,
-	correctAnswer?: string
+	correctAnswer?: string,
+	rawData?: string,
+	required?: boolean,
+	scoringApplicable?: boolean,
+	resolutionScore?: number,
+	providerAssessmentCode?: string
 ) => {
 	const body = {
 		ParentNodeId: parentNodeId,
@@ -28,25 +33,30 @@ export const createAssessmentNode = async (
 		ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce,
 		QueryResponseType: queryType,
 		Options: options,
-		Sequence:sequence,
+		Sequence: sequence,
 		Tags: tags ? tags : [],
-		CorrectAnswer: correctAnswer ? correctAnswer : null
+		CorrectAnswer: correctAnswer ? correctAnswer : null,
+		RawData: rawData ? rawData : null,
+		Required: required ? required : false,
+		ScoringApplicable: scoringApplicable ? scoringApplicable : false,
+		ResolutionScore: resolutionScore ? resolutionScore : null,
+		ProviderAssessmentCode: providerAssessmentCode ? providerAssessmentCode : null
 	};
-	if (options && options.length > 0) {
-		let count = 1;
-		const options = [];
-		for (const o of body.Options) {
-			const option = {
-				Text: o,
-				Sequence: count
-			};
-			options.push(option);
-			count = count + 1;
-		}
-		body.Options = options;
-	}
+	// if (options && options.length > 0) {
+	// 	let count = 1;
+	// 	const options = [];
+	// 	for (const o of body.Options) {
+	// 		const option = {
+	// 			Text: o,
+	// 			Sequence: count
+	// 		};
+	// 		options.push(option);
+	// 		count = count + 1;
+	// 	}
+	// 	body.Options = options;
+	// }
 
-	console.log('body----------',body);
+	// console.log('body----------', body);
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes`;
 	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 };
@@ -93,7 +103,8 @@ export const updateAssessmentNode = async (
 	message?: string,
 	sequence?: number,
 	serveListNodeChildrenAtOnce?: boolean,
-	correctAnswer?: string
+	correctAnswer?: number,
+	rawData?: string
 
 ) => {
 	const body = {
@@ -104,9 +115,10 @@ export const updateAssessmentNode = async (
 		QueryResponseType: queryType,
 		Options: options,
 		Sequence: sequence,
-		ServeListNodeChildrenAtOnce:serveListNodeChildrenAtOnce,
+		ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce,
 		Tags: tags ? tags : [],
-		CorrectAnswer: correctAnswer ? correctAnswer : null
+		CorrectAnswer: correctAnswer ? correctAnswer : null,
+		RawData: rawData ? rawData : null,
 
 	};
 	if (options && options.length > 0) {
@@ -192,9 +204,9 @@ export const addOption = async (
 ) => {
 	const body = {
 		Text: text,
-		Sequence:sequence,
+		Sequence: sequence,
 	};
-	console.log('body----------',body);
+	console.log('body----------', body);
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/options`;
 	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 };
@@ -209,11 +221,13 @@ export const updateOption = async (
 ) => {
 	const body = {
 		Text: text,
-		Sequence:sequence,
+		Sequence: sequence,
 	};
-	console.log('body----------',body);
+	console.log('body----------', body);
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/options/${optionId}`;
-	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+	console.log(url);
+	
+	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 };
 
 export const deleteOption = async (sessionId: string, templateId: string, nodeId: string, optionId: string) => {

@@ -1,11 +1,10 @@
 <script lang="ts">
-	
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import Choice from '../../create/choice.svelte';
 	import type { PageServerData } from './$types';
 
-	import { goto, invalidate } from '$app/navigation';
+	import { goto, invalidate, invalidateAll } from '$app/navigation';
 	import { createOrUpdateSchema } from '$lib/validation/assessment-node.schema';
 	import type { AssessmentNodeUpdateModel } from '$lib/types/assessment-node.types';
 	import { toastMessage } from '$lib/components/toast/toast.store';
@@ -17,16 +16,22 @@
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let nodeType = $state(data.assessmentNode.NodeType),
+		parentNodeId = $state(data.assessmentNode.ParentNodeId),
 		title = $state(data.assessmentNode.Title),
-		description = $state(data.assessmentNode.Description),
+		description = $state(data.assessmentNode.Description ?? undefined),
 		queryType = $state(data.assessmentNode.QueryResponseType),
 		options = $state(data.assessmentNode.Options ?? []),
-		message = $state(data.assessmentNode.Message ?? null),
+		message = $state(data.assessmentNode.Message ?? undefined),
 		sequence = $state(data.assessmentNode.Sequence),
 		serveListNodeChildrenAtOnce = $state(data.assessmentNode.ServeListNodeChildrenAtOnce ?? false),
 		tags = $state(data.assessmentNode.Tags),
-		correctAnswer = $state(data.assessmentNode.CorrectAnswer ?? null),
-		keywords: string[] = $state(data.assessmentNode.Tags);
+		correctAnswer = $state(data.assessmentNode.CorrectAnswer ?? undefined),
+		keywords: string[] = $state(data.assessmentNode.Tags),
+		resolutionScore = $state(data.assessmentNode.ResolutionScore),
+		providerAssessmentCode = $state(data.assessmentNode.ProviderAssessmentCode),
+		scoringApplicable = $state(data.assessmentNode.ScoringApplicable),
+		required = $state(data.assessmentNode.Required),
+		rawData = $state(data.assessmentNode.RawData ?? undefined);
 
 	let optionValueStore = $derived(options);
 
@@ -51,6 +56,10 @@
 		serveListNodeChildrenAtOnce = data.assessmentNode.ServeListNodeChildrenAtOnce ?? false;
 		tags = data.assessmentNode.Tags;
 		correctAnswer = data.assessmentNode.CorrectAnswer ?? null;
+		resolutionScore = data.assessmentNode.ResolutionScore;
+		providerAssessmentCode = data.assessmentNode.ProviderAssessmentCode;
+		scoringApplicable = data.assessmentNode.ScoringApplicable;
+		required = data.assessmentNode.Required;
 		errors = {};
 	}
 
@@ -72,6 +81,68 @@
 	let selectedNodeType = $derived(nodeType);
 	let selectedQueryType = $derived(queryType);
 
+	// let optionValueStore = $state([]);
+
+	const updateSequences = () => {
+		optionValueStore = optionValueStore.map((opt, index) => ({
+			...opt,
+			Sequence: index + 1
+		}));
+	};
+
+	const addOptionField = () => {
+		const newOption = { Text: '', Sequence: optionValueStore.length + 1 };
+		optionValueStore = [...optionValueStore, newOption];
+	};
+
+	let optionToDelete = $state(null);
+	let showConfirm = $state(false);
+
+	// Triggered when delete button is clicked
+	const confirmDelete = (id) => {
+		console.log('confirmDelete', id);
+		// event.preventDefault();
+		optionToDelete = id;
+
+		console.log('optionToDelete', optionToDelete);
+		if (id) {
+			// Show confirmation only if it has id (already saved)
+			showConfirm = true;
+		} else {
+			// Delete immediately if not saved yet
+			optionValueStore = optionValueStore.filter((opt) => opt !== id);
+			updateSequences();
+		}
+	};
+
+	let isDeleting = $state(false);
+
+	const removeOptionField = async (id) => {
+		console.log('removeOptionField', id);
+		if (optionToDelete) {
+			const response = await fetch(
+				`/api/server/assessments/options/${id}?nodeId=${nodeId}&templateId=${templateId}`,
+				{
+					method: 'DELETE',
+					headers: { 'content-type': 'application/json' }
+				}
+			);
+			const res = await response.json();
+			console.log('deleted Response', res);
+			if (res.HttpCode === 200) {
+				optionValueStore = optionValueStore.filter((opt) => opt !== optionToDelete);
+				isDeleting = true;
+				toastMessage(res);
+			} else {
+				toastMessage(res);
+			}
+			updateSequences();
+			optionToDelete = null;
+			showConfirm = false;
+		}
+		invalidateAll();
+	};
+
 	const onSelectQueryResponseType = (val) => (selectedQueryType = val.target.value);
 
 	const handleSubmit = async (event: Event) => {
@@ -80,16 +151,22 @@
 			errors = {};
 
 			const assessmentNodeUpdateModel: AssessmentNodeUpdateModel = {
-				NodeType: nodeType,
+				ParentNodeId: parentNodeId,
+				NodeType: selectedNodeType,
 				Title: title,
 				Description: description,
 				Sequence: sequence,
-				QueryType: queryType,
-				Options: optionValueStore,
-				Message: message,
+				QueryType: selectedQueryType,
+				ResolutionScore: resolutionScore,
+				ProviderAssessmentCode: providerAssessmentCode,
 				ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce,
+				ScoringApplicable: scoringApplicable,
+				Options: optionValueStore,
+				CorrectAnswer: correctAnswer,
+				Message: message,
 				Tags: keywords,
-				CorrectAnswer: correctAnswer
+				RawData: rawData,
+				Required: required
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentNodeUpdateModel);
@@ -104,7 +181,7 @@
 				);
 				return;
 			}
-			const res = await fetch(`/api/server/assessments/assessment-nodes/${nodeId}`, {
+			const res = await fetch(`/api/server/assessments/assessment-nodes/${nodeId}?templateId=${templateId}`, {
 				method: 'PUT',
 				body: JSON.stringify(assessmentNodeUpdateModel),
 				headers: { 'content-type': 'application/json' }
@@ -114,7 +191,7 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				goto(`${assessmentsRoutes}/${response?.Data?.HealthSystem?.id}/view`);
+				goto(`${assessmentsRoutes}/${response?.Data?.AssessmentNode?.id}/view`);
 				return;
 			}
 			if (response.Errors) {
@@ -144,8 +221,8 @@
 						<tr>
 							<th>Edit Assessment Node</th>
 							<th class="text-end">
-								<a href={viewRoute} class="btn variant-soft-secondary -my-2 p-2">
-									<Icon icon="material-symbols:close-rounded" class="text-lg" />
+								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
+									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
 						</tr>
@@ -168,7 +245,7 @@
 									bind:value={title}
 									placeholder="Enter title here..."
 									class="health-system-input
-						{form?.errors?.title ? 'input-text-error' : ''}"
+										{form?.errors?.title ? 'input-text-error' : ''}"
 								/>
 								{#if errors?.Title}
 									<p class="text-error">{errors?.Title}</p>
@@ -186,6 +263,20 @@
 								></textarea>
 								{#if errors?.Description}
 									<p class="text-error">{errors?.Description}</p>
+								{/if}
+							</td>
+						</tr>
+						<tr>
+							<td class="align-top">Raw Data</td>
+							<td>
+								<textarea
+									name="rawData"
+									bind:value={rawData}
+									placeholder="Enter raw data here..."
+									class="health-system-input {form?.errors?.rawData ? 'input-text-error' : ''}"
+								></textarea>
+								{#if errors?.RawData}
+									<p class="text-error">{errors?.RawData}</p>
 								{/if}
 							</td>
 						</tr>
@@ -243,17 +334,17 @@
 							{#if selectedQueryType === 'Single Choice Selection' || selectedQueryType === 'Multi Choice Selection'}
 								<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
 									<td class="align-top">Options</td>
-									<td
-										><Choice
-												bind:optionValueStore
-												{updateSequences}
-												{addOptionField}
-												{removeOptionField}
-												{confirmDelete}
-												{showConfirm}
-												readonly={true}
-										/></td
-									>
+									<td>
+										<Choice
+											bind:optionValueStore
+											{updateSequences}
+											{addOptionField}
+											{removeOptionField}
+											{confirmDelete}
+											{showConfirm}
+											{optionToDelete}
+										/>
+									</td>
 								</tr>
 
 								{#if selectedQueryType === 'Single Choice Selection'}

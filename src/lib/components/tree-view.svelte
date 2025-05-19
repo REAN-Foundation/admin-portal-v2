@@ -17,13 +17,13 @@
 							{#if child.NodeType === 'Node list'}
 								<details class="group">
 									<summary
-										class="flex cursor-pointer items-center gap-2 text-black hover:text-blue-600 hover:underline"
+										class="flex cursor-pointer items-center gap-2 text-black hover:text-blue-600 "
 									>
 										<span
 											class="flex h-6 w-6 items-center justify-center rounded-full bg-black text-sm text-white"
 											>→</span
 										>
-										<a href={assessmentNodeView(child.id)}>
+										<a class="hover:underline" href={assessmentNodeView(child.id)}>
 											{child.Sequence}-{child.NodeType}-{child.Title}
 										</a>
 									</summary>
@@ -34,38 +34,38 @@
 												{#if kid.NodeType === 'Node list'}
 													<details class="group">
 														<summary
-															class="flex cursor-pointer items-center gap-2 text-black hover:text-blue-600 hover:underline"
+															class="flex cursor-pointer items-center gap-2 text-black hover:text-blue-600 "
 														>
 															<span
 																class="flex h-6 w-6 items-center justify-center rounded-full bg-black text-sm text-white"
 																>→</span
 															>
-															<a href={assessmentNodeView(kid.id)}>
+															<a class="hover:underline" href={assessmentNodeView(kid.id)}>
 																{kid.Sequence}-{kid.NodeType}-{kid.Title}
 															</a>
 														</summary>
 													</details>
 												{:else if kid.NodeType === 'Question'}
 													<div
-														class="flex items-center gap-2 text-black hover:text-blue-600 hover:underline"
+														class="flex items-center gap-2 text-black hover:text-blue-600 "
 													>
 														<span
 															class="flex h-6 w-6 items-center justify-center rounded-full bg-black text-sm text-white"
 															>?</span
 														>
-														<a href={assessmentNodeView(kid.id)}>
+														<a class="hover:underline" href={assessmentNodeView(kid.id)}>
 															{kid.Sequence}-{kid.NodeType}-{kid.Title}
 														</a>
 													</div>
 												{:else if kid.NodeType === 'Message'}
 													<div
-														class="flex items-center gap-2 text-black hover:text-blue-600 hover:underline"
+														class="flex items-center gap-2 text-black hover:text-blue-600 "
 													>
 														<span
 															class="flex h-6 w-6 items-center justify-center rounded-full bg-black text-sm text-white"
 															>💬</span
 														>
-														<a href={assessmentNodeView(kid.id)}>
+														<a class="hover:underline" href={assessmentNodeView(kid.id)}>
 															{kid.Sequence}-{kid.NodeType}-{kid.Title}
 														</a>
 													</div>
@@ -75,22 +75,22 @@
 									</div>
 								</details>
 							{:else if child.NodeType === 'Question'}
-								<div class="flex items-center gap-2 text-black hover:text-blue-600 hover:underline">
+								<div class="flex items-center gap-2 text-black hover:text-blue-600 ">
 									<span
 										class="flex h-6 w-6 items-center justify-center rounded-full bg-black text-sm text-white"
 										>?</span
 									>
-									<a href={assessmentNodeView(child.id)}>
+									<a class="hover:underline" href={assessmentNodeView(child.id)}>
 										{child.Sequence}-{child.NodeType}-{child.Title}
 									</a>
 								</div>
 							{:else if child.NodeType === 'Message'}
-								<div class="flex items-center gap-2 text-black hover:text-blue-600 hover:underline">
+								<div class="flex items-center gap-2 text-black hover:text-blue-600 ">
 									<span
 										class="flex h-6 w-6 items-center justify-center rounded-full bg-black text-sm text-white"
 										>💬</span
 									>
-									<a href={assessmentNodeView(child.id)}>
+									<a class="hover:underline" href={assessmentNodeView(child.id)}>
 										{child.Sequence}-{child.NodeType}-{child.Title}
 									</a>
 								</div>
