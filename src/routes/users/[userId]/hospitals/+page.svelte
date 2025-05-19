@@ -20,6 +20,7 @@
 
 	let { data }: { data: PageServerData } = $props();
 
+	let debounceTimeout;
 	let isLoading = $state(false);
 	let hospitals = $state(data.hospitals.Items);
 	let retrivedHospitals = $derived(hospitals);
@@ -54,19 +55,16 @@
 	});
 
 	async function searchHospital(model) {
-		if (searchKeyword !== model.hospitalName) {
-			paginationSettings.page = 0;
-		}
-		let url = `/api/server/hospitals/search?`;
-		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
-		url += `&sortBy=${model.sortBy ?? sortBy}`;
-		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
-		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-
-		if (hospitalName) url += `&name=${model.hospitalName}`;
-		if (tags) url += `&tags=${tags}`;
-
 		try {
+			let url = `/api/server/hospitals/search?`;
+			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+			url += `&sortBy=${model.sortBy ?? sortBy}`;
+			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+
+			if (model.hospitalName) url += `&name=${model.hospitalName}`;
+			if (model.tags) url += `&tags=${model.tags}`;
+
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
@@ -91,21 +89,34 @@
 		}
 	}
 
-	$effect(() => {
-		searchHospital({
-			hospitalName,
-			tags,
-			itemsPerPage: paginationSettings.limit,
-			pageIndex: paginationSettings.page,
-			sortOrder,
-			sortBy
-		});
-
-		if (isDeleting) {
-			retrivedHospitals;
-			isDeleting = false;
+	function updateSearchField(name, value) {
+		if (name === 'hospitalName') {
+			hospitalName = value;
+		} else if (name === 'tags') {
+			tags = value;
 		}
-	});
+	}
+
+	async function onSearchInput(e) {
+		clearTimeout(debounceTimeout);
+		const { name, value } = e.target;
+
+		updateSearchField(name, value)
+		// console.log('event', e.target);
+
+		console.log('healthSystemName**', hospitalName);
+		debounceTimeout = setTimeout(() => {
+			paginationSettings.page = 0; // reset page when typing new search
+			searchHospital({
+				hospitalName,
+				tags,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortBy,
+				sortOrder
+			});
+		}, 400);
+	}
 
 	function sortTable(columnName) {
 		isSortingName = false;
@@ -118,12 +129,44 @@
 			isSortingTags = true;
 		}
 		sortBy = columnName;
+
+		searchHospital({
+			hospitalName,
+			tags,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortOrder,
+			sortBy
+		});
 	}
 
 	const handleDeleteClick = (id: string) => {
 		openDeleteModal = true;
 		idToBeDeleted = id;
 	};
+
+	function onItemsPerPageChange() {
+		paginationSettings.page = 0; // reset to first page
+		searchHospital({
+			hospitalName,
+			tags,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortOrder,
+			sortBy
+		});
+	}
+
+	function onPageChange() {
+		searchHospital({
+			hospitalName,
+			tags,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortOrder,
+			sortBy
+		});
+	}
 
 	const handleHospitalDelete = async (id) => {
 		const response = await fetch(`/api/server/hospitals/${id}`, {
@@ -135,8 +178,18 @@
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
+		} else {
+			toastMessage(res);
 		}
-		invalidate('app:hospitals');
+
+		searchHospital({
+			hospitalName,
+			tags,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortOrder,
+			sortBy
+		});
 	};
 </script>
 
@@ -155,8 +208,9 @@
 						<input
 							type="text"
 							name="hospitalName"
-							placeholder="Search by name"
 							bind:value={hospitalName}
+							placeholder="Search by name"
+							oninput={(event) => onSearchInput(event)}
 							class="health-system-input !pr-4 !pl-10"
 						/>
 						{#if hospitalName}
@@ -164,6 +218,7 @@
 								type="button"
 								onclick={() => {
 									hospitalName = '';
+									onSearchInput({ target: { name: 'hospitalName', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -179,8 +234,9 @@
 						<input
 							type="text"
 							name="tags"
-							placeholder="Search by tags"
 							bind:value={tags}
+							oninput={(event) => onSearchInput(event)}
+							placeholder="Search by tags"
 							class="health-system-input !pr-4 !pl-10"
 						/>
 						{#if tags}
@@ -188,6 +244,7 @@
 								type="button"
 								onclick={() => {
 									tags = '';
+									onSearchInput({ target: { name: 'tags', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -203,7 +260,7 @@
 					<thead>
 						<tr>
 							<th data-sort="index" class="w-10"></th>
-							<th class=" w-72 text-start">
+							<th class=" w-64 text-start">
 								<button onclick={() => sortTable('Name')}>
 									Name
 									{#if isSortingName}
@@ -215,10 +272,10 @@
 									{/if}
 								</button>
 							</th>
-							<th class=" w-72">
+							<th class=" w-64">
 								<button> Health System </button>
 							</th>
-							<th class=" w-64">
+							<th class=" w-36">
 								<button onclick={() => sortTable('Tags')}>
 									Tags
 									{#if isSortingTags}
@@ -230,7 +287,7 @@
 									{/if}
 								</button>
 							</th>
-							<th class="w-32">Created </th>
+							<th class="w-40">Created </th>
 							<th class="w-16"></th>
 						</tr>
 					</thead>
@@ -313,9 +370,9 @@
 
 <Confirmation
 	bind:isOpen={openDeleteModal}
-	title="Delete Hospital @@@"
+	title="Delete Hospital "
 	onConfirm={handleHospitalDelete}
 	id={idToBeDeleted}
 />
 
-<Pagination bind:paginationSettings />
+<Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />

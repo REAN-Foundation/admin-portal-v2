@@ -37,7 +37,7 @@
 	const breadCrumbs = [{ name: 'Documents', path: documentsRoute }];
 
 	let name = $state(undefined);
-	let fileName = $state(undefined);
+	let documentType = $state(undefined);
 
 	let sortBy = $state('Name');
 	let sortOrder = $state('ascending');
@@ -45,7 +45,6 @@
 	let totalDocumentsCount = $state(data.documents.TotalCount);
 
 	let isSortingName = $state(false);
-	let isSortingFileName = $state(false);
 
 	let paginationSettings: PaginationSettings = $state({
 		page: 0,
@@ -63,7 +62,7 @@
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
 
 			if (model.name) url += `&name=${model.name}`;
-			if (model.fileName) url += `&fileName=${model.fileName}`;
+			if (model.documentType) url += `&documentType=${model.documentType}`;
 
 			const res = await fetch(url, {
 				method: 'GET',
@@ -76,7 +75,6 @@
 			paginationSettings.size = totalDocumentsCount;
 
 			documents = searchResult.Data.Items.map((item, index) => ({ ...item, index: index + 1 }));
-			searchKeyword = model.name;
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -86,12 +84,19 @@
 
 	async function onSearchInput(e) {
 		clearTimeout(debounceTimeout);
-		let searchKeyword = e.target.value;
+		const { name_, value } = e.target;
+
+		if (name_ === 'name') {
+			name = value;
+		} else if (name_ === 'documentType') {
+			documentType = value;
+		}
 		console.log('qna documents name**', name);
 		debounceTimeout = setTimeout(() => {
 			paginationSettings.page = 0; // reset page when typing new search
 			searchDocuments({
-				name: searchKeyword,
+				name,
+				documentType,
 				itemsPerPage: paginationSettings.limit,
 				pageIndex: 0,
 				sortBy,
@@ -102,17 +107,15 @@
 
 	function sortTable(columnName) {
 		isSortingName = false;
-		isSortingFileName = false;
 		sortOrder = sortOrder === 'ascending' ? 'descending' : 'ascending';
 		if (columnName === 'Name') {
 			isSortingName = true;
-		} else if (columnName === 'FileName') {
-			isSortingFileName = true;
 		}
 		sortBy = columnName;
 
 		searchDocuments({
-			name: searchKeyword,
+			name,
+			documentType,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -128,7 +131,8 @@
 	function onItemsPerPageChange() {
 		paginationSettings.page = 0; // reset to first page
 		searchDocuments({
-			name: searchKeyword,
+			name,
+			documentType,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: 0,
 			sortBy,
@@ -138,7 +142,8 @@
 
 	function onPageChange() {
 		searchDocuments({
-			name: searchKeyword,
+			name,
+			documentType,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -161,7 +166,8 @@
 			toastMessage(res);
 		}
 		searchDocuments({
-			name: searchKeyword,
+			name,
+			documentType,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -185,12 +191,20 @@
 						<input
 							type="text"
 							name="name"
+							bind:value={name}
 							oninput={(event) => onSearchInput(event)}
 							placeholder="Search by Document name"
 							class="health-system-input !pr-4 !pl-10"
 						/>
 						{#if name}
-							<button type="button" onclick={() => (name = '')} class="close-btn">
+							<button
+								type="button"
+								onclick={() => {
+									name = '';
+									onSearchInput({ target: { name: 'name', value: '' } });
+								}}
+								class="close-btn"
+							>
 								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
@@ -203,15 +217,17 @@
 						<input
 							oninput={(event) => onSearchInput(event)}
 							type="text"
-							name="fileName"
-							placeholder="Search by Document fileName"
+							name="documentType"
+							bind:value={documentType}
+							placeholder="Search by Document Type"
 							class="health-system-input !pr-4 !pl-10"
 						/>
-						{#if fileName}
+						{#if documentType}
 							<button
 								type="button"
 								onclick={() => {
-									fileName = '';
+									documentType = '';
+									onSearchInput({ target: { name: 'documentType', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -241,17 +257,7 @@
 									{/if}
 								</button>
 							</th>
-							<th class="w-64">
-								<button onclick={() => sortTable('FileName')}>
-									File Name {#if isSortingFileName}
-										{#if sortOrder === 'ascending'}
-											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
-										{:else}
-											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
-										{/if}
-									{/if}
-								</button>
-							</th>
+							<th class="w-64"> File Name </th>
 							<th class="w-24">Version</th>
 							<th class="w-52">Parent Document</th>
 							<th class="w-20">Active</th>
