@@ -17,18 +17,18 @@
 	let assessmentTemplates = $state(data.assessmentTemplate.Items);
 	let retrivedAssessmentTemplates = $derived(assessmentTemplates);
 	let totalAssessmentTemplatesCount = $state(data.assessmentTemplate.TotalCount);
-	
+
 	const userId = page.params.userId;
 	const assessmentRoute = `/users/${userId}/assessment-templates`;
 	const editRoute = (id) => `/users/${userId}/assessment-templates/${id}/edit`;
 	const viewRoute = (id) => `/users/${userId}/assessment-templates/${id}/view`;
 	const createRoute = `/users/${userId}/assessment-templates/create`;
 	const importRoute = `/users/${userId}/assessment-templates/import`;
-	
+
 	const breadCrumbs = [{ name: 'Assessments', path: assessmentRoute }];
-	
-	let isLoading = $state(false);
+
 	let debounceTimeout;
+	let isLoading = $state(false);
 	let title = $state(undefined);
 	let type = $state(undefined);
 	let tags = $state(undefined);
@@ -52,25 +52,27 @@
 
 	async function searchAssessmentTemplate(model) {
 		try {
-		let url = `/api/server/assessments/assessment-templates/search?`;
-		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
-		url += `&sortBy=${model.sortBy ?? sortBy}`;
-		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
-		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-		if (title) url += `&title=${model.title}`;
-		if (type) url += `&type=${model.type}`;
-		if (tags) url += `&tags=${model.tags}`;
-		
+			let url = `/api/server/assessments/assessment-templates/search?`;
+			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+			url += `&sortBy=${model.sortBy ?? sortBy}`;
+			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+
+			if (model.title) url += `&title=${model.title}`;
+			if (model.type) url += `&type=${model.type}`;
+			if (model.tags) url += `&tags=${model.tags}`;
+
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
 			});
+
 			const searchResult = await res.json();
 			console.log('searchResult', searchResult);
-			totalAssessmentTemplatesCount = searchResult.Data.AssessmentTemplate.TotalCount;
+			totalAssessmentTemplatesCount = searchResult.Data.AssessmentTemplateRecords.TotalCount;
 			paginationSettings.size = totalAssessmentTemplatesCount;
 
-			assessmentTemplates = searchResult.Data.AssessmentTemplate.Items.map((item, index) => ({
+			assessmentTemplates = searchResult.Data.AssessmentTemplateRecords.Items.map((item, index) => ({
 				...item,
 				index: index + 1
 			}));
@@ -83,16 +85,30 @@
 		}
 	}
 
+	function updateSearchField(name, value) {
+		if (name === 'title') {
+			title = value;
+		} else if (name === 'type') {
+			type = value;
+		} else if (name === 'tags') {
+			tags = value;
+		}
+	}
+
 	async function onSearchInput(e) {
 		clearTimeout(debounceTimeout);
 		let searchKeyword = e.target.value;
-		
+
+		updateSearchField(name, value);
+
 		debounceTimeout = setTimeout(() => {
 			paginationSettings.page = 0; // reset page when typing new search
 			searchAssessmentTemplate({
-				title: searchKeyword,
+				title,
+				type,
+				tags,
 				itemsPerPage: paginationSettings.limit,
-				pageIndex: 0,
+				pageIndex: paginationSettings.page,
 				sortBy,
 				sortOrder
 			});
@@ -102,9 +118,11 @@
 	function onItemsPerPageChange() {
 		paginationSettings.page = 0; // reset to first page
 		searchAssessmentTemplate({
-			title: searchKeyword,
+			title,
+			type,
+			tags,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex:paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -112,7 +130,9 @@
 
 	function onPageChange() {
 		searchAssessmentTemplate({
-			title: searchKeyword,
+			title,
+			type,
+			tags,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -131,7 +151,9 @@
 		}
 		sortBy = columnName;
 		searchAssessmentTemplate({
-			title: searchKeyword,
+			title,
+			type,
+			tags,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -159,7 +181,9 @@
 			toastMessage(res);
 		}
 		searchAssessmentTemplate({
-			title: searchKeyword,
+			title,
+			type,
+			tags,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -194,6 +218,7 @@
 								type="button"
 								onclick={() => {
 									title = '';
+									onSearchInput({ target: { name: 'title', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -220,6 +245,7 @@
 								type="button"
 								onclick={() => {
 									type = '';
+									onSearchInput({ target: { name: 'type', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -245,6 +271,7 @@
 								type="button"
 								onclick={() => {
 									tags = '';
+									onSearchInput({ target: { name: 'tags', value: '' } });
 								}}
 								class="close-btn"
 							>

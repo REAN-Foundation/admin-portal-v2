@@ -4,10 +4,7 @@
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-	import { invalidate } from '$app/navigation';
-	import { browser } from '$app/environment';
 	import Tooltip from '$lib/components/tooltip.svelte';
-	import { onMount } from 'svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
@@ -55,20 +52,14 @@
 
 	async function searchLabRecords(model) {
 		try {
-			// if (searchKeyword !== model.typeName) {
-			// 	paginationSettings.page = 0;
-			// }
-			// if (searchKeyword !== model.displayName) {
-			// 	paginationSettings.page = 0;
-			// }
 			let url = `/api/server/lab-record-types/search?`;
 			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
 
-			if (typeName) url += `&typeName=${model.typeName}`;
-			if (displayName) url += `&displayName=${model.displayName}`;
+			if (model.typeName) url += `&typeName=${model.typeName}`;
+			if (model.displayName) url += `&displayName=${model.displayName}`;
 
 			const res = await fetch(url, {
 				method: 'GET',
@@ -92,15 +83,27 @@
 		}
 	}
 
+	function updateSearchField(name, value) {
+		if (name === 'typeName') {
+			typeName = value;
+		} else if (name === 'displayName') {
+			displayName = value;
+		}
+	}
+
 	async function onSearchInput(e) {
 		clearTimeout(debounceTimeout);
 		let searchKeyword = e.target.value;
+
+		updateSearchField(name, value)
+
 		debounceTimeout = setTimeout(() => {
 			paginationSettings.page = 0; // reset page when typing new search
 			searchLabRecords({
-				typeName: searchKeyword,
+				typeName,
+				displayName,
 				itemsPerPage: paginationSettings.limit,
-				pageIndex: 0,
+				pageIndex: paginationSettings.page,
 				sortBy,
 				sortOrder
 			});
@@ -135,9 +138,10 @@
 		}
 		sortBy = columnName;
 		searchLabRecords({
-			typeName: searchKeyword,
+			typeName,
+			displayName,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -146,9 +150,10 @@
 	function onItemsPerPageChange() {
 		paginationSettings.page = 0; // reset to first page
 		searchLabRecords({
-			typeName: searchKeyword,
+			typeName,
+			displayName,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -156,7 +161,8 @@
 
 	function onPageChange() {
 		searchLabRecords({
-			typeName: searchKeyword,
+			typeName,
+			displayName,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -183,7 +189,8 @@
 			toastMessage(res);
 		}
 		searchLabRecords({
-			typeName: searchKeyword,
+			typeName,
+			displayName,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -216,6 +223,7 @@
 								type="button"
 								onclick={() => {
 									typeName = '';
+									onSearchInput({ target: { name: 'typeName', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -240,6 +248,7 @@
 								type="button"
 								onclick={() => {
 									displayName = '';
+									onSearchInput({ target: { name: 'displayName', value: '' } });
 								}}
 								class="close-btn"
 							>

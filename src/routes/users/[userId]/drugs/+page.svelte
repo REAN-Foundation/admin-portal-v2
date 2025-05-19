@@ -64,17 +64,19 @@
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
 
-			if (drugName) url += `&drugName=${model.drugName}`;
-			if (genericName) url += `&genericName=${model.genericName}`;
+			if (model.drugName) url += `&drugName=${model.drugName}`;
+			if (model.genericName) url += `&genericName=${model.genericName}`;
 
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
 			});
+
 			const searchResult = await res.json();
 			console.log('searchResult', searchResult);
 			totalDrugsCount = searchResult.Data.Drugs.TotalCount;
 			paginationSettings.size = totalDrugsCount;
+
 			drugs = searchResult.Data.Drugs.Items.map((item, index) => ({
 				...item,
 				index: index + 1
@@ -88,13 +90,25 @@
 		}
 	}
 
+	function updateSearchField(name, value) {
+		if (name === 'drugName') {
+			drugName = value;
+		} else if (name === 'genericName') {
+			genericName = value;
+		}
+	}
+
 	async function onSearchInput(e) {
 		clearTimeout(debounceTimeout);
 		let searchKeyword = e.target.value;
+
+		updateSearchField(name, value)
+
 		debounceTimeout = setTimeout(() => {
 			paginationSettings.page = 0; // reset page when typing new search
 			searchDrug({
-				drugName: searchKeyword,
+				drugName,
+				genericName,
 				itemsPerPage: paginationSettings.limit,
 				pageIndex: 0,
 				sortBy,
@@ -129,9 +143,10 @@
 		}
 		sortBy = columnName;
 		searchDrug({
-			drugName: searchKeyword,
+			drugName,
+			genericName,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -140,9 +155,10 @@
 	function onItemsPerPageChange() {
 		paginationSettings.page = 0; // reset to first page
 		searchDrug({
-			drugName: searchKeyword,
+			drugName,
+			genericName,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex:paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -150,9 +166,10 @@
 
 	function onPageChange() {
 		searchDrug({
-			drugName: searchKeyword,
+			drugName,
+			genericName,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -178,7 +195,8 @@
 			toastMessage(res);
 		}
 		searchDrug({
-			drugName: searchKeyword,
+			drugName,
+			genericName,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -212,6 +230,7 @@
 								type="button"
 								onclick={() => {
 									drugName = '';
+									onSearchInput({ target: { name: 'drugName', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -237,6 +256,7 @@
 								type="button"
 								onclick={() => {
 									genericName = '';
+									onSearchInput({ target: { name: 'genericName', value: '' } });
 								}}
 								class="close-btn"
 							>
