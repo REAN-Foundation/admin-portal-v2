@@ -27,8 +27,8 @@
 
 	const breadCrumbs = [{ name: 'Assessments', path: assessmentRoute }];
 
-	let isLoading = $state(false);
 	let debounceTimeout;
+	let isLoading = $state(false);
 	let title = $state(undefined);
 	let type = $state(undefined);
 	let tags = $state(undefined);
@@ -57,20 +57,22 @@
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-			if (title) url += `&title=${model.title}`;
-			if (type) url += `&type=${model.type}`;
-			if (tags) url += `&tags=${model.tags}`;
+
+			if (model.title) url += `&title=${model.title}`;
+			if (model.type) url += `&type=${model.type}`;
+			if (model.tags) url += `&tags=${model.tags}`;
 
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
 			});
+
 			const searchResult = await res.json();
 
 			totalAssessmentTemplatesCount = searchResult.Data.AssessmentTemplate.TotalCount;
 			paginationSettings.size = totalAssessmentTemplatesCount;
 
-			assessmentTemplates = searchResult.Data.AssessmentTemplate.Items.map((item, index) => ({
+			assessmentTemplates = searchResult.Data.AssessmentTemplateRecords.Items.map((item, index) => ({
 				...item,
 				index: index + 1
 			}));
@@ -83,16 +85,29 @@
 		}
 	}
 
+	function updateSearchField(name, value) {
+		if (name === 'title') {
+			title = value;
+		} else if (name === 'type') {
+			type = value;
+		} else if (name === 'tags') {
+			tags = value;
+		}
+	}
+
 	async function onSearchInput(e) {
-		clearTimeout(debounceTimeout);
-		let searchKeyword = e.target.value;
+        clearTimeout(debounceTimeout);
+        const { name, value } = e.target;
+        updateSearchField(name, value)
 
 		debounceTimeout = setTimeout(() => {
 			paginationSettings.page = 0; // reset page when typing new search
 			searchAssessmentTemplate({
-				title: searchKeyword,
+				title,
+				type,
+				tags,
 				itemsPerPage: paginationSettings.limit,
-				pageIndex: 0,
+				pageIndex: paginationSettings.page,
 				sortBy,
 				sortOrder
 			});
@@ -102,9 +117,11 @@
 	function onItemsPerPageChange() {
 		paginationSettings.page = 0; // reset to first page
 		searchAssessmentTemplate({
-			title: searchKeyword,
+			title,
+			type,
+			tags,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex:paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -112,7 +129,9 @@
 
 	function onPageChange() {
 		searchAssessmentTemplate({
-			title: searchKeyword,
+			title,
+			type,
+			tags,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -131,7 +150,9 @@
 		}
 		sortBy = columnName;
 		searchAssessmentTemplate({
-			title: searchKeyword,
+			title,
+			type,
+			tags,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -159,7 +180,9 @@
 			toastMessage(res);
 		}
 		searchAssessmentTemplate({
-			title: searchKeyword,
+			title,
+			type,
+			tags,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -194,6 +217,7 @@
 								type="button"
 								onclick={() => {
 									title = '';
+									onSearchInput({ target: { name: 'title', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -220,6 +244,7 @@
 								type="button"
 								onclick={() => {
 									type = '';
+									onSearchInput({ target: { name: 'type', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -245,6 +270,7 @@
 								type="button"
 								onclick={() => {
 									tags = '';
+									onSearchInput({ target: { name: 'tags', value: '' } });
 								}}
 								class="close-btn"
 							>

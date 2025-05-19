@@ -109,7 +109,7 @@
 		searchSymptom({
 			symptom: searchKeyword,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex:paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -134,7 +134,7 @@
 		searchSymptom({
 			symptom: searchKeyword,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -144,7 +144,7 @@
 		searchSymptom({
 			symptom: searchKeyword,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex:paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -167,7 +167,7 @@
 		searchSymptom({
 			symptom: searchKeyword,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex:paginationSettings.page,
 			sortBy,
 			sortOrder
 		});

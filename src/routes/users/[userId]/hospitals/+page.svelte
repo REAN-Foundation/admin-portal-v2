@@ -99,7 +99,7 @@
 
 	async function onSearchInput(e) {
 		clearTimeout(debounceTimeout);
-		const { name, value } = e.target;
+		let searchKeyword = e.target.value;
 
 		updateSearchField(name, value)
 		// console.log('event', e.target);

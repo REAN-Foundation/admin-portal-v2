@@ -65,9 +65,10 @@
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-			if (title) url += `&title=${model.title}`;
-			if (nodeType) url += `&nodeType=${model.nodeType}`;
-			if (tags) url += `&tags=${tags}`;
+			if (model.title) url += `&title=${model.title}`;
+			if (model.nodeType) url += `&nodeType=${model.nodeType}`;
+			if (model.tags) url += `&tags=${tags}`;
+
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
@@ -90,16 +91,29 @@
 		}
 	}
 
+	function updateSearchField(name, value) {
+		if (name === 'title') {
+			title = value;
+		} else if (name === 'nodeType') {
+			nodeType = value;
+		} else if (name === 'tags') {
+			tags = value;
+		}
+	}
+
 	async function onSearchInput(e) {
-		clearTimeout(debounceTimeout);
-		let searchKeyword = e.target.value;
+        clearTimeout(debounceTimeout);
+        const { name, value } = e.target;
+        updateSearchField(name, value)
 
 		debounceTimeout = setTimeout(() => {
 			paginationSettings.page = 0;
 			searchNode({
-				title: searchKeyword,
+				title,
+				nodeType,
+				tags,
 				itemsPerPage: paginationSettings.limit,
-				pageIndex: 0,
+				pageIndex:paginationSettings.page,
 				sortBy,
 				sortOrder
 			});
@@ -117,9 +131,11 @@
 		}
 		sortBy = columnName;
 		searchNode({
-			title: searchKeyword,
+			title,
+			nodeType,
+			tags,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -128,9 +144,11 @@
 	function onItemsPerPageChange() {
 		paginationSettings.page = 0; 
 		searchNode({
-			title: searchKeyword,
+			title,
+			nodeType,
+			tags,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex:paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -138,9 +156,11 @@
 
 	function onPageChange() {
 		searchNode({
-			title: searchKeyword,
+			title,
+			nodeType,
+			tags,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex:paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -152,10 +172,13 @@
 	};
 
 	const handleAssessmentNodeDelete = async (id) => {
-		const response = await fetch(`/api/server/assessments/assessment-nodes/${id}?templateId=${templateId}`, {
-			method: 'DELETE',
-			headers: { 'content-type': 'application/json' }
-		});
+		const response = await fetch(
+			`/api/server/assessments/assessment-nodes/${id}?templateId=${templateId}`,
+			{
+				method: 'DELETE',
+				headers: { 'content-type': 'application/json' }
+			}
+		);
 
 		const res = await response.json();
 		
@@ -166,11 +189,13 @@
 			toastMessage(res);
 		}
 		searchNode({
-			title: searchKeyword,
+			title,
+			nodeType,
+			tags,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
-            sortBy,
-            sortOrder
+			sortBy,
+			sortOrder
 		});
 	};
 </script>
@@ -200,6 +225,7 @@
 								type="button"
 								onclick={() => {
 									title = '';
+									onSearchInput({ target: { name: 'title', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -225,6 +251,7 @@
 								type="button"
 								onclick={() => {
 									nodeType = '';
+									onSearchInput({ target: { name: 'nodeType', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -250,6 +277,7 @@
 								type="button"
 								onclick={() => {
 									tags = '';
+									onSearchInput({ target: { name: 'tags', value: '' } });
 								}}
 								class="close-btn"
 							>
