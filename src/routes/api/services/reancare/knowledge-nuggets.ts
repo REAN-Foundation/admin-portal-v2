@@ -1,4 +1,5 @@
 import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY } from '$env/static/private';
+import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 import { del, get, post, put } from './common.reancare';
 
 ////////////////////////////////////////////////////////////////
@@ -19,12 +20,25 @@ export const createKnowledgeNugget = async (
 		Tags: tags ? tags : null
 	};
 	const url = BACKEND_API_URL + '/educational/knowledge-nuggets';
-	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+		
+			const findAndClearKeys = [
+				`session-${sessionId}:req-searchKnowledgeNuggets`
+			];
+			await DashboardManager.findAndClear(findAndClearKeys);
+		
+			return result;
 };
 
 export const getKnowledgeNuggetById = async (sessionId: string, knowledgeNuggetId: string) => {
 	const url = BACKEND_API_URL + `/educational/knowledge-nuggets/${knowledgeNuggetId}`;
-	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+		const cacheKey = `session-${sessionId}:req-getKnowledgeNuggetById-${knowledgeNuggetId}`;
+		if (await DashboardManager.has(cacheKey)) {
+			return await DashboardManager.get(cacheKey);
+		}
+		const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+		await DashboardManager.set(cacheKey, result);
+		return result;
 };
 
 export const searchKnowledgeNuggets = async (sessionId: string, searchParams?: any) => {
@@ -44,7 +58,14 @@ export const searchKnowledgeNuggets = async (sessionId: string, searchParams?: a
 		}
 	}
 	const url = BACKEND_API_URL + `/educational/knowledge-nuggets/search${searchString}`;
-	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	 const cacheKey = `session-${sessionId}:req-searchKnowledgeNuggets:${searchString}`;
+		if (await DashboardManager.has(cacheKey)) {
+			return await DashboardManager.get(cacheKey);
+		}
+	
+		const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+		await DashboardManager.set(cacheKey, result);
+		return result;
 };
 
 export const updateKnowledgeNugget = async (
@@ -64,10 +85,32 @@ export const updateKnowledgeNugget = async (
 		Tags: tags ? tags : null
 	};
 	const url = BACKEND_API_URL + `/educational/knowledge-nuggets/${knowledgeNuggetId}`;
-	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+		const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+		const keysToBeDeleted = [
+			`session-${sessionId}:req-getKnowledgeNuggetById-${knowledgeNuggetId}`,
+		];
+		await DashboardManager.deleteMany(keysToBeDeleted);
+		const findAndClearKeys = [
+			`session-${sessionId}:req-searchKnowledgeNuggets`,
+		];
+		await DashboardManager.findAndClear(findAndClearKeys);
+	
+		return result;
 };
 
 export const deleteKnowledgeNugget = async (sessionId: string, knowledgeNuggetId: string) => {
 	const url = BACKEND_API_URL + `/educational/knowledge-nuggets/${knowledgeNuggetId}`;
-	return await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	const result = await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+		
+			const keysToBeDeleted = [
+				`session-${sessionId}:req-getKnowledgeNuggetById-${knowledgeNuggetId}`,
+			];
+			await DashboardManager.deleteMany(keysToBeDeleted);
+		
+			const findAndClearKeys = [
+				`session-${sessionId}:req-searchKnowledgeNuggets`,
+			];
+			await DashboardManager.findAndClear(findAndClearKeys);
+		
+			return result;
 };

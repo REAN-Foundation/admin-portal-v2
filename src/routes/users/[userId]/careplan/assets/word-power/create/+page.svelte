@@ -103,7 +103,7 @@
 						<tr>
 							<th>Create Word power</th>
 							<th class="text-end">
-								<a href={assetRoute} class="table-btn variant-soft-secondary">
+								<a href={assetRoute} class="cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -115,7 +115,7 @@
 							<td>
 								<input
 									type="text"
-									class="table-input-field {form?.errors?.name ? 'input-text-error' : ''}"
+									class="input {form?.errors?.name ? 'input-text-error' : ''}"
 									name="name"
 									placeholder="Enter name here..."
 									bind:value={name}
@@ -144,9 +144,7 @@
 								<input
 									type="text"
 									placeholder="Enter word power additionalresources here..."
-									class="table-input-field {form?.errors?.AdditionalResources
-										? 'input-text-error'
-										: ''}"
+									class="input {form?.errors?.AdditionalResources ? 'input-text-error' : ''}"
 									name="additionalResources"
 								/>
 							</td>
@@ -169,7 +167,7 @@
 							<td>
 								<input
 									type="text"
-									class="table-input-field {form?.errors?.version ? 'input-text-error' : ''}"
+									class="input {form?.errors?.version ? 'input-text-error' : ''}"
 									name="version"
 									placeholder="V 1.0"
 									bind:value={version}

@@ -105,7 +105,7 @@
 						<tr>
 							<th>Create Article</th>
 							<th class="text-end">
-								<a href={assetRoute} class="table-btn variant-soft-secondary">
+								<a href={assetRoute} class="cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -117,7 +117,7 @@
 							<td>
 								<input
 									type="text"
-									class="table-input-field {form?.errors?.name ? 'input-text-error' : ''}"
+									class="input {form?.errors?.name ? 'input-text-error' : ''}"
 									name="name"
 									placeholder="Enter name here..."
 									bind:value={name}
@@ -143,7 +143,7 @@
 							<td>
 								<input
 									type="url"
-									class="table-input-field {form?.errors?.Url ? 'input-text-error' : ''}"
+									class="input{form?.errors?.Url ? 'input-text-error' : ''}"
 									name="url"
 									placeholder="Enter url here"
 									bind:value={pathUrl}
@@ -171,7 +171,7 @@
 							<td>
 								<input
 									type="text"
-									class="table-input-field {form?.errors?.version ? 'input-text-error' : ''}"
+									class="input {form?.errors?.version ? 'input-text-error' : ''}"
 									name="version"
 									placeholder="V 1.0"
 									bind:value={version}

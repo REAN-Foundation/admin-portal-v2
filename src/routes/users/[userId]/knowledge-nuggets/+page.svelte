@@ -19,6 +19,7 @@
 
 	let { data }: { data: PageServerData } = $props();
 
+	let debounceTimeout;
 	let isLoading = $state(false);
 	let knowledgeNuggets = $state(data.knowledgeNuggets.Items);
 	let retrivedKnowledgeNuggets = $derived(knowledgeNuggets);
@@ -39,8 +40,6 @@
 	let tags = $state(undefined);
 	let sortBy = 'TopicName';
 	let sortOrder = $state('ascending');
-	let itemsPerPage = 10;
-	let offset = 0;
 	let totalKnowledgeNuggetsCount = $state(data.knowledgeNuggets.TotalCount);
 	let isSortingName = $state(false);
 	let isSortingTags = $state(false);
@@ -53,19 +52,15 @@
 	});
 
 	async function searchKnowledgeNugget(model) {
-		if (searchKeyword !== model.topicName || searchKeyword !== model.tags) {
-			paginationSettings.page = 0;
-		}
-
-		let url = `/api/server/knowledge-nuggets/search?`;
-		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
-		url += `&sortBy=${model.sortBy ?? sortBy}`;
-		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
-		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-		if (topicName) url += `&topicName=${topicName}`;
-		if (tags) url += `&tags=${tags}`;
-
 		try {
+			let url = `/api/server/knowledge-nuggets/search?`;
+			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+			url += `&sortBy=${model.sortBy ?? sortBy}`;
+			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+			if (model.topicName) url += `&topicName=${model.topicName}`;
+			if (model.tags) url += `&tags=${model.tags}`;
+
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
@@ -80,12 +75,38 @@
 				...item,
 				index: index + 1
 			}));
-			searchKeyword = model.topicName;
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
 			isLoading = false;
 		}
+	}
+
+	function updateSearchField(name, value) {
+		if (name === 'topicName') {
+			topicName = value;
+		} else if (name === 'tags') {
+			tags = value;
+		}
+	}
+	async function onSearchInput(e) {
+		clearTimeout(debounceTimeout);
+		const { name, value } = e.target;
+
+		updateSearchField(name, value);
+		// console.log('event', e.target);
+
+		debounceTimeout = setTimeout(() => {
+			paginationSettings.page = 0; // reset page when typing new search
+			searchKnowledgeNugget({
+				topicName,
+				tags,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortOrder,
+				sortBy
+			});
+		}, 400);
 	}
 
 	$effect(() => {
@@ -113,12 +134,44 @@
 			isSortingTags = true;
 		}
 		sortBy = columnName;
+
+		searchKnowledgeNugget({
+			topicName,
+			tags,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortOrder,
+			sortBy
+		});
 	}
 
 	const handleDeleteClick = (id: string) => {
 		openDeleteModal = true;
 		idToBeDeleted = id;
 	};
+
+	function onItemsPerPageChange() {
+		paginationSettings.page = 0; // reset to first page
+		searchKnowledgeNugget({
+			topicName,
+			tags,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortOrder,
+			sortBy
+		});
+	}
+
+	function onPageChange() {
+		searchKnowledgeNugget({
+			topicName,
+			tags,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortOrder,
+			sortBy
+		});
+	}
 
 	const handleKnowledgeNuggetDelete = async (id) => {
 		const response = await fetch(`/api/server/knowledge-nuggets/${id}`, {
@@ -130,8 +183,18 @@
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
+		} else {
+			toastMessage(res);
 		}
-		invalidate('app:knowledge-nuggests');
+
+		searchKnowledgeNugget({
+			topicName,
+			tags,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortOrder,
+			sortBy
+		});
 	};
 </script>
 
@@ -152,6 +215,7 @@
 							name="topicName"
 							placeholder="Search by name"
 							bind:value={topicName}
+							oninput={(event) => onSearchInput(event)}
 							class="health-system-input !pr-4 !pl-10"
 						/>
 						{#if topicName}
@@ -159,6 +223,7 @@
 								type="button"
 								onclick={() => {
 									topicName = '';
+									onSearchInput({ target: { name: 'topicName', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -177,6 +242,7 @@
 							name="tags"
 							placeholder="Search by tags"
 							bind:value={tags}
+							oninput={(event) => onSearchInput(event)}
 							class="health-system-input !pr-4 !pl-10"
 						/>
 						{#if tags}
@@ -184,6 +250,7 @@
 								type="button"
 								onclick={() => {
 									tags = '';
+									onSearchInput({ target: { name: 'tags', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -300,4 +367,5 @@
 	id={idToBeDeleted}
 />
 
-<Pagination bind:paginationSettings />
+<Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />
+

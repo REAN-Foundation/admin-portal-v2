@@ -104,7 +104,7 @@
 						<tr>
 							<th>Create Action Plan</th>
 							<th class="text-end">
-								<a href={actionPlanRoute} class="table-btn variant-soft-secondary">
+								<a href={actionPlanRoute} class="cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -116,7 +116,7 @@
 							<td>
 								<input
 									type="text"
-									class="table-input-field {form?.errors?.name ? 'input-text-error' : ''}"
+									class="input {form?.errors?.name ? 'input-text-error' : ''}"
 									name="name"
 									placeholder="Enter name here..."
 									bind:value={name}
@@ -157,7 +157,7 @@
 							<td>
 								<input
 									type="text"
-									class="table-input-field {form?.errors?.version ? 'input-text-error' : ''}"
+									class="input {form?.errors?.version ? 'input-text-error' : ''}"
 									name="version"
 									placeholder="V 1.0"
 									bind:value={version}
