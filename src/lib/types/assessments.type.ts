@@ -11,7 +11,7 @@ export interface AssessmentUpdateModel {
     Name: string;
     Description?: string;
     Template?: string;
-    TemplateCode?: string;
+    ReferenceTemplateCode?: string;
     Tags?: string[];
     Version?: string;
 }

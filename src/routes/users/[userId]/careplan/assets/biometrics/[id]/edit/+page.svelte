@@ -8,7 +8,6 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import { createOrUpdateSchema } from '$lib/validation/biometrics.schema';
 	import type { BiometricsUpdateModel } from '$lib/types/biometrics.type';
-	import { formData } from 'zod-form-data';
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
@@ -82,8 +81,7 @@
 			const response = await res.json();
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
-				toastMessage(response);
-				// console.log("Redirecting to:", response?.Data?.id); 
+				toastMessage(response); 
 				console.log("Full response:", response);
 				await goto(`${biometricsRoute}/${response?.Data?.id}/view`); 
 			} else if (response.Errors) {

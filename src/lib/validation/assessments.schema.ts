@@ -16,7 +16,7 @@ export const createOrUpdateSchema = z.object({
     Template: z.string()
         .max(1024, { message: 'Template Type must be at most 1024 characters long.' })
         .optional(),
-    TemplateCode: z.string()
+    ReferenceTemplateCode: z.string()
         .max(1024, { message: 'TemplateCode must be at most 1024 characters long.' })
         .optional(),
     Tags: z.array(z.string()).optional(),

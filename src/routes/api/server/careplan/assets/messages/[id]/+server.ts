@@ -1,9 +1,9 @@
+import type { MessageUpdateModel } from "$lib/types/message.type";
 import { ResponseHandler } from "$lib/utils/response.handler";
 import { uuidSchema } from "$lib/validation/common.schema";
+import { createOrUpdateSchema } from "$lib/validation/message.schema";
+import { deleteMessage, getMessageById, updateMessage } from "$routes/api/services/careplan/assets/messages";
 import type { RequestEvent } from "@sveltejs/kit";
-import { createOrUpdateSchema } from "$lib/validation/assessments.schema";
-import { deleteAssessment, getAssessmentById, updateAssessment } from "$routes/api/services/careplan/assets/assessments";
-import type { AssessmentUpdateModel } from "$lib/types/assessments.type";
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -23,14 +23,14 @@ export const DELETE = async (event: RequestEvent) => {
 
         const id = event.params.id;
 
-        const response = await deleteAssessment(
+        const response = await deleteMessage(
             sessionId,
             id
         );
 
         return ResponseHandler.success(response);
     } catch (error) {
-        console.error('Error deleting assessment:', error);
+        console.error('Error deleting message:', error);
         return ResponseHandler.handleError(500, null, error);
     }
 };
@@ -52,27 +52,27 @@ export const GET = async (event: RequestEvent) => {
 
         const id = event.params.id;
 
-        const response = await getAssessmentById(sessionId, id);
+        const response = await getMessageById(sessionId, id);
 
         return ResponseHandler.success(response);
     } catch (error) {
-        console.error("Error Assessment:", error);
+        console.error("Error message:", error);
         return ResponseHandler.handleError(500, null, error);
     }
 };
 
 export const PUT = async (event: RequestEvent) => {
     try {
-        console.log("Inside Assessment PUT endpoints");
+        console.log("Inside message PUT endpoints");
         const sessionId = event.locals?.sessionUser?.sessionId;
 
         if (!sessionId) {
             return ResponseHandler.handleError(401, null, new Error("Access denied: Invalid session."));
         }
 
-        const assessmentId = event.params.id;
+        const audioId = event.params.id;
         const request = event.request;
-        const data: AssessmentUpdateModel = await request.json();
+        const data: MessageUpdateModel = await request.json();
 
         console.log("data", data);
         const validationResult = createOrUpdateSchema.safeParse(data);
@@ -85,18 +85,19 @@ export const PUT = async (event: RequestEvent) => {
             });
         }
 
-        const response = await updateAssessment(
-            sessionId,
-            assessmentId,
+        const response = await updateMessage(sessionId,
+            audioId,
             data.Name,
-            data.Description,     
-            data.Template,
-            data.ReferenceTemplateCode,
+            data.Description, 
+            data.MessageType,
+            data.TemplateName,    
+            data.PathUrl,
             data.Tags,
-            data.Version ?? '');
+            data.Version ?? '',
+            data.TemplateVariables);
         return ResponseHandler.success(response);
     } catch (error) {
-        console.error("Error updating assessment:", error);
+        console.error("Error updating message:", error);
         return ResponseHandler.handleError(500, null, error);
     }
 };

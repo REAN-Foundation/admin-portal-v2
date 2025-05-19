@@ -15,7 +15,7 @@
 	let name = $state('');
 	let description = $state('');
 	let template = $state('');
-	let templateCode = $state('');
+	let referenceTemplateCode = $state('');
 	let version = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
@@ -41,7 +41,7 @@
 				Name: name,
 				Description: description,
 				Template: template,
-				ReferenceTemplateCode: templateCode,
+				ReferenceTemplateCode: referenceTemplateCode,
 				Version: version,
 				Tags: keywords
 			};
@@ -147,15 +147,15 @@
 						</td>
 					</tr>
 					<tr>
-						<td>Template Code </td>
+						<td>Reference Template Code </td>
 						<td>
 							<input
 								type="text"
-								bind:value={templateCode}
+								bind:value={referenceTemplateCode}
 								placeholder="Enter template code..."
 								class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
 							/>
-							{#if errors?.TemplateCode}<p class="text-error">{errors?.TemplateCode}</p>{/if}
+							{#if errors?.ReferenceTemplateCode}<p class="text-error">{errors?.ReferenceTemplateCode}</p>{/if}
 						</td>
 					</tr>
 

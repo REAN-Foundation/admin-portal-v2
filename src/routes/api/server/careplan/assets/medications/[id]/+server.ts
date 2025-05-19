@@ -1,15 +1,16 @@
+import type { MedicationUpdateModel } from "$lib/types/medication.types";
 import { ResponseHandler } from "$lib/utils/response.handler";
 import { uuidSchema } from "$lib/validation/common.schema";
+import { createOrUpdateSchema } from "$lib/validation/medications.schema";
+import { deleteMedication, getMedicationById, updateMedication } from "$routes/api/services/careplan/assets/medications";
 import type { RequestEvent } from "@sveltejs/kit";
-import { createOrUpdateSchema } from "$lib/validation/assessments.schema";
-import { deleteAssessment, getAssessmentById, updateAssessment } from "$routes/api/services/careplan/assets/assessments";
-import type { AssessmentUpdateModel } from "$lib/types/assessments.type";
 
 ///////////////////////////////////////////////////////////////////////////////
 
 export const DELETE = async (event: RequestEvent) => {
 
     try {
+        console.log("Inside the medications delete server endpoint")
         const sessionId = event.locals?.sessionUser?.sessionId;
         if (!sessionId) {
             return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session'));
@@ -23,14 +24,14 @@ export const DELETE = async (event: RequestEvent) => {
 
         const id = event.params.id;
 
-        const response = await deleteAssessment(
+        const response = await deleteMedication(
             sessionId,
             id
         );
 
         return ResponseHandler.success(response);
     } catch (error) {
-        console.error('Error deleting assessment:', error);
+        console.error('Error deleting medications:', error);
         return ResponseHandler.handleError(500, null, error);
     }
 };
@@ -52,27 +53,27 @@ export const GET = async (event: RequestEvent) => {
 
         const id = event.params.id;
 
-        const response = await getAssessmentById(sessionId, id);
+        const response = await getMedicationById(sessionId, id);
 
         return ResponseHandler.success(response);
     } catch (error) {
-        console.error("Error Assessment:", error);
+        console.error("Error medications:", error);
         return ResponseHandler.handleError(500, null, error);
     }
 };
 
 export const PUT = async (event: RequestEvent) => {
     try {
-        console.log("Inside Assessment PUT endpoints");
+        console.log("Inside medications PUT endpoints");
         const sessionId = event.locals?.sessionUser?.sessionId;
 
         if (!sessionId) {
             return ResponseHandler.handleError(401, null, new Error("Access denied: Invalid session."));
         }
 
-        const assessmentId = event.params.id;
+        const medicationsId = event.params.id;
         const request = event.request;
-        const data: AssessmentUpdateModel = await request.json();
+        const data: MedicationUpdateModel = await request.json();
 
         console.log("data", data);
         const validationResult = createOrUpdateSchema.safeParse(data);
@@ -85,18 +86,15 @@ export const PUT = async (event: RequestEvent) => {
             });
         }
 
-        const response = await updateAssessment(
-            sessionId,
-            assessmentId,
+        const response = await updateMedication(sessionId,
+            medicationsId,
             data.Name,
-            data.Description,     
-            data.Template,
-            data.ReferenceTemplateCode,
+            data.Description,
             data.Tags,
             data.Version ?? '');
         return ResponseHandler.success(response);
     } catch (error) {
-        console.error("Error updating assessment:", error);
+        console.error("Error updating medications:", error);
         return ResponseHandler.handleError(500, null, error);
     }
 };

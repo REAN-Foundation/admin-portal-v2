@@ -29,7 +29,7 @@
 	const assessmentRoute = `/users/${userId}/careplan/assets/assessments`;
 
 	const breadCrumbs = [
-		{ name: 'Biometric', path:assessmentRoute },
+		{ name: 'Assessment', path:assessmentRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
@@ -53,7 +53,7 @@
 				Name: name,
 				Description: description,
 				Template: template,
-				TemplateCode: templateCode,
+				ReferenceTemplateCode: templateCode,
 				Version: version,
 				Tags: keywords
 			};
@@ -111,7 +111,7 @@
 					<tr>
 						<th>Edit Assessment</th>
 						<th class="text-end">
-							<a href={assessmentRoute} class="health-system-btn variant-soft-secondary">
+							<a href={viewRoute} class="health-system-btn variant-soft-secondary">
 								<Icon icon="material-symbols:close-rounded" />
 							</a>
 						</th>

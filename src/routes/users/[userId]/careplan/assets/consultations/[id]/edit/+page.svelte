@@ -145,7 +145,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td>Consultation Type <span class="text-red-700">*</span></td>
+						<td>Consultation Type</td>
 						<td>
 							<select class="input" bind:value={consultationType}>
 								<option disabled value>Select Consultation type</option>
@@ -155,7 +155,6 @@
 							</select>
 						</td>
 					</tr>
-
 					<tr class="">
 						<td class="!py-3 align-top">Tags</td>
 						<td>
