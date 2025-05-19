@@ -9,7 +9,8 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	event.depends('app:drugs');
 	const response = await searchDrugs(sessionId, {
 		orderBy: 'DrugName',
-		order: 'ascending'
+		order: 'ascending',
+		itemsPerPage: 10
 	});
 	if (response.Status === 'failure' || response.HttpCode !== 200) {
 		throw error(response.HttpCode, response.Message);

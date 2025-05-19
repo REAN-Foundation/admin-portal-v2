@@ -10,7 +10,8 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	event.depends('app:symptoms');
 	const response = await searchSymptoms(sessionId, {
 		orderBy: 'Symptom',
-		order: 'ascending'
+		order: 'ascending',
+		itemsPerPage: 10
 	});
 
 	// const symptomsCount = response?.Data?.SymptomTypes?.TotalCount || [];

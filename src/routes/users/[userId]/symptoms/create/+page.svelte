@@ -2,10 +2,7 @@
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
-	import InputChip from '$lib/components/input-chips.svelte';
-	// import { createOrUpdateSchema } from '$lib/validation/health.system.schema.js';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
-	// import type { HealthSystemCreateModel } from '$lib/types/health.system.types.js';
 	import { goto } from '$app/navigation';
 	import { createOrUpdateSchema } from '$lib/validation/symptoms.schema.js';
 	import type { SymptomCreateModel } from '$lib/types/symptoms.types.js';
@@ -27,7 +24,7 @@
 
 	data.title = 'Clinical-Symptoms Create';
 	const userId = page.params.userId;
-	// let imageResourceId = $state(undefined);
+	
 	let symptomImage;
 
 	let errorMessage = {
@@ -42,69 +39,6 @@
 		{ name: 'Symptoms', path: symptomRoute },
 		{ name: 'Create', path: createRoute }
 	];
-
-	// const upload = async (imgBase64, filename) => {
-	// 	const data = {};
-	// 	console.log(imgBase64);
-	// 	const imgData = imgBase64.split(',');
-	// 	data['image'] = imgData[1];
-	// 	console.log(JSON.stringify(data));
-	// 	const res = await fetch(`/api/server/file-resources/upload`, {
-	// 		method: 'POST',
-	// 		headers: {
-	// 			'Content-Type': 'multipart/form-data',
-	// 			Accept: 'application/json',
-	// 			filename: filename
-	// 		},
-	// 		body: JSON.stringify(data)
-	// 	});
-	// 	console.log(Date.now().toString());
-	// 	const response = await res.json();
-	// 	if (response.Status === 'success' && response.HttpCode === 201) {
-	// 		const imageUrl = response.Data.FileResources[0].url;
-	// 		console.log('imageResourceId', imageUrl);
-	// 		const imageResourceId_ = response.Data.FileResources[0].id;
-	// 		console.log('ImageResource', imageResourceId_);
-	// 		if (imageResourceId_) {
-	// 			imageResourceId = imageResourceId_;
-	//               return true;
-	// 		}
-	// 		console.log(imageResourceId);
-	// 	} else {
-	// 		showMessage(response.Message, 'error');
-	//           return false;
-	// 	}
-	// };
-
-	// const onFileSelected = async (e) => {
-	// 	let f = e.target.files[0];
-	//       const fileSize = f.size;
-	//       if (fileSize > MAX_FILE_SIZE) {
-	//           errorMessage.Text = "File should be less than 150 KB";
-	//           errorMessage.Colour = 'text-error-500'
-	//           symptomImage.value = null;
-	//           return;
-	//       }
-	//       errorMessage.Text = 'Please wait file upload is in progress';
-	//       errorMessage.Colour = 'text-error-500';
-	//       console.log(`File size: ${fileSize} bytes`);
-	// 	const filename = f.name;
-	// 	let reader = new FileReader();
-	// 	// reader.readAsDataURL(f);
-	// 	reader.onload = async (e) => {
-	// 		fileinput = e.target.result;
-	// 		const isFileUploaded = await upload(e.target.result, filename);
-	//           if (isFileUploaded) {
-	//               errorMessage.Text = "File uploaded successfully";
-	//               errorMessage.Colour = 'text-success-500'
-	//               return;
-	//           }
-	//           errorMessage.Text = 'Error in file upload';
-	//           errorMessage.Colour = 'text-error-500'
-	//           symptomImage.value = null;
-	//           return;
-	// 	};
-	// };
 
 	const onFileSelected = async (e) => {
 		let file = e.target.files[0];

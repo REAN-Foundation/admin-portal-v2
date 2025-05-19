@@ -1,18 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
-	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-	import { invalidate } from '$app/navigation';
-	import Tooltip from '$lib/components/tooltip.svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
-	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
+	import Tooltip from '$lib/components/tooltip.svelte';
+	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
-	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
-	import Image from '$lib/components/image.svelte';
-	import { db } from '$lib/utils/local.db';
+	import { Helper } from '$lib/utils/helper';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -20,59 +16,73 @@
 
 	let debounceTimeout;
 	let isLoading = $state(false);
-	let symptoms = $state(data.symptoms.Items);
-	let retrivedSymptoms = $derived(symptoms);
+	let assessmentNodes = $state(data.assessmentNodes.Items);
+	let retrivedAssessmentNodes = $derived(assessmentNodes);
+
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
 	let isDeleting = $state(false);
 	let searchKeyword = $state(undefined);
 
 	const userId = page.params.userId;
-	const symptomRoute = `/users/${userId}/symptoms`;
-	const editRoute = (id) => `/users/${userId}/symptoms/${id}/edit`;
-	const viewRoute = (id) => `/users/${userId}/symptoms/${id}/view`;
-	const createRoute = `/users/${userId}/symptoms/create`;
+	const templateId = page.params.templateId;
 
-	const breadCrumbs = [{ name: 'Symptoms', path: symptomRoute }];
+	const assessmentRoute = `/users/${userId}/assessment-templates`;
+	const assessmentNodeRoute = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes`;
+	const editRoute = (id) =>
+		`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${id}/edit`;
+	const viewRoute = (id) =>
+		`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${id}/view`;
+	const createRoute = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/create`;
 
-	let symptom = $state(undefined);
+	const breadCrumbs = [
+		{ name: 'Assessments', path: assessmentRoute },
+		{ name: 'Assessment-Nodes', path: assessmentNodeRoute }
+	];
+
+	let title = $state(undefined);
+	let nodeType = $state(undefined);
 	let tags = $state(undefined);
-	let totalSymptomsCount = $state(data.symptoms.TotalCount);
-	let isSortingSymptom = $state(false);
-	let isSortingTags = $state(false);
-	let sortBy = $state('Symptom');
+
+	let sortBy = $state('Title');
 	let sortOrder = $state('ascending');
+
+	let totalAssessmentNodesCount = $state(data.assessmentNodes.TotalCount);
+	let isSortingTitle = $state(false);
+	let isSortingNodeType = $state(false);
 
 	let paginationSettings: PaginationSettings = $state({
 		page: 0,
 		limit: 10,
-		size: totalSymptomsCount,
+		size: totalAssessmentNodesCount,
 		amounts: [10, 20, 30, 50]
 	});
 
-	async function searchSymptom(model) {
+	async function searchNode(model) {
 		try {
-			let url = `/api/server/symptoms/search?`;
+			let url = `/api/server/assessments/assessment-nodes/search?templateId=${templateId}&`;
 			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-			if (symptom) url += `&symptom=${model.symptom}`;
+			if (title) url += `&title=${model.title}`;
+			if (nodeType) url += `&nodeType=${model.nodeType}`;
 			if (tags) url += `&tags=${tags}`;
-
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
 			});
 			const searchResult = await res.json();
 			
-			totalSymptomsCount = searchResult.Data.SymptomTypes.TotalCount;
-			paginationSettings.size = totalSymptomsCount;
-			symptoms = searchResult.Data.SymptomTypes.Items.map((item, index) => ({
+			
+			totalAssessmentNodesCount = searchResult.Data.AssessmentNodeRecords.TotalCount;
+			paginationSettings.size = totalAssessmentNodesCount;
+			assessmentNodes = searchResult.Data.AssessmentNodeRecords.Items.map((item, index) => ({
 				...item,
 				index: index + 1
 			}));
-			searchKeyword = model.symptom;
+
+			searchKeyword = model.title;
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -85,9 +95,9 @@
 		let searchKeyword = e.target.value;
 
 		debounceTimeout = setTimeout(() => {
-			paginationSettings.page = 0; // reset page when typing new search
-			searchSymptom({
-				symptom: searchKeyword,
+			paginationSettings.page = 0;
+			searchNode({
+				title: searchKeyword,
 				itemsPerPage: paginationSettings.limit,
 				pageIndex: 0,
 				sortBy,
@@ -97,17 +107,17 @@
 	}
 
 	function sortTable(columnName) {
-		isSortingSymptom = false;
-		isSortingTags = false;
+		isSortingTitle = false;
+		isSortingNodeType = false;
 		sortOrder = sortOrder === 'ascending' ? 'descending' : 'ascending';
-		if (columnName === 'Symptom') {
-			isSortingSymptom = true;
-		} else if (columnName === 'Tags') {
-			isSortingTags = true;
+		if (columnName === 'Title') {
+			isSortingTitle = true;
+		} else if (columnName === 'NodeType') {
+			isSortingNodeType = true;
 		}
 		sortBy = columnName;
-		searchSymptom({
-			symptom: searchKeyword,
+		searchNode({
+			title: searchKeyword,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: 0,
 			sortBy,
@@ -115,24 +125,10 @@
 		});
 	}
 
-	async function getImageUrl(id: string): Promise<string> {
-		const cachedImage = await db.imageCache
-			.where({ srcUrl: `/file-resources/${id}/download?disposition=inline` })
-			.first();
-		if (cachedImage) {
-			return cachedImage.srcUrl;
-		}
-		return `${data.backendUrl}/file-resources/${id}/download?disposition=inline`;
-	}
-
-	const handleDeleteClick = (id: string) => {
-		openDeleteModal = true;
-		idToBeDeleted = id;
-	};
 	function onItemsPerPageChange() {
-		paginationSettings.page = 0; // reset to first page
-		searchSymptom({
-			symptom: searchKeyword,
+		paginationSettings.page = 0; 
+		searchNode({
+			title: searchKeyword,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: 0,
 			sortBy,
@@ -141,8 +137,8 @@
 	}
 
 	function onPageChange() {
-		searchSymptom({
-			symptom: searchKeyword,
+		searchNode({
+			title: searchKeyword,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: 0,
 			sortBy,
@@ -150,26 +146,31 @@
 		});
 	}
 
-	const handleHealthSystemDelete = async (id) => {
-		console.log('Inside handleHealthSystemDelete', id);
-		const response = await fetch(`/api/server/symptoms/${id}`, {
+	const handleDeleteClick = (id: string) => {
+		openDeleteModal = true;
+		idToBeDeleted = id;
+	};
+
+	const handleAssessmentNodeDelete = async (id) => {
+		const response = await fetch(`/api/server/assessments/assessment-nodes/${id}?templateId=${templateId}`, {
 			method: 'DELETE',
 			headers: { 'content-type': 'application/json' }
 		});
 
 		const res = await response.json();
+		
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
 		} else {
 			toastMessage(res);
 		}
-		searchSymptom({
-			symptom: searchKeyword,
+		searchNode({
+			title: searchKeyword,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
-			sortBy,
-			sortOrder
+			pageIndex: paginationSettings.page,
+            sortBy,
+            sortOrder
 		});
 	};
 </script>
@@ -179,7 +180,7 @@
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container mb-6 shadow">
-			<div class="health-system-search-border p-4">
+			<div class="health-system-search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow">
 						<Icon
@@ -188,17 +189,42 @@
 						/>
 						<input
 							type="text"
-							name="symptom"
-							placeholder="Search by symptom"
+							name="title"
+							placeholder="Search by title"
 							oninput={(event) => onSearchInput(event)}
-							bind:value={symptom}
+							bind:value={title}
 							class="health-system-input !pr-4 !pl-10"
 						/>
-						{#if symptom}
+						{#if title}
 							<button
 								type="button"
 								onclick={() => {
-									symptom = '';
+									title = '';
+								}}
+								class="close-btn"
+							>
+								<Icon icon="material-symbols:close" />
+							</button>
+						{/if}
+					</div>
+					<div class="relative w-auto grow">
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
+						<input
+							type="text"
+							name="type"
+							placeholder="Search by node type"
+							oninput={(event) => onSearchInput(event)}
+							bind:value={nodeType}
+							class="health-system-input !pr-4 !pl-10"
+						/>
+						{#if nodeType}
+							<button
+								type="button"
+								onclick={() => {
+									nodeType = '';
 								}}
 								class="close-btn"
 							>
@@ -215,6 +241,7 @@
 							type="text"
 							name="tags"
 							placeholder="Search by tags"
+							oninput={(event) => onSearchInput(event)}
 							bind:value={tags}
 							class="health-system-input !pr-4 !pl-10"
 						/>
@@ -226,11 +253,11 @@
 								}}
 								class="close-btn"
 							>
-								<Icon icon="material-symbols:close" />
+								<Icon icon="material-symbols:close" class="text-lg" />
 							</button>
 						{/if}
 					</div>
-					<button class="health-system-btn variant-filled-secondary">
+					<button class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary">
 						<a href={createRoute}>Add New</a>
 					</button>
 				</div>
@@ -240,10 +267,11 @@
 				<table class="health-system-table min-w-full">
 					<thead>
 						<tr>
-							<th class="w-10"></th>
-							<th class=" w-70">
-								<button onclick={() => sortTable('Symptom')}>
-									Symptom {#if isSortingSymptom}
+							<th data-sort="index" class="w-12">Id</th>
+							<th>
+								<button onclick={() => sortTable('Title')}>
+									Title
+									{#if isSortingTitle}
 										{#if sortOrder === 'ascending'}
 											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
 										{:else}
@@ -252,9 +280,10 @@
 									{/if}
 								</button>
 							</th>
-							<th class="w-64">
-								<button onclick={() => sortTable('Tags')}>
-									Tags {#if isSortingTags}
+							<th>
+								<button onclick={() => sortTable('NodeType')}>
+									Node Type
+									{#if isSortingNodeType}
 										{#if sortOrder === 'ascending'}
 											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
 										{:else}
@@ -263,48 +292,48 @@
 									{/if}
 								</button>
 							</th>
-							<th class="w-24">Image</th>
-							<th class="w-32">Created</th>
-							<th class="w-20"></th>
+							<th>Query Response Type</th>
+							<th>Tags</th>
+							<th />
+							<th />
 						</tr>
 					</thead>
-					<tbody>
-						{#if retrivedSymptoms.length <= 0}
+					<tbody class="!bg-white dark:!bg-inherit">
+						{#if retrivedAssessmentNodes.length <= 0}
 							<tr>
-								<td colspan="7">{isLoading ? 'Loading...' : 'No records found'}</td>
+								<td aria-colindex={1} colspan="8">
+									{isLoading ? 'Loading...' : 'No records found'}
+								</td>
 							</tr>
 						{:else}
-							{#each retrivedSymptoms as row, index}
+							{#each retrivedAssessmentNodes as row, index}
 								<tr>
 									<td>
 										{paginationSettings.page * paginationSettings.limit + index + 1}
 									</td>
-									<td tabindex="0">
+
+									<td role="gridcell" aria-colindex={2} tabindex="0">
 										<Tooltip text={row.Name || 'Not specified'}>
-											<a href={viewRoute(row.id)}
-												>{row.Name !== null && row.Name !== ''
-													? Helper.truncateText(row.Symptom, 60)
-													: 'Not specified'}</a
-											>
+											<a href={viewRoute(row.id)}>
+												{row.Title !== null && row.Title !== ''
+													? Helper.truncateText(row.Title, 50)
+													: 'Not specified'}
+											</a>
 										</Tooltip>
 									</td>
-									<td tabindex="0">{row.Tags.length > 0 ? row.Tags : 'Not specified'}</td>
-									<td tabindex="0">
-										{#if row.ImageResourceId === undefined || row.ImageResourceId === null}
-											Not specified
-										{:else}
-											{#await getImageUrl(row.ImageResourceId) then imageUrl}
-												<Image cls="flex rounded-lg" source={imageUrl} w="24" h="24" />
-											{:catch error}
-												<p>Error loading image</p>
-											{/await}
-										{/if}
+									<td role="gridcell" aria-colindex={3} tabindex="0">
+										{Helper.truncateText(row.NodeType, 40)}
 									</td>
-									<td role="gridcell" aria-colindex={5} tabindex="0">
-										{TimeHelper.formatDateToReadable(row.CreatedAt, LocaleIdentifier.EN_US)}
-									</td>
-
-									<td>
+									<td>{row.QueryResponseType ? row.QueryResponseType : 'Not specified'}</td>
+									<td role="gridcell" aria-colindex={2} tabindex="0"
+										>{row.Tags.length > 0 ? row.Tags : 'Not specified'}</td
+									>
+									<!-- <td>
+							<a href={editRoute(row.id)} class="btn hover:variant-soft-primary -my-1 p-2">
+								<Icon icon="material-symbols:edit-outline" class="text-lg" />
+							</a>
+						</td> -->
+									<td role="gridcell" aria-colindex={2} tabindex="0">
 										<div class="flex">
 											<Tooltip text="Edit" forceShow={true}>
 												<button class="">
@@ -347,8 +376,8 @@
 
 <Confirmation
 	bind:isOpen={openDeleteModal}
-	title="Delete Symptom"
-	onConfirm={handleHealthSystemDelete}
+	title="Delete Assessment Node"
+	onConfirm={handleAssessmentNodeDelete}
 	id={idToBeDeleted}
 />
 

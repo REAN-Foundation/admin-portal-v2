@@ -66,7 +66,7 @@
 			});
 
 			const response = await res.json();
-			console.log(response, 'response');
+			
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				goto(`${drugsRoute}/${response?.Data?.Drug?.id}/view`);
