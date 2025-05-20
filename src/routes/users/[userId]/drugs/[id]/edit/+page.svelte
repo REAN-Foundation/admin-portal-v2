@@ -59,9 +59,9 @@
 				OtherInformation: otherInformation
 			};
 
-			console.log(drugUpdateModel, 'drugUpdateModel');
+			
 			const validationResult = createOrUpdateSchema.safeParse(drugUpdateModel);
-			console.log(validationResult, 'validationResult');
+			
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [

@@ -9,7 +9,8 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     event.depends('app:lab-records')
     const response = await searchLabRecordTypes(sessionId, {
         orderBy: "TypeName",
-        order: "ascending"
+        order: "ascending",
+        itemsPerPage: 10
     });
 
     if (response.Status === 'failure' || response.HttpCode !== 200) {

@@ -18,8 +18,7 @@
 
 	const MAX_FILE_SIZE = 1024 * 150;
 	let symptomImage = $state();
-	console.log(data, 'data');
-	// let keywords: string[] = $state(data.symptom.Tags);
+
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let keywords: string[] = $state(data.symptom.Tags);
@@ -29,11 +28,10 @@
 
 	let symptom = $state(data.symptom.Symptom);
 	let description = $state(data.symptom.Description);
-	// let tags = $state(data.symptom.Tags);
+
 	let language = $state(data.symptom.Language);
 	let imageUrl = data.symptom.ImageUrl ?? undefined;
 	let imageResourceId = $state(data.symptom.ImageResourceId ?? undefined);
-	// let isSubmitting = $state(false);
 
 	var symptomId = page.params.id;
 	const userId = page.params.userId;
@@ -67,36 +65,6 @@
 			path: editRoute
 		}
 	];
-
-	//   const onFileSelected = async (e) => {
-	// 	let f = e.target.files[0];
-	//       const fileSize = f.size;
-	//       if (fileSize > MAX_FILE_SIZE) {
-	//           errorMessage.Text = "File should be less than 150 KB";
-	//           errorMessage.Colour = 'text-error-500'
-	//           symptomImage.value = null;
-	//           return;
-	//       }
-	//       errorMessage.Text = 'Please wait file upload is in progress';
-	//       errorMessage.Colour = 'text-error-500';
-	//       console.log(`File size: ${fileSize} bytes`);
-	// 	const filename = f.name;
-	// 	let reader = new FileReader();
-	// 	reader.readAsDataURL(f);
-	// 	reader.onload = async (e) => {
-	// 		fileinput = e.target.result;
-	// 		const isFileUploaded = await upload(e.target.result, filename);
-	//           if (isFileUploaded) {
-	//               errorMessage.Text = "File uploaded successfully";
-	//               errorMessage.Colour = 'text-success-500'
-	//               return;
-	//           }
-	//           errorMessage.Text = 'Error in file upload';
-	//           errorMessage.Colour = 'text-error-500'
-	//           symptomImage.value = null;
-	//           return;
-	// 	};
-	// };
 
 	const onFileSelected = async (e) => {
 		let file = e.target.files[0];
@@ -136,9 +104,9 @@
 				errorMessage.Text = 'File uploaded successfully';
 				errorMessage.Colour = 'text-success-500';
 				const imageUrl = response.Data.FileResources[0].url;
-				console.log('imageResourceId', imageUrl);
+				// console.log('imageResourceId', imageUrl);
 				const imageResourceId_ = response.Data.FileResources[0].id;
-				console.log('ImageResource', imageResourceId_);
+				// console.log('ImageResource', imageResourceId_);
 				if (imageResourceId_) {
 					imageResourceId = imageResourceId_;
 					return true;
