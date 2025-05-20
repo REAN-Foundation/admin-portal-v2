@@ -16,11 +16,11 @@
 
 	let debounceTimeout;
 	let isLoading = $state(false);
-	let appointmentRecords = $state(data.appointmentRecords.data);
-	let totalUsers_ = $state(data.appointmentRecords.total_users);
-	let repiedYesCount_ = $state(data.appointmentRecords.replied_yes);
-	let repiedNoCount_ = $state(data.appointmentRecords.replied_no);
-	let notRepiedCount_ = $state(data.appointmentRecords.not_replied);
+	let appointmentRecords = $state(data.appointmentRecords.Items);
+	let totalUsers_ = $state(data.appointmentRecords.TotalUsers);
+	let repiedYesCount_ = $state(data.appointmentRecords.RepliedYes);
+	let repiedNoCount_ = $state(data.appointmentRecords.RepliedNo);
+	let notRepiedCount_ = $state(data.appointmentRecords.NotReplied);
 	let totalUsers = $derived(totalUsers_);
 	let repiedYesCount = $derived(repiedYesCount_);
 	let repiedNoCount = $derived(repiedNoCount_);
@@ -38,10 +38,10 @@
 	const statusReportRoute = `/users/${userId}/appointment-followup/summary-uploads`;
 	const breadCrumbs = [{ name: 'Status Report', path: statusReportRoute }];
 	let date = $state(undefined);
-	let totalAppointmentRecordsCount = $state(data.appointmentRecords.data.length);
+	let totalAppointmentRecordsCount = $state(data.appointmentRecords.TotalCount);
 	$inspect('totalAppointmentRecordsCount', totalAppointmentRecordsCount);
 	let isSortingName = $state(false);
-	let sortBy = $state('Name');
+	let sortBy = $state('appointment_date');
 	let sortOrder = $state('ascending');
 
 	let paginationSettings: PaginationSettings = $state({
@@ -54,9 +54,13 @@
 	async function searchAppointments(model) {
 		try {
 			let url = `/api/server/follow-up/search-appointments?`;
-			// console.log('model', model);
-			if (model.appointmentDate) url += `&appointment_date=${model.appointmentDate}`;
-			if (reply) url += `&replied_status=${model.reply}`;
+			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+			url += `&sortBy=${model.sortBy ?? sortBy}`;
+			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+			console.log('model', model);
+			if (model.appointmentDate) url += `&appointmentDate=${model.appointmentDate}`;
+			if (model.reply) url += `&repliedStatus=${model.reply}`;
 				console.log('model', model);
 			const res = await fetch(url, {
 				method: 'GET',
@@ -64,14 +68,14 @@
 			});
 			const searchResult = await res.json();
 			console.log('searchResult', searchResult);
-			totalAppointmentRecordsCount = searchResult.Data.data.length;
-			totalUsers_ = searchResult.Data.total_users;
-			repiedYesCount_ = searchResult.Data.replied_yes;
-			repiedNoCount_ = searchResult.Data.replied_no;
-			notRepiedCount_ = searchResult.Data.not_replied;
+			totalAppointmentRecordsCount = searchResult.Data.TotalCount;
+			totalUsers_ = searchResult.Data.TotalUsers;
+			repiedYesCount_ = searchResult.Data.RepliedYes;
+			repiedNoCount_ = searchResult.Data.RepliedNo;
+			notRepiedCount_ = searchResult.Data.NotReplied;
 			paginationSettings.size = totalAppointmentRecordsCount;
 
-			appointmentRecords = searchResult.Data.data.map((item, index) => ({
+			appointmentRecords = searchResult.Data.Items.map((item, index) => ({
 				...item,
 				index: index + 1
 			}));
@@ -83,23 +87,38 @@
 		}
 	}
 
-	async function onSearchInput(e) {
-		clearTimeout(debounceTimeout);
-		let searchKeyword = e.target.value;
-		console.log('date**', date);
-		debounceTimeout = setTimeout(() => {
-			paginationSettings.page = 0; // reset page when typing new search
-			searchAppointments({
-				appointmentDate: searchKeyword,
-				reply:searchKeyword,
-			});
-		}, 400);
+	function updateSearchField(name, value) {
+		if (name === 'appointmentDate') {
+			appointmentDate = value;
+		} else if (name === 'reply') {
+			reply = value;
+		}
 	}
+
+	async function onSearchInput(e) {
+			clearTimeout(debounceTimeout);
+			const { name, value } = e.target;
+
+			updateSearchField(name, value)
+			console.log('event', e.target);
+			debounceTimeout = setTimeout(() => {
+				paginationSettings.page = 0; // reset page when typing new search
+				searchAppointments({
+					appointmentDate,
+					reply,
+					itemsPerPage: paginationSettings.limit,
+					pageIndex: 0,
+					sortBy,
+					sortOrder
+				});
+			}, 400);
+		}
+
 
 	function sortTable(columnName) {
 		isSortingName = false;
 		sortOrder = sortOrder === 'ascending' ? 'descending' : 'ascending';
-		if (columnName === 'Name') {
+		if (columnName === 'user_name') {
 			isSortingName = true;
 		}
 		sortBy = columnName;
@@ -115,7 +134,7 @@
 	function onItemsPerPageChange() {
 		paginationSettings.page = 0;
 		searchAppointments({
-			date: searchKeyword,
+			appointmentDate: searchKeyword,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: 0,
 			sortBy,
@@ -125,35 +144,40 @@
 
 	function onPageChange() {
 		searchAppointments({
-			healthSystemName: searchKeyword,
+			appointmentDate: searchKeyword,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
 	}
-	const statistics = [
-		{
-			label: "Total Users",
-			value: totalUsers,
-			description: "Overall count of users associated with the tenant."
-		},
+
+	 function getStatistics() {
+		const statistics = [
 			{
-			label: "Replied Yes Count",
-			value: repiedYesCount,
-			description: "Number of users who replied with 'Yes'."
-		},
-		{
-			label: "Replied No Count",
-			value: repiedNoCount,
-			description: "Number of users who replied with 'No'."
-		},
-		{
-			label: "Not Replied Count",
-			value: notRepiedCount,
-			description: "Number of users who did not reply."
-		}
-	];
+				label: "Total Users",
+				value: totalUsers,
+				description: "Count of users who have at least one scheduled appointment"
+			},
+				{
+				label: "Replied Yes Count",
+				value: repiedYesCount,
+				description: "Number of users who replied with 'Yes'."
+			},
+			{
+				label: "Replied No Count",
+				value: repiedNoCount,
+				description: "Number of users who replied with 'No'."
+			},
+			{
+				label: "Not Replied Count",
+				value: notRepiedCount,
+				description: "Number of users who did not reply."
+			}
+		];
+		return statistics
+	 }
+
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -162,7 +186,7 @@
 	<div class="mx-auto">
 		<table class="w-full table-fixed text-[var(--color-info)]">
 			<tbody>
-				{#each statistics as stat}
+				{#each getStatistics() as stat}
 					<tr>
 						<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">{stat.label}</td>
 						<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">{stat.value}</td>
@@ -191,17 +215,18 @@
 							oninput={(event) => onSearchInput(event)}
 							class="health-system-input !pr-4 !pl-10"
 						/>
-						{#if appointmentDate}
+						<!-- {#if appointmentDate}
 							<button
 								type="button"
 								onclick={() => {
 									appointmentDate = '';
+									onSearchInput({ target: { name: 'appointmentDate', value: '' } });
 								}}
 								class="close-btn"
 							>
 								<Icon icon="material-symbols:close" />
 							</button>
-						{/if}
+						{/if} -->
 					</div>
 					<div class="relative w-auto grow">
 						<!-- <Icon
@@ -217,19 +242,20 @@
 							<option value="" disabled selected>Filter by reply</option>
 							<option value="Yes">Yes</option>
 							<option value="No">No</option>
-							<option value="Not Replied">Not Replied</option>
+							<option value="Not replied">Not Replied</option>
 							</select>
-						{#if reply}
+						<!-- {#if reply}
 							<button
 								type="button"
 								onclick={() => {
 									reply = '';
+									onSearchInput({ target: { name: 'reply', value: '' } });
 								}}
 								class="close-btn"
 							>
 								<Icon icon="material-symbols:close" />
 							</button>
-						{/if}
+						{/if} -->
 					</div>
 				</div>
 			</div>
@@ -238,13 +264,25 @@
 					<thead>
 						<tr>
 							<th data-sort="index">Id</th>
-							<th>Patient Name</th>
-							<th>Hospital Name</th>
+							<th>
+								<button onclick={() => sortTable('user_name')}>
+									User Name
+									{#if isSortingName}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
+									{/if}
+								</button>
+							</th>
+							<th>Location</th>
 							<th>EMRID</th>
 							<th>Phone No</th>
 							<th>Status</th>
+							<th>Appointment Date</th>
 							<th>Appointment Time</th>
-							<th>Replied</th>
+							<th>Replied Status</th>
 							<!-- <th>Created Date</th> -->
 						</tr>
 					</thead>
@@ -275,6 +313,9 @@
 										>{row.status ? row.status : 'Unspecified'}</td
 									>
 									<td role="gridcell" aria-colindex={7} tabindex="0"
+										>{row.appointment_date ? row.appointment_date : 'Unspecified'}</td
+									>
+									<td role="gridcell" aria-colindex={7} tabindex="0"
 										>{row.appointment_time ? row.appointment_time : 'Unspecified'}</td
 									>
 									<td role="gridcell" aria-colindex={8} tabindex="0"
@@ -290,4 +331,4 @@
 	</div>
 </div>
 
-<!-- <Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} /> -->
+<Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />

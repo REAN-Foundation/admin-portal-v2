@@ -10,7 +10,11 @@ export const GET = async (event: RequestEvent) => {
         const searchParams: URLSearchParams = event.url.searchParams;
         const searchFilters = {
             appointment_date: searchParams.get('appointmentDate') ?? undefined ,
-            replied_status: searchParams.get('replied_status') ?? undefined
+            replied_status: searchParams.get('repliedStatus') ?? undefined,
+            order_by: searchParams.get('sortBy'),
+			order: searchParams.get('sortOrder') ?? 'ascending',
+			items_per_page: parseInt(searchParams.get('itemsPerPage') ?? '10'),
+			page_index: parseInt(searchParams.get('pageIndex') ?? '0')
         };
         // const appointmentDate = searchParams.get('appointmentDate') ?? undefined;
         console.log('Search Parameters:', searchFilters);
