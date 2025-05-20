@@ -41,34 +41,7 @@
 	let selectedNodeType = $state('Question');
 	let selectedQueryType = $state('Text');
 
-	let optionValueStore = $state([]);
-
-	const updateSequences = () => {
-		optionValueStore = optionValueStore.map((opt, index) => ({
-			...opt,
-			Sequence: index + 1
-		}));
-	};
-
-	const addOptionField = () => {
-		const newOption = { Text: '', Sequence: optionValueStore.length + 1 };
-		optionValueStore = [...optionValueStore, newOption];
-	};
-
-	const removeOptionField = (option) => {
-		optionValueStore = optionValueStore.filter((opt) => opt.id !== option.id);
-	};
-
-	let showConfirm = $state(false);
-
-	const confirmDelete = (option) => {
-		if (option.id) {
-			optionValueStore = option;
-			showConfirm = true;
-		} else {
-			optionValueStore = optionValueStore.filter((opt) => opt.Text !== option.Text);
-		}
-	};
+	let optionArray = $state([]);
 
 	const onSelectNodeType = (val) => {
 		selectedNodeType = val.target.value;
@@ -122,7 +95,7 @@
 				ProviderAssessmentCode: providerAssessmentCode,
 				ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce,
 				ScoringApplicable: scoringApplicable,
-				Options: optionValueStore,
+				Options: optionArray,
 				CorrectAnswer: finalValue,
 				Message: message,
 				Tags: keywords,
@@ -354,16 +327,7 @@
 									<tr>
 										<td class="align-top">Options</td>
 										<td>
-											<Choice
-												bind:optionValueStore
-												{updateSequences}
-												{addOptionField}
-												{removeOptionField}
-												{confirmDelete}
-												{showConfirm}
-												optionToDelete="null"
-												mode="create"
-											/>
+											<Choice bind:optionArray />
 										</td>
 									</tr>
 									{#if selectedQueryType === 'Single Choice Selection'}
@@ -376,7 +340,7 @@
 													bind:value={correctAnswer}
 												>
 													<option value="" disabled selected>Select correct answer</option>
-													{#each optionValueStore as option}
+													{#each optionArray as option}
 														<option value={option.Sequence}>{option.Text}</option>
 													{/each}
 												</select>
@@ -384,7 +348,7 @@
 										</tr>
 									{/if}
 									<tr>
-										<td>Resolution Score <span class=" text-red-600">*</span></td>
+										<td>Resolution Score</td>
 										<td>
 											<input
 												type="number"
@@ -425,7 +389,7 @@
 									</tr>
 
 									<tr>
-										<td>Resolution Score <span class=" text-red-600">*</span></td>
+										<td>Resolution Score</td>
 										<td>
 											<input
 												type="number"
@@ -446,16 +410,7 @@
 								<tr>
 									<td class="align-top">Options</td>
 									<td>
-										<Choice
-											bind:optionValueStore
-											{updateSequences}
-											{addOptionField}
-											{removeOptionField}
-											{confirmDelete}
-											{showConfirm}
-											optionToDelete="null"
-											mode="create"
-										/>
+										<Choice bind:optionArray />
 									</td>
 								</tr>
 								{#if selectedQueryType === 'Single Choice Selection'}
@@ -470,7 +425,7 @@
 												bind:value={correctAnswer}
 											>
 												<option value="" disabled selected>Select correct answer</option>
-												{#each optionValueStore as option}
+												{#each optionArray as option}
 													<option value={option.Sequence}>{option.Text}</option>
 												{/each}
 											</select>

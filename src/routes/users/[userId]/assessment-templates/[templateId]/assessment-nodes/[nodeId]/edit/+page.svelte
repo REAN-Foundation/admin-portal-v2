@@ -1,10 +1,9 @@
 <script lang="ts">
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
-	import Choice from '../../create/choice.svelte';
+	import Choice from './choice.svelte';
 	import type { PageServerData } from './$types';
-
-	import { goto, invalidate, invalidateAll } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import { createOrUpdateSchema } from '$lib/validation/assessment-node.schema';
 	import type { AssessmentNodeUpdateModel } from '$lib/types/assessment-node.types';
 	import { toastMessage } from '$lib/components/toast/toast.store';
@@ -33,7 +32,7 @@
 		required = $state(data.assessmentNode.Required),
 		rawData = $state(data.assessmentNode.RawData ?? undefined);
 
-	let optionValueStore = $derived(options);
+	let optionArray = $derived(options);
 
 	let selectedOption = $derived(
 		correctAnswer !== null
@@ -81,64 +80,6 @@
 	let selectedNodeType = $derived(nodeType);
 	let selectedQueryType = $derived(queryType);
 
-	// let optionValueStore = $state([]);
-
-	const updateSequences = () => {
-		optionValueStore = optionValueStore.map((opt, index) => ({
-			...opt,
-			Sequence: index + 1
-		}));
-	};
-
-	const addOptionField = () => {
-		const newOption = { Text: '', Sequence: optionValueStore.length + 1 };
-		optionValueStore = [...optionValueStore, newOption];
-	};
-
-	let optionToDelete = $state(null);
-	let showConfirm = $state(false);
-
-	const confirmDelete = (id) => {
-		optionToDelete = id;
-
-		if (id) {
-			showConfirm = true;
-			optionValueStore = optionValueStore.filter((opt) => opt !== id);
-		} else {
-			optionValueStore = optionValueStore.filter((opt) => opt !== id);
-			updateSequences();
-		}
-	};
-
-	let isDeleting = $state(false);
-
-	const removeOptionField = async (id) => {
-		if (optionToDelete) {
-			const response = await fetch(
-				`/api/server/assessments/options/${id}?nodeId=${nodeId}&templateId=${templateId}`,
-				{
-					method: 'DELETE',
-					headers: { 'content-type': 'application/json' }
-				}
-			);
-			const res = await response.json();
-
-			if (res.HttpCode === 200) {
-				optionValueStore = optionValueStore.filter((opt) => opt !== optionToDelete);
-				isDeleting = true;
-				toastMessage(res);
-			} else {
-				toastMessage(res);
-			}
-			updateSequences();
-			optionToDelete = null;
-			showConfirm = false;
-		}
-		invalidateAll();
-	};
-
-	const onSelectQueryResponseType = (val) => (selectedQueryType = val.target.value);
-
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
@@ -165,7 +106,7 @@
 				ProviderAssessmentCode: providerAssessmentCode,
 				ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce,
 				ScoringApplicable: scoringApplicable,
-				Options: optionValueStore,
+				Options: optionArray,
 				CorrectAnswer: processedCorrectAnswer,
 				Message: message,
 				Tags: keywords,
@@ -328,12 +269,7 @@
 										placeholder="Select query type here..."
 										bind:value={queryType}
 									>
-										<!-- on:change={(val) => onSelectQueryResponseType(val)} -->
-
 										<option selected value={queryType}>{queryType}</option>
-										<!-- {#each queryResponseTypes as responseType}
-								<option disabled value={responseType}>{responseType}</option>
-							{/each} -->
 									</select>
 								</td>
 							</tr>
@@ -341,16 +277,7 @@
 								<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
 									<td class="align-top">Options</td>
 									<td>
-										<Choice
-											bind:optionValueStore
-											{updateSequences}
-											{addOptionField}
-											{removeOptionField}
-											{confirmDelete}
-											{showConfirm}
-											{optionToDelete}
-											mode="edit"
-										/>
+										<Choice bind:optionArray />
 									</td>
 								</tr>
 
