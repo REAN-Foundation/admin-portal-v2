@@ -118,7 +118,6 @@
 								<input
 									type="text"
 									name="title"
-									required
 									placeholder="Enter title here..."
 									bind:value={title}
 									class="health-system-input {form?.errors?.title ? 'input-text-error' : ''}"
@@ -148,7 +147,6 @@
 							<td>Type <span class="text-red-700">*</span></td>
 							<td>
 								<select
-									required
 									name="type"
 									placeholder="Select type here..."
 									bind:value={type}
