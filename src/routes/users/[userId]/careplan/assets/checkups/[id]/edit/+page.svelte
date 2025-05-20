@@ -16,14 +16,14 @@
 	let name = $state(data.checkups.Name);
 	let description = $state(data.checkups.Description);
 	let version = $state(data.checkups.Version);
-	let keywords: string[] = $state([]);
+	let keywords: string[] = $state(data.checkups.Tags);
 	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
 	var checkupsId = page.params.id;
 
 	const editRoute = `/users/${userId}/careplan/assets/checkups/${checkupsId}/edit`;
-	const viewRoute = `/users/${userId}/careplan/assets/biometric/${checkupsId}/view`;
+	const viewRoute = `/users/${userId}/careplan/assets/checkups/${checkupsId}/view`;
 	const checkupsRoute = `/users/${userId}/careplan/assets/checkups`;
 
 	const breadCrumbs = [

@@ -15,10 +15,9 @@
 	let promise = $state();
 	let name = $state(data.audio.Name);
 	let transcript = $state(data.audio.Transcript);
-	let pathUrl = $state(data.audio.PathUrl);
+	let pathUrl = $state(data.audio.Url);
 	let version = $state(data.audio.Version);
 	let tags = $state(data.audio.Tags);
-	// let keywords: string[] = $state([]);
 	let keywordsStr: string = $state('');
 	let keywords: string[] = $state(data.audio.Tags);
 

@@ -19,7 +19,7 @@
 	let templateName = $state(data.message.TemplateName);
 	let pathUrl = $state(data.message.PathUrl);
 	let version = $state(data.message.Version);
-	let keywords: string[] = $state([]);
+	let keywords: string[] = $state(data.message.Tags);
 	let keywordsStr = $state('');
 	let templateVariablesText = $state(
 		data.message.TemplateVariables ? JSON.stringify(data.message.TemplateVariables, null, 2) : ''

@@ -16,7 +16,7 @@
 	let name = $state(data.medications.Name);
 	let description = $state(data.medications.Description);
 	let version = $state(data.medications.Version);
-	let keywords: string[] = $state([]);
+	let keywords: string[] = $state(data.medications.Tags);
 	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
@@ -155,7 +155,6 @@
 									keywordsChanged={onUpdateKeywords}
 								/>
 								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
 							</td>
 						</tr>
 						<tr>

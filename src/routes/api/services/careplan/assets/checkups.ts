@@ -4,7 +4,7 @@ import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager'
 
 ////////////////////////////////////////////////////////////////
 
-export const createChallenges = async (
+export const createCheckup = async (
     sessionId: string,
     name: string,
     description: string,

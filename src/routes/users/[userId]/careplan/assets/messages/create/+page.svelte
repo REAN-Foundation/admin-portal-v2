@@ -54,8 +54,6 @@
 				PathUrl: pathUrl,
 				Version: version,
 				Tags: keywords,
-				// TemplateVariables: templateVariables
-				// TemplateVariables: parseTemplateVariables(templateVariablesText)
 				TemplateVariables: parsedTemplateVars
 
 			};

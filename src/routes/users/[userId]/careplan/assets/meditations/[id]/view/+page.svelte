@@ -19,7 +19,7 @@
 	let assetCode = meditation.AssetCode;
 	let name = meditation.Name;
 	let description = meditation.Description !== null ? meditation.Description : 'Not specified';
-	let meditationType = meditation.meditationType;
+	let meditationType = meditation.MeditationType;
 	let recommendedDurationMin = meditation.RecommendedDurationMin;
 	let tags_ = meditation.Tags;
 	let tags = tags_.join(', ');

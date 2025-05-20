@@ -106,7 +106,7 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td>Name <span class="text-red-700">*</span></td>
+						<td>Name<span class="text-red-700">*</span></td>
 						<td>
 							<input
 									type="text"
@@ -147,7 +147,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td>Reference Template Code </td>
+						<td>Reference Template Code<span class="text-red-700">*</span></td>
 						<td>
 							<input
 								type="text"

@@ -15,9 +15,9 @@
 	let promise = $state();
 	let name = $state(data.infographics.Name);
 	let description = $state(data.infographics.Description);
-	let pathUrl = $state(data.infographics.PathUrl);
+	let pathUrl = $state(data.infographics.Url);
 	let version = $state(data.infographics.Version);
-	let keywords: string[] = $state([]);
+	let keywords: string[] = $state(data.infographics.Tags);
 	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
@@ -36,7 +36,7 @@
 		name = data?.infographics?.Name;
 		infographicsId = page.params.id;
 		description = data?.infographics?.Description;
-		pathUrl = data?.infographics?.PathUrl;
+		pathUrl = data?.infographics?.Url;
 		version = data?.infographics?.Version;
 		keywords = data?.infographics?.Tags;
 		errors = {};
@@ -50,7 +50,7 @@
 			const infographicsUpdateModel: InfographicsUpdateModel = {
 				Name: name,
 				Description: description,
-				PathUrl: pathUrl,
+				Url: pathUrl,
 				Version: version,
 				Tags: keywords
 			};
@@ -77,7 +77,6 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				// console.log("Redirecting to:", response?.Data?.id);
 				console.log('Full response:', response);
 				await goto(`${infographicsRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
@@ -174,7 +173,6 @@
 									keywordsChanged={onUpdateKeywords}
 								/>
 								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
 							</td>
 						</tr>
 						<tr>

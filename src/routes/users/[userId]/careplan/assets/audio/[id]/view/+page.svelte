@@ -19,8 +19,7 @@
 	let assetCode = audio.AssetCode;
 	let name = audio.Name;
 	let transcript = data.audio.Transcript !== null ? data.audio.Transcript : 'Not specified';
-	// let pathUrl = (data.audio.Url !== null && data.audio.PathUrl !== '') ? data.audio.PathUrl : 'Not specified';
-	let pathUrl = data.audio.PathUrl !== null ? data.audio.PathUrl : 'Not specified';
+	let pathUrl = data.audio.Url !== null ? data.audio.Url : 'Not specified';
 	let tags_ = data.audio.Tags;
 	let tags = tags_.join(', ');
 	let version = data.audio.Version;

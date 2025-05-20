@@ -23,9 +23,9 @@
 	const userId = page.params.userId;
 	var physiotherapyId = page.params.id;
 
-	const editRoute = `/users/${userId}/careplan/assets/physiotherapys/${physiotherapyId}/edit`;
-	const viewRoute = `/users/${userId}/careplan/assets/physiotherapys/${physiotherapyId}/view`;
-	const physiotherapyRoute = `/users/${userId}/careplan/assets/physiotherapys`;
+	const editRoute = `/users/${userId}/careplan/assets/physiotherapy/${physiotherapyId}/edit`;
+	const viewRoute = `/users/${userId}/careplan/assets/physiotherapy/${physiotherapyId}/view`;
+	const physiotherapyRoute = `/users/${userId}/careplan/assets/physiotherapy`;
 
 	const breadCrumbs = [
 		{ name: 'Physiotherapy', path: physiotherapyRoute },
@@ -122,7 +122,7 @@
 									class="input {form?.errors?.Name
 										? 'input-text-error'
 										: ''}"
-									name="biometricsName"
+									name="name"
 									placeholder="Enter name here..."
 									bind:value={name}
 								/>
