@@ -25,12 +25,13 @@
 	const userId = page.params.userId;
 	var biometricsId = page.params.id;
 
+	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/biometrics/${biometricsId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/biometric/${biometricsId}/view`;
 	const biometricsRoute = `/users/${userId}/careplan/assets/biometrics`;
 
 	const breadCrumbs = [
-		{ name: 'Biometric', path: biometricsRoute },
+		{ name: 'Assets', path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
@@ -41,7 +42,6 @@
 		 measurementUnit = data?.biometrics?.MeasurementUnit
 		 version = data?.biometrics?.Version;
 		 biometricsType = data?.biometrics.BiometricsType;
-		//  keywords = data?.biometrics?.Tags;
 		 tags = data?.biometrics.Tags;
 		 errors = {};
 		}

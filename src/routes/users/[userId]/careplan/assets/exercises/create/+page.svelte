@@ -16,7 +16,6 @@
 	let description = $state('');
 	let exerciseType = $state('');
 	let intensityLevel = $state('');
-	// let recommendedDurationMin = $state();
 	let recommendedDurationMin = $state<number>();
 	let version = $state('');
 	let keywords: string[] = $state([]);
@@ -30,7 +29,6 @@
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
-		{ name: 'Exercise', path: exerciseRoute },
 		{ name: 'Create', path: createRoute }
 	];
 

@@ -23,12 +23,13 @@
 	const userId = page.params.userId;
 	var infographicsId = page.params.id;
 
+	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/infographics/${infographicsId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/infographics/${infographicsId}/view`;
 	const infographicsRoute = `/users/${userId}/careplan/assets/infographics`;
 
 	const breadCrumbs = [
-		{ name: 'Infographics', path: infographicsRoute },
+		{ name: 'Assets', path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 

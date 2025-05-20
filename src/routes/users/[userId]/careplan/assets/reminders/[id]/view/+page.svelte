@@ -29,10 +29,6 @@
 			path: assetRoute
 		},
 		{
-			name: 'Reminder',
-			path: remindersRoute
-		},
-		{
 			name: 'View',
 			path: viewRoute
 		}

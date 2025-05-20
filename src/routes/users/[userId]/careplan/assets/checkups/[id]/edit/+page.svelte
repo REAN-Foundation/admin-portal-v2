@@ -22,12 +22,13 @@
 	const userId = page.params.userId;
 	var checkupsId = page.params.id;
 
+	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/checkups/${checkupsId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/checkups/${checkupsId}/view`;
 	const checkupsRoute = `/users/${userId}/careplan/assets/checkups`;
 
 	const breadCrumbs = [
-		{ name: 'Checkups', path: checkupsRoute },
+		{ name: 'Assets', path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 

@@ -29,10 +29,6 @@
 			path: assetRoute
 		},
 		{
-			name: 'Medications',
-			path: medicationsRoute
-		},
-		{
 			name: 'View',
 			path: viewRoute
 		}

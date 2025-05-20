@@ -31,10 +31,6 @@
 			path: assetRoute
 		},
 		{
-			name: 'Meditation',
-			path: meditationRoute
-		},
-		{
 			name: 'View',
 			path: viewRoute
 		}

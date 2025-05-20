@@ -24,12 +24,13 @@
 	const userId = page.params.userId;
 	var meditationId = page.params.id;
 
+	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/meditations/${meditationId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/meditations/${meditationId}/view`;
 	const meditationRoute = `/users/${userId}/careplan/assets/meditations`;
 
 	const breadCrumbs = [
-		{ name: 'Meditation', path: meditationRoute },
+		{ name: 'Assets', path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 

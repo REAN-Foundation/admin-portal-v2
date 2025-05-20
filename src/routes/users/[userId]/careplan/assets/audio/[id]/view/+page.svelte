@@ -11,7 +11,7 @@
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/audio/${audioId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/audio/${audioId}/view`;
-	const audioRoute = `/users/${userId}/careplan/assets/audio`;
+	const audioRoute = `/users/${userId}/careplan/assets/audio/create`;
 
 	let { data }: { data: PageServerData } = $props();
 
@@ -28,10 +28,6 @@
 		{
 			name: 'Assets',
 			path: assetRoute
-		},
-		{
-			name: 'Audio',
-			path: audioRoute
 		},
 		{
 			name: 'View',

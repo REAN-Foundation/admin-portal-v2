@@ -22,12 +22,13 @@
 	const userId = page.params.userId;
 	var reminderId = page.params.id;
 
+	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/reminders/${reminderId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/reminders/${reminderId}/view`;
 	const reminderRoute = `/users/${userId}/careplan/assets/reminders`;
 
 	const breadCrumbs = [
-		{ name: 'Reminder', path: reminderRoute },
+		{ name: 'Assets', path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 

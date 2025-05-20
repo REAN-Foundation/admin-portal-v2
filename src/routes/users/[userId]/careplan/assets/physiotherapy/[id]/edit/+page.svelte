@@ -23,12 +23,13 @@
 	const userId = page.params.userId;
 	var physiotherapyId = page.params.id;
 
+	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/physiotherapy/${physiotherapyId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/physiotherapy/${physiotherapyId}/view`;
 	const physiotherapyRoute = `/users/${userId}/careplan/assets/physiotherapy`;
 
 	const breadCrumbs = [
-		{ name: 'Physiotherapy', path: physiotherapyRoute },
+		{ name: 'Assets', path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 

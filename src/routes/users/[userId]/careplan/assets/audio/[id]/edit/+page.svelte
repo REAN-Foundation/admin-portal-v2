@@ -25,12 +25,13 @@
 	const userId = page.params.userId;
 	var audioId = page.params.id;
 
+	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/audio/${audioId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/biometric/${audioId}/view`;
 	const audioRoute = `/users/${userId}/careplan/assets/audio`;
 
 	const breadCrumbs = [
-		{ name: 'Audio', path: audioRoute },
+		{ name: 'Assets',path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
@@ -81,7 +82,7 @@
 				toastMessage(response);
 				// console.log("Redirecting to:", response?.Data?.id);
 				console.log('Full response:', response);
-				await goto(`${audioRoute}/${response?.Data?.id}/view`);
+				await goto(`${viewRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {

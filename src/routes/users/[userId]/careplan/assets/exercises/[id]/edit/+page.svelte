@@ -25,12 +25,13 @@
 	const userId = page.params.userId;
 	var exerciseId = page.params.id;
 
+	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/exercises/${exerciseId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/exercises/${exerciseId}/view`;
 	const exerciseRoute = `/users/${userId}/careplan/assets/exercises`;
 
 	const breadCrumbs = [
-		{ name: 'Exercise', path: exerciseRoute },
+		{ name: 'Assets', path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 

@@ -23,12 +23,11 @@
 	data.title = 'Create Biometric';
 	const userId = page.params.userId;
 	const assetRoute = `/users/${userId}/careplan/assets`;
-	const createRoute = `/users/${userId}/careplan/assets/biometric/create`;
+	const createRoute = `/users/${userId}/careplan/assets/biometrics/create`;
 	const biometricsRoute = `/users/${userId}/careplan/assets/biometrics`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
-		{ name: 'Biometric', path: biometricsRoute },
 		{ name: 'Create', path: createRoute }
 	];
 

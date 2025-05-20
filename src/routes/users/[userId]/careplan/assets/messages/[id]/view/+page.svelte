@@ -34,10 +34,6 @@
 			path: assetRoute
 		},
 		{
-			name: 'Message',
-			path: messageRoute
-		},
-		{
 			name: 'View',
 			path: viewRoute
 		}

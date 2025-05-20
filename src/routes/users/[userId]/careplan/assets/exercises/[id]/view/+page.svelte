@@ -32,10 +32,6 @@
 			path: assetRoute
 		},
 		{
-			name: 'Exercise',
-			path: exerciseRoute
-		},
-		{
 			name: 'View',
 			path: viewRoute
 		}

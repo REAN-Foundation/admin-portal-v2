@@ -26,7 +26,6 @@
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
-		{ name: 'Reminders', path: remindersRoute },
 		{ name: 'Create', path: createRoute }
 	];
 

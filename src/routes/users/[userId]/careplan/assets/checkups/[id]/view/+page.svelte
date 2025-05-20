@@ -29,10 +29,6 @@
 			path: assetRoute
 		},
 		{
-			name: 'Checkups',
-			path: checkupsRoute
-		},
-		{
 			name: 'View',
 			path: viewRoute
 		}

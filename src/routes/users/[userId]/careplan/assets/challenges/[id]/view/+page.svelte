@@ -30,10 +30,6 @@
 			path: assetRoute
 		},
 		{
-			name: 'Challenges',
-			path: challengesRoute
-		},
-		{
 			name: 'View',
 			path: viewRoute
 		}

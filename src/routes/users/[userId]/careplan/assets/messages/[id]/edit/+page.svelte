@@ -28,12 +28,13 @@
 	const userId = page.params.userId;
 	var messageId = page.params.id;
 
+	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/messages/${messageId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/messages/${messageId}/view`;
 	const messageRoute = `/users/${userId}/careplan/assets/messages`;
 
 	const breadCrumbs = [
-		{ name: 'Message', path: messageRoute },
+		{ name: 'Assets', path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 

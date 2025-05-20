@@ -30,10 +30,6 @@
 			path: assetRoute
 		},
 		{
-			name: 'Physiotherapy',
-			path: physiotherapyRoute
-		},
-		{
 			name: 'View',
 			path: viewRoute
 		}

@@ -22,12 +22,13 @@
 	const userId = page.params.userId;
 	var medicationsId = page.params.id;
 
+	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/medications/${medicationsId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/biometric/${medicationsId}/view`;
 	const medicationsRoute = `/users/${userId}/careplan/assets/medications`;
 
 	const breadCrumbs = [
-		{ name: 'Medications', path: medicationsRoute },
+		{ name: 'Assets', path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
@@ -104,7 +105,7 @@
 						<tr>
 							<th>Edit Medications</th>
 							<th class="text-end">
-								<a href={medicationsRoute} class="health-system-btn variant-soft-secondary">
+								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
