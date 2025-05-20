@@ -6,7 +6,6 @@
 	import Choice from './choice.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
-	// import { sequence } from '@sveltejs/kit/hooks';
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { AssessmentNodeCreateModel } from '$lib/types/assessment-node.types';
 	import { createOrUpdateSchema } from '$lib/validation/assessment-node.schema';
@@ -189,7 +188,6 @@
 									bind:value={parentNodeId}
 								>
 									{#each assessmentNodes as node}
-										<!-- <option value="">{JSON.stringify(node)}</option> -->
 										{#if node.NodeType === 'Node list'}
 											<option value={node.id}
 												>{node.NodeType} - {node.Title} - {node.DisplayCode}</option
@@ -305,25 +303,6 @@
 							</tr>
 							{#if $scoringApplicableCondition === true}
 								{#if selectedQueryType === 'Single Choice Selection' || selectedQueryType === 'Multi Choice Selection'}
-									<!-- <tr>
-										<td class="align-top">Options</td>
-										<td>
-											<Choice />
-										</td>
-									</tr>
-									<tr>
-										<td>Correct Answer</td>
-										<td>
-											<input
-												type="text"
-												name="correctAnswer"
-												placeholder="Enter correct answer here..."
-												class="input w-full
-												{form?.errors?. correctAnswer? 'border-error-300 text-error-500' : ''}"
-												value={form?.data?.correctAnswer ?? ''}
-											/>
-										</td>
-									</tr> -->
 									<tr>
 										<td class="align-top">Options</td>
 										<td>
@@ -363,19 +342,6 @@
 											{/if}
 										</td>
 									</tr>
-
-									<!-- <tr>
-										<td class="align-top">Options</td>
-										<Choice
-										bind:correctAnswer
-										queryType={selectedQueryType}
-									/>
-									</tr>
-									<input
-										type="hidden"
-										name="CorrectAnswer"
-										value={JSON.stringify(correctAnswerString)}
-									/> -->
 								{:else if selectedQueryType === 'Boolean'}
 									<tr>
 										<td>Correct Answer</td>
@@ -432,19 +398,6 @@
 										</td>
 									</tr>
 								{/if}
-								<!-- <tr>
-										<td class="align-top">Options</td>
-										<Choice
-										bind:correctAnswer
-										queryType={selectedQueryType}
-									/>
-									</tr>
-								
-								<input
-									type="hidden"
-									name="CorrectAnswer"
-									value={JSON.stringify(correctAnswerString)}
-								/> -->
 							{/if}
 						{:else if selectedNodeType === 'Message'}
 							<tr>
@@ -481,11 +434,6 @@
 					</tbody>
 				</table>
 				<div class="button-container">
-					<!-- <button
-						type="button"
-						onclick={handleReset}
-						class="health-system-btn variant-soft-secondary">Reset</button
-					> -->
 					{#await promise}
 						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
 							Submiting

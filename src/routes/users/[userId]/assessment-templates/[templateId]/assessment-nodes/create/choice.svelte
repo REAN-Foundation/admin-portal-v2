@@ -17,8 +17,8 @@
 		addOptionField();
 	}
 	const addOptionField = () => {
-			const newOption = { Text: '', Sequence: optionArray.length + 1 };
-			optionArray = [...optionArray, newOption];
+		const newOption = { Text: '', Sequence: optionArray.length + 1 };
+		optionArray = [...optionArray, newOption];
 	};
 </script>
 
