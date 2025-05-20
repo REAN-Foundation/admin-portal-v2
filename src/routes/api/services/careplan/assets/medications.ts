@@ -48,7 +48,7 @@ export const searchMedications = async (sessionId: string, searchParams: Record<
 		searchString = '?' + params.join('&');
 	}
 
-	const cacheKey = `session-${sessionId}:req-searchAssets:medication:${searchString}`;
+	const cacheKey = `session-${sessionId}:req-searchAssets:medications:${searchString}`;
 	if (await DashboardManager.has(cacheKey)) {
 		return await DashboardManager.get(cacheKey);
 	}
