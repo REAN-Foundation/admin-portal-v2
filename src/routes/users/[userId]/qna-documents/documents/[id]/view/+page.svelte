@@ -43,7 +43,7 @@
 	// Generating breadcrumb items
 	const breadCrumbs = [
 		{
-			name: 'Document',
+			name: 'Q&A Documents',
 			path: documentRoute
 		},
 		{

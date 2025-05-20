@@ -40,7 +40,7 @@
 	let splitter = $state(undefined);
 	let active = $state(true);
 	let resourceId = $state(undefined);
-	let documentType = $state(undefined);
+	let documentType = $derived(fileName ? fileName.split('.').pop() : '');
 	let selectFile = $state(undefined);
 
 	$inspect(selectFile);
@@ -50,7 +50,7 @@
 	const createRoute = `/users/${userId}/qna-documents/documents/create`;
 	const documentsRoute = `/users/${userId}/qna-documents/documents`;
 	const breadCrumbs = [
-		{ name: 'Document', path: documentsRoute },
+		{ name: 'Q&A Documents', path: documentsRoute },
 		{ name: 'Create', path: createRoute }
 	];
 
@@ -110,12 +110,11 @@
 
 			const fileCreateModel: FileUploadModel = {
 				UploadFile: selectFile,
-				FileName: selectFile.name,
-				FileType: selectFile.type
+				FileName: selectFile?.name,
+				FileType: selectFile?.type
 			};
 
 			const fileValidationResult = fileUploadSchema.safeParse(fileCreateModel);
-			console.log('validation result of file', fileValidationResult);
 
 			const documentsCreateModel: DocumentsCreateModel = {
 				Name: name,
@@ -139,13 +138,15 @@
 
 			if (!fileValidationResult.success || !documentValidation.success) {
 				if (!fileValidationResult.success) {
-					errors = Object.fromEntries(
-						Object.entries(fileValidationResult.error.flatten().fieldErrors).map(([key, val]) => [
-							key,
-							val?.[0] || 'This field is required'
-						])
+					Object.assign(
+						errors,
+						Object.fromEntries(
+							Object.entries(fileValidationResult.error.flatten().fieldErrors).map(([key, val]) => [
+								key,
+								val?.[0] || 'This field is required'
+							])
+						)
 					);
-					return;
 				}
 				if (!documentValidation.success) {
 					Object.assign(
@@ -313,7 +314,7 @@
 
 								<!-- Validation Error -->
 								{#if errors?.UploadFile}
-									<p class="mt-1 text-sm text-red-600">{errors?.UploadFile}</p>
+									<p class="text-error">{errors?.UploadFile}</p>
 								{/if}
 							</td>
 						</tr>
@@ -329,10 +330,13 @@
 								/>
 								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
+								{#if errors?.Keywords}
+									<p class="text-error">{errors?.Keywords}</p>
+								{/if}
 							</td>
 						</tr>
 
-						<tr>
+						<!-- <tr>
 							<td>Document Type <span class="text-red-700">*</span></td>
 							<td>
 								<input
@@ -346,9 +350,9 @@
 									<p class="text-error">{errors?.DocumentType}</p>
 								{/if}
 							</td>
-						</tr>
+						</tr> -->
 						<!-- Source -->
-						<tr>
+						<!-- <tr>
 							<td>Source</td>
 							<td>
 								<input
@@ -359,7 +363,7 @@
 									class="health-system-input"
 								/>
 							</td>
-						</tr>
+						</tr> -->
 						<!-- Parent Document -->
 						<!-- <tr>
 							<td>Parent Document</td>
@@ -377,31 +381,7 @@
 							</td>
 						</tr> -->
 						<!-- parent document Version -->
-						<tr>
-							<td>Version</td>
-							<td>
-								<select
-									class="health-system-input"
-									name="version"
-									bind:value={version}
-									placeholder="Select type here..."
-								>
-									<option value="V1">V1</option>
-									<option value="V3">V3</option>
-								</select>
-							</td>
-						</tr>
-
-						<tr>
-							<td>Active</td>
-							<td>
-								<input type="radio" name="active" bind:group={active} value={true} />
-								<label for="activeTrue">True</label>
-
-								<input type="radio" name="active" bind:group={active} value={false} />
-								<label for="activeFalse">False</label>
-							</td>
-						</tr>
+						
 
 						<!-- <tr>
 							<td>Created By</td>
@@ -447,7 +427,7 @@
 									class="health-system-input"
 								/>
 								{#if errors?.ChunkingLength}
-									<p class="text-error">{errors?.ChunkingLenght}</p>
+									<p class="text-error">{errors?.ChunkingLength}</p>
 								{/if}
 							</td>
 						</tr>
