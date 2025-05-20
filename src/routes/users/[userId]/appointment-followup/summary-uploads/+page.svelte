@@ -9,6 +9,7 @@
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
+	import UploadModal from '$lib/components/appointment/upload.model.svelte';
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -43,6 +44,8 @@
 	let isSortingName = $state(false);
 	let sortBy = $state('appointment_date');
 	let sortOrder = $state('ascending');
+	let extraction = $state('FileBased');
+	let showUploadModal = $state(false);
 
 	let paginationSettings: PaginationSettings = $state({
 		page: 0,
@@ -114,7 +117,6 @@
 			}, 400);
 		}
 
-
 	function sortTable(columnName) {
 		isSortingName = false;
 		sortOrder = sortOrder === 'ascending' ? 'descending' : 'ascending';
@@ -181,8 +183,33 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
-<div class="mt-4 overflow-x-auto rounded-lg border border-[var(--color-outline)]">
+<div class="flex flex-col mx-6 gap-4 md:flex-row">
+		{#if extraction === "FileBased"}
+			<div class="relative w-auto grow pl-1.5">
+				<button class="btn variant-filled-secondary" onclick={() => showUploadModal = true}>
+					Upload Appointment Schedules
+				</button>
+			</div>
+		{:else}
+			<div class="relative w-auto grow">
+				<button class="btn variant-filled-secondary">
+					Extract Appointment Schedules
+				</button>
+			</div>
+		{/if}
+			<div class="relative w-auto grow">
+				<button class="btn variant-filled-secondary">
+					Cancel Appointments
+				</button>
+			</div>
+			<div class="relative w-auto grow">
+				<button class="btn variant-filled-secondary">
+					View Cancellations
+				</button>
+			</div>
+</div> 
+<UploadModal show={showUploadModal} onClose={() => showUploadModal = false} />
+<div class="mt-4 mx-6 overflow-x-auto rounded-lg border border-[var(--color-outline)]">
 	<div class="mx-auto">
 		<table class="w-full table-fixed text-[var(--color-info)]">
 			<tbody>
@@ -298,28 +325,28 @@
 										{paginationSettings.page * paginationSettings.limit + index + 1}
 									</td>
 									<td role="gridcell" aria-colindex={2} tabindex="0"
-										>{row.user_name ? row.user_name : 'Unspecified'}</td
+										>{row.user_name ? row.user_name : 'Not Specified'}</td
 									>
 									<td role="gridcell" aria-colindex={3} tabindex="0"
-										>{row.location ? row.location : 'Unspecified'}</td
+										>{row.location ? row.location : 'Not Specified'}</td
 									>
 									<td role="gridcell" aria-colindex={4} tabindex="0"
-										>{row.participant_code ? row.participant_code : 'Unspecified'}</td
+										>{row.participant_code ? row.participant_code : 'Not Specified'}</td
 									>
 									<td role="gridcell" aria-colindex={5} tabindex="0"
-										>{row.phone_number ? row.phone_number : 'Unspecified'}</td
+										>{row.phone_number ? row.phone_number : 'Not Specified'}</td
 									>
 									<td role="gridcell" aria-colindex={6} tabindex="0"
-										>{row.status ? row.status : 'Unspecified'}</td
+										>{row.status ? row.status : 'Not Specified'}</td
 									>
 									<td role="gridcell" aria-colindex={7} tabindex="0"
-										>{row.appointment_date ? row.appointment_date : 'Unspecified'}</td
+										>{row.appointment_date ? row.appointment_date : 'Not Specified'}</td
 									>
 									<td role="gridcell" aria-colindex={7} tabindex="0"
-										>{row.appointment_time ? row.appointment_time : 'Unspecified'}</td
+										>{row.appointment_time ? row.appointment_time : 'Not Specified'}</td
 									>
 									<td role="gridcell" aria-colindex={8} tabindex="0"
-										>{row.replied_status ? row.replied_status : 'Unspecified'}</td
+										>{row.replied_status ? row.replied_status : 'Not Specified'}</td
 									>
 								</tr>
 							{/each}
