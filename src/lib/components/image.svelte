@@ -4,7 +4,14 @@
 	import { Helper } from '$lib/utils/helper';
 	let { source, cls, w, h } = $props();
 
-	let objectUrl:any = $state();
+	console.log('source', source);
+	let objectUrl: any = $state();
+
+	$effect(() => {
+		if (source) {
+			loadImage();
+		}
+	});
 	async function loadImage() {
 		if (!source) {
 			return;

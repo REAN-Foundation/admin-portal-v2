@@ -5,23 +5,36 @@
 	import { enhance } from '$app/forms';
 	import Image from '$lib/components/image.svelte';
 	import BreadCrums from '$lib/components/breadcrumbs/breadcrums.svelte';
+	import type { FileUploadModel } from '$lib/types/file.upload.types';
+	import { fileUploadSchema } from '$lib/validation/file.upload.schema';
+	import { toastMessage } from '$lib/components/toast/toast.store';
+	import { createOrUpdateSchema, profileFileUploadSchema } from '$lib/validation/profile.schema';
+	import { goto } from '$app/navigation';
+	import type { ProfileFileUploadModel, ProfileUpdateModel } from '$lib/types/profile.types';
 
 	//////////////////////////////////////////////////////////////////////
 
-	// export let form;
-	// export let data: PageServerData;
-	let { form, data } = $props();
+	let { data, form }: { data: PageServerData; form: any } = $props();
+
+	let errors: Record<string, string> = $state({});
+	let promise = $state();
+
 	let firstName = $state(data.user.Person.FirstName);
 	let lastName = $state(data.user.Person.LastName);
-	let phone = data.user.Person.Phone;
+	let phone = $state(data.user.Person.Phone);
 	let email = $state(data.user.Person.Email);
 	let roleId = $state(data.user.Role.id);
-	let splitPhoneNumber = phone.split('-');
-	let [countryCode, phoneNumber] = splitPhoneNumber;
-	let imageUrl = data.user.Person.ProfileImageURL ?? undefined;
+	let roleName = $state(data.user.Role.RoleName);
+	let splitPhoneNumber = $state(phone.split('-'));
+	let [countryCode, phoneNumber] = $derived(splitPhoneNumber);
+	let imageUrl = $state(data.user.Person.ImageUrl);
 	let imageResourceId = $state(data.user.Person.ImageResourceId ?? undefined);
+	let previewImage = $state(null);
+	let fileInput: HTMLInputElement;
 
-	console.log('user', data.user);
+	console.log('data', data);
+
+	// console.log('imageurl ==>', imageUrl);
 	let profileImage = $state();
 	let errorMessage = {
 		Text: 'Max file upload size 150 KB',
@@ -29,24 +42,18 @@
 	};
 	const MAX_FILE_SIZE = 1024 * 150;
 
-	//Original data
-	let _firstName = $derived(firstName);
-	let _lastName = $derived(lastName);
-	let _email = $derived(email);
-	let _countryCode = countryCode;
-	let _phoneNumber = phoneNumber;
-
 	console.log('phone', phone);
 	function handleReset() {
-		firstName = _firstName;
-		lastName = _lastName;
-		email = _email;
-		countryCode = _countryCode;
-		phoneNumber = _phoneNumber;
+		firstName = data?.user?.Person?.FirstName;
+		lastName = data?.user?.Person?.LastName;
+		email = data?.user?.Person?.Email;
+		countryCode = countryCode;
+		phoneNumber = phoneNumber;
 	}
 
 	const userId = page.params.userId;
 	const userRoute = `/users/${userId}/home`;
+	const profileRoute = `/users/${userId}`
 
 	const breadCrumbs = [
 		{
@@ -55,37 +62,44 @@
 		}
 	];
 
+	$inspect('errors', errors);
+
 	const onFileSelected = async (e) => {
-		let file = e.target.files[0];
-		const fileSize = file.size;
-		if (fileSize > MAX_FILE_SIZE) {
-			errorMessage.Text = 'File should be less than 150 KB';
-			errorMessage.Colour = 'text-error-500';
-			profileImage.value = null;
+		const input = e.target as HTMLInputElement;
+    	const file = input.files?.[0];
+
+		const fileCreateModel: ProfileFileUploadModel = {
+			UploadFile: file,
+			FileName: file.name,
+			FileType: file.type
+		};
+
+		const fileValidationResult = profileFileUploadSchema.safeParse(fileCreateModel);
+		console.log('validation result of file', fileValidationResult);
+
+		if (!fileValidationResult.success) {
+			errors = Object.fromEntries(
+				Object.entries(fileValidationResult.error.flatten().fieldErrors).map(([key, val]) => [
+					key,
+					val?.[0] || 'This field is required'
+				])
+			);
 			return;
 		}
-
-		errorMessage.Text = 'Please wait, file upload is in progress';
-		errorMessage.Colour = 'text-error-500';
 
 		const formData = new FormData();
 		formData.append('file', file);
 		formData.append('filename', file.name);
 
 		try {
-			const res = await fetch(`/api/server/file-resources/upload`, {
+			const res = await fetch(`/api/server/profile-image/upload`, {
 				method: 'POST',
 				body: formData
 			});
 
-			if (!res.ok) {
-				const errorText = await res.text();
-				throw new Error(errorText);
-			}
 			const response = await res.json();
-			if (response.Status === 'success' && response.HttpCode === 201) {
-				errorMessage.Text = 'File uploaded successfully';
-				errorMessage.Colour = 'text-success-500';
+			imageUrl = response.Data.FileResources[0].Url;
+			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				const imageResourceId_ = response.Data.FileResources[0].id;
 				console.log('ImageResource', imageResourceId_);
 				if (imageResourceId_) {
@@ -93,158 +107,216 @@
 					return true;
 				}
 				console.log('imageResourceId', imageResourceId);
+
+				toastMessage(response);
+				return;
+			}
+
+			if (response.Errors) {
+				errors = response?.Errors || {};
 			} else {
-				errorMessage.Text = response.Message;
-				errorMessage.Colour = 'text-error-500';
+				toastMessage(response);
 			}
 		} catch (error) {
 			console.error('Error uploading file:', error);
-			errorMessage.Text = 'Error uploading file: ' + error.message;
-			errorMessage.Colour = 'text-error-500';
+
+			toastMessage();
 		}
 	};
+
+	$inspect('imageurl', imageUrl);
+
+	const handleSubmit = async (event: Event) => {
+		try {
+			event.preventDefault();
+			errors = {};
+
+			const userUpdateModel: ProfileUpdateModel = {
+				FirstName: firstName,
+				LastName: lastName,
+				Phone: phone,
+				CountryCode: countryCode,
+				Email: email,
+				RoleId: roleId,
+				Role: roleName,
+				ResourceId: imageResourceId
+			};
+			const userValidation = createOrUpdateSchema.safeParse(userUpdateModel);
+			console.log('validation result of documents', userValidation);
+
+			if (!userValidation.success) {
+				errors = Object.fromEntries(
+					Object.entries(userValidation.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				);
+
+				return;
+			}
+
+			const res = await fetch(`/api/server/profile/${userId}`, {
+				method: 'PUT',
+				body: JSON.stringify(userUpdateModel),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			const response = await res.json();
+
+			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				toastMessage(response);
+				// goto(`${profileRoute}/my-profile`);
+				window.location.reload();
+				return;
+			}
+
+			if (response.Errors) {
+				errors = response?.Errors || {};
+			} else {
+				toastMessage(response);
+			}
+		} catch (error) {
+			toastMessage();
+		}
+	};
+
+	
 </script>
 
-<!-- <BreadCrums crumbs={breadCrumbs} /> -->
+<BreadCrums crumbs={breadCrumbs} />
 
-<form
-	method="post"
-	action="?/updateProfileAction"
-	enctype="multipart/form-data"
-	class="my-2  "
-	use:enhance
->
-	<table class="w-full">
-		<thead class=" ">
-			<tr>
-				<th class="text-start text-lg md:text-xl font-semibold px-4 text-[var(--color-info)]">My Profile</th>
-				<th class="flex justify-end ">
-					<a href={userRoute} class=" p-4">
-						<Icon icon="material-symbols:close-rounded" />
-					</a>
-				</th>
-			</tr>
-		</thead>
-		<tbody class="!">
-			<tr>
-				<td>
-					<input type="text" hidden name="roleId" bind:value={roleId} />
-				</td>
-			</tr>
-			<tr class=" ">
-				<td class="px-4 py-4 text-[var(--color-info)]">First Name *</td>
-				<td class="px-4 py-4">
-					<input
-						type="text"
-						name="firstName"
-						bind:value={firstName}
-						required
-						placeholder="Enter first name here..."
-						class="input w-full {form?.errors?.firstName
-							? 'border-error-300'
-							: 'border-primary-200'}"
-					/>
-					{#if form?.errors?.firstName}
-						<p class="text-error-500 text-xs">{form?.errors?.firstName[0]}</p>
-					{/if}
-				</td>
-			</tr>
-			<tr class="">
-				<td class="px-4 py-4 text-[var(--color-info)]">Last Name *</td>
-				<td class="px-4 py-4">
-					<input
-						type="text"
-						name="lastName"
-						bind:value={lastName}
-						required
-						placeholder="Enter last name here..."
-						class="input w-full {form?.errors?.lastName
-							? 'border-error-300'
-							: 'border'}"
-					/>
-					{#if form?.errors?.lastName}
-						<p class="text-error-500 text-xs">{form?.errors?.lastName[0]}</p>
-					{/if}
-				</td>
-			</tr>
-			<tr class="">
-				<td class="px-4 py-4 text-[var(--color-info)]">Contact Number *</td>
-				<td class="flex gap-2 px-4 py-4">
-					<select
-						name="countryCode"
-						bind:value={countryCode}
-						class="select select-primary w-20 min-[320px]:w-12 sm:w-18 md:w-20 lg:w-20"
+<div class="px-6 py-4">
+	<div class="mx-auto">
+		<div class="health-system-table-container">
+			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+				<table class="health-system-table">
+					<thead>
+						<tr>
+							<th>My Profile</th>
+							<th class="text-end">
+								<a href={userRoute} class=" cancel-btn">
+									<Icon icon="material-symbols:close-rounded" />
+								</a>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="hidden">
+							<td>
+								<input type="text" hidden name="roleId" bind:value={roleId} />
+							</td>
+						</tr>
+						<tr>
+							<td>First Name <span class="text-red-600">*</span></td>
+							<td>
+								<input
+									type="text"
+									name="firstName"
+									bind:value={firstName}
+									placeholder="Enter first name here..."
+									class="health-system-input"
+								/>
+								{#if errors?.FirstName}
+									<p class="text-error">{errors?.FirstName}</p>
+								{/if}
+							</td>
+						</tr>
+						<tr>
+							<td>Last Name <span class="text-red-600">*</span></td>
+							<td>
+								<input
+									type="text"
+									name="lastName"
+									bind:value={lastName}
+									placeholder="Enter last name here..."
+									class="health-system-input"
+								/>
+								{#if errors?.LastName}
+									<p class="text-error">{errors?.LastName}</p>
+								{/if}
+							</td>
+						</tr>
+						<tr>
+							<td>Contact Number <span class="text-red-600">*</span></td>
+							<td class="flex gap-2 px-4 py-4">
+								<select name="countryCode" bind:value={countryCode} class="health-system-input">
+									<option>+1</option>
+									<option>+91</option>
+								</select>
+								<input
+									type="text"
+									name="phone"
+									bind:value={phoneNumber}
+									placeholder="Enter contact number here..."
+									class="health-system-input"
+								/>
+								{#if errors?.Phone}
+									<p class="text-error">{errors?.Phone[0]}</p>
+								{/if}
+							</td>
+						</tr>
+						<tr>
+							<td>Email <span class="text-red-600">*</span></td>
+							<td>
+								<input
+									type="email"
+									name="email"
+									bind:value={email}
+									placeholder="Enter email here..."
+									class="health-system-input"
+								/>
+								{#if errors?.Email}
+									<p class="text-error">{errors?.Email}</p>
+								{/if}
+							</td>
+						</tr>
+						<tr>
+							<td>Profile Image</td>
+							<td>
+								{#if imageUrl === undefined}
+									<input
+										name="fileinput"
+										type="file"
+										class="health-system-input"
+										placeholder="select Image"
+										onchange={async (e) => await onFileSelected(e)}
+									/>
+								{:else}
+									<Image cls="flex h-24 w-24 rounded-lg" source={imageUrl} w="24" h="24" />
+									<input
+										name="fileinput"
+										type="file"
+										class="health-system-input my-2"
+										bind:this={profileImage}
+										placeholder="Image"
+										onchange={async (e) => await onFileSelected(e)}
+									/>
+								{/if}
+								<input type="hidden" name="imageResourceId" value={imageResourceId} />
+								{#if errors?.UploadFile}
+									<p class="text-error">{errors?.UploadFile}</p>
+								{/if}
+
+								
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="button-container">
+					<button
+						type="button"
+						onclick={handleReset}
+						class="health-system-btn variant-soft-secondary">Reset</button
 					>
-						<option>+1</option>
-						<option>+91</option>
-					</select>
-					<input
-						type="text"
-						name="phone"
-						required
-						bind:value={phoneNumber}
-						placeholder="Enter contact number here..."
-						class="input {form?.errors?.phone ? 'border-error-300 text-error-500' : ''}"
-					/>
-					{#if form?.errors?.phone}
-						<p class="text-error-500 text-xs">{form?.errors?.phone[0]}</p>
-					{/if}
-				</td>
-			</tr>
-			<tr class="">
-				<td class="px-4 py-4 text-[var(--color-info)]">Email *</td>
-				<td class="px-4 py-4">
-					<input
-						type="email"
-						name="email"
-						required
-						bind:value={email}
-						placeholder="Enter email here..."
-						class="input"
-					/>
-					{#if form?.errors?.email}
-						<p class="text-error-500 text-xs">{form?.errors?.email[0]}</p>
-					{/if}
-				</td>
-			</tr>
-			<tr class="">
-				<td class="align-top px-4 py-4 text-[var(--color-info)]">Profile Image</td>
-				<td class="px-4 py-4">
-					{#if imageUrl === undefined}
-						<input
-							name="fileinput"
-							type="file"
-							class="true input   w-full"
-							placeholder="Image"
-							onchange={async (e) => await onFileSelected(e)}
-						/>
-						{#if errorMessage}
-							<p class={`${errorMessage.Colour} text-sm my-1`}>{errorMessage.Text}</p>
-						{/if}
-					{:else}
-						<Image cls="flex h-24 w-24 rounded-lg" source={imageUrl} w="24" h="24" />
-						<input
-							name="fileinput"
-							type="file"
-							class="true input w-full"
-							bind:this={profileImage}
-							placeholder="Image"
-							onchange={async (e) => await onFileSelected(e)}
-						/>
-						{#if errorMessage}
-							<p class= {`${errorMessage.Colour} `} >{errorMessage.Text}</p>
-						{/if}
-					{/if}
-					<input type="hidden" name="imageResourceId" value={imageResourceId} />
-					{#if form?.errors?.imageResourceId}
-						<p class="text-error-500 text-xs">{form?.errors?.imageResourceId[0]}</p>
-					{/if}
-				</td>
-			</tr>
-		</tbody>
-	</table>
-	<div class="flex justify-end gap-2 p-2">
-		<button type="button" onclick={handleReset} class=" btn w-1/5 md:!w-1/5 variant-soft-secondary">Reset</button>
-		<button type="submit" class="w-1/5 md:!w-1/5 btn variant-filled-secondary">Submit</button>
+					{#await promise}
+						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+							Submiting
+						</button>
+					{:then data}
+						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+					{/await}
+				</div>
+			</form>
+		</div>
 	</div>
-</form>
+</div>
