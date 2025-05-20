@@ -8,7 +8,7 @@ export const createAssessment = async (
     name: string,
     description: string,
     template: string,
-    templateCode: string,
+    referenceTemplateCode: string,
     tags: string[],
     version: string 
 ) => {
@@ -17,7 +17,7 @@ export const createAssessment = async (
         Description: description,
         Template: template,
         // TemplateCode: templateCode,
-        ReferenceTemplateCode: templateCode,
+        ReferenceTemplateCode: referenceTemplateCode,
         Tags: tags,
         Version: !version || version?.length === 0 ? 'V 1.0' : version,
     };
@@ -52,12 +52,12 @@ export const searchAssessment = async (sessionId: string, searchParams) => {
 };
 
 export const updateAssessment = async (
-sessionId: string, assessmentId: string, name: string, description: string, template: string, templateCode: string, tags: string[], version: string) => {
+sessionId: string, assessmentId: string, name: string, description: string, template: string, referenceTemplateCode: string, tags: string[], version: string) => {
     const body = {
         Name: name,
         Description: description,
         Template: template,
-        TemplateCode: templateCode,
+        ReferenceTemplateCode: referenceTemplateCode,
         Tags: tags,
         Version: !version || version?.length === 0 ? 'V 1.0' : version,
     };

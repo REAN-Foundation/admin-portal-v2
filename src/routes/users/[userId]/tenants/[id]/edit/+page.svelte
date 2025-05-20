@@ -107,7 +107,7 @@
 						<tr>
 							<th>Edit Tenant</th>
 							<th class="text-end">
-								<a href={viewRoute} class="table-btn variant-soft-secondary">
+								<a href={viewRoute} class="cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -119,7 +119,7 @@
 							<td>
 								<input
 									type="text"
-									class="table-input-field {form?.errors?.Name ? 'input-text-error' : ''}"
+									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
 									name="name"
 									placeholder="Enter name here..."
 									bind:value={name}
@@ -145,7 +145,7 @@
 							<td>
 								<input
 									type="text"
-									class="table-input-field {form?.errors?.Code ? 'input-text-error' : ''}"
+									class="input {form?.errors?.Code ? 'input-text-error' : ''}"
 									name="code"
 									placeholder="Enter code here..."
 									bind:value={code}
@@ -160,7 +160,7 @@
 							<td>
 								<input
 									type="text"
-									class="table-input-field {form?.errors?.Phone ? 'input-text-error' : ''}"
+									class="input {form?.errors?.Phone ? 'input-text-error' : ''}"
 									name="phone"
 									placeholder="Enter phone here..."
 									bind:value={phone}
@@ -175,7 +175,7 @@
 							<td>
 								<input
 									type="text"
-									class="table-input-field {form?.errors?.Email ? 'input-text-error' : ''}"
+									class="input {form?.errors?.Email ? 'input-text-error' : ''}"
 									name="email"
 									placeholder="Enter email here..."
 									bind:value={email}

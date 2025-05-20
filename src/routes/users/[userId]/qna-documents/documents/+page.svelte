@@ -15,8 +15,6 @@
 	let { data }: { data: PageServerData } = $props();
 
 	let documents = $state(data.documents.Items);
-	let fileResource = $derived(documents.map((items) => items.FileResource));
-	$inspect('file resource', fileResource);
 
 	let retrivedDocuments = $derived(documents);
 	let debounceTimeout;
@@ -24,7 +22,6 @@
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
 	let isDeleting = $state(false);
-	let searchKeyword = $state(undefined);
 
 	$inspect('retrivedDocuments', retrivedDocuments);
 
@@ -34,7 +31,7 @@
 	const viewRoute = (id) => `/users/${userId}/qna-documents/documents/${id}/view`;
 	const createRoute = `/users/${userId}/qna-documents/documents/create`;
 
-	const breadCrumbs = [{ name: 'Documents', path: documentsRoute }];
+	const breadCrumbs = [{ name: 'Q&A Documents', path: documentsRoute }];
 
 	let name = $state(undefined);
 	let documentType = $state(undefined);
@@ -174,6 +171,28 @@
 			sortOrder
 		});
 	};
+
+	const downloadFile = async (id) => {
+		const response = await fetch(`/api/server/file-resources/download/${id}`, {
+			method: 'GET',
+			headers: { 'content-type': 'application/json' }
+		});
+
+		const blob = await response.blob();
+
+		const contentDisposition = response.headers.get('Content-Disposition');
+		const fileNameMatch = contentDisposition?.match(/filename="(.+?)"/);
+		const fileName = fileNameMatch?.[1] ?? 'downloaded-file';
+
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = fileName;
+		document.body.appendChild(a);
+		a.click();
+		a.remove();
+		URL.revokeObjectURL(url);
+	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -193,7 +212,7 @@
 							name="name"
 							bind:value={name}
 							oninput={(event) => onSearchInput(event)}
-							placeholder="Search by Document name"
+							placeholder="search by document"
 							class="health-system-input !pr-4 !pl-10"
 						/>
 						{#if name}
@@ -219,7 +238,7 @@
 							type="text"
 							name="documentType"
 							bind:value={documentType}
-							placeholder="Search by Document Type"
+							placeholder="search by type"
 							class="health-system-input !pr-4 !pl-10"
 						/>
 						{#if documentType}
@@ -248,7 +267,7 @@
 							<th class="w-10" data-sort="index"></th>
 							<th class="w-52">
 								<button onclick={() => sortTable('Name')}>
-									Name {#if isSortingName}
+									Documents {#if isSortingName}
 										{#if sortOrder === 'ascending'}
 											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
 										{:else}
@@ -257,10 +276,12 @@
 									{/if}
 								</button>
 							</th>
-							<th class="w-64"> File Name </th>
+							<th class="w-64">Type</th>
 							<th class="w-24">Version</th>
 							<th class="w-52">Parent Document</th>
 							<th class="w-20">Active</th>
+							<!-- <th class="w-20">Last Updated</th> -->
+							<th class="w-20">Source</th>
 							<th class="w-16"></th>
 						</tr>
 					</thead>
@@ -283,9 +304,8 @@
 										</a>
 									</td>
 									<td>
-										{row.FileResource.OriginalFilename !== null &&
-										row.FileResource.OriginalFilename !== ''
-											? Helper.truncateText(row.FileResource.OriginalFilename, 20)
+										{row.DocumentType !== null && row.DocumentType !== ''
+											? Helper.truncateText(row.DocumentType, 20)
 											: 'Not specified'}
 									</td>
 									<td>
@@ -296,10 +316,13 @@
 										{/each}
 									</td>
 									<td>
-										{row.FileResource.OriginalFilename !== null &&
-										row.FileResource.OriginalFilename !== ''
-											? Helper.truncateText(row.FileResource.OriginalFilename, 20)
-											: 'Not specified'}
+										<button
+											class="text-blue-600 underline cursor-pointer"
+											onclick={(e) => {
+												e.preventDefault();
+												downloadFile(row.ResourceId);
+											}}>Link</button
+										>
 									</td>
 									<td>
 										{#if row.IsActive !== null && row.IsActive !== ''}
@@ -311,6 +334,20 @@
 										{:else}
 											Not specified
 										{/if}
+									</td>
+
+									<!-- <td>
+										{row.LastUpdated !== null && row.LastUpdated !== ''
+											? row.LastUpdated
+											: 'Not specified'}
+									</td> -->
+
+									<td>
+										{#each row.DocumentVersion as row_}
+											{row_.DocumentSource !== null && row_.DocumentSource !== ''
+												? row_.DocumentSource
+												: 'Not specified'}
+										{/each}
 									</td>
 
 									<td>
@@ -356,7 +393,7 @@
 
 <Confirmation
 	bind:isOpen={openDeleteModal}
-	title="Delete Documents"
+	title="Delete Document"
 	onConfirm={handleDocumentDelete}
 	id={idToBeDeleted}
 />

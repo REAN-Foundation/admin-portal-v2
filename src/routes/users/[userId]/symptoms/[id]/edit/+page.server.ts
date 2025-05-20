@@ -1,12 +1,7 @@
 import { type ServerLoadEvent } from '@sveltejs/kit';
-// import { redirect } from 'sveltekit-flash-message/server';
-// import { errorMessage, successMessage } from '$lib/utils/message.utils';
-// import { z } from 'zod';
-// import { zfd } from 'zod-form-data';
 import { BACKEND_API_URL } from '$env/static/private';
 import type { PageServerLoad } from './$types';
 import { getSymptomById } from '../../../../../api/services/reancare/symptoms';
-// import { updateSymptomSchema } from '$lib/validation/symptoms.schema';
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -15,9 +10,6 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const symptomId = event.params.id;
 	const response = await getSymptomById(sessionId, symptomId);
 
-	// if (response.Status === 'failure' || response.HttpCode !== 200) {
-	//     throw error(response.HttpCode, response.Message);
-	// }
 	const symptom = response?.Data?.SymptomType;
 	const id = response?.Data?.SymptomType.id;
 	const imageResourceId = symptom?.ImageResourceId;

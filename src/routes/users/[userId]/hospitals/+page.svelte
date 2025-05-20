@@ -370,7 +370,7 @@
 
 <Confirmation
 	bind:isOpen={openDeleteModal}
-	title="Delete Hospital @@@"
+	title="Delete Hospital "
 	onConfirm={handleHospitalDelete}
 	id={idToBeDeleted}
 />
