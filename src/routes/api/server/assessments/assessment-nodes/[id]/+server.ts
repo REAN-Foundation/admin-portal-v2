@@ -105,6 +105,11 @@ export const PUT = async (event: RequestEvent) => {
             data.ServeListNodeChildrenAtOnce,
             data.CorrectAnswer,
             data.RawData,
+            data.ScoringApplicable,
+            data.ResolutionScore,
+            data.ProviderAssessmentCode,
+            data.FieldIdentifier,
+            data.FieldIdentifierUnit
         );
 
         return ResponseHandler.success(response);
