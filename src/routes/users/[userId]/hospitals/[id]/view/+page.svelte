@@ -40,16 +40,16 @@
 	<div class="flex flex-wrap justify-end gap-2 py-2">
 		<a
 			href={editRoute}
-			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
+			class="table-btn variant-filled-secondary hover:!variant-soft-secondary"
 		>
 			<Icon icon="material-symbols:edit-outline" />
 			<span>Edit</span>
 		</a>
 	</div>
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container shadow">
 
-			<table class="health-system-table">
+			<table class="table-c">
 				<thead>
 					<tr>
 						<th>View Hospital</th>
