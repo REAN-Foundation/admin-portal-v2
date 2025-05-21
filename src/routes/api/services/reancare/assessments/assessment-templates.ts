@@ -120,6 +120,7 @@ export const updateAssessmentTemplate = async (
 		Tags: tags ? tags : []
 	};
 
+	console.log("assessment-body-----", body)
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${assessmentTemplateId}`;
 	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 };
