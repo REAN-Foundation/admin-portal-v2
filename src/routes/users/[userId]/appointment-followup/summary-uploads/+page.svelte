@@ -10,6 +10,9 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import UploadModal from '$lib/components/appointment/upload.model.svelte';
+	import { goto } from '$app/navigation';
+	import { createOrUpdateSchema } from '$lib/validation/follow-up/followup.upload.schema';
+	import type { FollowUpUploadModel } from '$lib/types/follow-up/followup.upload';
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -46,6 +49,8 @@
 	let sortOrder = $state('ascending');
 	let extraction = $state('FileBased');
 	let showUploadModal = $state(false);
+	let errors = $state(undefined);
+	let file = $state(undefined);
 
 	let paginationSettings: PaginationSettings = $state({
 		page: 0,
@@ -180,6 +185,55 @@
 		return statistics
 	 }
 
+	 
+	const handleUpload = async (event: Event) => {
+		try {
+			event.preventDefault();
+			errors = {};
+
+			const followUpUploadModel: FollowUpUploadModel = {
+				File : file,
+		
+			};
+
+			console.log('followUpUploadModel===',followUpUploadModel)
+
+			const validationResult = createOrUpdateSchema.safeParse(followUpUploadModel);
+
+			if (!validationResult.success) {
+				errors = Object.fromEntries(
+					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				);
+				return;
+			}
+
+			const res = await fetch(`/api/server/follow-up/file-upload`, {
+				method: 'POST',
+				body: JSON.stringify(followUpUploadModel),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			const response = await res.json();
+
+			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				toastMessage(response);
+				// goto(`${healthSystemsRoute}/${response?.Data?.HealthSystem?.id}/view`);
+				return;
+			}
+
+			if (response.Errors) {
+				// errors = response?.Errors || {};
+			} else {
+				toastMessage(response);
+			}
+		} catch (error) {
+			toastMessage();
+		}
+	};
+
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -208,7 +262,9 @@
 				</button>
 			</div>
 </div> 
-<UploadModal show={showUploadModal} onClose={() => showUploadModal = false} />
+
+<UploadModal show={showUploadModal} onClose={() => showUploadModal = false} onSubmit ={(e) => handleUpload(e.detail)} />
+
 <div class="mt-4 mx-6 overflow-x-auto rounded-lg border border-[var(--color-outline)]">
 	<div class="mx-auto">
 		<table class="w-full table-fixed text-[var(--color-info)]">
