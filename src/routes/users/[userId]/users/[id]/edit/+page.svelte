@@ -117,9 +117,9 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
+				<table class="table-c">
 					<thead>
 						<tr>
 							<th>Edit User</th>
@@ -140,7 +140,7 @@
 									name="firstName"
 									bind:value={firstName}
 									placeholder="Enter first name here..."
-									class="health-system-input "
+									class="input "
 								/>
 								{#if errors?.FirstName}
 									<p class="text-error">{errors?.FirstName}</p>
@@ -156,7 +156,7 @@
 									name="lastName"
 									bind:value={lastName}
 									placeholder="Enter last name here..."
-									class="health-system-input "
+									class="input "
 								/>
 								{#if errors?.LastName}
 									<p class="text-error">{errors?.LastName}</p>
@@ -170,7 +170,7 @@
 								<select
 									name="countryCode"
 									bind:value={splitPhoneNumber[0]}
-									class="health-system-input !w-20"
+									class="input !w-20"
 								>
 									<option>+1</option>
 									<option>+91</option>
@@ -181,7 +181,7 @@
 									pattern="[0-9]*"
 									bind:value={splitPhoneNumber[1]}
 									placeholder="Enter contact number here..."
-									class="health-system-input {errors?.Phone ? 'input-text-error' : ''}"
+									class="input {errors?.Phone ? 'input-text-error' : ''}"
 								/>
 								{#if errors?.Phone}
 									<p class="text-error">{errors?.Phone}</p>
@@ -197,7 +197,7 @@
 									name="email"
 									bind:value={email}
 									placeholder="Enter email here..."
-									class="health-system-input"
+									class="input"
 								/>
 								{#if errors?.Email}
 									<p class="text-error">{errors?.Email}</p>
@@ -210,7 +210,7 @@
 							<td>
 								<select
 									name="roleId"
-									class="health-system-input"
+									class="input"
 									placeholder="Select role here..."
 									disabled
 									bind:value={role}
@@ -230,14 +230,14 @@
 					<button
 						type="button"
 						onclick={handleReset}
-						class="health-system-btn variant-soft-secondary">Reset</button
+						class="table-btn variant-soft-secondary">Reset</button
 					>
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+						<button type="submit" class="table-btn variant-soft-secondary" disabled>
 							Submiting
 						</button>
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
 					{/await}
 				</div>
 			</form>
