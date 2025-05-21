@@ -34,9 +34,7 @@
 		return healthSystems.sort((a, b) => a.Name.localeCompare(b.Name));
 	}
 
-	let _hospitalName = $derived(hospitalName);
 	let _healthSystemId = $derived(healthSystemId);
-	let _tags = $derived(JSON.stringify(keywords));
 	const r = $derived(
 		healthSystems.filter((hs) => {
 			return hs.id === healthSystemId;
@@ -117,9 +115,9 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
+				<table class="table-c">
 					<thead>
 						<tr>
 							<th>Edit Hospital</th>
@@ -137,21 +135,20 @@
 							<td>
 								<input
 									type="text"
-									class="health-system-input {form?.errors?.hospitalName ? 'input-text-error' : ''}"
+									class="input"
 									name="hospitalName"
 									placeholder="Enter name here..."
 									bind:value={hospitalName}
-									required
 								/>
-								{#if form?.errors?.hospitalName}
-									<p class="text-error-500 text-xs">{form?.errors?.hospitalName[0]}</p>
+								{#if errors?.Name}
+									<p class="text-error">{errors?.Name}</p>
 								{/if}
 							</td>
 						</tr>
 						<tr>
 							<td>Health System <span class=" text-red-600">*</span></td>
 							<td>
-								<select name="healthSystemId" class=" health-system-input">
+								<select name="healthSystemId" class=" input">
 									<option value={healthSystemId}>{healthSystemName}</option>
 									{#each healthSystems as healthSystem}
 										{#if healthSystemId !== healthSystem.id}
@@ -167,18 +164,18 @@
 
 							<td>
 								<InputChips
-								bind:keywords
-								name="keywords"
-								id="keywords"
-								keywordsChanged={onUpdateKeywords}
-							/>
-							<input
-								type="hidden"
-								name="keywordsStr"
-								id="keywordsStr"
-								class="health-system-input"
-								bind:value={keywordsStr}
-							/>
+									bind:keywords
+									name="keywords"
+									id="keywords"
+									keywordsChanged={onUpdateKeywords}
+								/>
+								<input
+									type="hidden"
+									name="keywordsStr"
+									id="keywordsStr"
+									class="input"
+									bind:value={keywordsStr}
+								/>
 							</td>
 						</tr>
 					</tbody>
@@ -187,14 +184,14 @@
 					<button
 						type="button"
 						onclick={handleReset}
-						class="health-system-btn variant-soft-secondary">Reset</button
+						class="table-btn variant-soft-secondary">Reset</button
 					>
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+						<button type="submit" class="table-btn variant-soft-secondary" disabled>
 							Submiting
 						</button>
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
 					{/await}
 				</div>
 			</form>

@@ -91,9 +91,9 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
+				<table class="table-c">
 					<thead>
 						<tr>
 							<th>Edit User Role</th>
@@ -113,7 +113,7 @@
 									name="roleName"
 									bind:value={roleName}
 									placeholder="Enter role name here..."
-									class="health-system-input {form?.errors?.roleName ? 'input-text-error' : ''}"
+									class="input {form?.errors?.roleName ? 'input-text-error' : ''}"
 								/>
 								{#if errors?.Name}
 									<p class="text-error">{errors?.Name}</p>
@@ -127,7 +127,7 @@
 									name="description"
 									bind:value={description}
 									placeholder="Enter description here..."
-									class="health-system-input {form?.errors?.description ? 'input-text-error' : ''}"
+									class="input {form?.errors?.description ? 'input-text-error' : ''}"
 								></textarea>
 								{#if errors?.Description}
 									<p class="text-error">{errors?.Description}</p>
@@ -140,14 +140,14 @@
 					<button
 						type="button"
 						onclick={handleReset}
-						class="health-system-btn variant-soft-secondary">Reset</button
+						class="table-btn variant-soft-secondary">Reset</button
 					>
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+						<button type="submit" class="table-btn variant-soft-secondary" disabled>
 							Submiting
 						</button>
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
 					{/await}
 				</div>
 			</form>

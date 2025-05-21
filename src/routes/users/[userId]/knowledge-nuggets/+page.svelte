@@ -202,8 +202,8 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container mb-6 shadow">
-			<div class="health-system-search-border">
+		<div class="table-container mb-6 shadow">
+			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow">
 						<Icon
@@ -216,7 +216,7 @@
 							placeholder="Search by name"
 							bind:value={topicName}
 							oninput={(event) => onSearchInput(event)}
-							class="health-system-input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if topicName}
 							<button
@@ -234,7 +234,7 @@
 
 					<div class="relative w-auto grow">
 						<Icon
-							icon="heroicons:magnifying-glass"
+							icon="heroicons:tag"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
 						/>
 						<input
@@ -243,7 +243,7 @@
 							placeholder="Search by tags"
 							bind:value={tags}
 							oninput={(event) => onSearchInput(event)}
-							class="health-system-input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if tags}
 							<button
@@ -259,14 +259,14 @@
 						{/if}
 					</div>
 
-					<button class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary">
+					<button class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
 						<a href={createRoute} class="">Add New</a>
 					</button>
 				</div>
 			</div>
 
 			<div class="overflow-x-auto">
-				<table class="health-system-table min-w-full">
+				<table class="table-c min-w-full">
 					<thead>
 						<tr>
 							<th class=" w-10"></th>
@@ -312,10 +312,10 @@
 											<a href={viewRoute(row.id)}>{Helper.truncateText(row.TopicName, 60)}</a>
 										</Tooltip>
 									</td>
-									<td role="gridcell" aria-colindex={3} tabindex="0"
+									<td  tabindex="0"
 										>{row.Tags.length > 0 ? row.Tags : 'Not specified'}</td
 									>
-									<td role="gridcell" aria-colindex={4} tabindex="0">
+									<td tabindex="0">
 										{TimeHelper.formatDateToReadable(row.CreatedAt, LocaleIdentifier.EN_US)}
 									</td>
 
@@ -323,7 +323,7 @@
 										<div class="flex">
 											<Tooltip text="Edit" forceShow={true}>
 												<button class="">
-													<a href={editRoute(row.id)} class="health-system-btn group">
+													<a href={editRoute(row.id)} class="table-btn group">
 														<Icon icon="material-symbols:edit-outline" class="health-system-icon" />
 													</a>
 												</button>
@@ -331,7 +331,7 @@
 
 											<Tooltip text="View" forceShow={true}>
 												<button>
-													<a href={viewRoute(row.id)} class=" health-system-btn group"
+													<a href={viewRoute(row.id)} class=" table-btn group"
 														><Icon
 															icon="icon-park-outline:preview-open"
 															class="health-system-icon"
@@ -342,7 +342,7 @@
 
 											<Tooltip text="Delete" forceShow={true}>
 												<button
-													class="health-system-btn !text-red-600"
+													class="table-btn !text-red-600"
 													onclick={() => handleDeleteClick(row.id)}
 												>
 													<Icon icon="material-symbols:delete-outline-rounded" />
