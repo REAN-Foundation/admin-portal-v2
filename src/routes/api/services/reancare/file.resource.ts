@@ -114,9 +114,9 @@ export const deleteFileResource = async (sessionId: string, resourceId: string) 
 	return await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
 };
 
-export const download = async (sessionId, fileResourceId, asAttachment = false) => {
+export const download = async (sessionId, fileResourceId, attachment = false) => {
 	let url = BOT_CONTENT_API_URL + `/file-resources/download/${fileResourceId}`;
-	if (asAttachment) {
+	if (attachment) {
 		url = url + `?disposition=attachment`;
 	}
 	const session = await SessionManager.getSession(sessionId);
@@ -164,7 +164,7 @@ export const download = async (sessionId, fileResourceId, asAttachment = false) 
 		let filename = 'download-' + Date.now().toString() + '.' + extension;
 		console.log('filename', filename);
 
-		if (asAttachment === true) {
+		if (attachment === true) {
 			const disposition = responseHeaders.get('content-disposition');
 			console.log('disposition', disposition);
 
