@@ -14,6 +14,69 @@
 		{ name: 'Assessments', path: assessmentsRoutes },
 		{ name: 'Import', path: importRoute }
 	];
+
+	let assessmentTemplateFile;
+
+	let templateUrlId = $state(undefined);
+	let errorMessage = {
+		Text: 'Max file upload size 150 KB',
+		Colour: 'border-b-surface-700'
+	};
+	const MAX_FILE_SIZE = 1024 * 150;
+
+	const onFileSelected = async (e) => {
+		let file = e.target.files[0];
+		const fileSize = file.size;
+		if (fileSize > MAX_FILE_SIZE) {
+			errorMessage.Text = 'File should be less than 150 KB';
+			errorMessage.Colour = 'text-error-500';
+			assessmentTemplateFile.value = null;
+			return;
+		}
+
+		errorMessage.Text = 'Please wait, file upload is in progress';
+		errorMessage.Colour = 'text-error-500';
+
+		const formData = new FormData();
+		formData.append('file', file);
+		formData.append('filename', file.name);
+
+		try {
+			const res = await fetch(`/api/server/assessments/assessment-template/import`, {
+
+				method: 'POST',
+				body: formData
+			});
+
+			if (!res.ok) {
+				const errorText = await res.text();
+				throw new Error(errorText);
+			}
+
+			const response = await res.json();
+
+			if (response.Status === 'success' && response.HttpCode === 201) {
+				const templateUrl = response.Data.FileResources[0].url;
+				
+				const templateUrlId_ = response.Data.FileResources[0].id;
+				
+				if (templateUrlId_) {
+					templateUrlId = templateUrlId_;
+					errorMessage.Text = 'File uploaded successfully';
+					errorMessage.Colour = 'text-success-500';
+					return true;
+				}
+				
+			} else {
+				errorMessage.Text = response.Message;
+				errorMessage.Colour = 'text-error-500';
+			}
+		} catch (error) {
+			console.error('Error uploading file:', error);
+			errorMessage.Text = 'Error uploading file: ' + error.message;
+			errorMessage.Colour = 'text-error-500';
+		}
+	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -31,7 +94,19 @@
 					<tbody>
 						<tr>
 							<td class="text-center">
-								<input type="file" name="name" required class="health-system-input" />
+								<!-- <input type="file" name="name" required class="health-system-input" /> -->
+								<input
+								name="assessmentTemplateFile"
+								type="file"
+								class="true health-system-input"
+								placeholder="Select file"
+								bind:this={assessmentTemplateFile}
+								onchange={async (e) => await onFileSelected(e)}
+							/>
+							{#if errorMessage}
+								<p class={`${errorMessage.Colour}`}>{errorMessage.Text}</p>
+							{/if}
+							<input type="hidden" name="assessmentTemplateFile" value={assessmentTemplateFile} />
 							</td>
 						</tr>
 
