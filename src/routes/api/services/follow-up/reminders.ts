@@ -23,7 +23,7 @@ export const searchReportData = async (tenatCode: string, searchParams?: any) =>
 	console.log('searchString', searchString);
 	const url = FOLLOW_UP_URL + `/appointment-schedules/${tenatCode}/status-report/search${searchString}`;
 	console.log('url---', url);
-	return await get(url);
+	return await get_(url, false);
 };
 
 export const createReminder = async (tenantCode: string, date: string) => {
@@ -31,20 +31,22 @@ export const createReminder = async (tenantCode: string, date: string) => {
 		date: date
 	};
 	const url = FOLLOW_UP_URL + `/appointment-schedules/${tenantCode}/fetch-schedules-by-api`;
-	return await post(url, body);
+	return await post_(url, body, false);
 };
 
-export async function cancelReminder(
+export async function cancelAppointments(
 	sessionId: string,
-	date: string,
+	dates: string[],
 	tenantId: string,
-	tenantName: string = null
+	tenantName: string = null,
+	message?: string 
 ) {
 	const url = BACKEND_API_URL + '/follow-up/cancellations/';
 	const body = {
 		TenantId: tenantId,
 		TenantName: tenantName,
-		CancelDate: date
+		CancelDate: dates,
+		Message : message
 	};
 	await post_(url, body, true, sessionId);
 }

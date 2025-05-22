@@ -9,10 +9,11 @@
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
-	import UploadModal from '$lib/components/appointment/upload.model.svelte';
+	import UploadModal from '$routes/users/[userId]/appointment-followup/summary-uploads/upload.appointments.modal.svelte';
 	import { goto } from '$app/navigation';
 	import { createOrUpdateSchema } from '$lib/validation/follow-up/followup.upload.schema';
 	import type { FollowUpUploadModel } from '$lib/types/follow-up/followup.upload';
+	import CancelModel from '$routes/users/[userId]/appointment-followup/summary-uploads/cancel.appointment.modal.svelte';
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -30,10 +31,7 @@
 	let repiedNoCount = $derived(repiedNoCount_);
 	let notRepiedCount = $derived(notRepiedCount_);
 	let retrivedAppointmentRecords = $derived(appointmentRecords);
-	
-	let openDeleteModal = $state(false);
-	let idToBeDeleted = $state(null);
-	let isDeleting = $state(false);
+
 	let searchKeyword = $state(undefined);
 	let reply = $state(undefined);
 	let appointmentDate = $state(undefined);
@@ -49,6 +47,7 @@
 	let sortOrder = $state('ascending');
 	let extraction = $state('FileBased');
 	let showUploadModal = $state(false);
+	let showCancelModel = $state(false);
 	let errors = $state(undefined);
 	let file = $state(undefined);
 
@@ -185,7 +184,6 @@
 		return statistics
 	 }
 
-	 
 	const handleUpload = async (event: Event) => {
 		try {
 			event.preventDefault();
@@ -252,7 +250,7 @@
 			</div>
 		{/if}
 			<div class="relative w-auto grow">
-				<button class="btn variant-filled-secondary">
+				<button class="btn variant-filled-secondary" onclick={() => showCancelModel = true}>
 					Cancel Appointments
 				</button>
 			</div>
@@ -263,7 +261,8 @@
 			</div>
 </div> 
 
-<UploadModal show={showUploadModal} onClose={() => showUploadModal = false} onSubmit ={(e) => handleUpload(e.detail)} />
+<UploadModal showUploadModel = {showUploadModal} onClose = {() => showUploadModal = false} onSubmit ={(e) => handleUpload(e.detail)} />
+<CancelModel showCancelModel = {showCancelModel} onClose = {() => showCancelModel = false} />
 
 <div class="mt-4 mx-6 overflow-x-auto rounded-lg border border-[var(--color-outline)]">
 	<div class="mx-auto">
