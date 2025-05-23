@@ -91,27 +91,26 @@
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="table-container">
-		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<table class="table-c">
-			<thead>
-					<tr>
-						<th>Create Biometric</th>
-						<th class="text-end">
-							<a href={assetRoute} class="health-system-btn variant-soft-secondary">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Name <span class="text-red-700">*</span></td>
-						<td>
-							<input
+			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+				<table class="table-c">
+					<thead>
+						<tr>
+							<th>Create Biometric</th>
+							<th class="text-end">
+								<a href={assetRoute} class="health-system-btn variant-soft-secondary">
+									<Icon icon="material-symbols:close-rounded" />
+								</a>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Name<span class="text-red-700">*</span></td>
+							<td>
+								<input
+									required
 									type="text"
-									class="input {form?.errors?.Name
-										? 'input-text-error'
-										: ''}"
+									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
 									name="biometricsName"
 									placeholder="Enter name here..."
 									bind:value={biometricsName}
@@ -133,57 +132,60 @@
 							</td>
 						</tr>
 
-					<tr>
-						<td>Biometrics Type<span class="text-red-700">*</span></td>
-						<td>
-							<select class="input" bind:value={biometricsType}>
-								<option disabled value>Select biometrics type</option>
-								<option>Blood pressure</option>
-								<option>Blood glucose</option>
-								<option>Blood oxygen saturation</option>
-								<option>Body height</option>
-								<option>Body weight</option>
-								<option>Body temperature</option>
-								<option>Pulse</option>
-								<option>Other</option>
-							</select>
-						</td>
-					</tr>
+						<tr>
+							<td>Biometrics Type<span class="text-red-700">*</span></td>
+							<td>
+								<select required class="input" bind:value={biometricsType}>
+									<option disabled value>Select biometrics type</option>
+									<option>Blood pressure</option>
+									<option>Blood glucose</option>
+									<option>Blood oxygen saturation</option>
+									<option>Body height</option>
+									<option>Body weight</option>
+									<option>Body temperature</option>
+									<option>Pulse</option>
+									<option>Other</option>
+								</select>
+							</td>
+						</tr>
 
-					<tr>
-						<td>Measurement Unit<span class="text-red-700">*</span></td>
-						<td>
-							<input
-								type="text"
-								bind:value={measurementUnit}
-								placeholder="Enter unit..."
-								class="input {errors?.MeasurementUnit ? 'input-text-error' : ''}"
-							/>
-							{#if errors?.MeasurementUnit}<p class="text-error">{errors?.MeasurementUnit}</p>{/if}
-						</td>
-					</tr>
+						<tr>
+							<td>Measurement Unit<span class="text-red-700">*</span></td>
+							<td>
+								<input
+									required
+									type="text"
+									bind:value={measurementUnit}
+									placeholder="Enter unit..."
+									class="input {errors?.MeasurementUnit ? 'input-text-error' : ''}"
+								/>
+								{#if errors?.MeasurementUnit}<p class="text-error">
+										{errors?.MeasurementUnit}
+									</p>{/if}
+							</td>
+						</tr>
 
-					<tr class="">
-						<td class="!py-3 align-top">Tags</td>
-						<td>
-							<InputChips
-								bind:keywords
-								name="keywords"
-								id="keywords"
-								keywordsChanged={onUpdateKeywords}
-							/>
-							<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-							<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
-						</td>
-					</tr>
-					<tr>
-						<td>Version</td>
-						<td>
-							<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
-						</td>
-					</tr>
-				</tbody>
-			</table>
+						<tr class="">
+							<td class="!py-3 align-top">Tags</td>
+							<td>
+								<InputChips
+									bind:keywords
+									name="keywords"
+									id="keywords"
+									keywordsChanged={onUpdateKeywords}
+								/>
+								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
+							</td>
+						</tr>
+						<tr>
+							<td>Version</td>
+							<td>
+								<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
+							</td>
+						</tr>
+					</tbody>
+				</table>
 
 				<div class="button-container">
 					{#await promise}
