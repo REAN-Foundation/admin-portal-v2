@@ -38,6 +38,7 @@
 	let promise = $state();
 	const userId = page.params.userId;
 	const statusReportRoute = `/users/${userId}/appointment-followup/summary-uploads`;
+	const cancelRoute = `/users/${userId}/appointment-followup/view-cancellation`;
 	const breadCrumbs = [{ name: 'Status Report', path: statusReportRoute }];
 	let date = $state(undefined);
 	let totalAppointmentRecordsCount = $state(data.appointmentRecords.TotalCount);
@@ -184,6 +185,10 @@
 		return statistics
 	 }
 
+	function goToCancellations() {
+    	goto(cancelRoute);
+  	}
+
 	const handleUpload = async (event: Event) => {
 		try {
 			event.preventDefault();
@@ -256,12 +261,13 @@
 			</div>
 			<div class="relative w-auto grow">
 				<button class="btn variant-filled-secondary">
-					View Cancellations
+					<a href={`/users/${userId}/appointment-followup/view-cancellation`}>View Cancellations</a>
+		
 				</button>
 			</div>
 </div> 
 
-<UploadModal showUploadModel = {showUploadModal} onClose = {() => showUploadModal = false} onSubmit ={(e) => handleUpload(e.detail)} />
+<UploadModal showUploadModel = {showUploadModal} onClose = {() => showUploadModal = false} />
 <CancelModel showCancelModel = {showCancelModel} onClose = {() => showCancelModel = false} />
 
 <div class="mt-4 mx-6 overflow-x-auto rounded-lg border border-[var(--color-outline)]">

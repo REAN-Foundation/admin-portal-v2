@@ -596,7 +596,7 @@ export class TimeHelper {
     
         const options: Intl.DateTimeFormatOptions = {
             year: 'numeric',
-            month: 'long',
+            month: 'short',
             day: 'numeric',
             timeZone: userTimeZone
         };

@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { toastMessage } from "$lib/components/toast/toast.store";
+	import type { FollowUpUploadModel } from "$lib/types/follow-up/followup.upload";
+	import { createOrUpdateSchema } from "$lib/validation/follow-up/followup.upload.schema";
 	import Icon from "@iconify/svelte";
 
   /////////////////////////////////////////////////////////////////////////////
@@ -12,7 +15,7 @@
   let error = null;
   let promise = $state();
   let file = $state(undefined);
-
+  let errors: Record<string, string> = $state({});
   // function handleFileSelect(event) {
   //   file = event.target.files[0];
   // }
@@ -49,22 +52,70 @@
       onClose();         
     }
 
-    function handleUpload() {
-    if (!file) {
-      error = "Please select a file.";
-      return;
-    }
+//     function handleUpload() {
+//     if (!file) {
+//       error = "Please select a file.";
+//       return;
+//     }
 
-    error = null;
-    onSubmit(file);
-}
+//     error = null;
+//     onSubmit(file);
+// }
+
+	const handleUpload = async (event: Event) => {
+		try {
+			event.preventDefault();
+			errors = {};
+
+			const followUpUploadModel: FollowUpUploadModel = {
+				File : file,
+		
+			};
+
+			console.log('followUpUploadModel===',followUpUploadModel)
+
+			const validationResult = createOrUpdateSchema.safeParse(followUpUploadModel);
+
+			if (!validationResult.success) {
+				errors = Object.fromEntries(
+					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				);
+				return;
+			}
+
+			const res = await fetch(`/api/server/follow-up/file-upload`, {
+				method: 'POST',
+				body: JSON.stringify(followUpUploadModel),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			const response = await res.json();
+
+			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				toastMessage(response);
+				// goto(`${healthSystemsRoute}/${response?.Data?.HealthSystem?.id}/view`);
+				return;
+			}
+
+			if (response.Errors) {
+				// errors = response?.Errors || {};
+			} else {
+				toastMessage(response);
+			}
+		} catch (error) {
+			toastMessage();
+		}
+	};
 </script>
 
 {#if showUploadModel}
   <div class="overlay">
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div class="modal relative">
-      <form onsubmit={async () => (promise = handleUpload())}>
+      <form onsubmit={async (e) => (promise = handleUpload(e))}>
         <button class="cancel-btn absolute top-2 right-2" onclick={handleModalClose}>
           <Icon icon="material-symbols:close-rounded" />
         </button>
