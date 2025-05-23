@@ -364,6 +364,13 @@ export const buildSidebarMenu = (
 	);
 	sidebarNaviagation = addGMUMenus(sidebarNaviagation, userId, userRole, tenantSettings, options);
 	// Add here any new menu items
+	sidebarNaviagation = addAppointmentMenu(
+		sidebarNaviagation,
+		userId,
+		userRole,
+		tenantSettings,
+		options
+	);
 
 	console.log('sidebarMenu', sidebarNaviagation);
 
@@ -440,7 +447,7 @@ function addBotContentMenu(
 	const qnaDocument: SidebarMenu = {
 		name: 'QNA-Documents',
 		title: 'Q&A Documents',
-		icon: 'material-symbols:fact-check-outline' ,
+		icon: 'material-symbols:fact-check-outline',
 		link: `/users/${userId}/qna-documents/documents`,
 
 		children: []
@@ -1215,6 +1222,39 @@ function addGMUMenus(
 	gmu_?.children.push(statusReport_);
 	// gamification_?.children.push(badges_);
 	// gamification_?.children.push(schemas_);
+
+	const gmuNavigation: NavigationMenu | null = toNavigation(
+		gmu_,
+		userRole,
+		tenantSettings,
+		options
+	);
+	if (gmuNavigation) {
+		sidebarMenu.push(gmuNavigation);
+	}
+
+	return sidebarMenu;
+}
+
+function addAppointmentMenu(
+	sidebarMenu: NavigationMenu[],
+	userId: string,
+	userRole: string,
+	tenantSettings: any,
+	options: FeatureOptions
+): NavigationMenu[] {
+	const menuList: SidebarMenu[] = [];
+
+	const gmu: SidebarMenu = {
+		name: 'GMU',
+		title: 'Appointment',
+		icon: 'simple-icons:gamedeveloper',
+		link: null,
+		children: []
+	};
+	menuList.push(gmu);
+
+	const gmu_: SidebarMenu = getMenu(menuList, 'GMU');
 
 	const gmuNavigation: NavigationMenu | null = toNavigation(
 		gmu_,
