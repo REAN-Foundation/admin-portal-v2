@@ -30,7 +30,12 @@
 	let tags_ = Array.isArray(assessmentNodes?.Tags) ? assessmentNodes.Tags : [];
 	let tags = tags_.join(', ');
 	let correctAnswer = assessmentNodes.CorrectAnswer ?? null;
-	let rawData = assessmentNodes.RawData ?? null;
+	let rawData = assessmentNodes.RawData !== null && assessmentNodes.RawData !== ''
+		? assessmentNodes.RawData
+		: 'Not specified';
+
+	let fieldIdentifier = assessmentNodes.FieldIdentifier ?? null;
+	let fieldIdentifierUnit = assessmentNodes.FieldIdentifierUnit ?? null;
 
 	let resolutionScore = $state();
 
@@ -174,6 +179,13 @@
 						<td>Sequence</td>
 						<td>{sequence}</td>
 					</tr>
+					<tr>
+						<td>Field Identifier</td>
+						<td>{fieldIdentifier}</td>
+					</tr>
+					<tr>
+						<td>Field Identifier Unit</td>
+						<td>{fieldIdentifierUnit}</td>	
 					<tr>
 						<td>Tags</td>
 						<td>

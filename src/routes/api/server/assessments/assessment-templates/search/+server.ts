@@ -13,7 +13,7 @@ export const GET = async (event: RequestEvent) => {
 
 		const searchParams: URLSearchParams = event.url.searchParams;
 		const searchFilters = {
-			title: searchParams.get("name") ?? undefined,
+			title: searchParams.get("title") ?? undefined,
 			type: searchParams.get('type') ?? undefined,
 			tags: searchParams.get('tags') ?? undefined,
 			orderBy: searchParams.get("sortBy") ?? "CreatedAt",

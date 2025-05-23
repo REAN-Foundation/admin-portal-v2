@@ -9,7 +9,7 @@ import { SessionManager } from '$routes/api/cache/session/session.manager';
 
 export const uploadBinary = async (
 	sessionId: string,
-	tenantId:string,
+	tenantId: string,
 	buffer: Buffer,
 	filename: string,
 	isPublic = true
@@ -25,7 +25,7 @@ export const uploadBinary = async (
 	headers['Content-Type'] = 'application/octet-stream';
 	headers['x-file-name'] = filename;
 	headers['public'] = isPublic ? 'true' : 'false';
-	headers['TenantId'] = tenantId
+	headers['TenantId'] = tenantId;
 	headers['x-api-key'] = API_CLIENT_INTERNAL_KEY;
 	headers['Authorization'] = `Bearer ${accessToken}`;
 	headers['size'] = buffer.length.toString();
@@ -37,13 +37,11 @@ export const uploadBinary = async (
 		data: buffer
 	};
 
-
 	// console.log(JSON.stringify(config, null, 2));
 
 	const res = await axios(config);
 
 	// console.log("res", res);
-	
 
 	const response = res.data;
 
@@ -106,7 +104,7 @@ export const uploadBinary = async (
 export const getFileResourceById = async (sessionId, fileResourceId) => {
 	const url = BOT_CONTENT_API_URL + `/file-resources/${fileResourceId}`;
 	console.log('uri--', url);
-	
+
 	return await get(sessionId, url, false, API_CLIENT_INTERNAL_KEY);
 };
 
@@ -116,33 +114,60 @@ export const deleteFileResource = async (sessionId: string, resourceId: string) 
 	return await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
 };
 
-export const download = async (sessionId, fileResourceId, asAttachment = false) => {
-	let url = BOT_CONTENT_API_URL + `/file-resources/${fileResourceId}/download`;
-	if (asAttachment) {
+export const download = async (sessionId, fileResourceId, attachment = false) => {
+	let url = BOT_CONTENT_API_URL + `/file-resources/download/${fileResourceId}`;
+	if (attachment) {
 		url = url + `?disposition=attachment`;
 	}
 	const session = await SessionManager.getSession(sessionId);
 	const accessToken = session.accessToken;
+	// return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
 
 	const headers = {};
 	headers['x-api-key'] = API_CLIENT_INTERNAL_KEY;
 	headers['Authorization'] = `Bearer ${accessToken}`;
-	headers['responseType'] = `arraybuffer`;
+	headers['public'] = true;
 
 	const res = await fetch(url, {
 		method: 'GET',
 		headers
 	});
 
+	// console.log('ress', res);
+
 	const data = await res.arrayBuffer();
-    if (data) {
+	console.log('data', data);
+
+	// 	const blob = new Blob([data]);
+
+	// const url_ = URL.createObjectURL(blob);
+	// const link = document.createElement('a');
+	// link.href = url_;
+	// link.download = filename;
+	// link.click();
+
+	// URL.revokeObjectURL(url);
+
+	if (data) {
 		const responseHeaders = res.headers;
-		const contentType = responseHeaders['content-type'];
+		console.log('resposneHeader', responseHeaders);
+
+		const contentType = responseHeaders.get('content-type');
+		console.log('contentType', contentType);
+
 		const parts = contentType.split('/');
+		console.log('parts', parts);
+
 		const extension = parts.pop();
+		console.log('extension', extension);
+
 		let filename = 'download-' + Date.now().toString() + '.' + extension;
-		if (asAttachment === true) {
-			const disposition = responseHeaders['content-disposition'];
+		console.log('filename', filename);
+
+		if (attachment === true) {
+			const disposition = responseHeaders.get('content-disposition');
+			console.log('disposition', disposition);
+
 			if (disposition) {
 				const tokens = disposition.split('filename=');
 				if (tokens.length > 1) {
@@ -150,6 +175,8 @@ export const download = async (sessionId, fileResourceId, asAttachment = false) 
 				}
 			}
 		}
+
+	
 		return {
 			success: true,
 			Data: {

@@ -11,6 +11,7 @@
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
+	import { SYSTEM_ID } from '$lib/constants';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -176,8 +177,8 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container mb-6 shadow">
-			<div class="health-system-search-border">
+		<div class="table-container mb-6 shadow">
+			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow">
 						<Icon
@@ -190,7 +191,7 @@
 							bind:value={roleName}
 							placeholder="Search by role name"
 							oninput={(event) => onSearchInput(event)}
-							class="health-system-input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if roleName}
 							<button
@@ -205,16 +206,16 @@
 							</button>
 						{/if}
 					</div>
-					<!-- {#if SYSTEM_ID !== 'AHA'} -->
-					<button class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary">
+					{#if SYSTEM_ID !== 'AHA'}
+					<button class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
 						<a href={createRoute} class="">Add New</a>
 					</button>
-					<!-- {/if} -->
+					{/if}
 				</div>
 			</div>
 
 			<div class="overflow-x-auto">
-				<table class="health-system-table min-w-full">
+				<table class="table-c min-w-full">
 					<thead>
 						<tr>
 							<th data-sort="index" class="w-12"></th>
@@ -269,18 +270,18 @@
 										<div class="flex">
 											<Tooltip text="Edit" forceShow={true}>
 												<button class="">
-													<a href={editRoute(row.id)} class="health-system-btn group">
-														<Icon icon="material-symbols:edit-outline" class="health-system-icon" />
+													<a href={editRoute(row.id)} class="table-btn group">
+														<Icon icon="material-symbols:edit-outline" class="icon" />
 													</a>
 												</button>
 											</Tooltip>
 
 											<Tooltip text="View" forceShow={true}>
 												<button>
-													<a href={viewRoute(row.id)} class=" health-system-btn group"
+													<a href={viewRoute(row.id)} class=" table-btn group"
 														><Icon
 															icon="icon-park-outline:preview-open"
-															class="health-system-icon"
+															class="icon"
 														/>
 													</a>
 												</button>
@@ -288,7 +289,7 @@
 
 											<Tooltip text="Delete" forceShow={true}>
 												<button
-													class="health-system-btn !text-red-600"
+													class="table-btn !text-red-600"
 													onclick={() => handleDeleteClick(row.id)}
 												>
 													<Icon icon="material-symbols:delete-outline-rounded" />

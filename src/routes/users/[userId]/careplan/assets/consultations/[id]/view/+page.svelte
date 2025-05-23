@@ -8,6 +8,7 @@
 
 	const userId = page.params.userId;
 	var consultationId = page.params.id;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/consultations/${consultationId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/consultations/${consultationId}/view`;
@@ -28,10 +29,6 @@
 		{
 			name: 'Assets',
 			path: assetRoute
-		},
-		{
-			name: 'Consultation',
-			path: consultationRoute
 		},
 		{
 			name: 'View',

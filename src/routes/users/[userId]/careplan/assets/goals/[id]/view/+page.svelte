@@ -29,10 +29,6 @@
 			path: assetRoute
 		},
 		{
-			name: 'Goals',
-			path: goalsRoute
-		},
-		{
 			name: 'View',
 			path: viewRoute
 		}

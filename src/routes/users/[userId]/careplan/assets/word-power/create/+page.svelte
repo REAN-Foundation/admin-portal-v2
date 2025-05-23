@@ -29,10 +29,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Word-Power',
-			path: wordpowerRoute
-		},
+		
 		{
 			name: 'Create',
 			path: createRoute

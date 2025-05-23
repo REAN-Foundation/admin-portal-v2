@@ -58,15 +58,15 @@
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
 
-			if (typeName) url += `&typeName=${model.typeName}`;
-			if (displayName) url += `&displayName=${model.displayName}`;
+			if (model.typeName) url += `&typeName=${model.typeName}`;
+			if (model.displayName) url += `&displayName=${model.displayName}`;
 
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
 			});
 			const searchResult = await res.json();
-			
+
 			totalLabRecordsCount = searchResult.Data.LabRecordTypes.TotalCount;
 			paginationSettings.size = totalLabRecordsCount;
 
@@ -75,7 +75,6 @@
 				index: index + 1
 			}));
 			searchKeyword = model.typeName;
-			
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -83,15 +82,26 @@
 		}
 	}
 
+	function updateSearchField(name, value) {
+		if (name === 'typeName') {
+			typeName = value;
+		} else if (name === 'displayName') {
+			displayName = value;
+		}
+	}
+
 	async function onSearchInput(e) {
 		clearTimeout(debounceTimeout);
-		let searchKeyword = e.target.value;
+		const { name, value } = e.target;
+		updateSearchField(name, value);
+
 		debounceTimeout = setTimeout(() => {
-			paginationSettings.page = 0; 
+			paginationSettings.page = 0;
 			searchLabRecords({
-				typeName: searchKeyword,
+				typeName,
+				displayName,
 				itemsPerPage: paginationSettings.limit,
-				pageIndex: 0,
+				pageIndex: paginationSettings.page,
 				sortBy,
 				sortOrder
 			});
@@ -110,9 +120,10 @@
 		}
 		sortBy = columnName;
 		searchLabRecords({
-			typeName: searchKeyword,
+			typeName,
+			displayName,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -121,9 +132,10 @@
 	function onItemsPerPageChange() {
 		paginationSettings.page = 0; // reset to first page
 		searchLabRecords({
-			typeName: searchKeyword,
+			typeName,
+			displayName,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -131,7 +143,8 @@
 
 	function onPageChange() {
 		searchLabRecords({
-			typeName: searchKeyword,
+			typeName,
+			displayName,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -150,7 +163,7 @@
 		});
 
 		const res = await response.json();
-		
+
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
@@ -158,7 +171,8 @@
 			toastMessage(res);
 		}
 		searchLabRecords({
-			typeName: searchKeyword,
+			typeName,
+			displayName,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -184,6 +198,7 @@
 							name="typeName"
 							placeholder="Search by type name"
 							bind:value={typeName}
+							oninput={(event) => onSearchInput(event)}
 							class="health-system-input !pr-4 !pl-10"
 						/>
 						{#if typeName}
@@ -191,6 +206,7 @@
 								type="button"
 								onclick={() => {
 									typeName = '';
+									onSearchInput({ target: { name: 'typeName', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -208,6 +224,7 @@
 							name="displayName"
 							placeholder="Search by display name"
 							bind:value={displayName}
+							oninput={(event) => onSearchInput(event)}
 							class="health-system-input !pr-4 !pl-10"
 						/>
 						{#if displayName}
@@ -215,6 +232,7 @@
 								type="button"
 								onclick={() => {
 									displayName = '';
+									onSearchInput({ target: { name: 'displayName', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -264,7 +282,7 @@
 					</thead>
 					<tbody>
 						{#if retrivedLabRecords <= 0}
-							<tr>
+							<tr class="text-center">
 								<td colspan="8">{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}

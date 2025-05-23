@@ -17,12 +17,14 @@ export const createAssessmentNode = async (
 	queryType?: string,
 	options?: string[],
 	sequence?: number,
-	correctAnswer?: number|boolean,
+	correctAnswer?: number | boolean | string,
 	rawData?: string,
 	required?: boolean,
 	scoringApplicable?: boolean,
 	resolutionScore?: number,
-	providerAssessmentCode?: string
+	providerAssessmentCode?: string,
+	fieldIdentifier?: string,
+	fieldIdentifierUnit?: string
 ) => {
 	const body = {
 		ParentNodeId: parentNodeId,
@@ -40,7 +42,9 @@ export const createAssessmentNode = async (
 		Required: required ? required : false,
 		ScoringApplicable: scoringApplicable ? scoringApplicable : false,
 		ResolutionScore: resolutionScore ? resolutionScore : null,
-		ProviderAssessmentCode: providerAssessmentCode ? providerAssessmentCode : null
+		ProviderAssessmentCode: providerAssessmentCode ? providerAssessmentCode : null,
+		FieldIdentifier: fieldIdentifier ? fieldIdentifier : null,
+		FieldIdentifierUnit: fieldIdentifierUnit ? fieldIdentifierUnit : null
 	};
 	// if (options && options.length > 0) {
 	// 	let count = 1;
@@ -103,8 +107,14 @@ export const updateAssessmentNode = async (
 	message?: string,
 	sequence?: number,
 	serveListNodeChildrenAtOnce?: boolean,
-	correctAnswer?: number|boolean,
-	rawData?: string
+	correctAnswer?: number | boolean | string,
+	rawData?: string,
+	scoringApplicable?: boolean,
+	resolutionScore?: number,
+	providerAssessmentCode?: string,
+	fieldIdentifier?: string,
+	fieldIdentifierUnit?: string
+
 
 ) => {
 	const body = {
@@ -119,6 +129,12 @@ export const updateAssessmentNode = async (
 		Tags: tags ? tags : [],
 		CorrectAnswer: correctAnswer ? correctAnswer : null,
 		RawData: rawData ? rawData : null,
+		ScoringApplicable: scoringApplicable ? scoringApplicable : false,
+		ResolutionScore: resolutionScore ? resolutionScore : null,
+		ProviderAssessmentCode: providerAssessmentCode ? providerAssessmentCode : null,
+		FieldIdentifier: fieldIdentifier ? fieldIdentifier : null,
+		FieldIdentifierUnit: fieldIdentifierUnit ? fieldIdentifierUnit : null
+
 
 	};
 	if (options && options.length > 0) {
@@ -226,7 +242,7 @@ export const updateOption = async (
 	console.log('body----------', body);
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/options/${optionId}`;
 	console.log(url);
-	
+
 	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 };
 

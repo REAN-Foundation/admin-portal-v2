@@ -45,7 +45,9 @@ export const POST = async (event: RequestEvent) => {
 			data.Required,
 			data.ScoringApplicable,
 			data.ResolutionScore,
-			data.ProviderAssessmentCode
+			data.ProviderAssessmentCode,
+			data.FieldIdentifier,
+			data.FieldIdentifierUnit
 		);
 
 		return ResponseHandler.success(response);

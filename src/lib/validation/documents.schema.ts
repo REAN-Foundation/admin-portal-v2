@@ -17,7 +17,6 @@ export const createOrUpdateSchema = z.object({
 	FileName: z.string().optional(),
 	Source: z.string().optional(),
 	ParentDocument: z.string().optional(),
-	Version: z.string(),
 	Active: z.boolean(),
 	CreatedBy: z.string().optional(),
 	ChunkingStratergy: z

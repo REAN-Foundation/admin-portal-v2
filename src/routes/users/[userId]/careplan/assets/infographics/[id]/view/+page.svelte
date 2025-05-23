@@ -19,7 +19,7 @@
 	let assetCode = infographics.AssetCode;
 	let name = infographics.Name;
 	let description = infographics.Description !== null ? infographics.Description : 'Not specified';
-	let pathUrl = (infographics.Url !== null && infographics.PathUrl !== '') ? infographics.PathUrl : 'Not specified';
+	let pathUrl = (infographics.Url !== null && infographics.Url !== '') ? infographics.Url : 'Not specified';
 	let tags_ = infographics.Tags;
 	let tags = tags_.join(', ');
 	let version = infographics.Version;
@@ -28,10 +28,6 @@
 		{
 			name: 'Assets',
 			path: assetRoute
-		},
-		{
-			name: 'Infographics',
-			path: infographicsRoute
 		},
 		{
 			name: 'View',
@@ -53,8 +49,8 @@
 		</a>
 	</div>
 <div class="mx-auto">
-	<div class="health-system-table-container">
-		<table class="health-system-table">
+	<div class="table-container">
+		<table class="table-c">
 			<thead>
 				<tr>
 					<th>View Infographics</th>
@@ -79,7 +75,7 @@
 					<td>{description}</td>
 				</tr>
 				<tr>
-					<td>Path Url</td>
+					<td>Url</td>
 					<td>{pathUrl}</td>
 				</tr>
 				<tr>

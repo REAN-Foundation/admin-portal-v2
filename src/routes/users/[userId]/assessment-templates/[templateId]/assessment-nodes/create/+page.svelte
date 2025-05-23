@@ -6,7 +6,6 @@
 	import Choice from './choice.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
-	// import { sequence } from '@sveltejs/kit/hooks';
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { AssessmentNodeCreateModel } from '$lib/types/assessment-node.types';
 	import { createOrUpdateSchema } from '$lib/validation/assessment-node.schema';
@@ -32,6 +31,8 @@
 		message = $state(undefined),
 		keywords = $state(undefined),
 		required = $state(undefined),
+		fieldIdentifier = $state(undefined),
+		fieldIdentifierUnit = $state(undefined),
 		rawData = $state(undefined);
 
 	let errors: Record<string, string> = $state({});
@@ -41,34 +42,7 @@
 	let selectedNodeType = $state('Question');
 	let selectedQueryType = $state('Text');
 
-	let optionValueStore = $state([]);
-
-	const updateSequences = () => {
-		optionValueStore = optionValueStore.map((opt, index) => ({
-			...opt,
-			Sequence: index + 1
-		}));
-	};
-
-	const addOptionField = () => {
-		const newOption = { Text: '', Sequence: optionValueStore.length + 1 };
-		optionValueStore = [...optionValueStore, newOption];
-	};
-
-	const removeOptionField = (option) => {
-		optionValueStore = optionValueStore.filter((opt) => opt.id !== option.id);
-	};
-
-	let showConfirm = $state(false);
-
-	const confirmDelete = (option) => {
-		if (option.id) {
-			optionValueStore = option;
-			showConfirm = true;
-		} else {
-			optionValueStore = optionValueStore.filter((opt) => opt.Text !== option.Text);
-		}
-	};
+	let optionArray = $state([]);
 
 	const onSelectNodeType = (val) => {
 		selectedNodeType = val.target.value;
@@ -104,6 +78,50 @@
 		}
 	];
 
+	const AssessmentFieldIdentifiers = [
+		'General:PersonalProfile:FirstName',
+		'General:PersonalProfile:LastName',
+		'General:PersonalProfile:Name',
+		'General:PersonalProfile:Age',
+		'General:PersonalProfile:DateOfBirth',
+		'General:PersonalProfile:Gender',
+		'Clinical:HealthProfile:BloodGroup',
+		'Clinical:HealthProfile:Ethnicity',
+		'Clinical:HealthProfile:Race',
+		'Clinical:HealthProfile:MaritalStatus',
+		'Clinical:HealthProfile:Occupation',
+		'Clinical:HealthProfile:Smoking',
+		'Clinical:Vitals:BloodPressure:Systolic',
+		'Clinical:Vitals:BloodPressure:Diastolic',
+		'Clinical:Vitals:Pulse',
+		// 'Clinical:Vitals:RespiratoryRate',
+		'Clinical:Vitals:Temperature',
+		'Clinical:Vitals:Weight',
+		'Clinical:Vitals:Height',
+		// 'Clinical:Vitals:BodyMassIndex',
+		'Clinical:Vitals:OxygenSaturation',
+		'Clinical:Vitals:BloodGlucose',
+		'Clinical:LabRecords:Cholesterol',
+		'Clinical:LabRecords:Triglycerides',
+		'Clinical:LabRecords:LDL',
+		'Clinical:LabRecords:HDL',
+		// 'Clinical:LabRecords:Creatinine',
+		// 'Clinical:LabRecords:Urea',
+		// 'Clinical:LabRecords:Electrolytes',
+		// 'Clinical:LabRecords:Hemoglobin',
+		'Clinical:LabRecords:A1C'
+		// 'Clinical:LabRecords:Platelets',
+		// 'Clinical:LabRecords:WBC'
+	];
+
+	const sortedIdentifiers = AssessmentFieldIdentifiers;
+
+	function toLabel(identifier: string) {
+		const parts = identifier.split(':');
+		const lastPart = parts[parts.length - 1];
+		return lastPart.replace(/([a-z])([A-Z])/g, '$1 $2'); // adds space before capital letters
+	}
+
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
@@ -122,14 +140,17 @@
 				ProviderAssessmentCode: providerAssessmentCode,
 				ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce,
 				ScoringApplicable: scoringApplicable,
-				Options: optionValueStore,
+				Options: optionArray,
 				CorrectAnswer: finalValue,
 				Message: message,
 				Tags: keywords,
 				RawData: rawData,
-				Required: required
+				Required: required,
+				FieldIdentifier: fieldIdentifier,
+				FieldIdentifierUnit: fieldIdentifierUnit
 			};
 
+			console.log('assessmentNodeCreateModel', assessmentNodeCreateModel);
 			const validationResult = createOrUpdateSchema.safeParse(assessmentNodeCreateModel);
 
 			if (!validationResult.success) {
@@ -196,7 +217,7 @@
 								<select
 									name="nodeType"
 									placeholder="Select node type here..."
-									class="select w-full"
+									class="health-system-input {form?.errors?.nodeType ? 'input-text-error' : ''}"
 									onchange={(val) => onSelectNodeType(val)}
 								>
 									<option>Question</option>
@@ -216,7 +237,6 @@
 									bind:value={parentNodeId}
 								>
 									{#each assessmentNodes as node}
-										<!-- <option value="">{JSON.stringify(node)}</option> -->
 										{#if node.NodeType === 'Node list'}
 											<option value={node.id}
 												>{node.NodeType} - {node.Title} - {node.DisplayCode}</option
@@ -292,16 +312,16 @@
 									name="sequence"
 									placeholder="Enter sequence here..."
 									min="1"
-									class="input"
 									step="1"
 									bind:value={sequence}
+									class="health-system-input {form?.errors?.sequence ? 'input-text-error' : ''}"
 								/>
 								{#if errors?.Sequence}
 									<p class="text-error">{errors?.Sequence}</p>
 								{/if}
 							</td>
 						</tr>
-						<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
+						<tr>
 							<td class="align-top">Tags</td>
 							<td>
 								<InputChips
@@ -313,6 +333,48 @@
 								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 							</td>
 						</tr>
+						<tr>
+							<td>Field Identifier</td>
+							<td>
+								<select
+									name="fieldIdentifier"
+									bind:value={fieldIdentifier}
+									class="health-system-input {form?.errors?.fieldIdentifier
+										? 'input-text-error'
+										: ''}"
+								>
+									<option value="" disabled selected={fieldIdentifier === undefined}>
+										Select fieldIdentifier here...
+									</option>
+
+									{#each sortedIdentifiers as identifier}
+										<option value={identifier}>{toLabel(identifier)}</option>
+									{/each}
+								</select>
+
+								{#if errors?.FieldIdentifier}
+									<p class="text-error">{errors?.FieldIdentifier}</p>
+								{/if}
+							</td>
+						</tr>
+
+						<tr>
+							<td class="align-top">Field Identifier Unit</td>
+							<td>
+								<input
+									type="text"
+									name="fieldIdentifierUnit"
+									bind:value={fieldIdentifierUnit}
+									placeholder="Enter fieldIdentifierUnit here...."
+									class="health-system-input {form?.errors?.fieldIdentifierUnit
+										? 'input-text-error'
+										: ''}"
+								/>
+								{#if errors?.FieldIdentifierUnit}
+									<p class="text-error">{errors?.FieldIdentifierUnit}</p>
+								{/if}
+							</td>
+						</tr>
 						{#if selectedNodeType === 'Question'}
 							<tr>
 								<td class="align-top">Query Response Type <span class=" text-red-600">*</span></td>
@@ -320,7 +382,7 @@
 									<select
 										id="mySelect"
 										name="queryType"
-										class="select select-info w-full"
+										class="health-system-input {form?.errors?.queryType ? 'input-text-error' : ''}"
 										placeholder="Select query type here..."
 										onchange={(val) => onSelectQueryResponseType(val)}
 									>
@@ -332,38 +394,10 @@
 							</tr>
 							{#if $scoringApplicableCondition === true}
 								{#if selectedQueryType === 'Single Choice Selection' || selectedQueryType === 'Multi Choice Selection'}
-									<!-- <tr>
-										<td class="align-top">Options</td>
-										<td>
-											<Choice />
-										</td>
-									</tr>
-									<tr>
-										<td>Correct Answer</td>
-										<td>
-											<input
-												type="text"
-												name="correctAnswer"
-												placeholder="Enter correct answer here..."
-												class="input w-full
-												{form?.errors?. correctAnswer? 'border-error-300 text-error-500' : ''}"
-												value={form?.data?.correctAnswer ?? ''}
-											/>
-										</td>
-									</tr> -->
 									<tr>
 										<td class="align-top">Options</td>
 										<td>
-											<Choice
-												bind:optionValueStore
-												{updateSequences}
-												{addOptionField}
-												{removeOptionField}
-												{confirmDelete}
-												{showConfirm}
-												optionToDelete="null"
-												mode="create"
-											/>
+											<Choice bind:optionArray />
 										</td>
 									</tr>
 									{#if selectedQueryType === 'Single Choice Selection'}
@@ -376,7 +410,7 @@
 													bind:value={correctAnswer}
 												>
 													<option value="" disabled selected>Select correct answer</option>
-													{#each optionValueStore as option}
+													{#each optionArray as option}
 														<option value={option.Sequence}>{option.Text}</option>
 													{/each}
 												</select>
@@ -384,7 +418,7 @@
 										</tr>
 									{/if}
 									<tr>
-										<td>Resolution Score <span class=" text-red-600">*</span></td>
+										<td>Resolution Score</td>
 										<td>
 											<input
 												type="number"
@@ -399,19 +433,6 @@
 											{/if}
 										</td>
 									</tr>
-
-									<!-- <tr>
-										<td class="align-top">Options</td>
-										<Choice
-										bind:correctAnswer
-										queryType={selectedQueryType}
-									/>
-									</tr>
-									<input
-										type="hidden"
-										name="CorrectAnswer"
-										value={JSON.stringify(correctAnswerString)}
-									/> -->
 								{:else if selectedQueryType === 'Boolean'}
 									<tr>
 										<td>Correct Answer</td>
@@ -425,7 +446,7 @@
 									</tr>
 
 									<tr>
-										<td>Resolution Score <span class=" text-red-600">*</span></td>
+										<td>Resolution Score</td>
 										<td>
 											<input
 												type="number"
@@ -446,16 +467,7 @@
 								<tr>
 									<td class="align-top">Options</td>
 									<td>
-										<Choice
-											bind:optionValueStore
-											{updateSequences}
-											{addOptionField}
-											{removeOptionField}
-											{confirmDelete}
-											{showConfirm}
-											optionToDelete="null"
-											mode="create"
-										/>
+										<Choice bind:optionArray />
 									</td>
 								</tr>
 								{#if selectedQueryType === 'Single Choice Selection'}
@@ -470,26 +482,13 @@
 												bind:value={correctAnswer}
 											>
 												<option value="" disabled selected>Select correct answer</option>
-												{#each optionValueStore as option}
+												{#each optionArray as option}
 													<option value={option.Sequence}>{option.Text}</option>
 												{/each}
 											</select>
 										</td>
 									</tr>
 								{/if}
-								<!-- <tr>
-										<td class="align-top">Options</td>
-										<Choice
-										bind:correctAnswer
-										queryType={selectedQueryType}
-									/>
-									</tr>
-								
-								<input
-									type="hidden"
-									name="CorrectAnswer"
-									value={JSON.stringify(correctAnswerString)}
-								/> -->
 							{/if}
 						{:else if selectedNodeType === 'Message'}
 							<tr>
@@ -526,11 +525,6 @@
 					</tbody>
 				</table>
 				<div class="button-container">
-					<!-- <button
-						type="button"
-						onclick={handleReset}
-						class="health-system-btn variant-soft-secondary">Reset</button
-					> -->
 					{#await promise}
 						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
 							Submiting
