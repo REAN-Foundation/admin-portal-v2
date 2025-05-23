@@ -4,7 +4,6 @@ export interface DocumentsCreateModel {
 	FileName: string;
 	Source: string;
 	ParentDocument: string;
-	Version: string;
 	Active: boolean;
 	CreatedBy: string;
 	ChunkingStratergy: string;

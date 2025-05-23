@@ -11,14 +11,16 @@ export const GET = async (event: RequestEvent) => {
 		return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session'));
 	}
 
-	console.log('download server data', resourceId);
 
-	const asAttachment = true;
-	console.log('attachment', asAttachment);
+
+	console.log('download server data', event);
+
+	const attachment = event.url.searchParams.get('asAttachment');
+	console.log('attachment', attachment);
 
 	try {
 		console.log('Downloading file resource...');
-		const response = await download(sessionId, resourceId, asAttachment);
+		const response = await download(sessionId, resourceId, attachment  == 'true' ? true : false);
 		console.log('responseee', response);
 
 		const buffer = Buffer.from(response.Data.Buffer); 
@@ -28,7 +30,7 @@ export const GET = async (event: RequestEvent) => {
 		return new Response(buffer, {
 			headers: {
 				'Content-Type': mimeType,
-				'Content-Disposition': `${asAttachment ? 'attachment' : 'inline'}; filename="${fileName}"`
+				'Content-Disposition': `${attachment ? 'attachment' : 'inline'}; filename="${fileName}"`
 			}
 		});
 	} catch (err) {

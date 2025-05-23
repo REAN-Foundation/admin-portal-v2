@@ -7,6 +7,7 @@
 	import { goto } from '$app/navigation';
 	import { createSchema } from '$lib/validation/vector.store.schema';
 	import type { VectorStoreCreateModel } from '$lib/types/vector.store.types';
+	import FilePreviewModal from '$lib/components/modal/file.preview.modal.svelte';
 	///////////////////////////////////////////////////////////////////////////////
 	let { data }: { data: PageServerData } = $props();
 
@@ -18,7 +19,7 @@
 	let fileName = data.document.FileResource.OriginalFilename;
 	let source = data.document.Source;
 	let parentDocument = data.document.FileResource.OriginalFilename;
-	let parentDocumentVersion = Number(data.document.DocumentVersion.map((row) => (row.Version)));
+	let parentDocumentVersion = Number(data.document.DocumentVersion.map((row) => row.Version));
 	let chunkingStrategy = data.document.ChunkingStrategy;
 	let chunkingLength = data.document.ChunkingLength;
 	let chunkOverlap = data.document.ChunkOverlap;
@@ -27,6 +28,10 @@
 	let createdBy = data.document.CreatedBy;
 	let keywords = data.document.Keyword;
 	let documentType = data.document.DocumentType;
+
+	let fileUrl: string | null = $state(null);
+	let fileType: string | null = $state(null);
+	let showModal = $state(false);
 
 	const userId = page.params.userId;
 	const tenantId = data.document.FileResource.TenantId;
@@ -64,7 +69,6 @@
 			};
 
 			console.log(vectorStoreCreateModel);
-			
 
 			const validationResult = createSchema.safeParse(vectorStoreCreateModel);
 			console.log('validation result of publish', validationResult);
@@ -103,6 +107,38 @@
 			toastMessage();
 		}
 	};
+
+	const viewDocument = async () => {
+		try {
+			const res = await fetch(
+				`/api/server/file-resources/download/${resourceId}?asAttachment=false`
+			);
+
+			console.log('res', res);
+
+			if (!res.ok) {
+				console.error('Failed to fetch file');
+				toastMessage();
+				return;
+			}
+
+			const mimeType = res.headers.get('Content-Type');
+			fileType = mimeType;
+
+			const blob = await res.blob();
+			fileUrl = URL.createObjectURL(blob);
+			showModal = true;
+		} catch (error) {
+			toastMessage();
+		}
+	};
+
+	const closeModal = () => {
+		showModal = false;
+		URL.revokeObjectURL(fileUrl);
+		fileUrl = null;
+		fileType = null;
+	};
 </script>
 
 <!-- Rendering breadcrumbs component -->
@@ -110,19 +146,16 @@
 
 <div class="px-6 py-4">
 	<div class="flex flex-wrap justify-end gap-2 py-2">
-		<a
-			href={editRoute}
-			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
-		>
-			<Icon icon="material-symbols:edit-outline" />
+		<a href={editRoute} class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
+			<Icon icon="material-symbols:edit-outline" class="mr-1" />
 			<span>Edit</span>
 		</a>
 	</div>
 
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
+				<table class="table-c">
 					<thead>
 						<tr>
 							<th>View Document</th>
@@ -152,7 +185,14 @@
 
 						<tr>
 							<td>File Name</td>
-							<td>{fileName}</td>
+							<td class="flex items-center"
+								>{fileName}
+								<button
+									type="button"
+									class="table-btn variant-filled-secondary mx-5"
+									onclick={viewDocument}>Open with Document Viewer</button
+								>
+							</td>
 						</tr>
 
 						<tr>
@@ -204,14 +244,15 @@
 
 				<div class="button-container">
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+						<button type="submit" class="table-btn variant-soft-secondary" disabled>
 							Publishing
 						</button>
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Publish </button>
+						<button type="submit" class="table-btn variant-soft-secondary"> Publish </button>
 					{/await}
 				</div>
 			</form>
 		</div>
+		<FilePreviewModal {showModal} {fileUrl} {fileType} {closeModal} />
 	</div>
 </div>
