@@ -90,9 +90,9 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
+				<table class="table-c">
 					<thead>
 						<tr>
 							<th>Create User Role</th>
@@ -112,7 +112,7 @@
 									name="roleName"
 									bind:value={roleName}
 									placeholder="Enter role name here..."
-									class="health-system-input "
+									class="input "
 								/>
 								{#if errors?.Name}
 									<p class="text-error">{errors?.Name}</p>
@@ -126,7 +126,7 @@
 									name="description"
 									bind:value={description}
 									placeholder="Enter description here..."
-									class="health-system-input"
+									class="input"
 								></textarea>
 								{#if errors?.Description}
 									<p class="text-error">{errors?.Description}</p>
@@ -137,11 +137,11 @@
 				</table>
 				<div class="button-container">
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+						<button type="submit" class="table-btn variant-soft-secondary" disabled>
 							Submiting
 						</button>
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
 					{/await}
 				</div>
 			</form>

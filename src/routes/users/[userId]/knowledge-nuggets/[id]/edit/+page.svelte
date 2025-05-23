@@ -121,9 +121,9 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
+				<table class="table-c">
 					<thead>
 						<tr>
 							<th>Edit Knowledge Nugget</th>
@@ -144,7 +144,7 @@
 									required
 									bind:value={topicName}
 									placeholder="Enter name here..."
-									class="health-system-input {form?.errors?.topicName ? 'input-text-error' : ''}"
+									class="input {form?.errors?.topicName ? 'input-text-error' : ''}"
 								/>
 								{#if form?.errors?.topicName}
 									<p class="text-error">{form?.errors?.topicName[0]}</p>
@@ -158,7 +158,7 @@
 									name="briefInformation"
 									bind:value={briefInformation}
 									placeholder="Enter  brief information here..."
-									class="health-system-input {form?.errors?.briefInformation
+									class="input {form?.errors?.briefInformation
 										? 'input-text-error'
 										: ''}"
 								></textarea>
@@ -174,7 +174,7 @@
 									name="detailedInformation"
 									bind:value={detailedInformation}
 									placeholder="Enter detailed information here..."
-									class="health-system-input {form?.errors?.detailedInformation
+									class="input {form?.errors?.detailedInformation
 										? 'input-text-error'
 										: ''}"
 								></textarea>
@@ -191,7 +191,7 @@
 									type="text"
 									name="additionalResources"
 									bind:value={newResource}
-									class="health-system-input"
+									class="input"
 									placeholder="Enter additional resource here..."
 								/>
 								{#if form?.errors?.additionalResources}
@@ -216,18 +216,18 @@
 						</tr>
 					</tbody>
 				</table>
-				<div class="flex justify-end gap-2 p-2">
+				<div class="button-container">
 					<button
 						type="button"
 						onclick={handleReset}
-						class="health-system-btn variant-soft-secondary">Reset</button
+						class="table-btn variant-soft-secondary">Reset</button
 					>
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+						<button type="submit" class="table-btn variant-soft-secondary" disabled>
 							Submiting
 						</button>
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
 					{/await}
 				</div>
 			</form>

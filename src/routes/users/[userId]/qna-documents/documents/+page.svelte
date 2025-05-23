@@ -173,7 +173,7 @@
 	};
 
 	const downloadFile = async (id) => {
-		const response = await fetch(`/api/server/file-resources/download/${id}`, {
+		const response = await fetch(`/api/server/file-resources/download/${id}?asAttachment=true`, {
 			method: 'GET',
 			headers: { 'content-type': 'application/json' }
 		});
@@ -198,8 +198,8 @@
 <BreadCrumbs crumbs={breadCrumbs} />
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container z-0 shadow">
-			<div class="health-system-search-border p-4">
+		<div class="table-container shadow">
+			<div class="search-border p-4">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow">
 						<Icon
@@ -213,7 +213,7 @@
 							bind:value={name}
 							oninput={(event) => onSearchInput(event)}
 							placeholder="search by document"
-							class="health-system-input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if name}
 							<button
@@ -239,7 +239,7 @@
 							name="documentType"
 							bind:value={documentType}
 							placeholder="search by type"
-							class="health-system-input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if documentType}
 							<button
@@ -254,14 +254,14 @@
 							</button>
 						{/if}
 					</div>
-					<button class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary">
+					<button class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
 						<a href={createRoute} class="">Add New</a>
 					</button>
 				</div>
 			</div>
 
 			<div class="overflow-x-auto">
-				<table class="health-system-table">
+				<table class="table-c">
 					<thead>
 						<tr>
 							<th class="w-10" data-sort="index"></th>
@@ -276,7 +276,7 @@
 									{/if}
 								</button>
 							</th>
-							<th class="w-64">Type</th>
+							<th class="w-24">Type</th>
 							<th class="w-24">Version</th>
 							<th class="w-52">Parent Document</th>
 							<th class="w-20">Active</th>
@@ -317,7 +317,7 @@
 									</td>
 									<td>
 										<button
-											class="text-blue-600 underline cursor-pointer"
+											class="cursor-pointer text-blue-600 underline"
 											onclick={(e) => {
 												e.preventDefault();
 												downloadFile(row.ResourceId);
@@ -354,7 +354,7 @@
 										<div class="flex">
 											<Tooltip text="Edit" forceShow={true}>
 												<button class="">
-													<a href={editRoute(row.id)} class="health-system-btn group">
+													<a href={editRoute(row.id)} class="table-btn group">
 														<Icon icon="material-symbols:edit-outline" class="health-system-icon" />
 													</a>
 												</button>
@@ -362,7 +362,7 @@
 
 											<Tooltip text="View" forceShow={true}>
 												<button>
-													<a href={viewRoute(row.id)} class=" health-system-btn group"
+													<a href={viewRoute(row.id)} class=" table-btn group"
 														><Icon
 															icon="icon-park-outline:preview-open"
 															class="health-system-icon"
@@ -373,7 +373,7 @@
 
 											<Tooltip text="Delete" forceShow={true}>
 												<button
-													class="health-system-btn !text-red-600"
+													class="table-btn !text-red-600"
 													onclick={() => handleDeleteClick(row.id)}
 												>
 													<Icon icon="material-symbols:delete-outline-rounded" />

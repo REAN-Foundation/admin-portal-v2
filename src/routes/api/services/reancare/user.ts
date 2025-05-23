@@ -118,7 +118,7 @@ export const updateUser = async (
 	lastName: string,
 	phone: string,
 	email: string,
-	roleId: string,
+	roleId: number,
 	defaultTimeZone: string,
 	currentTimeZone: string,
 	imageResourceId?: string

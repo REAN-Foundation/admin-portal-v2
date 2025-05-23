@@ -112,6 +112,17 @@ export const createOrUpdateSchema = z.object({
                 invalid_type_error: "CorrectAnswer must be a number or boolean."
             })
         ])
-        .optional()
-    
+        .optional(),
+
+    FieldIdentifier: z
+        .string()
+        // .min(1, { message: "FieldIdentifier cannot be empty." })
+        // .max(128, { message: "FieldIdentifier must be at most 128 characters long." })
+        .optional(),
+
+    FieldIdentifierUnit: z
+        .string()
+        // .min(1, { message: "FieldIdentifierUnit cannot be empty." })
+        // .max(128, { message: "FieldIdentifierUnit must be at most 128 characters long." })
+        .optional(),
 });

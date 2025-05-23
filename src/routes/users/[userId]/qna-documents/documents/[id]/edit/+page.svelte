@@ -245,15 +245,15 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
+				<table class="table-c">
 					<thead>
 						<tr>
 							<th>Edit Document</th>
 							<th class="text-end">
 								<!-- Close Button -->
-								<a href={documentRoute} class="health-system-btn variant-soft-secondary">
+								<a href={documentRoute} class="table-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -270,7 +270,7 @@
 									name="name"
 									bind:value={name}
 									placeholder="Enter name here..."
-									class="health-system-input"
+									class="input"
 								/>
 								{#if errors?.Name}
 									<p class="text-error">{errors?.Name}</p>
@@ -285,7 +285,7 @@
 								<textarea
 									name="description"
 									placeholder="Enter description here..."
-									class="health-system-input"
+									class="input"
 									bind:value={description}
 								></textarea>
 								{#if errors?.Description}
@@ -302,7 +302,7 @@
 									name="fileName"
 									bind:value={fileName}
 									placeholder="Enter name here..."
-									class="health-system-input"
+									class="input"
 								/>
 								{#if errors?.FileName}
 									<p class="text-error">{errors?.FileName}</p>
@@ -319,14 +319,14 @@
 							<td>
 								<div class="flex items-center space-x-4">
 									<!-- Select File Button -->
-									<label class="health-system-btn variant-filled-secondary">
+									<label class="table-btn variant-filled-secondary">
 										Select File
 										<input type="file" class="hidden" onchange={handleFileChange} />
 									</label>
 
 									<input
 										type="text"
-										class="health-system-input bg-gray-100 text-gray-700 focus:outline-none"
+										class="input bg-gray-100 text-gray-700 focus:outline-none"
 										value={fileName}
 										readonly
 										placeholder="No file selected"
@@ -361,7 +361,7 @@
 									name="documentType"
 									bind:value={documentType}
 									placeholder="Enter document type here..."
-									class="health-system-input"
+									class="input"
 								/>
 								{#if errors?.DocumentType}
 									<p class="text-error">{errors?.DocumentType}</p>
@@ -377,7 +377,7 @@
 									name="source"
 									bind:value={source}
 									placeholder="Enter source here..."
-									class="health-system-input"
+									class="input"
 								/>
 							</td>
 						</tr> -->
@@ -390,7 +390,7 @@
 									name="parentDocument"
 									bind:value={parentDocument}
 									placeholder="Enter name here..."
-									class="health-system-input"
+									class="input"
 								/>
 								{#if form?.errors?.parentDocument}
 									<p class="text-error-500 text-xs">{form?.errors?.ParentDocument[2]}</p>
@@ -406,7 +406,7 @@
 									name="version"
 									bind:value={version}
 									placeholder="Enter version here..."
-									class="health-system-input bg-gray-100 text-gray-700"
+									class="input bg-gray-100 text-gray-700"
 									disabled
 								/>
 							</td>
@@ -415,7 +415,7 @@
 						<tr>
 							<td>Active</td>
 							<td>
-								<input class="health-system-input bg-gray-100 text-gray-700" disabled type="text" name="active" bind:value={active} />
+								<input class="input bg-gray-100 text-gray-700" disabled type="text" name="active" bind:value={active} />
 							</td>
 						</tr>
 
@@ -427,7 +427,7 @@
 									name="createdBy"
 									bind:value={createdBy}
 									placeholder="Enter creted by here..."
-									class="health-system-input"
+									class="input"
 								/>
 								{#if form?.errors?.createdBy}
 									<p class="text-error-500 text-xs">{form?.errors?.CreatedBy[0]}</p>
@@ -439,7 +439,7 @@
 							<td>Chunking Strategy <span class="text-red-700">*</span></td>
 							<td>
 								<select
-									class="health-system-input"
+									class="input"
 									name="chunkingStrategy"
 									bind:value={chunkingStrategy}
 									placeholder="Select type here..."
@@ -460,7 +460,7 @@
 									name="chunkingLenght"
 									bind:value={chunkingLength}
 									placeholder="Enter chunking length here..."
-									class="health-system-input"
+									class="input"
 								/>
 								{#if errors?.ChunkingLength}
 									<p class="text-error">{errors?.ChunkingLength}</p>
@@ -476,7 +476,7 @@
 									name="chunkOverlap"
 									bind:value={chunkOverlap}
 									placeholder="Enter chunking overlap here..."
-									class="health-system-input"
+									class="input"
 								/>
 
 								{#if errors?.ChunkingOverlap}
@@ -493,7 +493,7 @@
 									name="splitter"
 									bind:value={splitter}
 									placeholder="Enter Splitter here..."
-									class="health-system-input"
+									class="input"
 								/>
 								{#if errors?.Splitter}
 									<p class="text-error">{errors?.Splitter}</p>
@@ -507,14 +507,14 @@
 					<button
 						type="button"
 						onclick={handleReset}
-						class="health-system-btn variant-soft-secondary">Reset</button
+						class="table-btn variant-soft-secondary">Reset</button
 					>
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+						<button type="submit" class="table-btn variant-soft-secondary" disabled>
 							Submiting
 						</button>
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
 					{/await}
 				</div>
 			</form>

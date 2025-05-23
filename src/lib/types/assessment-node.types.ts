@@ -15,6 +15,8 @@ export interface AssessmentNodeCreateModel {
     CorrectAnswer?: number | string | boolean;
     RawData?: string;
     Required?: boolean;
+    FieldIdentifier?: string;
+    FieldIdentifierUnit?: string;
 };
 
 export interface AssessmentNodeUpdateModel {
@@ -31,7 +33,9 @@ export interface AssessmentNodeUpdateModel {
     ScoringApplicable?: boolean;
     Options?: string[];
     Tags?: string[];
-    CorrectAnswer?: number|string|boolean;
+    CorrectAnswer?: number | string | boolean;
     RawData?: string;
     Required?: boolean;
+    FieldIdentifier?: string;
+    FieldIdentifierUnit?: string;
 };
