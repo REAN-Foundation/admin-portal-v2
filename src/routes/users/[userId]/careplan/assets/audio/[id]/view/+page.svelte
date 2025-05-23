@@ -29,10 +29,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Audio',
-			path: audioRoute
-		},
+
 		{
 			name: 'View',
 			path: viewRoute

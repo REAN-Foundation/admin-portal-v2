@@ -27,7 +27,6 @@
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
-		{ name: 'Audio', path: audioRoute },
 		{ name: 'Create', path: createRoute }
 	];
 
@@ -132,20 +131,20 @@
 						</tr>
 
 						<tr>
-                            <td>Url</td>
-                            <td>
-                                <input
-                                    type="url"
+							<td>Url</td>
+							<td>
+								<input
+									type="url"
 									name="url"
 									bind:value={pathUrl}
 									placeholder="Enter url here"
-                                    class="health-system-input {errors?.Url ? 'input-text-error' : ''}"
-                                />
-                                {#if errors?.Url}
-                                    <p class="text-error">{errors?.Url}</p>
-                                {/if}
-                            </td>
-                        </tr>
+									class="health-system-input {errors?.Url ? 'input-text-error' : ''}"
+								/>
+								{#if errors?.Url}
+									<p class="text-error">{errors?.Url}</p>
+								{/if}
+							</td>
+						</tr>
 						<tr class="">
 							<td class="!py-3 align-top">Tags</td>
 							<td>
@@ -162,7 +161,12 @@
 						<tr>
 							<td>Version</td>
 							<td>
-								<input type="text" bind:value={version} class="health-system-input" placeholder="V 1.0" />
+								<input
+									type="text"
+									bind:value={version}
+									class="health-system-input"
+									placeholder="V 1.0"
+								/>
 							</td>
 						</tr>
 					</tbody>

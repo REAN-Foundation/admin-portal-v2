@@ -28,10 +28,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Medications',
-			path: medicationsRoute
-		},
+
 		{
 			name: 'View',
 			path: viewRoute
@@ -51,48 +48,48 @@
 			<span>Edit</span>
 		</a>
 	</div>
-<div class="mx-auto">
-	<div class="health-system-table-container">
-		<table class="health-system-table">
-			<thead>
-				<tr>
-					<th>View Medications</th>
-					<th class="text-end">
-						<a href={assetRoute} class=" cancel-btn">
-							<Icon icon="material-symbols:close-rounded" class="" />
-						</a>
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>Asset Code</td>
-					<td>{assetCode}</td>
-				</tr>
-				<tr>
-					<td>Name</td>
-					<td>{name}</td>
-				</tr>
-				<tr>
-					<td>Description</td>
-					<td>{description}</td>
-				</tr>
-				<tr>
-					<td>Tags</td>
-					<td>
-						{#if tags.length <= 0}
-							<span class="span">Tags not specified</span>
-						{:else}
-							<span class="span">{tags}</span>
-						{/if}
-					</td>
-				</tr>
-				<tr>
-					<td>Version</td>
-					<td>{version}</td>
-				</tr>
-		</tbody>
-	</table>
-</div>
-</div>
+	<div class="mx-auto">
+		<div class="health-system-table-container">
+			<table class="health-system-table">
+				<thead>
+					<tr>
+						<th>View Medications</th>
+						<th class="text-end">
+							<a href={assetRoute} class=" cancel-btn">
+								<Icon icon="material-symbols:close-rounded" class="" />
+							</a>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Asset Code</td>
+						<td>{assetCode}</td>
+					</tr>
+					<tr>
+						<td>Name</td>
+						<td>{name}</td>
+					</tr>
+					<tr>
+						<td>Description</td>
+						<td>{description}</td>
+					</tr>
+					<tr>
+						<td>Tags</td>
+						<td>
+							{#if tags.length <= 0}
+								<span class="span">Tags not specified</span>
+							{:else}
+								<span class="span">{tags}</span>
+							{/if}
+						</td>
+					</tr>
+					<tr>
+						<td>Version</td>
+						<td>{version}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
 </div>

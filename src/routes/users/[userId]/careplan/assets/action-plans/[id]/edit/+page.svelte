@@ -36,10 +36,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Action-Plan',
-			path: actionPlanRoute
-		},
+
 		{
 			name: 'Edit',
 			path: editRoute

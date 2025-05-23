@@ -29,10 +29,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Consultation',
-			path: consultationRoute
-		},
+		
 		{
 			name: 'View',
 			path: viewRoute

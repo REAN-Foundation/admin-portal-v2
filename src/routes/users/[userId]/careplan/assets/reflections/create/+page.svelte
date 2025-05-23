@@ -30,10 +30,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Reflection',
-			path: reflectionRoute
-		},
+		
 		{
 			name: 'Create',
 			path: createRoute

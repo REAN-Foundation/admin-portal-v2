@@ -29,10 +29,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Infographics',
-			path: infographicsRoute
-		},
+		
 		{
 			name: 'View',
 			path: viewRoute

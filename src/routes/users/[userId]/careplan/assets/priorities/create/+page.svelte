@@ -29,10 +29,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Priority',
-			path: priorityRoute
-		},
+		
 		{
 			name: 'Create',
 			path: createRoute
