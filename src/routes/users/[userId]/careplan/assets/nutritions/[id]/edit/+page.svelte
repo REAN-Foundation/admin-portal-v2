@@ -36,10 +36,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Nutrition',
-			path: nutritionRoute
-		},
+
 		{
 			name: 'Edit',
 			path: editRoute

@@ -30,10 +30,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Web-Newsfeed',
-			path: webNewsfeedRoute
-		},
+		
 		{
 			name: 'Create',
 			path: createRoute

@@ -31,10 +31,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Video',
-			path: videoRoute
-		},
+		
 		{
 			name: 'Create',
 			path: createRoute

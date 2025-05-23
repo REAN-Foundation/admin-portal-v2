@@ -30,10 +30,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Biometric',
-			path: biometricRoute
-		},
+
 		{
 			name: 'View',
 			path: viewRoute

@@ -28,7 +28,6 @@
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
-		{ name: 'Assessment', path: assessmentRoute },
 		{ name: 'Create', path: createRoute }
 	];
 
@@ -57,7 +56,7 @@
 				);
 				return;
 			}
-			console.log(assessmentCreateModel)
+			console.log(assessmentCreateModel);
 			const res = await fetch(`/api/server/careplan/assets/assessments`, {
 				method: 'POST',
 				body: JSON.stringify(assessmentCreateModel),
@@ -68,9 +67,9 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				// console.log("Redirecting to:", response?.Data?.id); 
-				console.log("Full response:", response);
-				await goto(`${assessmentRoute}/${response?.Data?.id}/view`); 
+				// console.log("Redirecting to:", response?.Data?.id);
+				console.log('Full response:', response);
+				await goto(`${assessmentRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -92,105 +91,112 @@
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container">
-		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<table class="health-system-table">
-			<thead>
-					<tr>
-						<th>Create Assessment</th>
-						<th class="text-end">
-							<a href={assetRoute} class="health-system-btn variant-soft-secondary">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Name <span class="text-red-700">*</span></td>
-						<td>
-							<input
+			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+				<table class="health-system-table">
+					<thead>
+						<tr>
+							<th>Create Assessment</th>
+							<th class="text-end">
+								<a href={assetRoute} class="health-system-btn variant-soft-secondary">
+									<Icon icon="material-symbols:close-rounded" />
+								</a>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Name <span class="text-red-700">*</span></td>
+							<td>
+								<input
 									type="text"
-									class="health-system-input {form?.errors?.Name
-										? 'input-text-error'
-										: ''}"
+									class="health-system-input {form?.errors?.Name ? 'input-text-error' : ''}"
 									name="assessmentName"
 									placeholder="Enter name here..."
 									bind:value={name}
 								/>
-							{#if errors?.Name}
-							<p class="text-error">{errors?.Name}</p>
-							{/if}
-						</td>
-					</tr>
-					<tr>
-						<td class="align-top">Description</td>
-						<td>
-							<textarea
-								name="description"
-								class="input w-full {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
-								bind:value={description}
-								placeholder="Enter description here..."
-							></textarea>
-						</td>
-					</tr>
+								{#if errors?.Name}
+									<p class="text-error">{errors?.Name}</p>
+								{/if}
+							</td>
+						</tr>
+						<tr>
+							<td class="align-top">Description</td>
+							<td>
+								<textarea
+									name="description"
+									class="input w-full {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
+									bind:value={description}
+									placeholder="Enter description here..."
+								></textarea>
+							</td>
+						</tr>
 
-					<tr>
-						<td>Template</td>
-						<td>
-							<input
-								type="text"
-								bind:value={template}
-								placeholder="Enter template..."
-								class="health-system-input {errors?.Template ? 'input-text-error' : ''}"
-							/>
-							{#if errors?.Template}<p class="text-error">{errors?.Template}</p>{/if}
-						</td>
-					</tr>
-					<tr>
-						<td>Reference Template Code </td>
-						<td>
-							<input
-								type="text"
-								bind:value={referenceTemplateCode}
-								placeholder="Enter template code..."
-								class="health-system-input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
-							/>
-							{#if errors?.ReferenceTemplateCode}<p class="text-error">{errors?.ReferenceTemplateCode}</p>{/if}
-						</td>
-					</tr>
+						<tr>
+							<td>Template</td>
+							<td>
+								<input
+									type="text"
+									bind:value={template}
+									placeholder="Enter template..."
+									class="health-system-input {errors?.Template ? 'input-text-error' : ''}"
+								/>
+								{#if errors?.Template}<p class="text-error">{errors?.Template}</p>{/if}
+							</td>
+						</tr>
+						<tr>
+							<td>Reference Template Code </td>
+							<td>
+								<input
+									type="text"
+									bind:value={referenceTemplateCode}
+									placeholder="Enter template code..."
+									class="health-system-input {errors?.ReferenceTemplateCode
+										? 'input-text-error'
+										: ''}"
+								/>
+								{#if errors?.ReferenceTemplateCode}<p class="text-error">
+										{errors?.ReferenceTemplateCode}
+									</p>{/if}
+							</td>
+						</tr>
 
-					<tr class="">
-						<td class="!py-3 align-top">Tags</td>
-						<td>
-							<InputChips
-								bind:keywords
-								name="keywords"
-								id="keywords"
-								keywordsChanged={onUpdateKeywords}
-							/>
-							<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-							<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
-						</td>
-					</tr>
-					<tr>
-						<td>Version</td>
-						<td>
-							<input type="text" bind:value={version} class="health-system-input" placeholder="V 1.0" />
-						</td>
-					</tr>
-				</tbody>
-			</table>
+						<tr class="">
+							<td class="!py-3 align-top">Tags</td>
+							<td>
+								<InputChips
+									bind:keywords
+									name="keywords"
+									id="keywords"
+									keywordsChanged={onUpdateKeywords}
+								/>
+								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
+							</td>
+						</tr>
+						<tr>
+							<td>Version</td>
+							<td>
+								<input
+									type="text"
+									bind:value={version}
+									class="health-system-input"
+									placeholder="V 1.0"
+								/>
+							</td>
+						</tr>
+					</tbody>
+				</table>
 
-			<div class="button-container">
-				{#await promise}
-					<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-						Submiting
-					</button>
-				{:then data}
-					<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
-				{/await}
-			</div>
-		</form>
+				<div class="button-container">
+					{#await promise}
+						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+							Submiting
+						</button>
+					{:then data}
+						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+					{/await}
+				</div>
+			</form>
+		</div>
 	</div>
-</div>
 </div>

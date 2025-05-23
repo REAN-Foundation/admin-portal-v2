@@ -27,10 +27,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Web-Link',
-			path: weblinkRoute
-		},
+
 		{
 			name: 'View',
 			path: viewRoute

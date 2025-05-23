@@ -29,10 +29,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Nutrition',
-			path: nutritionRoute
-		},
+		
 		{
 			name: 'Create',
 			path: createRoute
