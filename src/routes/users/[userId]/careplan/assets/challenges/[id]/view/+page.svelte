@@ -29,6 +29,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
+		
 		{
 			name: 'View',
 			path: viewRoute

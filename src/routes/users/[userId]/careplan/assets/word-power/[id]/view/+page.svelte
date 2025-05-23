@@ -28,10 +28,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Word-Power',
-			path: wordpowerRoute
-		},
+
 		{
 			name: 'View',
 			path: viewRoute

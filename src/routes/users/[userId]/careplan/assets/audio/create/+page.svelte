@@ -131,10 +131,10 @@
 						</tr>
 
 						<tr>
-                            <td>Url</td>
-                            <td>
-                                <input
-                                    type="url"
+							<td>Url</td>
+							<td>
+								<input
+									type="url"
 									name="url"
 									bind:value={pathUrl}
 									placeholder="Enter url here"
