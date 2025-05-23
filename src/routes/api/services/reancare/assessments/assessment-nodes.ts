@@ -208,6 +208,9 @@ export const updateScoringCondition = async (
 	const url =
 		BACKEND_API_URL +
 		`/clinical/assessment-templates/${templateId}/scoring-conditions/${scoringConditionId}`;
+
+	console.log('body----------', body);
+	console.log('url----------', url);
 	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 };
 
