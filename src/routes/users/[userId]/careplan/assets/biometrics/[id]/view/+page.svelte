@@ -11,7 +11,7 @@
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/biometrics/${biometricsId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/biometrics/${biometricsId}/view`;
-	const biometricRoute = `/users/${userId}/careplan/assets/biometrics`;
+	const createRoute = `/users/${userId}/careplan/assets/biometrics/create`;
 
 	let { data }: { data: PageServerData } = $props();
 
@@ -30,7 +30,6 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
 		{
 			name: 'View',
 			path: viewRoute

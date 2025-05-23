@@ -11,25 +11,24 @@
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/audio/${audioId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/audio/${audioId}/view`;
-	const audioRoute = `/users/${userId}/careplan/assets/audio`;
+	const audioRoute = `/users/${userId}/careplan/assets/audio/create`;
 
 	let { data }: { data: PageServerData } = $props();
 
 	let audio = $state(data.audio);
 	let assetCode = audio.AssetCode;
 	let name = audio.Name;
-	let transcript = audio.Transcript !== null ? audio.Transcript : 'Not specified';
-	let pathUrl = audio.Url !== null && audio.PathUrl !== '' ? audio.PathUrl : 'Not specified';
-	let tags_ = audio.Tags;
+	let transcript = data.audio.Transcript !== null ? data.audio.Transcript : 'Not specified';
+	let pathUrl = data.audio.Url !== null ? data.audio.Url : 'Not specified';
+	let tags_ = data.audio.Tags;
 	let tags = tags_.join(', ');
-	let version = audio.Version;
+	let version = data.audio.Version;
 
 	const breadCrumbs = [
 		{
 			name: 'Assets',
 			path: assetRoute
 		},
-
 		{
 			name: 'View',
 			path: viewRoute

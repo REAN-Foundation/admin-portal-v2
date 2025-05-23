@@ -90,26 +90,28 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th>Create Assessment</th>
-							<th class="text-end">
-								<a href={assetRoute} class="health-system-btn variant-soft-secondary">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Name <span class="text-red-700">*</span></td>
-							<td>
-								<input
+		<div class="table-container">
+		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+			<table class="table-c">
+			<thead>
+					<tr>
+						<th>Create Assessment</th>
+						<th class="text-end">
+							<a href={assetRoute} class="health-system-btn variant-soft-secondary">
+								<Icon icon="material-symbols:close-rounded" />
+							</a>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Name<span class="text-red-700">*</span></td>
+						<td>
+							<input
 									type="text"
-									class="health-system-input {form?.errors?.Name ? 'input-text-error' : ''}"
+									class="input {form?.errors?.Name
+										? 'input-text-error'
+										: ''}"
 									name="assessmentName"
 									placeholder="Enter name here..."
 									bind:value={name}
@@ -131,34 +133,30 @@
 							</td>
 						</tr>
 
-						<tr>
-							<td>Template</td>
-							<td>
-								<input
-									type="text"
-									bind:value={template}
-									placeholder="Enter template..."
-									class="health-system-input {errors?.Template ? 'input-text-error' : ''}"
-								/>
-								{#if errors?.Template}<p class="text-error">{errors?.Template}</p>{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Reference Template Code </td>
-							<td>
-								<input
-									type="text"
-									bind:value={referenceTemplateCode}
-									placeholder="Enter template code..."
-									class="health-system-input {errors?.ReferenceTemplateCode
-										? 'input-text-error'
-										: ''}"
-								/>
-								{#if errors?.ReferenceTemplateCode}<p class="text-error">
-										{errors?.ReferenceTemplateCode}
-									</p>{/if}
-							</td>
-						</tr>
+					<tr>
+						<td>Template</td>
+						<td>
+							<input
+								type="text"
+								bind:value={template}
+								placeholder="Enter template..."
+								class="input {errors?.Template ? 'input-text-error' : ''}"
+							/>
+							{#if errors?.Template}<p class="text-error">{errors?.Template}</p>{/if}
+						</td>
+					</tr>
+					<tr>
+						<td>Reference Template Code<span class="text-red-700">*</span></td>
+						<td>
+							<input
+								type="text"
+								bind:value={referenceTemplateCode}
+								placeholder="Enter template code..."
+								class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
+							/>
+							{#if errors?.ReferenceTemplateCode}<p class="text-error">{errors?.ReferenceTemplateCode}</p>{/if}
+						</td>
+					</tr>
 
 						<tr class="">
 							<td class="!py-3 align-top">Tags</td>
