@@ -484,6 +484,18 @@ tr {
 	@apply mt-6 flex flex-col justify-end gap-4 sm:flex-row;
 }
 
+.preview-modal-backdrop {
+	@apply fixed inset-0 bg-black/50 flex items-center justify-center z-50;
+}
+
+.preview-modal-content {
+	@apply bg-white p-6 max-w-[800px] w-full h-[90vh] overflow-auto relative rounded-lg;
+}
+
+.preview-close-btn {
+	@apply absolute top-2 right-2 text-2xl bg-transparent border-none cursor-pointer;
+}
+
 /* .cancel-btn {
 	@apply cursor-pointer rounded-md border border-[var(--color-outline)] px-4 py-2 text-sm text-[var(--color-info)];
 }
