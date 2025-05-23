@@ -103,7 +103,7 @@
 				<table class="health-system-table">
 					<thead>
 						<tr>
-							<th>Create Assessment Template</th>
+							<th>Create Template</th>
 							<th class="text-end">
 								<a href={assessmentsRoutes} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />

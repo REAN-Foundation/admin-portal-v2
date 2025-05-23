@@ -14,6 +14,10 @@
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
+	console.log(data, 'data from server');
+	let nodeTitle = data.assessmentNode.Title;
+	let templateTitle = data.templateData.Title;
+
 	let nodeType = $state(data.assessmentNode.NodeType),
 		parentNodeId = $state(data.assessmentNode.ParentNodeId),
 		title = $state(data.assessmentNode.Title),
@@ -77,8 +81,8 @@
 
 	const breadCrumbs = [
 		{ name: 'Assessments', path: assessmentsRoutes },
-		{ name: 'Assessment-View', path: assessmentTemplateView },
-		{ name: 'Assessment-Nodes', path: assessmentNodeRoutes },
+		{ name: templateTitle, path: assessmentTemplateView },
+		{ name: 'Nodes', path: assessmentNodeRoutes },
 		{ name: 'Edit', path: editRoute }
 	];
 	let selectedNodeType = $derived(nodeType);
@@ -100,34 +104,25 @@
 		'Clinical:Vitals:BloodPressure:Systolic',
 		'Clinical:Vitals:BloodPressure:Diastolic',
 		'Clinical:Vitals:Pulse',
-		'Clinical:Vitals:RespiratoryRate',
 		'Clinical:Vitals:Temperature',
 		'Clinical:Vitals:Weight',
 		'Clinical:Vitals:Height',
-		'Clinical:Vitals:BodyMassIndex',
 		'Clinical:Vitals:OxygenSaturation',
 		'Clinical:Vitals:BloodGlucose',
 		'Clinical:LabRecords:Cholesterol',
 		'Clinical:LabRecords:Triglycerides',
 		'Clinical:LabRecords:LDL',
 		'Clinical:LabRecords:HDL',
-		'Clinical:LabRecords:Creatinine',
-		'Clinical:LabRecords:Urea',
-		'Clinical:LabRecords:Electrolytes',
-		'Clinical:LabRecords:Hemoglobin',
-		'Clinical:LabRecords:A1C',
-		'Clinical:LabRecords:Platelets',
-		'Clinical:LabRecords:WBC'
+		'Clinical:LabRecords:A1C'
 	];
 
-	function toHumanLabel(identifier: string) {
-		const raw = identifier.split(':').pop() ?? '';
-		return raw.replace(/([a-z])([A-Z])/g, '$1 $2');
-	}
+	const sortedIdentifiers = AssessmentFieldIdentifiers;
 
-	const sortedIdentifiers = AssessmentFieldIdentifiers.sort((a, b) =>
-		toHumanLabel(a).localeCompare(toHumanLabel(b))
-	);
+	function toLabel(identifier: string) {
+		const parts = identifier.split(':');
+		const lastPart = parts[parts.length - 1];
+		return lastPart.replace(/([a-z])([A-Z])/g, '$1 $2'); // adds space before capital letters
+	}
 
 	const handleSubmit = async (event: Event) => {
 		try {
@@ -167,7 +162,12 @@
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentNodeUpdateModel);
 
-			console.log('validationResult', validationResult, "assessmentNodeUpdateModel", assessmentNodeUpdateModel);
+			console.log(
+				'validationResult',
+				validationResult,
+				'assessmentNodeUpdateModel',
+				assessmentNodeUpdateModel
+			);
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -218,7 +218,7 @@
 				<table class="health-system-table">
 					<thead>
 						<tr>
-							<th>Edit Assessment Node</th>
+							<th>Edit Node</th>
 							<th class="text-end">
 								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
@@ -320,7 +320,7 @@
 								>
 									<option value="" disabled selected>Select fieldIdentifier here...</option>
 									{#each sortedIdentifiers as identifier}
-										<option value={identifier}>{toHumanLabel(identifier)}</option>
+										<option value={identifier}>{toLabel(identifier)}</option>
 									{/each}
 								</select>
 
