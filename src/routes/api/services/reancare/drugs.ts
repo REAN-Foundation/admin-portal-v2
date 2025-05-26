@@ -1,4 +1,5 @@
 import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY } from '$env/static/private';
+import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 import { del, get, post, put } from './common.reancare';
 
 ////////////////////////////////////////////////////////////////
@@ -15,20 +16,31 @@ export const createDrug = async (
 ) => {
 	const body = {
 		DrugName: drugName,
-		GenericName: genericName ? genericName : null,
-		Ingredients: ingredients ? ingredients : null,
-		Strength: strength ? strength : null,
-		OtherCommercialNames: otherCommercialNames ? otherCommercialNames : null,
-		Manufacturer: manufacturer ? manufacturer : null,
-		OtherInformation: otherInformation ? otherInformation : null
+		GenericName: genericName ?? null,
+		Ingredients: ingredients ?? null,
+		Strength: strength ?? null,
+		OtherCommercialNames: otherCommercialNames ?? null,
+		Manufacturer: manufacturer ?? null,
+		OtherInformation: otherInformation ?? null
 	};
 	const url = BACKEND_API_URL + '/clinical/drugs';
-	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+
+	const findAndClearKeys = [`session-${sessionId}:req-searchDrugs`];
+	await DashboardManager.findAndClear(findAndClearKeys);
+
+	return result;
 };
 
 export const getDrugById = async (sessionId: string, drugId: string) => {
 	const url = BACKEND_API_URL + `/clinical/drugs/${drugId}`;
-	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	const cacheKey = `session-${sessionId}:req-getDrugById-${drugId}`;
+	if (await DashboardManager.has(cacheKey)) {
+		return await DashboardManager.get(cacheKey);
+	}
+	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	await DashboardManager.set(cacheKey, result);
+	return result;
 };
 
 export const searchDrugs = async (sessionId: string, searchParams?: any) => {
@@ -48,7 +60,14 @@ export const searchDrugs = async (sessionId: string, searchParams?: any) => {
 		}
 	}
 	const url = BACKEND_API_URL + `/clinical/drugs/search${searchString}`;
-	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	const cacheKey = `session-${sessionId}:req-searchDrugs:${searchString}`;
+	if (await DashboardManager.has(cacheKey)) {
+		return await DashboardManager.get(cacheKey);
+	}
+
+	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	await DashboardManager.set(cacheKey, result);
+	return result;
 };
 
 export const updateDrug = async (
@@ -64,18 +83,34 @@ export const updateDrug = async (
 ) => {
 	const body = {
 		DrugName: drugName,
-		GenericName: genericName ? genericName : '',
-		Ingredients: ingredients ? ingredients : '',
-		Strength: strength ? strength : '',
-		OtherCommercialNames: otherCommercialNames ? otherCommercialNames : '',
-		Manufacturer: manufacturer ? manufacturer : '',
-		OtherInformation: otherInformation ? otherInformation : ''
+		GenericName: genericName ?? '',
+		Ingredients: ingredients ?? '',
+		Strength: strength ?? '',
+		OtherCommercialNames: otherCommercialNames ?? '',
+		Manufacturer: manufacturer ?? '',
+		OtherInformation: otherInformation ?? ''
 	};
 	const url = BACKEND_API_URL + `/clinical/drugs/${drugId}`;
-	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+
+	const keysToBeDeleted = [`session-${sessionId}:req-getDrugById-${drugId}`];
+	await DashboardManager.deleteMany(keysToBeDeleted);
+
+	const findAndClearKeys = [`session-${sessionId}:req-searchDrugs`];
+	await DashboardManager.findAndClear(findAndClearKeys);
+
+	return result;
 };
 
 export const deleteDrug = async (sessionId: string, drugId: string) => {
 	const url = BACKEND_API_URL + `/clinical/drugs/${drugId}`;
-	return await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	const result = await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+
+	const keysToBeDeleted = [`session-${sessionId}:req-getDrugById-${drugId}`];
+	await DashboardManager.deleteMany(keysToBeDeleted);
+
+	const findAndClearKeys = [`session-${sessionId}:req-searchDrugs`];
+	await DashboardManager.findAndClear(findAndClearKeys);
+
+	return result;
 };
