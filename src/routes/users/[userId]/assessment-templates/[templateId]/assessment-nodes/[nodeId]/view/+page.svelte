@@ -47,7 +47,7 @@ console.log('This is data',data)
 	let resolutionScore = $state();
 
 	if (nodeType === 'Question') {
-		resolutionScore = assessmentNodes.ScoringCondition?.ResolutionScore;
+		resolutionScore = assessmentNodes.ScoringCondition?.ResolutionScore ?? 'Not specified';
 	}
 
 	scoringApplicableCondition.set(data.templateDetails.ScoringApplicable);
@@ -307,12 +307,12 @@ console.log('This is data',data)
 									<div class="flex items-center">
 										<span>{resolutionScore}</span>
 
-										<button
+										<!-- <button
 											onclick={openModal}
 											class="px-2 text-center text-gray-500 hover:text-blue-600"
 										>
 											<Icon icon="material-symbols:edit-outline" class="text-lg" />
-										</button>
+										</button> -->
 									</div>
 								</td>
 							</tr>
