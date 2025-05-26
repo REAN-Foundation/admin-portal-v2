@@ -440,7 +440,7 @@ function addBotContentMenu(
 	const qnaDocument: SidebarMenu = {
 		name: 'QNA-Documents',
 		title: 'Q&A Documents',
-		icon: 'material-symbols:fact-check-outline' ,
+		icon: 'material-symbols:fact-check-outline',
 		link: `/users/${userId}/qna-documents/documents`,
 
 		children: []
@@ -537,6 +537,51 @@ function addAdministrationMenus(
 	};
 	menuList.push(tenant);
 
+	const settings: SidebarMenu = {
+		name: 'Tenant-Settings',
+		title: 'Settings',
+		icon: 'mdi:cog-outline',
+		link: ``,
+		children: []
+	};
+	menuList.push(settings);
+
+	const commonSettings: SidebarMenu = {
+		name: 'Common',
+		title: 'Common Setting',
+		icon: 'mdi:tools',
+		link: `/users/${userId}/tenants/settings/common-setting`,
+		children: []
+	};
+	menuList.push(commonSettings);
+
+	const chatBotSettings: SidebarMenu = {
+		name: 'Chatbot-Setting',
+		title: 'Chat Bot Setting',
+		icon: 'mdi:robot-outline',
+		link: `/users/${userId}/tenants/settings/chatbot-setting`,
+		children: []
+	};
+	menuList.push(chatBotSettings);
+
+	const formsSettings: SidebarMenu = {
+		name: 'Forms-Setting',
+		title: 'Forms Setting',
+		icon: 'mdi:form-select',
+		link: `/users/${userId}/tenants/settings/form-setting`,
+		children: []
+	};
+	menuList.push(formsSettings);
+
+	const followUpSettings: SidebarMenu = {
+		name: 'FollowUp-Setting',
+		title: 'Follow-up Setting',
+		icon: 'mdi:calendar-clock',
+		link: `/users/${userId}/tenants/settings/followup-setting`,
+		children: []
+	};
+	menuList.push(followUpSettings);
+
 	const personRoleMenu: SidebarMenu = {
 		name: 'Person-Role',
 		title: 'User Roles',
@@ -567,14 +612,35 @@ function addAdministrationMenus(
 	const administration_: SidebarMenu = getMenu(menuList, 'Administration');
 	const clients: SidebarMenu = getMenu(menuList, 'Clients');
 	const tenants: SidebarMenu = getMenu(menuList, 'Tenants');
+	const setting: SidebarMenu = getMenu(menuList, 'Tenant-Settings');
+	const commonSetting: SidebarMenu = getMenu(menuList, 'Common');
+	const chatBotSetting: SidebarMenu = getMenu(menuList, 'Chatbot-Setting');
+	const formsSetting: SidebarMenu = getMenu(menuList, 'Forms-Setting');
+	const followUpSetting: SidebarMenu = getMenu(menuList, 'FollowUp-Setting');
 	const personRole: SidebarMenu = getMenu(menuList, 'Person-Role');
 	const userManagement: SidebarMenu = getMenu(menuList, 'User-Managment');
 	const users: SidebarMenu = getMenu(menuList, 'Users');
+
+	console.log('Tenants:', tenants);
+	console.log('Setting:', setting);
+	console.log('Children under tenants before push:', tenants.children);
+
+	setting.children = setting.children || [];
+	setting?.children.push(commonSetting);
+	setting?.children.push(chatBotSetting);
+	setting?.children.push(formsSetting);
+	setting?.children.push(followUpSetting);
+
+	tenants.children = tenants.children || [];
+	tenants?.children.push(setting);
+
 	administration_?.children.push(clients);
 	administration_?.children.push(tenants);
 	administration_?.children.push(personRole);
 	administration_?.children.push(userManagement);
 	administration_?.children.push(users);
+
+	console.log('Children under tenants after push:', tenants.children);
 
 	const administrationNavigation: NavigationMenu | null = toNavigation(
 		administration_,
