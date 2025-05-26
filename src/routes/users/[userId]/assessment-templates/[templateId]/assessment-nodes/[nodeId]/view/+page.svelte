@@ -1,49 +1,56 @@
 <script lang="ts">
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import { scoringApplicableCondition, showScoringConditionModal } from '$lib/store/general.store';
+	import UpdateScoringCondition from '$lib/components/modal/update.scoring.condition.modal.svelte';
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import { page } from '$app/state';
+	import { createOrUpdateSchema } from '$lib/validation/scoring.condition.schema';
+	import { toastMessage } from '$lib/components/toast/toast.store';
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
+	let errors: Record<string, string> = $state({});
+	let templateTitle = data.templateDetails.Title;
 
-	let sessionId = data.sessionId;
-	let assessmentNodes = $state(data.assessmentNode);
+console.log('This is data',data)
+	const assessmentNodes = $state(data.assessmentNode);
+	console.log('assessmentNodes', assessmentNodes);
 
-	let nodeType = assessmentNodes.NodeType;
-	let title = assessmentNodes.Title;
-	let description =
+	const nodeType = assessmentNodes.NodeType;
+	const title = assessmentNodes.Title;
+	const description =
 		assessmentNodes.Description !== null && assessmentNodes.Description !== ''
 			? assessmentNodes.Description
 			: 'Not specified';
-	let message = assessmentNodes.Message !== null ? assessmentNodes.Message : 'Not specified';
-	let serveListNodeChildrenAtOnce = assessmentNodes.ServeListNodeChildrenAtOnce ?? null;
-	let queryType = assessmentNodes.QueryResponseType;
-	let options = assessmentNodes.Options ?? [];
-	let childrenNodes = assessmentNodes.Children ?? [];
-	let displayCode = assessmentNodes.DisplayCode;
-	let sequence = assessmentNodes.Sequence;
-	let tags_ = Array.isArray(assessmentNodes?.Tags) ? assessmentNodes.Tags : [];
-	let tags = tags_.join(', ');
-	let correctAnswer = assessmentNodes.CorrectAnswer ?? null;
-	let rawData = assessmentNodes.RawData !== null && assessmentNodes.RawData !== ''
-		? assessmentNodes.RawData
-		: 'Not specified';
+	const message = assessmentNodes.Message !== null ? assessmentNodes.Message : 'Not specified';
+	const serveListNodeChildrenAtOnce = assessmentNodes.ServeListNodeChildrenAtOnce ?? null;
+	const queryType = assessmentNodes.QueryResponseType;
+	const options = assessmentNodes.Options ?? [];
+	const childrenNodes = assessmentNodes.Children ?? [];
+	const displayCode = assessmentNodes.DisplayCode;
+	const sequence = assessmentNodes.Sequence;
+	const tags_ = Array.isArray(assessmentNodes?.Tags) ? assessmentNodes.Tags : [];
+	const tags = tags_.join(', ');
+	const correctAnswer = assessmentNodes.CorrectAnswer ?? null;
+	const rawData =
+		assessmentNodes.RawData !== null && assessmentNodes.RawData !== ''
+			? assessmentNodes.RawData
+			: 'Not specified';
 
-	let fieldIdentifier = assessmentNodes.FieldIdentifier ?? null;
-	let fieldIdentifierUnit = assessmentNodes.FieldIdentifierUnit ?? null;
+	const fieldIdentifier = assessmentNodes.FieldIdentifier ?? null;
+	const fieldIdentifierUnit = assessmentNodes.FieldIdentifierUnit ?? null;
 
 	let resolutionScore = $state();
 
 	if (nodeType === 'Question') {
-		resolutionScore = assessmentNodes.ScoringCondition?.ResolutionScore;
+		resolutionScore = assessmentNodes.ScoringCondition?.ResolutionScore ?? 'Not specified';
 	}
 
-	scoringApplicableCondition.set(data.templateScoringCondition.ScoringApplicable);
+	scoringApplicableCondition.set(data.templateDetails.ScoringApplicable);
 
 	// console.log('assessmentNode', assessmentNodes);
 
@@ -65,11 +72,11 @@
 			path: assessmentsRoutes
 		},
 		{
-			name: 'Assessment-View',
+			name: templateTitle,
 			path: assessmentTemplateView
 		},
 		{
-			name: 'Assessment-Nodes',
+			name: 'Nodes',
 			path: assessmentNodeRoutes
 		},
 		{
@@ -93,33 +100,93 @@
 		window.location.href = viewRoute;
 	};
 
-	const onUpdateScoringCondition = async (resolutionScore: number) => {
-		const scoringId = data.assessmentNode.ScoringCondition.id;
-		console.log(scoringId);
-		await updateScoringCondition({
-			sessionId,
-			templateId,
-			nodeId,
-			scoringConditionId: data.assessmentNode.ScoringCondition.id,
-			resolutionScore: resolutionScore
-		});
+	let model = $state(false);
+
+	const openModal = async (event) => {
+		event.preventDefault();
+		event.stopPropagation();
+		model = true;
+	};
+	const closeModal = async () => {
+		model = false;
+	};
+	const onUpdateScoringCondition = async (score: number) => {
+		// const scoringId = data.assessmentNode.ScoringCondition.id;
+		// console.log(scoringId);
+		resolutionScore = score;
+		console.log('resolutionScore', resolutionScore);
+		handleSubmit(event);
 	};
 
-	async function updateScoringCondition(model) {
-		const response = await fetch(`/api/server/assessment-nodes/update-scoring-condition`, {
-			method: 'POST',
-			body: JSON.stringify(model),
-			headers: { 'content-type': 'application/json' }
-		});
-		const resp = await response.text();
-		const scoringCondition = JSON.parse(resp);
-		resolutionScore = scoringCondition.ResolutionScore;
-	}
+	const handleSubmit = async (event: Event) => {
+		try {
+			event.preventDefault();
+			errors = {};
+			const scoringId = data.assessmentNode.ScoringCondition ?? undefined;
+
+			const scoringConditionUpdateModel = {
+				ScoringConditionId: scoringId,
+				ResolutionScore: resolutionScore
+			};
+
+			const validationResult = createOrUpdateSchema.safeParse(scoringConditionUpdateModel);
+			console.log('validationResult', validationResult);
+
+			if (!validationResult.success) {
+				errors = Object.fromEntries(
+					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				);
+				return;
+			}
+
+			const res = await fetch(
+				`/api/server/assessments/assessment-nodes/update-scoring-condition?templateId=${templateId}&nodeId=${nodeId}`,
+				{
+					method: 'PUT',
+					body: JSON.stringify(scoringConditionUpdateModel),
+					headers: { 'content-type': 'application/json' }
+				}
+			);
+
+			// console.log(scoringId);
+			const response = await res.json();
+			// const scoringCondition = JSON.parse(resp);
+
+			console.log('response', response);
+			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				toastMessage(response);
+				// goto(`${assessmentsRoutes}/${response?.Data?.AssessmentTemplate?.id}/view`);
+				// resolutionScore = scoringCondition.ResolutionScore;
+				return;
+			}
+			if (response.Errors) {
+				errors = response?.Errors || {};
+			} else {
+				toastMessage(response);
+			}
+		} catch (error) {
+			toastMessage();
+		}
+	};
+
+	// async function updateScoringCondition(model) {
+	// 	const response = await fetch(`/api/server/assessment-nodes/update-scoring-condition`, {
+	// 		method: 'POST',
+	// 		body: JSON.stringify(model),
+	// 		headers: { 'content-type': 'application/json' }
+	// 	});
+	// }
 </script>
 
 <!-- <UpdateScoringCondition
 	on:updateScoringCondition={async (e) => await onUpdateScoringCondition(e.detail.resolutionScore)}
 /> -->
+{#if model}
+	<UpdateScoringCondition {onUpdateScoringCondition} {closeModal} />
+{/if}
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
@@ -137,7 +204,7 @@
 			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
 		>
 			<Icon icon="material-symbols:edit-outline" />
-			<span>Edit</span>
+			<span class="ml-1">Edit</span>
 		</a>
 	</div>
 
@@ -146,7 +213,7 @@
 			<table class="health-system-table">
 				<thead>
 					<tr>
-						<th>View Assessment Node</th>
+						<th>View Node</th>
 						<th class="text-end">
 							<a href={assessmentNodeRoutes} class="cancel-btn">
 								<Icon icon="material-symbols:close-rounded" />
@@ -185,8 +252,8 @@
 					</tr>
 					<tr>
 						<td>Field Identifier Unit</td>
-						<td>{fieldIdentifierUnit}</td>	
-					<tr>
+						<td>{fieldIdentifierUnit}</td>
+					</tr><tr>
 						<td>Tags</td>
 						<td>
 							{#if tags.length <= 0}
@@ -240,12 +307,12 @@
 									<div class="flex items-center">
 										<span>{resolutionScore}</span>
 
-										<button
-											onclick={async () => showScoringConditionModal.set(true)}
+										<!-- <button
+											onclick={openModal}
 											class="px-2 text-center text-gray-500 hover:text-blue-600"
 										>
 											<Icon icon="material-symbols:edit-outline" class="text-lg" />
-										</button>
+										</button> -->
 									</div>
 								</td>
 							</tr>

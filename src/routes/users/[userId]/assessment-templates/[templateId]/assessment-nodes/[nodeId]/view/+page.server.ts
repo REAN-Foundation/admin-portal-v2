@@ -10,8 +10,8 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 	const assessmentNodeId = event.params.nodeId;
 		const templateId = event.params.templateId;
 		const response = await getAssessmentNodeById(sessionId, templateId, assessmentNodeId);
-		const _templateScoringCondition = await getAssessmentTemplateById(sessionId, templateId);
-		const templateScoringCondition = _templateScoringCondition.Data.AssessmentTemplate;
+		const templateDetails_ = await getAssessmentTemplateById(sessionId, templateId);
+	const templateDetails = templateDetails_.Data.AssessmentTemplate;
 
 		if (response.Status === 'failure' || response.HttpCode !== 200) {
 			throw error(response.HttpCode, response.Message);
@@ -22,7 +22,7 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 			location: `${id}/edit`,
 			assessmentNode,
 			sessionId,
-			templateScoringCondition,
+			templateDetails,
 			message: response.Message,
 			title:'Clinical-Assessments-Assessment Nodes View'
 		};

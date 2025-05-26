@@ -137,10 +137,10 @@
 				<div class="button-container">
 					{#await promise}
 						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-							Submiting
+							Uploading...
 						</button>
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+						<button type="submit" class="health-system-btn variant-soft-secondary"> Upload </button>
 					{/await}
 				</div>
 			</form>

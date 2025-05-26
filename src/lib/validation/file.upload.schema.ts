@@ -6,10 +6,11 @@ const allowedTypes = [
 	'application/pdf',
 	'application/xml',
 	'text/xml',
-	'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+	'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 	'application/vnd.ms-excel',
 	'text/plain',
-	'text/csv'
+	'text/csv',
+	'application/json'
 ];
 
 export const fileUploadSchema = z.object({
@@ -23,7 +24,8 @@ export const fileUploadSchema = z.object({
 			return isValidSize && isValidType;
 		},
 		{
-			message: 'Upload file must be a PDF, XML,TEXT, or Excel file and less than 5MB.'
+			message:
+				'Upload file must be a PDF, XML, TEXT, JSON, or Excel file and less than 5MB.'
 		}
 	),
 	FileName: z.string({

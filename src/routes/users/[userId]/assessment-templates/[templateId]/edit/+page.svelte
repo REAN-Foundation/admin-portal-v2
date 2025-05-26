@@ -118,7 +118,7 @@
 				<table class="health-system-table">
 					<thead>
 						<tr>
-							<th>Edit Assessment Template</th>
+							<th>Edit Template</th>
 							<th class="text-end">
 								<a href={viewRoute} class=" cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
