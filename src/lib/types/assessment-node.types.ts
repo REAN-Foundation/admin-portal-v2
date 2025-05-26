@@ -39,3 +39,9 @@ export interface AssessmentNodeUpdateModel {
     FieldIdentifier?: string;
     FieldIdentifierUnit?: string;
 };
+
+export interface ScoringConditionUpdateModel {
+    ScoringConditionId?: string;
+    ResolutionScore?: number;
+
+};
