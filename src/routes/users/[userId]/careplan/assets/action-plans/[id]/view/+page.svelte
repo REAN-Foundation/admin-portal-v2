@@ -28,10 +28,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Action-Plan',
-			path: actionPlanRoute
-		},
+
 		{
 			name: 'View',
 			path: viewRoute

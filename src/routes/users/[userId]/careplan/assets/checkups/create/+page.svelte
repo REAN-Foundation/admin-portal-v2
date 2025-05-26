@@ -26,7 +26,7 @@
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
-		{ name: 'Checkups', path: checkupsRoute },
+	
 		{ name: 'Create', path: createRoute }
 	];
 
@@ -35,7 +35,7 @@
 			event.preventDefault();
 			errors = {};
 
-			const checkupsCreateModel:CheckupsCreateModel = {
+			const checkupsCreateModel: CheckupsCreateModel = {
 				Name: name,
 				Description: description,
 				Version: version,
@@ -64,7 +64,6 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				// console.log("Redirecting to:", response?.Data?.id);
 				console.log('Full response:', response);
 				await goto(`${checkupsRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
@@ -87,9 +86,9 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
+				<table class="table-c">
 					<thead>
 						<tr>
 							<th>Create Checkups</th>
@@ -106,7 +105,7 @@
 							<td>
 								<input
 									type="text"
-									class="health-system-input {form?.errors?.Name ? 'input-text-error' : ''}"
+									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
 									name="name"
 									placeholder="Enter name here..."
 									bind:value={name}
@@ -138,13 +137,12 @@
 									keywordsChanged={onUpdateKeywords}
 								/>
 								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
 							</td>
 						</tr>
 						<tr>
 							<td>Version</td>
 							<td>
-								<input type="text" bind:value={version} class="health-system-input" placeholder="V 1.0" />
+								<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
 							</td>
 						</tr>
 					</tbody>

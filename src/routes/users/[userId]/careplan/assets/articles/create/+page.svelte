@@ -30,10 +30,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Article',
-			path: articleRoute
-		},
+
 		{
 			name: 'Create',
 			path: createRoute

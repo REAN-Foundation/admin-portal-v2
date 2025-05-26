@@ -29,10 +29,6 @@
 			path: assetRoute
 		},
 		{
-			name: 'Checkups',
-			path: checkupsRoute
-		},
-		{
 			name: 'View',
 			path: viewRoute
 		}
@@ -52,8 +48,8 @@
 		</a>
 	</div>
 <div class="mx-auto">
-	<div class="health-system-table-container">
-		<table class="health-system-table">
+	<div class="table-container">
+		<table class="table-c">
 			<thead>
 				<tr>
 					<th>View Checkups</th>

@@ -19,7 +19,7 @@
 	let templateName = $state(data.message.TemplateName);
 	let pathUrl = $state(data.message.PathUrl);
 	let version = $state(data.message.Version);
-	let keywords: string[] = $state([]);
+	let keywords: string[] = $state(data.message.Tags);
 	let keywordsStr = $state('');
 	let templateVariablesText = $state(
 		data.message.TemplateVariables ? JSON.stringify(data.message.TemplateVariables, null, 2) : ''
@@ -28,12 +28,13 @@
 	const userId = page.params.userId;
 	var messageId = page.params.id;
 
+	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/messages/${messageId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/messages/${messageId}/view`;
 	const messageRoute = `/users/${userId}/careplan/assets/messages`;
 
 	const breadCrumbs = [
-		{ name: 'Message', path: messageRoute },
+		{ name: 'Assets', path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
@@ -128,9 +129,9 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
+				<table class="table-c">
 					<thead>
 						<tr>
 							<th>Edit Message</th>
@@ -147,7 +148,7 @@
 							<td>
 								<input
 									type="text"
-									class="health-system-input {form?.errors?.Name ? 'input-text-error' : ''}"
+									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
 									name="name"
 									placeholder="Enter name here..."
 									bind:value={name}
@@ -163,7 +164,7 @@
 							<td>
 								<input
 									type="textarea"
-									class="health-system-input {form?.errors?.Name ? 'input-text-error' : ''}"
+									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
 									name="description"
 									placeholder="Enter description here..."
 									bind:value={description}
@@ -176,7 +177,7 @@
 						<tr>
 							<td>Message Type</td>
 							<td>
-								<select class="health-system-input" bind:value={messageType}>
+								<select class="input" bind:value={messageType}>
 									<option disabled value>Select message type</option>
 									<option>Educational</option>
 									<option>Status</option>
@@ -191,7 +192,7 @@
 									type="text"
 									bind:value={templateName}
 									placeholder="Enter Template Name..."
-									class="health-system-input {errors?.TemplateName ? 'input-text-error' : ''}"
+									class="input {errors?.TemplateName ? 'input-text-error' : ''}"
 								/>
 								{#if errors?.TemplateName}<p class="text-error">{errors?.TemplateName}</p>{/if}
 							</td>
@@ -215,7 +216,7 @@
 									name="url"
 									bind:value={pathUrl}
 									placeholder="Enter url here"
-									class="health-system-input {errors?.Url ? 'input-text-error' : ''}"
+									class="input {errors?.Url ? 'input-text-error' : ''}"
 								/>
 								{#if errors?.Url}
 									<p class="text-error">{errors?.Url}</p>
@@ -242,7 +243,7 @@
 								<input
 									type="text"
 									bind:value={version}
-									class="health-system-input"
+									class="input"
 									placeholder="V 1.0"
 								/>
 							</td>

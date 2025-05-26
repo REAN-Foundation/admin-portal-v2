@@ -17,21 +17,21 @@
 	let description = $state(data.exercise.Description);
 	let exerciseType = $state(data.exercise.ExerciseType);
 	let intensityLevel = $state(data.exercise.IntensityLevel);
-	// let recommendedDurationMin = $state();
 	let recommendedDurationMin = $state<number>(data.exercise.RecommendedDurationMin);
 	let version = $state(data.exercise.Version);
-	let keywords: string[] = $state([]);
+	let keywords: string[] = $state(data.exercise.Tags);
 	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
 	var exerciseId = page.params.id;
 
+	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/exercises/${exerciseId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/exercises/${exerciseId}/view`;
 	const exerciseRoute = `/users/${userId}/careplan/assets/exercises`;
 
 	const breadCrumbs = [
-		{ name: 'Exercise', path: exerciseRoute },
+		{ name: 'Assets', path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
@@ -107,14 +107,14 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<table class="health-system-table">
+			<table class="table-c">
 			<thead>
 					<tr>
 						<th>Edit Biometric</th>
 						<th class="text-end">
-							<a href={exerciseRoute} class="health-system-btn variant-soft-secondary">
+							<a href={viewRoute} class="health-system-btn variant-soft-secondary">
 								<Icon icon="material-symbols:close-rounded" />
 							</a>
 						</th>
@@ -126,7 +126,7 @@
 						<td>
 							<input
 									type="text"
-									class="health-system-input {form?.errors?.Name
+									class="input {form?.errors?.Name
 										? 'input-text-error'
 										: ''}"
 									name="biometricsName"
@@ -153,7 +153,7 @@
 					<tr>
 						<td>Exercise Type</td>
 						<td>
-							<select class="health-system-input" bind:value={exerciseType}>
+							<select class="input" bind:value={exerciseType}>
 								<option disabled value>Select exercise type</option>
 								<option>Strength</option>
 								<option>Aerobic</option>
@@ -169,7 +169,7 @@
 					<tr>
 						<td>Intensity Level</td>
 						<td>
-							<select class="health-system-input" bind:value={intensityLevel}>
+							<select class="input" bind:value={intensityLevel}>
 								<option disabled value>Select Intensity Level</option>
 								<option>None</option>
 								<option>Minimal</option>
@@ -190,7 +190,7 @@
 								type="text"
 								bind:value={recommendedDurationMin}
 								placeholder="Enter recommended duration min..."
-								class="health-system-input {errors?.RecommendedDurationMin ? 'input-text-error' : ''}"
+								class="input {errors?.RecommendedDurationMin ? 'input-text-error' : ''}"
 							/>
 							{#if errors?.RecommendedDurationMin}<p class="text-error">{errors?.RecommendedDurationMin}</p>{/if}
 						</td>
@@ -211,7 +211,7 @@
 					<tr>
 						<td>Version</td>
 						<td>
-							<input type="text" bind:value={version} class="health-system-input" placeholder="V 1.0" />
+							<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
 						</td>
 					</tr>
 				</tbody>

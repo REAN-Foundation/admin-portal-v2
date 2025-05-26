@@ -28,10 +28,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Web-Newsfeed',
-			path: webNewsfeedRoute
-		},
+
 		{
 			name: 'View',
 			path: viewRoute

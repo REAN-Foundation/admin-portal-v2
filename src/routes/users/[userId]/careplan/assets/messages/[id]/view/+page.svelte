@@ -21,7 +21,7 @@
 	let description = message.Description !== null ? message.Description : 'Not specified';
 	let messageType = message.MessageType !== null ? message.MessageType : 'Not specified';
 	let templateName = message.TemplateName !== null ? message.TemplateName : 'Not specified';
-	let pathUrl = (message.Url !== null && message.PathUrl !== '') ? message.PathUrl : 'Not specified';
+	let pathUrl = message.Url !== null && message.PathUrl !== '' ? message.PathUrl : 'Not specified';
 	let tags_ = message.Tags;
 	let tags = tags_.join(', ');
 	let version = message.Version;
@@ -32,10 +32,6 @@
 		{
 			name: 'Assets',
 			path: assetRoute
-		},
-		{
-			name: 'Message',
-			path: messageRoute
 		},
 		{
 			name: 'View',
@@ -57,8 +53,8 @@
 		</a>
 	</div>
 <div class="mx-auto">
-	<div class="health-system-table-container">
-		<table class="health-system-table">
+	<div class="table-container">
+		<table class="table-c">
 			<thead>
 				<tr>
 					<th>View Message</th>

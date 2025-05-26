@@ -1,7 +1,8 @@
 import type { CheckupsCreateModel } from "$lib/types/checkups.types";
 import { ResponseHandler } from "$lib/utils/response.handler";
 import { createOrUpdateSchema } from "$lib/validation/checkups.schema";
-import { createCheckups } from "$routes/api/services/careplan/assets/checkups";
+import { createCheckup } from "$routes/api/services/careplan/assets/checkups";
+// import { createCheckups } from "$routes/api/services/careplan/assets/checkups";
 import type { RequestEvent } from "@sveltejs/kit";
 
 
@@ -28,7 +29,7 @@ export const POST = async (event: RequestEvent) => {
             });
         }
 
-        const response = await createCheckups(
+        const response = await createCheckup(
             sessionId,
             data.Name,
             data.Description,     

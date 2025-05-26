@@ -28,10 +28,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Article',
-			path: articleRoute
-		},
+
 		{
 			name: 'View',
 			path: viewRoute

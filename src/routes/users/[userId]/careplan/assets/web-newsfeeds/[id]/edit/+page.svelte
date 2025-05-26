@@ -37,10 +37,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Web-Newsfeed',
-			path: webNewsfeedRoute
-		},
+		
 		{
 			name: 'Edit',
 			path: editRoute

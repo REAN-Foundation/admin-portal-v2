@@ -37,10 +37,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Word-Power',
-			path: wordpowerRoute
-		},
+
 		{
 			name: 'Edit',
 			path: editRoute
