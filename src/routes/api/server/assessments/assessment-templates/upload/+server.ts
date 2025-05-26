@@ -1,19 +1,19 @@
 import { PUBLIC_LOCAL_STORAGE } from '$env/static/public';
 import type { FileUploadModel } from '$lib/types/file.upload.types';
 import { ResponseHandler } from '$lib/utils/response.handler';
-import { fileUploadSchema } from '$lib/validation/file.upload.schema';
+import { fileUploadSchema } from '$lib/validation/assessment-import.schema';
 import { importAssessmentTemplate } from '../../../../services/reancare/assessments/assessment-templates';
 import type { RequestEvent, RequestHandler } from './$types';
 import * as fs from 'fs';
 import { writeFile } from 'node:fs/promises';
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 export const POST: RequestHandler = async (event: RequestEvent) => {
     try {
-        console.log(`Upload in progress---`);
 
         const formData = await event.request.formData();
-        console.log('formData', formData);
-        // const filename: string;
+
         const file = formData.get('file') as File;
         const filename = file.name;
         const fileUploadFolder = PUBLIC_LOCAL_STORAGE;
@@ -25,7 +25,7 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
         };
 
         const validationResult = fileUploadSchema.safeParse(fileCreateModel);
-        console.log('validation result from server', validationResult);
+
         if (!validationResult.success) {
             return ResponseHandler.success({
                 Status: 'failure',
@@ -40,9 +40,6 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
             });
         }
 
-        console.log('File name:', filename);
-        console.log('File type:', file.type);
-
         const filePath = `${fileUploadFolder}/${filename}`;
 
         if (!fs.existsSync(`${fileUploadFolder}`)) {
@@ -55,8 +52,6 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
         }
 
         const sessionId = event.locals?.sessionUser?.sessionId;
-        // const tenantId = event.locals?.sessionUser?.tenantCode;
-        // const fileBuffer = fs.readFileSync(filePath);
 
         await writeFile(filePath, Buffer.from(await file?.arrayBuffer()));
 
@@ -75,11 +70,7 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
             });
         }
 
-        console.log('Uploading file resource ...');
-
         const response = await importAssessmentTemplate(sessionId, filename, filePath);
-
-        console.log(JSON.stringify(response, null, 2));
 
         fs.unlinkSync(filePath);
 
