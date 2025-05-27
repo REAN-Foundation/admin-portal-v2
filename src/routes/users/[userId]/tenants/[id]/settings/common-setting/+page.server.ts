@@ -1,7 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getTenantSettings } from '../../../../../../api/services/reancare/tenant-settings';
+import { getTenantSettingsByType } from '../../../../../../api/services/reancare/tenant-settings';
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -11,7 +11,7 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 	try {
         console.log('Event-',event)
         const tenantId = event.locals?.sessionUser?.tenantId;
-		const response = await getTenantSettings(sessionId, tenantId);
+		const response = await getTenantSettingsByType(sessionId, tenantId,'Common');
 
         console.log("response of setting", response);
         
