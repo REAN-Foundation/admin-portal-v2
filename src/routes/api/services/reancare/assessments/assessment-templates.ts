@@ -1,12 +1,12 @@
 import { BACKEND_API_URL } from '$env/static/private';
 import { ServerHelper } from '$lib/server/server.helper';
-// import { SessionManager } from '../../../sessions/session.manager'
 import { API_CLIENT_INTERNAL_KEY } from '$env/static/private';
 import * as fs from 'fs';
 import axios from 'axios';
 import FormData from 'form-data';
 import { del, get, post, put } from '../common.reancare';
 import { SessionManager } from '../../../cache/session/session.manager';
+import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 
 ////////////////////////////////////////////////////////////////
 
@@ -31,9 +31,16 @@ export const createAssessmentTemplate = async (
 		ScoringApplicable: scoringApplicable ? scoringApplicable : false,
 		Tags: tags ? tags : []
 	};
-	console.log("assessment-body-----", body)
+
 	const url = BACKEND_API_URL + '/clinical/assessment-templates';
-	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+
+	const findAndClearKeys = [
+		`session-${sessionId}:req-searchAssessmentTemplates`,
+	];
+	await DashboardManager.findAndClear(findAndClearKeys);
+
+	return result;
 };
 
 export const importAssessmentTemplate = async (
@@ -59,7 +66,7 @@ export const importAssessmentTemplate = async (
 
 	try {
 		const res = await axios.post(url, form, { headers });
-		//only for 201 status code
+
 		const response = res.data;
 		return response;
 	} catch (error) {
@@ -74,7 +81,13 @@ export const getAssessmentTemplateById = async (
 	assessmentTemplateId: string
 ) => {
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${assessmentTemplateId}`;
-	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	const cacheKey = `session-${sessionId}:req-getAssessmentTemplateById-${assessmentTemplateId}`;
+	if (await DashboardManager.has(cacheKey)) {
+		return await DashboardManager.get(cacheKey);
+	}
+	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	await DashboardManager.set(cacheKey, result);
+	return result;
 };
 
 export const searchAssessmentTemplates = async (sessionId: string, searchParams?: any) => {
@@ -94,7 +107,13 @@ export const searchAssessmentTemplates = async (sessionId: string, searchParams?
 		}
 	}
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/search${searchString}`;
-	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	const cacheKey = `session-${sessionId}:req-searchAssessmentTemplates:${searchString}`;
+	if (await DashboardManager.has(cacheKey)) {
+		return await DashboardManager.get(cacheKey);
+	}
+	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	await DashboardManager.set(cacheKey, result);
+	return result;
 };
 
 export const updateAssessmentTemplate = async (
@@ -120,12 +139,33 @@ export const updateAssessmentTemplate = async (
 		Tags: tags ? tags : []
 	};
 
-	console.log("assessment-body-----", body)
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${assessmentTemplateId}`;
-	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+	const keysToBeDeleted = [
+		`session-${sessionId}:req-getAssessmentTemplateById-${assessmentTemplateId}`,
+	];
+	await DashboardManager.deleteMany(keysToBeDeleted);
+	const findAndClearKeys = [
+		`session-${sessionId}:req-searchAssessmentTemplates`,
+	];
+	await DashboardManager.findAndClear(findAndClearKeys);
+
+	return result;
 };
 
 export const deleteAssessmentTemplate = async (sessionId: string, assessmentTemplateId: string) => {
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${assessmentTemplateId}`;
-	return await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	const result = await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+
+	const keysToBeDeleted = [
+		`session-${sessionId}:req-getAssessmentTemplateById-${assessmentTemplateId}`,
+	];
+	await DashboardManager.deleteMany(keysToBeDeleted);
+
+	const findAndClearKeys = [
+		`session-${sessionId}:req-searchAssessmentTemplates`,
+	];
+	await DashboardManager.findAndClear(findAndClearKeys);
+
+	return result;
 };
