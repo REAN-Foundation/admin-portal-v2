@@ -44,8 +44,13 @@
 
 		if (response.Status === 'success' && response.HttpCode === 201) {
 			return { success: true, resourceId: response.Data?.id, response };
+		}
+		if (response.Errors) {
+			errors = response?.Errors || {};
+			// showMessage(response.Message, 'error');
+			return response;
 		} else {
-			showMessage(response.Message, 'error');
+			// showMessage(response.Message, 'error');
 			return { success: false, error: response.Message };
 		}
 	};
@@ -67,8 +72,6 @@
 			errors = {};
 
 			const uploadResult = await upload(fileinput, selectFile);
-
-			console.log('uploadResult', uploadResult);
 
 			if (uploadResult.response.HttpCode === 201 || uploadResult.response.HttpCode === 200) {
 				toastMessage(uploadResult.response);
@@ -100,12 +103,8 @@
 					</thead>
 					<tbody>
 						<tr>
-							<!-- <td class="text-center">
-								<input type="file" name="name" required class="health-system-input" />
-							</td> -->
 							<td>
 								<div class="flex items-center space-x-4">
-									<!-- Select File Button -->
 									<label class="health-system-btn variant-filled-secondary">
 										Select File
 										<input type="file" class="hidden" onchange={onFileSelected} />
@@ -120,27 +119,20 @@
 									/>
 								</div>
 
-								<!-- Validation Error -->
 								{#if errors?.UploadFile}
 									<p class="text-error">{errors?.UploadFile}</p>
 								{/if}
 							</td>
 						</tr>
-
-						<!-- <tr>
-							<td class="text-center">
-								<button type="submit" class="health-system-btn variant-soft-secondary">Upload</button>
-							</td>
-						</tr> -->
 					</tbody>
 				</table>
 				<div class="button-container">
 					{#await promise}
 						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-							Submiting
+							Uploading...
 						</button>
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+						<button type="submit" class="health-system-btn variant-soft-secondary"> Upload </button>
 					{/await}
 				</div>
 			</form>

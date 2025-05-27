@@ -37,7 +37,7 @@
 
 	const breadCrumbs = [
 		{ name: 'Assessments', path: assessmentRoute },
-		{ name: 'Assessment-Nodes', path: assessmentNodeRoute }
+		{ name: 'Nodes', path: assessmentNodeRoute }
 	];
 
 	let title = $state(undefined);

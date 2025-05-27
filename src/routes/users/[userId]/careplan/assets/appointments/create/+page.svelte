@@ -141,7 +141,7 @@
 						<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
 							<td>Appointment Type</td>
 							<td>
-								<select name="appointmentType" class="select">
+								<select name="appointmentType" class="select" bind:value={appointmentType}>
 									<option disabled selected>Select appointment type</option>
 									<option>Doctor</option>
 									<option>Lab</option>
