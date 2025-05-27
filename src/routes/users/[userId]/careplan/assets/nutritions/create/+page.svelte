@@ -29,10 +29,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Nutrition',
-			path: nutritionRoute
-		},
+		
 		{
 			name: 'Create',
 			path: createRoute
@@ -114,7 +111,7 @@
 							<td>
 								<input
 									type="text"
-									class="table-input-field {form?.errors?.name ? 'input-text-error' : ''}"
+									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
 									name="name"
 									placeholder="Enter name here..."
 									bind:value={name}
@@ -153,16 +150,7 @@
 						<tr>
 							<td>Version</td>
 							<td>
-								<input
-									type="text"
-									class="table-input-field {form?.errors?.version ? 'input-text-error' : ''}"
-									name="version"
-									placeholder="V 1.0"
-									bind:value={version}
-								/>
-								{#if errors?.Version}
-									<p class="text-error-500 text-xs">{errors?.Version}</p>
-								{/if}
+								<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
 							</td>
 						</tr>
 					</tbody>

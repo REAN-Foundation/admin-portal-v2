@@ -18,18 +18,20 @@
 	let measurementUnit = $state(data.biometrics.MeasurementUnit);
 	let version = $state(data.biometrics.Version);
 	let biometricsType = $state(data.biometrics.BiometricsType);
-	let keywords: string[] = $state([]);
-	let keywordsStr = $state('');
+	let tags = $state(data.biometrics.Tags);
+	let keywordsStr: string = $state('');
+	let keywords: string[] = $state(data.biometrics.Tags);
 
 	const userId = page.params.userId;
 	var biometricsId = page.params.id;
 
+	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/biometrics/${biometricsId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/biometric/${biometricsId}/view`;
 	const biometricsRoute = `/users/${userId}/careplan/assets/biometrics`;
 
 	const breadCrumbs = [
-		{ name: 'Biometric', path: biometricsRoute },
+		{ name: 'Assets', path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
@@ -40,7 +42,7 @@
 		 measurementUnit = data?.biometrics?.MeasurementUnit
 		 version = data?.biometrics?.Version;
 		 biometricsType = data?.biometrics.BiometricsType;
-		 keywords = data?.biometrics?.Tags;
+		 tags = data?.biometrics.Tags;
 		 errors = {};
 		}
 
@@ -103,9 +105,9 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<table class="health-system-table">
+			<table class="table-c">
 			<thead>
 					<tr>
 						<th>Edit Biometric</th>
@@ -122,7 +124,7 @@
 						<td>
 							<input
 									type="text"
-									class="health-system-input {form?.errors?.Name
+									class="input {form?.errors?.Name
 										? 'input-text-error'
 										: ''}"
 									name="biometricsName"
@@ -150,7 +152,7 @@
 					<tr>
 						<td>Biometrics Type</td>
 						<td>
-							<select class="health-system-input" bind:value={biometricsType}>
+							<select class="input" bind:value={biometricsType}>
 								<option disabled value>Select biometrics type</option>
 								<option>Blood pressure</option>
 								<option>Blood glucose</option>
@@ -165,13 +167,13 @@
 					</tr>
 
 					<tr>
-						<td>Measurement Unit <span class="text-red-700">*</span></td>
+						<td>Measurement Unit</td>
 						<td>
 							<input
 								type="text"
 								bind:value={measurementUnit}
 								placeholder="Enter unit..."
-								class="health-system-input {errors?.MeasurementUnit ? 'input-text-error' : ''}"
+								class="input {errors?.MeasurementUnit ? 'input-text-error' : ''}"
 							/>
 							{#if errors?.MeasurementUnit}<p class="text-error">{errors?.MeasurementUnit}</p>{/if}
 						</td>
@@ -193,7 +195,7 @@
 					<tr>
 						<td>Version</td>
 						<td>
-							<input type="text" bind:value={version} class="health-system-input" placeholder="V 1.0" />
+							<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
 						</td>
 					</tr>
 				</tbody>

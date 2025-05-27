@@ -5,6 +5,7 @@
 	import Image from '$lib/components/image.svelte';
 	import { getPublicLogoImageSource } from '$lib/themes/theme.selector';
 	import Sidebar from './Sidebar.svelte';
+	import { clickOutside } from '$lib/actions/clickOutside';
 
 	let { logout, userId, imageUrl, userName, tenantSettings, userRole, email } = $props();
 
@@ -28,7 +29,6 @@
 	let selectedMode = $state('Light');
 	let selectedOption = $state('Blue');
 	let showSidebar = $state(false);
-
 
 	const userMenuItems = [
 		{
@@ -110,7 +110,6 @@
 		.split(' ')
 		.map((word: any[]) => word[0])
 		.join('');
-
 </script>
 
 <header class="navbar">
@@ -124,7 +123,7 @@
 				onclick={() => (showSidebar = !showSidebar)}
 				class=" btn-icon mx-4 rounded p-1 text-white hover:bg-white/10 md:hidden"
 			>
-				<Icon icon="material-symbols:menu-rounded" class="!text-3xl text " />
+				<Icon icon="material-symbols:menu-rounded" class="text !text-3xl " />
 			</button>
 			<button
 				class=" user-profile-btn"
@@ -141,7 +140,12 @@
 				{/if}
 			</button>
 			{#if showUserMenu}
-				<div class="user-menu">
+				<div
+					class="user-menu"
+					use:clickOutside={() => {
+						showUserMenu = false;
+					}}
+				>
 					<button class="user-menu-close" onclick={() => (showUserMenu = false)}>
 						<Icon icon="ant-design:close-outlined" class="h-5 w-5" />
 					</button>
@@ -157,18 +161,30 @@
 
 					{#each userMenuItems as item}
 						{#if item.label === 'Themes'}
-							<button class="user-menu-item" onclick={() => (showThemeMenu = !showThemeMenu)}>
+							<button
+								class="user-menu-item"
+								onclick={() => {
+									showUserMenu = false;
+									showThemeMenu = !showThemeMenu;
+								}}
+							>
 								<Icon icon={item.icon} class="menu-icon" />
 								<span>{item.label}</span>
 							</button>
 						{:else if item.label === 'Sign Out'}
-							<button class="user-menu-item" onclick={item.action}>
+							<button
+								class="user-menu-item"
+								onclick={() => {
+									showUserMenu = false;
+									item.action();
+								}}
+							>
 								<Icon icon={item.icon} class="menu-icon" />
 								<span>{item.label}</span>
 							</button>
 							<!-- <hr class="user-menu-divider" /> -->
 						{:else}
-							<a href={item.href} class="user-menu-item">
+							<a href={item.href} class="user-menu-item" onclick={() => (showUserMenu = false)}>
 								<Icon icon={item.icon} class="menu-icon" />
 								<span>{item.label}</span>
 							</a>
@@ -178,7 +194,12 @@
 			{/if}
 
 			{#if showThemeMenu}
-				<div class="theme-menu">
+				<div
+					class="theme-menu"
+					use:clickOutside={() => {
+						showThemeMenu = false;
+					}}
+				>
 					<button class="themes-close-button" onclick={closeThemeMenu}>
 						<Icon icon="ant-design:close-outlined" class="h-5 w-5" />
 					</button>
@@ -233,7 +254,7 @@
 										{/if}
 									</div>
 
-									<div class="text-info ml-1 sm:ml-2 text-[var(--color-info)]">{name}</div>
+									<div class="text-info ml-1 text-[var(--color-info)] sm:ml-2">{name}</div>
 								</button>
 							{/each}
 						</div>
@@ -243,7 +264,7 @@
 		</div>
 	</div>
 
-	<Sidebar bind:showSidebar userId={userId} tenantSettings={tenantSettings} userRole={userRole} />
+	<Sidebar bind:showSidebar {userId} {tenantSettings} {userRole} />
 
 	<ConfirmModal
 		show={showConfirmLogout_}

@@ -112,14 +112,14 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
+				<table class="table-c">
 					<thead>
 						<tr>
 							<th>Create Knowledge Nugget</th>
 							<th class="text-end">
-								<a href={knowledgeNuggetsRoute} class="cancel-btn variant-soft-secondary">
+								<a href={knowledgeNuggetsRoute} class="cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -133,7 +133,7 @@
 									type="text"
 									name="topicName"
 									placeholder="Enter name here..."
-									class="health-system-input"
+									class="input"
 									bind:value={topicName}
 
 								/>
@@ -148,7 +148,7 @@
 								<textarea
 									name="briefInformation"
 									placeholder="Enter  brief information here..."
-									class="health-system-input"
+									class="input"
 									bind:value={briefInformation}
 								></textarea>
 							</td>
@@ -159,7 +159,7 @@
 								<textarea
 									name="detailedInformation"
 									placeholder="Enter detailed information here..."
-									class="health-system-input"
+									class="input"
 									bind:value={detailedInformation}
 								></textarea>
 							</td>
@@ -170,7 +170,7 @@
 								<input
 									type="text"
 									name="additionalResources"
-									class="health-system-input"
+									class="input"
 									placeholder="Enter additional resource here..."
 									bind:value={newResource}
 									onchange={addResource}
@@ -194,11 +194,11 @@
 				</table>
 				<div class="button-container">
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+						<button type="submit" class="table-btn variant-soft-secondary" disabled>
 							Submiting
 						</button>
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
 					{/await}
 				</div>
 			</form>

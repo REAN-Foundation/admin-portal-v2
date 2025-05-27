@@ -37,7 +37,7 @@
 
 	const breadCrumbs = [
 		{ name: 'Assessments', path: assessmentRoute },
-		{ name: 'Assessment-Nodes', path: assessmentNodeRoute }
+		{ name: 'Nodes', path: assessmentNodeRoute }
 	];
 
 	let title = $state(undefined);
@@ -65,16 +65,16 @@
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-			if (title) url += `&title=${model.title}`;
-			if (nodeType) url += `&nodeType=${model.nodeType}`;
-			if (tags) url += `&tags=${tags}`;
+			if (model.title) url += `&title=${model.title}`;
+			if (model.nodeType) url += `&nodeType=${model.nodeType}`;
+			if (model.tags) url += `&tags=${tags}`;
+
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
 			});
 			const searchResult = await res.json();
-			
-			
+
 			totalAssessmentNodesCount = searchResult.Data.AssessmentNodeRecords.TotalCount;
 			paginationSettings.size = totalAssessmentNodesCount;
 			assessmentNodes = searchResult.Data.AssessmentNodeRecords.Items.map((item, index) => ({
@@ -90,16 +90,29 @@
 		}
 	}
 
+	function updateSearchField(name, value) {
+		if (name === 'title') {
+			title = value;
+		} else if (name === 'nodeType') {
+			nodeType = value;
+		} else if (name === 'tags') {
+			tags = value;
+		}
+	}
+
 	async function onSearchInput(e) {
 		clearTimeout(debounceTimeout);
-		let searchKeyword = e.target.value;
+		const { name, value } = e.target;
+		updateSearchField(name, value);
 
 		debounceTimeout = setTimeout(() => {
 			paginationSettings.page = 0;
 			searchNode({
-				title: searchKeyword,
+				title,
+				nodeType,
+				tags,
 				itemsPerPage: paginationSettings.limit,
-				pageIndex: 0,
+				pageIndex: paginationSettings.page,
 				sortBy,
 				sortOrder
 			});
@@ -117,20 +130,24 @@
 		}
 		sortBy = columnName;
 		searchNode({
-			title: searchKeyword,
+			title,
+			nodeType,
+			tags,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
 	}
 
 	function onItemsPerPageChange() {
-		paginationSettings.page = 0; 
+		paginationSettings.page = 0;
 		searchNode({
-			title: searchKeyword,
+			title,
+			nodeType,
+			tags,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -138,9 +155,11 @@
 
 	function onPageChange() {
 		searchNode({
-			title: searchKeyword,
+			title,
+			nodeType,
+			tags,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -152,13 +171,16 @@
 	};
 
 	const handleAssessmentNodeDelete = async (id) => {
-		const response = await fetch(`/api/server/assessments/assessment-nodes/${id}?templateId=${templateId}`, {
-			method: 'DELETE',
-			headers: { 'content-type': 'application/json' }
-		});
+		const response = await fetch(
+			`/api/server/assessments/assessment-nodes/${id}?templateId=${templateId}`,
+			{
+				method: 'DELETE',
+				headers: { 'content-type': 'application/json' }
+			}
+		);
 
 		const res = await response.json();
-		
+
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
@@ -166,11 +188,13 @@
 			toastMessage(res);
 		}
 		searchNode({
-			title: searchKeyword,
+			title,
+			nodeType,
+			tags,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
-            sortBy,
-            sortOrder
+			sortBy,
+			sortOrder
 		});
 	};
 </script>
@@ -200,6 +224,7 @@
 								type="button"
 								onclick={() => {
 									title = '';
+									onSearchInput({ target: { name: 'title', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -225,6 +250,7 @@
 								type="button"
 								onclick={() => {
 									nodeType = '';
+									onSearchInput({ target: { name: 'nodeType', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -250,6 +276,7 @@
 								type="button"
 								onclick={() => {
 									tags = '';
+									onSearchInput({ target: { name: 'tags', value: '' } });
 								}}
 								class="close-btn"
 							>
@@ -300,7 +327,7 @@
 					</thead>
 					<tbody class="!bg-white dark:!bg-inherit">
 						{#if retrivedAssessmentNodes.length <= 0}
-							<tr>
+							<tr class="text-center">
 								<td aria-colindex={1} colspan="8">
 									{isLoading ? 'Loading...' : 'No records found'}
 								</td>

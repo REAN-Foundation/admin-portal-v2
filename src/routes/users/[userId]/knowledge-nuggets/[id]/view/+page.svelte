@@ -40,14 +40,14 @@
 
 <div class="px-6 py-4">
 	<div class="flex flex-wrap gap-2 py-2">
-		<a href={editRoute} class="health-system-btn variant-filled-secondary ml-auto">
+		<a href={editRoute} class="table-btn variant-filled-secondary ml-auto">
 			<Icon icon="material-symbols:edit-outline" />
 			<span>Edit</span>
 		</a>
 	</div>
 	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<table class="health-system-table">
+		<div class="table-container">
+			<table class="table-c">
 				<thead>
 					<tr>
 						<th class=" w-60">View Knowledge Nugget</th>

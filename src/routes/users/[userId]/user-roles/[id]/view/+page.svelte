@@ -35,14 +35,14 @@
 
 <div class="px-6 py-4">
 	<div class="flex flex-wrap justify-end py-2 gap-2">
-		<a href={editRoute} class="health-system-btn variant-filled-secondary">
+		<a href={editRoute} class="table-btn variant-filled-secondary">
 			<Icon icon="material-symbols:edit-outline" />
 			<span>Edit</span>
 		</a>
 	</div>
 	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<table class="health-system-table">
+		<div class="table-container">
+			<table class="table-c">
 				<thead>
 					<tr>
 						<th>View User Role</th>

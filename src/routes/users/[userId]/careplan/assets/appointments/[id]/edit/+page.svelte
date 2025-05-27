@@ -37,10 +37,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Appointment',
-			path: appointmentRoute
-		},
+
 		{
 			name: 'Edit',
 			path: editRoute

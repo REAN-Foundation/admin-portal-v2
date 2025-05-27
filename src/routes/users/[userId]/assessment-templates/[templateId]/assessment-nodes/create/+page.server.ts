@@ -1,15 +1,10 @@
-// import { redirect } from 'sveltekit-flash-message/server';
 import { error, type RequestEvent } from '@sveltejs/kit';
-// import { zfd } from 'zod-form-data';
-// import { z } from 'zod';
-// import { errorMessage, successMessage } from '$lib/utils/message.utils';
 import type { PageServerLoad } from './$types';
 import {
-    // addScoringCondition,
-    // createAssessmentNode,
     getQueryResponseTypes,
     searchAssessmentNodes
 } from '../../../../../../api/services/reancare/assessments/assessment-nodes';
+import { getAssessmentTemplateById } from '../../../../../../api/services/reancare/assessments/assessment-templates';
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -21,16 +16,19 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
     };
     const _queryResponseTypes = await getQueryResponseTypes(sessionId);
     const response = await searchAssessmentNodes(sessionId, searchParams);
+    const templateDetails = await getAssessmentTemplateById(sessionId, templateId);
 
     if (response.Status === 'failure' || response.HttpCode !== 200) {
         throw error(response.HttpCode, response.Message);
     }
     const queryResponseTypes = _queryResponseTypes?.Data?.QueryResponseTypes;
     const assessmentNodes = response?.Data?.AssessmentNodeRecords?.Items;
+    const templateData = templateDetails?.Data?.AssessmentTemplate;
 
     return {
         queryResponseTypes,
         assessmentNodes,
+        templateData,
         message: response.Message,
         title: 'Clinical-Assessments-Assessment Nodes Create'
     };

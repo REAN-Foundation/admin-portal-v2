@@ -118,10 +118,10 @@
 				<table class="health-system-table">
 					<thead>
 						<tr>
-							<th>Edit Assessment Template</th>
+							<th>Edit Template</th>
 							<th class="text-end">
-								<a href={viewRoute} class="btn variant-soft-secondary -my-2 p-2">
-									<Icon icon="material-symbols:close-rounded" class="text-lg" />
+								<a href={viewRoute} class=" cancel-btn">
+									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
 						</tr>
@@ -169,7 +169,7 @@
 										: ''}"
 								>
 									<option selected>{assessmentType}</option>
-									<option>Daily Update</option>
+									<!-- <option>Daily Update</option> -->
 									<option>Symptoms</option>
 									<option>Survey</option>
 									<option>Protocol</option>

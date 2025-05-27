@@ -27,7 +27,6 @@
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
-		{ name: 'Audio', path: audioRoute },
 		{ name: 'Create', path: createRoute }
 	];
 
@@ -89,9 +88,9 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
+				<table class="table-c">
 					<thead>
 						<tr>
 							<th>Create Audio</th>
@@ -108,7 +107,7 @@
 							<td>
 								<input
 									type="text"
-									class="health-system-input {form?.errors?.Name ? 'input-text-error' : ''}"
+									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
 									name="name"
 									placeholder="Enter name here..."
 									bind:value={name}
@@ -132,37 +131,37 @@
 						</tr>
 
 						<tr>
-                            <td>Url</td>
-                            <td>
-                                <input
-                                    type="url"
+							<td>Url</td>
+							<td>
+								<input
+									type="url"
 									name="url"
 									bind:value={pathUrl}
 									placeholder="Enter url here"
-                                    class="health-system-input {errors?.Url ? 'input-text-error' : ''}"
+                                    class="input {errors?.Url ? 'input-text-error' : ''}"
                                 />
                                 {#if errors?.Url}
                                     <p class="text-error">{errors?.Url}</p>
                                 {/if}
                             </td>
                         </tr>
-						<tr class="">
-							<td class="!py-3 align-top">Tags</td>
-							<td>
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-									keywordsChanged={onUpdateKeywords}
-								/>
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
-							</td>
-						</tr>
+						<tr>
+                            <td class="!py-3 align-top">Tags</td>
+                            <td>
+                                <InputChips
+                                    bind:keywords
+                                    name="keywords"
+                                    id="keywords"
+                                    keywordsChanged={onUpdateKeywords}
+                                />
+                                <input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+                                <!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
+                            </td>
+                        </tr>
 						<tr>
 							<td>Version</td>
 							<td>
-								<input type="text" bind:value={version} class="health-system-input" placeholder="V 1.0" />
+								<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
 							</td>
 						</tr>
 					</tbody>

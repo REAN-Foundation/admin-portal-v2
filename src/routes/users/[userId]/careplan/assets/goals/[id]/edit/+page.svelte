@@ -16,18 +16,19 @@
 	let name = $state(data.goals.Name);
 	let description = $state(data.goals.Description);
 	let version = $state(data.goals.Version);
-	let keywords: string[] = $state([]);
+	let keywords: string[] = $state(data.goals.Tags);
 	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
 	var goalsId = page.params.id;
 
+	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/goals/${goalsId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/biometric/${goalsId}/view`;
 	const goalsRoute = `/users/${userId}/careplan/assets/goals`;
 
 	const breadCrumbs = [
-		{ name: 'Goals', path: goalsRoute },
+		{ name: 'Assets', path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
@@ -96,14 +97,14 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
+				<table class="table-c">
 					<thead>
 						<tr>
 							<th>Edit Goals</th>
 							<th class="text-end">
-								<a href={goalsRoute} class="health-system-btn variant-soft-secondary">
+								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -115,7 +116,7 @@
 							<td>
 								<input
 									type="text"
-									class="health-system-input {form?.errors?.Name ? 'input-text-error' : ''}"
+									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
 									name="name"
 									placeholder="Enter name here..."
 									bind:value={name}
@@ -131,7 +132,7 @@
 							<td>
 								<input
 										type="textarea"
-										class="health-system-input {form?.errors?.Name
+										class="input {form?.errors?.Name
 											? 'input-text-error'
 											: ''}"
 										name="description"
@@ -160,7 +161,7 @@
 						<tr>
 							<td>Version</td>
 							<td>
-								<input type="text" bind:value={version} class="health-system-input" placeholder="V 1.0" />
+								<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
 							</td>
 						</tr>
 					</tbody>

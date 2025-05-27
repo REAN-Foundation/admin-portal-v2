@@ -1,5 +1,5 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
-import { searchmedications } from "$routes/api/services/careplan/assets/medications";
+import { searchMedications } from "$routes/api/services/careplan/assets/medications";
 import type { RequestEvent } from "@sveltejs/kit";
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -21,7 +21,7 @@ export const GET = async (event: RequestEvent) => {
         };
 
         console.log("Search Parameters:", searchFilters);
-        const response = await searchmedications(sessionId, searchFilters);
+        const response = await searchMedications(sessionId, searchFilters);
         return ResponseHandler.success(response);
 
     } catch (error) {

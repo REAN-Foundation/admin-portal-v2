@@ -2,10 +2,17 @@
 	import { enhance } from '$app/forms';
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
+	import { toastMessage } from '$lib/components/toast/toast.store';
+	import { showMessage } from '$lib/utils/message.utils';
 
 	///////////////////////////////////////////////////////////////////////////////////////
 
 	const userId = page.params.userId;
+	let fileinput = $state();
+	let fileName = $state(undefined);
+	let selectFile = $state(undefined);
+	let errors: Record<string, string> = $state({});
+	let promise = $state();
 
 	const importRoute = `/users/${userId}/assessment-templates/import`;
 	const assessmentsRoutes = `/users/${userId}/assessment-templates`;
@@ -14,6 +21,72 @@
 		{ name: 'Assessments', path: assessmentsRoutes },
 		{ name: 'Import', path: importRoute }
 	];
+
+	const upload = async (imgBase64, file) => {
+		const data = {};
+		console.log(imgBase64);
+
+		const imgData = imgBase64.split(',');
+		data['image'] = imgData[1];
+
+		if (!file) return;
+
+		const formData = new FormData();
+		formData.append('file', file);
+
+		const res = await fetch(`/api/server/assessments/assessment-templates/upload`, {
+			method: 'POST',
+			body: formData
+		});
+
+		const response = await res.json();
+		console.log('response from api endpoint', response);
+
+		if (response.Status === 'success' && response.HttpCode === 201) {
+			return { success: true, resourceId: response.Data?.id, response };
+		}
+		if (response.Errors) {
+			errors = response?.Errors || {};
+			// showMessage(response.Message, 'error');
+			return response;
+		} else {
+			// showMessage(response.Message, 'error');
+			return { success: false, error: response.Message };
+		}
+	};
+
+	const onFileSelected = async (e) => {
+		let f = e.target.files[0];
+		fileName = f.name;
+		selectFile = f;
+		let reader = new FileReader();
+		reader.readAsDataURL(f);
+		reader.onload = async (e) => {
+			fileinput = e.target.result;
+		};
+	};
+
+	const handleSubmit = async (event: Event) => {
+		try {
+			event.preventDefault();
+			errors = {};
+
+			const uploadResult = await upload(fileinput, selectFile);
+
+			if (uploadResult.response.HttpCode === 201 || uploadResult.response.HttpCode === 200) {
+				toastMessage(uploadResult.response);
+				return;
+			}
+
+			if (uploadResult.response.Errors) {
+				errors = uploadResult?.response.Errors || {};
+			} else {
+				toastMessage(uploadResult.response);
+			}
+		} catch (error) {
+			toastMessage();
+		}
+	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -21,47 +94,48 @@
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container">
-			<form method="post" action="?/importAssessment" use:enhance enctype="multipart/form-data">
+			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 				<table class="health-system-table">
 					<thead>
 						<tr>
-							<th>Import assessment template</th>
+							<th>Import template</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td class="text-center">
-								<input type="file" name="name" required class="health-system-input" />
+							<td>
+								<div class="flex items-center space-x-4">
+									<label class="health-system-btn variant-filled-secondary">
+										Select File
+										<input type="file" class="hidden" onchange={onFileSelected} />
+									</label>
+
+									<input
+										type="text"
+										class="health-system-input bg-gray-100 text-gray-700 focus:outline-none"
+										value={fileName}
+										readonly
+										placeholder="No file selected"
+									/>
+								</div>
+
+								{#if errors?.UploadFile}
+									<p class="text-error">{errors?.UploadFile}</p>
+								{/if}
 							</td>
 						</tr>
-
-						<!-- <tr>
-							<td class="text-center">
-								<button type="submit" class="health-system-btn variant-soft-secondary">Upload</button>
-							</td>
-						</tr> -->
 					</tbody>
 				</table>
 				<div class="button-container">
-					<button type="submit" class="health-system-btn variant-soft-secondary">Upload</button>
+					{#await promise}
+						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+							Uploading...
+						</button>
+					{:then data}
+						<button type="submit" class="health-system-btn variant-soft-secondary"> Upload </button>
+					{/await}
 				</div>
 			</form>
 		</div>
 	</div>
 </div>
-
-<!-- <form method="post" 
-    action="?/importAssessment"
-    use:enhance enctype="multipart/form-data"
-	>
-    <div>
-      <label for="file">Import Assessment template</label>
-      <input type="file" 
-      name="name" 
-      required  
-      class="true input w-full"
-    />
-	  <button type="submit" class="btn variant-filled-secondary">Upload</button>
-	  
-    </div>
-</form> -->

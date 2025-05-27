@@ -1,4 +1,5 @@
 import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY } from '$env/static/private';
+import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 import { del, get, post, put } from './common.reancare';
 
 ////////////////////////////////////////////////////////////////
@@ -23,12 +24,25 @@ export const createLabRecordType = async (
 		Unit: unit ? unit : null
 	};
 	const url = BACKEND_API_URL + '/types/lab-records';
-	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+
+	const findAndClearKeys = [
+		`session-${sessionId}:req-searchLabRecordTypes`,
+	];
+	await DashboardManager.findAndClear(findAndClearKeys);
+
+	return result;
 };
 
 export const getLabRecordTypeById = async (sessionId: string, labRecordTypeId: string) => {
 	const url = BACKEND_API_URL + `/types/lab-records/${labRecordTypeId}`;
-	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	const cacheKey = `session-${sessionId}:req-getLabRecordTypeById-${labRecordTypeId}`;
+	if (await DashboardManager.has(cacheKey)) {
+		return await DashboardManager.get(cacheKey);
+	}
+	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	await DashboardManager.set(cacheKey, result);
+	return result;
 };
 
 export const searchLabRecordTypes = async (sessionId: string, searchParams?: any) => {
@@ -48,8 +62,14 @@ export const searchLabRecordTypes = async (sessionId: string, searchParams?: any
 		}
 	}
 	const url = BACKEND_API_URL + `/types/lab-records/search${searchString}`;
-	console.log(url);
-	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	const cacheKey = `session-${sessionId}:req-searchLabRecordTypes:${searchString}`;
+	if (await DashboardManager.has(cacheKey)) {
+		return await DashboardManager.get(cacheKey);
+	}
+
+	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	await DashboardManager.set(cacheKey, result);
+	return result;
 };
 
 export const updateLabRecordType = async (
@@ -73,10 +93,32 @@ export const updateLabRecordType = async (
 		Unit: unit ? unit : ''
 	};
 	const url = BACKEND_API_URL + `/types/lab-records/${labRecordTypeId}`;
-	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+	const keysToBeDeleted = [
+		`session-${sessionId}:req-getLabRecordTypeById-${labRecordTypeId}`,
+	];
+	await DashboardManager.deleteMany(keysToBeDeleted);
+	const findAndClearKeys = [
+		`session-${sessionId}:req-searchLabRecordTypes`,
+	];
+	await DashboardManager.findAndClear(findAndClearKeys);
+
+	return result;
 };
 
 export const deleteLabRecordType = async (sessionId: string, labRecordTypeId: string) => {
 	const url = BACKEND_API_URL + `/types/lab-records/${labRecordTypeId}`;
-	return await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	const result = await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+
+	const keysToBeDeleted = [
+		`session-${sessionId}:req-getLabRecordTypeById-${labRecordTypeId}`,
+	];
+	await DashboardManager.deleteMany(keysToBeDeleted);
+
+	const findAndClearKeys = [
+		`session-${sessionId}:req-searchLabRecordTypes`,
+	];
+	await DashboardManager.findAndClear(findAndClearKeys);
+
+	return result;
 };
