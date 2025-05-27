@@ -1,20 +1,27 @@
 <script lang="ts">
 	import ExpandableSettings from '$lib/components/tenant-setting.svelte';
 	import type { CommonUISettings } from '$lib/types/tenent-settings.types';
+	import Icon from '@iconify/svelte';
 	import type { PageServerData } from '../$types';
+	import { page } from '$app/state';
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 
 	let commonSetting = $state(data.settings);
-
-	$inspect('This is commonSetting from data', JSON.stringify(commonSetting, null, 2));
+	let promise = $state();
+	const userId = page.params.userId;
+	const tenantRoute = `/users/${userId}/tenants`;
+	// $inspect('This is commonSetting from data', JSON.stringify(commonSetting, null, 2));
 
 	function handleSettingsSubmit(updated) {
 		console.log('New settings:', updated);
 		commonSetting = updated;
 	}
+
+	let disabled = $state(true);
+	let edit = $derived(disabled);
 
 	const commonUISettings: CommonUISettings = {
 		Clinical: {
@@ -218,8 +225,56 @@
 	};
 </script>
 
-<ExpandableSettings
-	groupedSettings={commonUISettings}
-	onSubmit={handleSettingsSubmit}
-	bind:commonSetting
-/>
+<div class="px-6 py-4">
+	<button
+		class="table-btn variant-filled-secondary gap-1 "
+		onclick={() => {
+			disabled = !disabled;
+			edit = disabled;
+		}}
+	>
+		<Icon icon="material-symbols:edit-outline" />
+		<span>Edit</span>
+	</button>
+
+	<div class="mx-auto ">
+		<div class="table-container ">
+			<form>
+				<table class="table-c min-w-full">
+					<thead>
+						<tr>
+							<th> Common Setting </th>
+
+							<th class="text-end">
+								<a href={tenantRoute} class="cancel-btn">
+									<Icon icon="material-symbols:close-rounded" />
+								</a>
+							</th>
+						</tr>
+					</thead>
+					<tbody >
+						<tr class="">
+							<td class="!w-full mb-4">
+								<ExpandableSettings
+									groupedSettings={commonUISettings}
+									onSubmit={handleSettingsSubmit}
+									bind:commonSetting
+									{edit}
+								/>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="button-container">
+					{#await promise}
+						<button type="submit" class="table-btn variant-soft-secondary" disabled>
+							Submiting
+						</button>
+					{:then data}
+						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
+					{/await}
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

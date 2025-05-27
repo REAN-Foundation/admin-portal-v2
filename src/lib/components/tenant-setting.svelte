@@ -1,10 +1,11 @@
 <script lang="ts">
+	import Icon from '@iconify/svelte';
 	import Icons from './icons.svelte';
 	import InfoIcon from './infoIcon.svelte';
 
-	let { groupedSettings, onSubmit, commonSetting = $bindable() } = $props();
+	let { groupedSettings, onSubmit, commonSetting = $bindable(), edit } = $props();
 
-	$inspect(commonSetting, 'commonSetting');
+	// $inspect(commonSetting, 'commonSetting');
 	let settingsCopy = $state({});
 	let disabled = $state(true);
 	let openTab: string | null = $state(null);
@@ -47,7 +48,7 @@
 	}
 </script>
 
-<div class="space-y-4 p-4">
+<!-- <div class="space-y-4 p-4">
 	<div class="flex justify-between">
 		<h2 class="text-lg font-semibold">Common Settings</h2>
 		<div class="flex items-center gap-2">
@@ -58,15 +59,15 @@
 				{disabled ? 'Edit' : 'Cancel'}
 			</button>
 		</div>
-	</div>
-
+	</div> -->
+<div class="flex flex-col py-4">
 	{#each Object.entries(commonSetting) as [groupName, groupItems]}
 		{#if groupName !== 'UserInterfaces'}
-			<div class="rounded-md border shadow-sm">
+			<div class="mb-4 rounded-md border shadow-sm">
 				<button
 					type="button"
 					onclick={() => toggleTab(groupName)}
-					class="flex w-full items-center justify-between bg-gray-100 px-4 py-2 hover:bg-gray-200"
+					class="sidebar-itm flex w-full items-center justify-between bg-gray-100 px-4 py-2 hover:bg-gray-200"
 				>
 					<div class="flex items-center gap-2 font-medium capitalize">
 						<Icons
@@ -84,15 +85,9 @@
 							title={`Settings under ${groupName}`}
 						/>
 					</div>
-					<span class:rotate-180={openTab === groupName} class="transition-transform duration-300">
-						<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M19 9l-7 7-7-7"
-							/>
-						</svg>
+					<!-- <span class:rotate-180={openTab === groupName} class="transition-transform duration-300"> -->
+					<span class="transition-transform duration-300" class:rotate-180={openTab === groupName}>
+						<Icon icon="icon-park-outline:down" width="16" height="16" class="h-5 w-5" />
 					</span>
 				</button>
 
@@ -100,12 +95,22 @@
 					<div class="grid grid-cols-1 gap-3 bg-white p-4 md:grid-cols-2">
 						{#each Object.entries(groupItems) as [key, value]}
 							{@const meta = getSettingMeta(groupName, key)}
-							<label class="flex items-center gap-2">
-								<input
-									type="checkbox"
-									class="checkbox checkbox-primary"
-									bind:checked={meta.value}
-								/>
+							<div class="flex">
+								{#if edit === true}
+									<span class="tick text-green-500">✔</span>
+								{:else}
+									<!-- {groupItems[key].value}
+								{JSON.stringify(value)} -->
+									<!-- {value.Enabled} -->
+									<label class="flex items-center gap-2">
+										<input
+											type="checkbox"
+											class="checkbox checkbox-primary"
+											bind:checked={value.Enabled}
+											disabled={edit}
+										/>
+									</label>
+								{/if}
 								<Icons
 									cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 fill-none"
 									h="70%"
@@ -113,7 +118,7 @@
 									iconPath={meta?.IconPath}
 								/>
 								<span class="font-medium">{meta?.Name ?? key}</span>
-							</label>
+							</div>
 						{/each}
 					</div>
 				{/if}
