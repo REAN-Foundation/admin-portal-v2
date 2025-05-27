@@ -1,7 +1,7 @@
-import { API_CLIENT_INTERNAL_KEY, BACKEND_API_URL, FOLLOW_UP_URL } from '$env/static/private';
+import { FOLLOW_UP_URL } from '$env/static/private';
 import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 import { get_, post_ } from '../common';
-import { get, post } from '../reancare/common.reancare';
+// import { get} from '../reancare/common.reancare';
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -44,26 +44,24 @@ export const createReminder = async (tenantCode: string, date: string) => {
 
 export async function cancelAppointments(
 	sessionId: string,
-	dates: string,
+	date: string,
 	tenantId: string,
-	tenantName: string = null,
+	tenantCode: string,
 	message?: string
 ) {
-	const url = BACKEND_API_URL + '/follow-up/cancellations/';
+	const url = FOLLOW_UP_URL + '/appointment-cancellations/';
 	const body = {
-		TenantId: tenantId,
-		TenantName: tenantName,
-		CancelDate: dates,
-		Message: message
+		tenant_id : tenantId,
+		tenant_code: tenantCode,
+		cancel_date: date,
+		message: message
 	};
 
-	const result = await post(sessionId, url, body, true);
+	const result = await post_( url, body, false);
 
 	const findAndClearKeys = [`session-${sessionId}:req-viewCancellations`];
 	await DashboardManager.findAndClear(findAndClearKeys);
-
 	console.log('result-------', result);
-
 	return result;
 }
 
@@ -83,12 +81,13 @@ export async function viewCancellations(sessionId: string, searchParams?: any) {
 			searchString += params.join('&');
 		}
 	}
-	const url = BACKEND_API_URL + `/follow-up/cancellations/search${searchString}`;
+	
+	const url = FOLLOW_UP_URL + `/appointment-cancellations/search${searchString}`;
 	const cacheKey = `session-${sessionId}:req-viewCancellations:${searchString}`;
 	if (await DashboardManager.has(cacheKey)) {
 		return await DashboardManager.get(cacheKey);
 	}
-	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	const result = await get_( url, false);
 	await DashboardManager.set(cacheKey, result);
 	return result;
 }

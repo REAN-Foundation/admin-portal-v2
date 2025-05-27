@@ -55,8 +55,10 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
 		const extensionIndex = newFileName.lastIndexOf('.');
 		const extension = newFileName.substring(extensionIndex);
 		const finalFileName = `${tenantCode}_${formattedDate}${extension}`;
-
+		console.log('finalFileName...', finalFileName);
 		console.log('Uploading file resource ...');
+	
+
 		const response = await uploadAppoinmentPdf(finalFileName, filePath);
 		console.log(JSON.stringify(response, null, 2));
 

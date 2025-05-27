@@ -31,7 +31,7 @@
 	let appointmentCancellationRecordsCount = $state(data.appointmentCancellationRecords.TotalCount);
 	$inspect('totalAppointmentRecordsCount', appointmentCancellationRecordsCount);
 	let isSortingDate = $state(false);
-	let sortBy = $state('CancelDate');
+	let sortBy = $state('cancel_date');
 	let sortOrder = $state('ascending');
 
 	let paginationSettings: PaginationSettings = $state({
@@ -51,17 +51,17 @@
 			console.log('model', model);
 			if (model.fromDate) url += `&fromDate=${model.fromDate}`;
 			if (model.toDate) url += `&toDate=${model.toDate}`;
-				console.log('model', model);
+			console.log('model', model);
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
 			});
 			const searchResult = await res.json();
 			console.log('searchResult', searchResult);
-			appointmentCancellationRecordsCount = searchResult.Data.FollowUpCancellation.TotalCount;
+			appointmentCancellationRecordsCount = searchResult.Data.TotalCount;
 			paginationSettings.size = appointmentCancellationRecordsCount;
 
-			appointmentCancellationRecords = searchResult.Data.FollowUpCancellation.Items.map((item, index) => ({
+			appointmentCancellationRecords = searchResult.Data.Items.map((item, index) => ({
 				...item,
 				index: index + 1
 			}));
@@ -82,12 +82,15 @@
 	}
 
 	async function onSearchInput(e) {
-			clearTimeout(debounceTimeout);
-			const { name, value } = e.target;
+		clearTimeout(debounceTimeout);
+		const { name, value } = e.target;
 
-			updateSearchField(name, value)
-			console.log('event', e.target);
-			debounceTimeout = setTimeout(() => {
+		updateSearchField(name, value);
+		console.log('event', e.target);
+		debounceTimeout = setTimeout(() => {
+			paginationSettings.page = 0;
+
+			if (fromDate && toDate) {
 				paginationSettings.page = 0;
 				searchAppointmentCancellations({
 					fromDate,
@@ -97,8 +100,9 @@
 					sortBy,
 					sortOrder
 				});
-			}, 400);
-		}
+			}
+		}, 400);
+	}
 
 	function sortTable(columnName) {
 		isSortingDate = false;
@@ -138,16 +142,14 @@
 			sortOrder
 		});
 	}
-
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container mb-6 shadow">
-		<div class="health-system-search-border p-4">
-		
+		<div class="table-container mb-6 shadow">
+			<div class="search-border p-4">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<label class="lable mt-2" for="fromDate">From Date</label>
 					<div class="relative w-auto grow pl-1.5">
@@ -163,7 +165,6 @@
 							oninput={(event) => onSearchInput(event)}
 							class="health-system-input !pr-4 !pl-10"
 						/>
-					
 					</div>
 
 					<label class="lable mt-2" for="toDate">To Date</label>
@@ -181,6 +182,18 @@
 							class="health-system-input !pr-4 !pl-10"
 						/>
 					</div>
+					<!-- svelte-ignore a11y_consider_explicit_label -->
+					<!-- <button
+						type="button"
+						onclick={() => {
+							searchKeyword = '';
+							onSearchInput({ target: { name: 'fromDate', value: '' } });
+							onSearchInput({ target: { name: 'toDate', value: '' } });
+						}}
+						class="close-btn"
+					>
+						<Icon icon="material-symbols:close" />
+					</button> -->
 				</div>
 			</div>
 			<div class="overflow-x-auto">
@@ -202,7 +215,6 @@
 							</th>
 							<th>Cancelled By</th>
 							<th>Cancelled On</th>
-			
 						</tr>
 					</thead>
 					<tbody class="">
@@ -217,13 +229,13 @@
 										{paginationSettings.page * paginationSettings.limit + index + 1}
 									</td>
 									<td role="gridcell" aria-colindex={2} tabindex="0"
-										>{TimeHelper.formatDateToReadable(row.CancelDate, LocaleIdentifier.EN_US)}</td
+										>{TimeHelper.formatDateToReadable(row.cancel_date, LocaleIdentifier.EN_US)}</td
 									>
 									<td role="gridcell" aria-colindex={3} tabindex="0"
-										>{row.TenantName ? row.TenantName : 'Not Specified'}</td
+										>{row.TenantCode ? row.TenantCode : 'Not Specified'}</td
 									>
 									<td role="gridcell" aria-colindex={4} tabindex="0"
-										>{TimeHelper.formatDateToReadable(row.CreatedAt, LocaleIdentifier.EN_US)}</td
+										>{TimeHelper.formatDateToReadable(row.created_at, LocaleIdentifier.EN_US)}</td
 									>
 								</tr>
 							{/each}
@@ -233,6 +245,6 @@
 			</div>
 		</div>
 	</div>
-</div> 
+</div>
 
 <Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />

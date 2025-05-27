@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { toastMessage } from "$lib/components/toast/toast.store";
+	import { showMessage } from "$lib/helper/message.utils";
 	import type { FollowUpUploadModel } from "$lib/types/follow-up/followup.upload";
 	import { createOrUpdateSchema } from "$lib/validation/follow-up/followup.upload.schema";
 	import Icon from "@iconify/svelte";
@@ -52,63 +53,45 @@
       onClose();         
     }
 
-//     function handleUpload() {
-//     if (!file) {
-//       error = "Please select a file.";
-//       return;
-//     }
+  const handleUpload = async (event: Event) => {
+	try {
+		event.preventDefault();
+		errors = {};
 
-//     error = null;
-//     onSubmit(file);
-// }
-
-	const handleUpload = async (event: Event) => {
-		try {
-			event.preventDefault();
-			errors = {};
-
-			const followUpUploadModel: FollowUpUploadModel = {
-				File : file,
-		
-			};
-
-			console.log('followUpUploadModel===',followUpUploadModel)
-
-			const validationResult = createOrUpdateSchema.safeParse(followUpUploadModel);
-
-			if (!validationResult.success) {
-				errors = Object.fromEntries(
-					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-						key,
-						val?.[0] || 'This field is required'
-					])
-				);
-				return;
-			}
-
-			const res = await fetch(`/api/server/follow-up/file-upload`, {
-				method: 'POST',
-				body: JSON.stringify(followUpUploadModel),
-				headers: { 'content-type': 'application/json' }
-			});
-
-			const response = await res.json();
-
-			if (response.HttpCode === 201 || response.HttpCode === 200) {
-				toastMessage(response);
-				// goto(`${healthSystemsRoute}/${response?.Data?.HealthSystem?.id}/view`);
-				return;
-			}
-
-			if (response.Errors) {
-				// errors = response?.Errors || {};
-			} else {
-				toastMessage(response);
-			}
-		} catch (error) {
-			toastMessage();
+		if (!file) {
+			errors = { File: 'File is required' };
+			return;
 		}
-	};
+
+		const formData = new FormData();
+		formData.append('file', file);
+
+		const res = await fetch('/api/server/follow-up/file-upload', {
+			method: 'POST',
+			body: formData
+
+		});
+
+		const response = await res.json();
+
+    console.log('response', response);
+
+		if (response.status == 200) {
+			showMessage(response.body.Message, 'success');
+      onClose(); 
+			return;
+		}
+
+		if (response.Errors) {
+			errors = response.Errors;
+		} else {
+			toastMessage(response);
+		}
+	} catch (error) {
+		toastMessage();
+	}
+};
+
 </script>
 
 {#if showUploadModel}
@@ -138,7 +121,6 @@
             id="fileInput"
             type="file"
             class="input"
-            bind:value={file}
             onchange={handleFileInput}
           />
           <label for="fileInput" class="upload-btn variant-soft-secondary">

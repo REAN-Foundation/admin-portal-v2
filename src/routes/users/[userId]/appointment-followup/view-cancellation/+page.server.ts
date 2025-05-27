@@ -5,19 +5,20 @@ import { viewCancellations } from "$routes/api/services/follow-up/reminders";
 ///////////////////////////////////////////////////////////////////////////////
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     const sessionId = event.cookies.get('sessionId');
-    const tenatCode = event.locals.sessionUser.tenantCode;
-    const tenantName = event.locals.sessionUser.tenantName;
-    console.log('tenatCode', tenatCode);
+    const tenantCode = event.locals.sessionUser.tenantCode;
+    const  tenantName = event.locals.sessionUser.tenantName;
+    console.log('tenatCode', tenantCode);
     console.log('tenantName', tenantName);
 
     const searchParams = {
-        tenantName: tenantName,
-        orderBy: "CancelDate",
+        tenant_code: tenantCode,
+        order_by: "cancel_date",
         order: "ascending",
         itemsPerPage: 10
     }
     const response = await viewCancellations(sessionId, searchParams);
-    const appointmentCancellationRecords = response?.Data.FollowUpCancellation || [];
+    console.log('response', response);
+    const appointmentCancellationRecords = response?.Data || [];
 
     return {
         appointmentCancellationRecords,

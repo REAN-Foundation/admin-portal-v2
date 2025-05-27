@@ -35,6 +35,7 @@
 	let searchKeyword = $state(undefined);
 	let reply = $state(undefined);
 	let appointmentDate = $state(undefined);
+	// let appointmentDate = $state(new Date().toISOString().split('T')[0]);
 	let promise = $state();
 	const userId = page.params.userId;
 	const statusReportRoute = `/users/${userId}/appointment-followup/summary-uploads`;
@@ -377,7 +378,7 @@
 					<tbody class="">
 						{#if retrivedAppointmentRecords.length <= 0}
 							<tr>
-								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
+								<td colspan="6">{isLoading ? 'Loading...' : `No records found for date ${appointmentDate}`}</td>
 							</tr>
 						{:else}
 							{#each retrivedAppointmentRecords as row, index}

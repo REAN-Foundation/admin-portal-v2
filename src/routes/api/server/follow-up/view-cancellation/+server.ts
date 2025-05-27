@@ -12,8 +12,12 @@ export const GET = async (event: RequestEvent) => {
 		}
 		const searchParams: URLSearchParams = event.url.searchParams;
 		const searchFilters = {
-			dateFrom: searchParams.get('fromDate') ?? undefined,
-			dateTo: searchParams.get('toDate') ?? undefined
+			from_date: searchParams.get('fromDate') ?? undefined,
+			to_date: searchParams.get('toDate') ?? undefined,
+			order_by: searchParams.get("sortBy") ?? "cancel_date",
+            order: searchParams.get("sortOrder") ?? "ascending",
+            items_per_page: parseInt(searchParams.get("itemsPerPage") ?? "10"),
+            page_index: parseInt(searchParams.get("pageIndex") ?? "0"),
 		};
 
 		console.log('Search Parameters:', searchFilters);

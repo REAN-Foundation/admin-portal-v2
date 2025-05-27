@@ -8,10 +8,10 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     const tenatCode = event.locals.sessionUser.tenantCode;
     console.log('tenatCode', tenatCode);
 
-    const date = new Date();
-    const dateString = date.toISOString().split('T')[0];
+    // const date = new Date();
+    // const dateString = date.toISOString().split('T')[0];
     const searchParams = {
-        appointment_date: dateString,
+        // appointment_date: dateString,
         order_by: 'appointment_date',
         order: 'ascending',
         items_per_page: 10

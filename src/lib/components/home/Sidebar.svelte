@@ -36,7 +36,7 @@
 						<Icon icon={navParent.icon} class="mx-1 text-2xl" />
 						<span class="sidebar-text">{navParent.title}</span>
 					</a>
-				{:else if navParent.title === 'Appointment'}
+				{:else if navParent.title === 'Appointment Follow-Up'}
 					<a
 						href={`/users/${userId}/appointment-followup/summary-uploads`}
 						class="sidebar-item items-center {activeTab === 'Appointment'

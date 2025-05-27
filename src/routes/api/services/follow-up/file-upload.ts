@@ -42,13 +42,13 @@ export const uploadAppoinmentPdf = async (fileName: string, filePath: string) =>
         console.log('response', JSON.stringify(response, null, 2));
         return {
             status: 200,
-            body: { success: true, message: 'File uploaded successfully to S3.' }
+            body: { Success: true, Message: 'File uploaded successfully to S3.' }
         };
     } catch (error) {
         console.error('Error uploading file to S3:', error);
         return {
             status: 500,
-            body: { success: false, message: 'Error uploading file to S3.' }
+            body: { Success: false, Message: 'Error uploading file to S3.' }
         };
     }
 };

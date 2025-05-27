@@ -11,7 +11,7 @@ export const POST = async (event: RequestEvent) => {
 		console.log('Inside cancel appointmentr POST endpoints');
 		const sessionId = event.locals?.sessionUser?.sessionId;
 		const tenantId = event.locals?.sessionUser.tenantId;
-		const tenantName = event.locals?.sessionUser.tenantName;
+		const tenantCode = event.locals?.sessionUser.tenantCode;
 		if (!sessionId) {
 			return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session.'));
 		}
@@ -45,7 +45,7 @@ export const POST = async (event: RequestEvent) => {
 					sessionId,
 					date,
 					tenantId,
-					tenantName,
+					tenantCode,
 					data.Message
 				);
      
