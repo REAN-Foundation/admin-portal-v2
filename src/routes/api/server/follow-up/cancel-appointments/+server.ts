@@ -49,10 +49,10 @@ export const POST = async (event: RequestEvent) => {
 					data.Message
 				);
 
-				if (response.Status === 'success') {
+				if (response.Status === 'Success') {
 					scheduledDates.push(date);
 				}
-				if (response.Status !== 'success') {
+				if (response.Status !== 'Success') {
 					unscheduledDates.push(date);
 				}
 			}

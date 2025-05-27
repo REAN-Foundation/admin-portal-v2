@@ -67,7 +67,7 @@
 
 			console.log('response', response);
 
-			if (response.HttpCode === 201 || response.HttpCode === 200) {
+			if (response.Status === 'Success') {
 				if (response.ScheduledDates.length > 0) {
 					console.log('response.ScheduledDates.length', response.ScheduledDates.length);
 					const message = `Appointments cancelled for the dates ${response.ScheduledDates.join(',')}`;

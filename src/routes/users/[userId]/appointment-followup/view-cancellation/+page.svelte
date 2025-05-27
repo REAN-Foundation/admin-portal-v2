@@ -213,6 +213,7 @@
 									{/if}
 								</button>
 							</th>
+							<th>Message</th>
 							<th>Cancelled By</th>
 							<th>Cancelled On</th>
 						</tr>
@@ -232,7 +233,10 @@
 										>{TimeHelper.formatDateToReadable(row.cancel_date, LocaleIdentifier.EN_US)}</td
 									>
 									<td role="gridcell" aria-colindex={3} tabindex="0"
-										>{row.TenantCode ? row.TenantCode : 'Not Specified'}</td
+										>{row.message ? row.message : 'Not Specified'}</td
+									>
+									<td role="gridcell" aria-colindex={3} tabindex="0"
+										>{row.cancelled_by_user_name ? row.cancelled_by_user_name : 'Not Specified'}</td
 									>
 									<td role="gridcell" aria-colindex={4} tabindex="0"
 										>{TimeHelper.formatDateToReadable(row.created_at, LocaleIdentifier.EN_US)}</td
