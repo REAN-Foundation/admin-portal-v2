@@ -15,7 +15,7 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 		return true;
 	}
 	if (menuName === 'Analysis') {
-		if (tenantSettings.Common.Analysis.CustomQueries || tenantSettings.Common.Analysis.Quicksight) {
+		if (tenantSettings.Common.Analysis.CustomQueries.Enabled || tenantSettings.Common.Analysis.Quicksight.Enabled) {
 			return true;
 		}
 		return false;
@@ -23,35 +23,35 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 
 	if (menuName === 'Clinical') {
 		if (
-			tenantSettings.Common.Clinical.Assessments ||
-			tenantSettings.Common.Clinical.LabRecords ||
-			tenantSettings.Common.Clinical.Symptoms ||
-			tenantSettings.Common.Clinical.DrugsManagement
+			tenantSettings.Common.Clinical.Assessments.Enabled ||
+			tenantSettings.Common.Clinical.LabRecords.Enabled ||
+			tenantSettings.Common.Clinical.Symptoms.Enabled ||
+			tenantSettings.Common.Clinical.DrugsManagement.Enabled
 		) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Assessments') {
-		if (tenantSettings.Common.Clinical.Assessments) {
+		if (tenantSettings.Common.Clinical.Assessments.Enabled) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Lab-Records') {
-		if (tenantSettings.Common.Clinical.LabRecords) {
+		if (tenantSettings.Common.Clinical.LabRecords.Enabled) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Symptoms') {
-		if (tenantSettings.Common.Clinical.Symptoms) {
+		if (tenantSettings.Common.Clinical.Symptoms.Enabled) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Drugs') {
-		if (tenantSettings.Common.Clinical.DrugsManagement) {
+		if (tenantSettings.Common.Clinical.DrugsManagement.Enabled) {
 			return true;
 		}
 		return false;
@@ -63,13 +63,13 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 		menuName === 'Careplan-Plans' ||
 		menuName === 'Careplan-Enrollments'
 	) {
-		if (tenantSettings.Common.Clinical.Careplans) {
+		if (tenantSettings.Common.Clinical.Careplans.Enabled) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Assessments') {
-		if (tenantSettings.Common.Clinical.Assessments) {
+		if (tenantSettings.Common.Clinical.Assessments.Enabled) {
 			return true;
 		}
 		return false;
@@ -79,7 +79,7 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 		menuName === 'Hospitals' ||
 		menuName === 'Health-Systems'
 	) {
-		if (tenantSettings.Common.AddOns.HospitalSystems) {
+		if (tenantSettings.Common.Affiliations.HealthSystems.Enabled) {
 			return true;
 		}
 		return false;
@@ -91,7 +91,7 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 		menuName === 'Gamification-Badges' ||
 		menuName === 'Gamification-Schemas'
 	) {
-		if (tenantSettings.Common.AddOns.Gamification) {
+		if (tenantSettings.Common.Miscellaneous.Gamification.Enabled) {
 			return true;
 		}
 		return false;
@@ -102,7 +102,7 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 		menuName === 'Learning-Journeys' ||
 		menuName === 'Knowledge-Nuggets'
 	) {
-		if (tenantSettings.Common.AddOns.LearningJourney) {
+		if (tenantSettings.Common.Educational.LearningJourney.Enabled) {
 			return true;
 		}
 		return false;
@@ -115,48 +115,48 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 	}
 	if (menuName === 'Add-ons') {
 		if (
-			tenantSettings.Common.AddOns.Organizations ||
-			tenantSettings.Common.AddOns.Cohorts ||
-			tenantSettings.Common.AddOns.Notifications ||
-			tenantSettings.Common.AddOns.Notices ||
-			tenantSettings.Common.AddOns.Newsfeeds
+			// tenantSettings.Common.AddOns.Organizations ||
+			tenantSettings.Common.Research.Cohorts.Enabled ||
+			tenantSettings.Common.Miscellaneous.Notifications.Enabled ||
+			tenantSettings.Common.Miscellaneous.Notices.Enabled ||
+			tenantSettings.Common.Miscellaneous.Newsfeeds.Enabled
 		) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Organizations') {
-		if (tenantSettings.Common.AddOns.Organizations) {
-			return true;
-		}
+		// if (tenantSettings.Common.AddOns.Organizations) {
+		// 	return true;
+		// }
 		return false;
 	}
 	if (menuName === 'Cohorts') {
-		if (tenantSettings.Common.AddOns.Cohorts) {
+		if (tenantSettings.Common.Research.Cohorts.Enabled) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Notifications') {
-		if (tenantSettings.Common.AddOns.Notifications) {
+		if (tenantSettings.Common.Miscellaneous.Notifications.Enabled) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Notices') {
-		if (tenantSettings.Common.AddOns.Notices) {
+		if (tenantSettings.Common.Miscellaneous.Notices.Enabled) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Newsfeeds') {
-		if (tenantSettings.Common.AddOns.Newsfeeds) {
+		if (tenantSettings.Common.Miscellaneous.Newsfeeds.Enabled) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Custom-Queries') {
-		if (tenantSettings.Common.Analysis.CustomQueries) {
+		if (tenantSettings.Common.Analysis.CustomQueries.Enabled) {
 			return true;
 		}
 		return false;

@@ -20,15 +20,6 @@ export interface HealthcareInterfaces {
     Forms     : boolean
 }
 
-export interface ClinicalFeatures {
-    Vitals              : boolean;
-    LabRecords          : boolean;
-    Symptoms            : boolean;
-    DrugsManagement     : boolean;
-    Medications         : boolean;
-    Careplans           : boolean;
-    Assessments         : boolean;
-}
 
 export interface ExternalIntegrations {
     FHIRStorage    : boolean;
@@ -57,16 +48,114 @@ export interface AddOnFeatures {
     Notices                 : boolean;
 }
 
-export interface AnalysisSettings {
-    CustomQueries: boolean;
-    Quicksight   : boolean;
+export interface Setting {
+    Name            : string,
+    Enabled         : boolean,
+    Navigable       : boolean,
+    Path?           : string,
+    Icon?           : string,
+    Description?    : string
+}
+
+export interface ClinicalFeatures{
+    Vitals               : Setting;
+    LabRecords           : Setting;
+    Symptoms             : Setting;
+    SymptomAssessments   : Setting;
+    DrugsManagement      : Setting;
+    Medications          : Setting;
+    Careplans            : Setting;
+    Assessments          : Setting;
+    DailyAssessments     : Setting;
+    Appointments         : Setting;
+    Visits               : Setting;
+    Orders               : Setting;
+    Documents            : Setting;
+    PatientHealthReports : Setting;
+    
+}
+
+export interface Wellness{
+    Exercise      : Setting;
+    Nutrition     : Setting;
+    Meditation    : Setting;
+    Priorities    : Setting;
+    Goals         : Setting;
+    DeviceIntegration: Setting;
 }
 
 export interface CommonSettings {
-    Clinical : ClinicalFeatures;
-    External : ExternalIntegrations;
-    AddOns   : AddOnFeatures;
-    Analysis : AnalysisSettings;
+    UserInterfaces  : UserInterfaces;
+    Clinical        : ClinicalFeatures;
+    Wellness        : Wellness;
+    EHR             : EHR;
+    Community       : Community;
+    Research        : Research;
+    Affiliations    : Affiliations;
+    Miscellaneous   : Miscellaneous;
+    Educational     : Educational;
+    Analysis        : AnalysisSettings;
+    General         : General;
+}
+
+export interface UserInterfaces {
+    PatientApp    : boolean,
+    ChatBot       : boolean,
+    Forms         : boolean,
+    PatientPortal : boolean,
+    Followup      : boolean,
+}
+
+export interface Wellness{
+    Exercise      : Setting;
+    Nutrition     : Setting;
+    Meditation    : Setting;
+    Priorities    : Setting;
+    Goals         : Setting;
+    DeviceIntegration: Setting;
+}
+
+export interface EHR {
+    FHIRStorage    : Setting;
+    EHRIntegration : Setting;
+    ABDM           : Setting;
+}
+
+export interface Community{
+    UserGroups : Setting;
+    Chat       : Setting;
+}
+
+export interface Research{
+    Cohorts  : Setting;
+}
+
+export interface Affiliations{
+    HealthCenters  : Setting;
+    HealthSystems  : Setting;
+}
+
+export interface Miscellaneous{
+    Gamification  : Setting;
+    Notifications : Setting;
+    Newsfeeds     : Setting;
+    Notices       : Setting;
+}
+
+export interface Educational{
+    Courses          : Setting;
+    LearningJourney  : Setting;
+    KnowledgeNuggets : Setting;
+}
+
+export interface AnalysisSettings {
+    CustomQueries: Setting;
+    Quicksight   : Setting;
+}
+
+export interface General{
+    ViewPersonRoles : Setting;
+    ViewUsers       : Setting;
 }
 
 export interface PatientAppSettings {
