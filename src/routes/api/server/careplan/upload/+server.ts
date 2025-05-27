@@ -1,15 +1,15 @@
 import { PUBLIC_LOCAL_STORAGE } from '$env/static/public';
 import type { FileUploadModel } from '$lib/types/file.upload.types';
 import { ResponseHandler } from '$lib/utils/response.handler';
-import { fileUploadSchema } from '$lib/validation/assessment-import.schema';
-import { importAssessmentTemplate } from '../../../../services/reancare/assessments/assessment-templates';
-import type { RequestEvent, RequestHandler } from './$types';
+import { fileUploadSchema } from '$lib/validation/file.upload.schema';
+import { importCareplan } from '$routes/api/services/careplan/careplans';
+import type { RequestEvent } from '@sveltejs/kit';
 import * as fs from 'fs';
 import { writeFile } from 'node:fs/promises';
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const POST: RequestHandler = async (event: RequestEvent) => {
+export const POST = async (event: RequestEvent) => {
     try {
 
         const formData = await event.request.formData();
@@ -56,7 +56,6 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
         await writeFile(filePath, Buffer.from(await file?.arrayBuffer()));
 
         if (!fs.existsSync(filePath)) {
-            console.log('File not created');
             return ResponseHandler.success({
                 Status: 'failure',
                 HttpCode: 400,
@@ -70,7 +69,7 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
             });
         }
 
-        const response = await importAssessmentTemplate(sessionId, filename, filePath);
+        const response = await importCareplan(sessionId, filename, filePath);
 
         fs.unlinkSync(filePath);
 

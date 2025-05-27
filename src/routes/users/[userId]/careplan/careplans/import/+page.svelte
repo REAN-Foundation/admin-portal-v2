@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
-	import { showMessage } from '$lib/utils/message.utils';
 
 	///////////////////////////////////////////////////////////////////////////////////////
 
@@ -14,17 +13,16 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 
-	const importRoute = `/users/${userId}/assessment-templates/import`;
-	const assessmentsRoutes = `/users/${userId}/assessment-templates`;
+	const importRoute = `/users/${userId}/careplan/careplans/import`;
+	const careplanRoute = `/users/${userId}/careplan/careplans`;
 
 	const breadCrumbs = [
-		{ name: 'Assessments', path: assessmentsRoutes },
+		{ name: 'Careplans', path: careplanRoute },
 		{ name: 'Import', path: importRoute }
 	];
 
 	const upload = async (imgBase64, file) => {
 		const data = {};
-		console.log(imgBase64);
 
 		const imgData = imgBase64.split(',');
 		data['image'] = imgData[1];
@@ -34,23 +32,21 @@
 		const formData = new FormData();
 		formData.append('file', file);
 
-		const res = await fetch(`/api/server/assessments/assessment-templates/upload`, {
+		const res = await fetch(`/api/server/careplan/upload`, {
 			method: 'POST',
 			body: formData
 		});
 
 		const response = await res.json();
-		console.log('response from api endpoint', response);
 
 		if (response.Status === 'success' && response.HttpCode === 201) {
 			return { success: true, resourceId: response.Data?.id, response };
 		}
 		if (response.Errors) {
 			errors = response?.Errors || {};
-			// showMessage(response.Message, 'error');
+
 			return response;
 		} else {
-			// showMessage(response.Message, 'error');
 			return { success: false, error: response.Message };
 		}
 	};
@@ -75,6 +71,7 @@
 
 			if (uploadResult.response.HttpCode === 201 || uploadResult.response.HttpCode === 200) {
 				toastMessage(uploadResult.response);
+				goto(`${careplanRoute}/`);
 				return;
 			}
 
@@ -119,6 +116,7 @@
 									/>
 								</div>
 
+								<!-- Validation Error -->
 								{#if errors?.UploadFile}
 									<p class="text-error">{errors?.UploadFile}</p>
 								{/if}
@@ -129,10 +127,10 @@
 				<div class="button-container">
 					{#await promise}
 						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-							Uploading...
+							Submiting
 						</button>
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Upload </button>
+						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
 					{/await}
 				</div>
 			</form>
