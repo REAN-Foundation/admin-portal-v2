@@ -7,11 +7,13 @@ import type { RequestEvent } from '@sveltejs/kit';
 export const GET = async (event: RequestEvent) => {
 	try {
 		const sessionId = event.locals?.sessionUser?.sessionId;
+		const tenantCode = event.locals?.sessionUser?.tenantCode;
 		if (!sessionId) {
 			return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session.'));
 		}
 		const searchParams: URLSearchParams = event.url.searchParams;
 		const searchFilters = {
+			tenant_code: tenantCode,
 			from_date: searchParams.get('fromDate') ?? undefined,
 			to_date: searchParams.get('toDate') ?? undefined,
 			order_by: searchParams.get("sortBy") ?? "cancel_date",

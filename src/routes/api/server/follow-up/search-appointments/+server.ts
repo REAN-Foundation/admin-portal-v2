@@ -9,6 +9,7 @@ export const GET = async (event: RequestEvent) => {
         const tenantCode = event.locals?.sessionUser?.tenantCode;
         const searchParams: URLSearchParams = event.url.searchParams;
         const searchFilters = {
+            tenant_code: tenantCode,
             appointment_date: searchParams.get('appointmentDate') ?? undefined ,
             replied_status: searchParams.get('repliedStatus') ?? undefined,
             order_by: searchParams.get('sortBy'),

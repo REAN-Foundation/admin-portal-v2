@@ -186,58 +186,6 @@
 		return statistics
 	 }
 
-	function goToCancellations() {
-    	goto(cancelRoute);
-  	}
-
-	const handleUpload = async (event: Event) => {
-		try {
-			event.preventDefault();
-			errors = {};
-
-			const followUpUploadModel: FollowUpUploadModel = {
-				File : file,
-		
-			};
-
-			console.log('followUpUploadModel===',followUpUploadModel)
-
-			const validationResult = createOrUpdateSchema.safeParse(followUpUploadModel);
-
-			if (!validationResult.success) {
-				errors = Object.fromEntries(
-					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-						key,
-						val?.[0] || 'This field is required'
-					])
-				);
-				return;
-			}
-
-			const res = await fetch(`/api/server/follow-up/file-upload`, {
-				method: 'POST',
-				body: JSON.stringify(followUpUploadModel),
-				headers: { 'content-type': 'application/json' }
-			});
-
-			const response = await res.json();
-
-			if (response.HttpCode === 201 || response.HttpCode === 200) {
-				toastMessage(response);
-				// goto(`${healthSystemsRoute}/${response?.Data?.HealthSystem?.id}/view`);
-				return;
-			}
-
-			if (response.Errors) {
-				// errors = response?.Errors || {};
-			} else {
-				toastMessage(response);
-			}
-		} catch (error) {
-			toastMessage();
-		}
-	};
-
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -271,7 +219,7 @@
 <UploadModal showUploadModel = {showUploadModal} onClose = {() => showUploadModal = false} />
 <CancelModel showCancelModel = {showCancelModel} onClose = {() => showCancelModel = false} />
 
-<div class="mt-4 mx-6 overflow-x-auto rounded-lg border border-[var(--color-outline)]">
+<!-- <div class="mt-4 mx-6 overflow-x-auto rounded-lg border border-[var(--color-outline)]">
 	<div class="mx-auto">
 		<table class="w-full table-fixed text-[var(--color-info)]">
 			<tbody>
@@ -285,7 +233,7 @@
 			</tbody>
 		</table>
 	</div>
-</div>
+</div> -->
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container mb-6 shadow">
@@ -366,19 +314,20 @@
 								</button>
 							</th>
 							<th>Location</th>
-							<th>EMRID</th>
-							<th>Phone No</th>
+							<!-- <th>EMRID</th> -->
+							<th>Phone </th>
 							<th>Status</th>
 							<th>Appointment Date</th>
 							<th>Appointment Time</th>
 							<th>Replied Status</th>
+							<th>Cancelled</th>
 							<!-- <th>Created Date</th> -->
 						</tr>
 					</thead>
 					<tbody class="">
 						{#if retrivedAppointmentRecords.length <= 0}
 							<tr>
-								<td colspan="6">{isLoading ? 'Loading...' : `No records found for date ${appointmentDate}`}</td>
+								<td colspan="6">{isLoading ? 'Loading...' : `No records found `}</td>
 							</tr>
 						{:else}
 							{#each retrivedAppointmentRecords as row, index}
@@ -392,9 +341,9 @@
 									<td role="gridcell" aria-colindex={3} tabindex="0"
 										>{row.location ? row.location : 'Not Specified'}</td
 									>
-									<td role="gridcell" aria-colindex={4} tabindex="0"
+									<!-- <td role="gridcell" aria-colindex={4} tabindex="0"
 										>{row.participant_code ? row.participant_code : 'Not Specified'}</td
-									>
+									> -->
 									<td role="gridcell" aria-colindex={5} tabindex="0"
 										>{row.phone_number ? row.phone_number : 'Not Specified'}</td
 									>
@@ -409,6 +358,9 @@
 									>
 									<td role="gridcell" aria-colindex={8} tabindex="0"
 										>{row.replied_status ? row.replied_status : 'Not Specified'}</td
+									>
+									<td role="gridcell" aria-colindex={8} tabindex="0"
+										>{row.is_cancelled ? row.is_cancelled : false}</td
 									>
 								</tr>
 							{/each}
