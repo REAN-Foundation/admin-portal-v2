@@ -28,10 +28,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Priority',
-			path: priorityRoute
-		},
+
 		{
 			name: 'View',
 			path: viewRoute

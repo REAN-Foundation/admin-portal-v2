@@ -15,6 +15,8 @@
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
+	let templateTitle = data.templateData.Title;
+
 	const queryResponseTypes = data.queryResponseTypes;
 	const assessmentNodes = data.assessmentNodes;
 	let parentNodeId = $state(undefined),
@@ -65,11 +67,11 @@
 			path: assessmentsRoutes
 		},
 		{
-			name: 'Assessment-View',
+			name: templateTitle,
 			path: assessmentTemplateView
 		},
 		{
-			name: 'Assessment-Nodes',
+			name: 'Nodes',
 			path: assessmentNodeRoutes
 		},
 		{
@@ -202,7 +204,7 @@
 				<table class="health-system-table">
 					<thead>
 						<tr>
-							<th>Create Assessment Node</th>
+							<th>Create Node</th>
 							<th class="text-end">
 								<a href={assessmentNodeRoutes} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />

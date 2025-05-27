@@ -36,10 +36,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Reflection',
-			path: reflectionRoute
-		},
+		
 		{
 			name: 'Edit',
 			path: editRoute

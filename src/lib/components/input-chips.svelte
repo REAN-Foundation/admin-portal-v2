@@ -24,36 +24,35 @@
 		keywordsChanged;
 	};
 </script>
-
 <div class="flex flex-col gap-2 rounded">
-	<input
-		class="input"
-		type="text"
-		placeholder="Type and press enter to add a keyword"
-		bind:value={input}
-		on:keydown={(e) => {
-			if (e.key === 'Enter') {
-				e.preventDefault();
-				addChip();
-			}
-		}}
-		{name}
-		{id}
-	/>
-
-	{#if keywords.length}
-		<div class="flex flex-wrap gap-2">
-			{#each keywords as chip, i}
-				<div>
-					<button
-						type="button"
-						class="btn variant-soft-secondary"
-						on:click={() => removeChip(chip)}
-					>
-						{chip} x
-					</button>
-				</div>
-			{/each}
-		</div>
-	{/if}
+    <input
+        class="input"
+        type="text"
+        placeholder="Type and press enter to add a keyword"
+        bind:value={input}
+        on:keydown={(e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addChip();
+            }
+        }}
+        {name}
+        {id}
+    />
+    {#if keywords.length}
+        <div class="flex flex-wrap gap-2">
+            {#each keywords as chip, i}
+                <div>
+                    <button
+                        type="button"
+                        class="btn variant-soft-secondary"
+                        on:click={() => removeChip(chip)}
+                    >
+                        {chip} x
+                    </button>
+                </div>
+            {/each}
+        </div>
+    {/if}
 </div>
+

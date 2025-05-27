@@ -27,10 +27,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Video',
-			path: videoRoute
-		},
+
 		{
 			name: 'View',
 			path: viewRoute

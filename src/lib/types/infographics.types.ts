@@ -1,7 +1,7 @@
 export interface InfographicsCreateModel {
 	Name: string;
 	Description?: string;
-	PathUrl?: string;
+	Url?: string;
 	Tags?: string[];
 	Version?: string;
 }
@@ -9,7 +9,7 @@ export interface InfographicsCreateModel {
 export interface InfographicsUpdateModel {
 	Name: string;
 	Description?: string;
-	PathUrl?: string;
+	Url?: string;
 	Tags?: string[];
 	Version?: string;
 }

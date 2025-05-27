@@ -37,10 +37,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Web-Link',
-			path: weblinkRoute
-		},
+		
 		{
 			name: 'Edit',
 			path: editRoute

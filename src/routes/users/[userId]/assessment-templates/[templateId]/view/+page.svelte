@@ -67,14 +67,14 @@
 			href={nodeRoute}
 			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
 		>
-			Add Assessment Node</a
+			Add Node</a
 		>
 		<a
 			href={editRoute}
 			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
 		>
 			<Icon icon="material-symbols:edit-outline" />
-			<span>Edit</span>
+			<span class="ml-1">Edit</span>
 		</a>
 	</div>
 
@@ -83,7 +83,7 @@
 			<table class="health-system-table">
 				<thead>
 					<tr>
-						<th>View Assessment</th>
+						<th>View Template</th>
 						<th class="text-end">
 							<a href={assessmentsRoutes} class="cancel-btn">
 								<Icon icon="material-symbols:close-rounded" />

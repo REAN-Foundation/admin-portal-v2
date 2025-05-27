@@ -31,10 +31,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Animation',
-			path: animationRoute
-		},
+
 		{
 			name: 'Create',
 			path: createRoute

@@ -17,18 +17,19 @@
 	let description = $state(data.consultation.Description);
 	let consultationType = $state(data.consultation.ConsultationType);
 	let version = $state(data.consultation.Version);
-	let keywords: string[] = $state([]);
+	let keywords: string[] = $state(data.consultation.Tags);
 	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
 	var consultationId = page.params.id;
 
+	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/consultations/${consultationId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/consultations/${consultationId}/view`;
 	const consultationRoute = `/users/${userId}/careplan/assets/consultations`;
 
 	const breadCrumbs = [
-		{ name: 'Consultation', path: consultationRoute },
+		{ name: 'Assets', path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
@@ -101,14 +102,14 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<table class="health-system-table">
+			<table class="table-c">
 			<thead>
 					<tr>
 						<th>Edit Consultation</th>
 						<th class="text-end">
-							<a href={consultationRoute} class="health-system-btn variant-soft-secondary">
+							<a href={viewRoute} class="health-system-btn variant-soft-secondary">
 								<Icon icon="material-symbols:close-rounded" />
 							</a>
 						</th>
@@ -120,7 +121,7 @@
 						<td>
 							<input
 									type="text"
-									class="health-system-input {form?.errors?.Name
+									class="input {form?.errors?.Name
 										? 'input-text-error'
 										: ''}"
 									name="name"
@@ -147,7 +148,7 @@
 					<tr>
 						<td>Consultation Type</td>
 						<td>
-							<select class="health-system-input" bind:value={consultationType}>
+							<select class="input" bind:value={consultationType}>
 								<option disabled value>Select Consultation type</option>
 								<option>Tele-consultation</option>
 								<option>Visit-consultation</option>
@@ -171,7 +172,7 @@
 					<tr>
 						<td>Version</td>
 						<td>
-							<input type="text" bind:value={version} class="health-system-input" placeholder="V 1.0" />
+							<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
 						</td>
 					</tr>
 				</tbody>

@@ -15,20 +15,21 @@
 	let promise = $state();
 	let name = $state(data.infographics.Name);
 	let description = $state(data.infographics.Description);
-	let pathUrl = $state(data.infographics.PathUrl);
+	let pathUrl = $state(data.infographics.Url);
 	let version = $state(data.infographics.Version);
-	let keywords: string[] = $state([]);
+	let keywords: string[] = $state(data.infographics.Tags);
 	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
 	var infographicsId = page.params.id;
 
+	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/infographics/${infographicsId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/infographics/${infographicsId}/view`;
 	const infographicsRoute = `/users/${userId}/careplan/assets/infographics`;
 
 	const breadCrumbs = [
-		{ name: 'Infographics', path: infographicsRoute },
+		{ name: 'Assets', path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
@@ -36,7 +37,7 @@
 		name = data?.infographics?.Name;
 		infographicsId = page.params.id;
 		description = data?.infographics?.Description;
-		pathUrl = data?.infographics?.PathUrl;
+		pathUrl = data?.infographics?.Url;
 		version = data?.infographics?.Version;
 		keywords = data?.infographics?.Tags;
 		errors = {};
@@ -50,7 +51,7 @@
 			const infographicsUpdateModel: InfographicsUpdateModel = {
 				Name: name,
 				Description: description,
-				PathUrl: pathUrl,
+				Url: pathUrl,
 				Version: version,
 				Tags: keywords
 			};
@@ -77,7 +78,6 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				// console.log("Redirecting to:", response?.Data?.id);
 				console.log('Full response:', response);
 				await goto(`${infographicsRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
@@ -100,9 +100,9 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
+				<table class="table-c">
 					<thead>
 						<tr>
 							<th>Edit Infographics</th>
@@ -119,7 +119,7 @@
 							<td>
 								<input
 									type="text"
-									class="health-system-input {form?.errors?.Name ? 'input-text-error' : ''}"
+									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
 									name="name"
 									placeholder="Enter name here..."
 									bind:value={name}
@@ -135,7 +135,7 @@
 							<td>
 								<input
 										type="textarea"
-										class="health-system-input {form?.errors?.Name
+										class="input {form?.errors?.Name
 											? 'input-text-error'
 											: ''}"
 										name="description"
@@ -156,7 +156,7 @@
 									name="url"
 									bind:value={pathUrl}
 									placeholder="Enter url here"
-                                    class="health-system-input {errors?.Url ? 'input-text-error' : ''}"
+                                    class="input {errors?.Url ? 'input-text-error' : ''}"
                                 />
                                 {#if errors?.Url}
                                     <p class="text-error">{errors?.Url}</p>
@@ -174,13 +174,12 @@
 									keywordsChanged={onUpdateKeywords}
 								/>
 								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
 							</td>
 						</tr>
 						<tr>
 							<td>Version</td>
 							<td>
-								<input type="text" bind:value={version} class="health-system-input" placeholder="V 1.0" />
+								<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
 							</td>
 						</tr>
 					</tbody>
