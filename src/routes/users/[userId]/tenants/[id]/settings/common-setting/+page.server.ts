@@ -13,7 +13,7 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
         const tenantId = event.locals?.sessionUser?.tenantId;
 		const response = await getTenantSettingsByType(sessionId, tenantId,'Common');
 
-        console.log("response of setting", response);
+        // console.log("response of setting", response);
         
 
 		if (response.Status === 'failure' || response.HttpCode !== 200) {

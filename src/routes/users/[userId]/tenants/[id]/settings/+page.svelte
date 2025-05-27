@@ -12,9 +12,9 @@
 
 	console.log('data =>', data);
 
-	let isPatientAppChecked = $state(data.settings.UserInterfaces.PatientApp);
-	let isChatbotChecked = $state(data.settings.UserInterfaces.ChatBot);
-	let isFormsChecked = $state(data.settings.UserInterfaces.Forms);
+	// let isPatientAppChecked = $state(data.settings.PatientApp);
+	// let isChatbotChecked = $state(data.settings.ChatBot);
+	// let isFormsChecked = $state(data.settings.Forms);
 
 	let disabled = $state(true);
 	let edit = $derived(disabled);
@@ -105,7 +105,7 @@
 					<tbody>
 						<tr>
 							<td>
-								{#if edit === true && isPatientAppChecked === true}
+								<!-- {#if edit === true && isPatientAppChecked === true}
 									<span class="tick ml-10 text-green-500">✔</span>
 								{:else}
 									<input
@@ -115,13 +115,13 @@
 										bind:checked={isPatientAppChecked}
 										class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
 									/>
-								{/if}
+								{/if} -->
 							</td>
 							<td>Patient App</td>
 						</tr>
 						<tr>
 							<td>
-								{#if edit === true && isChatbotChecked === true}
+								<!-- {#if edit === true && isChatbotChecked === true}
 									<span class="tick ml-10 text-green-500">✔</span>
 								{:else}
 									<input
@@ -131,13 +131,13 @@
 										bind:checked={isChatbotChecked}
 										class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
 									/>
-								{/if}
+								{/if} -->
 							</td>
 							<td class="ml-4">Chat bot</td>
 						</tr>
 						<tr>
 							<td>
-								{#if edit === true && isFormsChecked === true}
+								<!-- {#if edit === true && isFormsChecked === true}
 									<span class="tick ml-10 text-green-500">✔</span>
 								{:else}
 									<input
@@ -147,7 +147,7 @@
 										bind:checked={isFormsChecked}
 										class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
 									/>
-								{/if}
+								{/if} -->
 							</td>
 							<td class="ml-4">Forms</td>
 						</tr>

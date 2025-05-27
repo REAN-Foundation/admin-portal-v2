@@ -1,31 +1,3 @@
-
-
-export enum TenantSettingsTypes {
-    Common = 'Common',
-    Followup = 'Followup',
-    ChatBot = 'ChatBot',
-    Forms = 'Forms',
-    Consent = 'Consent',
-}
-
-export enum WeekDay {
-    Sunday = 'Sunday',
-    Monday = 'Monday',
-    Tuesday = 'Tuesday',
-    Wednesday = 'Wednesday',
-    Thursday = 'Thursday',
-    Friday = 'Friday',
-    Saturday = 'Saturday'
-}
-
-export const TenantSettingsTypesList = [
-    TenantSettingsTypes.Common,
-    TenantSettingsTypes.Followup,
-    TenantSettingsTypes.ChatBot,
-    TenantSettingsTypes.Forms,
-    TenantSettingsTypes.Consent,
-];
-
 export interface UserInterfaces {
     PatientApp: boolean,
     ChatBot: boolean,
@@ -34,75 +6,85 @@ export interface UserInterfaces {
     Followup: boolean,
 }
 
-export interface ClinicalFeatures {
-    Vitals: Setting;
-    LabRecords: Setting;
-    Symptoms: Setting;
-    SymptomAssessments: Setting;
-    DrugsManagement: Setting;
-    Medications: Setting;
-    Careplans: Setting;
-    Assessments: Setting;
-    DailyAssessments: Setting;
-    Appointments: Setting;
-    Visits: Setting;
-    Orders: Setting;
-    Documents: Setting;
-    PatientHealthReports: Setting;
+export interface ClinicalUIFeatures {
+    Vitals: UISetting;
+    LabRecords: UISetting;
+    Symptoms: UISetting;
+    SymptomAssessments: UISetting;
+    DrugsManagement: UISetting;
+    Medications: UISetting;
+    Careplans: UISetting;
+    Assessments: UISetting;
+    DailyAssessments: UISetting;
+    Appointments: UISetting;
+    Visits: UISetting;
+    Orders: UISetting;
+    Documents: UISetting;
+    PatientHealthReports: UISetting;
 
 }
 
-export interface Wellness {
-    Exercise: Setting;
-    Nutrition: Setting;
-    Meditation: Setting;
-    Priorities: Setting;
-    Goals: Setting;
-    DeviceIntegration: Setting;
+export interface WellnessUI {
+    Exercise: UISetting;
+    Nutrition: UISetting;
+    Meditation: UISetting;
+    Priorities: UISetting;
+    Goals: UISetting;
+    DeviceIntegration: UISetting;
 }
 
-export interface EHR {
-    FHIRStorage: Setting;
-    EHRIntegration: Setting;
-    ABDM: Setting;
+export interface EHRUI {
+    FHIRStorage: UISetting;
+    EHRIntegration: UISetting;
+    ABDM: UISetting;
 }
 
-export interface Community {
-    UserGroups: Setting;
-    Chat: Setting;
+
+
+
+export interface CommunityUI {
+    UserGroups: UISetting;
+    Chat: UISetting;
 }
 
-export interface Research {
-    Cohorts: Setting;
+
+
+export interface ResearchUI {
+    Cohorts: UISetting;
 }
 
-export interface Affiliations {
-    HealthCenters: Setting;
-    HealthSystems: Setting;
+
+export interface AffiliationsUI {
+    HealthCenters: UISetting;
+    HealthSystems: UISetting;
 }
 
-export interface Miscellaneous {
-    Gamification: Setting;
-    Notifications: Setting;
-    Newsfeeds: Setting;
-    Notices: Setting;
+
+export interface MiscellaneousUI {
+    Gamification: UISetting;
+    Notifications: UISetting;
+    Newsfeeds: UISetting;
+    Notices: UISetting;
 }
 
-export interface Educational {
-    Courses: Setting;
-    LearningJourney: Setting;
-    KnowledgeNuggets: Setting;
+
+export interface EducationalUI {
+    Courses: UISetting;
+    LearningJourney: UISetting;
+    KnowledgeNuggets: UISetting;
 }
 
-export interface General {
-    ViewPersonRoles: Setting;
-    ViewUsers: Setting;
+
+export interface GeneralUI {
+    ViewPersonRoles: UISetting;
+    ViewUsers: UISetting;
 }
 
 export interface DeviceIntegration {
     Terra: boolean;
     SenseSemi: boolean;
 }
+
 
 export interface AddOnFeatures {
     HospitalSystems: boolean,
@@ -120,23 +102,24 @@ export interface AddOnFeatures {
     Notices: boolean;
 }
 
-export interface AnalysisSettings {
-    CustomQueries: Setting;
-    Quicksight: Setting;
+export interface AnalysisUISettings {
+    CustomQueries: UISetting;
+    Quicksight: UISetting;
 }
 
-export interface CommonSettings {
-    UserInterfaces: UserInterfaces;
-    Clinical: ClinicalFeatures;
-    Wellness: Wellness;
-    EHR: EHR;
-    Community: Community;
-    Research: Research;
-    Affiliations: Affiliations;
-    Miscellaneous: Miscellaneous;
-    Educational: Educational;
-    Analysis: AnalysisSettings;
-    General: General;
+
+
+export interface CommonUISettings {
+    Clinical: ClinicalUIFeatures;
+    Wellness?: WellnessUI;
+    EHR?: EHRUI;
+    Community?: CommunityUI;
+    Research?: ResearchUI;
+    Affiliations?: AffiliationsUI;
+    Miscellaneous?: MiscellaneousUI;
+    Educational: EducationalUI;
+    Analysis: AnalysisUISettings;
+    General: GeneralUI;
 }
 
 export interface PatientAppSettings {
@@ -335,4 +318,10 @@ export interface Setting {
     Path?: string,
     Icon?: string,
     Description?: string
+}
+
+export interface UISetting {
+    Name: string,
+    IconPath?: string,
+    InfoText?: string,
 }
