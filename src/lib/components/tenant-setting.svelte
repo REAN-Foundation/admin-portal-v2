@@ -69,14 +69,16 @@
 			<table class="table-c">
 				<thead>
 					<tr>
-						<th> Common Setting </th>
+						<th>
+							<div class="flex justify-between">
+								<h1>Common Setting</h1>
 
-						<th class="text-end">
-							<a href={tenantRoute} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
+								<a href={tenantRoute} class="cancel-btn">
+									<Icon icon="material-symbols:close-rounded" />
+								</a>
+							</div>
+						</th></tr
+					>
 				</thead>
 				<tbody>
 					{#each Object.entries(commonSetting) as [groupName, groupItems]}
@@ -88,22 +90,22 @@
 										onclick={() => toggleTab(groupName)}
 										class="sidebar-item flex w-full items-center justify-between"
 									>
-										<div class="flex items-center gap-2">
+										<div class="flex flex-1 items-center gap-2">
 											<Icons
-												cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 fill-none w-14"
+												cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 fill-none"
 												h="100%"
 												w="100%"
 												iconPath=""
 											/>
-											<span class="flex-1">{groupName}</span>
-											<InfoIcon
-												cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 cursor-pointer fill-none"
-												h="100%"
-												w="100%"
-												iconPath="/tenant-setting/info.svg#icon"
-												title={`Settings under ${groupName}`}
-											/>
+											<span>{groupName}</span>
 										</div>
+										<InfoIcon
+											cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 cursor-pointer fill-none mt-1"
+											h="100%"
+											w="100%"
+											iconPath="/tenant-setting/info.svg#icon"
+											title={`Settings under ${groupName}`}
+										/>
 										<!-- <span class:rotate-180={openTab === groupName} class="transition-transform duration-300"> -->
 										<span
 											class="transition-transform duration-300"
@@ -114,34 +116,36 @@
 									</button>
 
 									{#if openTab === groupName}
-										<div class="mx-5 grid grid-cols-1 gap-x-10 gap-y-6 lg:grid-cols-2">
-											{#each Object.entries(groupItems) as [key, value]}
-												{@const meta = getSettingMeta(groupName, key)}
-												<div class="flex items-center">
-													{#if edit === true && value.Enabled === true}
-														<span class="tick  text-green-500">✔</span>
-													{:else}
-														<!-- {groupItems[key].value}
+										<div class="w-full flex justify-center py-5">
+										<div class="grid w-full grid-cols-1 gap-x-10 gap-y-6 lg:grid-cols-2 mx-20">
+												{#each Object.entries(groupItems) as [key, value]}
+													{@const meta = getSettingMeta(groupName, key)}
+													<div class="flex items-center gap-3">
+														{#if edit === true && value.Enabled === true}
+															<span class="tick text-green-500">✔</span>
+														{:else}
+															<!-- {groupItems[key].value}
 								{JSON.stringify(value)} -->
-														<!-- {value.Enabled} -->
-														<label class="flex items-center gap-2">
-															<input
-																type="checkbox"
-																class="checkbox checkbox-primary"
-																bind:checked={value.Enabled}
-																disabled={edit}
-															/>
-														</label>
-													{/if}
-													<Icons
-														cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 fill-none my-2"
-														h="70%"
-														w="70%"
-														iconPath={meta?.IconPath}
-													/>
-													<span class="font-medium">{meta?.Name ?? key}</span>
-												</div>
-											{/each}
+															<!-- {value.Enabled} -->
+															<label class="flex items-center gap-2">
+																<input
+																	type="checkbox"
+																	class="checkbox checkbox-primary"
+																	bind:checked={value.Enabled}
+																	disabled={edit}
+																/>
+															</label>
+														{/if}
+														<Icons
+															cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 fill-none my-2"
+															h="70%"
+															w="70%"
+															iconPath={meta?.IconPath}
+														/>
+														<span >{meta?.Name ?? key}</span>
+													</div>
+												{/each}
+											</div>
 										</div>
 									{/if}
 								</td>
