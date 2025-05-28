@@ -27,6 +27,10 @@
 		}
 	}
 
+	function handleFormSubmit(event) {
+		event.preventDefault();
+		onSubmit(commonSetting);
+	}
 	function submit() {
 		const payload: Record<string, Record<string, boolean>> = {};
 		for (const group in settingsCopy) {
@@ -65,7 +69,7 @@
 
 <div class="mx-auto">
 	<div class="table-container">
-		<form>
+		<form onsubmit={handleFormSubmit}>
 			<table class="table-c">
 				<thead>
 					<tr>
@@ -116,13 +120,13 @@
 									</button>
 
 									{#if openTab === groupName}
-										<div class="w-full flex justify-center py-5">
-										<div class="grid w-full grid-cols-1 gap-x-10 gap-y-6 lg:grid-cols-2 mx-20">
+										<div class="flex w-full justify-center py-5">
+											<div class="mx-20 grid w-full grid-cols-2 gap-x-10 gap-y-6 lg:grid-cols-2">
 												{#each Object.entries(groupItems) as [key, value]}
 													{@const meta = getSettingMeta(groupName, key)}
 													<div class="flex items-center gap-3">
 														{#if edit === true && value.Enabled === true}
-															<span class="tick text-green-500">✔</span>
+															<span class=" text-green-500">✔</span>
 														{:else}
 															<!-- {groupItems[key].value}
 								{JSON.stringify(value)} -->
@@ -131,8 +135,8 @@
 																<input
 																	type="checkbox"
 																	class="checkbox checkbox-primary"
-																	bind:checked={value.Enabled}
 																	disabled={edit}
+																	bind:checked={commonSetting[groupName][key].Enabled}
 																/>
 															</label>
 														{/if}
@@ -142,7 +146,7 @@
 															w="70%"
 															iconPath={meta?.IconPath}
 														/>
-														<span >{meta?.Name ?? key}</span>
+														<span>{meta?.Name ?? key}</span>
 													</div>
 												{/each}
 											</div>

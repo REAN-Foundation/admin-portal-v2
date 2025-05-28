@@ -18,6 +18,7 @@
 	function handleSettingsSubmit(updated) {
 		console.log('New settings:', updated);
 		commonSetting = updated;
+		// Call your API here
 	}
 
 	let disabled = $state(true);
@@ -244,6 +245,7 @@
 		onSubmit={handleSettingsSubmit}
 		bind:commonSetting
 		{edit}
+	
 		{tenantRoute}
 	/>
 </div>
