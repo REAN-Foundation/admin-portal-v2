@@ -245,7 +245,6 @@
 		onSubmit={handleSettingsSubmit}
 		bind:commonSetting
 		{edit}
-	
 		{tenantRoute}
 	/>
 </div>

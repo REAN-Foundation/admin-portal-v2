@@ -25,39 +25,37 @@
 	const viewRoute = `/users/${userId}/tenants/${tenantId}/view`;
 	const tenantRoute = `/users/${userId}/tenants`;
 
-	const breadCrumbs = [
-		{
-			name: 'Tenants',
-			path: tenantRoute
-		},
-		{
-			name: 'Settings',
-			path: viewRoute
-		}
-	];
+	// const breadCrumbs = [
+	// 	{
+	// 		name: 'Tenants',
+	// 		path: tenantRoute
+	// 	},
+	// 	{
+	// 		name: 'Settings',
+	// 		path: viewRoute
+	// 	}
+	// ];
 
 	// let tabs = ['Common Settings', 'Chatbot Settings', 'Forms Settings', 'Patient App Settings'];
-	let tabs = [
-		{ name: 'Common Settings', path: `${tenantRoute}/${tenantId}/settings/common-setting` },
-		{ name: 'Chatbot Settings', path: `${tenantRoute}/${tenantId}/settings/chatbot-setting` },
-		{ name: 'Forms Settings', path: `${tenantRoute}/${tenantId}/settings/form-setting` },
-		{ name: 'Patient App Settings', path:`${tenantRoute}/${tenantId}/settings/patient-app-setting` }
-	];
-	let activeTab = $state('Common Settings');
+	// let tabs = [
+	// 	{ name: 'Common Settings', path: `${tenantRoute}/${tenantId}/settings/common-setting` },
+	// 	{ name: 'Chatbot Settings', path: `${tenantRoute}/${tenantId}/settings/chatbot-setting` },
+	// 	{ name: 'Forms Settings', path: `${tenantRoute}/${tenantId}/settings/form-setting` },
+	// 	{ name: 'Patient App Settings', path:`${tenantRoute}/${tenantId}/settings/patient-app-setting` }
+	// ];
+	// let activeTab = $state('Common Settings');
 
-	function selectTab(tab) {
-		activeTab = tab;
-	}
+	// function selectTab(tab) {
+	// 	activeTab = tab;
+	// }
 
 	const handleSubmit = (e) => {};
 </script>
 
-<BreadCrumbs crumbs={breadCrumbs} />
-
-
+<!-- <BreadCrumbs crumbs={breadCrumbs} /> -->
 
 <div class="px-6 py-2">
-	<div class=" border-b my-3">
+	<!--	<div class=" border-b my-3">
 	<div class="flex space-x-6 px-4 pt-4">
 		{#each tabs as tab}
 			<button
@@ -75,7 +73,7 @@
 			</button>
 		{/each}
 	</div>
-</div>
+</div> -->
 	<div class="mb-2 flex w-full flex-wrap justify-end gap-2">
 		<button
 			class="table-btn variant-filled-secondary gap-1"

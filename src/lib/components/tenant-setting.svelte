@@ -31,6 +31,7 @@
 		event.preventDefault();
 		onSubmit(commonSetting);
 	}
+	
 	function submit() {
 		const payload: Record<string, Record<string, boolean>> = {};
 		for (const group in settingsCopy) {
