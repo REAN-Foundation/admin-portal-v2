@@ -226,55 +226,24 @@
 </script>
 
 <div class="px-6 py-4">
-	<button
-		class="table-btn variant-filled-secondary gap-1 "
-		onclick={() => {
-			disabled = !disabled;
-			edit = disabled;
-		}}
-	>
-		<Icon icon="material-symbols:edit-outline" />
-		<span>Edit</span>
-	</button>
-
-	<div class="mx-auto ">
-		<div class="table-container ">
-			<form>
-				<table class="table-c min-w-full">
-					<thead>
-						<tr>
-							<th> Common Setting </th>
-
-							<th class="text-end">
-								<a href={tenantRoute} class="cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody >
-						<tr class="">
-							<td class="!w-full mb-4">
-								<ExpandableSettings
-									groupedSettings={commonUISettings}
-									onSubmit={handleSettingsSubmit}
-									bind:commonSetting
-									{edit}
-								/>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="button-container">
-					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
-					{/await}
-				</div>
-			</form>
-		</div>
+	<div class="flex flex-wrap justify-end gap-2 py-2">
+		<button
+			class="table-btn variant-filled-secondary gap-1"
+			onclick={() => {
+				disabled = !disabled;
+				edit = disabled;
+			}}
+		>
+			<Icon icon="material-symbols:edit-outline" />
+			<span>Edit</span>
+		</button>
 	</div>
+
+	<ExpandableSettings
+		groupedSettings={commonUISettings}
+		onSubmit={handleSettingsSubmit}
+		bind:commonSetting
+		{edit}
+		{tenantRoute}
+	/>
 </div>
