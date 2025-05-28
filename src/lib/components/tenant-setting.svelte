@@ -52,6 +52,22 @@
 			}
 		);
 	}
+
+	const iconPaths = {
+		Clinical: '/tenant-setting/common-setting/clinical.svg#icon',
+		External: '/tenant-setting/common-setting/external.svg#icon',
+		Wellness: '/tenant-setting/common-setting/external.svg#icon',
+		EHR: '/tenant-setting/common-setting/ehr.svg#icon',
+
+		Affiliations: '/tenant-setting/common-setting/external.svg#icon',
+		Analysis: '/tenant-setting/common-setting/external.svg#icon',
+		Community: '/tenant-setting/common-setting/external.svg#icon',
+
+		Educational: '/tenant-setting/common-setting/external.svg#icon',
+		General: '/tenant-setting/common-setting/external.svg#icon',
+		Miscellaneous: '/tenant-setting/common-setting/external.svg#icon',
+		Research: '/tenant-setting/common-setting/external.svg#icon'
+	};
 </script>
 
 <!-- <div class="space-y-4 p-4">
@@ -75,7 +91,7 @@
 					<tr>
 						<th>
 							<div class="flex justify-between">
-								<h1>Common Setting</h1>
+								<h1 class="py-2 text-lg">Common Setting</h1>
 
 								<a href={tenantRoute} class="cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
@@ -88,25 +104,27 @@
 					{#each Object.entries(commonSetting) as [groupName, groupItems]}
 						{#if groupName !== 'UserInterfaces'}
 							<tr>
-								<td class="!w-full">
+								<td>
 									<button
 										type="button"
 										onclick={() => toggleTab(groupName)}
-										class="sidebar-item flex w-full items-center justify-between"
+										class={`sidebar-item flex w-full items-center justify-between rounded-md px-4 py-2 transition-colors duration-200 ${
+											openTab === groupName ? 'bg-slate-100 ' : ''
+										}`}
 									>
 										<div class="flex flex-1 items-center gap-2">
 											<Icons
-												cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 fill-none"
-												h="100%"
-												w="100%"
-												iconPath=""
+												cls="stroke-slate-800 my-2 stroke-2 fill-none"
+												h="80%"
+												w="80%"
+												iconPath={iconPaths[groupName] ?? ''}
 											/>
-											<span>{groupName}</span>
+											<span class="text-base">{groupName}</span>
 										</div>
 										<InfoIcon
-											cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 cursor-pointer fill-none mt-1"
-											h="100%"
-											w="100%"
+											cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 cursor-pointer fill-none my-2"
+											h="80%"
+											w="80%"
 											iconPath="/tenant-setting/info.svg#icon"
 											title={`Settings under ${groupName}`}
 										/>
@@ -126,7 +144,9 @@
 													{@const meta = getSettingMeta(groupName, key)}
 													<div class="flex items-center gap-3">
 														{#if edit === true && value.Enabled === true}
-															<span class=" text-green-500">✔</span>
+															<span class="text-green-500">✅</span>
+														{:else if edit === true && value.Enabled !== true}
+															<span>❌</span>
 														{:else}
 															<!-- {groupItems[key].value}
 								{JSON.stringify(value)} -->
