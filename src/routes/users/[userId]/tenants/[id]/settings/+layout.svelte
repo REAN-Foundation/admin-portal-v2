@@ -25,7 +25,7 @@
 <div class="flex w-full flex-col">
 	<!-- Navigation Buttons -->
 	<div class="flex gap-4 p-4">
-		{#each [{ label: 'Common Setting', path: `${tenantRoute}/${tenantId}/settings/common-setting` }, { label: 'ChatBot Setting', path: `${tenantRoute}/${tenantId}/settings/chatbot-setting` }, { label: 'User Interface', path: `${tenantRoute}/${tenantId}/settings/user-interface-setting` }, { label: 'Appointment Followup', path: `${tenantRoute}/${tenantId}/settings/followup-setting` }] as nav}
+		{#each [{ label: 'Basic', path: `${tenantRoute}/${tenantId}/settings/common-setting` }, { label: 'Chat Bot', path: `${tenantRoute}/${tenantId}/settings/chatbot-setting` }, { label: 'Forms', path: `${tenantRoute}/${tenantId}/settings/chatbot-setting` }, { label: 'Followup', path: `${tenantRoute}/${tenantId}/settings/followup-setting` }] as nav}
 			<a
 				href={nav.path}
 				class={`rounded border px-4 py-2 ${
