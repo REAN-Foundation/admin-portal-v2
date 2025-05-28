@@ -894,4 +894,7 @@ tr {
 .upload-btn {
 	@apply inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-2 text-center text-sm whitespace-nowrap text-[var(--color-info)] transition-all duration-150 ease-in-out hover:bg-[var(--color-active)];
 }
+.drag-input {
+	@apply  border-dashed p-6 rounded text-center mb-4 mt-4 w-full border border-[var(--color-outline)] bg-[var(--color-accent)] text-[var(--color-info)] focus:outline-none
+}
 

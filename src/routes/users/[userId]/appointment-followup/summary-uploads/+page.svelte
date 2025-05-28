@@ -160,31 +160,31 @@
 		});
 	}
 
-	 function getStatistics() {
-		const statistics = [
-			{
-				label: "Total Users",
-				value: totalUsers,
-				description: "Count of users who have at least one scheduled appointment"
-			},
-				{
-				label: "Replied Yes Count",
-				value: repiedYesCount,
-				description: "Number of users who replied with 'Yes'."
-			},
-			{
-				label: "Replied No Count",
-				value: repiedNoCount,
-				description: "Number of users who replied with 'No'."
-			},
-			{
-				label: "Not Replied Count",
-				value: notRepiedCount,
-				description: "Number of users who did not reply."
-			}
-		];
-		return statistics
-	 }
+	//  function getStatistics() {
+	// 	const statistics = [
+	// 		{
+	// 			label: "Total Users",
+	// 			value: totalUsers,
+	// 			description: "Count of users who have at least one scheduled appointment"
+	// 		},
+	// 			{
+	// 			label: "Replied Yes Count",
+	// 			value: repiedYesCount,
+	// 			description: "Number of users who replied with 'Yes'."
+	// 		},
+	// 		{
+	// 			label: "Replied No Count",
+	// 			value: repiedNoCount,
+	// 			description: "Number of users who replied with 'No'."
+	// 		},
+	// 		{
+	// 			label: "Not Replied Count",
+	// 			value: notRepiedCount,
+	// 			description: "Number of users who did not reply."
+	// 		}
+	// 	];
+	// 	return statistics
+	//  }
 
 </script>
 
@@ -274,14 +274,17 @@
 							name="reply"
 							bind:value={reply}
 							oninput={(event) => onSearchInput(event)}
-							class="input w-1/4 ml-auto"
+							class="select"
 						>
 							<option value="" disabled selected>Filter by reply</option>
 							<option value="Yes">Yes</option>
 							<option value="No">No</option>
 							<option value="Not replied">Not Replied</option>
 							</select>
-						<!-- {#if reply}
+							<div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+							<Icon icon="mdi:chevron-down" class="text-info h-5 w-5" />
+						</div>
+									<!-- {#if reply}
 							<button
 								type="button"
 								onclick={() => {
@@ -359,9 +362,18 @@
 									<td role="gridcell" aria-colindex={8} tabindex="0"
 										>{row.replied_status ? row.replied_status : 'Not Specified'}</td
 									>
-									<td role="gridcell" aria-colindex={8} tabindex="0"
-										>{row.is_cancelled ? row.is_cancelled : false}</td
-									>
+									<!-- <td role="gridcell" aria-colindex={8} tabindex="0"
+										>{row.is_cancelled ? 'True' : 'False'}</td
+									> -->
+									<td class="flex items-center gap-2">
+										{#if row.is_cancelled}
+										 	<Icon icon="mdi:check-circle" class="text-green-500" />
+											<span class="lable">True</span>
+										{:else}
+											<Icon icon="mdi:close-circle" class="text-red-500" />
+											<span class="lable">False</span>
+										{/if}
+									</td>
 								</tr>
 							{/each}
 						{/if}
