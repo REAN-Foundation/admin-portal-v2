@@ -1,14 +1,20 @@
-import { CAREPLAN_BACKEND_API_URL, CAREPLAN_SERVICE_API_KEY } from "$env/static/private";
-import { del, get } from "./common.careplan";
-
+import { CAREPLAN_BACKEND_API_URL } from '$env/static/private';
+import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
+import { del, get } from './common.careplan';
 ////////////////////////////////////////////////////////////////
 
 export const getEnrollmentById = async (sessionId: string, enrollmentId: string) => {
     const url = CAREPLAN_BACKEND_API_URL + `/enrollments/${enrollmentId}`;
-    return await get(sessionId, url, true, CAREPLAN_SERVICE_API_KEY);
+    const cacheKey = `session-${sessionId}:req-getEnrollmentById-${enrollmentId}`;
+    if (await DashboardManager.has(cacheKey)) {
+        return await DashboardManager.get(cacheKey);
+    }
+    const result = await get(sessionId, url, true);
+    await DashboardManager.set(cacheKey, result);
+    return result;
 };
 
-export const searchEnrollments = async (sessionId: string, searchParams?: any) => {
+export const searchEnrollments = async (sessionId: string, searchParams?) => {
     let searchString = '';
     if (searchParams) {
         const keys = Object.keys(searchParams);
@@ -24,19 +30,37 @@ export const searchEnrollments = async (sessionId: string, searchParams?: any) =
             searchString += params.join('&');
         }
     }
-    const url = CAREPLAN_BACKEND_API_URL + `/enrollments/search${searchString}`;
 
-     console.log("URL----",url);
-    return await get(sessionId, url, true, CAREPLAN_SERVICE_API_KEY);
+    const url = CAREPLAN_BACKEND_API_URL + `/enrollments/search${searchString}`;
+    console.log("url", url)
+    const cacheKey = `session-${sessionId}:req-searchEnrollments:${searchString}`;
+    // if (await DashboardManager.has(cacheKey)) {
+    //     return await DashboardManager.get(cacheKey);
+    // }
+
+    const result = await get(sessionId, url, true);
+    // await DashboardManager.set(cacheKey, result);
+    return result;
 };
 
 export const getEnrollmentStats = async (sessionId: string,participantId:string) => {
     const url = CAREPLAN_BACKEND_API_URL + `/enrollments/${participantId}/stats`;
-    return await get(sessionId, url, true, CAREPLAN_SERVICE_API_KEY);
+    return await get(sessionId, url, true);
 };
 
-export const deleteEnrollment = async (sessionId: string,  enrollmentId: string) => {
+export const deleteEnrollment = async (sessionId: string, enrollmentId: string) => {
     const url = CAREPLAN_BACKEND_API_URL + `/enrollments/${enrollmentId}`;
-    return await del(sessionId, url, true);
-};
+    const result = await del(sessionId, url, true);
 
+    const keysToBeDeleted = [
+        `session-${sessionId}:req-getEnrollmentById-${enrollmentId}`,
+    ];
+    await DashboardManager.deleteMany(keysToBeDeleted);
+
+    const findAndClearKeys = [
+        `session-${sessionId}:req-searchEnrollments`,
+    ];
+    await DashboardManager.findAndClear(findAndClearKeys);
+
+    return result;
+};

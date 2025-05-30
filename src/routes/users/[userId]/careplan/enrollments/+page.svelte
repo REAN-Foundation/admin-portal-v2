@@ -3,16 +3,16 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
-	import type { PageData } from './$types';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
-	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
+	import type { PageServerData } from './$types';
 	
-	let { data }: { data: PageData } = $props();
 
+	let { data }: { data: PageServerData } = $props();
+	console.log("data",data);
 	let debounceTimeout; 
 	let isLoading = $state(false);
 	let enrollment = $state(data.enrollments.Items);
@@ -20,11 +20,16 @@
 	let searchKeyword = $state(undefined);
 	let promise = $state();
 
-
 	const userId = page.params.userId;
-	const enrollmentsRoute = `/users/${userId}/careplan/enrollments`;
+	const enrollmentsRoute = () => `/users/${userId}/careplan/enrollments`;
+	const viewRoute = (id) => `/users/${userId}/careplan/enrollments/${id}/view`;
 
-	const breadCrumbs = [{ name: 'Enrollments', path: enrollmentsRoute }];
+	const breadCrumbs = [
+		{
+			name: 'Enrollments',
+			path: enrollmentsRoute()
+		}
+	];
 
 	let carePlan = $state(undefined);
 	let displayId = $state(undefined);
@@ -33,8 +38,9 @@
 
 	let totalCarePlanCount = $state(data.enrollments.TotalCount);
 	$inspect('totalCarePlanCount', totalCarePlanCount);
+
 	let isSortingName = $state(false);
-	let sortBy = $state('Name');
+	let sortBy = $state('StartDate');
 	let sortOrder = $state('ascending');
 
 	let paginationSettings: PaginationSettings = $state({
@@ -44,63 +50,102 @@
 		amounts: [10, 20, 30, 50]
 	});
 
-
 	$inspect('retrivedEnrollment', enrollment);
 
 	async function searchEnrollments(model) {
-	try {
-		let url = `/api/server/careplan/enrollments/search?`;
-		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+		try {
+
+			let url = `/api/server/careplan/enrollments/search?`;
+			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
 
-		if (model.carePlan) {
-			let careplanId;
-			const found = enrollment.find(item => item.Careplan?.Name?.trim() === model.carePlan.trim());
-			if (found) {
-				careplanId = found.Careplan.id;
+			if (model.carePlan) url += `&name=${model.carePlan}`;
+
+			// if (model.carePlan) {
+            // let careplanId = undefined
+            // let search = enrollment.find(item =>item.Careplan.Name === model.carePlan.trim())
+            // if (search){
+            //     careplanId = search.Careplan.id;
+            // }
+            // console.log('searching',search)
+            // enrollment.forEach(element => {
+            //  if (element.Careplan.Name === carePlan.trim()){
+            //      careplanId = element.Careplan.id;
+            //  }
+            // });
+        // }
+			
+			if (model.displayId ?? displayId) {
+				url += `&displayId=${model.displayId ?? displayId}`;
 			}
-			url += `&carePlan=${careplanId ?? model.carePlan}`;
+
+			if (model.startDate ?? startDate) {
+				url += `&startDate=${model.startDate ?? startDate}`;
+			}
+
+			if (model.endDate ?? endDate) {
+				url += `&endDate=${model.endDate ?? endDate}`;
+			}
+
+			if (model.sortBy ?? sortBy) {
+				url += `&orderBy=${model.sortBy ?? sortBy}`;
+				url += `&order=${(model.sortOrder ?? sortOrder).toUpperCase()}`;
+			}
+
+			const res = await fetch(url, {
+				method: 'GET',
+				headers: { 'content-type': 'application/json' }
+			});
+			const searchResult = await res.json();
+			console.log('searchResult', searchResult);
+			totalCarePlanCount = searchResult.Data.TotalCount;
+			paginationSettings.size = totalCarePlanCount;
+			
+			enrollment = searchResult.Data.Items.map((item, index) => ({
+				...item,
+				index: index + 1
+				
+			}));
+		} catch (err) {
+			console.error('Search Enrollments failed:', err);
+		} finally {
+			isLoading = false;
 		}
+	}
 
-		if (model.displayId ?? displayId) {
-			url += `&displayId=${model.displayId ?? displayId}`;
-		}
-
-		if (model.startDate ?? startDate) {
-			url += `&startDate=${model.startDate ?? startDate}`;
-		}
-
-		if (model.endDate ?? endDate) {
-			url += `&endDate=${model.endDate ?? endDate}`;
-		}
-
-		const res = await fetch(url, {
-			method: 'GET',
-			headers: { 'content-type': 'application/json' }
-		});
-		const response = await res.json();
-
-		enrollment = response.map((item, index) => ({
-			...item,
-			index: index + 1
-		}));
-	} catch (err) {
-		console.error('Search Enrollments failed:', err);
-	} finally {
-		isLoading = false;
+	function updateSearchField(name, value) {
+		console.log(name,value);
+	if (name === 'carePlan') {
+		carePlan = value;
+	} else if (name === 'displayId') {
+		displayId = value;
+	} else if (name === 'startDate') {
+		startDate = value;
+	} else if (name === 'endDate') {
+		endDate = value;
 	}
 }
 
-async function onSearchInput(e) {
+	function onSearchInput(e, field: 'carePlan'| 'displayId' | 'startDate' | 'endDate') {
 	clearTimeout(debounceTimeout);
-	searchKeyword = e.target.value; // store globally if needed elsewhere
-	paginationSettings.page = 0; // reset to first page when searching
+	const keyword = e.target.value;
 
+	// const { name, value } = e.target;
+	// updateSearchField(name, value)
 	debounceTimeout = setTimeout(() => {
+		paginationSettings.page = 0;
+
+		if (field === 'carePlan') carePlan = keyword;
+		if (field === 'displayId') displayId = keyword;
+		if (field === 'startDate') startDate = keyword;
+		if (field === 'endDate') endDate = keyword;
 		searchEnrollments({
-			carePlan: searchKeyword,
+			carePlan,
+			displayId,
+			startDate,
+			endDate,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: 0,
 			sortBy,
@@ -109,24 +154,34 @@ async function onSearchInput(e) {
 	}, 400);
 }
 
-function sortTable(columnName) {
-	isSortingName = columnName === 'Name';
-	sortOrder = sortOrder === 'ascending' ? 'descending' : 'ascending';
-	sortBy = columnName;
 
-	searchEnrollments({
-		carePlan: searchKeyword, // uses global search keyword
-		itemsPerPage: paginationSettings.limit,
-		pageIndex: paginationSettings.page,
-		sortBy,
-		sortOrder
-	});
-}
+	function sortTable(columnName: string) {
+		isSortingName = false;
+		sortOrder = sortOrder === 'ascending' ? 'descending' : 'ascending';
+		if (columnName === 'Name') {
+			isSortingName = true;
+		}
+		sortBy = columnName;
 
-function onItemsPerPageChange() {
-		paginationSettings.page = 0; // reset to first page
 		searchEnrollments({
 			carePlan: searchKeyword,
+			displayId,
+			startDate,
+			endDate,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortBy,
+			sortOrder
+		});
+	}
+
+	function onItemsPerPageChange() {
+		paginationSettings.page = 0;
+		searchEnrollments({
+			carePlan: searchKeyword,
+			displayId,
+			startDate,
+			endDate,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: 0,
 			sortBy,
@@ -137,40 +192,42 @@ function onItemsPerPageChange() {
 	function onPageChange() {
 		searchEnrollments({
 			carePlan: searchKeyword,
+			displayId,
+			startDate,
+			endDate,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
 	}
-
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-2">
+<div class="px-6 py-4">
 	<div class="mx-auto">
-		<h2 class="text-xl font-medium mb-4">Enrollments</h2>
-		<div class="flex justify-between items-center mb-4">
-			<div class="flex items-center space-x-2">
-				<a href="enrollments/create" class="btn-primary">
-					<Icon icon="mdi:plus" class="w-5 h-5" />
-					<span>New Enrollment</span>
-				</a>
-			</div>
-		</div>
-		<!-- Search Filters -->
-		<div class="table-container my-6 shadow">
+		<div class="table-container mb-6 shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative flex-1 pr-1.5">
-						<input
-							type="text"
-							name="carePlan"
-							placeholder="Search by care plan"
-							bind:value={carePlan}
-							class="table-input-field"
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
 						/>
+						<input
+							name="carePlan"
+							type="text"
+							oninput={(event) => onSearchInput(event, 'carePlan' )}
+							placeholder="Search by care plan"
+							class="table-input-field !pr-4 !pl-10"
+						/>
+						
+						{#if carePlan}
+							<button type="button" onclick={() => {carePlan = '';}} class="close-btn">
+								<Icon icon="material-symbols:close" />
+							</button>
+						{/if}
 					</div>
 
 					<div class="relative flex-1 pr-1.5">
@@ -179,41 +236,98 @@ function onItemsPerPageChange() {
 							name="displayId"
 							placeholder="Search by Enrollment code"
 							bind:value={displayId}
-							class="table-input-field"
+							class="table-input-field !pr-4 !pl-10"
+							oninput={(event) => onSearchInput(event, 'displayId')}
 						/>
+						
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
+						{#if displayId}
+							<button type="button" onclick={() => {displayId = '';}} class="close-btn">
+								<Icon icon="material-symbols:close" />
+							</button>
+						{/if}
 					</div>
-
-					<div class="relative flex-1 pr-1.5">
+					<div class="relative flex-1 pr-1.5 flex flex-row text-inline items-center">
+						<label class="pr-2">Start date</label>
 						<input
 							type="date"
 							name="startDate"
 							placeholder="Search by start date"
 							bind:value={startDate}
-							class="table-input-field"
+							class="table-input-field !pr-4 !pl-10"
+							oninput={(event) => onSearchInput(event, 'startDate')}
 						/>
+						
+						{#if startDate}
+							<button type="button" onclick={() => {startDate = '';}} class="close-btn">
+								<Icon icon="material-symbols:close" />
+							</button>
+						{/if}
 					</div>
 
-					<div class="relative flex-1">
+					<div class="relative flex-1 pr-1.5 flex flex-row text-inline items-center">
+						<label class="pr-2">End date</label>
 						<input
 							type="date"
 							name="endDate"
 							placeholder="Search by end date"
 							bind:value={endDate}
-							class="table-input-field"
+							class="table-input-field !pr-4 !pl-10"
+							oninput={(event) => onSearchInput(event,'endDate')}
 						/>
+						{#if endDate}
+							<button type="button" onclick={() => {endDate = '';}} class="close-btn">
+								<Icon icon="material-symbols:close" />
+							</button>
+						{/if}
 					</div>
 				</div>
 			</div>
 
-			<!-- Table -->
 			<div class="overflow-x-auto">
 				<table class="table-c min-w-full">
 					<thead>
 						<tr>
 							<th>Id</th>
-							<th>Participant</th>
-							<th>Enrollment Code</th>
-							<th>Careplan</th>
+							<th>
+								<button onclick={() => sortTable('Participant')}>
+									Participant
+									{#if sortBy === 'Participant'}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
+									{/if}
+								</button>
+							</th>
+							<th>
+								<button onclick={() => sortTable('EnrollmentCode')}>
+									Enrollment Code
+									{#if sortBy === 'EnrollmentCode'}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
+									{/if}
+								</button>
+							</th>
+							<th>
+								<button onclick={() => sortTable('Careplan')}>
+									Careplan
+									{#if sortBy === 'Careplan'}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
+									{/if}
+								</button>
+							</th>
 							<th>Start Date</th>
 							<th>End Date</th>
 						</tr>
@@ -221,17 +335,30 @@ function onItemsPerPageChange() {
 					<tbody>
 						{#if retrivedEnrollments.length <= 0}
 							<tr>
-								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
+								<td colspan="7">{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}
-							{#each retrivedEnrollments as enrollment}
+							{#each retrivedEnrollments as enrollment,index}
 								<tr>
-									<td>{enrollment.index}</td>
-									<td>Participant - {enrollment.ParticipantId}</td>
-									<td>{enrollment.EnrollmentCode}</td>
-									<td>{enrollment.Careplan}</td>
+									<td>
+                                        {paginationSettings.page * paginationSettings.limit + index + 1}
+                                    </td>
+									<td>
+										<Tooltip text={enrollment.ParticipantId || 'Not specified'}>
+											<a href={viewRoute(enrollment.id)}>
+												Participant - {enrollment.Participant.DisplayId !== null && enrollment.Participant.DisplayId !== ''
+													? Helper.truncateText(enrollment.Participant.DisplayId, 50)
+													: 'Not specified'}
+											</a>
+										</Tooltip>
+									</td>
+									<td>{enrollment.DisplayId}</td>
+									<td>{enrollment.Careplan.Name}</td>
 									<td>{TimeHelper.formatDateToReadable(enrollment.StartDate, LocaleIdentifier.EN_US)}</td>
 									<td>{TimeHelper.formatDateToReadable(enrollment.EndDate, LocaleIdentifier.EN_US)}</td>
+									<td>
+									
+									</td>
 								</tr>
 							{/each}
 						{/if}
@@ -246,7 +373,7 @@ function onItemsPerPageChange() {
 	<div class="flex items-center">
 		<select 
 			bind:value={paginationSettings.limit}
-			on:change={onItemsPerPageChange}
+			onchange={onItemsPerPageChange}
 			class="border rounded px-2 py-1 mr-2"
 		>
 			{#each paginationSettings.amounts as amount}
