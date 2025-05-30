@@ -1,9 +1,10 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	import Icons from './icons.svelte';
 	import InfoIcon from './infoIcon.svelte';
+	import Icons from './icons.svelte';
 
-	let { groupedSettings, commonSetting = $bindable(), edit, tenantRoute } = $props();
+
+	let { groupedSettings, commonSetting = $bindable(), edit } = $props();
 
 	let openTab: string | null = $state(null);
 
@@ -39,7 +40,7 @@
 		Community: '/tenant-setting/common-setting/external.svg#icon',
 
 		Educational: '/tenant-setting/common-setting/external.svg#icon',
-		General: '/tenant-setting/common-setting/external.svg#icon',
+		// General: '/tenant-setting/common-setting/external.svg#icon',
 		Miscellaneous: '/tenant-setting/common-setting/external.svg#icon',
 		Research: '/tenant-setting/common-setting/external.svg#icon'
 	};
@@ -64,7 +65,7 @@
 				</thead>
 				<tbody> -->
 {#each Object.entries(commonSetting) as [groupName, groupItems]}
-	{#if groupName !== 'UserInterfaces'}
+	{#if groupName !== 'UserInterfaces'&& groupName !== 'General'}
 		<tr>
 			<td>
 				<button

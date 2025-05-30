@@ -16,7 +16,7 @@
 	let promise = $state();
 	function handleCommonSettingSubmit(event, updated) {
 		event.preventDefault();
-		console.log('New settings:', updated);
+		console.log('New settings:updated ', updated);
 		commonSetting = updated;
 		// Call your API here
 	}
@@ -61,20 +61,19 @@
 							groupedSettings={commonUISettings}
 							bind:commonSetting
 							{edit}
-							{tenantRoute}
 						/>
 					</tbody>
 				</table>
+				<div class="button-container">
+					{#await promise}
+						<button type="submit" class="table-btn variant-soft-secondary" disabled>
+							Submiting
+						</button>
+					{:then data}
+						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
+					{/await}
+				</div>
 			</form>
 		</div>
 	</div>
-</div>
-<div class="button-container">
-	{#await promise}
-		<button type="submit" class="table-btn variant-soft-secondary" disabled>
-			Submiting
-		</button>
-	{:then data}
-		<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
-	{/await}
 </div>

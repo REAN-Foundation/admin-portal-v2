@@ -1,7 +1,7 @@
 export interface Setting {
     Name            : string,
-    Enabled         : boolean,
-    Navigable       : boolean,
+    Enabled?         : boolean,
+    Navigable?       : boolean,
     Path?           : string,
     Icon?           : string,
     Description?    : string
@@ -112,7 +112,7 @@ export interface AnalysisSettings {
 }
 
 export interface CommonSettings {
-    UserInterfaces  : UserInterfaces;
+    UserInterfaces?  : UserInterfaces;
     Clinical        : ClinicalFeatures;
     Wellness        : Wellness;
     EHR             : EHR;
@@ -122,7 +122,7 @@ export interface CommonSettings {
     Miscellaneous   : Miscellaneous;
     Educational     : Educational;
     Analysis        : AnalysisSettings;
-    General         : General;
+    General?         : General;
 }
 
 
@@ -245,10 +245,22 @@ export interface FormsIntegrations {
     GoogleForm : boolean;
 }
 
+export interface FormsUIIntegrations {
+    KoboToolbox: Setting;
+    ODK: Setting;
+    GoogleForms: Setting;
+}
+
 export interface FormsSettings {
     Integrations  : FormsIntegrations,
     OfflineSupport: boolean,
     FieldApp      : boolean
+}
+
+export interface FormsUISettings {
+    Integrations: FormsUIIntegrations,
+    OfflineSupport: Setting,
+    FieldApp: Setting
 }
 
 export interface ConsentSettings {
@@ -276,4 +288,3 @@ export interface TenantSettingsDomainModel {
 export interface TenantSettingsDto extends TenantSettingsDomainModel {
     TenantId ?: string;
 }
-

@@ -3,6 +3,8 @@ import { ChatBotSettingsSchema, CommonSettingsSchema, ConsentSettingsSchema, Fol
 import { getTenantSettingsByType, updateTenantSettingsByType } from "$routes/api/services/reancare/tenant-settings";
 import type { RequestEvent } from "@sveltejs/kit";
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 export const GET = async (event: RequestEvent) => {
     try {
         const sessionId = event.request.headers.get("session-id");
@@ -43,7 +45,6 @@ export const PUT = async (event: RequestEvent) => {
         const type = event.params.type;
         const request = event.request;
         const data = await request.json();
-        console.log('data', data);      
 
         const validationResult = validateRequestData(data, type);
         if (!validationResult.success) {
@@ -60,7 +61,9 @@ export const PUT = async (event: RequestEvent) => {
             });
         }
 
-        const response = await updateTenantSettingsByType(sessionId, id, type, data);
+        const formData = { [type]: data };
+
+        const response = await updateTenantSettingsByType(sessionId, id, type, formData);
 
         return ResponseHandler.success(response);
     } catch (error) {
@@ -74,6 +77,8 @@ const validateRequestData = (data: any, type: string) => {
         case 'Common':
             return CommonSettingsSchema.safeParse(data);
         case 'ChatBot':
+            console.log('Validating ChatBot settings');
+            console.log('Data:', data);
             return ChatBotSettingsSchema.safeParse(data);
         case 'Followup':
             return FollowupSettingsSchema.safeParse(data);
