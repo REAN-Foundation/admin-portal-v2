@@ -328,7 +328,9 @@
 					<tbody>
 						{#if retrivedAssets.length <= 0}
 							<tr>
-								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
+								<td class=" text-center" colspan="6"
+									>{isLoading ? 'Loading...' : 'No records found'}</td
+								>
 							</tr>
 						{:else}
 							{#each retrivedAssets as row, index}

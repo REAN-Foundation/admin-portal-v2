@@ -15,7 +15,7 @@ export const GET = async (event: RequestEvent) => {
 		const assetTypeRoute = searchParams.get('assetType');
 		const searchFilters = {
 			name: searchParams.get('name') ?? undefined,
-			code: searchParams.get('code') ?? undefined,
+			assetCode: searchParams.get('code') ?? undefined,
 			orderBy: searchParams.get('sortBy') ?? 'CreatedAt',
 			order: searchParams.get('sortOrder') ?? 'ascending',
 			itemsPerPage: parseInt(searchParams.get('itemsPerPage') ?? '10'),
