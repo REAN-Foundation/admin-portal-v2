@@ -28,7 +28,13 @@ export const getTenantSettings = async (
 	tenantId: string
 	) => {
 	const url = baseUrl + `/${tenantId}`;
-	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+    // const cacheKey = `session-${sessionId}:req-getTenantSettingsByTenantId-${tenantId}`;
+	// if (await DashboardManager.has(cacheKey)) {
+    //         return await DashboardManager.get(cacheKey);
+    //     }
+    const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+    // await DashboardManager.set(cacheKey, result);
+    return result;
 };
 
 export const updateTenantSettingsByType = async (
