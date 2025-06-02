@@ -7,6 +7,7 @@
 	import type { AnimationsCreateModel } from '$lib/types/animation.js';
 	import { createOrUpdateSchema } from '$lib/validation/animation.schema.js';
 	import InputChips from '$lib/components/input-chips.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	//////////////////////////////////////////////////////////////////////
 
@@ -109,7 +110,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {form?.errors?.name ? 'input-text-error' : ''}"
+							class="input {form?.errors?.Mame ? 'input-text-error' : ''}"
 							name="name"
 							placeholder="Enter name here..."
 							bind:value={name}
@@ -123,7 +124,7 @@
 					<td class=" table-label">Transcript</td>
 					<td class="table-data">
 						<textarea
-							name="description"
+							name="transcript"
 							class="input resize-none {errors?.Transcript
 								? 'border-error-300'
 								: 'border-primary-200'}"
@@ -164,7 +165,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {form?.errors?.version ? 'input-text-error' : ''}"
+							class="input {form?.errors?.Version ? 'input-text-error' : ''}"
 							name="version"
 							placeholder="V 1.0"
 							bind:value={version}
@@ -177,13 +178,7 @@
 			</tbody>
 		</table>
 		<div class="btn-container">
-			{#await promise}
-				<button type="submit" class="table-btn variant-soft-secondary" disabled>
-					Submitting
-				</button>
-			{:then data}
-				<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
-			{/await}
+			<Button />
 		</div>
 	</form>
 </div>

@@ -7,6 +7,7 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { AppointmentCreateModel } from '$lib/types/appointment.js';
 	import { createOrUpdateSchema } from '$lib/validation/appointment.schema.js';
+	import Button from '$lib/components/button/button.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////
 
@@ -110,7 +111,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {form?.errors?.name ? 'input-text-error' : ''}"
+							class="input {form?.errors?.Name ? 'input-text-error' : ''}"
 							name="name"
 							placeholder="Enter name here..."
 							bind:value={name}
@@ -164,7 +165,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {form?.errors?.version ? 'input-text-error' : ''}"
+							class="input {form?.errors?.Version ? 'input-text-error' : ''}"
 							name="version"
 							placeholder="V 1.0"
 							bind:value={version}
@@ -177,13 +178,7 @@
 			</tbody>
 		</table>
 		<div class="btn-container">
-			{#await promise}
-				<button type="submit" class="table-btn variant-soft-secondary" disabled>
-					Submitting
-				</button>
-			{:then data}
-				<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
-			{/await}
+			<Button />
 		</div>
 	</form>
 </div>

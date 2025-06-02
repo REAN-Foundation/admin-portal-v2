@@ -8,6 +8,7 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { AnimationsUpdateModel } from '$lib/types/animation';
 	import { createOrUpdateSchema } from '$lib/validation/animation.schema';
+	import Button from '$lib/components/button/button.svelte';
 
 	/////////////////////////////////////////////////////////////////////
 
@@ -140,7 +141,7 @@
 					<td class="table-label">Transcript</td>
 					<td class="table-data">
 						<textarea
-							name="description"
+							name="transcript"
 							class="input resize-none {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
 							bind:value={transcript}
 							placeholder="Enter transcript here..."
@@ -197,13 +198,7 @@
 			<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary">
 				Reset
 			</button>
-			{#await promise}
-				<button type="submit" class="table-btn variant-soft-secondary" disabled>
-					Submitting
-				</button>
-			{:then data}
-				<button type="submit" class="table-btn variant-soft-secondary">Submit</button>
-			{/await}
+			<Button />
 		</div>
 	</form>
 </div>
