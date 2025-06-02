@@ -47,6 +47,7 @@ export const PUT = async (event: RequestEvent) => {
         const data = await request.json();
 
         const validationResult = validateRequestData(data, type);
+        console.log('Validation result:', validationResult.error);
         if (!validationResult.success) {
             return ResponseHandler.success({
                 Status: 'failure',
@@ -60,6 +61,9 @@ export const PUT = async (event: RequestEvent) => {
                 )
             });
         }
+
+        console.log('Validation result:', JSON.stringify(validationResult, null, 2));
+        console.log('Data to be updated:', data);
 
         const formData = { [type]: data };
 
@@ -75,10 +79,10 @@ export const PUT = async (event: RequestEvent) => {
 const validateRequestData = (data: any, type: string) => {
     switch (type) {
         case 'Common':
-            return CommonSettingsSchema.safeParse(data);
-        case 'ChatBot':
             console.log('Validating ChatBot settings');
             console.log('Data:', data);
+            return CommonSettingsSchema.safeParse(data);
+        case 'ChatBot':
             return ChatBotSettingsSchema.safeParse(data);
         case 'Followup':
             return FollowupSettingsSchema.safeParse(data);
