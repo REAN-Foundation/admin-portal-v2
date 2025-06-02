@@ -8,6 +8,7 @@
 	import type { ActionPlanUpdateModel } from '$lib/types/action.plan';
 	import { createOrUpdateSchema } from '$lib/validation/action.plan.schema';
 	import InputChips from '$lib/components/input-chips.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -182,13 +183,7 @@
 			<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary">
 				Reset
 			</button>
-			{#await promise}
-				<button type="submit" class="table-btn variant-soft-secondary" disabled>
-					Submitting
-				</button>
-			{:then data}
-				<button type="submit" class="table-btn variant-soft-secondary">Submit</button>
-			{/await}
+			<Button />
 		</div>
 	</form>
 </div>
