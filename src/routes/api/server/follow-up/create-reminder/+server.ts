@@ -1,8 +1,8 @@
 import { ResponseHandler } from '$lib/utils/response.handler';
 import type { RequestEvent } from '@sveltejs/kit';
 import { createReminder } from '$routes/api/services/follow-up/reminders';
-import type { ReminderCreateModel } from '$lib/types/follow-up/reminder.types';
-import { createOrUpdateSchema } from '$lib/validation/follow-up/reminder.schema';
+import type { ScheduleAppointmentModel } from '$lib/types/follow-up/followup.upload';
+import { ScheduleAppointmentSchema } from '$lib/validation/follow-up/followup.upload.schema';
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -17,10 +17,10 @@ export const POST = async (event: RequestEvent) => {
 		}
 
 		const request = event.request;
-		const data: ReminderCreateModel = await request.json();
+		const data: ScheduleAppointmentModel = await request.json();
 
 		console.log('data', data);
-		const validationResult = createOrUpdateSchema.safeParse(data);
+		const validationResult = ScheduleAppointmentSchema.safeParse(data);
 		if (!validationResult.success) {
 			return ResponseHandler.success({
 				Status: 'failure',
