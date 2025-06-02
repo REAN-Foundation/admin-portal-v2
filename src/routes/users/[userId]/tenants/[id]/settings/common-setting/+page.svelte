@@ -11,7 +11,7 @@
 
 	let { data }: { data: PageServerData } = $props();
 
-	let commonSetting = $state(data.settings);
+	let commonSetting = $state({ Common: data.settings });
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
@@ -26,10 +26,10 @@
 		// console.log('New settings:updated ', updated);
 	}
 
-	const handleSubmit = async (event: Event, commonSetting) => {
+	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
 		// commonSetting = updated;
-		// console.log('New settings:common Setting ', commonSetting);
+		console.log('New settings:common Setting ', commonSetting);
 		// console.log("New settings:updated ", updated);
 		try {
 			errors = {};
@@ -76,12 +76,12 @@
 			// 	return;
 			// }
 
-			const updated = { Common: JSON.stringify(commonSetting,null,2) };
+			const updated = { Common: commonSetting };
 			console.log('New settings:updated ', updated);
 
 			const res = await fetch(`/api/server/tenants/settings/${tenantId}/Common`, {
 				method: 'PUT',
-				body: JSON.stringify({Common:commonSetting}),
+				body: JSON.stringify(commonSetting),
 				headers: { 'content-type': 'application/json' }
 			});
 			const response = await res.json();
@@ -120,20 +120,17 @@
 
 	<div class="mx-auto">
 		<div class="table-container">
-			<form onsubmit={() => handleSubmit(event, commonSetting)}>
+			<form onsubmit={() => handleSubmit(event)}>
 				<table class="table-c">
 					<thead>
 						<tr>
-							<th>
-								<div class="flex justify-between">
-									<h1 class="py-2 text-lg">Common Setting</h1>
-
-									<a href={tenantRoute} class="cancel-btn">
-										<Icon icon="material-symbols:close-rounded" />
-									</a>
-								</div>
-							</th></tr
-						>
+							<th>Common Setting</th>
+							<th class="text-end">
+								<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
+									<Icon icon="material-symbols:close-rounded" />
+								</a>
+							</th>
+						</tr>
 					</thead>
 					<tbody>
 						<ExpandableSettings groupedSettings={commonUISettings} bind:commonSetting {edit} />

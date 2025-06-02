@@ -48,6 +48,8 @@ export const PUT = async (event: RequestEvent) => {
 
         const validationResult = validateRequestData(data, type);
         console.log('Validation result:', validationResult.error);
+        console.log('Validation result:', JSON.stringify(validationResult, null, 2));
+        console.log('Data to be updated:', JSON.stringify(data, null, 2));
         if (!validationResult.success) {
             return ResponseHandler.success({
                 Status: 'failure',
@@ -62,8 +64,6 @@ export const PUT = async (event: RequestEvent) => {
             });
         }
 
-        console.log('Validation result:', JSON.stringify(validationResult, null, 2));
-        console.log('Data to be updated:', data);
 
         const formData = { [type]: data };
 

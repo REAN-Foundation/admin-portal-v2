@@ -113,16 +113,13 @@
 				<table class="table-c">
 					<thead>
 						<tr>
-							<th>
-								<div class="flex justify-between">
-									<h1 class="py-2 text-lg">Forms</h1>
-
-									<a href={tenantRoute} class="cancel-btn">
-										<Icon icon="material-symbols:close-rounded" />
-									</a>
-								</div>
-							</th></tr
-						>
+							<th>Common Setting</th>
+							<th class="text-end">
+								<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
+									<Icon icon="material-symbols:close-rounded" />
+								</a>
+							</th>
+						</tr>
 					</thead>
 					<tbody>
 						{#each Object.entries(formSetting.Forms) as [groupName, groupItems]}

@@ -64,7 +64,7 @@
 					>
 				</thead>
 				<tbody> -->
-{#each Object.entries(commonSetting) as [groupName, groupItems]}
+{#each Object.entries(commonSetting.Common) as [groupName, groupItems]}
 	{#if groupName !== 'UserInterfaces'&& groupName !== 'General'}
 		<tr>
 			<td>
@@ -113,7 +113,7 @@
 												type="checkbox"
 												class="checkbox checkbox-primary"
 												disabled={edit}
-												bind:checked={commonSetting[groupName][key].Enabled}
+												bind:checked={commonSetting.Common[groupName][key].Enabled}
 											/>
 										</label>
 									{/if}

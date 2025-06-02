@@ -82,10 +82,10 @@
 	];
 </script>
 
-<div class="px-6 py-8">
+<!-- <div class="px-6 py-8">
 	<div class="mx-auto max-w-4xl overflow-hidden rounded-lg bg-white shadow">
 		<form onsubmit={async (e) => (promise = handleSubmit(e))} class="divide-y divide-gray-200">
-			<!-- Header -->
+
 			<div class="flex items-center justify-between bg-gray-100 px-6 py-4">
 				<h2 class="text-lg font-semibold">Appointment Follow-Up Setting</h2>
 				<a href={tenantRoute} class="text-gray-500 transition hover:text-gray-700">
@@ -93,7 +93,7 @@
 				</a>
 			</div>
 
-			<!-- Enable Toggle -->
+			
 			<div class="px-6 py-4">
 				<label class="inline-flex items-center space-x-2 text-sm">
 					<input
@@ -105,7 +105,7 @@
 				</label>
 			</div>
 
-			<!-- Schedule Type -->
+		
 			<div class="flex flex-col gap-4 px-6 py-4 md:flex-row md:justify-between">
 				<label class="flex items-center space-x-2 text-sm">
 					<input
@@ -128,10 +128,10 @@
 				</label>
 			</div>
 
-			<!-- Dynamic Section -->
+			
 			<div class="space-y-6 px-6 py-4">
 				{#if scheduleType === 'file'}
-					<!-- Upload Files -->
+					
 					<div>
 						<label class="mb-1 block text-sm font-medium">
 							File column format <span class="ml-2 text-xs text-gray-500">JSON</span>
@@ -143,7 +143,7 @@
 						></textarea>
 					</div>
 				{:else}
-					<!-- API Integration -->
+				
 					<div class="space-y-4">
 						<div>
 							<label class="mb-1 block text-sm font-semibold">Authentication Endpoint</label>
@@ -172,7 +172,7 @@
 				{/if}
 			</div>
 
-			<!-- File Type or Extraction Schedule -->
+	
 			<div class="flex flex-col gap-4 px-6 py-4 md:flex-row md:items-center">
 				<label class="w-48 text-sm font-medium">
 					{scheduleType === 'file' ? 'File Type' : 'Extraction Schedule'}
@@ -200,7 +200,7 @@
 				{/if}
 			</div>
 
-			<!-- Reminder Schedules -->
+		
 			<div class="px-6 py-4">
 				<div class="flex items-center justify-between">
 					<h3 class="text-sm font-semibold">Reminder Schedules</h3>
@@ -222,7 +222,7 @@
 				{/each}
 			</div>
 
-			<!-- Submit -->
+	
 			<div class="bg-gray-100 px-6 py-4 text-end">
 				{#await promise}
 					<button
@@ -242,5 +242,161 @@
 				{/await}
 			</div>
 		</form>
+	</div>
+</div> -->
+
+
+<div class="px-6 py-4">
+	<div class="mx-auto">
+		<div class="health-system-table-container">
+			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+				<table class="health-system-table">
+					<thead>
+						<tr>
+							<th>Appointment Follow-Up Setting</th>
+							<th class="text-end">
+								<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
+									<Icon icon="material-symbols:close-rounded" />
+								</a>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td colspan="2">
+								<!-- Enable Toggle -->
+								<div class="flex items-center space-x-2">
+									<input type="checkbox" bind:checked={isEnabled} class="h-4 w-4" />
+									<label class="text-sm">Enabled</label>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td
+								><label class="flex items-center space-x-2">
+									<input type="radio" value="file" bind:group={scheduleType} class="h-4 w-4" />
+									<span class="text-sm">Upload Schedule Files</span>
+								</label></td
+							>
+							<td>
+								<label class="flex items-center space-x-2">
+									<input type="radio" value="api" bind:group={scheduleType} class="h-4 w-4" />
+									<span class="text-sm">Integrate Schedule API</span>
+								</label>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								{#if scheduleType === 'file'}
+									<!-- Upload Schedule Files UI -->
+									<div class="space-y-4">
+										<div class="space-y-1">
+											<label class="text-sm font-medium"
+												>File column format <span class="ml-2 text-xs text-gray-500">JSON</span
+												></label
+											>
+											<textarea
+												bind:value={fileColumnFormat}
+												rows="4"
+												class="w-full resize-none rounded border p-2 text-sm"
+											></textarea>
+										</div>
+									</div>
+								{:else}
+									<!-- Integrate Schedule API UI -->
+									<div class="space-y-6">
+										<div class="space-y-1">
+											<label class="text-sm font-semibold">Authentication Endpoint</label>
+											<ul class="list-disc pl-4 text-xs text-gray-600">
+												<li>Base Url</li>
+												<li>Request Type</li>
+												<li>Path params</li>
+												<li>Query params</li>
+												<li>Request body</li>
+												<li>Headers</li>
+											</ul>
+										</div>
+
+										<div class="space-y-1">
+											<label class="text-sm font-semibold">Schedule Extraction Endpoint</label>
+											<ul class="list-disc pl-4 text-xs text-gray-600">
+												<li>Base Url</li>
+												<li>Request Type</li>
+												<li>Path params</li>
+												<li>Query params</li>
+												<li>Request body</li>
+												<li>Headers</li>
+											</ul>
+										</div>
+									</div>
+								{/if}
+							</td>
+						</tr>
+						<tr>
+							<td>
+								{#if scheduleType === 'file'}
+									<div class="space-y-1">
+										<label class="text-sm font-medium">File Type</label>
+									</div>
+								{:else}
+									<div class="space-y-1">
+										<label class="text-sm font-medium">Extraction Schedule</label>
+									</div>
+								{/if}
+							</td>
+							<td>
+								{#if scheduleType === 'file'}
+									<select bind:value={selectedFileType} class="w-64 rounded border p-2 text-sm">
+										<option value="" disabled selected>Select file type</option>
+										<option value="csv">CSV</option>
+										<option value="json">JSON</option>
+										<option value="xlsx">Excel</option>
+									</select>
+								{:else}
+									<!-- Integrate Schedule API UI -->
+									<select bind:value={extractionSchedule} class="w-64 rounded border p-2 text-sm">
+										<option value="" disabled selected>Select schedule</option>
+										<option value="hourly">Hourly</option>
+										<option value="daily">Daily</option>
+										<option value="weekly">Weekly</option>
+									</select>
+								{/if}
+							</td>
+						</tr>
+						<tr>
+							<td> <h3 class="text-sm font-medium">Reminder Schedules</h3></td>
+							<td>
+								<button class="rounded bg-blue-200 px-3 py-1 text-sm hover:bg-blue-300"
+									>Add Schedule</button
+								>
+							</td>
+						</tr>
+
+						{#each reminderSchedules as schedule, i}
+							<tr>
+								<td>
+									<div class="flex border-b pb-1 text-sm last:border-none">
+										<span class="px-2">{i + 1}</span>
+										<span class="justify-left">{schedule.label}</span>
+									</div>
+								</td>
+								<td>
+									<span>{schedule.time}</span>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+				<div class="button-container">
+					{#await promise}
+						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+							Submiting
+						</button>
+					{:then data}
+						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+					{/await}
+				</div>
+			</form>
+		</div>
 	</div>
 </div>
