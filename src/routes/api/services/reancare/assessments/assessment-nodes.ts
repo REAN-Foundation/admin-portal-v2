@@ -1,6 +1,6 @@
 import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY } from '$env/static/private';
+import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 import { del, get, post, put } from '../common.reancare';
-// import { del, get, post, put } from '../../rean-care/common.reancare';
 
 ////////////////////////////////////////////////////////////////
 
@@ -17,12 +17,14 @@ export const createAssessmentNode = async (
 	queryType?: string,
 	options?: string[],
 	sequence?: number,
-	correctAnswer?: number|boolean,
+	correctAnswer?: number | boolean | string,
 	rawData?: string,
 	required?: boolean,
 	scoringApplicable?: boolean,
 	resolutionScore?: number,
-	providerAssessmentCode?: string
+	providerAssessmentCode?: string,
+	fieldIdentifier?: string,
+	fieldIdentifierUnit?: string
 ) => {
 	const body = {
 		ParentNodeId: parentNodeId,
@@ -40,25 +42,20 @@ export const createAssessmentNode = async (
 		Required: required ? required : false,
 		ScoringApplicable: scoringApplicable ? scoringApplicable : false,
 		ResolutionScore: resolutionScore ? resolutionScore : null,
-		ProviderAssessmentCode: providerAssessmentCode ? providerAssessmentCode : null
+		ProviderAssessmentCode: providerAssessmentCode ? providerAssessmentCode : null,
+		FieldIdentifier: fieldIdentifier ? fieldIdentifier : null,
+		FieldIdentifierUnit: fieldIdentifierUnit ? fieldIdentifierUnit : null
 	};
-	// if (options && options.length > 0) {
-	// 	let count = 1;
-	// 	const options = [];
-	// 	for (const o of body.Options) {
-	// 		const option = {
-	// 			Text: o,
-	// 			Sequence: count
-	// 		};
-	// 		options.push(option);
-	// 		count = count + 1;
-	// 	}
-	// 	body.Options = options;
-	// }
 
-	// console.log('body----------', body);
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes`;
-	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+
+		const findAndClearKeys = [
+			`session-${sessionId}:req-searchAssessmentNodes`,
+		];
+		await DashboardManager.findAndClear(findAndClearKeys);
+	
+		return result;
 };
 
 export const getAssessmentNodeById = async (
@@ -67,7 +64,15 @@ export const getAssessmentNodeById = async (
 	nodeId: string
 ) => {
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}`;
-	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	const cacheKey = `session-${sessionId}:req-getAssessmentNodeById-${nodeId}`;
+	if (await DashboardManager.has(cacheKey)) {
+		return await DashboardManager.get(cacheKey);
+	}
+	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	await DashboardManager.set(cacheKey, result);
+	return result;
+
+	
 };
 
 export const searchAssessmentNodes = async (sessionId: string, searchParams?: any) => {
@@ -87,7 +92,15 @@ export const searchAssessmentNodes = async (sessionId: string, searchParams?: an
 		}
 	}
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/nodes/search${searchString}`;
-	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	// return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	const cacheKey = `session-${sessionId}:req-searchAssessmentNodes${searchString}`;
+	if (await DashboardManager.has(cacheKey)) {
+		return await DashboardManager.get(cacheKey);
+	}
+
+	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	await DashboardManager.set(cacheKey, result);
+	return result;
 };
 
 export const updateAssessmentNode = async (
@@ -103,8 +116,14 @@ export const updateAssessmentNode = async (
 	message?: string,
 	sequence?: number,
 	serveListNodeChildrenAtOnce?: boolean,
-	correctAnswer?: number|boolean,
-	rawData?: string
+	correctAnswer?: number | boolean | string,
+	rawData?: string,
+	scoringApplicable?: boolean,
+	resolutionScore?: number,
+	providerAssessmentCode?: string,
+	fieldIdentifier?: string,
+	fieldIdentifierUnit?: string
+
 
 ) => {
 	const body = {
@@ -119,6 +138,12 @@ export const updateAssessmentNode = async (
 		Tags: tags ? tags : [],
 		CorrectAnswer: correctAnswer ? correctAnswer : null,
 		RawData: rawData ? rawData : null,
+		ScoringApplicable: scoringApplicable ? scoringApplicable : false,
+		ResolutionScore: resolutionScore ? resolutionScore : null,
+		ProviderAssessmentCode: providerAssessmentCode ? providerAssessmentCode : null,
+		FieldIdentifier: fieldIdentifier ? fieldIdentifier : null,
+		FieldIdentifierUnit: fieldIdentifierUnit ? fieldIdentifierUnit : null
+
 
 	};
 	if (options && options.length > 0) {
@@ -136,7 +161,17 @@ export const updateAssessmentNode = async (
 	}
 	console.log('body---', body)
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}`;
-	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+	const keysToBeDeleted = [
+		`session-${sessionId}:req-getAssessmentNodeById-${nodeId}`,
+	];
+	await DashboardManager.deleteMany(keysToBeDeleted);
+	const findAndClearKeys = [
+		`session-${sessionId}:req-searchAssessmentNodes`,
+	];
+	await DashboardManager.findAndClear(findAndClearKeys);
+
+	return result;
 };
 
 export const deleteAssessmentNode = async (
@@ -145,7 +180,19 @@ export const deleteAssessmentNode = async (
 	nodeId: string
 ) => {
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}`;
-	return await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	const result = await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+
+	const keysToBeDeleted = [
+		`session-${sessionId}:req-getAssessmentNodeById-${nodeId}`,
+	];
+	await DashboardManager.deleteMany(keysToBeDeleted);
+
+	const findAndClearKeys = [
+		`session-${sessionId}:req-searchAssessmentNodes`,
+	];
+	await DashboardManager.findAndClear(findAndClearKeys);
+
+	return result;
 };
 
 export const getQueryResponseTypes = async (sessionId: string) => {
@@ -192,6 +239,9 @@ export const updateScoringCondition = async (
 	const url =
 		BACKEND_API_URL +
 		`/clinical/assessment-templates/${templateId}/scoring-conditions/${scoringConditionId}`;
+
+	console.log('body----------', body);
+	console.log('url----------', url);
 	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 };
 
@@ -208,7 +258,14 @@ export const addOption = async (
 	};
 	console.log('body----------', body);
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/options`;
-	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+
+	const findAndClearKeys = [
+		`session-${sessionId}:req-searchAssessmentNodeOptions`,
+	];
+	await DashboardManager.findAndClear(findAndClearKeys);
+
+	return result;
 };
 
 export const updateOption = async (
@@ -223,14 +280,35 @@ export const updateOption = async (
 		Text: text,
 		Sequence: sequence,
 	};
-	console.log('body----------', body);
+
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/options/${optionId}`;
-	console.log(url);
-	
-	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+
+	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+	const keysToBeDeleted = [
+		`session-${sessionId}:req-getAssessmentNodeOptionsById-${optionId}`,
+	];
+	await DashboardManager.deleteMany(keysToBeDeleted);
+	const findAndClearKeys = [
+		`session-${sessionId}:req-searchAssessmentNodeOptions`,
+	];
+	await DashboardManager.findAndClear(findAndClearKeys);
+
+	return result;
 };
 
 export const deleteOption = async (sessionId: string, templateId: string, nodeId: string, optionId: string) => {
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/options/${optionId}`;
-	return await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	const result = await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+
+	const keysToBeDeleted = [
+		`session-${sessionId}:req-getAssessmentNodeOptionsById-${optionId}`,
+	];
+	await DashboardManager.deleteMany(keysToBeDeleted);
+
+	const findAndClearKeys = [
+		`session-${sessionId}:req-searchAssessmentNodeOptions`,
+	];
+	await DashboardManager.findAndClear(findAndClearKeys);
+
+	return result;
 };

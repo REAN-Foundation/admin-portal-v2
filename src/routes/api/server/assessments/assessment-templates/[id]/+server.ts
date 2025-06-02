@@ -1,11 +1,9 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
 import { uuidSchema } from "$lib/validation/common.schema";
 import type { RequestEvent } from "@sveltejs/kit";
-// import { getHealthSystemById, updateHealthSystem } from "../../../services/rean-care/health.systems";
-// import type { HealthSystemUpdateModel } from "$lib/types/health.system.types";
-import { createOrUpdateSchema } from "$lib/validation/health.system.schema";
 import { deleteAssessmentTemplate, getAssessmentTemplateById, updateAssessmentTemplate } from "../../../../services/reancare/assessments/assessment-templates";
 import type { AssessmentTemplateUpdateModel } from "$lib/types/assessment-template.types";
+import { createOrUpdateSchema } from "$lib/validation/assessment.template.schema";
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -87,6 +85,7 @@ export const PUT = async (event: RequestEvent) => {
             });
         }
 
+        console.log("validationResult", validationResult);
         const response = await updateAssessmentTemplate(
             sessionId,
             templateId,

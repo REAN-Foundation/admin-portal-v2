@@ -30,10 +30,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Web-Link',
-			path: weblinkRoute
-		},
+		
 		{
 			name: 'Create',
 			path: createRoute

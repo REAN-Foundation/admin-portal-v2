@@ -3,8 +3,6 @@
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
-	import InputChip from '$lib/components/input-chips.svelte';
-	import { enhance } from '$app/forms';
 	import type { HospitalCreateModel } from '$lib/types/hospital.types';
 	import { createOrUpdateSchema } from '$lib/validation/hospital.schemas';
 	import { toastMessage } from '$lib/components/toast/toast.store';
@@ -32,7 +30,6 @@
 	];
 
 	let healthSystems = $state(data.healthSystems);
-	// console.log('healthSystems ->', JSON.stringify(healthSystems, null, 2));
 	healthSystems = sortHealthSystemsByName(healthSystems);
 
 	function sortHealthSystemsByName(healthSystems) {
@@ -97,9 +94,9 @@
 <BreadCrumbs crumbs={breadCrumbs} />
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container shadow ">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
+				<table class="table-c">
 					<thead>
 						<tr>
 							<th>Add Hospital</th>
@@ -116,27 +113,27 @@
 							<td>
 								<input
 									type="text"
-									class="health-system-input {form?.errors?.hospitalName ? 'input-text-error' : ''}"
+									class="input"
 									name="hospitalName"
 									placeholder="Enter name here..."
 									bind:value={hospitalName}
-									required
 								/>
-								{#if form?.errors?.hospitalName}
-									<p class="text-error">{form?.errors?.hospitalName[0]}</p>
+								{#if errors?.Name}
+									<p class="text-error ml-1">{errors?.Name}</p>
 								{/if}
 							</td>
 						</tr>
 						<tr>
 							<td>Health System <span class="text-red-600">*</span></td>
 							<td>
-								<select required name="healthSystemId" class="health-system-input !pr-4" bind:value={selectedHealthSystemId}>
+								<select  name="healthSystemId" class="input !pr-4" bind:value={selectedHealthSystemId}>
 									{#each healthSystems as healthSystem}
 										{#if healthSystemId !== healthSystem.id}
 											<option value={healthSystem.id}>{healthSystem.Name}</option>
 										{/if}
 									{/each}
 								</select>
+								
 							</td>
 						</tr>
 						<tr>
@@ -152,7 +149,7 @@
 									type="hidden"
 									name="keywordsStr"
 									id="keywordsStr"
-									class="health-system-input"
+									class="input"
 									bind:value={keywordsStr}
 								/>
 								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" /> -->
@@ -162,11 +159,11 @@
 				</table>
 				<div class="button-container">
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+						<button type="submit" class="table-btn variant-soft-secondary" disabled>
 							Submiting
 						</button>
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
 					{/await}
 				</div>
 			</form>

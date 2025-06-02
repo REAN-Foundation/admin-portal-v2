@@ -15,7 +15,7 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 		return true;
 	}
 	if (menuName === 'Analysis') {
-		if (tenantSettings.Common.Analysis.CustomQueries || tenantSettings.Common.Analysis.Quicksight) {
+		if (tenantSettings.Common.Analysis.CustomQueries.Enabled || tenantSettings.Common.Analysis.Quicksight.Enabled) {
 			return true;
 		}
 		return false;
@@ -23,35 +23,35 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 
 	if (menuName === 'Clinical') {
 		if (
-			tenantSettings.Common.Clinical.Assessments ||
-			tenantSettings.Common.Clinical.LabRecords ||
-			tenantSettings.Common.Clinical.Symptoms ||
-			tenantSettings.Common.Clinical.DrugsManagement
+			tenantSettings.Common.Clinical.Assessments.Enabled ||
+			tenantSettings.Common.Clinical.LabRecords.Enabled ||
+			tenantSettings.Common.Clinical.Symptoms.Enabled ||
+			tenantSettings.Common.Clinical.DrugsManagement.Enabled
 		) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Assessments') {
-		if (tenantSettings.Common.Clinical.Assessments) {
+		if (tenantSettings.Common.Clinical.Assessments.Enabled) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Lab-Records') {
-		if (tenantSettings.Common.Clinical.LabRecords) {
+		if (tenantSettings.Common.Clinical.LabRecords.Enabled) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Symptoms') {
-		if (tenantSettings.Common.Clinical.Symptoms) {
+		if (tenantSettings.Common.Clinical.Symptoms.Enabled) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Drugs') {
-		if (tenantSettings.Common.Clinical.DrugsManagement) {
+		if (tenantSettings.Common.Clinical.DrugsManagement.Enabled) {
 			return true;
 		}
 		return false;
@@ -63,13 +63,13 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 		menuName === 'Careplan-Plans' ||
 		menuName === 'Careplan-Enrollments'
 	) {
-		if (tenantSettings.Common.Clinical.Careplans) {
+		if (tenantSettings.Common.Clinical.Careplans.Enabled) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Assessments') {
-		if (tenantSettings.Common.Clinical.Assessments) {
+		if (tenantSettings.Common.Clinical.Assessments.Enabled) {
 			return true;
 		}
 		return false;
@@ -79,7 +79,7 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 		menuName === 'Hospitals' ||
 		menuName === 'Health-Systems'
 	) {
-		if (tenantSettings.Common.AddOns.HospitalSystems) {
+		if (tenantSettings.Common.Affiliations.HealthSystems.Enabled) {
 			return true;
 		}
 		return false;
@@ -91,7 +91,7 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 		menuName === 'Gamification-Badges' ||
 		menuName === 'Gamification-Schemas'
 	) {
-		if (tenantSettings.Common.AddOns.Gamification) {
+		if (tenantSettings.Common.Miscellaneous.Gamification.Enabled) {
 			return true;
 		}
 		return false;
@@ -102,7 +102,7 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 		menuName === 'Learning-Journeys' ||
 		menuName === 'Knowledge-Nuggets'
 	) {
-		if (tenantSettings.Common.AddOns.LearningJourney) {
+		if (tenantSettings.Common.Educational.LearningJourney.Enabled) {
 			return true;
 		}
 		return false;
@@ -115,48 +115,48 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 	}
 	if (menuName === 'Add-ons') {
 		if (
-			tenantSettings.Common.AddOns.Organizations ||
-			tenantSettings.Common.AddOns.Cohorts ||
-			tenantSettings.Common.AddOns.Notifications ||
-			tenantSettings.Common.AddOns.Notices ||
-			tenantSettings.Common.AddOns.Newsfeeds
+			// tenantSettings.Common.AddOns.Organizations ||
+			tenantSettings.Common.Research.Cohorts.Enabled ||
+			tenantSettings.Common.Miscellaneous.Notifications.Enabled ||
+			tenantSettings.Common.Miscellaneous.Notices.Enabled ||
+			tenantSettings.Common.Miscellaneous.Newsfeeds.Enabled
 		) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Organizations') {
-		if (tenantSettings.Common.AddOns.Organizations) {
-			return true;
-		}
+		// if (tenantSettings.Common.AddOns.Organizations) {
+		// 	return true;
+		// }
 		return false;
 	}
 	if (menuName === 'Cohorts') {
-		if (tenantSettings.Common.AddOns.Cohorts) {
+		if (tenantSettings.Common.Research.Cohorts.Enabled) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Notifications') {
-		if (tenantSettings.Common.AddOns.Notifications) {
+		if (tenantSettings.Common.Miscellaneous.Notifications.Enabled) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Notices') {
-		if (tenantSettings.Common.AddOns.Notices) {
+		if (tenantSettings.Common.Miscellaneous.Notices.Enabled) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Newsfeeds') {
-		if (tenantSettings.Common.AddOns.Newsfeeds) {
+		if (tenantSettings.Common.Miscellaneous.Newsfeeds.Enabled) {
 			return true;
 		}
 		return false;
 	}
 	if (menuName === 'Custom-Queries') {
-		if (tenantSettings.Common.Analysis.CustomQueries) {
+		if (tenantSettings.Common.Analysis.CustomQueries.Enabled) {
 			return true;
 		}
 		return false;
@@ -362,8 +362,15 @@ export const buildSidebarMenu = (
 		tenantSettings,
 		options
 	);
-	sidebarNaviagation = addGMUMenus(sidebarNaviagation, userId, userRole, tenantSettings, options);
+	// sidebarNaviagation = addGMUMenus(sidebarNaviagation, userId, userRole, tenantSettings, options);
 	// Add here any new menu items
+	sidebarNaviagation = addAppointmentMenu(
+		sidebarNaviagation,
+		userId,
+		userRole,
+		tenantSettings,
+		options
+	);
 
 	console.log('sidebarMenu', sidebarNaviagation);
 
@@ -440,7 +447,7 @@ function addBotContentMenu(
 	const qnaDocument: SidebarMenu = {
 		name: 'QNA-Documents',
 		title: 'Q&A Documents',
-		icon: 'material-symbols:fact-check-outline' ,
+		icon: 'material-symbols:fact-check-outline',
 		link: `/users/${userId}/qna-documents/documents`,
 
 		children: []
@@ -1171,7 +1178,65 @@ function addGamificationMenus(
 	return sidebarMenu;
 }
 
-function addGMUMenus(
+// function addGMUMenus(
+// 	sidebarMenu: NavigationMenu[],
+// 	userId: string,
+// 	userRole: string,
+// 	tenantSettings: any,
+// 	options: FeatureOptions
+// ): NavigationMenu[] {
+// 	const menuList: SidebarMenu[] = [];
+
+// 	const gmu: SidebarMenu = {
+// 		name: 'GMU',
+// 		title: 'Appointment Follow-Up',
+// 		icon: 'simple-icons:gamedeveloper',
+// 		link: null,
+// 		children: []
+// 	};
+// 	menuList.push(gmu);
+
+// 	const pdfUpload: SidebarMenu = {
+// 		name: 'Appointment-pdf-Upload',
+// 		title: 'Set-Reminders',
+// 		icon: 'mdi:event-edit',
+// 		link: `/users/${userId}/appointment-followup/set-reminders`,
+// 		children: []
+// 	};
+// 	menuList.push(pdfUpload);
+
+// 	const statusReport: SidebarMenu = {
+// 		name: 'Appointment-Status-Report',
+// 		title: 'Status Report',
+// 		icon: 'octicon:id-badge-16',
+// 		link: `/users/${userId}/appointment-followup/summary-uploads`,
+// 		children: []
+// 	};
+// 	menuList.push(statusReport);
+
+// 	const gmu_: SidebarMenu = getMenu(menuList, 'GMU');
+// 	const pdfUpload_: SidebarMenu = getMenu(menuList, 'Appointment-pdf-Upload');
+// 	const statusReport_: SidebarMenu = getMenu(menuList, 'Appointment-Status-Report');
+
+// 	gmu_?.children.push(pdfUpload_);
+// 	gmu_?.children.push(statusReport_);
+// 	// gamification_?.children.push(badges_);
+// 	// gamification_?.children.push(schemas_);
+
+// 	const gmuNavigation: NavigationMenu | null = toNavigation(
+// 		gmu_,
+// 		userRole,
+// 		tenantSettings,
+// 		options
+// 	);
+// 	if (gmuNavigation) {
+// 		sidebarMenu.push(gmuNavigation);
+// 	}
+
+// 	return sidebarMenu;
+// }
+
+function addAppointmentMenu(
 	sidebarMenu: NavigationMenu[],
 	userId: string,
 	userRole: string,
@@ -1189,32 +1254,7 @@ function addGMUMenus(
 	};
 	menuList.push(gmu);
 
-	const pdfUpload: SidebarMenu = {
-		name: 'Appointment-pdf-Upload',
-		title: 'Set-Reminders',
-		icon: 'mdi:event-edit',
-		link: `/users/${userId}/appointment-followup/set-reminders`,
-		children: []
-	};
-	menuList.push(pdfUpload);
-
-	const statusReport: SidebarMenu = {
-		name: 'Appointment-Status-Report',
-		title: 'Status Report',
-		icon: 'octicon:id-badge-16',
-		link: `/users/${userId}/appointment-followup/summary-uploads`,
-		children: []
-	};
-	menuList.push(statusReport);
-
 	const gmu_: SidebarMenu = getMenu(menuList, 'GMU');
-	const pdfUpload_: SidebarMenu = getMenu(menuList, 'Appointment-pdf-Upload');
-	const statusReport_: SidebarMenu = getMenu(menuList, 'Appointment-Status-Report');
-
-	gmu_?.children.push(pdfUpload_);
-	gmu_?.children.push(statusReport_);
-	// gamification_?.children.push(badges_);
-	// gamification_?.children.push(schemas_);
 
 	const gmuNavigation: NavigationMenu | null = toNavigation(
 		gmu_,

@@ -268,7 +268,12 @@
 	}}
 />
 
-<FunnelCard {labels} dataSource={funnelChartData} />
+<FunnelCard
+	{labels}
+	dataSource={funnelChartData}
+	{genderWiseUsers}
+	{selectGenderWiseUsersDividionYearly}
+/>
 
 <div class=" my-6">
 	<p class="history-head">Registration / Deregistration History</p>

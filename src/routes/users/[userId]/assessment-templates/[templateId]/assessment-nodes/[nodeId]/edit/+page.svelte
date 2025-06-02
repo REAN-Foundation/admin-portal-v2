@@ -14,6 +14,10 @@
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
+	console.log(data, 'data from server');
+	let nodeTitle = data.assessmentNode.Title;
+	let templateTitle = data.templateData.Title;
+
 	let nodeType = $state(data.assessmentNode.NodeType),
 		parentNodeId = $state(data.assessmentNode.ParentNodeId),
 		title = $state(data.assessmentNode.Title),
@@ -30,6 +34,8 @@
 		providerAssessmentCode = $state(data.assessmentNode.ProviderAssessmentCode),
 		scoringApplicable = $state(data.assessmentNode.ScoringApplicable),
 		required = $state(data.assessmentNode.Required),
+		fieldIdentifier = $state(data.assessmentNode.FieldIdentifier ?? undefined),
+		fieldIdentifierUnit = $state(data.assessmentNode.FieldIdentifierUnit ?? undefined),
 		rawData = $state(data.assessmentNode.RawData ?? undefined);
 
 	let optionArray = $derived(options);
@@ -59,6 +65,8 @@
 		providerAssessmentCode = data.assessmentNode.ProviderAssessmentCode;
 		scoringApplicable = data.assessmentNode.ScoringApplicable;
 		required = data.assessmentNode.Required;
+		fieldIdentifier = data.assessmentNode.FieldIdentifier ?? null;
+		fieldIdentifierUnit = data.assessmentNode.FieldIdentifierUnit ?? null;
 		errors = {};
 	}
 
@@ -73,12 +81,48 @@
 
 	const breadCrumbs = [
 		{ name: 'Assessments', path: assessmentsRoutes },
-		{ name: 'Assessment-View', path: assessmentTemplateView },
-		{ name: 'Assessment-Nodes', path: assessmentNodeRoutes },
+		{ name: templateTitle, path: assessmentTemplateView },
+		{ name: 'Nodes', path: assessmentNodeRoutes },
 		{ name: 'Edit', path: editRoute }
 	];
 	let selectedNodeType = $derived(nodeType);
 	let selectedQueryType = $derived(queryType);
+
+	const AssessmentFieldIdentifiers = [
+		'General:PersonalProfile:FirstName',
+		'General:PersonalProfile:LastName',
+		'General:PersonalProfile:Name',
+		'General:PersonalProfile:Age',
+		'General:PersonalProfile:DateOfBirth',
+		'General:PersonalProfile:Gender',
+		'Clinical:HealthProfile:BloodGroup',
+		'Clinical:HealthProfile:Ethnicity',
+		'Clinical:HealthProfile:Race',
+		'Clinical:HealthProfile:MaritalStatus',
+		'Clinical:HealthProfile:Occupation',
+		'Clinical:HealthProfile:Smoking',
+		'Clinical:Vitals:BloodPressure:Systolic',
+		'Clinical:Vitals:BloodPressure:Diastolic',
+		'Clinical:Vitals:Pulse',
+		'Clinical:Vitals:Temperature',
+		'Clinical:Vitals:Weight',
+		'Clinical:Vitals:Height',
+		'Clinical:Vitals:OxygenSaturation',
+		'Clinical:Vitals:BloodGlucose',
+		'Clinical:LabRecords:Cholesterol',
+		'Clinical:LabRecords:Triglycerides',
+		'Clinical:LabRecords:LDL',
+		'Clinical:LabRecords:HDL',
+		'Clinical:LabRecords:A1C'
+	];
+
+	const sortedIdentifiers = AssessmentFieldIdentifiers;
+
+	function toLabel(identifier: string) {
+		const parts = identifier.split(':');
+		const lastPart = parts[parts.length - 1];
+		return lastPart.replace(/([a-z])([A-Z])/g, '$1 $2'); // adds space before capital letters
+	}
 
 	const handleSubmit = async (event: Event) => {
 		try {
@@ -111,11 +155,19 @@
 				Message: message,
 				Tags: keywords,
 				RawData: rawData,
-				Required: required
+				Required: required,
+				FieldIdentifier: fieldIdentifier,
+				FieldIdentifierUnit: fieldIdentifierUnit
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentNodeUpdateModel);
 
+			console.log(
+				'validationResult',
+				validationResult,
+				'assessmentNodeUpdateModel',
+				assessmentNodeUpdateModel
+			);
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -166,7 +218,7 @@
 				<table class="health-system-table">
 					<thead>
 						<tr>
-							<th>Edit Assessment Node</th>
+							<th>Edit Node</th>
 							<th class="text-end">
 								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
@@ -254,6 +306,44 @@
 									keywordsChanged={onUpdateKeywords}
 								/>
 								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+							</td>
+						</tr>
+						<tr>
+							<td>Field Identifier</td>
+							<td>
+								<select
+									name="fieldIdentifier"
+									bind:value={fieldIdentifier}
+									class="health-system-input {form?.errors?.fieldIdentifier
+										? 'input-text-error'
+										: ''}"
+								>
+									<option value="" disabled selected>Select fieldIdentifier here...</option>
+									{#each sortedIdentifiers as identifier}
+										<option value={identifier}>{toLabel(identifier)}</option>
+									{/each}
+								</select>
+
+								{#if errors?.FieldIdentifier}
+									<p class="text-error">{errors?.FieldIdentifier}</p>
+								{/if}
+							</td>
+						</tr>
+						<tr>
+							<td class="align-top">Field Identifier Unit</td>
+							<td>
+								<input
+									type="text"
+									name="fieldIdentifierUnit"
+									bind:value={fieldIdentifierUnit}
+									placeholder="Enter fieldIdentifierUnit here...."
+									class="health-system-input {form?.errors?.fieldIdentifierUnit
+										? 'input-text-error'
+										: ''}"
+								/>
+								{#if errors?.FieldIdentifierUnit}
+									<p class="text-error">{errors?.FieldIdentifierUnit}</p>
+								{/if}
 							</td>
 						</tr>
 						{#if selectedNodeType === 'Question'}

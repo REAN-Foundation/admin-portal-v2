@@ -273,11 +273,6 @@
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
 						/>
-						{#if nameAssetSearch}
-							<button type="button" onclick={() => (nameAssetSearch = '')} class="close-btn">
-								<Icon icon="material-symbols:close" />
-							</button>
-						{/if}
 					</div>
 
 					<div class="relative flex-1 pr-1.5">
@@ -292,11 +287,6 @@
 							icon="heroicons:tag"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
 						/>
-						{#if codeAssetSearch}
-							<button type="button" onclick={() => (codeAssetSearch = '')} class="close-btn">
-								<Icon icon="material-symbols:close" />
-							</button>
-						{/if}
 					</div>
 
 					<button class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
@@ -338,7 +328,9 @@
 					<tbody>
 						{#if retrivedAssets.length <= 0}
 							<tr>
-								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
+								<td class=" text-center" colspan="6"
+									>{isLoading ? 'Loading...' : 'No records found'}</td
+								>
 							</tr>
 						{:else}
 							{#each retrivedAssets as row, index}

@@ -55,9 +55,8 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
 
 		const formData = await event.request.formData();
 		console.log('formData', formData);
-		let filename: string;
 		const file = formData.get('file') as File;
-		filename = file.name;
+		const filename = file.name;
 
 		const fileCreateModel: FileUploadModel = {
 			UploadFile: file,

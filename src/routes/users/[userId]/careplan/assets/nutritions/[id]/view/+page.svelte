@@ -27,10 +27,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		{
-			name: 'Nutrition',
-			path: nutritionRoute
-		},
+		
 		{
 			name: 'View',
 			path: viewRoute

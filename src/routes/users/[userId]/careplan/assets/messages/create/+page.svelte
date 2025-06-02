@@ -31,7 +31,6 @@
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
-		{ name: 'Message', path: messagesRoute },
 		{ name: 'Create', path: createRoute }
 	];
 
@@ -54,8 +53,6 @@
 				PathUrl: pathUrl,
 				Version: version,
 				Tags: keywords,
-				// TemplateVariables: templateVariables
-				// TemplateVariables: parseTemplateVariables(templateVariablesText)
 				TemplateVariables: parsedTemplateVars
 
 			};
@@ -110,25 +107,7 @@
 	}
 }
 
-
-// 	function parseTemplateVariables(text: string): Record<string, any> | null {
-// 		try {
-// 		const parsed = JSON.parse(text);
-// 		if (
-// 			typeof parsed !== 'object' ||
-// 			parsed === null ||
-// 			Array.isArray(parsed)
-// 		) {
-// 			throw new Error('Not a valid object');
-// 		}
-// 		return parsed;
-// 	} catch (e) {
-// 		errors['TemplateVariables'] = 'TemplateVariables must be a valid JSON object with key-value pairs';
-// 		return null;
-// 	}
-// }
-
-	const onUpdateKeywords = (e: any) => {
+const onUpdateKeywords = (e: any) => {
 		keywords = e.detail;
 		keywordsStr = keywords?.join(', ');
 	};
@@ -138,9 +117,9 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
+				<table class="table-c">
 					<thead>
 						<tr>
 							<th>Create Message</th>
@@ -157,7 +136,7 @@
 							<td>
 								<input
 									type="text"
-									class="health-system-input {form?.errors?.Name ? 'input-text-error' : ''}"
+									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
 									name="name"
 									placeholder="Enter name here..."
 									bind:value={name}
@@ -182,7 +161,7 @@
 						<tr>
 						<td>Message Type<span class="text-red-700">*</span></td>
 						<td>
-							<select class="health-system-input" bind:value={messageType}>
+							<select class="input" bind:value={messageType}>
 								<option disabled value>Select message type</option>
 								<option>Educational</option>
 								<option>Status</option>
@@ -197,23 +176,11 @@
 								type="text"
 								bind:value={templateName}
 								placeholder="Enter Template Name..."
-								class="health-system-input {errors?.TemplateName ? 'input-text-error' : ''}"
+								class="input {errors?.TemplateName ? 'input-text-error' : ''}"
 							/>
 							{#if errors?.TemplateName}<p class="text-error">{errors?.TemplateName}</p>{/if}
 						</td>
 					</tr>
-					<!-- <tr>
-						<td>Template Variables</td>
-						<td>
-							<input
-								type="text"
-								bind:value={templateVariablesText}
-								placeholder="Enter Template Variables..."
-								class="health-system-input {errors?.TemplateVariables ? 'input-text-error' : ''}"
-							/>
-							{#if errors?.TemplateVariables}<p class="text-error">{errors?.TemplateVariables}</p>{/if}
-						</td>
-					</tr> -->
 					<tr>
 							<td class="align-top">Template Variables</td>
 							<td>
@@ -234,7 +201,7 @@
 									name="url"
 									bind:value={pathUrl}
 									placeholder="Enter url here"
-                                    class="health-system-input {errors?.Url ? 'input-text-error' : ''}"
+                                    class="input {errors?.Url ? 'input-text-error' : ''}"
                                 />
                                 {#if errors?.Url}
                                     <p class="text-error">{errors?.Url}</p>
@@ -257,7 +224,7 @@
 						<tr>
 							<td>Version</td>
 							<td>
-								<input type="text" bind:value={version} class="health-system-input" placeholder="V 1.0" />
+								<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
 							</td>
 						</tr>
 					</tbody>

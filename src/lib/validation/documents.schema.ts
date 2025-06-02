@@ -3,8 +3,8 @@ import { z } from 'zod';
 export const createOrUpdateSchema = z.object({
 	Name: z
 		.string({
-			required_error: 'Documents name is required.',
-			invalid_type_error: 'Documents name must be a string.'
+			required_error: 'Document name is required.',
+			invalid_type_error: 'Document name must be a string.'
 		})
 		.min(1, { message: 'Documents name cannot be empty.' })
 		.max(256, { message: 'Documents name must be at most 256 characters long.' }),
@@ -17,7 +17,6 @@ export const createOrUpdateSchema = z.object({
 	FileName: z.string().optional(),
 	Source: z.string().optional(),
 	ParentDocument: z.string().optional(),
-	Version: z.string(),
 	Active: z.boolean(),
 	CreatedBy: z.string().optional(),
 	ChunkingStratergy: z

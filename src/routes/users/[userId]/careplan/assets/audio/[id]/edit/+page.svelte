@@ -15,20 +15,23 @@
 	let promise = $state();
 	let name = $state(data.audio.Name);
 	let transcript = $state(data.audio.Transcript);
-	let pathUrl = $state(data.audio.PathUrl);
+	let pathUrl = $state(data.audio.Url);
 	let version = $state(data.audio.Version);
-	let keywords: string[] = $state([]);
-	let keywordsStr = $state('');
+	let tags = $state(data.audio.Tags);
+	let keywordsStr: string = $state('');
+	let keywords: string[] = $state(data.audio.Tags);
+
 
 	const userId = page.params.userId;
 	var audioId = page.params.id;
 
+	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/audio/${audioId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/biometric/${audioId}/view`;
 	const audioRoute = `/users/${userId}/careplan/assets/audio`;
 
 	const breadCrumbs = [
-		{ name: 'Audio', path: audioRoute },
+		{ name: 'Assets',path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
@@ -79,7 +82,7 @@
 				toastMessage(response);
 				// console.log("Redirecting to:", response?.Data?.id);
 				console.log('Full response:', response);
-				await goto(`${audioRoute}/${response?.Data?.id}/view`);
+				await goto(`${viewRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -100,9 +103,9 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container">
+		<div class="table-container">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
+				<table class="table-c">
 					<thead>
 						<tr>
 							<th>Edit Audio</th>
@@ -119,7 +122,7 @@
 							<td>
 								<input
 									type="text"
-									class="health-system-input {form?.errors?.Name ? 'input-text-error' : ''}"
+									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
 									name="name"
 									placeholder="Enter name here..."
 									bind:value={name}
@@ -135,7 +138,7 @@
 							<td>
 								<input
 										type="textarea"
-										class="health-system-input {form?.errors?.Name
+										class="input {form?.errors?.Name
 											? 'input-text-error'
 											: ''}"
 										name="transcript"
@@ -180,7 +183,7 @@
 						<tr>
 							<td>Version</td>
 							<td>
-								<input type="text" bind:value={version} class="health-system-input" placeholder="V 1.0" />
+								<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
 							</td>
 						</tr>
 					</tbody>
