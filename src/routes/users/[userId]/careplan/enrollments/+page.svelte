@@ -5,12 +5,12 @@
 	import Icon from '@iconify/svelte';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
-	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 	import type { PageServerData } from './$types';
 
 	let { data }: { data: PageServerData } = $props();
+
 	console.log('data', data);
 	let debounceTimeout;
 	let isLoading = $state(false);
@@ -64,21 +64,6 @@
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
 
-			// 	if (carePlan) {
-			// 	let careplanId = undefined
-			// 	let search = enrollment.find(item =>item.Careplan.Name === carePlan.trim())
-			// 	if (search){
-			// 		careplanId = search.Careplan.id;
-			// 	}
-			// 	console.log('data',data)
-
-			// 	if(careplanId){
-			// 		url += `&carePlan=${careplanId}`;
-			// 	}
-			// 	else{
-			// 		url += `&carePlan=${carePlan}`;
-			// 	}
-			// }
 			const carePlanName = model.carePlan ?? carePlan;
 			if (carePlanName) {
 				const matchedPlan = enrollment.find(
@@ -90,7 +75,7 @@
 					url += `&carePlan=${encodeURIComponent(careplanId)}`;
 				} else {
 					console.warn('CarePlan ID not found, sending carePlanName:', carePlanName);
-					url += `&carePlan=${encodeURIComponent(carePlanName)}`;
+					url += `&careplanName=${encodeURIComponent(carePlanName)}`;
 				}
 			}
 
@@ -124,11 +109,10 @@
 			totalCarePlanCount = searchResult.Data.TotalCount;
 			paginationSettings.size = totalCarePlanCount;
 
-				enrollment = searchResult.Data.Items.map((item, index) => ({
-					...item,
-					index: index + 1
-				}));
-		
+			enrollment = searchResult.Data.Items.map((item, index) => ({
+				...item,
+				index: index + 1
+			}));
 		} catch (err) {
 			console.error('Search Enrollments failed:', err);
 		} finally {
@@ -157,7 +141,6 @@
 			paginationSettings.page = 0;
 
 			if (field === 'carePlan') carePlan = keyword;
-
 			if (field === 'displayId') displayId = keyword;
 			if (field === 'startDate') startDate = keyword;
 			if (field === 'endDate') endDate = keyword;
@@ -229,7 +212,7 @@
 		<div class="table-container mb-6 shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="relative flex-1 pr-1.5">
+					<div class="relative pr-1.5">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
@@ -238,8 +221,9 @@
 							name="carePlan"
 							type="text"
 							oninput={(event) => onSearchInput(event, 'carePlan')}
+							bind:value={carePlan}
 							placeholder="Search by care plan"
-							class="table-input-field !pr-4 !pl-10"
+							class="table-input-field !w-64 !pr-4 !pl-10"
 						/>
 
 						{#if carePlan}
@@ -255,20 +239,20 @@
 						{/if}
 					</div>
 
-					<div class="relative flex-1 pr-1.5">
+					<div class="relative pr-1.5">
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
 						<input
 							type="text"
 							name="displayId"
 							placeholder="Search by Enrollment code"
 							bind:value={displayId}
-							class="table-input-field !pr-4 !pl-10"
+							class="table-input-field !w-64 !pr-4 !pl-10"
 							oninput={(event) => onSearchInput(event, 'displayId')}
 						/>
 
-						<Icon
-							icon="heroicons:magnifying-glass"
-							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
-						/>
 						{#if displayId}
 							<button
 								type="button"
@@ -281,38 +265,37 @@
 							</button>
 						{/if}
 					</div>
-					<div class="text-inline relative flex flex-1 flex-row items-center pr-1.5">
-						<label class="pr-2">Start date</label>
-						<input
-							type="date"
-							name="startDate"
-							placeholder="Search by start date"
-							bind:value={startDate}
-							class="table-input-field !pr-4 !pl-10"
-							oninput={(event) => onSearchInput(event, 'startDate')}
-						/>
+				
 
-						{#if startDate}
-							<button
-								type="button"
-								onclick={() => {
-									startDate = '';
-								}}
-								class="close-btn"
-							>
-								<Icon icon="material-symbols:close" />
-							</button>
-						{/if}
+					<div class="relative flex flex-row items-center pr-1.5">
+						<label class="pr-2">Start date</label>
+
+						<div class="flex items-center space-x-2">
+							<input
+								type="date"
+								name="startDate"
+								placeholder="Search by start date"
+								bind:value={startDate}
+								class="table-input-field hide-calendar-icon w-64 pr-6 pl-4"
+								oninput={(event) => onSearchInput(event, 'startDate')}
+							/>
+
+							{#if startDate}
+								<button type="button" onclick={() => (startDate = '')} class="close-btn">
+									<Icon icon="material-symbols:close" class="text-gray-500 ml-6" />
+								</button>
+							{/if}
+						</div>
 					</div>
 
-					<div class="text-inline relative flex flex-1 flex-row items-center pr-1.5">
+					<div class="text-inline relative flex flex-row items-center pr-1.5">
 						<label class="pr-2">End date</label>
 						<input
 							type="date"
 							name="endDate"
 							placeholder="Search by end date"
 							bind:value={endDate}
-							class="table-input-field !pr-4 !pl-10"
+							class="table-input-field hide-calendar-icon w-64 pr-6 pl-4"
 							oninput={(event) => onSearchInput(event, 'endDate')}
 						/>
 						{#if endDate}
@@ -421,17 +404,4 @@
 	</div>
 </div>
 
-<div class="flex items-center justify-between px-6">
-	<div class="flex items-center">
-		<select
-			bind:value={paginationSettings.limit}
-			onchange={onItemsPerPageChange}
-			class="mr-2 rounded border px-2 py-1"
-		>
-			{#each paginationSettings.amounts as amount}
-				<option value={amount}>{amount} Items</option>
-			{/each}
-		</select>
-	</div>
-	<Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />
-</div>
+<Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />

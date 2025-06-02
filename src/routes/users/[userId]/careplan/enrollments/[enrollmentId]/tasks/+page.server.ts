@@ -2,9 +2,7 @@ import { error, type RequestEvent } from '@sveltejs/kit';
 import { redirect } from 'sveltekit-flash-message/server';
 import { errorMessage } from '$lib/utils/message.utils';
 import type { PageServerLoad } from './$types';
-
 import { searchEnrollmentTask } from '$routes/api/services/careplan/enrollment.task';
-// import { getEnrollmentById } from '$routes/api/services/careplan/enrollment';
 import { searchParticipantActivities } from '$routes/api/services/careplan/participant.activity.response';
 import { getEnrollmentById } from '$routes/api/services/careplan/enrollments';
 

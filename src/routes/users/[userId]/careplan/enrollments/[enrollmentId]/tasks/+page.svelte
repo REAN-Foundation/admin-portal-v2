@@ -16,7 +16,6 @@ $inspect(data)
 
 	let debounceTimeout;
 	let isLoading = $state(false);
-	// let careplanId = data.careplanId;
 	let careplanId = data.enrollment?.CareplanId;
 	let enrollmentsTasks = $state(data.enrollmentTask.Items);
 	let retrivedEnrollmentTasks = $derived(enrollmentsTasks);
@@ -25,7 +24,6 @@ $inspect(data)
 	let enrollmentDsipId = $state(data.enrollment);
 	let enrollmentCode = $state(enrollmentDsipId.DisplayId);
 	let searchKeyword = $state(undefined);
-	// let enrollmentId = $state(undefined);
 	let enrollmentId = page.params.enrollmentId
 
 	const userId = page.params.userId;
@@ -53,7 +51,6 @@ $inspect(data)
 	$inspect('totalEnrollmentTasksCount', totalEnrollmentTasksCount)
 	let isSortingAssetType = $state(false);
 	let isSortingCreatedAt = $state(false);
-	// let items = 10;
 
 	let paginationSettings = $state({
 		page: 0,
@@ -64,56 +61,6 @@ $inspect(data)
 
 	$inspect('retrivedEnrollment', enrollmentsTask);
 	$inspect('retrivedParticipantResponse', participantResponse);
-
-// 	async function searchEnrollments(model) {
-// 	try {
-// 		isLoading = true;
-
-// 		let url = `/api/server/careplan/enrollment-task/search?`;
-// 		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
-// 		url += `&sortBy=${model.sortBy ?? sortBy}`;
-// 		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
-// 		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-// 		url += `&careplanId=${careplanId}`;
-// 		url += `&enrollmentId=${enrollmentId}`;
-// 		if (model.assetType) url += `&assetType=${model.assetType}`;
-// 		if (model.scheduledDate) url += `&scheduledDate=${model.scheduledDate}`;
-
-// 		const res = await fetch(url, {
-// 			method: 'GET',
-// 			headers: { 'content-type': 'application/json' }
-// 		});
-// 		const searchResult = await res.json();
-// 		console.log('searchResult', searchResult);
-
-// 		const enrollmentTask = searchResult?.Data?.EnrollmentTask;
-// 		const participantResp = searchResult?.Data?.ParticipantResponse;
-
-// 		if (
-// 			enrollmentTask &&
-// 			enrollmentTask.TotalCount !== undefined &&
-// 			Array.isArray(enrollmentTask.Items)
-// 		) {
-// 			totalEnrollmentTasksCount = enrollmentTask.TotalCount;
-// 			paginationSettings.size = totalEnrollmentTasksCount;
-
-// 			enrollmentsTasks = enrollmentTask.Items.map((item, index) => ({
-// 				...item,
-// 				index: index + 1
-// 			}));
-// 		} else {
-// 			totalEnrollmentTasksCount = 0;
-// 			enrollmentsTasks = [];
-// 		}
-
-// 		participantResponse = participantResp ?? [];
-// 	} catch (err) {
-// 		console.error('Search failed:', err);
-// 	} finally {
-// 		isLoading = false;
-// 	}
-// }
-
 
 	async function searchEnrollments(model) {
 	try {
@@ -224,13 +171,11 @@ async function onSearchInput(e) {
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="table-container mb-6 shadow">
-			<!-- Header with Enrollment Code -->
 			<div class="flex items-center p-5 ">
 				<h2 class="text-lg font-semibold pr-2">Enrollment Code : <span class=" font-normal">{enrollmentCode}</span></h2>
 				
 			</div>
 
-			<!-- Search bar -->
 			<div class="health-system-search-border mb-4">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="flex-1">
@@ -260,8 +205,6 @@ async function onSearchInput(e) {
 					</div>
 				</div>
 			</div>
-
-			<!-- Table -->
 			<div class="overflow-x-auto">
 				<table class="table-c min-w-full">
 					<thead>
@@ -319,12 +262,12 @@ async function onSearchInput(e) {
 										{#if row.ProgressStatus === 'Completed'}
 											<Icon
 												icon="material-symbols:done-rounded"
-												class="text-xl text-success-500"
+												class="text-xl text-green-500"
 											/>
 										{:else}
 											<Icon
 												icon="material-symbols:close-rounded"
-												class="text-xl text-error-500"
+												class="text-xl text-red-500"
 											/>
 										{/if}
 									</td>
