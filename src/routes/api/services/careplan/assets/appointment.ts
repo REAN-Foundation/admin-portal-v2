@@ -19,12 +19,11 @@ export const createAppointment = async (
 		Tags: tags,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
+
 	const url = CAREPLAN_BACKEND_API_URL + '/assets/appointments';
 	const result = await post_(url, body, true, sessionId);
 
-	// Invalidate cached search results
-	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAppointments`]);
-
+	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
 	return result;
 };
 
@@ -54,7 +53,7 @@ export const searchAppointments = async (
 		searchString = '?' + params.join('&');
 	}
 
-	const cacheKey = `session-${sessionId}:req-searchAppointments:${searchString}`;
+	const cacheKey = `session-${sessionId}:req-searchAssets:appointments:${searchString}`;
 	if (await DashboardManager.has(cacheKey)) {
 		return await DashboardManager.get(cacheKey);
 	}
@@ -89,8 +88,7 @@ export const updateAppointment = async (
 	await DashboardManager.deleteMany([
 		`session-${sessionId}:req-getAppointmentById-${appointmentId}`
 	]);
-
-	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAppointments`]);
+	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
 
 	return result;
 };
@@ -102,8 +100,7 @@ export const deleteAppointment = async (sessionId: string, appointmentId: string
 	await DashboardManager.deleteMany([
 		`session-${sessionId}:req-getAppointmentById-${appointmentId}`
 	]);
-
-	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAppointments`]);
+	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
 
 	return result;
 };

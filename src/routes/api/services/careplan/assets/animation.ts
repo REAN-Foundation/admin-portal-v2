@@ -1,5 +1,5 @@
 import { CAREPLAN_BACKEND_API_URL } from '$env/static/private';
-import { delete_, get_, post_, put_ } from '../../common';
+import { del, get, post, put } from '../common.careplan';
 import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 
 ////////////////////////////////////////////////////////////////
@@ -17,14 +17,13 @@ export const createAnimation = async (
 		Transcript: transcript,
 		Url: pathUrl,
 		Tags: tags,
-		Version: !version || version.length === 0 ? 'V 1.0' : version
+		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
+
 	const url = CAREPLAN_BACKEND_API_URL + '/assets/animations';
-	const result = await post_(url, body, true, sessionId);
+	const result = await post(sessionId, url, body, true);
 
-	// Clear relevant cached search results
-	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAnimations`]);
-
+	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
 	return result;
 };
 
@@ -35,7 +34,7 @@ export const getAnimationById = async (sessionId: string, animationId: string) =
 	}
 
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/animations/${animationId}`;
-	const result = await get_(url, true, sessionId);
+	const result = await get(sessionId, url, true);
 
 	await DashboardManager.set(cacheKey, result);
 	return result;
@@ -54,13 +53,13 @@ export const searchAnimation = async (
 		searchString = '?' + params.join('&');
 	}
 
-	const cacheKey = `session-${sessionId}:req-searchAnimations:${searchString}`;
+	const cacheKey = `session-${sessionId}:req-searchAssets:animations:${searchString}`;
 	if (await DashboardManager.has(cacheKey)) {
 		return await DashboardManager.get(cacheKey);
 	}
 
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/animations/search${searchString}`;
-	const result = await get_(url, true, sessionId);
+	const result = await get(sessionId, url, true);
 
 	await DashboardManager.set(cacheKey, result);
 	return result;
@@ -80,25 +79,24 @@ export const updateAnimation = async (
 		Transcript: transcript,
 		Url: pathUrl,
 		Tags: tags,
-		Version: !version || version.length === 0 ? 'V 1.0' : version
+		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
+
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/animations/${animationId}`;
-	const result = await put_(url, body, true, sessionId);
+	const result = await put(sessionId, url, body, true);
 
 	await DashboardManager.deleteMany([`session-${sessionId}:req-getAnimationById-${animationId}`]);
-
-	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAnimations`]);
+	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
 
 	return result;
 };
 
 export const deleteAnimation = async (sessionId: string, animationId: string) => {
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/animations/${animationId}`;
-	const result = await delete_(url, true, sessionId);
+	const result = await del(sessionId, url, true);
 
 	await DashboardManager.deleteMany([`session-${sessionId}:req-getAnimationById-${animationId}`]);
-
-	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAnimations`]);
+	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
 
 	return result;
 };

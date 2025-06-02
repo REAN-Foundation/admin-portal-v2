@@ -23,9 +23,7 @@ export const createArticle = async (
 	const url = CAREPLAN_BACKEND_API_URL + '/assets/articles';
 	const result = await post_(url, body, true, sessionId);
 
-	// Clear article search cache after creation
 	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
-
 	return result;
 };
 
@@ -87,7 +85,6 @@ export const updateArticle = async (
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/articles/${articleId}`;
 	const result = await put_(url, body, true, sessionId);
 
-	// Clear cache for this article and search results
 	await DashboardManager.deleteMany([`session-${sessionId}:req-getArticleById-${articleId}`]);
 	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
 
@@ -98,7 +95,6 @@ export const deleteArticle = async (sessionId: string, articleId: string) => {
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/articles/${articleId}`;
 	const result = await delete_(url, true, sessionId);
 
-	// Clear cache for this article and search results
 	await DashboardManager.deleteMany([`session-${sessionId}:req-getArticleById-${articleId}`]);
 	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
 

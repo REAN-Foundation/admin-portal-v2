@@ -72,7 +72,7 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				goto(`${animationRoute}/${response?.Data.id}/view`);
+				goto(`${animationRoute}/${response?.Data?.id}/view`);
 				return;
 			}
 
