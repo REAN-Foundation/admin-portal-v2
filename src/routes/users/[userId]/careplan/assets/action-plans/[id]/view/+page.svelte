@@ -37,6 +37,7 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
+
 <div class="mx-auto w-full px-6 py-4">
 	<div class="form-headers">
 		<h2 class="form-titles">View Action Plan</h2>
