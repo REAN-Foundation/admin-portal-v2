@@ -27,7 +27,7 @@
 	let chatBotSettingsLink = `${tenantRoute}/${tenantId}/settings/chatbot-setting`;
 	let formSettingsLink = `${tenantRoute}/${tenantId}/settings/forms-setting`;
 	let followupSettingsLink = `${tenantRoute}/${tenantId}/settings/followup-setting`;
-	let concentSettingsLink = `${tenantRoute}/${tenantId}/settings/followup-setting`;
+	// let concentSettingsLink = `${tenantRoute}/${tenantId}/settings/followup-setting`;
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -92,7 +92,7 @@
 				<Icon icon="material-symbols:featured-play-list-outline-rounded" class="h-5 w-5 shrink-0" />
 				Follow-up
 			</a>
-			<a
+			<!-- <a
 				class="btn {page.url.pathname === concentSettingsLink
 					? 'variant-filled-secondary'
 					: 'variant-soft-secondary'} flex items-center justify-center gap-2 whitespace-nowrap"
@@ -100,7 +100,7 @@
 			>
 				<Icon icon="material-symbols:featured-play-list-outline-rounded" class="h-5 w-5 shrink-0" />
 				Concent
-			</a>
+			</a> -->
 		</div>
 	</div>
 </div>
