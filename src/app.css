@@ -881,7 +881,7 @@ tr {
 	@apply w-[30%] py-3 align-top font-medium text-[var(--color-info)];
 }
 .table-data {
-	@apply w-[70%] p-2 py-3 text-[var(--color-info)] sm:py-3;
+	@apply w-[70%] px-0 py-3 pl-2 text-[var(--color-info)] sm:py-3 sm:pl-0;
 }
 .important-field {
 	@apply text-red-500;
