@@ -8,6 +8,7 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { AnimationsUpdateModel } from '$lib/types/animation';
 	import { createOrUpdateSchema } from '$lib/validation/animation.schema';
+	import Button from '$lib/components/button/button.svelte';
 
 	/////////////////////////////////////////////////////////////////////
 
@@ -37,7 +38,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		
+
 		{
 			name: 'Edit',
 			path: editRoute
@@ -106,110 +107,98 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th>Edit Animation</th>
-							<th class="text-end">
-								<a href={viewRoute} class="cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Asset Code</td>
-							<td>{assetCode}</td>
-						</tr>
-						<tr>
-							<td>Name *</td>
-							<td>
-								<input
-									type="text"
-									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
-									name="name"
-									placeholder="Enter name here..."
-									bind:value={name}
-								/>
-								{#if errors?.Name}
-									<p class="text-error-500 text-xs">{errors?.Name}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Transcript</td>
-							<td>
-								<textarea
-									name="transcript"
-									class="input w-full {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
-									bind:value={transcript}
-									placeholder="Enter transcript here..."
-								></textarea>
-							</td>
-						</tr>
-						<tr>
-							<td>Path Url</td>
-							<td>
-								<input
-									type="url"
-									class="input {form?.errors?.PathUrl ? 'input-text-error' : ''}"
-									name="pathUrl"
-									placeholder="Enter url here"
-									bind:value={pathUrl}
-								/>
-								{#if errors?.Url}
-									<p class="text-error-500 text-xs">{errors?.PathUrl}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td class="!py-3">Tags</td>
-							<td>
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-									keywordsChanged={onUpdateKeywords}
-								/>
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" bind:value={tags} /> -->
-							</td>
-						</tr>
-						<tr>
-							<td>Version</td>
-							<td>
-								<input
-									type="text"
-									class="input{form?.errors?.Version ? 'input-text-error' : ''}"
-									name="version"
-									placeholder="V 1.0"
-									bind:value={version}
-								/>
-								{#if errors?.Version}
-									<p class="text-error-500 text-xs">{errors?.Version}</p>
-								{/if}
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="button-container">
-					<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary"
-						>Reset</button
-					>
-					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit Animation</h2>
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Asset Code</td>
+					<td class="table-data">{assetCode}</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Name <span class="important-field">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+							name="name"
+							placeholder="Enter name here..."
+							bind:value={name}
+						/>
+						{#if errors?.Name}
+							<p class="error-text">{errors?.Name}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Transcript</td>
+					<td class="table-data">
+						<textarea
+							name="transcript"
+							class="input resize-none {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
+							bind:value={transcript}
+							placeholder="Enter transcript here..."
+						></textarea>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Path Url</td>
+					<td class="table-data">
+						<input
+							type="url"
+							class="input {form?.errors?.PathUrl ? 'input-text-error' : ''}"
+							name="pathUrl"
+							placeholder="Enter url here"
+							bind:value={pathUrl}
+						/>
+						{#if errors?.Url}
+							<p class="error-text">{errors?.PathUrl}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Tags</td>
+					<td class="table-data">
+						<InputChips
+							bind:keywords
+							name="keywords"
+							id="keywords"
+							keywordsChanged={onUpdateKeywords}
+						/>
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Version</td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {form?.errors?.Version ? 'input-text-error' : ''}"
+							name="version"
+							placeholder="V 1.0"
+							bind:value={version}
+						/>
+						{#if errors?.Version}
+							<p class="error-text">{errors?.Version}</p>
+						{/if}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="btn-container">
+			<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary">
+				Reset
+			</button>
+			<Button />
+		</div>
+	</form>
 </div>

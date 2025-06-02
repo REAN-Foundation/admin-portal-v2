@@ -4,7 +4,7 @@
 	--theme-border-color: rgba(32, 108, 207, 0.989); /* Default Blue */
 	--color-primary: #ffffff;
 	--color-secondary: #fbfbfb;
-	--color-outline: #cacadb;
+	--color-outline: #e5e5ef;
 	--color-accent: #f5f6f8;
 	--color-neutral: #eaeaef;
 	--color-base: #fff;
@@ -485,15 +485,15 @@ tr {
 }
 
 .preview-modal-backdrop {
-	@apply fixed inset-0 bg-black/50 flex items-center justify-center z-50;
+	@apply fixed inset-0 z-50 flex items-center justify-center bg-black/50;
 }
 
 .preview-modal-content {
-	@apply bg-white p-6 max-w-[800px] w-full h-[90vh] overflow-auto relative rounded-lg;
+	@apply relative h-[90vh] w-full max-w-[800px] overflow-auto rounded-lg bg-white p-6;
 }
 
 .preview-close-btn {
-	@apply absolute top-2 right-2 text-2xl bg-transparent border-none cursor-pointer;
+	@apply absolute top-2 right-2 cursor-pointer border-none bg-transparent text-2xl;
 }
 
 /* .cancel-btn {
@@ -863,38 +863,36 @@ tr {
 	@apply inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-2 text-center text-sm whitespace-nowrap text-[var(--color-error)] transition-all duration-150 ease-in-out hover:bg-[var(--active-soft)];
 }
 
-/* form specific  */
+
+/* form and table specific */
+
+.form-headers {
+	@apply mb-4 flex flex-row justify-between;
+}
+.form-titles {
+	@apply text-base font-semibold text-[var(--color-info)] sm:mb-0 sm:text-lg;
+}
+.form-cancel-btn {
+	@apply inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-2 text-center text-sm whitespace-nowrap text-[var(--color-error)] transition-all duration-150 ease-in-out hover:bg-[var(--active-soft)];
+}
+.tables-row {
+	@apply border-b border-[var(--color-outline)];
+}
+.table-label {
+	@apply w-[30%] py-3 align-top font-medium text-[var(--color-info)];
+}
+.table-data {
+	@apply w-[70%] px-0 py-3 pl-2 text-[var(--color-info)] sm:py-3 sm:pl-0;
+}
+.important-field {
+	@apply text-red-500;
+}
+.error-text {
+	@apply mt-1 text-xs text-red-500;
+}
+.btn-container {
+	@apply mt-4 flex justify-end gap-2 px-2 sm:px-0;
+}
 .edit-btn {
 	@apply inline-flex cursor-pointer items-center justify-center gap-1 rounded-md px-3 py-2 text-center text-sm whitespace-nowrap text-[var(--color-info)] transition-all duration-150 ease-in-out hover:bg-[var(--color-active)];
 }
-
-.forms-container {
-	@apply overflow-hidden rounded-md border border-[var(--color-outline)] text-[var(--color-info)] shadow-sm;
-}
-
-.form-header {
-	@apply flex items-center justify-between border-b border-[var(--color-outline)] bg-[var(--color-accent)] px-6 py-2;
-}
-
-.form-title {
-	@apply text-base font-semibold;
-}
-
-.form-table {
-	@apply w-full text-sm;
-}
-
-.form-td-left {
-	@apply w-1/2 border-b border-[var(--color-outline)] px-6 py-2;
-}
-
-.form-td-right {
-	@apply border-b border-[var(--color-outline)] px-6 py-2;
-}
-.upload-btn {
-	@apply inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-2 text-center text-sm whitespace-nowrap text-[var(--color-info)] transition-all duration-150 ease-in-out hover:bg-[var(--color-active)];
-}
-.drag-input {
-	@apply  border-dashed p-6 rounded text-center mb-4 mt-4 w-full border border-[var(--color-outline)] bg-[var(--color-accent)] text-[var(--color-info)] focus:outline-none
-}
-
