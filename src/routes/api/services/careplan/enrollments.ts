@@ -16,11 +16,13 @@ export const getEnrollmentById = async (sessionId: string, enrollmentId: string)
 
 export const searchEnrollments = async (sessionId: string, searchParams?) => {
     let searchString = '';
+
     if (searchParams) {
         const keys = Object.keys(searchParams);
         if (keys.length > 0) {
             searchString = '?';
             const params = [];
+
             for (const key of keys) {
                 if (searchParams[key]) {
                     const param = `${key}=${searchParams[key]}`;
@@ -33,13 +35,8 @@ export const searchEnrollments = async (sessionId: string, searchParams?) => {
 
     const url = CAREPLAN_BACKEND_API_URL + `/enrollments/search${searchString}`;
     console.log("url", url)
-    const cacheKey = `session-${sessionId}:req-searchEnrollments:${searchString}`;
-    // if (await DashboardManager.has(cacheKey)) {
-    //     return await DashboardManager.get(cacheKey);
-    // }
 
     const result = await get(sessionId, url, true);
-    // await DashboardManager.set(cacheKey, result);
     return result;
 };
 

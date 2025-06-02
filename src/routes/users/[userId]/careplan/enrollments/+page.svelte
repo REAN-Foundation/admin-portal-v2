@@ -9,11 +9,10 @@
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 	import type { PageServerData } from './$types';
-	
 
 	let { data }: { data: PageServerData } = $props();
-	console.log("data",data);
-	let debounceTimeout; 
+	console.log('data', data);
+	let debounceTimeout;
 	let isLoading = $state(false);
 	let enrollment = $state(data.enrollments.Items);
 	let retrivedEnrollments = $derived(enrollment);
@@ -52,34 +51,54 @@
 
 	$inspect('retrivedEnrollment', enrollment);
 
+	function isGuid(value: string) {
+		const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+		return guidRegex.test(value);
+	}
+
 	async function searchEnrollments(model) {
 		try {
-
 			let url = `/api/server/careplan/enrollments/search?`;
 			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
 
-			if (model.carePlan) url += `&name=${model.carePlan}`;
+			// 	if (carePlan) {
+			// 	let careplanId = undefined
+			// 	let search = enrollment.find(item =>item.Careplan.Name === carePlan.trim())
+			// 	if (search){
+			// 		careplanId = search.Careplan.id;
+			// 	}
+			// 	console.log('data',data)
 
-			// if (model.carePlan) {
-            // let careplanId = undefined
-            // let search = enrollment.find(item =>item.Careplan.Name === model.carePlan.trim())
-            // if (search){
-            //     careplanId = search.Careplan.id;
-            // }
-            // console.log('searching',search)
-            // enrollment.forEach(element => {
-            //  if (element.Careplan.Name === carePlan.trim()){
-            //      careplanId = element.Careplan.id;
-            //  }
-            // });
-        // }
-			
+			// 	if(careplanId){
+			// 		url += `&carePlan=${careplanId}`;
+			// 	}
+			// 	else{
+			// 		url += `&carePlan=${carePlan}`;
+			// 	}
+			// }
+			const carePlanName = model.carePlan ?? carePlan;
+			if (carePlanName) {
+				const matchedPlan = enrollment.find(
+					(item) => item.Careplan?.Name?.trim() === carePlanName.trim()
+				);
+				const careplanId = matchedPlan?.Careplan?.id;
+
+				if (careplanId) {
+					url += `&carePlan=${encodeURIComponent(careplanId)}`;
+				} else {
+					console.warn('CarePlan ID not found, sending carePlanName:', carePlanName);
+					url += `&carePlan=${encodeURIComponent(carePlanName)}`;
+				}
+			}
+
 			if (model.displayId ?? displayId) {
 				url += `&displayId=${model.displayId ?? displayId}`;
 			}
+
+			let rawDate = model.startDate ?? startDate;
 
 			if (model.startDate ?? startDate) {
 				url += `&startDate=${model.startDate ?? startDate}`;
@@ -98,16 +117,18 @@
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
 			});
+
 			const searchResult = await res.json();
 			console.log('searchResult', searchResult);
+
 			totalCarePlanCount = searchResult.Data.TotalCount;
 			paginationSettings.size = totalCarePlanCount;
-			
-			enrollment = searchResult.Data.Items.map((item, index) => ({
-				...item,
-				index: index + 1
-				
-			}));
+
+				enrollment = searchResult.Data.Items.map((item, index) => ({
+					...item,
+					index: index + 1
+				}));
+		
 		} catch (err) {
 			console.error('Search Enrollments failed:', err);
 		} finally {
@@ -116,44 +137,42 @@
 	}
 
 	function updateSearchField(name, value) {
-		console.log(name,value);
-	if (name === 'carePlan') {
-		carePlan = value;
-	} else if (name === 'displayId') {
-		displayId = value;
-	} else if (name === 'startDate') {
-		startDate = value;
-	} else if (name === 'endDate') {
-		endDate = value;
+		console.log(name, value);
+		if (name === 'carePlan') {
+			carePlan = value;
+		} else if (name === 'displayId') {
+			displayId = value;
+		} else if (name === 'startDate') {
+			startDate = value;
+		} else if (name === 'endDate') {
+			endDate = value;
+		}
 	}
-}
 
-	function onSearchInput(e, field: 'carePlan'| 'displayId' | 'startDate' | 'endDate') {
-	clearTimeout(debounceTimeout);
-	const keyword = e.target.value;
+	function onSearchInput(e, field: 'carePlan' | 'displayId' | 'startDate' | 'endDate') {
+		console.log('Key', e.target.value);
+		clearTimeout(debounceTimeout);
+		const keyword = e.target.value;
+		debounceTimeout = setTimeout(() => {
+			paginationSettings.page = 0;
 
-	// const { name, value } = e.target;
-	// updateSearchField(name, value)
-	debounceTimeout = setTimeout(() => {
-		paginationSettings.page = 0;
+			if (field === 'carePlan') carePlan = keyword;
 
-		if (field === 'carePlan') carePlan = keyword;
-		if (field === 'displayId') displayId = keyword;
-		if (field === 'startDate') startDate = keyword;
-		if (field === 'endDate') endDate = keyword;
-		searchEnrollments({
-			carePlan,
-			displayId,
-			startDate,
-			endDate,
-			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
-			sortBy,
-			sortOrder
-		});
-	}, 400);
-}
-
+			if (field === 'displayId') displayId = keyword;
+			if (field === 'startDate') startDate = keyword;
+			if (field === 'endDate') endDate = keyword;
+			searchEnrollments({
+				carePlan: searchKeyword,
+				displayId,
+				startDate,
+				endDate,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortBy,
+				sortOrder
+			});
+		}, 400);
+	}
 
 	function sortTable(columnName: string) {
 		isSortingName = false;
@@ -218,13 +237,19 @@
 						<input
 							name="carePlan"
 							type="text"
-							oninput={(event) => onSearchInput(event, 'carePlan' )}
+							oninput={(event) => onSearchInput(event, 'carePlan')}
 							placeholder="Search by care plan"
 							class="table-input-field !pr-4 !pl-10"
 						/>
-						
+
 						{#if carePlan}
-							<button type="button" onclick={() => {carePlan = '';}} class="close-btn">
+							<button
+								type="button"
+								onclick={() => {
+									carePlan = '';
+								}}
+								class="close-btn"
+							>
 								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
@@ -239,18 +264,24 @@
 							class="table-input-field !pr-4 !pl-10"
 							oninput={(event) => onSearchInput(event, 'displayId')}
 						/>
-						
+
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
 						/>
 						{#if displayId}
-							<button type="button" onclick={() => {displayId = '';}} class="close-btn">
+							<button
+								type="button"
+								onclick={() => {
+									displayId = '';
+								}}
+								class="close-btn"
+							>
 								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
 					</div>
-					<div class="relative flex-1 pr-1.5 flex flex-row text-inline items-center">
+					<div class="text-inline relative flex flex-1 flex-row items-center pr-1.5">
 						<label class="pr-2">Start date</label>
 						<input
 							type="date"
@@ -260,15 +291,21 @@
 							class="table-input-field !pr-4 !pl-10"
 							oninput={(event) => onSearchInput(event, 'startDate')}
 						/>
-						
+
 						{#if startDate}
-							<button type="button" onclick={() => {startDate = '';}} class="close-btn">
+							<button
+								type="button"
+								onclick={() => {
+									startDate = '';
+								}}
+								class="close-btn"
+							>
 								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
 					</div>
 
-					<div class="relative flex-1 pr-1.5 flex flex-row text-inline items-center">
+					<div class="text-inline relative flex flex-1 flex-row items-center pr-1.5">
 						<label class="pr-2">End date</label>
 						<input
 							type="date"
@@ -276,10 +313,16 @@
 							placeholder="Search by end date"
 							bind:value={endDate}
 							class="table-input-field !pr-4 !pl-10"
-							oninput={(event) => onSearchInput(event,'endDate')}
+							oninput={(event) => onSearchInput(event, 'endDate')}
 						/>
 						{#if endDate}
-							<button type="button" onclick={() => {endDate = '';}} class="close-btn">
+							<button
+								type="button"
+								onclick={() => {
+									endDate = '';
+								}}
+								class="close-btn"
+							>
 								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
@@ -338,15 +381,16 @@
 								<td colspan="7">{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}
-							{#each retrivedEnrollments as enrollment,index}
+							{#each retrivedEnrollments as enrollment, index}
 								<tr>
 									<td>
-                                        {paginationSettings.page * paginationSettings.limit + index + 1}
-                                    </td>
+										{paginationSettings.page * paginationSettings.limit + index + 1}
+									</td>
 									<td>
 										<Tooltip text={enrollment.ParticipantId || 'Not specified'}>
 											<a href={viewRoute(enrollment.id)}>
-												Participant - {enrollment.Participant.DisplayId !== null && enrollment.Participant.DisplayId !== ''
+												Participant - {enrollment.Participant.DisplayId !== null &&
+												enrollment.Participant.DisplayId !== ''
 													? Helper.truncateText(enrollment.Participant.DisplayId, 50)
 													: 'Not specified'}
 											</a>
@@ -354,11 +398,19 @@
 									</td>
 									<td>{enrollment.DisplayId}</td>
 									<td>{enrollment.Careplan.Name}</td>
-									<td>{TimeHelper.formatDateToReadable(enrollment.StartDate, LocaleIdentifier.EN_US)}</td>
-									<td>{TimeHelper.formatDateToReadable(enrollment.EndDate, LocaleIdentifier.EN_US)}</td>
-									<td>
-									
-									</td>
+									<td
+										>{TimeHelper.formatDateToReadable(
+											enrollment.StartDate,
+											LocaleIdentifier.EN_US
+										)}</td
+									>
+									<td
+										>{TimeHelper.formatDateToReadable(
+											enrollment.EndDate,
+											LocaleIdentifier.EN_US
+										)}</td
+									>
+									<td> </td>
 								</tr>
 							{/each}
 						{/if}
@@ -369,12 +421,12 @@
 	</div>
 </div>
 
-<div class="flex justify-between items-center px-6">
+<div class="flex items-center justify-between px-6">
 	<div class="flex items-center">
-		<select 
+		<select
 			bind:value={paginationSettings.limit}
 			onchange={onItemsPerPageChange}
-			class="border rounded px-2 py-1 mr-2"
+			class="mr-2 rounded border px-2 py-1"
 		>
 			{#each paginationSettings.amounts as amount}
 				<option value={amount}>{amount} Items</option>

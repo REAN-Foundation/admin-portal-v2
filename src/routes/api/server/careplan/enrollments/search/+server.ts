@@ -13,13 +13,7 @@ export const GET = async (event: RequestEvent) => {
 
         const searchParams: URLSearchParams = event.url.searchParams;
         const searchFilters = {
-             careplanId: searchParams.get('carePlan') ?? undefined,
-    // if (careplanId){
-    //   const pattern = new RegExp('^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$', 'i');
-    //     if (pattern.test(careplanId) === false) {
-    //         return new Response(JSON.stringify([]));
-    //     }
-    // },
+            careplanId: searchParams.get('carePlan') ?? undefined,
             displayId: searchParams.get("displayId") ?? undefined,
             startDate: searchParams.get("startDate") ?? undefined,
             endDate: searchParams.get("endDate") ?? undefined,

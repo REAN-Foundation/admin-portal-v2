@@ -136,10 +136,10 @@ $inspect(data)
 		const searchResult = await res.json();
 		console.log('searchResult', searchResult);
 
-		totalEnrollmentTasksCount = searchResult.Data.EnrollmentTask.TotalCount;
+		totalEnrollmentTasksCount = searchResult.Data.TotalCount;
 		paginationSettings.size = totalEnrollmentTasksCount;
 
-		enrollmentsTasks = searchResult.Data.EnrollmentTask.Items.map((item, index) => ({
+		enrollmentsTasks = searchResult.Data.Items.map((item, index) => ({
 			...item,
 			index: index + 1
 		}));
@@ -225,9 +225,9 @@ async function onSearchInput(e) {
 	<div class="mx-auto">
 		<div class="table-container mb-6 shadow">
 			<!-- Header with Enrollment Code -->
-			<div class="flex items-center justify-between mb-4">
-				<h2 class="text-lg font-semibold">Enrollment Code</h2>
-				<span>{enrollmentCode}</span>
+			<div class="flex items-center p-5 ">
+				<h2 class="text-lg font-semibold pr-2">Enrollment Code : <span class=" font-normal">{enrollmentCode}</span></h2>
+				
 			</div>
 
 			<!-- Search bar -->
@@ -296,7 +296,7 @@ async function onSearchInput(e) {
 									{/if}
 								</button>
 							</th>
-							<th class="text-center">Completed</th>
+							<th class="text-start">Completed</th>
 						</tr>
 					</thead>
 					<tbody>
