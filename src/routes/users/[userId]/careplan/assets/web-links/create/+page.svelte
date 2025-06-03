@@ -7,6 +7,7 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import { createOrUpdateSchema } from '$lib/validation/web.links.schema.js';
 	import type { WebLinksCreateModel } from '$lib/types/web.links.js';
+	import Button from '$lib/components/button/button.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////
 	let { data, form } = $props();
@@ -30,7 +31,7 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-		
+
 		{
 			name: 'Create',
 			path: createRoute
@@ -92,106 +93,91 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th>Create Animation</th>
-							<th class="text-end">
-								<a href={createRoute} class="cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Name *</td>
-							<td>
-								<input
-									type="text"
-									class="input {form?.errors?.name ? 'input-text-error' : ''}"
-									name="name"
-									placeholder="Enter name here..."
-									bind:value={name}
-								/>
-								{#if errors?.Name}
-									<p class="text-error-500 text-xs">{errors?.Name}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td class="align-top">Description</td>
-							<td>
-								<textarea
-									name="description"
-									class="input w-full {errors?.Description
-										? 'border-error-300'
-										: 'border-primary-200'}"
-									bind:value={description}
-									placeholder="Enter description here..."
-								></textarea>
-							</td>
-						</tr>
-						<tr>
-							<td>Url</td>
-							<td>
-								<input
-									type="url"
-									class="input {form?.errors?.Url ? 'input-text-error' : ''}"
-									name="url"
-									placeholder="Enter url here"
-									bind:value={pathUrl}
-								/>
-								{#if errors?.Url}
-									<p class="text-error-500 text-xs">{errors?.Url}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td class="!py-3 align-top">Tags</td>
-							<td>
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-									keywordsChanged={onUpdateKeywords}
-								/>
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
-							</td>
-						</tr>
-						<tr>
-							<td>Version</td>
-							<td>
-								<input
-									type="text"
-									class="input {form?.errors?.version ? 'input-text-error' : ''}"
-									name="version"
-									placeholder="V 1.0"
-									bind:value={version}
-								/>
-								{#if errors?.Version}
-									<p class="text-error-500 text-xs">{errors?.Version}</p>
-								{/if}
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="button-container">
-					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Create Web link</h2>
+			<a href={assetRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class=" table-label">Name <span class="important-field">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {form?.errors?.Mame ? 'input-text-error' : ''}"
+							name="name"
+							placeholder="Enter name here..."
+							bind:value={name}
+						/>
+						{#if errors?.Name}
+							<p class="error-text">{errors?.Name}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class=" table-label">Description</td>
+					<td class="table-data">
+						<textarea
+							name="description"
+							class="input resize-none {errors?.Description
+								? 'border-error-300'
+								: 'border-primary-200'}"
+							bind:value={description}
+							placeholder="Enter description here..."
+						></textarea>
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Url</td>
+					<td class="table-data">
+						<input
+							type="url"
+							class="input {form?.errors?.Url ? 'input-text-error' : ''}"
+							name="url"
+							placeholder="Enter url here"
+							bind:value={pathUrl}
+						/>
+						{#if errors?.Url}
+							<p class="error-text">{errors?.Url}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Tags</td>
+					<td class="table-data">
+						<InputChips
+							bind:keywords
+							name="keywords"
+							id="keywords"
+							keywordsChanged={onUpdateKeywords}
+						/>
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Version</td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {form?.errors?.Version ? 'input-text-error' : ''}"
+							name="version"
+							placeholder="V 1.0"
+							bind:value={version}
+						/>
+						{#if errors?.Version}
+							<p class="error-text">{errors?.Version}</p>
+						{/if}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="btn-container">
+			<Button />
+		</div>
+	</form>
 </div>
