@@ -11,7 +11,9 @@
 
 	let { data }: { data: PageServerData } = $props();
 
-	let commonSetting = $state({ Common: data.settings });
+	let commonSetting = $state(data.settings);
+
+	$inspect(commonSetting, 'commonSetting');
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
@@ -33,7 +35,7 @@
 		// console.log("New settings:updated ", updated);
 		try {
 			errors = {};
-			// const chatbotCreateModel: ChatBotSettings = {
+			// const chatbotCreateModel:  = {
 			// 	Name: commonSetting.ChatBot.Name,
 			// 	Description: commonSetting.ChatBot.Description,
 			// 	DefaultLanguage: commonSetting.ChatBot.DefaultLanguage,
@@ -64,17 +66,17 @@
 			// 	Emojis: commonSetting.ChatBot.Emojis
 			// };
 
-			// const validationResult = CommonSettingsSchema.safeParse(commonSetting);
-			// console.log('This is validation result', validationResult);
-			// if (!validationResult.success) {
-			// 	errors = Object.fromEntries(
-			// 		Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-			// 			key,
-			// 			val?.[0] || 'This field is required'
-			// 		])
-			// 	);
-			// 	return;
-			// }
+			const validationResult = CommonSettingsSchema.safeParse(commonSetting);
+			console.log('This is validation result', validationResult);
+			if (!validationResult.success) {
+				errors = Object.fromEntries(
+					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				);
+				return;
+			}
 
 			const updated = { Common: commonSetting };
 			console.log('New settings:updated ', updated);
@@ -124,7 +126,7 @@
 				<table class="table-c">
 					<thead>
 						<tr>
-							<th>Common Setting</th>
+							<th class="">Common Setting</th>
 							<th class="text-end">
 								<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />

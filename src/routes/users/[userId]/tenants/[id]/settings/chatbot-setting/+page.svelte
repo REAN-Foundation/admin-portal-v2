@@ -155,8 +155,8 @@
 				<table class="health-system-table">
 					<thead>
 						<tr>
-							<th>Chat Bot Setting</th>
-							<th class="text-end">
+							<th class="w-[30%]">Chat Bot Setting</th>
+							<th class="text-end w-[70%]">
 								<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>

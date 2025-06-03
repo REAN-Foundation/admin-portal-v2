@@ -3,7 +3,6 @@
 	import InfoIcon from './infoIcon.svelte';
 	import Icons from './icons.svelte';
 
-
 	let { groupedSettings, commonSetting = $bindable(), edit } = $props();
 
 	let openTab: string | null = $state(null);
@@ -64,8 +63,8 @@
 					>
 				</thead>
 				<tbody> -->
-{#each Object.entries(commonSetting.Common) as [groupName, groupItems]}
-	{#if groupName !== 'UserInterfaces'&& groupName !== 'General'}
+{#each Object.entries(commonSetting) as [groupName, groupItems]}
+	{#if groupName !== 'UserInterfaces' && groupName !== 'General'}
 		<tr>
 			<td>
 				<button
@@ -108,12 +107,13 @@
 									{:else if edit === true && value.Enabled !== true}
 										<span>❌</span>
 									{:else}
+										{commonSetting[groupName][key].Enabled}
 										<label class="flex items-center gap-2">
 											<input
 												type="checkbox"
 												class="checkbox checkbox-primary"
 												disabled={edit}
-												bind:checked={commonSetting.Common[groupName][key].Enabled}
+												bind:checked={commonSetting[groupName][key].Enabled}
 											/>
 										</label>
 									{/if}
