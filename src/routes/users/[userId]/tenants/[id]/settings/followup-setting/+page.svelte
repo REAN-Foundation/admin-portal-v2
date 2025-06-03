@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import ReminderScheduleForm from '$lib/components/reminder-schedule-form.svelte';
+	import ReminderScheduleList from '$lib/components/reminder-schedule-list.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
 	import type { ReminderTrigger } from '$lib/types/tenant.settings.types.js';
 	import { FollowupSettingsSchema } from '$lib/validation/tenant.settings.schema';
 	import Icon from '@iconify/svelte';
-	import { preventDefault } from 'svelte/legacy';
 	import { fade, fly } from 'svelte/transition';
 
 	let { data, form } = $props();
@@ -18,7 +19,7 @@
 	const tenantRoute = `/users/${userId}/tenants/${tenantId}/settings/followup-setting`;
 	let reminderSchedules: ReminderTrigger[] = $state([]);
 	let followUpSettingUpdateModel = $state({
-		Source: 'Api',
+		Source: 'File',
 		// FileUploadSettings:{},
 		FileUploadSettings: {
 			// FileUploadConfig: {
@@ -54,47 +55,22 @@
 			ReminderSchedule: [],
 			ScheduleFrequency: ''
 		}
-
-		// Source: followUpSettingUpdateModel.Source,
-		// FileUploadSettings: {
-		// 	FileColumnFormat: fileColumnFormat,
-		// 	FileType: selectedFileType,
-		// 	ReminderSchedules: reminderSchedules
-		// },
-		// ApiIntegrationSettings: {
-		// 	Auth: {
-		// 		Method: authMethod,
-		// 		Url: authUrl,
-		// 		Body: authBody,
-		// 		QueryParams: authQueryParams,
-		// 		Headers: authHeaders,
-		// 		TokenPath: authTokenPath,
-		// 		ResponseType: authResponseType,
-		// 		TokenInjection: {
-		// 			Location: authTokenLocation,
-		// 			Key: authTokenKey,
-		// 			Prefix: authTokenPrefix
-		// 		}
-		// 	},
-		// 	Fetch: {
-		// 		Method: apiFetchMethod,
-		// 		Url: apiFetchUrl,
-		// 		QueryParams: apiFetchQueryParams,
-		// 		Body: apiFetchBody,
-		// 		Headers: authHeaders,
-		// 		ResponseType: apiFetchResponseType,
-		// 		ResponseField: responseField
-		// 	},
-		// 	ReminderSchedule: reminderSchedules,
-		// 	ScheduleFrequency: scheduleFrequency
 	});
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
 			errors = {};
 
-			console.log('FollowUpSettingUpdateModel:', followUpSettingUpdateModel);
+			if (followUpSettingUpdateModel.Source === 'Api') {
+				// followUpSettingUpdateModel.ApiIntegrationSettings.ReminderSchedule = reminderSchedules;
+				followUpSettingUpdateModel.FileUploadSettings = undefined;
+			}
+			if (followUpSettingUpdateModel.Source === 'File') {
+				// followUpSettingUpdateModel.FileUploadSettings.ReminderSchedule = reminderSchedules;
+				followUpSettingUpdateModel.ApiIntegrationSettings = null;
+			}
 
+			console.log('FollowUp Setting UpdateModel:', followUpSettingUpdateModel);
 			const validationResult = FollowupSettingsSchema.safeParse(followUpSettingUpdateModel);
 			console.log('Validation Result:', validationResult);
 
@@ -231,63 +207,62 @@
 	}
 
 	let inputMap = {
-	'Auth.QueryParams': { key: '', value: '' },
-	'Auth.Headers': { key: '', value: '' },
-	'Fetch.QueryParams': { key: '', value: '' },
-	'Fetch.Headers': { key: '', value: '' }
-};
+		'Auth.QueryParams': { key: '', value: '' },
+		'Auth.Headers': { key: '', value: '' },
+		'Fetch.QueryParams': { key: '', value: '' },
+		'Fetch.Headers': { key: '', value: '' }
+	};
 
-function ensurePath(path: string) {
-	const parts = path.split('.');
-	let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
-	for (let i = 0; i < parts.length - 1; i++) {
-		obj = obj[parts[i]] ||= {};
+	function ensurePath(path: string) {
+		const parts = path.split('.');
+		let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
+		for (let i = 0; i < parts.length - 1; i++) {
+			obj = obj[parts[i]] ||= {};
+		}
+		obj[parts[parts.length - 1]] ||= {};
 	}
-	obj[parts[parts.length - 1]] ||= {};
-}
 
-function addKeyValue(path: string) {
-	ensurePath(path);
-	const { key, value } = inputMap[path];
-	if (key && value) {
+	function addKeyValue(path: string) {
+		ensurePath(path);
+		const { key, value } = inputMap[path];
+		if (key && value) {
+			const parts = path.split('.');
+			let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
+			for (let i = 0; i < parts.length - 1; i++) {
+				obj = obj[parts[i]];
+			}
+			const final = parts[parts.length - 1];
+
+			obj[final] = {
+				...obj[final],
+				[key]: value
+			};
+
+			inputMap[path] = { key: '', value: '' };
+		}
+	}
+
+	function removeKeyValue(path: string, key: string) {
 		const parts = path.split('.');
 		let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
 		for (let i = 0; i < parts.length - 1; i++) {
 			obj = obj[parts[i]];
 		}
 		const final = parts[parts.length - 1];
-
-		obj[final] = {
-			...obj[final],
-			[key]: value
-		};
-
-		inputMap[path] = { key: '', value: '' };
+		const copy = { ...obj[final] };
+		delete copy[key];
+		obj[final] = copy;
 	}
-}
 
-function removeKeyValue(path: string, key: string) {
-	const parts = path.split('.');
-	let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
-	for (let i = 0; i < parts.length - 1; i++) {
-		obj = obj[parts[i]];
+	function getObject(path: string) {
+		const parts = path.split('.');
+		let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
+		for (const part of parts) {
+			if (!obj) return null;
+			obj = obj[part];
+		}
+		return obj;
 	}
-	const final = parts[parts.length - 1];
-	const copy = { ...obj[final] };
-	delete copy[key];
-	obj[final] = copy;
-}
-
-function getObject(path: string) {
-	const parts = path.split('.');
-	let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
-	for (const part of parts) {
-		if (!obj) return null;
-		obj = obj[part];
-	}
-	return obj;
-}
-
 </script>
 
 <div class="px-6 py-4">
@@ -489,7 +464,7 @@ function getObject(path: string) {
 									</button>
 								</td>
 							</tr>
-						
+
 							<tr>
 								<td>
 									<label>Auth Query Params</label>
@@ -498,12 +473,12 @@ function getObject(path: string) {
 									<button
 										type="button"
 										onclick={() => addKeyValue('Auth.QueryParams')}
-										class="mb-2 rounded bg-blue-500 px-3 py-1 text-white text-sm hover:bg-blue-600"
+										class="mb-2 rounded bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600"
 									>
 										Add Param
 									</button>
-							
-									<div class="flex gap-2 mb-2">
+
+									<div class="mb-2 flex gap-2">
 										<input
 											placeholder="Key"
 											class="w-1/2 rounded border p-2 text-sm"
@@ -515,9 +490,11 @@ function getObject(path: string) {
 											bind:value={inputMap['Auth.QueryParams'].value}
 										/>
 									</div>
-							
+
 									{#each Object.entries(getObject('Auth.QueryParams') || {}) as [key, value]}
-										<div class="flex justify-between items-center text-sm mb-1 border rounded px-2 py-1 bg-gray-50">
+										<div
+											class="mb-1 flex items-center justify-between rounded border bg-gray-50 px-2 py-1 text-sm"
+										>
 											<span>{key}: {value}</span>
 											<button
 												type="button"
@@ -530,7 +507,7 @@ function getObject(path: string) {
 									{/each}
 								</td>
 							</tr>
-							
+
 							<tr>
 								<td>
 									<label for="tokenPath">Token Path</label>
@@ -809,47 +786,14 @@ function getObject(path: string) {
 								</td>
 							</tr>
 
-							{#each followUpSettingUpdateModel.ApiIntegrationSettings.ReminderSchedule as schedule, i}
-								<tr>
-									<td>
-										<div class="flex border-b pb-1 text-sm last:border-none">
-											<span class="px-2">{i + 1}</span>
-											<span class="justify-left">{schedule.Type}</span>
-										</div>
-									</td>
-									<td class="flex items-center justify-between gap-2 text-sm">
-										{#if schedule.TimeOfDay}
-											{schedule.TimeOfDay}
-										{:else if schedule.OffsetValue}
-											{schedule.OffsetValue} {schedule.OffsetUnit} before
-										{:else}
-											—
-										{/if}
-
-										<!-- Buttons -->
-										<div class="flex gap-2">
-											<button
-												class="text-xs text-blue-600 underline"
-												onclick={(event) => {
-													event.preventDefault();
-													editSchedule(i);
-												}}
-											>
-												Edit
-											</button>
-											<button
-												class="text-xs text-red-600 underline"
-												onclick={(event) => {
-													event.preventDefault();
-													deleteSchedule(i);
-												}}
-											>
-												Delete
-											</button>
-										</div>
-									</td>
-								</tr>
-							{/each}
+						
+							<ReminderScheduleList
+								bind:reminderSchedule={
+									followUpSettingUpdateModel.ApiIntegrationSettings.ReminderSchedule
+								}
+								{deleteSchedule}
+								{editSchedule}
+							/>
 						{/if}
 						{#if followUpSettingUpdateModel.Source === 'File'}
 							<tr>
@@ -867,47 +811,13 @@ function getObject(path: string) {
 								</td>
 							</tr>
 
-							{#each followUpSettingUpdateModel.FileUploadSettings.ReminderSchedule as schedule, i}
-								<tr>
-									<td>
-										<div class="flex border-b pb-1 text-sm last:border-none">
-											<span class="px-2">{i + 1}</span>
-											<span class="justify-left">{schedule.Type}</span>
-										</div>
-									</td>
-									<td class="flex items-center justify-between gap-2 text-sm">
-										{#if schedule.TimeOfDay}
-											{schedule.TimeOfDay}
-										{:else if schedule.OffsetValue}
-											{schedule.OffsetValue} {schedule.OffsetUnit} before
-										{:else}
-											—
-										{/if}
-
-										<!-- Buttons -->
-										<div class="flex gap-2">
-											<button
-												class="text-xs text-blue-600 underline"
-												onclick={(event) => {
-													event.preventDefault();
-													editSchedule(i);
-												}}
-											>
-												Edit
-											</button>
-											<button
-												class="text-xs text-red-600 underline"
-												onclick={(event) => {
-													event.preventDefault();
-													deleteSchedule(i);
-												}}
-											>
-												Delete
-											</button>
-										</div>
-									</td>
-								</tr>
-							{/each}
+							<ReminderScheduleList
+								bind:reminderSchedule={
+									followUpSettingUpdateModel.FileUploadSettings.ReminderSchedule
+								}
+								{deleteSchedule}
+								{editSchedule}
+							/>
 						{/if}
 					</tbody>
 				</table>
@@ -925,95 +835,5 @@ function getObject(path: string) {
 	</div>
 </div>
 {#if showReminderModal}
-	<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" transition:fade>
-		<!-- Modal Box -->
-		<div class="relative w-[100%] max-w-md rounded-xl bg-white p-6 shadow-lg">
-			<div class="health-system-table-container">
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th class="w-[30%]">Add Reminder Schedule </th>
-							<th class="w-[70%] text-end">
-								<button class="cancel-btn" onclick={() => (showReminderModal = false)}>
-									<Icon icon="material-symbols:close-rounded" class="text-2xl" />
-								</button>
-							</th>
-						</tr>
-					</thead>
-
-					<tbody>
-						<tr>
-							<td>
-								<label for="type" class="mb-1 block font-medium"
-									>Type <span class="text-red-700">*</span></label
-								>
-							</td>
-							<td>
-								<select bind:value={newReminder.Type} class="w-full rounded border p-2">
-									<option value="PreviousDay">Previous Day</option>
-									<option value="SameDayMorning">Same Day Morning</option>
-									<option value="StartOfDay">Start Of Day</option>
-									<option value="XHoursBefore">X Hours Before</option>
-									<option value="XMinutesBefore">X Minutes Before</option>
-									<option value="CustomTimeBefore">Custom Time Before</option>
-									<option value="AfterAppointment">After Appointment</option>
-									<option value="EndOfDay">End Of Day</option>
-									<option value="NoReminder">No Reminder</option>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<label for="offset" class="mb-1 block font-medium">Offset Value</label>
-							</td>
-							<td>
-								<input
-									type="number"
-									bind:value={newReminder.OffsetValue}
-									placeholder="Enter offset value"
-									class="w-full rounded border p-2"
-								/>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<label for="unit" class="mb-1 block font-medium">Offset Unit</label>
-							</td>
-							<td>
-								<select bind:value={newReminder.OffsetUnit} class="w-full rounded border p-2">
-									<option value="minutes">Minutes</option>
-									<option value="hours">Hours</option>
-									<option value="days">Days</option>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<label for="time" class="mb-1 block font-medium">Time of Day</label>
-							</td>
-							<td>
-								<input
-									type="time"
-									bind:value={newReminder.TimeOfDay}
-									class="w-full rounded border p-2"
-								/>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-
-				<div class=" flex justify-end gap-3 p-3">
-					<button
-						class="cancel-btn rounded px-4 py-2 text-sm hover:bg-gray-300"
-						onclick={() => (showReminderModal = false)}
-					>
-						Cancel
-					</button>
-					<button class="table-btn variant-filled-secondary gap-1 rounded" onclick={addSchedule}>
-						Add
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
+<ReminderScheduleForm {showReminderModal} bind:newReminder {addSchedule} />
 {/if}
