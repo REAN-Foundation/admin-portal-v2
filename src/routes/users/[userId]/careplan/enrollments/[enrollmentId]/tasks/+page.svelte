@@ -1,5 +1,4 @@
 <script lang="ts">
-	import date from 'date-and-time';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import type { PageServerData } from './$types';
 	import { page } from '$app/state';

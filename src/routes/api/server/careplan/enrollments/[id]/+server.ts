@@ -59,7 +59,7 @@ export const GET = async (event: RequestEvent) => {
     }
 };
 
-export const GET_STAT = async (event: RequestEvent) => {
+export const _GET = async (event: RequestEvent) => {
     try {
         const sessionId = event.request.headers.get("session-id");
         if (!sessionId) {
