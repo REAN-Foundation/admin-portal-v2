@@ -96,7 +96,7 @@
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
 			<h2 class="form-titles">Create Article</h2>
-			<a href={createRoute} class="form-cancel-btn">
+			<a href={assetRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
 		</div>
@@ -104,7 +104,7 @@
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
-					<td class=" table-label">Name <span class="important-field">*</span></td>
+					<td class="table-label">Name <span class="important-field">*</span></td>
 					<td class="table-data">
 						<input
 							type="text"
