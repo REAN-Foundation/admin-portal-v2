@@ -8,6 +8,7 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { ArticlesUpdateModel } from '$lib/types/articles';
 	import { createOrUpdateSchema } from '$lib/validation/articles.schema';
+	import Button from '$lib/components/button/button.svelte';
 
 	//////////////////////////////////////////////////////////////////////////////////
 	let { data, form }: { data: PageServerData; form: any } = $props();
@@ -197,13 +198,7 @@
 			<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary">
 				Reset
 			</button>
-			{#await promise}
-				<button type="submit" class="table-btn variant-soft-secondary" disabled>
-					Submitting
-				</button>
-			{:then data}
-				<button type="submit" class="table-btn variant-soft-secondary">Submit</button>
-			{/await}
+			<Button />
 		</div>
 	</form>
 </div>

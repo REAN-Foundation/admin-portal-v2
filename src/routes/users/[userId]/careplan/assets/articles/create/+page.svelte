@@ -7,6 +7,7 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { ArticlesCreateModel } from '$lib/types/articles.js';
 	import { createOrUpdateSchema } from '$lib/validation/articles.schema.js';
+	import Button from '$lib/components/button/button.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////
 	let { data, form } = $props();
@@ -96,7 +97,7 @@
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
 			<h2 class="form-titles">Create Article</h2>
-			<a href={createRoute} class="form-cancel-btn">
+			<a href={assetRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
 		</div>
@@ -104,7 +105,7 @@
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
-					<td class=" table-label">Name <span class="important-field">*</span></td>
+					<td class="table-label">Name <span class="important-field">*</span></td>
 					<td class="table-data">
 						<input
 							type="text"
@@ -176,13 +177,7 @@
 			</tbody>
 		</table>
 		<div class="btn-container">
-			{#await promise}
-				<button type="submit" class="table-btn variant-soft-secondary" disabled>
-					Submitting
-				</button>
-			{:then data}
-				<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
-			{/await}
+			<Button/>
 		</div>
 	</form>
 </div>
