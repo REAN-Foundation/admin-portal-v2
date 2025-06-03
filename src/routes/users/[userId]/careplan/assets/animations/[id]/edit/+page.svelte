@@ -142,7 +142,9 @@
 					<td class="table-data">
 						<textarea
 							name="transcript"
-							class="input resize-none {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
+							class="input resize-none {errors?.Transcript
+								? 'border-error-300'
+								: 'border-primary-200'}"
 							bind:value={transcript}
 							placeholder="Enter transcript here..."
 						></textarea>
