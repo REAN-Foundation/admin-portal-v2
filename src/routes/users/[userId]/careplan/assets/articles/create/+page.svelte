@@ -7,6 +7,7 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { ArticlesCreateModel } from '$lib/types/articles.js';
 	import { createOrUpdateSchema } from '$lib/validation/articles.schema.js';
+	import Button from '$lib/components/button/button.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////
 	let { data, form } = $props();
@@ -176,13 +177,7 @@
 			</tbody>
 		</table>
 		<div class="btn-container">
-			{#await promise}
-				<button type="submit" class="table-btn variant-soft-secondary" disabled>
-					Submitting
-				</button>
-			{:then data}
-				<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
-			{/await}
+			<Button/>
 		</div>
 	</form>
 </div>
