@@ -11,7 +11,7 @@
 	//////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();	
-$inspect(data)
+	$inspect(data)
 
 	let debounceTimeout;
 	let isLoading = $state(false);

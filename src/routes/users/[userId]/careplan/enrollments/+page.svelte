@@ -82,9 +82,7 @@
 			if (model.displayId ?? displayId) {
 				url += `&displayId=${model.displayId ?? displayId}`;
 			}
-
-			let rawDate = model.startDate ?? startDate;
-
+			
 			if (model.startDate ?? startDate) {
 				url += `&startDate=${model.startDate ?? startDate}`;
 			}
@@ -276,7 +274,7 @@
 								name="startDate"
 								placeholder="Search by start date"
 								bind:value={startDate}
-								class="table-input-field hide-calendar-icon w-64 pr-6 pl-4"
+								class="table-input-field hide-calendar-icon w-52 pr-6 pl-4"
 								oninput={(event) => onSearchInput(event, 'startDate')}
 							/>
 
@@ -295,7 +293,7 @@
 							name="endDate"
 							placeholder="Search by end date"
 							bind:value={endDate}
-							class="table-input-field hide-calendar-icon w-64 pr-6 pl-4"
+							class="table-input-field hide-calendar-icon w-52 pr-6 pl-4"
 							oninput={(event) => onSearchInput(event, 'endDate')}
 						/>
 						{#if endDate}

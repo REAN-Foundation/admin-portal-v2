@@ -896,3 +896,7 @@ tr {
 .edit-btn {
 	@apply inline-flex cursor-pointer items-center justify-center gap-1 rounded-md px-3 py-2 text-center text-sm whitespace-nowrap text-[var(--color-info)] transition-all duration-150 ease-in-out hover:bg-[var(--color-active)];
 }
+
+.container {
+	@apply w-full h-full;
+}

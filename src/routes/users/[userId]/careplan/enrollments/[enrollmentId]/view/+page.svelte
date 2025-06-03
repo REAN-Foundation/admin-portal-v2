@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
-	import date from 'date-and-time';
 	import { page } from '$app/state';
 	import EnrollmentDisplay from '$lib/components/enrollment.display/enrollment.display.svelte';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
+	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 
 	////////////////////////////////////////////////////////////////////////
 
@@ -59,7 +59,7 @@
 	<div class="forms-container">
 		<div class="form-header">
 			<h2 class="form-title">View Enrollment</h2>
-			<a href={enrollmentsRoute} class="cancel-btn">
+			<a href={enrollmentsRoute} class="cancel-btn text-end">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
 		</div>
@@ -93,15 +93,24 @@
 					</tr>
 					<tr>
 						<td class="form-td-left">Enrollment Date</td>
-						<td class="form-td-right">{date.format(new Date(enrollment.EnrollmentDate), 'DD-MMM-YYYY')}</td>
+						<td class="form-td-right">{TimeHelper.formatDateToReadable(
+											enrollment.EnrollmentDate,
+											LocaleIdentifier.EN_US
+										)}</td>
 					</tr>
 					<tr>
 						<td class="form-td-left">Start Date</td>
-						<td class="form-td-right">{date.format(new Date(enrollment.StartDate), 'DD-MMM-YYYY')}</td>
+						<td class="form-td-right">{TimeHelper.formatDateToReadable(
+											enrollment.StartDate,
+											LocaleIdentifier.EN_US
+										)}</td>
 					</tr>
 					<tr>
 						<td class="form-td-left">End Date</td>
-						<td class="form-td-right">{date.format(new Date(enrollment.EndDate), 'DD-MMM-YYYY')}</td>
+						<td class="form-td-right">{TimeHelper.formatDateToReadable(
+											enrollment.EndDate,
+											LocaleIdentifier.EN_US
+										)}</td>
 					</tr>
 					<tr>
 						<td class="form-td-left">Current Week</td>
