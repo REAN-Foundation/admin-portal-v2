@@ -365,8 +365,15 @@ export const buildSidebarMenu = (
 		tenantSettings,
 		options
 	);
-	sidebarNaviagation = addGMUMenus(sidebarNaviagation, userId, userRole, tenantSettings, options);
+	// sidebarNaviagation = addGMUMenus(sidebarNaviagation, userId, userRole, tenantSettings, options);
 	// Add here any new menu items
+	sidebarNaviagation = addAppointmentMenu(
+		sidebarNaviagation,
+		userId,
+		userRole,
+		tenantSettings,
+		options
+	);
 
 	console.log('sidebarMenu', sidebarNaviagation);
 
@@ -1178,7 +1185,65 @@ function addGamificationMenus(
 	return sidebarMenu;
 }
 
-function addGMUMenus(
+// function addGMUMenus(
+// 	sidebarMenu: NavigationMenu[],
+// 	userId: string,
+// 	userRole: string,
+// 	tenantSettings: any,
+// 	options: FeatureOptions
+// ): NavigationMenu[] {
+// 	const menuList: SidebarMenu[] = [];
+
+// 	const gmu: SidebarMenu = {
+// 		name: 'GMU',
+// 		title: 'Appointment Follow-Up',
+// 		icon: 'simple-icons:gamedeveloper',
+// 		link: null,
+// 		children: []
+// 	};
+// 	menuList.push(gmu);
+
+// 	const pdfUpload: SidebarMenu = {
+// 		name: 'Appointment-pdf-Upload',
+// 		title: 'Set-Reminders',
+// 		icon: 'mdi:event-edit',
+// 		link: `/users/${userId}/appointment-followup/set-reminders`,
+// 		children: []
+// 	};
+// 	menuList.push(pdfUpload);
+
+// 	const statusReport: SidebarMenu = {
+// 		name: 'Appointment-Status-Report',
+// 		title: 'Status Report',
+// 		icon: 'octicon:id-badge-16',
+// 		link: `/users/${userId}/appointment-followup/summary-uploads`,
+// 		children: []
+// 	};
+// 	menuList.push(statusReport);
+
+// 	const gmu_: SidebarMenu = getMenu(menuList, 'GMU');
+// 	const pdfUpload_: SidebarMenu = getMenu(menuList, 'Appointment-pdf-Upload');
+// 	const statusReport_: SidebarMenu = getMenu(menuList, 'Appointment-Status-Report');
+
+// 	gmu_?.children.push(pdfUpload_);
+// 	gmu_?.children.push(statusReport_);
+// 	// gamification_?.children.push(badges_);
+// 	// gamification_?.children.push(schemas_);
+
+// 	const gmuNavigation: NavigationMenu | null = toNavigation(
+// 		gmu_,
+// 		userRole,
+// 		tenantSettings,
+// 		options
+// 	);
+// 	if (gmuNavigation) {
+// 		sidebarMenu.push(gmuNavigation);
+// 	}
+
+// 	return sidebarMenu;
+// }
+
+function addAppointmentMenu(
 	sidebarMenu: NavigationMenu[],
 	userId: string,
 	userRole: string,
@@ -1196,32 +1261,7 @@ function addGMUMenus(
 	};
 	menuList.push(gmu);
 
-	const pdfUpload: SidebarMenu = {
-		name: 'Appointment-pdf-Upload',
-		title: 'Set-Reminders',
-		icon: 'mdi:event-edit',
-		link: `/users/${userId}/appointment-followup/set-reminders`,
-		children: []
-	};
-	menuList.push(pdfUpload);
-
-	const statusReport: SidebarMenu = {
-		name: 'Appointment-Status-Report',
-		title: 'Status Report',
-		icon: 'octicon:id-badge-16',
-		link: `/users/${userId}/appointment-followup/summary-uploads`,
-		children: []
-	};
-	menuList.push(statusReport);
-
 	const gmu_: SidebarMenu = getMenu(menuList, 'GMU');
-	const pdfUpload_: SidebarMenu = getMenu(menuList, 'Appointment-pdf-Upload');
-	const statusReport_: SidebarMenu = getMenu(menuList, 'Appointment-Status-Report');
-
-	gmu_?.children.push(pdfUpload_);
-	gmu_?.children.push(statusReport_);
-	// gamification_?.children.push(badges_);
-	// gamification_?.children.push(schemas_);
 
 	const gmuNavigation: NavigationMenu | null = toNavigation(
 		gmu_,
