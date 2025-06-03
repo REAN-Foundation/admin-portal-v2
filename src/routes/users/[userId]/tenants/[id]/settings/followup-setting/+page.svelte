@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import FollowUpSettings from '$lib/components/follow-up-settings.svelte';
 	import ReminderScheduleForm from '$lib/components/reminder-schedule-form.svelte';
 	import ReminderScheduleList from '$lib/components/reminder-schedule-list.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
@@ -179,90 +180,90 @@
 		showReminderModal = false;
 	};
 
-	let newParamKey = $state('');
-	let newParamValue = $state('');
+	// let newParamKey = $state('');
+	// let newParamValue = $state('');
 
-	// Ensure QueryParams is initialized as an object
-	if (!followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams) {
-		followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams = {};
-	}
+	// // Ensure QueryParams is initialized as an object
+	// if (!followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams) {
+	// 	followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams = {};
+	// }
 
-	function addQueryParam() {
-		if (newParamKey && newParamValue) {
-			// clone existing object to trigger reactivity
-			followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams = {
-				...followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams,
-				[newParamKey]: newParamValue
-			};
+	// function addQueryParam() {
+	// 	if (newParamKey && newParamValue) {
+	// 		// clone existing object to trigger reactivity
+	// 		followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams = {
+	// 			...followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams,
+	// 			[newParamKey]: newParamValue
+	// 		};
 
-			// reset inputs
-			newParamKey = '';
-			newParamValue = '';
-		}
-	}
-	function removeQueryParam(key: string) {
-		const current = { ...followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams };
-		delete current[key];
-		followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams = current;
-	}
+	// 		// reset inputs
+	// 		newParamKey = '';
+	// 		newParamValue = '';
+	// 	}
+	// }
+	// function removeQueryParam(key: string) {
+	// 	const current = { ...followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams };
+	// 	delete current[key];
+	// 	followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams = current;
+	// }
 
-	let inputMap = {
-		'Auth.QueryParams': { key: '', value: '' },
-		'Auth.Headers': { key: '', value: '' },
-		'Fetch.QueryParams': { key: '', value: '' },
-		'Fetch.Headers': { key: '', value: '' }
-	};
+	// let inputMap = {
+	// 	'Auth.QueryParams': { key: '', value: '' },
+	// 	'Auth.Headers': { key: '', value: '' },
+	// 	'Fetch.QueryParams': { key: '', value: '' },
+	// 	'Fetch.Headers': { key: '', value: '' }
+	// };
 
-	function ensurePath(path: string) {
-		const parts = path.split('.');
-		let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
-		for (let i = 0; i < parts.length - 1; i++) {
-			obj = obj[parts[i]] ||= {};
-		}
-		obj[parts[parts.length - 1]] ||= {};
-	}
+	// function ensurePath(path: string) {
+	// 	const parts = path.split('.');
+	// 	let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
+	// 	for (let i = 0; i < parts.length - 1; i++) {
+	// 		obj = obj[parts[i]] ||= {};
+	// 	}
+	// 	obj[parts[parts.length - 1]] ||= {};
+	// }
 
-	function addKeyValue(path: string) {
-		ensurePath(path);
-		const { key, value } = inputMap[path];
-		if (key && value) {
-			const parts = path.split('.');
-			let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
-			for (let i = 0; i < parts.length - 1; i++) {
-				obj = obj[parts[i]];
-			}
-			const final = parts[parts.length - 1];
+	// function addKeyValue(path: string) {
+	// 	ensurePath(path);
+	// 	const { key, value } = inputMap[path];
+	// 	if (key && value) {
+	// 		const parts = path.split('.');
+	// 		let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
+	// 		for (let i = 0; i < parts.length - 1; i++) {
+	// 			obj = obj[parts[i]];
+	// 		}
+	// 		const final = parts[parts.length - 1];
 
-			obj[final] = {
-				...obj[final],
-				[key]: value
-			};
+	// 		obj[final] = {
+	// 			...obj[final],
+	// 			[key]: value
+	// 		};
 
-			inputMap[path] = { key: '', value: '' };
-		}
-	}
+	// 		inputMap[path] = { key: '', value: '' };
+	// 	}
+	// }
 
-	function removeKeyValue(path: string, key: string) {
-		const parts = path.split('.');
-		let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
-		for (let i = 0; i < parts.length - 1; i++) {
-			obj = obj[parts[i]];
-		}
-		const final = parts[parts.length - 1];
-		const copy = { ...obj[final] };
-		delete copy[key];
-		obj[final] = copy;
-	}
+	// function removeKeyValue(path: string, key: string) {
+	// 	const parts = path.split('.');
+	// 	let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
+	// 	for (let i = 0; i < parts.length - 1; i++) {
+	// 		obj = obj[parts[i]];
+	// 	}
+	// 	const final = parts[parts.length - 1];
+	// 	const copy = { ...obj[final] };
+	// 	delete copy[key];
+	// 	obj[final] = copy;
+	// }
 
-	function getObject(path: string) {
-		const parts = path.split('.');
-		let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
-		for (const part of parts) {
-			if (!obj) return null;
-			obj = obj[part];
-		}
-		return obj;
-	}
+	// function getObject(path: string) {
+	// 	const parts = path.split('.');
+	// 	let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
+	// 	for (const part of parts) {
+	// 		if (!obj) return null;
+	// 		obj = obj[part];
+	// 	}
+	// 	return obj;
+	// }
 </script>
 
 <div class="px-6 py-4">
@@ -421,90 +422,17 @@
 									<label for="queryParams">Request Query Params</label>
 								</td>
 								<td>
-									<!-- Add button -->
-
-									<!-- Inputs -->
-									<div class="mb-2 flex gap-2">
-										<input
-											placeholder="Key"
-											class="w-1/2 rounded border p-2 text-sm"
-											bind:value={newParamKey}
-										/>
-										<input
-											placeholder="Value"
-											class="w-1/2 rounded border p-2 text-sm"
-											bind:value={newParamValue}
-										/>
-									</div>
-
-									<!-- List of added key-value pairs -->
-									{#if followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams}
-										{#each Object.entries(followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams) as [key, value]}
-											<div
-												class="mb-1 flex items-center justify-between rounded border bg-gray-50 px-2 py-1 text-sm"
-											>
-												<span class="truncate">{key}: {value}</span>
-												<button
-													class="text-xs text-red-500 hover:underline"
-													onclick={(event) => {
-														event.preventDefault();
-														removeQueryParam(key);
-													}}
-												>
-													Remove
-												</button>
-											</div>
-										{/each}
-									{/if}
-									<button
-										class="mb-2 rounded bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600"
-										onclick={addQueryParam}
-									>
-										Add Param
-									</button>
+								
+									<FollowUpSettings model={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams}/>
 								</td>
 							</tr>
 
 							<tr>
 								<td>
-									<label>Auth Query Params</label>
+									<label for="headers">Auth Query Headers</label>
 								</td>
 								<td>
-									<button
-										type="button"
-										onclick={() => addKeyValue('Auth.QueryParams')}
-										class="mb-2 rounded bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600"
-									>
-										Add Param
-									</button>
-
-									<div class="mb-2 flex gap-2">
-										<input
-											placeholder="Key"
-											class="w-1/2 rounded border p-2 text-sm"
-											bind:value={inputMap['Auth.QueryParams'].key}
-										/>
-										<input
-											placeholder="Value"
-											class="w-1/2 rounded border p-2 text-sm"
-											bind:value={inputMap['Auth.QueryParams'].value}
-										/>
-									</div>
-
-									{#each Object.entries(getObject('Auth.QueryParams') || {}) as [key, value]}
-										<div
-											class="mb-1 flex items-center justify-between rounded border bg-gray-50 px-2 py-1 text-sm"
-										>
-											<span>{key}: {value}</span>
-											<button
-												type="button"
-												class="text-xs text-red-500 hover:underline"
-												onclick={() => removeKeyValue('Auth.QueryParams', key)}
-											>
-												Remove
-											</button>
-										</div>
-									{/each}
+									<FollowUpSettings model={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Headers}/>
 								</td>
 							</tr>
 
