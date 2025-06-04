@@ -25,23 +25,23 @@
 	}
 </script>
 
+<div class="my-2 flex gap-2">
+	<input
+	type="text"
+	placeholder="Key"
+	class="w-1/2 rounded border p-2 text-sm"
+	bind:value={newParamKey}
+	/>
+	<input
+	type="text"
+	placeholder="Value"
+	class="w-1/2 rounded border p-2 text-sm"
+	bind:value={newParamValue}
+	/>
+</div>
 <button type="button" class="table-btn variant-filled-secondary gap-1" onclick={addQueryParam}>
 	Add New
 </button>
-<div class="my-2 flex gap-2">
-	<input
-		type="text"
-		placeholder="Key"
-		class="w-1/2 rounded border p-2 text-sm"
-		bind:value={newParamKey}
-	/>
-	<input
-		type="text"
-		placeholder="Value"
-		class="w-1/2 rounded border p-2 text-sm"
-		bind:value={newParamValue}
-	/>
-</div>
 
 {#if Object.keys(model).length}
 	{#each Object.entries(model) as [key, value]}

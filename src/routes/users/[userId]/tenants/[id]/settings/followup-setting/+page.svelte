@@ -9,8 +9,10 @@
 	import Icon from '@iconify/svelte';
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////
-	
+
 	let { data, form } = $props();
+
+	$inspect('data', data);
 	let promise = $state();
 	let errors: Record<string, string> = $state({});
 	$inspect('errors', errors);
@@ -21,41 +23,41 @@
 	const tenantRoute = `/users/${userId}/tenants/${tenantId}/settings/followup-setting`;
 	let reminderSchedules: ReminderTrigger[] = $state([]);
 	let followUpSettingUpdateModel = $state({
-		Source: 'Api',
+		Source: data.settings.Source,
 		// FileUploadSettings:{},
 		FileUploadSettings: {
 			// FileUploadConfig: {
-			FileColumnFormat: '',
-			FileType: '',
-			ReminderSchedule: []
+			FileColumnFormat: data.settings.FileUploadSettings?.FileColumnFormat,
+			FileType: data.settings.FileUploadSettings?.FileType,
+			ReminderSchedule: data.settings.FileUploadSettings?.ReminderSchedule
 			// }
 		},
 		ApiIntegrationSettings: {
 			Auth: {
-				Method: '',
-				Url: '',
-				Body: '',
-				QueryParams: {},
-				Headers: {},
-				TokenPath: '',
-				ResponseType: '',
+				Method: data.settings.ApiIntegrationSettings?.Auth?.Method,
+				Url: data.settings.ApiIntegrationSettings?.Auth?.Url,
+				Body: data.settings.ApiIntegrationSettings?.Auth?.Body,
+				QueryParams: data.settings.ApiIntegrationSettings?.Auth?.QueryParams,
+				Headers: data.settings.ApiIntegrationSettings?.Auth?.Headers,
+				TokenPath: data.settings.ApiIntegrationSettings?.Auth?.TokenPath,
+				ResponseType: data.settings.ApiIntegrationSettings?.Auth?.ResponseType,
 				TokenInjection: {
-					Location: '',
-					Key: '',
-					Prefix: ''
+					Location: data.settings.ApiIntegrationSettings?.Auth?.TokenInjection.Location,
+					Key: data.settings.ApiIntegrationSettings?.Auth?.TokenInjection.Key,
+					Prefix: data.settings.ApiIntegrationSettings?.Auth?.TokenInjection.Prefix
 				}
 			},
 			Fetch: {
-				Method: '',
-				Url: '',
-				QueryParams: {},
-				Body: '',
-				Headers: {},
-				ResponseType: '',
-				ResponseField: ''
+				Method: data.settings.ApiIntegrationSettings?.Fetch.Method,
+				Url: data.settings.ApiIntegrationSettings?.Fetch.Url,
+				QueryParams: data.settings.ApiIntegrationSettings?.Fetch.QueryParams,
+				Body: data.settings.ApiIntegrationSettings?.Fetch.Body,
+				Headers: data.settings.ApiIntegrationSettings?.Fetch.Headers,
+				ResponseType: data.settings.ApiIntegrationSettings?.Fetch.ResponseType,
+				ResponseField: data.settings.ApiIntegrationSettings?.Fetch.ResponseField
 			},
-			ReminderSchedule: [],
-			ScheduleFrequency: ''
+			ReminderSchedule: data.settings.ApiIntegrationSettings?.ReminderSchedule,
+			ScheduleFrequency: data.settings.ApiIntegrationSettings?.ScheduleFrequency
 		}
 	});
 	const handleSubmit = async (event: Event) => {
@@ -203,7 +205,7 @@
 						<tr>
 							<th class="w-[30%]">Appointment Follow-Up Setting</th>
 							<th class="w-[70%] text-end">
-								<a href={tenantRoute} class="cancel-btn ">
+								<a href={tenantRoute} class="cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
