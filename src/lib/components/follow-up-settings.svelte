@@ -1,71 +1,56 @@
 <script lang="ts">
-	let { model } = $props();
+	import Icon from "@iconify/svelte";
+
+	let { model = $bindable() } = $props();
 
 	let newParamKey = $state('');
 	let newParamValue = $state('');
 
-	// Ensure QueryParams is initialized as an object
-	if (!model) {
-		model = {};
-	}
-
 	function addQueryParam() {
-		if (newParamKey && newParamValue) {
-			// clone existing object to trigger reactivity
+		if (newParamKey.trim() && newParamValue.trim()) {
 			model = {
 				...model,
-				[newParamKey]: newParamValue
+				[newParamKey.trim()]: newParamValue.trim()
 			};
 
-			// reset inputs
 			newParamKey = '';
 			newParamValue = '';
 		}
 	}
+
 	function removeQueryParam(key: string) {
-		const current = { ...model };
-		delete current[key];
-		model = current;
+		const updatedModel = { ...model };
+		delete updatedModel[key];
+		model = updatedModel;
 	}
 </script>
 
-<td>
-	<!-- Add button -->
+<button type="button" class="table-btn variant-filled-secondary gap-1" onclick={addQueryParam}>
+	Add New
+</button>
+<div class="my-2 flex gap-2">
+	<input
+		type="text"
+		placeholder="Key"
+		class="w-1/2 rounded border p-2 text-sm"
+		bind:value={newParamKey}
+	/>
+	<input
+		type="text"
+		placeholder="Value"
+		class="w-1/2 rounded border p-2 text-sm"
+		bind:value={newParamValue}
+	/>
+</div>
 
-	<!-- Inputs -->
-	<div class="mb-2 flex gap-2">
-		<input placeholder="Key" class="w-1/2 rounded border p-2 text-sm" bind:value={newParamKey} />
-		<input
-			placeholder="Value"
-			class="w-1/2 rounded border p-2 text-sm"
-			bind:value={newParamValue}
-		/>
-	</div>
+{#if Object.keys(model).length}
+	{#each Object.entries(model) as [key, value]}
+		<div class="mb-1 flex items-center justify-between rounded bg-gray-50 px-2 py-1 text-sm">
+			<span class="truncate">{key}: {value}</span>
+			<button class="health-system-btn !text-red-600" onclick={() => removeQueryParam(key)}>
+				<Icon icon="material-symbols:delete-outline-rounded" height=15 width=15 />
+			</button>
+		</div>
+	{/each}
+{/if}
 
-	<!-- List of added key-value pairs -->
-	{#if model}
-		{#each Object.entries(model) as [key, value]}
-			<div
-				class="mb-1 flex items-center justify-between rounded border bg-gray-50 px-2 py-1 text-sm"
-			>
-				<span class="truncate">{key}: {value}</span>
-				<button
-					class="text-xs text-red-500 hover:underline"
-					onclick={(event) => {
-						event.preventDefault();
-						removeQueryParam(key);
-					}}
-				>
-					Remove
-				</button>
-			</div>
-		{/each}
-	{/if}
-    
-	<button
-		class="mb-2 rounded bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600"
-		onclick={addQueryParam}
-	>
-		Add Param
-	</button>
-</td>

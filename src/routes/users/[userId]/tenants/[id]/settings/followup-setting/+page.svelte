@@ -7,12 +7,13 @@
 	import type { ReminderTrigger } from '$lib/types/tenant.settings.types.js';
 	import { FollowupSettingsSchema } from '$lib/validation/tenant.settings.schema';
 	import Icon from '@iconify/svelte';
-	import { fade, fly } from 'svelte/transition';
 
+	///////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	let { data, form } = $props();
 	let promise = $state();
 	let errors: Record<string, string> = $state({});
-	// $inspect(errors, 'errors');
+	$inspect('errors', errors);
 
 	const userId = page.params.userId;
 
@@ -20,7 +21,7 @@
 	const tenantRoute = `/users/${userId}/tenants/${tenantId}/settings/followup-setting`;
 	let reminderSchedules: ReminderTrigger[] = $state([]);
 	let followUpSettingUpdateModel = $state({
-		Source: 'File',
+		Source: 'Api',
 		// FileUploadSettings:{},
 		FileUploadSettings: {
 			// FileUploadConfig: {
@@ -37,7 +38,7 @@
 				QueryParams: {},
 				Headers: {},
 				TokenPath: '',
-				ResponseType: '', // 'json', 'text', 'form', 'xml'
+				ResponseType: '',
 				TokenInjection: {
 					Location: '',
 					Key: '',
@@ -50,7 +51,7 @@
 				QueryParams: {},
 				Body: '',
 				Headers: {},
-				ResponseType: '', // 'json', 'text', 'form', 'xml'
+				ResponseType: '',
 				ResponseField: ''
 			},
 			ReminderSchedule: [],
@@ -68,7 +69,7 @@
 			}
 			if (followUpSettingUpdateModel.Source === 'File') {
 				// followUpSettingUpdateModel.FileUploadSettings.ReminderSchedule = reminderSchedules;
-				followUpSettingUpdateModel.ApiIntegrationSettings = null;
+				followUpSettingUpdateModel.ApiIntegrationSettings = undefined;
 			}
 
 			console.log('FollowUp Setting UpdateModel:', followUpSettingUpdateModel);
@@ -85,7 +86,7 @@
 				return;
 			}
 
-			const res = await fetch(`/api/server/tenants/settings/${tenantId}/Common`, {
+			const res = await fetch(`/api/server/tenants/settings/${tenantId}/Followup`, {
 				method: 'PUT',
 				body: JSON.stringify(followUpSettingUpdateModel),
 				headers: { 'content-type': 'application/json' }
@@ -179,91 +180,6 @@
 		};
 		showReminderModal = false;
 	};
-
-	// let newParamKey = $state('');
-	// let newParamValue = $state('');
-
-	// // Ensure QueryParams is initialized as an object
-	// if (!followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams) {
-	// 	followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams = {};
-	// }
-
-	// function addQueryParam() {
-	// 	if (newParamKey && newParamValue) {
-	// 		// clone existing object to trigger reactivity
-	// 		followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams = {
-	// 			...followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams,
-	// 			[newParamKey]: newParamValue
-	// 		};
-
-	// 		// reset inputs
-	// 		newParamKey = '';
-	// 		newParamValue = '';
-	// 	}
-	// }
-	// function removeQueryParam(key: string) {
-	// 	const current = { ...followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams };
-	// 	delete current[key];
-	// 	followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams = current;
-	// }
-
-	// let inputMap = {
-	// 	'Auth.QueryParams': { key: '', value: '' },
-	// 	'Auth.Headers': { key: '', value: '' },
-	// 	'Fetch.QueryParams': { key: '', value: '' },
-	// 	'Fetch.Headers': { key: '', value: '' }
-	// };
-
-	// function ensurePath(path: string) {
-	// 	const parts = path.split('.');
-	// 	let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
-	// 	for (let i = 0; i < parts.length - 1; i++) {
-	// 		obj = obj[parts[i]] ||= {};
-	// 	}
-	// 	obj[parts[parts.length - 1]] ||= {};
-	// }
-
-	// function addKeyValue(path: string) {
-	// 	ensurePath(path);
-	// 	const { key, value } = inputMap[path];
-	// 	if (key && value) {
-	// 		const parts = path.split('.');
-	// 		let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
-	// 		for (let i = 0; i < parts.length - 1; i++) {
-	// 			obj = obj[parts[i]];
-	// 		}
-	// 		const final = parts[parts.length - 1];
-
-	// 		obj[final] = {
-	// 			...obj[final],
-	// 			[key]: value
-	// 		};
-
-	// 		inputMap[path] = { key: '', value: '' };
-	// 	}
-	// }
-
-	// function removeKeyValue(path: string, key: string) {
-	// 	const parts = path.split('.');
-	// 	let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
-	// 	for (let i = 0; i < parts.length - 1; i++) {
-	// 		obj = obj[parts[i]];
-	// 	}
-	// 	const final = parts[parts.length - 1];
-	// 	const copy = { ...obj[final] };
-	// 	delete copy[key];
-	// 	obj[final] = copy;
-	// }
-
-	// function getObject(path: string) {
-	// 	const parts = path.split('.');
-	// 	let obj = followUpSettingUpdateModel.ApiIntegrationSettings;
-	// 	for (const part of parts) {
-	// 		if (!obj) return null;
-	// 		obj = obj[part];
-	// 	}
-	// 	return obj;
-	// }
 </script>
 
 <div class="px-6 py-4">
@@ -287,7 +203,7 @@
 						<tr>
 							<th class="w-[30%]">Appointment Follow-Up Setting</th>
 							<th class="w-[70%] text-end">
-								<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
+								<a href={tenantRoute} class="cancel-btn ">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -314,360 +230,31 @@
 								{/if}
 							</td>
 						</tr>
-						{#if followUpSettingUpdateModel.Source === 'File'}
-							<tr>
-								<td>
-									<label for="format" class="text-sm font-medium"
-										>File column format <span class="text-red-700">*</span></label
-									>
-								</td>
-								<td>
-									<input
-										bind:value={followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat}
-										placeholder="Base URL"
-										class="w-full rounded border p-2 text-sm"
-									/>
-									{#if errors?.FileColumnFormat}
-										<p class="text-error">{errors?.FileColumnFormat}</p>
-									{/if}
-								</td>
-							</tr>
-							<!-- <tr>
-								<td colspan="2">
-									<div class="space-y-4">
-										<div class=" flex">
-											<label for="format" class="text-sm font-medium"
-												>File column format <span class="text-red-700">*</span></label
-											>
-											<span class="mx-auto text-xs text-gray-500">JSON</span>
-										</div>
-										<textarea
-											bind:value={
-												followUpSettingUpdateModel.FileUploadSettings.FileUploadConfig
-													.FileColumnFormat
-											}
-											rows="4"
-											class="w-full resize-none rounded border p-2 text-sm"
-										></textarea>
-									</div>
-								</td>
-							</tr> -->
-						{/if}
-
-						{#if followUpSettingUpdateModel.Source === 'Api'}
-							<tr>
-								<td colspan="2">
-									<label for="source" class="text-sm font-semibold">Authentication Endpoint</label>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<!-- <div class="space-y-2">
-									<div class="flex flex-row"> -->
-									<label for="method">API Config Method <span class="text-red-700">*</span></label>
-									<!-- </div> -->
-								</td>
-
-								<td>
-									<select
-										bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Method}
-										class="w-full rounded border p-2 text-sm"
-									>
-										<option value="" disabled selected>Select Method</option>
-										<option value="GET">GET</option>
-										<option value="POST">POST</option>
-										<option value="PUT">PUT</option>
-										<option value="DELETE">DELETE</option>
-										<option value="PATCH">PATCH</option>
-									</select>
-									{#if errors?.ApiIntegrationSettings}
-										<p class="text-error">{errors?.ApiIntegrationSettings}</p>
-									{/if}
-								</td>
-							</tr><tr>
-								<td>
-									<label for="baseUrl">API Base URL <span class="text-red-700">*</span></label>
-								</td>
-								<td>
-									<input
-										bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Url}
-										placeholder="Base URL"
-										class="w-full rounded border p-2 text-sm"
-									/>
-									{#if errors?.Url}
-										<p class="text-error">{errors?.Url}</p>
-									{/if}
-								</td>
-							</tr>
-							<!-- </div> -->
-							<tr>
-								<td>
-									<!-- <div class="flex flex-row"> -->
-									<label for="requestBody"> Request Body </label>
-								</td>
-								<td>
-									<input
-										bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Body}
-										placeholder="Request Body"
-										class="w-full rounded border p-2 text-sm"
-									/>
-									{#if errors?.Body}
-										<p class="text-error">{errors?.Body}</p>
-									{/if}
-								</td>
-								<!-- </div> -->
-							</tr>
-							<tr>
-								<td>
-									<label for="queryParams">Request Query Params</label>
-								</td>
-								<td>
-								
-									<FollowUpSettings model={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams}/>
-								</td>
-							</tr>
-
-							<tr>
-								<td>
-									<label for="headers">Auth Query Headers</label>
-								</td>
-								<td>
-									<FollowUpSettings model={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Headers}/>
-								</td>
-							</tr>
-
-							<tr>
-								<td>
-									<label for="tokenPath">Token Path</label>
-								</td>
-								<td>
-									<input
-										bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenPath}
-										placeholder="Token path (e.g. data.token)"
-										class="w-full rounded border p-2 text-sm"
-									/>
-								</td>
-							</tr>
-
-							<tr>
-								<td>
-									<label for="Responsetype">
-										Response Type <span class="text-red-700">*</span></label
-									>
-								</td>
-								<td>
-									<select
-										bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.ResponseType}
-										class="w-full rounded border p-2 text-sm"
-									>
-										<option value="" disabled selected>Select Response type</option>
-										<option value="json">JSON</option>
-										<option value="text">Text</option>
-										<option value="form">Form</option>
-										<option value="xml">XML</option>
-									</select>
-								</td>
-							</tr>
-
-							<tr class=" ">
-								<td colspan="2" class=" py-5">
-									<label for="Token" class="font-semibold"> Token Injection</label>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<label for="tokenLocation">Location <span class="text-red-700">*</span></label>
-								</td>
-								<td>
-									<select
-										bind:value={
-											followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Location
-										}
-										class="w-full rounded border p-2 text-sm"
-									>
-										<option value="" disabled selected>Select Location</option>
-										<option value="header">Header</option>
-										<option value="query">Query</option>
-										<option value="body">Body</option>
-									</select>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<label for="tokenKey"> Key <span class="text-red-700">*</span></label>
-								</td>
-								<td>
-									<input
-										bind:value={
-											followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Key
-										}
-										placeholder="Token key"
-										class="w-full rounded border p-2 text-sm"
-									/>
-								</td>
-							</tr><tr>
-								<td>
-									<label for="tokenPrefix"> Prefix </label>
-								</td>
-								<td>
-									<input
-										bind:value={
-											followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Prefix
-										}
-										placeholder="Token prefix "
-										class="w-full rounded border p-2 text-sm"
-									/>
-								</td>
-							</tr>
-							<tr>
-								<td colspan="2">
-									<label for="fetchconfig" class="text-sm font-semibold"
-										>API Fetch Configuration</label
-									>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<label for="method">API Config Method <span class="text-red-700">*</span></label>
-								</td>
-								<td>
-									<select
-										bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Method}
-										class="w-full rounded border p-2 text-sm"
-									>
-										<option value="" disabled selected>Select Fecth Method</option>
-										<option value="GET">GET</option>
-										<option value="POST">POST</option>
-										<option value="PUT">PUT</option>
-										<option value="DELETE">DELETE</option>
-										<option value="PATCH">PATCH</option>
-									</select>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<label for="url"> URL <span class="text-red-700">*</span></label>
-								</td>
-								<td>
-									<input
-										bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Url}
-										placeholder="Base URL"
-										class="w-full rounded border p-2 text-sm"
-									/>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<label for="queryParams">Request Query Params</label>
-								</td>
-								<td>
-									<input
-										bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.QueryParams}
-										placeholder="Query Params (e.g. ?key=value)"
-										class="w-full rounded border p-2 text-sm"
-									/>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<label for="body"> Request Body</label>
-								</td>
-								<td>
-									<input
-										bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Body}
-										placeholder="Request Body"
-										class="w-full rounded border p-2 text-sm"
-									/>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<label for="headers">Query Headers </label>
-								</td>
-								<td>
-									<input
-										bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Headers}
-										placeholder="Headers (e.g. Authorization: Bearer token)"
-										class="w-full rounded border p-2 text-sm"
-									/>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<label for="requestType"> Response Type</label>
-								</td>
-								<td>
-									<select
-										bind:value={
-											followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseType
-										}
-										class="w-full rounded border p-2 text-sm"
-									>
-										<option value="" disabled selected>Select Response type</option>
-										<option value="json">JSON</option>
-										<option value="text">Text</option>
-										<option value="form">Form</option>
-										<option value="xml">XML</option>
-									</select>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<label for="responseField"> Response Field</label>
-								</td>
-								<td>
-									<input
-										bind:value={
-											followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseField
-										}
-										placeholder="response field"
-										class="w-full rounded border p-2 text-sm"
-									/>
-								</td>
-							</tr>
-
-							<tr>
-								<td>
-									<label for="source" class="text-sm font-semibold"
-										>Schedule Frequency <span class="text-red-700">*</span></label
-									>
-								</td>
-								<td>
-									<div class="space-y-2">
-										<select
-											bind:value={
-												followUpSettingUpdateModel.ApiIntegrationSettings.ScheduleFrequency
-											}
-											class="w-full rounded border p-2 text-sm"
-										>
-											<option value="" disabled selected>Select Schedule Frequency</option>
-											<option value="daily">Daily</option>
-											<option value="weekly">Weekly</option>
-											<option value="monthly">Monthly</option>
-										</select>
-									</div>
-								</td>
-							</tr>
-						{/if}
 						{#if followUpSettingUpdateModel.Source === 'File' || followUpSettingUpdateModel.Source === 'Api'}
-							<tr>
-								<td>
-									{#if followUpSettingUpdateModel.Source === 'File'}
-										<div class="space-y-1">
-											<label for="fileType" class="text-sm font-medium"
-												>File Type <span class="text-red-700">*</span></label
-											>
-										</div>
-									{:else if followUpSettingUpdateModel.Source === 'Api'}
-										<div class="space-y-1">
-											<label for="schedule" class="text-sm font-medium"
-												>Extraction Schedule <span class="text-red-700">*</span></label
-											>
-										</div>
-									{/if}
-								</td>
-								<td>
-									{#if followUpSettingUpdateModel.Source === 'File'}
+							{#if followUpSettingUpdateModel.Source === 'File'}
+								<tr>
+									<td>
+										<label for="format" class="">File column format </label>
+									</td>
+									<td>
+										<textarea
+											bind:value={followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat}
+											placeholder="Base URL"
+											class="w-full rounded border p-2 text-sm"
+										></textarea>
+										{#if errors?.FileColumnFormat}
+											<p class="text-error">{errors?.FileColumnFormat}</p>
+										{/if}
+									</td>
+								</tr>
+
+								<tr>
+									<td>
+										<label for="fileType" class=""
+											>File Type <span class="text-red-700">*</span></label
+										>
+									</td>
+									<td>
 										<select
 											bind:value={followUpSettingUpdateModel.FileUploadSettings.FileType}
 											class="w-full rounded border p-2 text-sm"
@@ -680,82 +267,381 @@
 											<option value="txt">Text</option>
 											<option value="pdf">PDF</option>
 										</select>
-									{:else if followUpSettingUpdateModel.Source === 'Api'}
-										<!-- Integrate Schedule API UI -->
+										{#if errors?.FileUploadSettings}
+											<p class="text-error">{errors?.FileUploadSettings}</p>
+										{/if}
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label for="schedule">
+											Reminder Schedules <span class="text-red-700">*</span></label
+										>
+									</td>
+									<td>
+										<button
+											onclick={(event) => {
+												event.preventDefault();
+												showReminderModal = true;
+											}}
+											class="table-btn variant-filled-secondary gap-1"
+										>
+											Add Schedule
+										</button>
+									</td>
+								</tr>
+
+								<ReminderScheduleList
+									bind:reminderSchedule={
+										followUpSettingUpdateModel.FileUploadSettings.ReminderSchedule
+									}
+									{deleteSchedule}
+									{editSchedule}
+								/>
+							{/if}
+
+							{#if followUpSettingUpdateModel.Source === 'Api'}
+								<tr>
+									<td colspan="2">
+										<label for="source" class="text-sm font-semibold">Authentication Endpoint</label
+										>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<!-- <div class="space-y-2">
+									<div class="flex flex-row"> -->
+										<label for="method">API Config Method <span class="text-red-700">*</span></label
+										>
+										<!-- </div> -->
+									</td>
+
+									<td>
+										<select
+											bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Method}
+											class="w-full rounded border p-2 text-sm"
+										>
+											<option value="" disabled selected>Select Method</option>
+											<option value="GET">GET</option>
+											<option value="POST">POST</option>
+											<option value="PUT">PUT</option>
+											<option value="DELETE">DELETE</option>
+											<option value="PATCH">PATCH</option>
+										</select>
+										{#if errors?.ApiIntegrationSettings}
+											<p class="text-error">{errors?.ApiIntegrationSettings}</p>
+										{/if}
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label for="baseUrl">API Base URL <span class="text-red-700">*</span></label>
+									</td>
+									<td>
+										<input
+											bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Url}
+											placeholder="Base URL"
+											class="w-full rounded border p-2 text-sm"
+										/>
+										{#if errors?.Url}
+											<p class="text-error">{errors?.Url}</p>
+										{/if}
+									</td>
+								</tr>
+
+								<tr>
+									<td>
+										<!-- <div class="flex flex-row"> -->
+										<label for="requestBody"> Request Body </label>
+									</td>
+									<td>
+										<input
+											bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Body}
+											placeholder="Request Body"
+											class="w-full rounded border p-2 text-sm"
+										/>
+										{#if errors?.Body}
+											<p class="text-error">{errors?.Body}</p>
+										{/if}
+									</td>
+									<!-- </div> -->
+								</tr>
+								<tr>
+									<td>
+										<label for="queryParams">Request Query Params</label>
+									</td>
+									<td>
+										<FollowUpSettings
+											bind:model={
+												followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams
+											}
+										/>
+									</td>
+								</tr>
+
+								<tr>
+									<td>
+										<label for="headers">Auth Query Headers</label>
+									</td>
+									<td>
+										<FollowUpSettings
+											bind:model={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Headers}
+										/>
+									</td>
+								</tr>
+
+								<tr>
+									<td>
+										<label for="tokenPath">Token Path <span class="text-red-700">*</span></label>
+									</td>
+									<td>
+										<input
+											bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenPath}
+											placeholder="Token path (e.g. data.token)"
+											class="w-full rounded border p-2 text-sm"
+										/>
+									</td>
+								</tr>
+
+								<tr>
+									<td>
+										<label for="Responsetype">
+											Response Type <span class="text-red-700">*</span></label
+										>
+									</td>
+									<td>
 										<select
 											bind:value={
-												followUpSettingUpdateModel.ApiIntegrationSettings.ScheduleFrequency
+												followUpSettingUpdateModel.ApiIntegrationSettings.Auth.ResponseType
 											}
 											class="w-full rounded border p-2 text-sm"
 										>
-											<option value="" disabled selected>Select schedule</option>
-											<option value="daily">Daily</option>
-											<option value="weekly">Weekly</option>
-											<option value="monthly">Monthly</option>
+											<option value="" disabled selected>Select Response type</option>
+											<option value="json">JSON</option>
+											<option value="text">Text</option>
+											<option value="form">Form</option>
+											<option value="xml">XML</option>
 										</select>
-									{/if}
-								</td>
-							</tr>
-						{/if}
+									</td>
+								</tr>
 
-						{#if followUpSettingUpdateModel.Source === 'Api'}
-							<tr>
-								<td><h3 class="text-sm font-medium">Reminder Schedules</h3></td>
-								<td>
-									<button
-										onclick={(event) => {
-											event.preventDefault();
-											showReminderModal = true;
-										}}
-										class="table-btn variant-filled-secondary gap-1"
-									>
-										Add Schedule
-									</button>
-								</td>
-							</tr>
+								<tr>
+									<td colspan="2" class=" py-5">
+										<label for="Token" class="font-semibold"> Token Injection</label>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label for="tokenLocation">Location <span class="text-red-700">*</span></label>
+									</td>
+									<td>
+										<select
+											bind:value={
+												followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection
+													.Location
+											}
+											class="w-full rounded border p-2 text-sm"
+										>
+											<option value="" disabled selected>Select Location</option>
+											<option value="header">Header</option>
+											<option value="query">Query</option>
+											<option value="body">Body</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label for="tokenKey"> Key <span class="text-red-700">*</span></label>
+									</td>
+									<td>
+										<input
+											bind:value={
+												followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Key
+											}
+											placeholder="Token key"
+											class="w-full rounded border p-2 text-sm"
+										/>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label for="tokenPrefix"> Prefix </label>
+									</td>
+									<td>
+										<input
+											bind:value={
+												followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Prefix
+											}
+											placeholder="Token prefix "
+											class="w-full rounded border p-2 text-sm"
+										/>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2">
+										<label for="fetchconfig" class="text-sm font-semibold"
+											>API Fetch Configuration</label
+										>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label for="method">API Config Method <span class="text-red-700">*</span></label
+										>
+									</td>
+									<td>
+										<select
+											bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Method}
+											class="w-full rounded border p-2 text-sm"
+										>
+											<option value="" disabled selected>Select Fecth Method</option>
+											<option value="GET">GET</option>
+											<option value="POST">POST</option>
+											<option value="PUT">PUT</option>
+											<option value="DELETE">DELETE</option>
+											<option value="PATCH">PATCH</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label for="url"> URL <span class="text-red-700">*</span></label>
+									</td>
+									<td>
+										<input
+											bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Url}
+											placeholder="Base URL"
+											class="w-full rounded border p-2 text-sm"
+										/>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label for="queryParams">Request Query Params</label>
+									</td>
+									<td>
+										<FollowUpSettings
+											bind:model={
+												followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.QueryParams
+											}
+										/>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label for="body"> Request Body</label>
+									</td>
+									<td>
+										<input
+											bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Body}
+											placeholder="Request Body"
+											class="w-full rounded border p-2 text-sm"
+										/>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label for="headers">Query Headers </label>
+									</td>
+									<td>
+										<FollowUpSettings
+											bind:model={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Headers}
+										/>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label for="requestType"> Response Type</label>
+									</td>
+									<td>
+										<select
+											bind:value={
+												followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseType
+											}
+											class="w-full rounded border p-2 text-sm"
+										>
+											<option value="" disabled selected>Select Response type</option>
+											<option value="json">JSON</option>
+											<option value="text">Text</option>
+											<option value="form">Form</option>
+											<option value="xml">XML</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label for="responseField"> Response Field</label>
+									</td>
+									<td>
+										<input
+											bind:value={
+												followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseField
+											}
+											placeholder="response field"
+											class="w-full rounded border p-2 text-sm"
+										/>
+									</td>
+								</tr>
 
-						
-							<ReminderScheduleList
-								bind:reminderSchedule={
-									followUpSettingUpdateModel.ApiIntegrationSettings.ReminderSchedule
-								}
-								{deleteSchedule}
-								{editSchedule}
-							/>
-						{/if}
-						{#if followUpSettingUpdateModel.Source === 'File'}
-							<tr>
-								<td><h3 class="text-sm font-medium">Reminder Schedules</h3></td>
-								<td>
-									<button
-										onclick={(event) => {
-											event.preventDefault();
-											showReminderModal = true;
-										}}
-										class="table-btn variant-filled-secondary gap-1"
-									>
-										Add Schedule
-									</button>
-								</td>
-							</tr>
+								<tr>
+									<td>
+										<label for="source"
+											>Schedule Frequency <span class="text-red-700">*</span></label
+										>
+									</td>
+									<td>
+										<div class="space-y-2">
+											<select
+												bind:value={
+													followUpSettingUpdateModel.ApiIntegrationSettings.ScheduleFrequency
+												}
+												class="w-full rounded border p-2 text-sm"
+											>
+												<option value="" disabled selected>Select Schedule Frequency</option>
+												<option value="daily">Daily</option>
+												<option value="weekly">Weekly</option>
+												<option value="monthly">Monthly</option>
+											</select>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label for="schedule">
+											Reminder Schedules <span class="text-red-700">*</span>
+										</label>
+									</td>
+									<td>
+										<button
+											onclick={(event) => {
+												event.preventDefault();
+												showReminderModal = true;
+											}}
+											class="table-btn variant-filled-secondary gap-1"
+										>
+											Add Schedule
+										</button>
+									</td>
+								</tr>
 
-							<ReminderScheduleList
-								bind:reminderSchedule={
-									followUpSettingUpdateModel.FileUploadSettings.ReminderSchedule
-								}
-								{deleteSchedule}
-								{editSchedule}
-							/>
+								<ReminderScheduleList
+									bind:reminderSchedule={
+										followUpSettingUpdateModel.ApiIntegrationSettings.ReminderSchedule
+									}
+									{deleteSchedule}
+									{editSchedule}
+								/>
+							{/if}
 						{/if}
 					</tbody>
 				</table>
 				<div class="button-container">
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+						<button type="submit" class="table-btn variant-filled-secondary gap-1" disabled>
 							Submiting
 						</button>
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+						<button type="submit" class="table-btn variant-filled-secondary gap-1"> Submit </button>
 					{/await}
 				</div>
 			</form>
@@ -763,5 +649,5 @@
 	</div>
 </div>
 {#if showReminderModal}
-<ReminderScheduleForm {showReminderModal} bind:newReminder {addSchedule} />
+	<ReminderScheduleForm bind:showReminderModal bind:newReminder {addSchedule} />
 {/if}

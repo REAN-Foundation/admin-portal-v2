@@ -2,7 +2,7 @@
 	import Icon from '@iconify/svelte';
 	import { fade, fly } from 'svelte/transition';
 
-	let { showReminderModal, addSchedule, newReminder = $bindable() } = $props();
+	let { showReminderModal = $bindable(), addSchedule, newReminder = $bindable() } = $props();
 </script>
 
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" transition:fade>
@@ -96,23 +96,3 @@
 		</div>
 	</div>
 </div>
-<!-- {#if showReminderModal}
-	<ReminderModal {showReminderModal} bind:newReminder {addSchedule} />
-{/if} -->
-<!-- <ReminderScheduleList
-								bind:reminderSchedule={followUpSettingUpdateModel.ApiIntegrationSettings.ReminderSchedule}
-								{showReminderModal}
-								source={'Api'}
-							/>
-							{#if showReminderModal}
-							<ReminderScheduleForm {showReminderModal} bind:newReminder {addSchedule} />
-						{/if} -->
-						
-						<!-- <ReminderScheduleList
-								bind:reminderSchedule={followUpSettingUpdateModel.FileUploadSettings.ReminderSchedule}
-								{showReminderModal}
-								source={'File'}
-							/> -->
-
-							<!-- import ReminderScheduleForm from '$lib/components/reminder-schedule-form.svelte';
-							import ReminderScheduleList from '$lib/components/reminder-schedule-list.svelte'; -->
