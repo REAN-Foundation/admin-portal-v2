@@ -56,116 +56,119 @@
 		</a>
 	</div>
 
-	<div class="forms-container">
-		<div class="form-header">
-			<h2 class="form-title">View Enrollment</h2>
-			<a href={enrollmentsRoute} class="cancel-btn text-end">
+	<div class="mx-auto w-full px-6 py-4">
+		<div class="form-headers">
+			<h2 class="form-titles">View Enrollment</h2>
+			<a href={enrollmentsRoute} class="cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
 		</div>
 
-		<div class="lg:flex w-full">
-			<table class="form-table lg:w-1/2 w-full">
-				<tbody>
-					<tr>
-						<td class="form-td-left">Enrollment Code</td>
-						<td class="form-td-right">{enrollmentCode}</td>
-					</tr>
-					<tr>
-						<td class="form-td-left">Participant</td>
-						<td class="form-td-right">Participant # {participantDisplayId}</td>
-					</tr>
-					<tr>
-						<td class="form-td-left">Age</td>
-						<td class="form-td-right">{age}</td>
-					</tr>
-					<tr>
-						<td class="form-td-left">Gender</td>
-						<td class="form-td-right">{enrollment.Participant.Gender}</td>
-					</tr>
-					<tr>
-						<td class="form-td-left">Careplan</td>
-						<td class="form-td-right">{enrollment.Careplan.Name}</td>
-					</tr>
-					<tr>
-						<td class="form-td-left">Category</td>
-						<td class="form-td-right">{enrollment.Careplan.Category.Type}</td>
-					</tr>
-					<tr>
-						<td class="form-td-left">Enrollment Date</td>
-						<td class="form-td-right">{TimeHelper.formatDateToReadable(
-											enrollment.EnrollmentDate,
-											LocaleIdentifier.EN_US
-										)}</td>
-					</tr>
-					<tr>
-						<td class="form-td-left">Start Date</td>
-						<td class="form-td-right">{TimeHelper.formatDateToReadable(
-											enrollment.StartDate,
-											LocaleIdentifier.EN_US
-										)}</td>
-					</tr>
-					<tr>
-						<td class="form-td-left">End Date</td>
-						<td class="form-td-right">{TimeHelper.formatDateToReadable(
-											enrollment.EndDate,
-											LocaleIdentifier.EN_US
-										)}</td>
-					</tr>
-					<tr>
-						<td class="form-td-left">Current Week</td>
-						<td class="form-td-right">{currentWeek}</td>
-					</tr>
-				</tbody>
-			</table>
-			<div class="lg:w-1/2 w-full pr-6">
+		<!-- ✅ Responsive flex layout -->
+		<div class="flex flex-col md:flex-row gap-6">
+			<!-- Table column -->
+			<div class="w-full md:w-7/12">
+				<table class="w-full">
+					<tbody>
+						<tr class="tables-row">
+							<td class="table-label">Enrollment Code</td>
+							<td class="table-data">{enrollmentCode}</td>
+						</tr>
+						<tr class="tables-row">
+							<td class="table-label">Participant</td>
+							<td class="table-data">Participant # {participantDisplayId}</td>
+						</tr>
+						<tr class="tables-row">
+							<td class="table-label">Age</td>
+							<td class="table-data">{age}</td>
+						</tr>
+						<tr class="tables-row">
+							<td class="table-label">Gender</td>
+							<td class="table-data">{enrollment.Participant.Gender}</td>
+						</tr>
+						<tr class="tables-row">
+							<td class="table-label">Careplan</td>
+							<td class="table-data">{enrollment.Careplan.Name}</td>
+						</tr>
+						<tr class="tables-row">
+							<td class="table-label">Category</td>
+							<td class="table-data">{enrollment.Careplan.Category.Type}</td>
+						</tr>
+						<tr class="tables-row">
+							<td class="table-label">Enrollment Date</td>
+							<td class="table-data">
+								{TimeHelper.formatDateToReadable(enrollment.EnrollmentDate, LocaleIdentifier.EN_US)}
+							</td>
+						</tr>
+						<tr class="tables-row">
+							<td class="table-label">Start Date</td>
+							<td class="table-data">
+								{TimeHelper.formatDateToReadable(enrollment.StartDate, LocaleIdentifier.EN_US)}
+							</td>
+						</tr>
+						<tr class="tables-row">
+							<td class="table-label">End Date</td>
+							<td class="table-data">
+								{TimeHelper.formatDateToReadable(enrollment.EndDate, LocaleIdentifier.EN_US)}
+							</td>
+						</tr>
+						<tr class="tables-row">
+							<td class="table-label">Current Week</td>
+							<td class="table-data">{currentWeek}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<!-- Graph column -->
+			<div class="w-full md:w-5/12 pr-0 md:pr-6">
 				<EnrollmentDisplay {totalWeeks} {currentWeek} {MAX_STEP_WIDTH} />
 			</div>
 		</div>
+	</div>
 
-		<div class="grid grid-cols md:grid-cols-2 lg:grid-cols-4 gap-14 lg:gap-24 md:gap-28 pb-4 mt-4">
-			<div class="flex justify-center">
-				<div class="grid grid-cols justify-items-center">
-					<label class="form-label text-xl mb-2">Total Tasks</label>
-					<div
-						class="radial-progress text-secondary text-xl font-bold"
-						style="--value:100;--size:98px; --thickness:10px"
-					>
-						{enrollmentStats.TolalTask}
-					</div>
+	<div class="grid-cols mt-4 grid gap-14 pb-4 md:grid-cols-2 md:gap-28 lg:grid-cols-4 lg:gap-24">
+		<div class="flex justify-center">
+			<div class="grid-cols grid justify-items-center">
+				<label class="form-label mb-2 text-xl">Total Tasks</label>
+				<div
+					class="radial-progress text-secondary text-xl font-bold"
+					style="--value:100;--size:98px; --thickness:10px"
+				>
+					{enrollmentStats.TolalTask}
 				</div>
 			</div>
-			<div class="flex justify-center">
-				<div class="grid grid-cols justify-items-center">
-					<label class="form-label text-xl mb-2">Finished Tasks</label>
-					<div
-						class="radial-progress text-green-500 text-xl font-bold"
-						style="--value:100;--size:98px; --thickness:10px"
-					>
-						{enrollmentStats.FinishedTask}
-					</div>
+		</div>
+		<div class="flex justify-center">
+			<div class="grid-cols grid justify-items-center">
+				<label class="form-label mb-2 text-xl">Finished Tasks</label>
+				<div
+					class="radial-progress text-xl font-bold text-green-500"
+					style="--value:100;--size:98px; --thickness:10px"
+				>
+					{enrollmentStats.FinishedTask}
 				</div>
 			</div>
-			<div class="flex justify-center">
-				<div class="grid grid-cols justify-items-center">
-					<label class="form-label text-xl mb-2">Delayed Tasks</label>
-					<div
-						class="radial-progress text-red-500 text-xl font-bold"
-						style="--value:100;--size:98px; --thickness:10px"
-					>
-						{enrollmentStats.DelayedTask}
-					</div>
+		</div>
+		<div class="flex justify-center">
+			<div class="grid-cols grid justify-items-center">
+				<label class="form-label mb-2 text-xl">Delayed Tasks</label>
+				<div
+					class="radial-progress text-xl font-bold text-red-500"
+					style="--value:100;--size:98px; --thickness:10px"
+				>
+					{enrollmentStats.DelayedTask}
 				</div>
 			</div>
-			<div class="flex justify-center">
-				<div class="grid grid-cols justify-items-center">
-					<label class="form-label text-xl mb-2">Unserved Tasks</label>
-					<div
-						class="radial-progress text-secondary text-xl font-bold"
-						style="--value:100; --size:98px; --thickness:10px"
-					>
-						{enrollmentStats.UnservedTask}
-					</div>
+		</div>
+		<div class="flex justify-center">
+			<div class="grid-cols grid justify-items-center">
+				<label class="form-label mb-2 text-xl">Unserved Tasks</label>
+				<div
+					class="radial-progress text-secondary text-xl font-bold"
+					style="--value:100; --size:98px; --thickness:10px"
+				>
+					{enrollmentStats.UnservedTask}
 				</div>
 			</div>
 		</div>

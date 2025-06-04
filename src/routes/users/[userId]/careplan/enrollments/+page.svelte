@@ -18,6 +18,7 @@
 	let retrivedEnrollments = $derived(enrollment);
 	let searchKeyword = $state(undefined);
 	let promise = $state();
+	let hasSearchResults = $state(true);
 
 	const userId = page.params.userId;
 	const enrollmentsRoute = () => `/users/${userId}/careplan/enrollments`;
@@ -82,7 +83,7 @@
 			if (model.displayId ?? displayId) {
 				url += `&displayId=${model.displayId ?? displayId}`;
 			}
-			
+
 			if (model.startDate ?? startDate) {
 				url += `&startDate=${model.startDate ?? startDate}`;
 			}
@@ -107,27 +108,20 @@
 			totalCarePlanCount = searchResult.Data.TotalCount;
 			paginationSettings.size = totalCarePlanCount;
 
-			enrollment = searchResult.Data.Items.map((item, index) => ({
-				...item,
-				index: index + 1
-			}));
+			const items = searchResult?.Data?.Items ?? [];
+
+			if (items.length === 0) {
+				enrollment = [];
+			} else {
+				enrollment = items.map((item, index) => ({
+					...item,
+					index: index + 1
+				}));
+			}
 		} catch (err) {
 			console.error('Search Enrollments failed:', err);
 		} finally {
 			isLoading = false;
-		}
-	}
-
-	function updateSearchField(name, value) {
-		console.log(name, value);
-		if (name === 'carePlan') {
-			carePlan = value;
-		} else if (name === 'displayId') {
-			displayId = value;
-		} else if (name === 'startDate') {
-			startDate = value;
-		} else if (name === 'endDate') {
-			endDate = value;
 		}
 	}
 
@@ -263,7 +257,6 @@
 							</button>
 						{/if}
 					</div>
-				
 
 					<div class="relative flex flex-row items-center pr-1.5">
 						<label class="pr-2">Start date</label>
@@ -280,7 +273,7 @@
 
 							{#if startDate}
 								<button type="button" onclick={() => (startDate = '')} class="close-btn">
-									<Icon icon="material-symbols:close" class="text-gray-500 ml-6" />
+									<Icon icon="material-symbols:close" class="ml-6 text-gray-500" />
 								</button>
 							{/if}
 						</div>
