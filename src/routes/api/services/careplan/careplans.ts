@@ -20,13 +20,17 @@ export const createCareplan = async (
 	name: string,
 	description: string,
 	tags: string[],
-	version: string
+	version: string,
+	ownerUserId: string,
+	tenantId: string
 ) => {
 	const url = CAREPLAN_BACKEND_API_URL + '/careplans';
 	const body = {
 		Code: code,
 		CategoryId: categoryId,
 		Name: name,
+		OwnerUserId: ownerUserId,
+		TenantId: tenantId,
 		Description: description ? description : null,
 		Tags: tags,
 		Version: !version || version?.length === 0 ? 'V 1.0' : version
@@ -58,13 +62,13 @@ export const searchCareplan = async (sessionId: string, searchParams?) => {
 	}
 
 	const url = CAREPLAN_BACKEND_API_URL + `/careplans/search${searchString}`;
-	const cacheKey = `session-${sessionId}:req-searchCareplan:${searchString}`;
-	if (await DashboardManager.has(cacheKey)) {
-		return await DashboardManager.get(cacheKey);
-	}
+	// const cacheKey = `session-${sessionId}:req-searchCareplan:${searchString}`;
+	// if (await DashboardManager.has(cacheKey)) {
+	// 	return await DashboardManager.get(cacheKey);
+	// }
 
 	const result = await get(sessionId, url, true);
-	await DashboardManager.set(cacheKey, result);
+	// await DashboardManager.set(cacheKey, result);
 	return result;
 };
 
@@ -122,12 +126,23 @@ export const getCarePlanById = async (sessionId: string, careplanId: string) => 
 export const updateCarePlan = async (
 	sessionId: string,
 	careplanId: string,
+	code: string,
 	name: string,
-	tags: string[]
+	Description: string,
+	tags: string[],
+	version: string,
+    ownerUserId: string,
+	tenantId: string,
+	
 ) => {
 	const body = {
+		Code: code,
+		Description: Description ? Description : null,
 		Name: name,
-		Tags: tags ? tags : null
+		Tags: tags ? tags : null,
+		OwnerUserId: ownerUserId,
+		TenantId: tenantId,
+		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
 	const url = CAREPLAN_BACKEND_API_URL + `/careplans/${careplanId}`;
 	const result = await put(sessionId, url, body, true);

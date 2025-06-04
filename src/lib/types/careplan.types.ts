@@ -5,6 +5,8 @@ export interface CarePlanCreateModel {
     CategoryId: string;
     Description?: string;
     Version?: string;
+    OwnerUserId: string;
+    TenantId?: string;
 }
 
 export interface CarePlanUpdateModel {
@@ -14,4 +16,6 @@ export interface CarePlanUpdateModel {
     Category?: string;
     Description?: string;
     Version?: string;
+    OwnerUserId: string;
+    TenantId?: string;
 }
