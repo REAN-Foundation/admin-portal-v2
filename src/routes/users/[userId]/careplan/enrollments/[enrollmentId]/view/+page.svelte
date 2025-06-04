@@ -59,7 +59,7 @@
 	<div class="mx-auto w-full px-6 py-4">
 		<div class="form-headers">
 			<h2 class="form-titles">View Enrollment</h2>
-			<a href={enrollmentsRoute} class="cancel-btn">
+			<a href={enrollmentsRoute} class="cancel-btn" hidden>
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
 		</div>
