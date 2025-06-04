@@ -101,7 +101,7 @@
 <BreadCrumbs crumbs={breadCrumbs} />
 
 <div class="p-6">
-	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
 			<h2 class="form-titles">Edit Audio</h2>
 			<a href={viewRoute} class="form-cancel-btn">
