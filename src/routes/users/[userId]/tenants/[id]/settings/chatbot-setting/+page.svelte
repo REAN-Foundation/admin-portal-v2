@@ -4,19 +4,28 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Icons from '$lib/components/icons.svelte';
 	import InfoIcon from '$lib/components/infoIcon.svelte';
-	import { ChatBotSettingsSchema } from '$lib/validation/tenant.settings.schema.js';
-	import type { ChatBotSettings } from '$lib/types/tenant.settings.types.js';
-
-	///////////////////////////////////////////////////////////////////////////
+	import {
+		ChatBotSettingsSchema,
+		ConsentSettingsSchema
+	} from '$lib/validation/tenant.settings.schema.js';
+	import type { ChatBotSettings, ConsentSettings } from '$lib/types/tenant.settings.types.js';
+	import ConsentModel from '$routes/users/[userId]/tenants/[id]/settings/chatbot-setting/consent.modal.svelte';
+	///////////////////////////////////////////////////////////////////////
 
 	let { data, form } = $props();
 
 	let errors: Record<string, string> = $state({});
 	let chatBotSetting = $state({ ChatBot: data.settings });
+
 	let promise = $state();
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
+	const tenantCode = $state(data.tenantCode);
+	const tenantName = $state(data.tenantName);
 	const tenantRoute = `/users/${userId}/tenants`;
+	let showCancelModel = $state(false);
+	let consentSetting = $state();
+	let previousConsent = chatBotSetting.ChatBot.Consent;
 
 	let openTab: string | null = $state(null);
 
@@ -28,6 +37,47 @@
 
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
+
+		try {
+			errors = {};
+			const consentSettingModel: ConsentSettings = {
+				TenantId: tenantId,
+				TenantCode: tenantCode,
+				TenantName: tenantName,
+				DefaultLanguage: consentSetting.DefaultLanguage,
+				Messages: consentSetting.Messages
+			};
+
+			const validationResult = ConsentSettingsSchema.safeParse(consentSettingModel);
+			if (!validationResult.success) {
+				errors = Object.fromEntries(
+					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				);
+				return;
+			}
+
+			const res = await fetch(`/api/server/tenants/settings/${tenantId}/Consent`, {
+				method: 'PUT',
+				body: JSON.stringify(consentSettingModel),
+				headers: { 'content-type': 'application/json' }
+			});
+			const response = await res.json();
+			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				toastMessage(response);
+				// edit = true;
+				// return;
+			}
+			if (response.Errors) {
+				errors = response?.Errors || {};
+			} else {
+				toastMessage(response);
+			}
+		} catch (error) {
+			toastMessage();
+		}
 		try {
 			errors = {};
 			const chatbotCreateModel: ChatBotSettings = {
@@ -133,7 +183,28 @@
 			}
 		);
 	}
+
+	$effect(() => {
+		if (edit === false && chatBotSetting.ChatBot.Consent === true && previousConsent === false) {
+			showCancelModel = true;
+		}
+
+		previousConsent = chatBotSetting.ChatBot.Consent;
+	});
+
+	function onCloseModal() {
+		showCancelModel = false;
+	}
 </script>
+
+<ConsentModel
+	{showCancelModel}
+	onClose={() => (showCancelModel = false)}
+	{form}
+	bind:consentSetting
+	{tenantName}
+	{tenantCode}
+/>
 
 <div class="px-6 py-4">
 	<div class="flex flex-wrap justify-end gap-2 py-2">
@@ -156,7 +227,7 @@
 					<thead>
 						<tr>
 							<th class="w-[30%]">Chat Bot Setting</th>
-							<th class="text-end w-[70%]">
+							<th class="w-[70%] text-end">
 								<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
@@ -270,10 +341,10 @@
 							{#if typeof groupItems === 'boolean'}
 								<tr>
 									<td>
-										<div class="flex flex-1 items-center gap-2">
-											{#if edit === true && chatBotSetting.ChatBot[groupName]}
+										<div class="flex items-center gap-2">
+											{#if edit === true && groupItems === true}
 												<span class="text-green-500">✅</span>
-											{:else if edit === true && !chatBotSetting.ChatBot[groupName]}
+											{:else if edit === true && groupItems === false}
 												<span>❌</span>
 											{:else}
 												<input
@@ -282,24 +353,35 @@
 													disabled={edit}
 													bind:checked={chatBotSetting.ChatBot[groupName]}
 												/>
-												<Icons
-													cls="stroke-slate-800 my-2 stroke-2 fill-none"
-													h="80%"
-													w="80%"
-													iconPath="/tenant-setting/chatbot/whatsapp.svg#icon"
-												/>
 											{/if}
+
+											<Icons
+												cls="stroke-slate-800 my-2 stroke-2 fill-none"
+												h="80%"
+												w="80%"
+												iconPath="/tenant-setting/chatbot/whatsapp.svg#icon"
+											/>
 											<span class="text-base">{groupName}</span>
 										</div>
 									</td>
-									<td class="flex justify-end">
-										<InfoIcon
-											cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 cursor-pointer fill-none my-2"
-											h="80%"
-											w="80%"
-											iconPath="/tenant-setting/info.svg#icon"
-											title="Settings under Whatsapp"
-										/>
+
+									<td>
+										<div class="flex items-center justify-end gap-2">
+											{#if groupName === 'Consent' && groupItems === true && edit === true}
+												<Icon
+													icon="material-symbols:edit-outline"
+													onclick={() => (showCancelModel = true)}
+												/>
+											{/if}
+
+											<InfoIcon
+												cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 cursor-pointer fill-none my-2"
+												h="80%"
+												w="80%"
+												iconPath="/tenant-setting/info.svg#icon"
+												title="Settings under Whatsapp"
+											/>
+										</div>
 									</td>
 								</tr>
 							{/if}

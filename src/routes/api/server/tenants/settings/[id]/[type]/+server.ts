@@ -7,12 +7,12 @@ import type { RequestEvent } from "@sveltejs/kit";
 
 export const GET = async (event: RequestEvent) => {
     try {
-        const sessionId = event.request.headers.get("session-id");
+        const sessionId = event.locals?.sessionUser?.sessionId;
         if (!sessionId) {
             return ResponseHandler.handleError(401, null, new Error("Access denied: Invalid session"));
         }
 
-        const result = await tenantSettingTypeSchema.safeParseAsync(event.params);
+        const result = await tenantSettingTypeSchema.safeParseAsync(event.params.type);
         if (!result.success) {
             const data = Object.fromEntries(
                 Object.entries(result.error.flatten().fieldErrors).map(([key, val]) => [key, val?.[0] || ""])

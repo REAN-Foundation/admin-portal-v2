@@ -113,8 +113,8 @@
 				<table class="table-c">
 					<thead>
 						<tr>
-							<th class="w-[30%]">Common Setting</th>
-							<th class="text-end w-[70%]">
+							<th class="w-full">Common Setting</th>
+							<th class="text-end">
 								<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>

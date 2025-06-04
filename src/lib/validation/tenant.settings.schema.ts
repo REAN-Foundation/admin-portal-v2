@@ -339,7 +339,7 @@ export const FormsSettingsSchema = z.object({
 });
 
 // ConsentMessage Schema
-const ConsentMessageSchema = z.object({
+export const ConsentMessageSchema = z.object({
     LanguageCode: z.string().optional(),
     Content: z.string().optional(),
     WebsiteURL: z.string().optional(),

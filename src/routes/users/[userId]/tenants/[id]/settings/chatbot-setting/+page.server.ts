@@ -9,12 +9,13 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
     const sessionId = event.cookies.get('sessionId') as string;
     let settings = undefined;
     try {
-        console.log('Event-',event)
+        console.log('Event-', event)
         const tenantId = event.locals?.sessionUser?.tenantId;
-        const response = await getTenantSettingsByType(sessionId, tenantId,'ChatBot');
-
+        const tenantCode = event.locals?.sessionUser?.tenantCode;
+        const tenantName = event.locals?.sessionUser?.tenantName;
+        const response = await getTenantSettingsByType(sessionId, tenantId, 'ChatBot');
         // console.log("response of setting", response);
-        
+
 
         if (response.Status === 'failure' || response.HttpCode !== 200) {
             throw error(response.HttpCode, response.Message);
@@ -24,9 +25,11 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
             settings = response.Data.TenantSettings;
         }
 
-        console.log('response=',JSON.stringify(settings,null,2));
-    
+        console.log('response=', JSON.stringify(settings, null, 2));
+
         return {
+            tenantCode,
+            tenantName,
             sessionId,
             tenantId,
             settings
