@@ -8,6 +8,7 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { AudioUpdateModel } from '$lib/types/audio.type';
 	import { createOrUpdateSchema } from '$lib/validation/audio.schema';
+	import Button from '$lib/components/button/button.svelte';
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
@@ -27,7 +28,7 @@
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/audio/${audioId}/edit`;
-	const viewRoute = `/users/${userId}/careplan/assets/biometric/${audioId}/view`;
+	const viewRoute = `/users/${userId}/careplan/assets/audio/${audioId}/view`;
 	const audioRoute = `/users/${userId}/careplan/assets/audio`;
 
 	const breadCrumbs = [
@@ -80,9 +81,7 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				// console.log("Redirecting to:", response?.Data?.id);
-				console.log('Full response:', response);
-				await goto(`${viewRoute}/${response?.Data?.id}/view`);
+				goto(`${audioRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -101,59 +100,52 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th>Edit Audio</th>
-							<th class="text-end">
-								<a href={audioRoute} class="health-system-btn variant-soft-secondary">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Name</td>
-							<td>
-								<input
-									type="text"
-									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
-									name="name"
-									placeholder="Enter name here..."
-									bind:value={name}
-								/>
-								{#if errors?.Name}
-									<p class="text-error">{errors?.Name}</p>
-								{/if}
-							</td>
-						</tr>
-
-						<tr>
-							<td>Transcript</td>
-							<td>
-								<input
-										type="textarea"
-										class="input {form?.errors?.Name
+<div class="p-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit Audio</h2>
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Name</td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+							name="name"
+							placeholder="Enter name here..."
+							bind:value={name}
+						/>
+						{#if errors?.Name}
+							<p class="text-error">{errors?.Name}</p>
+						{/if}
+					</td>
+					</tr>
+					<tr class="tables-row">
+						<td class="table-label">Transcript</td>
+						<td class="table-data">
+							<input
+									type="textarea"
+									class="input {form?.errors?.Name
 											? 'input-text-error'
 											: ''}"
-										name="transcript"
-										placeholder="Enter transcript here..."
-										bind:value={transcript}
-									/>
+									name="transcript"
+									placeholder="Enter transcript here..."
+									bind:value={transcript}
+								/>
 								{#if errors?.Name}
 								<p class="text-error">{errors?.Name}</p>
 								{/if}
 							</td>
 						</tr>
 
-						<tr>
-                            <td>Url</td>
-                            <td>
+						<tr class="tables-row">
+                            <td class="table-label">Url</td>
+                            <td class="table-data">
                                 <input
                                     type="url"
 									name="url"
@@ -167,9 +159,9 @@
                             </td>
                         </tr>
 
-						<tr class="">
-							<td class="!py-3 align-top">Tags</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Tags</td>
+							<td class="table-data">
 								<InputChips
 									bind:keywords
 									name="keywords"
@@ -180,30 +172,19 @@
 								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
 							</td>
 						</tr>
-						<tr>
-							<td>Version</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Version</td>
+							<td class="table-data">
 								<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
 							</td>
 						</tr>
 					</tbody>
 				</table>
-
-				<div class="button-container">
-					<button
-						type="button"
-						onclick={handleReset}
-						class="health-system-btn variant-soft-secondary">Reset</button
-					>
-					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
-					{/await}
+				<div class="btn-container">
+					<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary">
+						Reset
+					</button>
+					<Button />
 				</div>
 			</form>
 		</div>
-	</div>
-</div>
