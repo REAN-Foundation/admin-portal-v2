@@ -4,7 +4,7 @@ import { errorMessage } from '$lib/utils/message.utils';
 import { searchEnrollments } from '../../../../api/services/careplan/enrollments';
 import type { PageServerLoad } from '../../../../$types';
 
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 export const load: PageServerLoad = async (event: RequestEvent) => {
   const sessionId = event.cookies.get('sessionId');

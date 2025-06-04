@@ -9,6 +9,8 @@
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 	import type { PageServerData } from './$types';
 
+	///////////////////////////////////////////////////////////////////////////
+
 	let { data }: { data: PageServerData } = $props();
 
 	console.log('data', data);

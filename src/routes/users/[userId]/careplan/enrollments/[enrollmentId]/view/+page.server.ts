@@ -2,7 +2,7 @@ import type { PageServerLoad } from '../../../../../../$types';
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import { getEnrollmentById, getEnrollmentStats } from '$routes/api/services/careplan/enrollments';
 
-////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');

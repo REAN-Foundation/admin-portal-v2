@@ -1,7 +1,8 @@
 import { CAREPLAN_BACKEND_API_URL } from '$env/static/private';
 import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 import { del, get } from './common.careplan';
-////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
 
 export const getEnrollmentById = async (sessionId: string, enrollmentId: string) => {
     const url = CAREPLAN_BACKEND_API_URL + `/enrollments/${enrollmentId}`;

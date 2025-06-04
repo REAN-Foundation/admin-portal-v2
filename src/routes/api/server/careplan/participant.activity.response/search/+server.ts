@@ -2,6 +2,8 @@ import { ResponseHandler } from "$lib/utils/response.handler";
 import { searchParticipantActivities } from "$routes/api/services/careplan/participant.activity.response";
 import type { RequestEvent } from "@sveltejs/kit";
 
+///////////////////////////////////////////////////////////////////////////////
+
 export const GET = async (event: RequestEvent) => {
     try {
         const sessionId = event.locals?.sessionUser?.sessionId;

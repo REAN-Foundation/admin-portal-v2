@@ -6,7 +6,7 @@
 	import Icon from '@iconify/svelte';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 
-	////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////
 
 	const userId = page.params.userId;
 	const enrollmentId = page.params.enrollmentId;

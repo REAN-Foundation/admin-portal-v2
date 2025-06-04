@@ -6,7 +6,7 @@ import { searchEnrollmentTask } from '$routes/api/services/careplan/enrollment.t
 import { searchParticipantActivities } from '$routes/api/services/careplan/participant.activity.response';
 import { getEnrollmentById } from '$routes/api/services/careplan/enrollments';
 
-////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 export const load: PageServerLoad = async (event: RequestEvent) => {
 	const sessionId = event.cookies.get('sessionId');
