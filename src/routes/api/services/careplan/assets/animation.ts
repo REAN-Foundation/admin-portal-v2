@@ -10,13 +10,15 @@ export const createAnimation = async (
 	transcript: string,
 	pathUrl: string,
 	tags: string[],
-	version: string
+	version: string,
+	tenantId: string
 ) => {
 	const body = {
 		Name: name,
 		Transcript: transcript,
 		Url: pathUrl,
 		Tags: tags,
+		TenantId: tenantId,
 		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
 
@@ -72,14 +74,16 @@ export const updateAnimation = async (
 	transcript: string,
 	pathUrl: string,
 	tags: string[],
-	version: string
+	version: string,
+	tenantId: string
 ) => {
 	const body = {
 		Name: name,
 		Transcript: transcript,
 		Url: pathUrl,
 		Tags: tags,
-		Version: !version || version?.length === 0 ? 'V 1.0' : version
+		Version: !version || version?.length === 0 ? 'V 1.0' : version,
+		TenantId: tenantId,
 	};
 
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/animations/${animationId}`;

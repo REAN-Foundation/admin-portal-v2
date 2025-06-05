@@ -27,7 +27,9 @@
 	let keywords: string[] = $state(data.animation.Tags);
 
 	const userId = page.params.userId;
+	const tenantId = data.tenantId;
 	const animationId = page.params.id;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/animations/${animationId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/animations/${animationId}/view`;
@@ -62,7 +64,8 @@
 				Transcript: transcript,
 				PathUrl: pathUrl,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(animationsUpdateModel);
