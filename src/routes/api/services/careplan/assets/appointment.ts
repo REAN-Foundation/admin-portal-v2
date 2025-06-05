@@ -10,13 +10,15 @@ export const createAppointment = async (
 	description: string,
 	appointmentType: string,
 	tags: string[],
-	version: string
+	version: string,
+	tenantId: string
 ) => {
 	const body = {
 		Name: name,
 		Description: description,
 		AppointmentType: appointmentType,
 		Tags: tags,
+		TenantId: tenantId,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
 
@@ -72,13 +74,15 @@ export const updateAppointment = async (
 	description: string,
 	appointmentType: string,
 	tags: string[],
-	version: string
+	version: string,
+	tenantId: string
 ) => {
 	const body = {
 		Name: name,
 		Description: description,
 		AppointmentType: appointmentType,
 		Tags: tags,
+		TenantId: tenantId,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
 
