@@ -4,6 +4,7 @@ export interface AppointmentCreateModel {
 	AppointmentType: string;
 	Tags?: string[];
 	Version: string;
+	TenantId?: string;
 }
 
 export interface AppointmentUpdateModel {
@@ -12,4 +13,5 @@ export interface AppointmentUpdateModel {
 	AppointmentType: string;
 	Tags?: string[];
 	Version: string;
+	TenantId?: string;
 }

@@ -27,6 +27,7 @@
 	let keywords: string[] = $state(data.appointment.Tags);
 
 	const userId = page.params.userId;
+	const tenantId = data.tenantId;
 	const appointmentId = page.params.id;
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/appointments/${appointmentId}/edit`;
@@ -63,7 +64,8 @@
 				Description: description,
 				AppointmentType: appointmentType,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(appointmentUpdateModel);
