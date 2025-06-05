@@ -265,7 +265,7 @@ const ReminderTriggerSchema = z.object({
 const FileUploadConfigSchema = z.object({
     FileColumnFormat: z.string({
         required_error: "FileColumnFormat is required",
-    }).optional(),
+    }),
     FileType: FileTypeEnum,
     ReminderSchedule: z.array(ReminderTriggerSchema),
 });

@@ -37,8 +37,8 @@
 				Method: data.settings.ApiIntegrationSettings?.Auth?.Method,
 				Url: data.settings.ApiIntegrationSettings?.Auth?.Url,
 				Body: data.settings.ApiIntegrationSettings?.Auth?.Body,
-				QueryParams: data.settings.ApiIntegrationSettings?.Auth?.QueryParams,
-				Headers: data.settings.ApiIntegrationSettings?.Auth?.Headers,
+				QueryParams: data.settings.ApiIntegrationSettings?.Auth?.QueryParams || {},
+				Headers: data.settings.ApiIntegrationSettings?.Auth?.Headers || {},
 				TokenPath: data.settings.ApiIntegrationSettings?.Auth?.TokenPath,
 				ResponseType: data.settings.ApiIntegrationSettings?.Auth?.ResponseType,
 				TokenInjection: {
@@ -50,9 +50,9 @@
 			Fetch: {
 				Method: data.settings.ApiIntegrationSettings?.Fetch.Method,
 				Url: data.settings.ApiIntegrationSettings?.Fetch.Url,
-				QueryParams: data.settings.ApiIntegrationSettings?.Fetch.QueryParams,
+				QueryParams: data.settings.ApiIntegrationSettings?.Fetch?.QueryParams || {},
 				Body: data.settings.ApiIntegrationSettings?.Fetch.Body,
-				Headers: data.settings.ApiIntegrationSettings?.Fetch.Headers,
+				Headers: data.settings.ApiIntegrationSettings?.Fetch?.Headers || {},
 				ResponseType: data.settings.ApiIntegrationSettings?.Fetch.ResponseType,
 				ResponseField: data.settings.ApiIntegrationSettings?.Fetch.ResponseField
 			},
@@ -182,6 +182,23 @@
 		};
 		showReminderModal = false;
 	};
+
+	let openTab: string | null = $state(null);
+
+	function toggleTab(tab: string) {
+		openTab = openTab === tab ? null : tab;
+	}
+	let jsonInput = $derived(followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat);
+    let jsonError = $state('');
+
+    function validateJSON() {
+        try {
+            JSON.parse(followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat);
+            jsonError = ''; 
+        } catch (error) {
+            jsonError = 'Invalid JSON format';
+        }
+    }
 </script>
 
 <div class="px-6 py-4">
@@ -203,7 +220,7 @@
 				<table class="health-system-table">
 					<thead>
 						<tr>
-							<th class="w-[30%]">Appointment Follow-Up Setting</th>
+							<th class="w-[30%]">Follow-Up Setting</th>
 							<th class="w-[70%] text-end">
 								<a href={tenantRoute} class="cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
@@ -224,8 +241,8 @@
 									class="w-full rounded border p-2 text-sm"
 								>
 									<option value="None" selected>None</option>
-									<option value="File">Upload Schedule Files</option>
-									<option value="Api">Integrate Schedule API</option>
+									<option value="File">Files</option>
+									<option value="Api">API</option>
 								</select>
 								{#if errors?.Source}
 									<p class="text-error">{errors?.Source}</p>
@@ -234,21 +251,24 @@
 						</tr>
 						{#if followUpSettingUpdateModel.Source === 'File' || followUpSettingUpdateModel.Source === 'Api'}
 							{#if followUpSettingUpdateModel.Source === 'File'}
-								<tr>
-									<td>
-										<label for="format" class="">File column format </label>
-									</td>
-									<td>
-										<textarea
-											bind:value={followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat}
-											placeholder="Base URL"
-											class="w-full rounded border p-2 text-sm"
-										></textarea>
-										{#if errors?.FileColumnFormat}
-											<p class="text-error">{errors?.FileColumnFormat}</p>
-										{/if}
-									</td>
-								</tr>
+							<tr>
+								<td>
+									<label for="format" class="text-sm ">File Column Format</label>
+								</td>
+								<td>
+									<textarea
+										cols="30"
+										bind:value={followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat}
+										placeholder="File column format in JSON format"
+										class="w-full rounded border p-2 text-sm"
+										oninput={validateJSON}
+									></textarea>
+							
+									{#if jsonError}
+										<p class="text-error">{jsonError}</p>
+									{/if}
+								</td>
+							</tr>
 
 								<tr>
 									<td>
@@ -303,287 +323,359 @@
 							{/if}
 
 							{#if followUpSettingUpdateModel.Source === 'Api'}
-								<tr>
-									<td colspan="2">
+								<tr class="bg-gray-100">
+									<td class="">
 										<label for="source" class="text-sm font-semibold">Authentication Endpoint</label
 										>
 									</td>
-								</tr>
-								<tr>
 									<td>
-										<!-- <div class="space-y-2">
+										<button
+											class="flex w-full items-center justify-between"
+											type="button"
+											onclick={() => toggleTab('fetch')}
+										>
+											<span
+												class="ml-auto transition-transform duration-300"
+												class:rotate-180={openTab === 'fetch'}
+											>
+												<Icon
+													icon="icon-park-outline:down"
+													width="16"
+													height="16"
+													class="h-5 w-5"
+												/>
+											</span>
+										</button>
+									</td>
+								</tr>
+
+								{#if openTab === 'auth'}
+									<tr>
+										<td>
+											<!-- <div class="space-y-2">
 									<div class="flex flex-row"> -->
-										<label for="method">API Config Method <span class="text-red-700">*</span></label
-										>
+											<label for="method"
+												>API Config Method <span class="text-red-700">*</span></label
+											>
+											<!-- </div> -->
+										</td>
+
+										<td>
+											<select
+												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Method}
+												class="w-full rounded border p-2 text-sm"
+											>
+												<option value="" disabled selected>Select Method</option>
+												<option value="GET">GET</option>
+												<option value="POST">POST</option>
+												<option value="PUT">PUT</option>
+												<option value="DELETE">DELETE</option>
+												<option value="PATCH">PATCH</option>
+											</select>
+											{#if errors?.ApiIntegrationSettings}
+												<p class="text-error">{errors?.ApiIntegrationSettings}</p>
+											{/if}
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label for="baseUrl">API Base URL <span class="text-red-700">*</span></label>
+										</td>
+										<td>
+											<input
+												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Url}
+												placeholder="Base URL"
+												class="w-full rounded border p-2 text-sm"
+											/>
+											{#if errors?.Url}
+												<p class="text-error">{errors?.Url}</p>
+											{/if}
+										</td>
+									</tr>
+
+									<tr>
+										<td>
+											<!-- <div class="flex flex-row"> -->
+											<label for="requestBody"> Request Body </label>
+										</td>
+										<td>
+											<input
+												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Body}
+												placeholder="Request Body"
+												class="w-full rounded border p-2 text-sm"
+											/>
+											{#if errors?.Body}
+												<p class="text-error">{errors?.Body}</p>
+											{/if}
+										</td>
 										<!-- </div> -->
-									</td>
+									</tr>
+									<tr>
+										<td>
+											<label for="queryParams">Request Query Params</label>
+										</td>
+										<td>
+											<FollowUpSettings
+												bind:model={
+													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams
+												}
+											/>
+										</td>
+									</tr>
 
-									<td>
-										<select
-											bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Method}
-											class="w-full rounded border p-2 text-sm"
-										>
-											<option value="" disabled selected>Select Method</option>
-											<option value="GET">GET</option>
-											<option value="POST">POST</option>
-											<option value="PUT">PUT</option>
-											<option value="DELETE">DELETE</option>
-											<option value="PATCH">PATCH</option>
-										</select>
-										{#if errors?.ApiIntegrationSettings}
-											<p class="text-error">{errors?.ApiIntegrationSettings}</p>
-										{/if}
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<label for="baseUrl">API Base URL <span class="text-red-700">*</span></label>
-									</td>
-									<td>
-										<input
-											bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Url}
-											placeholder="Base URL"
-											class="w-full rounded border p-2 text-sm"
-										/>
-										{#if errors?.Url}
-											<p class="text-error">{errors?.Url}</p>
-										{/if}
-									</td>
-								</tr>
+									<tr>
+										<td>
+											<label for="headers">Auth Query Headers</label>
+										</td>
+										<td>
+											<FollowUpSettings
+												bind:model={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Headers}
+											/>
+										</td>
+									</tr>
 
-								<tr>
-									<td>
-										<!-- <div class="flex flex-row"> -->
-										<label for="requestBody"> Request Body </label>
-									</td>
-									<td>
-										<input
-											bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Body}
-											placeholder="Request Body"
-											class="w-full rounded border p-2 text-sm"
-										/>
-										{#if errors?.Body}
-											<p class="text-error">{errors?.Body}</p>
-										{/if}
-									</td>
-									<!-- </div> -->
-								</tr>
-								<tr>
-									<td>
-										<label for="queryParams">Request Query Params</label>
-									</td>
-									<td>
-										<FollowUpSettings
-											bind:model={
-												followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams
-											}
-										/>
-									</td>
-								</tr>
+									<tr>
+										<td>
+											<label for="tokenPath">Token Path <span class="text-red-700">*</span></label>
+										</td>
+										<td>
+											<input
+												bind:value={
+													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenPath
+												}
+												placeholder="Token path (e.g. data.token)"
+												class="w-full rounded border p-2 text-sm"
+											/>
+										</td>
+									</tr>
 
-								<tr>
-									<td>
-										<label for="headers">Auth Query Headers</label>
-									</td>
-									<td>
-										<FollowUpSettings
-											bind:model={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Headers}
-										/>
-									</td>
-								</tr>
+									<tr>
+										<td>
+											<label for="Responsetype">
+												Response Type <span class="text-red-700">*</span></label
+											>
+										</td>
+										<td>
+											<select
+												bind:value={
+													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.ResponseType
+												}
+												class="w-full rounded border p-2 text-sm"
+											>
+												<option value="" disabled selected>Select Response type</option>
+												<option value="json">JSON</option>
+												<option value="text">Text</option>
+												<option value="form">Form</option>
+												<option value="xml">XML</option>
+											</select>
+										</td>
+									</tr>
+								{/if}
 
-								<tr>
+								<tr class="cursor-pointer bg-gray-100">
 									<td>
-										<label for="tokenPath">Token Path <span class="text-red-700">*</span></label>
-									</td>
-									<td>
-										<input
-											bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenPath}
-											placeholder="Token path (e.g. data.token)"
-											class="w-full rounded border p-2 text-sm"
-										/>
-									</td>
-								</tr>
-
-								<tr>
-									<td>
-										<label for="Responsetype">
-											Response Type <span class="text-red-700">*</span></label
-										>
-									</td>
-									<td>
-										<select
-											bind:value={
-												followUpSettingUpdateModel.ApiIntegrationSettings.Auth.ResponseType
-											}
-											class="w-full rounded border p-2 text-sm"
-										>
-											<option value="" disabled selected>Select Response type</option>
-											<option value="json">JSON</option>
-											<option value="text">Text</option>
-											<option value="form">Form</option>
-											<option value="xml">XML</option>
-										</select>
-									</td>
-								</tr>
-
-								<tr>
-									<td colspan="2" class=" py-5">
-										<label for="Token" class="font-semibold"> Token Injection</label>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<label for="tokenLocation">Location <span class="text-red-700">*</span></label>
-									</td>
-									<td>
-										<select
-											bind:value={
-												followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection
-													.Location
-											}
-											class="w-full rounded border p-2 text-sm"
-										>
-											<option value="" disabled selected>Select Location</option>
-											<option value="header">Header</option>
-											<option value="query">Query</option>
-											<option value="body">Body</option>
-										</select>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<label for="tokenKey"> Key <span class="text-red-700">*</span></label>
-									</td>
-									<td>
-										<input
-											bind:value={
-												followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Key
-											}
-											placeholder="Token key"
-											class="w-full rounded border p-2 text-sm"
-										/>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<label for="tokenPrefix"> Prefix </label>
-									</td>
-									<td>
-										<input
-											bind:value={
-												followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Prefix
-											}
-											placeholder="Token prefix "
-											class="w-full rounded border p-2 text-sm"
-										/>
-									</td>
-								</tr>
-								<tr>
-									<td colspan="2">
 										<label for="fetchconfig" class="text-sm font-semibold"
 											>API Fetch Configuration</label
 										>
 									</td>
-								</tr>
-								<tr>
 									<td>
-										<label for="method">API Config Method <span class="text-red-700">*</span></label
+										<button
+											class="flex w-full items-center justify-between"
+											type="button"
+											onclick={() => toggleTab('fetch')}
 										>
+											<span
+												class="ml-auto transition-transform duration-300"
+												class:rotate-180={openTab === 'fetch'}
+											>
+												<Icon
+													icon="icon-park-outline:down"
+													width="16"
+													height="16"
+													class="h-5 w-5"
+												/>
+											</span>
+										</button>
+									</td>
+								</tr>
+
+								{#if openTab === 'fetch'}
+									<tr>
+										<td>
+											<label for="method"
+												>API Config Method <span class="text-red-700">*</span></label
+											>
+										</td>
+										<td>
+											<select
+												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Method}
+												class="w-full rounded border p-2 text-sm"
+											>
+												<option value="" disabled selected>Select Fecth Method</option>
+												<option value="GET">GET</option>
+												<option value="POST">POST</option>
+												<option value="PUT">PUT</option>
+												<option value="DELETE">DELETE</option>
+												<option value="PATCH">PATCH</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label for="url"> URL <span class="text-red-700">*</span></label>
+										</td>
+										<td>
+											<input
+												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Url}
+												placeholder="Base URL"
+												class="w-full rounded border p-2 text-sm"
+											/>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label for="queryParams">Request Query Params</label>
+										</td>
+										<td>
+											<FollowUpSettings
+												bind:model={
+													followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.QueryParams
+												}
+											/>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label for="body"> Request Body</label>
+										</td>
+										<td>
+											<input
+												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Body}
+												placeholder="Request Body"
+												class="w-full rounded border p-2 text-sm"
+											/>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label for="headers">Query Headers </label>
+										</td>
+										<td>
+											<FollowUpSettings
+												bind:model={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Headers}
+											/>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label for="requestType"> Response Type</label>
+										</td>
+										<td>
+											<select
+												bind:value={
+													followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseType
+												}
+												class="w-full rounded border p-2 text-sm"
+											>
+												<option value="" disabled selected>Select Response type</option>
+												<option value="json">JSON</option>
+												<option value="text">Text</option>
+												<option value="form">Form</option>
+												<option value="xml">XML</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label for="responseField"> Response Field</label>
+										</td>
+										<td>
+											<input
+												bind:value={
+													followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseField
+												}
+												placeholder="response field"
+												class="w-full rounded border p-2 text-sm"
+											/>
+										</td>
+									</tr>
+								{/if}
+
+								<tr class="cursor-pointer bg-gray-100">
+									<td class=" py-5">
+										<label for="Token" class="font-semibold"> Token Injection</label>
 									</td>
 									<td>
-										<select
-											bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Method}
-											class="w-full rounded border p-2 text-sm"
+										<button
+											class="flex w-full items-center justify-between"
+											type="button"
+											onclick={() => toggleTab('fetch')}
 										>
-											<option value="" disabled selected>Select Fecth Method</option>
-											<option value="GET">GET</option>
-											<option value="POST">POST</option>
-											<option value="PUT">PUT</option>
-											<option value="DELETE">DELETE</option>
-											<option value="PATCH">PATCH</option>
-										</select>
+											<span
+												class="ml-auto transition-transform duration-300"
+												class:rotate-180={openTab === 'fetch'}
+											>
+												<Icon
+													icon="icon-park-outline:down"
+													width="16"
+													height="16"
+													class="h-5 w-5"
+												/>
+											</span>
+										</button>
 									</td>
 								</tr>
-								<tr>
-									<td>
-										<label for="url"> URL <span class="text-red-700">*</span></label>
-									</td>
-									<td>
-										<input
-											bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Url}
-											placeholder="Base URL"
-											class="w-full rounded border p-2 text-sm"
-										/>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<label for="queryParams">Request Query Params</label>
-									</td>
-									<td>
-										<FollowUpSettings
-											bind:model={
-												followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.QueryParams
-											}
-										/>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<label for="body"> Request Body</label>
-									</td>
-									<td>
-										<input
-											bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Body}
-											placeholder="Request Body"
-											class="w-full rounded border p-2 text-sm"
-										/>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<label for="headers">Query Headers </label>
-									</td>
-									<td>
-										<FollowUpSettings
-											bind:model={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Headers}
-										/>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<label for="requestType"> Response Type</label>
-									</td>
-									<td>
-										<select
-											bind:value={
-												followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseType
-											}
-											class="w-full rounded border p-2 text-sm"
-										>
-											<option value="" disabled selected>Select Response type</option>
-											<option value="json">JSON</option>
-											<option value="text">Text</option>
-											<option value="form">Form</option>
-											<option value="xml">XML</option>
-										</select>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<label for="responseField"> Response Field</label>
-									</td>
-									<td>
-										<input
-											bind:value={
-												followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseField
-											}
-											placeholder="response field"
-											class="w-full rounded border p-2 text-sm"
-										/>
-									</td>
-								</tr>
+								{#if openTab === 'token'}
+									<tr>
+										<td>
+											<label for="tokenLocation">Location <span class="text-red-700">*</span></label
+											>
+										</td>
+										<td>
+											<select
+												bind:value={
+													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection
+														.Location
+												}
+												class="w-full rounded border p-2 text-sm"
+											>
+												<option value="" disabled selected>Select Location</option>
+												<option value="header">Header</option>
+												<option value="query">Query</option>
+												<option value="body">Body</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label for="tokenKey"> Key <span class="text-red-700">*</span></label>
+										</td>
+										<td>
+											<input
+												bind:value={
+													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Key
+												}
+												placeholder="Token key"
+												class="w-full rounded border p-2 text-sm"
+											/>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label for="tokenPrefix"> Prefix </label>
+										</td>
+										<td>
+											<input
+												bind:value={
+													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection
+														.Prefix
+												}
+												placeholder="Token prefix "
+												class="w-full rounded border p-2 text-sm"
+											/>
+										</td>
+									</tr>
+								{/if}
 
 								<tr>
 									<td>

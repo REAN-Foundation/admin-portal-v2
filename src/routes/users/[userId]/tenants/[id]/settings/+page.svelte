@@ -5,6 +5,8 @@
 	import { page } from '$app/state';
 	import Icon from '@iconify/svelte';
 	import { goto } from '$app/navigation';
+	import { toastMessage } from '$lib/components/toast/toast.store';
+	import { UserInterfacesSchema } from '$lib/validation/tenant.settings.schema';
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -12,10 +14,8 @@
 
 	console.log('data =>', data);
 
-	// let isPatientAppChecked = $state(data.settings.PatientApp);
-	// let isChatbotChecked = $state(data.settings.ChatBot);
-	// let isFormsChecked = $state(data.settings.Forms);
-
+	let setttings = data.settings.Common;
+	let errors: Record<string, string> = $state({});
 	let disabled = $state(true);
 	let edit = $derived(disabled);
 	let promise = $state();
@@ -25,55 +25,46 @@
 	const viewRoute = `/users/${userId}/tenants/${tenantId}/view`;
 	const tenantRoute = `/users/${userId}/tenants`;
 
-	// const breadCrumbs = [
-	// 	{
-	// 		name: 'Tenants',
-	// 		path: tenantRoute
-	// 	},
-	// 	{
-	// 		name: 'Settings',
-	// 		path: viewRoute
-	// 	}
-	// ];
+	const handleSubmit = async (event: Event) => {
+		event.preventDefault();
+		try {
+			errors = {};
 
-	// let tabs = ['Common Settings', 'Chatbot Settings', 'Forms Settings', 'Patient App Settings'];
-	// let tabs = [
-	// 	{ name: 'Common Settings', path: `${tenantRoute}/${tenantId}/settings/common-setting` },
-	// 	{ name: 'Chatbot Settings', path: `${tenantRoute}/${tenantId}/settings/chatbot-setting` },
-	// 	{ name: 'Forms Settings', path: `${tenantRoute}/${tenantId}/settings/form-setting` },
-	// 	{ name: 'Patient App Settings', path:`${tenantRoute}/${tenantId}/settings/patient-app-setting` }
-	// ];
-	// let activeTab = $state('Common Settings');
+			const validationResult = UserInterfacesSchema.safeParse(setttings);
 
-	// function selectTab(tab) {
-	// 	activeTab = tab;
-	// }
+			if (!validationResult.success) {
+				errors = Object.fromEntries(
+					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				);
+				return;
+			}
 
-	const handleSubmit = (e) => {};
+			const res = await fetch(`/api/server/tenants/settings/${tenantId}/Common`, {
+				method: 'PUT',
+				body: JSON.stringify(setttings),
+				headers: { 'content-type': 'application/json' }
+			});
+			const response = await res.json();
+			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				toastMessage(response);
+				edit = true;
+				return;
+			}
+			if (response.Errors) {
+				errors = response?.Errors || {};
+			} else {
+				toastMessage(response);
+			}
+		} catch (error) {
+			toastMessage();
+		}
+	};
 </script>
 
-<!-- <BreadCrumbs crumbs={breadCrumbs} /> -->
-
 <div class="px-6 py-2">
-	<!--	<div class=" border-b my-3">
-	<div class="flex space-x-6 px-4 pt-4">
-		{#each tabs as tab}
-			<button
-				class="pb-2 text-sm font-medium transition-colors duration-200"
-				class:selected={activeTab === tab.name}
-				onclick={() => selectTab(tab)}
-			>
-				<a href={tab.path}>
-					<span
-						class='text-gray-600 hover:text-black hover:border-b-2 hover:border-gray-400'
-					>
-						{tab.name}
-					</span>
-				</a>
-			</button>
-		{/each}
-	</div>
-</div> -->
 	<div class="mb-2 flex w-full flex-wrap justify-end gap-2">
 		<button
 			class="table-btn variant-filled-secondary gap-1"
@@ -101,54 +92,58 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
-							<td>
-								<!-- {#if edit === true && isPatientAppChecked === true}
-									<span class="tick ml-10 text-green-500">✔</span>
-								{:else}
-									<input
-										type="checkbox"
-										name="patientApp"
-										{disabled}
-										bind:checked={isPatientAppChecked}
-										class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
-									/>
-								{/if} -->
-							</td>
-							<td>Patient App</td>
-						</tr>
-						<tr>
-							<td>
-								<!-- {#if edit === true && isChatbotChecked === true}
-									<span class="tick ml-10 text-green-500">✔</span>
-								{:else}
-									<input
-										type="checkbox"
-										name="chatBot"
-										{disabled}
-										bind:checked={isChatbotChecked}
-										class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
-									/>
-								{/if} -->
-							</td>
-							<td class="ml-4">Chat bot</td>
-						</tr>
-						<tr>
-							<td>
-								<!-- {#if edit === true && isFormsChecked === true}
-									<span class="tick ml-10 text-green-500">✔</span>
-								{:else}
-									<input
-										type="checkbox"
-										name="form"
-										{disabled}
-										bind:checked={isFormsChecked}
-										class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
-									/>
-								{/if} -->
-							</td>
-							<td class="ml-4">Forms</td>
-						</tr>
+						{#each Object.entries(setttings.UserInterfaces) as [key, value]}
+							<tr>
+								<td>
+									{#if key === 'ChatBot'}
+										<input
+											type="checkbox"
+											name="patientApp"
+											{disabled}
+											bind:checked={setttings.UserInterfaces[key]}
+											class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
+										/>
+										<span>Chat Bot</span>
+									{:else if key === 'Followup'}
+										<input
+											type="checkbox"
+											name="followup"
+											{disabled}
+											bind:checked={setttings.UserInterfaces[key]}
+											class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
+										/>
+										<span>Follow-up</span>
+									{:else if key === 'Forms'}
+										<input
+											type="checkbox"
+											name="forms"
+											{disabled}
+											bind:checked={setttings.UserInterfaces[key]}
+											class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
+										/>
+										<span>Forms</span>
+									{:else if key === 'PatientApp'}
+										<input
+											type="checkbox"
+											name="patientApp"
+											disabled
+											bind:checked={setttings.UserInterfaces[key]}
+											class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
+										/>
+										<span>Patient App</span>
+									{:else if key === 'PatientPortal'}
+										<input
+											type="checkbox"
+											name="patientPortal"
+											disabled
+											bind:checked={setttings.UserInterfaces[key]}
+											class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
+										/>
+										<span>Patient Portal</span>
+									{/if}
+								</td>
+							</tr>
+						{/each}
 					</tbody>
 				</table>
 

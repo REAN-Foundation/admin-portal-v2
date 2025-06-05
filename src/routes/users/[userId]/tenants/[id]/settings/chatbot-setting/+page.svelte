@@ -10,6 +10,7 @@
 	} from '$lib/validation/tenant.settings.schema.js';
 	import type { ChatBotSettings, ConsentSettings } from '$lib/types/tenant.settings.types.js';
 	import ConsentModel from '$routes/users/[userId]/tenants/[id]/settings/chatbot-setting/consent.modal.svelte';
+	import { languages } from '$lib/utils/language.js';
 	///////////////////////////////////////////////////////////////////////
 
 	let { data, form } = $props();
@@ -26,6 +27,10 @@
 	let showCancelModel = $state(false);
 	let consentSetting = $state();
 	let previousConsent = chatBotSetting.ChatBot.Consent;
+
+	let fileinput = $state();
+	let fileName = $state(undefined);
+	let selectFile = $state(undefined);
 
 	let openTab: string | null = $state(null);
 
@@ -195,6 +200,50 @@
 	function onCloseModal() {
 		showCancelModel = false;
 	}
+
+	const upload = async (imgBase64, file) => {
+		const data = {};
+		console.log(imgBase64);
+
+		const imgData = imgBase64.split(',');
+		data['image'] = imgData[1];
+
+		if (!file) return;
+
+		const formData = new FormData();
+		formData.append('file', file);
+
+		const res = await fetch(`/api/server/assessments/assessment-templates/upload`, {
+			method: 'POST',
+			body: formData
+		});
+
+		const response = await res.json();
+		console.log('response from api endpoint', response);
+
+		if (response.Status === 'success' && response.HttpCode === 201) {
+			return { success: true, resourceId: response.Data?.id, response };
+		}
+		if (response.Errors) {
+			errors = response?.Errors || {};
+			// showMessage(response.Message, 'error');
+			return response;
+		} else {
+			// showMessage(response.Message, 'error');
+			return { success: false, error: response.Message };
+		}
+	};
+
+	const onFileSelected = async (e) => {
+		let f = e.target.files[0];
+		fileName = f.name;
+		selectFile = f;
+		let reader = new FileReader();
+		reader.readAsDataURL(f);
+		reader.onload = async (e) => {
+			fileinput = e.target.result;
+		};
+	};
 </script>
 
 <ConsentModel
@@ -298,15 +347,23 @@
 						<tr>
 							<td>Favicon </td>
 							<td>
-								<input
-									type="text"
-									class="health-system-input"
-									name="favicon"
-									placeholder="Enter favicon here..."
-									bind:value={chatBotSetting.ChatBot.Favicon}
-								/>
-								{#if errors?.Favicon}
-									<p class="text-error">{errors?.Favicon}</p>
+								<div class="flex items-center space-x-4">
+									<label class="health-system-btn variant-filled-secondary">
+										Select File
+										<input type="file" class="hidden" onchange={onFileSelected} />
+									</label>
+
+									<input
+										type="text"
+										class="health-system-input bg-gray-100 text-gray-700 focus:outline-none"
+										value={fileName}
+										readonly
+										placeholder="No file selected"
+									/>
+								</div>
+
+								{#if errors?.UploadFile}
+									<p class="text-error">{errors?.UploadFile}</p>
 								{/if}
 							</td>
 						</tr>
@@ -324,7 +381,7 @@
 						<tr>
 							<td>Default Language </td>
 							<td>
-								<input
+								<!-- <input
 									type="text"
 									class="health-system-input"
 									name="defaultLanguage"
@@ -333,59 +390,21 @@
 								/>
 								{#if errors?.DefaultLanguage}
 									<p class="text-error">{errors?.DefaultLanguage}</p>
+								{/if} -->
+								<select
+									bind:value={chatBotSetting.ChatBot.DefaultLanguage}
+									class="w-full rounded border p-2 text-sm"
+								>
+									<option value="" disabled selected>Select file type</option>
+									{#each languages as lang}
+										<option value={lang.name}>{lang.name}</option>
+									{/each}
+								</select>
+								{#if errors?.DefaultLanguage}
+									<p class="text-error">{errors?.DefaultLanguage}</p>
 								{/if}
 							</td>
 						</tr>
-
-						{#each Object.entries(chatBotSetting.ChatBot) as [groupName, groupItems]}
-							{#if typeof groupItems === 'boolean'}
-								<tr>
-									<td>
-										<div class="flex items-center gap-2">
-											{#if edit === true && groupItems === true}
-												<span class="text-green-500">✅</span>
-											{:else if edit === true && groupItems === false}
-												<span>❌</span>
-											{:else}
-												<input
-													type="checkbox"
-													class="checkbox checkbox-primary"
-													disabled={edit}
-													bind:checked={chatBotSetting.ChatBot[groupName]}
-												/>
-											{/if}
-
-											<Icons
-												cls="stroke-slate-800 my-2 stroke-2 fill-none"
-												h="80%"
-												w="80%"
-												iconPath="/tenant-setting/chatbot/whatsapp.svg#icon"
-											/>
-											<span class="text-base">{groupName}</span>
-										</div>
-									</td>
-
-									<td>
-										<div class="flex items-center justify-end gap-2">
-											{#if groupName === 'Consent' && groupItems === true && edit === true}
-												<Icon
-													icon="material-symbols:edit-outline"
-													onclick={() => (showCancelModel = true)}
-												/>
-											{/if}
-
-											<InfoIcon
-												cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 cursor-pointer fill-none my-2"
-												h="80%"
-												w="80%"
-												iconPath="/tenant-setting/info.svg#icon"
-												title="Settings under Whatsapp"
-											/>
-										</div>
-									</td>
-								</tr>
-							{/if}
-						{/each}
 
 						{#each Object.entries(chatBotSetting.ChatBot) as [groupName, groupItems]}
 							{#if groupName === 'MessageChannels' || groupName === 'SupportChannels'}
@@ -394,7 +413,7 @@
 										<button
 											type="button"
 											onclick={() => toggleTab(groupName)}
-											class={`sidebar-item flex w-full items-center justify-between rounded-md px-4 py-2 transition-colors duration-200 ${
+											class={`sidebar-item flex w-full items-center justify-between rounded-md  py-2 transition-colors duration-200 ${
 												openTab === groupName ? 'bg-slate-100 ' : ''
 											}`}
 										>
@@ -471,6 +490,61 @@
 									</td>
 								</tr>
 							{/if}
+						{/each}
+
+						{#each Object.entries(chatBotSetting.ChatBot)
+							.filter(([_, val]) => typeof val === 'boolean')
+							.reduce((acc, curr, idx, arr) => {
+								if (idx % 2 === 0) acc.push(arr.slice(idx, idx + 2));
+								return acc;
+							}, []) as row}
+							<tr>
+								{#each row as [groupName, groupItems]}
+									<td class="w-1/2 p-4 align-top">
+										<div class="flex items-center justify-between rounded-xl border p-4 shadow-sm">
+											<!-- Left: App Icon -->
+											<div class="mx-auto items-center justify-between ">
+												<Icons
+													cls=""
+													h="24px"
+													w="24px"
+													iconPath="/tenant-setting/chatbot/whatsapp.svg#icon"
+												/>
+											</div>
+
+											<!-- Middle: Name & Description -->
+											<div class="ml- flex flex-grow flex-col">
+												<span class="font-semibold">{groupName}</span>
+												<p class="text-sm">
+													This is a short description for {groupName} chatbot setting.
+												</p>
+											</div>
+
+											<!-- Right: Toggle -->
+											<div class="flex items-center gap-2">
+												{#if groupName === 'Consent' && groupItems === true && edit === true}
+													<Icon
+														icon="material-symbols:edit-outline" height="15" width="15"
+														onclick={() => (showCancelModel = true)}
+													/>
+												{/if}
+												<label class="flex cursor-pointer items-center">
+													<input
+														type="checkbox"
+														class="checkbox checkbox-primary scale-125"
+														bind:checked={chatBotSetting.ChatBot[groupName]}
+														disabled={edit}
+													/>
+												</label>
+											</div>
+										</div>
+									</td>
+								{/each}
+
+								{#if row.length === 1}
+									<td class="w-1/2"></td>
+								{/if}
+							</tr>
 						{/each}
 					</tbody>
 				</table>

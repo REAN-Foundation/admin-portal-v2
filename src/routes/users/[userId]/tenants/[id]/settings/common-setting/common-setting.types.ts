@@ -126,11 +126,11 @@ export const commonUISettings: CommonSettings = {
     Affiliations: {
         HealthCenters: {
             Name: 'Health Centers',
-            Path: '/tenant-setting/common-setting/hospital.svg#icon'
+            Path: '/tenant-setting/common-setting/hospital-center.svg#icon'
         },
         HealthSystems: {
             Name: 'Health Systems',
-            Path: '/tenant-setting/common-setting/hospital.svg#icon'
+            Path: '/tenant-setting/common-setting/affiliation--hospital-system.svg#icon'
         }
     },
     Miscellaneous: {
@@ -194,7 +194,7 @@ export const commonUISettings: CommonSettings = {
     Analysis: {
         CustomQueries: {
             Name: 'Custom Queries',
-            Path: '/tenant-setting/common-setting/custom.svg#icon'
+            Path: '/tenant-setting/common-setting/cqueries.svg#icon'
         },
         Quicksight: {
             Name: 'Quicksight',

@@ -121,7 +121,7 @@
 										cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 fill-none my-2"
 										h="70%"
 										w="70%"
-										iconPath={meta?.IconPath}
+										iconPath={meta?.Path}
 									/>
 									<span>{meta?.Name ?? key}</span>
 								</div>

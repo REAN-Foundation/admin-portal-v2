@@ -40,10 +40,10 @@
 	/>
 </div>
 <button type="button" class="table-btn variant-filled-secondary gap-1" onclick={addQueryParam}>
-	Add New
+	Add
 </button>
 
-{#if Object.keys(model).length}
+{#if Object.keys(model)}
 	{#each Object.entries(model) as [key, value]}
 		<div class="mb-1 flex items-center justify-between rounded bg-gray-50 px-2 py-1 text-sm">
 			<span class="truncate">{key}: {value}</span>
