@@ -86,12 +86,17 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
-					<thead>
+<div class="p-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+
+	<div class="form-headers">
+			<h2 class="form-titles">Create Audio</h2>
+			<a href={assetRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>
+				<table class="w-full">
+					<!-- <thead>
 						<tr>
 							<th>Create Audio</th>
 							<th class="text-end">
@@ -100,11 +105,11 @@
 								</a>
 							</th>
 						</tr>
-					</thead>
+					</thead> -->
 					<tbody>
-						<tr>
-							<td>Name <span class="text-red-700">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Name <span class="text-red-700">*</span></td>
+							<td class="table-data">
 								<input
 									type="text"
 									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
@@ -118,9 +123,9 @@
 							</td>
 						</tr>
 
-						<tr>
-							<td class="align-top">Transcript</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Transcript</td>
+							<td class="table-data">
 								<textarea
 									name="transcript"
 									class="input w-full {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
@@ -130,9 +135,9 @@
 							</td>
 						</tr>
 
-						<tr>
-							<td>Url</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Url</td>
+							<td class="table-data">
 								<input
 									type="url"
 									name="url"
@@ -145,9 +150,9 @@
                                 {/if}
                             </td>
                         </tr>
-						<tr>
-                            <td class="!py-3 align-top">Tags</td>
-                            <td>
+						<tr class="tables-row">
+                            <td class="table-label">Tags</td>
+                            <td class="table-data">
                                 <InputChips
                                     bind:keywords
                                     name="keywords"
@@ -158,9 +163,9 @@
                                 <!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
                             </td>
                         </tr>
-						<tr>
-							<td>Version</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Version</td>
+							<td class="table-data">
 								<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
 							</td>
 						</tr>
@@ -178,5 +183,5 @@
 				</div>
 			</form>
 		</div>
-	</div>
-</div>
+	
+

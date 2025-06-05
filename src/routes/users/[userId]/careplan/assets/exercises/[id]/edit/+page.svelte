@@ -105,133 +105,138 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<table class="table-c">
-			<thead>
-					<tr>
-						<th>Edit Biometric</th>
-						<th class="text-end">
-							<a href={viewRoute} class="health-system-btn variant-soft-secondary">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Name </td>
-						<td>
-							<input
-									type="text"
-									class="input {form?.errors?.Name
-										? 'input-text-error'
-										: ''}"
-									name="biometricsName"
-									placeholder="Enter name here..."
-									bind:value={name}
-								/>
-							{#if errors?.Name}
-							<p class="text-error">{errors?.Name}</p>
-							{/if}
-						</td>
-					</tr>
+<div class="p-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit Biometric</h2>
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>
 
-					<tr>
-						<td class="align-top">Description</td>
-						<td>
-							<textarea
-								name="description"
-								class="input w-full {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
-								bind:value={description}
-								placeholder="Enter description here..."
-							></textarea>
-						</td>
-					</tr>
-					<tr>
-						<td>Exercise Type</td>
-						<td>
-							<select class="input" bind:value={exerciseType}>
-								<option disabled value>Select exercise type</option>
-								<option>Strength</option>
-								<option>Aerobic</option>
-								<option>Balance</option>
-								<option>Reflexes</option>
-								<option>Flexibility</option>
-								<option>Body temperature</option>
-								<option>Pulse</option>
-								<option>Other</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>Intensity Level</td>
-						<td>
-							<select class="input" bind:value={intensityLevel}>
-								<option disabled value>Select Intensity Level</option>
-								<option>None</option>
-								<option>Minimal</option>
-								<option>Moderate</option>
-								<option>Somewhat hard</option>
-								<option>Hard</option>
-								<option>Harder</option>
-								<option>Very hard</option>
-								<option>Extremely hard</option>
-								<option>Maximum effort</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>Recommended Duration Min</td>
-						<td>
-							<input
-								type="text"
-								bind:value={recommendedDurationMin}
-								placeholder="Enter recommended duration min..."
-								class="input {errors?.RecommendedDurationMin ? 'input-text-error' : ''}"
-							/>
-							{#if errors?.RecommendedDurationMin}<p class="text-error">{errors?.RecommendedDurationMin}</p>{/if}
-						</td>
-					</tr>
-					<tr class="">
-						<td class="!py-3 align-top">Tags</td>
-						<td>
-							<InputChips
-								bind:keywords
-								name="keywords"
-								id="keywords"
-								keywordsChanged={onUpdateKeywords}
-							/>
-							<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-							<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
-						</td>
-					</tr>
-					<tr>
-						<td>Version</td>
-						<td>
-							<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
-						</td>
-					</tr>
-				</tbody>
-			</table>
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Name <span class="important-field">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+							name="biometricsName"
+							placeholder="Enter name here..."
+							bind:value={name}
+						/>
+						{#if errors?.Name}
+							<p class="error-text">{errors?.Name}</p>
+						{/if}
+					</td>
+				</tr>
 
-			<div class="button-container">
-				<button
-					type="button"
-					onclick={handleReset}
-					class="health-system-btn variant-soft-secondary">Reset</button
-				>
-				{#await promise}
-					<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-						Submiting
-					</button>
-				{:then data}
-					<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
-				{/await}
-			</div>
-		</form>
-	</div>
+				<tr class="tables-row">
+					<td class="table-label">Description</td>
+					<td class="table-data">
+						<textarea
+							name="description"
+							class="input resize-none {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
+							bind:value={description}
+							placeholder="Enter description here..."
+						></textarea>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Exercise Type</td>
+					<td class="table-data">
+						<select class="input" bind:value={exerciseType}>
+							<option disabled value>Select exercise type</option>
+							<option>Strength</option>
+							<option>Aerobic</option>
+							<option>Balance</option>
+							<option>Reflexes</option>
+							<option>Flexibility</option>
+							<option>Body temperature</option>
+							<option>Pulse</option>
+							<option>Other</option>
+						</select>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Intensity Level</td>
+					<td class="table-data">
+						<select class="input" bind:value={intensityLevel}>
+							<option disabled value>Select Intensity Level</option>
+							<option>None</option>
+							<option>Minimal</option>
+							<option>Moderate</option>
+							<option>Somewhat hard</option>
+							<option>Hard</option>
+							<option>Harder</option>
+							<option>Very hard</option>
+							<option>Extremely hard</option>
+							<option>Maximum effort</option>
+						</select>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Recommended Duration Min</td>
+					<td class="table-data">
+						<input
+							type="text"
+							bind:value={recommendedDurationMin}
+							placeholder="Enter recommended duration min..."
+							class="input {errors?.RecommendedDurationMin ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.RecommendedDurationMin}
+							<p class="error-text">{errors?.RecommendedDurationMin}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label align-top">Tags</td>
+					<td class="table-data">
+						<InputChips
+							bind:keywords
+							name="keywords"
+							id="keywords"
+							keywordsChanged={onUpdateKeywords}
+						/>
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Version</td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {form?.errors?.Version ? 'input-text-error' : ''}"
+							name="version"
+							placeholder="V 1.0"
+							bind:value={version}
+						/>
+						{#if errors?.Version}
+							<p class="error-text">{errors?.Version}</p>
+						{/if}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container">
+			<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary">
+				Reset
+			</button>
+			{#await promise}
+				<button type="submit" class="table-btn variant-soft-secondary" disabled>
+					Submitting
+				</button>
+			{:then data}
+				<button type="submit" class="table-btn variant-soft-secondary">Submit</button>
+			{/await}
+		</div>
+	</form>
 </div>
-</div>
+

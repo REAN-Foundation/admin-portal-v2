@@ -127,145 +127,152 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th>Edit Message</th>
-							<th class="text-end">
-								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Name</td>
-							<td>
-								<input
-									type="text"
-									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
-									name="name"
-									placeholder="Enter name here..."
-									bind:value={name}
-								/>
-								{#if errors?.Name}
-									<p class="text-error">{errors?.Name}</p>
-								{/if}
-							</td>
-						</tr>
-
-						<tr>
-							<td>Description</td>
-							<td>
-								<input
-									type="textarea"
-									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
-									name="description"
-									placeholder="Enter description here..."
-									bind:value={description}
-								/>
-								{#if errors?.Name}
-									<p class="text-error">{errors?.Name}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Message Type</td>
-							<td>
-								<select class="input" bind:value={messageType}>
-									<option disabled value>Select message type</option>
-									<option>Educational</option>
-									<option>Status</option>
-									<option>Unknown</option>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td>Template Name</td>
-							<td>
-								<input
-									type="text"
-									bind:value={templateName}
-									placeholder="Enter Template Name..."
-									class="input {errors?.TemplateName ? 'input-text-error' : ''}"
-								/>
-								{#if errors?.TemplateName}<p class="text-error">{errors?.TemplateName}</p>{/if}
-							</td>
-						</tr>
-						<tr>
-							<td class="align-top">Template Variables</td>
-							<td>
-								<textarea
-									name="templateVariablesText"
-									class="input w-full {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
-									bind:value={templateVariablesText}
-									placeholder="Enter Template Variables here..."
-								></textarea>
-							</td>
-						</tr>
-						<tr>
-							<td>Url</td>
-							<td>
-								<input
-									type="url"
-									name="url"
-									bind:value={pathUrl}
-									placeholder="Enter url here"
-									class="input {errors?.Url ? 'input-text-error' : ''}"
-								/>
-								{#if errors?.Url}
-									<p class="text-error">{errors?.Url}</p>
-								{/if}
-							</td>
-						</tr>
-
-						<tr class="">
-							<td class="!py-3 align-top">Tags</td>
-							<td>
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-									keywordsChanged={onUpdateKeywords}
-								/>
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
-							</td>
-						</tr>
-						<tr>
-							<td>Version</td>
-							<td>
-								<input
-									type="text"
-									bind:value={version}
-									class="input"
-									placeholder="V 1.0"
-								/>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-
-				<div class="button-container">
-					<button
-						type="button"
-						onclick={handleReset}
-						class="health-system-btn variant-soft-secondary">Reset</button
-					>
-					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit Message</h2>
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Name <span class="important-field">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {errors?.Name ? 'input-text-error' : ''}"
+							name="name"
+							placeholder="Enter name here..."
+							bind:value={name}
+						/>
+						{#if errors?.Name}
+							<p class="error-text">{errors?.Name}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Description</td>
+					<td class="table-data">
+						<textarea
+							name="description"
+							class="input resize-none {errors?.Description ? 'input-text-error' : ''}"
+							bind:value={description}
+							placeholder="Enter description here..."
+						></textarea>
+						{#if errors?.Description}
+							<p class="error-text">{errors?.Description}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Message Type</td>
+					<td class="table-data">
+						<select class="input" bind:value={messageType}>
+							<option disabled value>Select message type</option>
+							<option>Educational</option>
+							<option>Status</option>
+							<option>Unknown</option>
+						</select>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Template Name</td>
+					<td class="table-data">
+						<input
+							type="text"
+							bind:value={templateName}
+							name="templateName"
+							placeholder="Enter Template Name..."
+							class="input {errors?.TemplateName ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.TemplateName}
+							<p class="error-text">{errors?.TemplateName}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label align-top">Template Variables</td>
+					<td class="table-data">
+						<textarea
+							name="templateVariablesText"
+							class="input resize-none {errors?.TemplateVariables ? 'input-text-error' : ''}"
+							bind:value={templateVariablesText}
+							placeholder="Enter Template Variables here..."
+						></textarea>
+						{#if errors?.TemplateVariables}
+							<p class="error-text">{errors?.TemplateVariables}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">URL</td>
+					<td class="table-data">
+						<input
+							type="url"
+							name="url"
+							bind:value={pathUrl}
+							placeholder="Enter URL here..."
+							class="input {errors?.Url ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.Url}
+							<p class="error-text">{errors?.Url}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label align-top">Tags</td>
+					<td class="table-data">
+						<InputChips
+							bind:keywords
+							name="keywords"
+							id="keywords"
+							keywordsChanged={onUpdateKeywords}
+						/>
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Version</td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="version"
+							bind:value={version}
+							class="input {errors?.Version ? 'input-text-error' : ''}"
+							placeholder="V 1.0"
+						/>
+						{#if errors?.Version}
+							<p class="error-text">{errors?.Version}</p>
+						{/if}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container">
+      <button type="button" onclick={handleReset} class="table-btn variant-soft-secondary">
+        Reset
+      </button>
+
+      {#await promise}
+        <button type="submit" class="table-btn variant-soft-secondary" disabled>
+          Submitting
+        </button>
+      {:then data}
+        <button type="submit" class="table-btn variant-soft-secondary">
+          Submit
+        </button>
+      {/await}
+    </div>
+	</form>
 </div>

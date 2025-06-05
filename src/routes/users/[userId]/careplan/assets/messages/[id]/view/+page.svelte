@@ -42,74 +42,68 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-2">
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<h2 class="form-titles">View Message</h2>
+		<a href={assetRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
+		</a>
+	</div>
+
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<td class="table-label">Asset Code</td>
+				<td class="table-data">{assetCode}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Name</td>
+				<td class="table-data">{name}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Description</td>
+				<td class="table-data">{description}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Message Type</td>
+				<td class="table-data">{messageType}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Template Name</td>
+				<td class="table-data">{templateName}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Template Variables</td>
+				<td class="table-data">{templateVariablesText}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Path Url</td>
+				<td class="table-data">{pathUrl}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Tags</td>
+				<td class="table-data">
+					{#if tags.length <= 0}
+						<span>Tags not specified</span>
+					{:else}
+						<span>{tags}</span>
+					{/if}
+				</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Version</td>
+				<td class="table-data">{version}</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div class="btn-container">
 		<a
 			href={editRoute}
-			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
+			class="edit-btn variant-filled-secondary hover:!variant-soft-secondary text-[var(--color-info)]"
 		>
 			<Icon icon="material-symbols:edit-outline" />
 			<span>Edit</span>
 		</a>
 	</div>
-<div class="mx-auto">
-	<div class="table-container">
-		<table class="table-c">
-			<thead>
-				<tr>
-					<th>View Message</th>
-					<th class="text-end">
-						<a href={assetRoute} class=" cancel-btn">
-							<Icon icon="material-symbols:close-rounded" class="" />
-						</a>
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>Asset Code</td>
-					<td>{assetCode}</td>
-				</tr>
-				<tr>
-					<td>Name</td>
-					<td>{name}</td>
-				</tr>
-				<tr>
-					<td>Description</td>
-					<td>{description}</td>
-				</tr>
-				<tr>
-					<td>Message Type</td>
-					<td>{messageType}</td>
-				</tr>
-				<tr>
-					<td>Template Name</td>
-					<td>{templateName}</td>
-				</tr>
-				<tr>
-					<td>Template Variables</td>
-					<td>{templateVariablesText}</td>
-				</tr>
-				<tr>
-					<td>Path Url</td>
-					<td>{pathUrl}</td>
-				</tr>
-				<tr>
-					<td>Tags</td>
-					<td>
-						{#if tags.length <= 0}
-							<span class="span">Tags not specified</span>
-						{:else}
-							<span class="span">{tags}</span>
-						{/if}
-					</td>
-				</tr>
-				<tr>
-					<td>Version</td>
-					<td>{version}</td>
-				</tr>
-		</tbody>
-	</table>
-</div>
-</div>
 </div>

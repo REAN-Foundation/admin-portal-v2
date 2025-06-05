@@ -7,6 +7,7 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import { createOrUpdateSchema } from '$lib/validation/biometrics.schema';
 	import type { BiometricsCreateModel } from '$lib/types/biometrics.type';
+	import Button from '$lib/components/button/button.svelte';
 
 	let { data, form } = $props();
 
@@ -88,115 +89,99 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th>Create Biometric</th>
-							<th class="text-end">
-								<a href={assetRoute} class="health-system-btn variant-soft-secondary">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Name<span class="text-red-700">*</span></td>
-							<td>
-								<input
-									required
-									type="text"
-									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
-									name="biometricsName"
-									placeholder="Enter name here..."
-									bind:value={biometricsName}
-								/>
-								{#if errors?.Name}
-									<p class="text-error">{errors?.Name}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td class="align-top">Description</td>
-							<td>
-								<textarea
-									name="description"
-									class="input w-full {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
-									bind:value={description}
-									placeholder="Enter description here..."
-								></textarea>
-							</td>
-						</tr>
+<div class="p-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+			<div class="form-headers">
+			<h2 class="form-titles">Create Biometric</h2>
+			<a href={assetRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>
 
-						<tr>
-							<td>Biometrics Type<span class="text-red-700">*</span></td>
-							<td>
-								<select required class="input" bind:value={biometricsType}>
-									<option disabled value>Select biometrics type</option>
-									<option>Blood pressure</option>
-									<option>Blood glucose</option>
-									<option>Blood oxygen saturation</option>
-									<option>Body height</option>
-									<option>Body weight</option>
-									<option>Body temperature</option>
-									<option>Pulse</option>
-									<option>Other</option>
-								</select>
-							</td>
-						</tr>
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+				<td class="table-label">Name<span class="text-red-700">*</span></td>
+				<td class="table-data">
+					<input
+						required
+						type="text"
+						class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+						name="biometricsName"
+						placeholder="Enter name here..."
+						bind:value={biometricsName}
+					/>
+					{#if errors?.Name}
+						<p class="text-error">{errors?.Name}</p>
+					{/if}
+				</td>
+			</tr>
+			<tr class="tables-row">
+			<td class="table-label">Description</td>
+			<td class="table-data">
+				<textarea
+					name="description"
+					class="input w-full {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
+					bind:value={description}
+					placeholder="Enter description here..."
+					>
+				</textarea>
+			</td>
+			</tr>
+			<tr class="tables-row">
+			<td class="table-label">Biometrics Type<span class="text-red-700">*</span></td>
+			<td class="table-data">
+				<select required class="input" bind:value={biometricsType}>
+					<option disabled value>Select biometrics type</option>
+					<option>Blood pressure</option>
+					<option>Blood glucose</option>
+					<option>Blood oxygen saturation</option>
+					<option>Body height</option>
+					<option>Body weight</option>
+					<option>Body temperature</option>
+					<option>Pulse</option>
+					<option>Other</option>
+				</select>
+			</td>
+			</tr>
+			<tr class="tables-row">
+			<td class="table-label">Measurement Unit<span class="text-red-700">*</span></td>
+			<td class="table-data">
+				<input
+					required
+					type="text"
+					bind:value={measurementUnit}
+					placeholder="Enter unit..."
+					class="input {errors?.MeasurementUnit ? 'input-text-error' : ''}"
+				/>
+				{#if errors?.MeasurementUnit}<p class="text-error">
+					{errors?.MeasurementUnit}</p>
+				{/if}
+			</td>
+			</tr>
+			<tr class="tables-row">
+			<td class="table-label">Tags</td>
+			<td class="table-data">
+				<InputChips
+					bind:keywords
+					name="keywords"
+					id="keywords"
+					keywordsChanged={onUpdateKeywords}
+					/>
+					<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+			</td>
+			</tr>
+			<tr class="tables-row">
+			<td class="table-label">Version</td>
+			<td class="table-data">
+				<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
+			</td>
+			</tr>
+		</tbody>
+	</table>
 
-						<tr>
-							<td>Measurement Unit<span class="text-red-700">*</span></td>
-							<td>
-								<input
-									required
-									type="text"
-									bind:value={measurementUnit}
-									placeholder="Enter unit..."
-									class="input {errors?.MeasurementUnit ? 'input-text-error' : ''}"
-								/>
-								{#if errors?.MeasurementUnit}<p class="text-error">
-										{errors?.MeasurementUnit}
-									</p>{/if}
-							</td>
-						</tr>
-
-						<tr class="">
-							<td class="!py-3 align-top">Tags</td>
-							<td>
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-									keywordsChanged={onUpdateKeywords}
-								/>
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
-							</td>
-						</tr>
-						<tr>
-							<td>Version</td>
-							<td>
-								<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
-							</td>
-						</tr>
-					</tbody>
-				</table>
-
-				<div class="button-container">
-					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
-					{/await}
-				</div>
+	<div class="btn-container">
+			<Button />
+		</div>
 			</form>
 		</div>
-	</div>
-</div>
