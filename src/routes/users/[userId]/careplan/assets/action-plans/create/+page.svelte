@@ -22,6 +22,8 @@
 
 	data.title = 'Action-plan Create';
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+	
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/action-plans/create`;
 	const actionPlanRoute = `/users/${userId}/careplan/assets/action-plans`;
@@ -47,7 +49,8 @@
 				Name: name,
 				Description: description,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(actionPlanCreateModel);
