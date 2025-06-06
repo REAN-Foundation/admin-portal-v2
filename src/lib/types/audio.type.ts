@@ -4,6 +4,7 @@ export interface AudioCreateModel {
 	PathUrl?: string;
 	Tags?: string[];
 	Version?: string;
+	TenantId?: string;
 }
 
 export interface AudioUpdateModel {
@@ -12,4 +13,5 @@ export interface AudioUpdateModel {
 	PathUrl?: string;
 	Tags?: string[];
 	Version?: string;
+	TenantId?: string;
 }
