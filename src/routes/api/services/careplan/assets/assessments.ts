@@ -10,7 +10,8 @@ export const createAssessment = async (
     template: string,
     referenceTemplateCode: string,
     tags: string[],
-    version: string 
+    version: string,
+    tenantId: string,
 ) => {
     const body = {
         Name: name,
@@ -20,6 +21,7 @@ export const createAssessment = async (
         ReferenceTemplateCode: referenceTemplateCode,
         Tags: tags,
         Version: !version || version?.length === 0 ? 'V 1.0' : version,
+        TenantId: tenantId
     };
 
     const url = CAREPLAN_BACKEND_API_URL + '/assets/assessments';
@@ -52,13 +54,14 @@ export const searchAssessment = async (sessionId: string, searchParams) => {
 };
 
 export const updateAssessment = async (
-sessionId: string, assessmentId: string, name: string, description: string, template: string, referenceTemplateCode: string, tags: string[], version: string) => {
+sessionId: string, assessmentId: string, name: string, description: string, template: string, referenceTemplateCode: string, tags: string[], version: string, tenantId: string) => {
     const body = {
         Name: name,
         Description: description,
         Template: template,
         ReferenceTemplateCode: referenceTemplateCode,
         Tags: tags,
+        TenantId: tenantId,
         Version: !version || version?.length === 0 ? 'V 1.0' : version,
     };
 

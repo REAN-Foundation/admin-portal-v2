@@ -22,6 +22,8 @@
 
 	data.title = 'Create Assessment';
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/assessments/create`;
 	const assessmentRoute = `/users/${userId}/careplan/assets/assessments`;
@@ -42,7 +44,8 @@
 				Template: template,
 				ReferenceTemplateCode: referenceTemplateCode,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentCreateModel);

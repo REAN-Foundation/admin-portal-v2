@@ -22,6 +22,7 @@
 	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
+	const tenantId = data.tenantId;
 	var assessmentId = page.params.id;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
@@ -56,7 +57,8 @@
 				Template: template,
 				ReferenceTemplateCode: templateCode,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentUpdateModel);
