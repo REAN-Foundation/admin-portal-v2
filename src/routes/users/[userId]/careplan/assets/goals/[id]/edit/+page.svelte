@@ -20,6 +20,7 @@
 	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
+	const tenantId = data.tenantId;
 	var goalsId = page.params.id;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
@@ -50,7 +51,8 @@
 				Name: name,
 				Description: description,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(goalsUpdateModel);
