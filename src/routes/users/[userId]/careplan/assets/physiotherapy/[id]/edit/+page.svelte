@@ -21,6 +21,7 @@
 	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
+	const tenantId = data.tenantId;
 	var physiotherapyId = page.params.id;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
@@ -53,7 +54,8 @@
 				Description: description,
 				RecommendedDurationMin: recommendedDurationMin,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(physiotherapyUpdateModel);

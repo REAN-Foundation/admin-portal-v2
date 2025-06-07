@@ -21,6 +21,8 @@
 
 	data.title = 'Create Physiotherapy';
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/physiotherapy/create`;
 	const physiotherapyRoute = `/users/${userId}/careplan/assets/physiotherapy`;
@@ -40,7 +42,8 @@
 				Description: description,
 				RecommendedDurationMin: recommendedDurationMin,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(physiotherapyCreateModel);

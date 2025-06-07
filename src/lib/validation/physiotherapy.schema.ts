@@ -27,5 +27,11 @@ export const createOrUpdateSchema = z.object({
     Version: z
         .string()
         .max(128, { message: 'Version must be at most 128 characters long.' })
-        .optional()
+        .optional(),
+
+    TenantId: z
+		.string({
+			required_error: 'TenantId is required.',
+			invalid_type_error: 'TenantId must be a string.'
+		})
 });
