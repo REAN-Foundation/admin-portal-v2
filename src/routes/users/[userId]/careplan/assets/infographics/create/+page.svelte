@@ -21,6 +21,8 @@
 
 	data.title = 'Create Infographics';
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/infographics/create`;
 	const infographicsRoute = `/users/${userId}/careplan/assets/infographics`;
@@ -40,7 +42,8 @@
 				Description: description,
 				Url: pathUrl,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(infographicsCreateModel);

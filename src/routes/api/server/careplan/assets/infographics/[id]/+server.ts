@@ -89,7 +89,8 @@ export const PUT = async (event: RequestEvent) => {
             audioId,
             data.Name,
             data.Description,     
-            data.PathUrl,
+            data.Url,
+            data.TenantId,
             data.Tags,
             data.Version ?? '');
         return ResponseHandler.success(response);

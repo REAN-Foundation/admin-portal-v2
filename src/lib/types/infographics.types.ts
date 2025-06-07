@@ -4,6 +4,7 @@ export interface InfographicsCreateModel {
 	Url?: string;
 	Tags?: string[];
 	Version?: string;
+	TenantId?: string;
 }
 
 export interface InfographicsUpdateModel {
@@ -12,4 +13,5 @@ export interface InfographicsUpdateModel {
 	Url?: string;
 	Tags?: string[];
 	Version?: string;
+	TenantId?: string;
 }
