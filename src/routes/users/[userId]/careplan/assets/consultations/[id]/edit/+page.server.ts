@@ -7,6 +7,8 @@ import { getConsultationById } from '$routes/api/services/careplan/assets/consul
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
 	const consultationId = event.params.id;
+	const tenantId = event.locals.sessionUser.tenantId;
+
 	const response = await getConsultationById(sessionId, consultationId);
 
 	const consultation = response?.Data;
@@ -15,6 +17,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	return {
 		location: `${id}/edit`,
 		consultation,
+		tenantId,
 		message: response?.Message || 'consultation retrieved successfully',
 		title: 'Consultation Edit'
 	};

@@ -10,13 +10,15 @@ export const createConsultation = async (
 	description: string,
 	consultationType: string,
 	tags: string[],
-	version: string
+	version: string,
+	tenantId: string,
 ) => {
 	const body = {
 		Name            : name,
 		Description     : description,
 		ConsultationType: consultationType,
 		Tags            : tags,
+		TenantId        : tenantId,
 		Version         : !version || version?.length === 0 ? 'V 1.0' : version
 	};
 
@@ -69,13 +71,15 @@ export const updateConsultation = async (
 	description: string,
 	consultationType: string,
 	tags: string[],
-	version: string
+	version: string,
+	tenantId: string
 ) => {
 	const body = {
 		Name            : name,
 		Description     : description,
 		ConsultationType: consultationType,
 		Tags            : tags,
+		TenantId        : tenantId,
 		Version         : !version || version?.length === 0 ? 'V 1.0' : version
 	};
 

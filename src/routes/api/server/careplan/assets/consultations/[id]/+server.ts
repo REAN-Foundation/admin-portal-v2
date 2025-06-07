@@ -91,6 +91,7 @@ export const PUT = async (event: RequestEvent) => {
             data.Description ?? '',            
             data.ConsultationType,
             data.Tags,
+            data.TenantId,
             data.Version ?? '');
 
         return ResponseHandler.success(response);
