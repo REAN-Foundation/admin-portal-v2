@@ -22,6 +22,8 @@
 	let version = $state(undefined);
 
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/web-links/create`;
 	const weblinkRoute = `/users/${userId}/careplan/assets/web-links`;
@@ -48,7 +50,8 @@
 				Description: description,
 				PathUrl: pathUrl,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(webLinksCreateModels);
