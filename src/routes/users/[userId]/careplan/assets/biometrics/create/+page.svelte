@@ -23,6 +23,8 @@
 
 	data.title = 'Create Biometric';
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/biometrics/create`;
 	const biometricsRoute = `/users/${userId}/careplan/assets/biometrics`;
@@ -43,7 +45,8 @@
 				MeasurementUnit: measurementUnit,
 				Version: version,
 				BiometricsType: biometricsType,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(biometricsCreateModel);

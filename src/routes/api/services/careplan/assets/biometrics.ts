@@ -11,7 +11,8 @@ export const createBiometrics = async (
 	biometricsType: string,
 	measurementUnit: string,
 	tags: string[],
-	version: string
+	version: string,
+	tenantId: string
 ) => {
 	const body = {
 		Name            : name,
@@ -19,6 +20,7 @@ export const createBiometrics = async (
 		BiometricsType  : biometricsType,
 		MeasurementUnit : measurementUnit,
 		Tags            : tags,
+		TenantId        : tenantId,
 		Version         : !version || version?.length === 0 ? 'V 1.0' : version
 	};
 
@@ -73,7 +75,8 @@ export const updateBiometrics = async (
 	biometricsType: string,
 	measurementUnit: string,
 	tags: string[],
-	version: string
+	version: string,
+	tenantId: string
 ) => {
 	const body = {
 		Name            : name,
@@ -81,6 +84,7 @@ export const updateBiometrics = async (
 		BiometricsType  : biometricsType,
 		MeasurementUnit : measurementUnit,
 		Tags            : tags,
+		TenantId        : tenantId,
 		Version         : !version || version?.length === 0 ? 'V 1.0' : version
 	};
 

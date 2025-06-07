@@ -34,6 +34,7 @@ export const POST = async (event: RequestEvent) => {
             data.BiometricsType,
             data.MeasurementUnit,
             data.Tags,
+            data.TenantId,
             data.Version ?? '');
 
         return ResponseHandler.success(response);

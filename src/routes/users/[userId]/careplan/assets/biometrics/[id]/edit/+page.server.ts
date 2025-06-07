@@ -8,6 +8,7 @@ import { getBiometricsById } from '../../../../../../../api/services/careplan/as
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
 	const biometricsId = event.params.id;
+	const tenantId = event.locals.sessionUser.tenantId;
 	const response = await getBiometricsById(sessionId, biometricsId);
 
 	const biometrics = response?.Data;
@@ -16,6 +17,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	return {
 		location: `${id}/edit`,
 		biometrics,
+		tenantId,
 		message: response?.Message || 'biometrics retrieved successfully',
 		title: 'Biometrics Edit'
 	};
