@@ -9,12 +9,14 @@ export const createReminder = async (
     name: string,
     description: string,
     tags: string[],
-    version: string
+    version: string,
+    tenantId: string
 ) => {
     const body = {
         Name: name,
         Description: description,
         Tags: tags,
+        TenantId: tenantId,
         Version: !version || version?.length === 0 ? 'V 1.0' : version,
     };
 
@@ -67,12 +69,14 @@ export const updateReminder = async (
     name: string,
     description: string,
     tags: string[],
-    version: string
+    version: string,
+    tenantId: string
 ) => {
     const body = {
         Name: name,
         Description: description,
         Tags: tags,
+        TenantId: tenantId,
         Version: !version || version?.length === 0 ? 'V 1.0' : version,
     };
 
