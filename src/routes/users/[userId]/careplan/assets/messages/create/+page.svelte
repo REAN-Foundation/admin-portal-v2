@@ -25,6 +25,8 @@
 
 	data.title = 'Create Message';
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/messages/create`;
 	const messagesRoute = `/users/${userId}/careplan/assets/messages`;
@@ -53,6 +55,7 @@
 				PathUrl: pathUrl,
 				Version: version,
 				Tags: keywords,
+				TenantId: tenantId,
 				TemplateVariables: parsedTemplateVars
 
 			};

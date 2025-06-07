@@ -26,6 +26,7 @@
 	);
 
 	const userId = page.params.userId;
+	const tenantId = data.tenantId;
 	var messageId = page.params.id;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
@@ -66,6 +67,7 @@
 				TemplateName: templateName,
 				Version: version,
 				Tags: keywords,
+				TenantId: tenantId,
 				TemplateVariables: parseTemplateVariables(templateVariablesText)
 			};
 

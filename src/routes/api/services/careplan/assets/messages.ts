@@ -13,6 +13,7 @@ export const createMessage = async (
 	pathUrl: string,
 	tags: string[],
 	version: string,
+	tenantId: string,
 	templateVariables?: { [key: string]: any }
 ) => {
 	const body = {
@@ -23,6 +24,7 @@ export const createMessage = async (
 		TemplateVariables : templateVariables || {},
 		Url               : pathUrl,
 		Tags              : tags,
+		TenantId          : tenantId,
 		Version           : !version || version?.length === 0 ? 'V 1.0' : version
 	};
 
@@ -78,6 +80,7 @@ export const updateMessage = async (
 	pathUrl: string,
 	tags: string[],
 	version: string,
+	tenantId: string,
 	templateVariables?: { [key: string]: any }
 ) => {
 	const body = {
@@ -88,6 +91,7 @@ export const updateMessage = async (
 		TemplateVariables : templateVariables || {},
 		Url               : pathUrl,
 		Tags              : tags,
+		TenantId          : tenantId,
 		Version           : !version || version?.length === 0 ? 'V 1.0' : version
 	};
 

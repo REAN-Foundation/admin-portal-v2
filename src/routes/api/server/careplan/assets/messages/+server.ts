@@ -36,6 +36,7 @@ export const POST = async (event: RequestEvent) => {
             data.PathUrl,
             data.Tags,
             data.Version ?? '',
+            data.TenantId,
             data.TemplateVariables
         );
 
