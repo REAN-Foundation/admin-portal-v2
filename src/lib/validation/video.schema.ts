@@ -33,5 +33,12 @@ export const createOrUpdateSchema = z.object({
 		.string({
 			invalid_type_error: 'Version must be a string.'
 		})
-		.optional()
+		.optional(),
+
+	TenantId: z
+		.string({
+			required_error: 'TenantId is required.',
+			invalid_type_error: 'TenantId must be a string.'
+		})
+
 });
