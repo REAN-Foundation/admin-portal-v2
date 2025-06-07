@@ -6,6 +6,7 @@ export interface ExerciseCreateModel {
   RecommendedDurationMin?: number;
   Tags?: string[];
   Version?: string;
+  TenantId?: string;
 }
 
 export interface ExerciseUpdateModel {
@@ -16,4 +17,5 @@ export interface ExerciseUpdateModel {
   RecommendedDurationMin?: number;
   Tags?: string[];
   Version?: string;
+  TenantId?: string;
 }
