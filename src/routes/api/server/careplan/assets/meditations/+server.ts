@@ -34,6 +34,7 @@ export const POST = async (event: RequestEvent) => {
             data.MeditationType,
             data.RecommendedDurationMin,
             data.Tags,
+            data.TenantId,
             data.Version ?? '');
 
         return ResponseHandler.success(response);

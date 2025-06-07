@@ -92,6 +92,7 @@ export const PUT = async (event: RequestEvent) => {
             data.ExerciseType,
             data.RecommendedDurationMin,
             data.Tags,
+            data.TenantId,
             data.Version ?? '');
 
         return ResponseHandler.success(response);

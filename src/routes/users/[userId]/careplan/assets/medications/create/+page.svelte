@@ -20,6 +20,8 @@
 
 	data.title = 'Create Medications';
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/medications/create`;
 	const medicationsRoute = `/users/${userId}/careplan/assets/medications`;
@@ -38,7 +40,8 @@
 				Name: name,
 				Description: description,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(medicationCreateModel);

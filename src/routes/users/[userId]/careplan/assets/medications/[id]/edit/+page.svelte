@@ -21,6 +21,7 @@
 
 	const userId = page.params.userId;
 	var medicationsId = page.params.id;
+	const tenantId = data.tenantId;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/medications/${medicationsId}/edit`;
@@ -50,7 +51,8 @@
 				Name: name,
 				Description: description,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(medicationsUpdateModel);
