@@ -26,7 +26,9 @@
 	let keywords: string[] = $state(data.article.Tags);
 
 	const userId = page.params.userId;
+	const tenantId = data.tenantId;
 	const articleId = page.params.id;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/articles/${articleId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/articles/${articleId}/view`;
@@ -60,7 +62,8 @@
 				Summary: summary,
 				PathUrl: pathUrl,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(articlesUpdateModel);
