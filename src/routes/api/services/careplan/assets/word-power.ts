@@ -10,13 +10,15 @@ export const createWordPower = async (
 	description: string,
 	additionalResources: string[],
 	tags: string[],
-	version: string
+	version: string,
+	tenantId: string
 ) => {
 	const body = {
 		Name: name,
 		Description: description,
 		AdditionalResources: additionalResources,
 		Tags: tags,
+		TenantId: tenantId,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
 	const url = CAREPLAN_BACKEND_API_URL + '/assets/word-power';
@@ -73,12 +75,14 @@ export const updateWordPower = async (
 	description: string,
 	additionalResources: string[],
 	tags: string[],
-	version: string
+	version: string,
+	tenantId: string
 ) => {
 	const body = {
 		Name: name,
 		Description: description,
 		Tags: tags,
+		TenantId: tenantId,
 		AdditionalResources: additionalResources,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};

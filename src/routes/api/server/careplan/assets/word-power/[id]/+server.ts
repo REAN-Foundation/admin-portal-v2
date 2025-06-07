@@ -106,6 +106,7 @@ export const PUT = async (event: RequestEvent) => {
 			data.Description,
 			data.AdditionalResources,
 			data.Tags,
+			data.TenantId,
 			data.Version
 		);
 
