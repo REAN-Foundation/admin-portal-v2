@@ -21,6 +21,8 @@
 
 	data.title = 'Create Checkups';
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/checkups/create`;
 	const checkupsRoute = `/users/${userId}/careplan/assets/checkups`;
@@ -40,7 +42,8 @@
 				Name: name,
 				Description: description,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(checkupsCreateModel);
