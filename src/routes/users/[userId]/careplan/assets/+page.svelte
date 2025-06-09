@@ -11,6 +11,7 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -288,10 +289,7 @@
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
 						/>
 					</div>
-
-					<button class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
-						<a href={createRoute} class="">Add New</a>
-					</button>
+					<Button href={createRoute} text="Add New" variant="primary"></Button>
 				</div>
 			</div>
 			<div class="overflow-x-auto">
@@ -353,33 +351,30 @@
 									</td>
 									<td>
 										<div class="flex">
-											<Tooltip text="Edit" forceShow={true}>
-												<button>
-													<a href={editRoute(row.id)} class="table-btn group">
-														<Icon icon="material-symbols:edit-outline" class="health-system-icon" />
-													</a>
-												</button>
-											</Tooltip>
+											<Button
+												href={editRoute(row.id)}
+												variant="icon"
+												icon="material-symbols:edit-outline"
+												iconSize="sm"
+												tooltip="Edit"
+											/>
 
-											<Tooltip text="View" forceShow={true}>
-												<button>
-													<a href={viewRoute(row.id)} class="table-btn group">
-														<Icon
-															icon="icon-park-outline:preview-open"
-															class="health-system-icon"
-														/>
-													</a>
-												</button>
-											</Tooltip>
+											<Button
+												href={viewRoute(row.id)}
+												variant="icon"
+												icon="icon-park-outline:preview-open"
+												iconSize="sm"
+												tooltip="View"
+											/>
 
-											<Tooltip text="Delete" forceShow={true}>
-												<button
-													class="table-btn !text-red-600"
-													onclick={() => handleDeleteClick(row.id)}
-												>
-													<Icon icon="material-symbols:delete-outline-rounded" />
-												</button>
-											</Tooltip>
+											<Button
+												onclick={() => handleDeleteClick(row.id)}
+												variant="icon"
+												icon="material-symbols:delete-outline-rounded"
+												iconSize="sm"
+												color="red"
+												tooltip="Delete"
+											/>
 										</div>
 									</td>
 								</tr>

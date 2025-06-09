@@ -15,7 +15,6 @@
 	--color-bold-red: #b8273f;
 	--color-light-red: #fde8e8;
 	--color-red-text: #a60d27;
-
 	--color-blue: rgba(0, 130, 220, 1);
 }
 
@@ -43,8 +42,8 @@
 	--color-info: #1a202c;
 	--color-error: #e02222;
 	--color-success: #10b981;
-	--color-active: rgba(0, 149, 255, 0.751);
-	--active-soft: rgba(0, 149, 255, 0.253);
+	--color-active: rgba(45, 166, 252, 0.751);
+	--active-soft: rgba(0, 149, 255, 0.751);
 }
 [data-theme='dark'][data-theme-option='blue'] {
 	--color-primary: #1c252a;
@@ -68,8 +67,8 @@
 	--color-info: #1a202c;
 	--color-error: #e02222;
 	--color-success: #10b981;
-	--color-active: rgba(78, 197, 90, 0.63);
-	--active-soft: rgba(78, 197, 90, 0.199);
+	--color-active: rgba(97, 232, 110, 0.63);
+	--active-soft: rgba(78, 197, 90, 0.63);
 }
 [data-theme='dark'][data-theme-option='mint'] {
 	--color-primary: #1c252a;
@@ -91,8 +90,8 @@
 	--color-info: #1a202c;
 	--color-error: #e02222;
 	--color-success: #10b981;
-	--color-active: rgba(128, 128, 128, 0.74);
-	--active-soft: rgba(128, 128, 128, 0.203);
+	--color-active: rgba(178, 167, 167, 0.74);
+	--active-soft: rgba(128, 128, 128, 0.74);
 }
 [data-theme='dark'][data-theme-option='grey'] {
 	--color-primary: #1c252a;
@@ -119,8 +118,8 @@
 	--color-info: #1a202c;
 	--color-error: #e02222;
 	--color-success: #34d399;
-	--color-active: rgba(50, 153, 153, 0.516);
-	--active-soft: rgba(50, 153, 153, 0.221);
+	--color-active: rgba(48, 196, 196, 0.516);
+	--active-soft: rgba(50, 153, 153, 0.516);
 }
 [data-theme='dark'][data-theme-option='teal'] {
 	--color-primary: #1c252a;
@@ -146,8 +145,8 @@
 	--color-info: #1a202c;
 	--color-error: #e02222;
 	--color-success: #10b981;
-	--color-active: rgba(255, 217, 0, 0.477);
-	--active-soft: rgba(255, 217, 0, 0.169);
+	--color-active: rgba(231, 198, 10, 0.477);
+	--active-soft: rgba(240, 206, 11, 0.826);
 }
 [data-theme='dark'][data-theme-option='gold'] {
 	--color-primary: #1c252a;
@@ -425,7 +424,7 @@ tr {
 }
 
 .variant-soft-secondary {
-	@apply bg-[var(--active-soft)] text-[var(--color-info)] hover:bg-[var(--active-soft)];
+	@apply bg-[var(--active-soft)] text-white hover:bg-[var(--active-soft)];
 }
 
 .progress-bar {
@@ -863,7 +862,6 @@ tr {
 	@apply inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-2 text-center text-sm whitespace-nowrap text-[var(--color-error)] transition-all duration-150 ease-in-out hover:bg-[var(--active-soft)];
 }
 
-
 /* form and table specific */
 
 .form-headers {
@@ -895,4 +893,9 @@ tr {
 }
 .edit-btn {
 	@apply inline-flex cursor-pointer items-center justify-center gap-1 rounded-md px-3 py-2 text-center text-sm whitespace-nowrap text-[var(--color-info)] transition-all duration-150 ease-in-out hover:bg-[var(--color-active)];
+}
+
+/* Component specific classes */
+.button {
+	@apply rounded-md bg-[var(--active-soft)] font-semibold text-white transition-colors duration-200 hover:bg-[var(--color-active)];
 }

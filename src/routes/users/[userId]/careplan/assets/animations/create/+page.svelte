@@ -178,7 +178,7 @@
 			</tbody>
 		</table>
 		<div class="btn-container">
-			<Button />
+			<Button type="submit" text="Submit" variant="primary" />
 		</div>
 	</form>
 </div>
