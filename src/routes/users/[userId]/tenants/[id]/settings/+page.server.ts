@@ -21,7 +21,7 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
             settings = response.Data.TenantSettings;
         }
 
-        console.log('response=',JSON.stringify(settings,null,2));
+        // console.log('response=',JSON.stringify(settings,null,2));
 	
 		return {
 			sessionId,

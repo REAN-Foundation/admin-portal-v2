@@ -16,6 +16,9 @@
 
 	let setttings = data.settings.Common;
 	let errors: Record<string, string> = $state({});
+
+	// console.log('setttings:', JSON.stringify(setttings, null, 2));
+
 	let disabled = $state(true);
 	let edit = $derived(disabled);
 	let promise = $state();
@@ -29,6 +32,22 @@
 		event.preventDefault();
 		try {
 			errors = {};
+
+			if (setttings.UserInterfaces.ChatBot === false) {
+				Object.keys(setttings.ChatBot).forEach((key) => {
+					setttings.ChatBot[key] = false;
+				});
+			}
+
+			if (setttings.UserInterfaces.Forms === false) {
+				Object.keys(setttings.Forms).forEach((key) => {
+					setttings.Forms[key] = false;
+				});
+			}
+
+			if (setttings.UserInterfaces.Followup === false) {
+				setttings.Followup.Source = 'None';
+			}
 
 			const validationResult = UserInterfacesSchema.safeParse(setttings);
 

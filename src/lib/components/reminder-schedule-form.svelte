@@ -52,6 +52,8 @@
 								bind:value={newReminder.OffsetValue}
 								placeholder="Enter offset value"
 								class="w-full rounded border p-2"
+								min="0"
+								max="24"
 							/>
 						</td>
 					</tr>

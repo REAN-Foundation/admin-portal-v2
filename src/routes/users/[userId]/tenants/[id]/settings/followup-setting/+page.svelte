@@ -12,10 +12,9 @@
 
 	let { data, form } = $props();
 
-	$inspect('data', data);
 	let promise = $state();
-	let errors: Record<string, string> = $state({});
-	$inspect('errors', errors);
+	let errors = $state({});
+
 
 	const userId = page.params.userId;
 
@@ -60,6 +59,23 @@
 			ScheduleFrequency: data.settings.ApiIntegrationSettings?.ScheduleFrequency
 		}
 	});
+
+	function setNestedError(obj: any, path: (string | number)[], value: string) {
+		let current = obj;
+		for (let i = 0; i < path.length - 1; i++) {
+			const key = path[i];
+			if (typeof key === 'number') {
+				// If key is an array index, ensure the array exists
+				if (!Array.isArray(current)) current = [];
+				if (!current[key]) current[key] = {};
+			} else {
+				if (!(key in current)) current[key] = {};
+			}
+			current = current[key];
+		}
+		current[path[path.length - 1]] = value;
+	}
+
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
@@ -77,14 +93,17 @@
 			console.log('FollowUp Setting UpdateModel:', followUpSettingUpdateModel);
 			const validationResult = FollowupSettingsSchema.safeParse(followUpSettingUpdateModel);
 			console.log('Validation Result:', validationResult);
+			// const validationResult = FollowupSettingsSchema.safeParse(followUpSettingUpdateModel);
 
 			if (!validationResult.success) {
-				errors = Object.fromEntries(
-					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-						key,
-						val?.[0] || 'This field is required'
-					])
-				);
+				// console.log('Raw Zod Errors:', validationResult.error.errors);
+
+				
+				for (const err of validationResult.error.errors) {
+					setNestedError(errors, err.path as string[], err.message);
+				}
+
+				// console.log('Parsed Errors:', errors);
 				return;
 			}
 
@@ -148,6 +167,19 @@
 	};
 
 	const addSchedule = () => {
+		console.log('New Reminder:', newReminder);
+
+		// Safety: Ensure ReminderSchedule array is initialized
+		if (followUpSettingUpdateModel.Source === 'Api') {
+			if (!Array.isArray(followUpSettingUpdateModel.ApiIntegrationSettings.ReminderSchedule)) {
+				followUpSettingUpdateModel.ApiIntegrationSettings.ReminderSchedule = [];
+			}
+		} else {
+			if (!Array.isArray(followUpSettingUpdateModel.FileUploadSettings.ReminderSchedule)) {
+				followUpSettingUpdateModel.FileUploadSettings.ReminderSchedule = [];
+			}
+		}
+
 		if (editingIndex !== null) {
 			// update existing schedule
 			if (followUpSettingUpdateModel.Source === 'Api') {
@@ -180,6 +212,7 @@
 			OffsetUnit: 'hours',
 			TimeOfDay: ''
 		};
+
 		showReminderModal = false;
 	};
 
@@ -189,16 +222,16 @@
 		openTab = openTab === tab ? null : tab;
 	}
 	let jsonInput = $derived(followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat);
-    let jsonError = $state('');
+	let jsonError = $state('');
 
-    function validateJSON() {
-        try {
-            JSON.parse(followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat);
-            jsonError = ''; 
-        } catch (error) {
-            jsonError = 'Invalid JSON format';
-        }
-    }
+	function validateJSON() {
+		try {
+			JSON.parse(followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat);
+			jsonError = '';
+		} catch (error) {
+			jsonError = 'Invalid JSON format';
+		}
+	}
 </script>
 
 <div class="px-6 py-4">
@@ -251,24 +284,27 @@
 						</tr>
 						{#if followUpSettingUpdateModel.Source === 'File' || followUpSettingUpdateModel.Source === 'Api'}
 							{#if followUpSettingUpdateModel.Source === 'File'}
-							<tr>
-								<td>
-									<label for="format" class="text-sm ">File Column Format</label>
-								</td>
-								<td>
-									<textarea
-										cols="30"
-										bind:value={followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat}
-										placeholder="File column format in JSON format"
-										class="w-full rounded border p-2 text-sm"
-										oninput={validateJSON}
-									></textarea>
-							
-									{#if jsonError}
-										<p class="text-error">{jsonError}</p>
-									{/if}
-								</td>
-							</tr>
+								<tr>
+									<td>
+										<label for="format" class="text-sm">File Column Format</label>
+									</td>
+									<td>
+										<textarea
+											cols="30"
+											bind:value={followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat}
+											placeholder="File column format in JSON format"
+											class="w-full rounded border p-2 text-sm"
+											oninput={validateJSON}
+										></textarea>
+
+										{#if jsonError}
+											<p class="text-error">{jsonError}</p>
+										{/if}
+										<!-- {#if errors?.FileUploadSettings.FileColumnFormat}
+											<p class="text-error">{FileUploadSettings.FileColumnFormat}</p>
+										{/if} -->
+									</td>
+								</tr>
 
 								<tr>
 									<td>
@@ -289,8 +325,11 @@
 											<option value="txt">Text</option>
 											<option value="pdf">PDF</option>
 										</select>
-										{#if errors?.FileUploadSettings}
+										<!-- {#if errors?.FileUploadSettings}
 											<p class="text-error">{errors?.FileUploadSettings}</p>
+										{/if} -->
+										{#if errors?.FileUploadSettings?.FileType}
+											<p class="text-error">{errors.FileUploadSettings.FileType}</p>
 										{/if}
 									</td>
 								</tr>
@@ -310,6 +349,10 @@
 										>
 											Add Schedule
 										</button>
+
+										{#if errors?.FileUploadSettings?.ReminderSchedule}
+											<p class="text-error">{errors?.FileUploadSettings?.ReminderSchedule}</p>
+										{/if}
 									</td>
 								</tr>
 
@@ -332,11 +375,11 @@
 										<button
 											class="flex w-full items-center justify-between"
 											type="button"
-											onclick={() => toggleTab('fetch')}
+											onclick={() => toggleTab('auth')}
 										>
 											<span
 												class="ml-auto transition-transform duration-300"
-												class:rotate-180={openTab === 'fetch'}
+												class:rotate-180={openTab === 'auth'}
 											>
 												<Icon
 													icon="icon-park-outline:down"
@@ -372,8 +415,8 @@
 												<option value="DELETE">DELETE</option>
 												<option value="PATCH">PATCH</option>
 											</select>
-											{#if errors?.ApiIntegrationSettings}
-												<p class="text-error">{errors?.ApiIntegrationSettings}</p>
+											{#if errors?.ApiIntegrationSettings?.Auth?.Method}
+												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.Method}</p>
 											{/if}
 										</td>
 									</tr>
@@ -387,8 +430,8 @@
 												placeholder="Base URL"
 												class="w-full rounded border p-2 text-sm"
 											/>
-											{#if errors?.Url}
-												<p class="text-error">{errors?.Url}</p>
+											{#if errors?.ApiIntegrationSettings?.Auth?.Url}
+												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.Url}</p>
 											{/if}
 										</td>
 									</tr>
@@ -404,8 +447,8 @@
 												placeholder="Request Body"
 												class="w-full rounded border p-2 text-sm"
 											/>
-											{#if errors?.Body}
-												<p class="text-error">{errors?.Body}</p>
+											{#if errors?.ApiIntegrationSettings?.Auth?.Body}
+												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.Body}</p>
 											{/if}
 										</td>
 										<!-- </div> -->
@@ -420,6 +463,9 @@
 													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams
 												}
 											/>
+											{#if errors?.ApiIntegrationSettings?.Auth?.QueryParams}
+												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.QueryParams}</p>
+											{/if}
 										</td>
 									</tr>
 
@@ -431,6 +477,9 @@
 											<FollowUpSettings
 												bind:model={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Headers}
 											/>
+											{#if errors?.ApiIntegrationSettings?.Auth?.Headers}
+												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.Headers}</p>
+											{/if}
 										</td>
 									</tr>
 
@@ -446,6 +495,9 @@
 												placeholder="Token path (e.g. data.token)"
 												class="w-full rounded border p-2 text-sm"
 											/>
+											{#if errors?.ApiIntegrationSettings?.Auth?.TokenPath}
+												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.TokenPath}</p>
+											{/if}
 										</td>
 									</tr>
 
@@ -468,6 +520,9 @@
 												<option value="form">Form</option>
 												<option value="xml">XML</option>
 											</select>
+											{#if errors?.ApiIntegrationSettings?.Auth?.ResponseType}
+												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.ResponseType}</p>
+											{/if}
 										</td>
 									</tr>
 								{/if}
@@ -518,6 +573,9 @@
 												<option value="DELETE">DELETE</option>
 												<option value="PATCH">PATCH</option>
 											</select>
+											{#if errors?.ApiIntegrationSettings?.Fetch?.Method}
+												<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.Method}</p>
+											{/if}
 										</td>
 									</tr>
 									<tr>
@@ -530,6 +588,9 @@
 												placeholder="Base URL"
 												class="w-full rounded border p-2 text-sm"
 											/>
+											{#if errors?.ApiIntegrationSettings?.Fetch?.Url}
+												<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.Url}</p>
+											{/if}
 										</td>
 									</tr>
 									<tr>
@@ -542,6 +603,9 @@
 													followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.QueryParams
 												}
 											/>
+											{#if errors?.ApiIntegrationSettings?.Fetch?.QueryParams}
+												<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.QueryParams}</p>
+											{/if}
 										</td>
 									</tr>
 									<tr>
@@ -554,6 +618,9 @@
 												placeholder="Request Body"
 												class="w-full rounded border p-2 text-sm"
 											/>
+											{#if errors?.ApiIntegrationSettings?.Fetch?.Body}
+												<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.Body}</p>
+											{/if}
 										</td>
 									</tr>
 									<tr>
@@ -564,6 +631,9 @@
 											<FollowUpSettings
 												bind:model={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Headers}
 											/>
+											{#if errors?.ApiIntegrationSettings?.Fetch?.Headers}
+												<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.Headers}</p>
+											{/if}
 										</td>
 									</tr>
 									<tr>
@@ -583,6 +653,9 @@
 												<option value="form">Form</option>
 												<option value="xml">XML</option>
 											</select>
+											{#if errors?.ApiIntegrationSettings?.Fetch?.ResponseType}
+												<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.ResponseType}</p>
+											{/if}
 										</td>
 									</tr>
 									<tr>
@@ -597,6 +670,11 @@
 												placeholder="response field"
 												class="w-full rounded border p-2 text-sm"
 											/>
+											{#if errors?.ApiIntegrationSettings?.Fetch?.ResponseField}
+												<p class="text-error">
+													{errors.ApiIntegrationSettings?.Fetch?.ResponseField}
+												</p>
+											{/if}
 										</td>
 									</tr>
 								{/if}
@@ -609,11 +687,11 @@
 										<button
 											class="flex w-full items-center justify-between"
 											type="button"
-											onclick={() => toggleTab('fetch')}
+											onclick={() => toggleTab('token')}
 										>
 											<span
 												class="ml-auto transition-transform duration-300"
-												class:rotate-180={openTab === 'fetch'}
+												class:rotate-180={openTab === 'token'}
 											>
 												<Icon
 													icon="icon-park-outline:down"
@@ -644,6 +722,11 @@
 												<option value="query">Query</option>
 												<option value="body">Body</option>
 											</select>
+											<!-- {#if errors?.ApiIntegrationSettings?.Auth.TokenInjection.Location}
+												<p class="text-error">
+													{errors.ApiIntegrationSettings.Auth.TokenInjection.Location}
+												</p>
+											{/if} -->
 										</td>
 									</tr>
 									<tr>
@@ -658,6 +741,11 @@
 												placeholder="Token key"
 												class="w-full rounded border p-2 text-sm"
 											/>
+											{#if errors?.ApiIntegrationSettings?.Auth?.TokenInjection?.Key}
+												<p class="text-error">
+													{errors.ApiIntegrationSettings?.Auth?.TokenInjection?.Key}
+												</p>
+											{/if}
 										</td>
 									</tr>
 									<tr>
@@ -673,6 +761,11 @@
 												placeholder="Token prefix "
 												class="w-full rounded border p-2 text-sm"
 											/>
+											{#if errors?.ApiIntegrationSettings?.Auth?.TokenInjection?.Prefix}
+												<p class="text-error">
+													{errors.ApiIntegrationSettings?.Auth?.TokenInjection?.Prefix}
+												</p>
+											{/if}
 										</td>
 									</tr>
 								{/if}
@@ -696,6 +789,9 @@
 												<option value="weekly">Weekly</option>
 												<option value="monthly">Monthly</option>
 											</select>
+											{#if errors?.ApiIntegrationSettings?.ScheduleFrequency}
+												<p class="text-error">{errors.ApiIntegrationSettings.ScheduleFrequency}</p>
+											{/if}
 										</div>
 									</td>
 								</tr>
@@ -715,6 +811,9 @@
 										>
 											Add Schedule
 										</button>
+										{#if errors?.ApiIntegrationSettings?.ReminderSchedule}
+											<p class="text-error">{errors.ApiIntegrationSettings.ReminderSchedule}</p>
+										{/if}
 									</td>
 								</tr>
 

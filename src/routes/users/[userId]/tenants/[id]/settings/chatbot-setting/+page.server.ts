@@ -26,6 +26,8 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
         }
 
         console.log('response=', JSON.stringify(settings, null, 2));
+        console.log('This is tenant name ', tenantName);
+        console.log('This is tenant code', tenantCode);
 
         return {
             tenantCode,

@@ -292,3 +292,9 @@ export interface TenantSettingsDomainModel {
 export interface TenantSettingsDto extends TenantSettingsDomainModel {
     TenantId?: string;
 }
+
+export interface FaviconUploadModel {
+    UploadFile: File;
+    FileName: string;
+    FileType: string;
+}

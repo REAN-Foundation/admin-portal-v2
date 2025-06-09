@@ -44,6 +44,7 @@ export const updateTenantSettingsByType = async (
 	settings: any,
 ) => {
 	const url = baseUrl + `/${tenantId}/types/${type}`;
+	console.log("This is setting from service", JSON.stringify(settings, null, 2));
 	return await put(sessionId, url, settings, true, API_CLIENT_INTERNAL_KEY);
 }
 

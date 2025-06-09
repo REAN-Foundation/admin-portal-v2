@@ -8,13 +8,20 @@
 		ChatBotSettingsSchema,
 		ConsentSettingsSchema
 	} from '$lib/validation/tenant.settings.schema.js';
-	import type { ChatBotSettings, ConsentSettings } from '$lib/types/tenant.settings.types.js';
+	import type {
+		ChatBotSettings,
+		ConsentSettings,
+		FaviconUploadModel
+	} from '$lib/types/tenant.settings.types.js';
 	import ConsentModel from '$routes/users/[userId]/tenants/[id]/settings/chatbot-setting/consent.modal.svelte';
 	import { languages } from '$lib/utils/language.js';
+	import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema.js';
+	import type { ProfileFileUploadModel } from '$lib/types/profile.types.js';
 	///////////////////////////////////////////////////////////////////////
 
 	let { data, form } = $props();
 
+	$inspect("data", data);
 	let errors: Record<string, string> = $state({});
 	let chatBotSetting = $state({ ChatBot: data.settings });
 
@@ -28,7 +35,8 @@
 	let consentSetting = $state();
 	let previousConsent = chatBotSetting.ChatBot.Consent;
 
-	let fileinput = $state();
+	$inspect("chatbot setting", chatBotSetting);
+	let faviconUrl = $state(chatBotSetting.ChatBot.Favicon);
 	let fileName = $state(undefined);
 	let selectFile = $state(undefined);
 
@@ -37,8 +45,35 @@
 	function toggleTab(tab: string) {
 		openTab = openTab === tab ? null : tab;
 	}
+
 	let disabled = $state(true);
 	let edit = $derived(disabled);
+
+	async function uploadFile(event: Event) {
+		if (formData.has('file')) {
+			try {
+				const res = await fetch(`/api/server/tenants/upload`, {
+					method: 'POST',
+					body: formData
+				});
+				const response = await res.json();
+
+				console.log('response from api endpoint', response);
+				if (response.HttpCode === 201 || response.HttpCode === 200) {
+					toastMessage(response);
+					// edit = true;
+					// return;
+				}
+				if (response.Errors) {
+					errors = response?.Errors || {};
+				} else {
+					toastMessage(response);
+				}
+			} catch (error) {
+				toastMessage();
+			}
+		}
+	}
 
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
@@ -83,6 +118,40 @@
 		} catch (error) {
 			toastMessage();
 		}
+
+		// console.log('faviconUrl', faviconUrl);
+		
+		// if (formData.has('file')) {
+		// 	const res = await fetch(`/api/server/tenants/upload`, {
+		// 		method: 'POST',
+		// 		body: formData
+		// 	});
+		// 	const response = await res.json();
+		// 	// const uploadFileData = uploadFile(event);
+		// 	faviconUrl = response.Data.FileResources[0].Url;
+		// // 	try {
+		// // 		const res = await fetch(`/api/server/tenants/upload`, {
+		// // 			method: 'POST',
+		// // 			body: formData
+		// // 		});
+		// // 		const response = await res.json();
+
+		// // 		console.log('response from api endpoint', response);
+		// // 		if (response.HttpCode === 201 || response.HttpCode === 200) {
+		// // 			toastMessage(response);
+		// // 			// edit = true;
+		// // 			// return;
+		// // 		}
+		// // 		if (response.Errors) {
+		// // 			errors = response?.Errors || {};
+		// // 		} else {
+		// // 			toastMessage(response);
+		// // 		}
+		// // 	} catch (error) {
+		// // 		toastMessage();
+		// // 	}
+		// }
+
 		try {
 			errors = {};
 			const chatbotCreateModel: ChatBotSettings = {
@@ -92,7 +161,7 @@
 				OrganizationName: chatBotSetting.ChatBot.OrganizationName,
 				OrganizationLogo: chatBotSetting.ChatBot.OrganizationLogo,
 				OrganizationWebsite: chatBotSetting.ChatBot.OrganizationWebsite,
-				Favicon: chatBotSetting.ChatBot.Favicon,
+				Favicon: faviconUrl,
 				MessageChannels: {
 					WhatsApp: chatBotSetting.ChatBot.MessageChannels?.WhatsApp,
 					Telegram: chatBotSetting.ChatBot.MessageChannels?.Telegram
@@ -201,48 +270,65 @@
 		showCancelModel = false;
 	}
 
-	const upload = async (imgBase64, file) => {
-		const data = {};
-		console.log(imgBase64);
+	// const upload = async (imgBase64, file) => {
+	// 	const data = {};
+	// 	console.log(imgBase64);
 
-		const imgData = imgBase64.split(',');
-		data['image'] = imgData[1];
+	// 	// const imgData = imgBase64.split(',');
+	// 	// data['image'] = imgData[1];
 
-		if (!file) return;
+	// 	if (!file) return;
 
-		const formData = new FormData();
-		formData.append('file', file);
+	// 	const formData = new FormData();
+	// 	formData.append('file', file);
 
-		const res = await fetch(`/api/server/assessments/assessment-templates/upload`, {
-			method: 'POST',
-			body: formData
-		});
+	// 	const res = await fetch(`/api/server/tenants/upload`, {
+	// 		method: 'POST',
+	// 		body: formData
+	// 	});
 
-		const response = await res.json();
-		console.log('response from api endpoint', response);
+	// 	const response = await res.json();
+	// 	console.log('response from api endpoint', response);
 
-		if (response.Status === 'success' && response.HttpCode === 201) {
-			return { success: true, resourceId: response.Data?.id, response };
-		}
-		if (response.Errors) {
-			errors = response?.Errors || {};
-			// showMessage(response.Message, 'error');
-			return response;
-		} else {
-			// showMessage(response.Message, 'error');
-			return { success: false, error: response.Message };
-		}
-	};
+	// 	if (response.Status === 'success' && response.HttpCode === 201) {
+	// 		return { success: true, resourceId: response.Data?.id, response };
+	// 	}
+	// 	if (response.Errors) {
+	// 		errors = response?.Errors || {};
+	// 		// showMessage(response.Message, 'error');
+	// 		return response;
+	// 	} else {
+	// 		// showMessage(response.Message, 'error');
+	// 		return { success: false, error: response.Message };
+	// 	}
+	// };
 
+	const formData = new FormData();
 	const onFileSelected = async (e) => {
-		let f = e.target.files[0];
-		fileName = f.name;
-		selectFile = f;
-		let reader = new FileReader();
-		reader.readAsDataURL(f);
-		reader.onload = async (e) => {
-			fileinput = e.target.result;
+		const input = e.target as HTMLInputElement;
+		const file = input.files?.[0];
+
+		const fileCreateModel: FaviconUploadModel = {
+			UploadFile: file,
+			FileName: file.name,
+			FileType: file.type
 		};
+
+		const fileValidationResult = imageUploadSchema.safeParse(fileCreateModel);
+		console.log('validation result of file', fileValidationResult);
+
+		if (!fileValidationResult.success) {
+			errors = Object.fromEntries(
+				Object.entries(fileValidationResult.error.flatten().fieldErrors).map(([key, val]) => [
+					key,
+					val?.[0] || 'This field is required'
+				])
+			);
+			return;
+		}
+
+		formData.append('file', file);
+		formData.append('filename', file.name);
 	};
 </script>
 
@@ -350,7 +436,12 @@
 								<div class="flex items-center space-x-4">
 									<label class="health-system-btn variant-filled-secondary">
 										Select File
-										<input type="file" class="hidden" onchange={onFileSelected} />
+										<input
+											type="file"
+											class="hidden"
+											placeholder="select Image"
+											onchange={async (e) => await onFileSelected(e)}
+										/>
 									</label>
 
 									<input
@@ -503,7 +594,7 @@
 									<td class="w-1/2 p-4 align-top">
 										<div class="flex items-center justify-between rounded-xl border p-4 shadow-sm">
 											<!-- Left: App Icon -->
-											<div class="mx-auto items-center justify-between ">
+											<div class="mx-auto items-center justify-between">
 												<Icons
 													cls=""
 													h="24px"
@@ -524,7 +615,9 @@
 											<div class="flex items-center gap-2">
 												{#if groupName === 'Consent' && groupItems === true && edit === true}
 													<Icon
-														icon="material-symbols:edit-outline" height="15" width="15"
+														icon="material-symbols:edit-outline"
+														height="15"
+														width="15"
 														onclick={() => (showCancelModel = true)}
 													/>
 												{/if}

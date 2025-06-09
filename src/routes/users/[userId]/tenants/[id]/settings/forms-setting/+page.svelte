@@ -125,7 +125,7 @@
 						{#each Object.entries(formSetting.Forms) as [groupName, groupItems]}
 							{#if groupName == 'Integrations'}
 								<tr>
-									<td>
+									<td colspan="2">
 										<button
 											type="button"
 											onclick={() => toggleTab(groupName)}
@@ -140,8 +140,11 @@
 													w="80%"
 													iconPath={iconPaths[groupName] ?? ''}
 												/>
-												<span class="text-base">{groupName}</span>
+												<span class="text-base">
+													<span>Integrations</span>
+												</span>
 											</div>
+
 											<InfoIcon
 												cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 cursor-pointer fill-none my-2"
 												h="80%"
@@ -168,10 +171,11 @@
 												<div class="mx-20 grid w-full grid-cols-2 gap-x-10 gap-y-6 lg:grid-cols-2">
 													{#each Object.entries(groupItems) as [key, value]}
 														{@const meta = getSettingMeta(groupName, key)}
+
 														<div class="flex items-center gap-3">
-															{#if edit === true && value === true}
+															{#if edit === true && formSetting.Forms[groupName][key] === true}
 																<span class="text-green-500">✅</span>
-															{:else if edit === true && value !== true}
+															{:else if edit === true && formSetting.Forms[groupName][key] !== true}
 																<span>❌</span>
 															{:else}
 																<label class="flex items-center gap-2">
@@ -197,35 +201,39 @@
 										{/if}
 									</td>
 								</tr>
-							{:else}
+							{/if}
+						{/each}
+						{#each Object.entries(formSetting.Forms) as [groupName, groupItems]}
+							{#if typeof groupItems === 'boolean'}
 								<tr>
 									<td>
-										<div
-											class="sidebar-item flex w-full items-center justify-between rounded-md bg-slate-100 px-4 py-2"
-										>
-											<div class="flex flex-1 items-center gap-2">
-												{#if edit === true && groupItems === true}
-													<span class="text-green-500">✅</span>
-												{:else if edit === true && groupItems !== true}
-													<span>❌</span>
-												{:else}
-													<label class="flex items-center gap-2">
-														<input
-															type="checkbox"
-															class="checkbox checkbox-primary"
-															disabled={edit}
-															bind:checked={formSetting.Forms[groupName]}
-														/>
-													</label>
-												{/if}
-												<Icons
-													cls="stroke-slate-800 my-2 stroke-2 fill-none"
-													h="80%"
-													w="80%"
-													iconPath={iconPaths[groupName] ?? ''}
+										<div class="flex items-center gap-2">
+											{#if edit === true && groupItems === true}
+												<span class="text-green-500">✅</span>
+											{:else if edit === true && groupItems !== true}
+												<span>❌</span>
+											{:else}
+												<!-- <label class="flex items-center gap-2"> -->
+												<input
+													type="checkbox"
+													class="checkbox checkbox-primary"
+													disabled={edit}
+													bind:checked={formSetting.Forms[groupName]}
 												/>
-												<span class="text-base">{groupName}</span>
-											</div>
+												<!-- </label> -->
+											{/if}
+											<Icons
+												cls="stroke-slate-800 my-2 stroke-2 fill-none"
+												h="80%"
+												w="80%"
+												iconPath={iconPaths[groupName] ?? ''}
+											/>
+											<span class="text-base">{groupName}</span>
+										</div>
+									</td>
+
+									<td>
+										<div class="flex items-center justify-end gap-2">
 											<InfoIcon
 												cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 cursor-pointer fill-none my-2"
 												h="80%"
@@ -233,37 +241,6 @@
 												iconPath="/tenant-setting/info.svg#icon"
 												title={`Settings under ${groupName}`}
 											/>
-										</div>
-
-										<div class="flex w-full justify-center py-5">
-											<div class="mx-20 grid w-full grid-cols-2 gap-x-10 gap-y-6 lg:grid-cols-2">
-												{#each Object.entries(groupItems) as [key, value]}
-													{@const meta = getSettingMeta(groupName, key)}
-													<div class="flex items-center gap-3">
-														{#if edit === true && value.Enabled === true}
-															<span class="text-green-500">✅</span>
-														{:else if edit === true && value.Enabled !== true}
-															<span>❌</span>
-														{:else}
-															<label class="flex items-center gap-2">
-																<input
-																	type="checkbox"
-																	class="checkbox checkbox-primary"
-																	disabled={edit}
-																	bind:checked={formSetting.Forms[groupName][key]}
-																/>
-															</label>
-														{/if}
-														<Icons
-															cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 fill-none my-2"
-															h="70%"
-															w="70%"
-															iconPath={meta?.IconPath}
-														/>
-														<span>{meta?.Name ?? key}</span>
-													</div>
-												{/each}
-											</div>
 										</div>
 									</td>
 								</tr>

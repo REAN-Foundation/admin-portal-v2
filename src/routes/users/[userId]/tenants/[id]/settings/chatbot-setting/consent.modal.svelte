@@ -8,6 +8,7 @@
 	} from '$lib/validation/tenant.settings.schema';
 	import { languages } from '$lib/utils/language';
 	import { page } from '$app/state';
+	import { writable } from 'svelte/store';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -26,6 +27,8 @@
 	let defaultLangCode = $state('');
 	let newMessage = $state({ LanguageCode: '', Content: '', WebsiteURL: '' });
 	let showAddMessageForm = $state(false);
+	let isEditing = writable(false);
+	let editIndex = writable(null);
 
 	let errors: Record<string, string> = $state({});
 	let dataLoaded = $state(false);
@@ -55,27 +58,38 @@
 		defaultLangCode = languages.find((l) => l.name === selected)?.code ?? '';
 	}
 
-	const handleSave = async (event: Event) => {
-		event.preventDefault();
-		errors = {};
-		const consentMessageModel: ConsentMessage = {
-			LanguageCode: newMessage.LanguageCode,
-			Content: newMessage.Content,
-			WebsiteURL: newMessage.WebsiteURL
-		};
-		const validationResult = ConsentMessageSchema.safeParse(consentMessageModel);
-		if (!validationResult.success) {
-			errors = Object.fromEntries(
-				Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-					key,
-					val?.[0] || 'This field is required'
-				])
-			);
-			return;
+	// const handleSave = async (event: Event) => {
+	// 	event.preventDefault();
+	// 	errors = {};
+	// 	const consentMessageModel: ConsentMessage = {
+	// 		LanguageCode: newMessage.LanguageCode,
+	// 		Content: newMessage.Content,
+	// 		WebsiteURL: newMessage.WebsiteURL
+	// 	};
+	// 	const validationResult = ConsentMessageSchema.safeParse(consentMessageModel);
+	// 	if (!validationResult.success) {
+	// 		errors = Object.fromEntries(
+	// 			Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+	// 				key,
+	// 				val?.[0] || 'This field is required'
+	// 			])
+	// 		);
+	// 		return;
+	// 	}
+	// 	message.push(validationResult.data);
+	// 	newMessage = { LanguageCode: '', Content: '', WebsiteURL: '' };
+	// };
+
+	function updateMessage() {
+		if ($editIndex !== null && $editIndex >= 0) {
+			message[$editIndex] = { ...newMessage };
+			newMessage = { LanguageCode: '', Content: '', WebsiteURL: '' };
+			$editIndex = null;
+			$isEditing = false;
+			showAddMessageForm = false;
 		}
-		message.push(validationResult.data);
-		newMessage = { LanguageCode: '', Content: '', WebsiteURL: '' };
-	};
+	}
+
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
@@ -120,6 +134,8 @@
 			dataLoaded = true;
 		}
 	});
+	let tenantName1;
+	let tenantCode1;
 	async function loadConsentSettings() {
 		try {
 			const type = 'Consent';
@@ -134,9 +150,9 @@
 			console.log('data in loadConsentSettings', data.Data);
 
 			// Assuming this structure comes from your backend
-			tenantName = data.Data.TenantSettings?.TenantName || null;
-			console.log('tenantName', tenantName);
-			tenantCode = data.Data.TenantSettings?.TenantCode || null;
+			tenantName1 = data.Data.TenantSettings?.TenantName || null;
+			console.log('tenantName', tenantName1);
+			tenantCode1 = data.Data.TenantSettings?.TenantCode || null;
 			defualtLang = data.Data.TenantSettings?.DefaultLanguage || null;
 			defaultLangCode = languages.find((l) => l.name === defualtLang)?.code ?? '';
 			message = data.Messages || [];
@@ -159,12 +175,14 @@
 
 {#if showCancelModel}
 	<div class="overlay">
-		<div class="modal relative max-h-[80vh] overflow-y-auto rounded bg-white p-4 shadow-lg">
+		<div
+			class="modal health-system-table-container relative max-h-[80vh] overflow-y-auto rounded bg-white p-4 shadow-lg"
+		>
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 				<table class="health-system-table">
 					<thead>
 						<tr>
-							<th>Chat Bot Setting</th>
+							<th class="text">Chat Bot Setting</th>
 							<th class="text-end">
 								<button class="cancel-btn absolute top-2 right-2" onclick={handleModalClose}>
 									<Icon icon="material-symbols:close-rounded" />
@@ -240,7 +258,7 @@
 								<td>
 									<select class="health-system-input" bind:value={newMessage.LanguageCode}>
 										<option value="" disabled selected>Select code</option>
-										{#each languages.filter((l) => l.name === defualtLang) as lang}
+										{#each languages as lang}
 											<option value={lang.code}>{lang.code}</option>
 										{/each}
 									</select>
@@ -249,13 +267,12 @@
 							<tr>
 								<td> Content <span class="text-red-700"></span></td>
 								<td>
-									<input
-										type="text"
+									<textarea
 										name="content"
 										class="health-system-input {form?.errors?.content ? 'input-text-error' : ''}"
 										placeholder="Enter content"
 										bind:value={newMessage.Content}
-									/>
+									></textarea>
 								</td>
 							</tr>
 							<tr>
@@ -276,25 +293,59 @@
 									<button
 										type="button"
 										class="health-system-btn variant-filled-secondary"
-										onclick={addMessage}>Save Message</button
+										onclick={() => {
+											if ($isEditing) {
+												updateMessage();
+											} else {
+												addMessage();
+											}
+										}}
 									>
-								</td>
-							</tr>
-
-							<tr>
-								<td>
-									{#if message.length > 0}
-										<ul class="ml-4 list-disc">
-											{#each message as msg, idx}
-												<li>{msg.LanguageCode} - {msg.Content} ({msg.WebsiteURL})</li>
-											{/each}
-										</ul>
-									{/if}
+										{$isEditing ? 'Update Message' : 'Save Message'}
+									</button>
 								</td>
 							</tr>
 						{/if}
 					</tbody>
 				</table>
+				{#if message.length > 0}
+					<!-- Insert this just before the submit button div -->
+					<div class="health-system-table-container mt-4 shadow">
+						<table class="health-system-table w-full">
+							<thead>
+								<tr>
+									<th>Sr</th>
+									<th>Language Code</th>
+									<th>Content</th>
+									<th>Website URL</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								{#each message as msg, index}
+									<tr>
+										<td>{index + 1}</td>
+										<td>{msg.LanguageCode}</td>
+										<td>{msg.Content}</td>
+										<td>{msg.WebsiteURL}</td>
+										<td>
+											<Icon
+												icon="material-symbols:edit-outline"
+												class="cursor-pointer"
+												onclick={() => {
+													showAddMessageForm = true;
+													newMessage = { ...msg };
+													$editIndex = index;
+													$isEditing = true;
+												}}
+											/>
+										</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</div>
+				{/if}
 				<div class="text-right">
 					{#await promise}
 						<button type="submit" class="upload-btn variant-filled-secondary" disabled>
