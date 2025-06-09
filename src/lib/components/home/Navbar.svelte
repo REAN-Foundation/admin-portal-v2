@@ -7,16 +7,16 @@
 	import Sidebar from './Sidebar.svelte';
 	import { clickOutside } from '$lib/actions/clickOutside';
 
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	let { logout, userId, imageUrl, userName, tenantSettings, userRole, email } = $props();
 
 	let showConfirmDelete_ = false;
 	let showConfirmLogout_ = $state(false);
-
 	const logoutMessage_ = 'Are you sure you want to sign out?';
 	let logoutMessage = $state(logoutMessage_);
 	let showUserMenu = $state(false);
 	let showThemeMenu = $state(false);
-
 	const themeModes = ['Light', 'Dark'];
 	const themeOptions = [
 		{ name: 'Blue', color: 'rgba(0, 150, 255, 0.1)', borderColor: 'rgba(0, 150, 255, 1)' },
@@ -25,7 +25,6 @@
 		{ name: 'Teal', color: 'rgba(50, 153, 153, 0.1)', borderColor: 'rgba(50, 153, 153, 1)' },
 		{ name: 'Gold', color: 'rgba(255, 215, 0, 0.1)', borderColor: 'rgba(255, 215, 0, 1)' }
 	];
-
 	let selectedMode = $state('Light');
 	let selectedOption = $state('Blue');
 	let showSidebar = $state(false);
@@ -37,7 +36,12 @@
 			href: `/users/${userId}/my-profile`
 		},
 		{ label: 'Themes', icon: 'mdi:palette-outline' },
-		{ label: 'Sign Out', icon: 'material-symbols:logout', action: openLogoutModal }
+		{ label: 'Sign Out', icon: 'material-symbols:logout', action: openLogoutModal },
+		{
+			label: 'Change Password',
+			icon: 'material-symbols:lock-outline',
+			href: `/users/${userId}/change-password`
+		}
 	];
 
 	const logoImageSource = getPublicLogoImageSource();
@@ -57,10 +61,8 @@
 	const applyThemeOption = () => {
 		const theme = selectedMode.toLowerCase();
 		const option = selectedOption.toLowerCase();
-
 		document.documentElement.setAttribute('data-theme', theme);
 		document.documentElement.setAttribute('data-theme-option', option);
-
 		const themeOption = themeOptions.find((opt) => opt.name.toLowerCase() === option);
 		if (themeOption) {
 			document.documentElement.style.setProperty('--theme-border-color', themeOption.borderColor);
@@ -70,12 +72,10 @@
 	onMount(() => {
 		const storedMode = localStorage.getItem('themeMode');
 		const storedOption = localStorage.getItem('themeOption');
-
 		if (storedMode) {
 			selectedMode = storedMode;
 			document.documentElement.setAttribute('data-theme', storedMode.toLowerCase());
 		}
-
 		if (storedOption) {
 			selectedOption = storedOption;
 			applyThemeOption();
@@ -92,7 +92,6 @@
 		localStorage.setItem('themeMode', 'Light');
 		localStorage.removeItem('themeOption');
 		applyThemeOption();
-
 		if (logout) logout();
 		showConfirmLogout_ = false;
 	}
@@ -117,7 +116,6 @@
 		<div class="flex items-center">
 			<img src={logoImageSource} alt="Logo" class="px-4" width="100" height="100" />
 		</div>
-
 		<div class="relative ml-auto flex items-center">
 			<button
 				onclick={() => (showSidebar = !showSidebar)}
@@ -139,6 +137,7 @@
 					<span class="initial-icon">{userInitials}</span>
 				{/if}
 			</button>
+
 			{#if showUserMenu}
 				<div
 					class="user-menu"
@@ -203,7 +202,6 @@
 					<button class="themes-close-button" onclick={closeThemeMenu}>
 						<Icon icon="ant-design:close-outlined" class="h-5 w-5" />
 					</button>
-
 					<div>
 						<p class="para">Appearance</p>
 						<div class="flex items-center space-x-4">
@@ -229,12 +227,10 @@
 							{/each}
 						</div>
 					</div>
-
 					<!-- <hr class="theme-divider" /> -->
 
 					<div>
 						<p class="para">Themes</p>
-
 						<div class="grid grid-cols-3 gap-2 sm:gap-4">
 							{#each themeOptions as { name, color, borderColor }}
 								<button
@@ -253,7 +249,6 @@
 											<Icon icon="mdi:check" class="text-info h-2 w-2 sm:h-3 sm:w-3" />
 										{/if}
 									</div>
-
 									<div class="text-info ml-1 text-[var(--color-info)] sm:ml-2">{name}</div>
 								</button>
 							{/each}
