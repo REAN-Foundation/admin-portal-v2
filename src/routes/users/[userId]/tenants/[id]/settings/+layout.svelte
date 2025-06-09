@@ -9,6 +9,9 @@
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
 
+	let disabled = $state(true);
+	let edit = $derived(disabled);
+
 	const viewRoute = `/users/${userId}/tenants/${tenantId}/view`;
 	const tenantRoute = `/users/${userId}/tenants`;
 
@@ -92,6 +95,7 @@
 				<Icon icon="material-symbols:featured-play-list-outline-rounded" class="h-5 w-5 shrink-0" />
 				Follow-up
 			</a>
+				
 			<!-- <a
 				class="btn {page.url.pathname === concentSettingsLink
 					? 'variant-filled-secondary'

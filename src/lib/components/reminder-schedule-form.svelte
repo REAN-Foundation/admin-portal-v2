@@ -7,15 +7,15 @@
 
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" transition:fade>
 	<!-- Modal Box -->
-	<div class="relative w-[100%] max-w-md rounded-xl bg-white p-6 shadow-lg">
+	<div class="relative w-[100%] max-w-md rounded-xl bg-white shadow-lg">
 		<div class="health-system-table-container">
 			<table class="health-system-table">
 				<thead>
 					<tr>
-						<th class="w-[30%]">Add Reminder Schedule </th>
-						<th class="w-[70%] text-end">
+						<th class="">Add Reminder Schedule </th>
+						<th class=" text-end">
 							<button class="cancel-btn" onclick={() => (showReminderModal = false)}>
-								<Icon icon="material-symbols:close-rounded" class="text-2xl" />
+								<Icon icon="material-symbols:close-rounded" class=" text-md" />
 							</button>
 						</th>
 					</tr>
@@ -91,7 +91,7 @@
 				>
 					Cancel
 				</button>
-				<button class="table-btn variant-filled-secondary gap-1 rounded" onclick={addSchedule}>
+				<button class="table-btn variant-soft-secondary gap-1 rounded" onclick={addSchedule}>
 					Add
 				</button>
 			</div>

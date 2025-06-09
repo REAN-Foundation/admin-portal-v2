@@ -102,52 +102,43 @@
 		}
 	};
 
-	let disabled = $state(true);
+	let disabled = $state(false);
 	let edit = $derived(disabled);
 </script>
 
 <div class="px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-2">
-		<button
-			class="table-btn variant-filled-secondary gap-1"
-			onclick={() => {
-				disabled = !disabled;
-				edit = disabled;
-			}}
-		>
-			<Icon icon="material-symbols:edit-outline" />
-			<span>Edit</span>
-		</button>
-	</div>
-
 	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={() => handleSubmit(event)}>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th class="">Common Setting</th>
-							<th class="text-end">
-								<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<ExpandableSettings groupedSettings={commonUISettings} bind:commonSetting {edit} />
-					</tbody>
-				</table>
-				<div class="button-container">
-					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
-					{/await}
+		<form onsubmit={() => handleSubmit(event)}>
+			<div class="flex items-center justify-between p-2">
+				<h1 class=" text-xl">Common Setting</h1>
+				<div class="flex items-center gap-2 text-end">
+					<button
+						type="button"
+						class="table-btn variant-filled-secondary gap-1"
+						onclick={() => {
+							disabled = !disabled;
+							edit = disabled;
+						}}
+					>
+						<Icon icon="material-symbols:edit-outline" />
+						<span>{edit ? 'Edit' : 'Save'}</span>
+					</button>
+					<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
+						<Icon icon="material-symbols:close-rounded" class=" h-5" />
+					</a>
 				</div>
-			</form>
-		</div>
+			</div>
+
+			<ExpandableSettings groupedSettings={commonUISettings} bind:commonSetting {edit} />
+			<div class="button-container">
+				{#await promise}
+					<button type="submit" class="table-btn variant-soft-secondary" disabled>
+						Submiting
+					</button>
+				{:then data}
+					<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
+				{/await}
+			</div>
+		</form>
 	</div>
 </div>

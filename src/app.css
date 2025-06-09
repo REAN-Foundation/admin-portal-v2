@@ -848,7 +848,7 @@ tr {
 }
 
 .table-input-field {
-	@apply  rounded-lg border border-gray-200 px-8 py-2 outline-[var(--color-active)];
+	@apply rounded-lg border border-gray-200 px-8 py-2 outline-[var(--color-active)];
 }
 
 .search-border {
@@ -862,7 +862,6 @@ tr {
 .cancel-btn {
 	@apply inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-2 text-center text-sm whitespace-nowrap text-[var(--color-error)] transition-all duration-150 ease-in-out hover:bg-[var(--active-soft)];
 }
-
 
 /* form and table specific */
 
@@ -898,5 +897,9 @@ tr {
 }
 
 .container {
-	@apply w-full h-full;
+	@apply h-full w-full;
+}
+
+.progressive-bar {
+	@apply bg-[var(--color-active)];
 }

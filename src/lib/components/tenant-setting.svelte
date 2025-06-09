@@ -45,92 +45,72 @@
 	};
 </script>
 
-<!-- <div class="mx-auto">
-	<div class="table-container">
-		<form onsubmit={handleFormSubmit}>
-			<table class="table-c">
-				<thead>
-					<tr>
-						<th>
-							<div class="flex justify-between">
-								<h1 class="py-2 text-lg">Common Setting</h1>
-
-								<a href={tenantRoute} class="cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</div>
-						</th></tr
-					>
-				</thead>
-				<tbody> -->
 {#each Object.entries(commonSetting) as [groupName, groupItems]}
 	{#if groupName !== 'UserInterfaces' && groupName !== 'General'}
-		<tr>
-			<td>
-				<button
-					type="button"
-					onclick={() => toggleTab(groupName)}
-					class={`sidebar-item flex w-full items-center justify-between rounded-md px-4 py-2 transition-colors duration-200 ${
-						openTab === groupName ? 'bg-slate-100 ' : ''
-					}`}
-				>
-					<div class="flex flex-1 items-center gap-2">
-						<Icons
-							cls="stroke-slate-800 my-2 stroke-2 fill-none"
-							h="80%"
-							w="80%"
-							iconPath={iconPaths[groupName] ?? ''}
-						/>
-						<span class="text-base">{groupName}</span>
-					</div>
-					<InfoIcon
-						cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 cursor-pointer fill-none my-2"
+		<div
+			class={`sidebar-item my-2 flex w-full flex-col rounded-md border !p-0 py-2 transition-colors duration-200`}
+		>
+			<button
+				type="button"
+				onclick={() => toggleTab(groupName)}
+				class={`flex items-center justify-between rounded-t-md p-4
+ 			 ${openTab === groupName ? ' bg-gray-200' : ''}
+			`}
+			>
+				<div class="flex flex-1 items-center gap-2">
+					<Icons
+						cls="stroke-slate-800 my-2 stroke-2 fill-none"
 						h="80%"
 						w="80%"
-						iconPath="/tenant-setting/info.svg#icon"
-						title={`Settings under ${groupName}`}
+						iconPath={iconPaths[groupName] ?? ''}
 					/>
-					<!-- <span class:rotate-180={openTab === groupName} class="transition-transform duration-300"> -->
-					<span class="transition-transform duration-300" class:rotate-180={openTab === groupName}>
-						<Icon icon="icon-park-outline:down" width="16" height="16" class="h-5 w-5" />
-					</span>
-				</button>
 
-				{#if openTab === groupName}
-					<div class="flex w-full justify-center py-5">
-						<div class="mx-20 grid w-full grid-cols-2 gap-x-10 gap-y-6 lg:grid-cols-2">
-							{#each Object.entries(groupItems) as [key, value]}
-								{@const meta = getSettingMeta(groupName, key)}
-								<div class="flex items-center gap-3">
-									{#if edit === true && value.Enabled === true}
-										<span class="text-green-500">✅</span>
-									{:else if edit === true && value.Enabled !== true}
-										<span>❌</span>
-									{:else}
-										{commonSetting[groupName][key].Enabled}
-										<label class="flex items-center gap-2">
-											<input
-												type="checkbox"
-												class="checkbox checkbox-primary"
-												disabled={edit}
-												bind:checked={commonSetting[groupName][key].Enabled}
-											/>
-										</label>
-									{/if}
-									<Icons
-										cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 fill-none my-2"
-										h="70%"
-										w="70%"
-										iconPath={meta?.Path}
-									/>
-									<span>{meta?.Name ?? key}</span>
-								</div>
-							{/each}
-						</div>
+					<div class=" text-start">
+						<p class="text-base font-semibold">{groupName}</p>
+
+						<p class=" text-sm">Settings under {groupName}</p>
 					</div>
-				{/if}
-			</td>
-		</tr>
+				</div>
+
+				<!-- <span class:rotate-180={openTab === groupName} class="transition-transform duration-300"> -->
+				<span class="transition-transform duration-300" class:rotate-90={openTab === groupName}>
+					<Icon icon="icon-park-outline:down" rotate="35" width="16" height="16" class="h-5 w-5" />
+				</span>
+			</button>
+
+			{#if openTab === groupName}
+				<div class="flex w-full justify-center py-5">
+					<div class="mx-20 grid w-full grid-cols-2 gap-x-10 gap-y-6 lg:grid-cols-2">
+						{#each Object.entries(groupItems) as [key, value]}
+							{@const meta = getSettingMeta(groupName, key)}
+							<div class="flex items-center gap-3">
+								{#if edit === true && value.Enabled === true}
+									<span class="text-green-500">✅</span>
+								{:else if edit === true && value.Enabled !== true}
+									<span>❌</span>
+								{:else}
+									<label class="flex items-center gap-2">
+										<input
+											type="checkbox"
+											class="checkbox checkbox-primary"
+											disabled={edit}
+											bind:checked={commonSetting[groupName][key].Enabled}
+										/>
+									</label>
+								{/if}
+								<Icons
+									cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 fill-none my-2"
+									h="70%"
+									w="70%"
+									iconPath={meta?.Path}
+								/>
+								<span>{meta?.Name ?? key}</span>
+							</div>
+						{/each}
+					</div>
+				</div>
+			{/if}
+		</div>
 	{/if}
 {/each}
 <!-- </tbody>
