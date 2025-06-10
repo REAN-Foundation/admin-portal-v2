@@ -7,8 +7,6 @@
 		ConsentSettingsSchema
 	} from '$lib/validation/tenant.settings.schema';
 	import { languages } from '$lib/utils/language';
-	import { page } from '$app/state';
-	import { writable } from 'svelte/store';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -20,23 +18,22 @@
 		tenantName,
 		tenantCode
 	} = $props();
+
 	let promise = $state();
 
-	let message = $state([]);
+	let message = $state(consentSetting.Messages);
+
 	let defualtLang = $state('');
 	let defaultLangCode = $state('');
 	let newMessage = $state({ LanguageCode: '', Content: '', WebsiteURL: '' });
 	let showAddMessageForm = $state(false);
-	let isEditing = writable(false);
-	let editIndex = writable(null);
+
+	let editingIndex: number | null = $state();
 
 	let errors: Record<string, string> = $state({});
-	let dataLoaded = $state(false);
-	let tenantId = page.params.id;
 
 	function handleModalClose() {
 		onClose();
-		dataLoaded = false;
 	}
 
 	function addMessage() {
@@ -52,42 +49,29 @@
 		newMessage = { LanguageCode: '', Content: '', WebsiteURL: '' }; // reset
 		showAddMessageForm = false;
 	}
+
+	function updateMessage() {
+		if (editingIndex !== null) {
+			message[editingIndex] = { ...newMessage };
+			newMessage = { LanguageCode: '', Content: '', WebsiteURL: '' };
+			editingIndex = null;
+			showAddMessageForm = false;
+		}
+	}
+
+	function deleteMessage(index: number) {
+		message.splice(index, 1);
+		addToast({
+			message: 'Message deleted successfully.',
+			type: 'success',
+			timeout: 3000
+		});
+	}
+
 	function onDefaultLangChange(event: Event) {
 		const selected = (event.target as HTMLSelectElement).value;
 		defualtLang = selected;
 		defaultLangCode = languages.find((l) => l.name === selected)?.code ?? '';
-	}
-
-	// const handleSave = async (event: Event) => {
-	// 	event.preventDefault();
-	// 	errors = {};
-	// 	const consentMessageModel: ConsentMessage = {
-	// 		LanguageCode: newMessage.LanguageCode,
-	// 		Content: newMessage.Content,
-	// 		WebsiteURL: newMessage.WebsiteURL
-	// 	};
-	// 	const validationResult = ConsentMessageSchema.safeParse(consentMessageModel);
-	// 	if (!validationResult.success) {
-	// 		errors = Object.fromEntries(
-	// 			Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-	// 				key,
-	// 				val?.[0] || 'This field is required'
-	// 			])
-	// 		);
-	// 		return;
-	// 	}
-	// 	message.push(validationResult.data);
-	// 	newMessage = { LanguageCode: '', Content: '', WebsiteURL: '' };
-	// };
-
-	function updateMessage() {
-		if ($editIndex !== null && $editIndex >= 0) {
-			message[$editIndex] = { ...newMessage };
-			newMessage = { LanguageCode: '', Content: '', WebsiteURL: '' };
-			$editIndex = null;
-			$isEditing = false;
-			showAddMessageForm = false;
-		}
 	}
 
 	const handleSubmit = async (event: Event) => {
@@ -101,9 +85,8 @@
 				DefaultLanguage: defualtLang,
 				Messages: message
 			};
-			console.log('consentSettingModel', consentSettingModel);
+
 			const validationResult = ConsentSettingsSchema.safeParse(consentSettingModel);
-			console.log('validationResult', validationResult);
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -111,13 +94,12 @@
 						val?.[0] || 'This field is required'
 					])
 				);
-
 				return;
 			}
-			console.log('validationResult.data', validationResult.data);
+
 			consentSetting = validationResult.data;
-			console.log('consentSetting', consentSetting);
 			onClose();
+
 			addToast({
 				message: 'Consent settings updated successfully.',
 				type: 'success',
@@ -127,56 +109,12 @@
 			toastMessage();
 		}
 	};
-
-	$effect(() => {
-		if (showCancelModel && !dataLoaded) {
-			loadConsentSettings();
-			dataLoaded = true;
-		}
-	});
-	let tenantName1;
-	let tenantCode1;
-	async function loadConsentSettings() {
-		try {
-			const type = 'Consent';
-			const res = await fetch(`/api/server/tenants/settings/${tenantId}/${type}`, {
-				method: 'GET',
-				headers: { 'content-type': 'application/json' }
-			});
-
-			console.log('response in loadConsentSettings', res);
-			if (!res.ok) throw new Error('Failed to load data');
-			const data = await res.json();
-			console.log('data in loadConsentSettings', data.Data);
-
-			// Assuming this structure comes from your backend
-			tenantName1 = data.Data.TenantSettings?.TenantName || null;
-			console.log('tenantName', tenantName1);
-			tenantCode1 = data.Data.TenantSettings?.TenantCode || null;
-			defualtLang = data.Data.TenantSettings?.DefaultLanguage || null;
-			defaultLangCode = languages.find((l) => l.name === defualtLang)?.code ?? '';
-			message = data.Messages || [];
-
-			addToast({
-				message: 'Consent Settings retireved successfully',
-				type: 'success',
-				timeout: 3000
-			});
-		} catch (err) {
-			console.error(err);
-			addToast({
-				message: 'Failed to load consent settings',
-				type: 'error',
-				timeout: 3000
-			});
-		}
-	}
 </script>
 
 {#if showCancelModel}
 	<div class="overlay">
 		<div
-			class="modal health-system-table-container relative max-h-[80vh] overflow-y-auto rounded bg-white p-4 shadow-lg"
+			class="modal health-system-table-container relative max-h-[120vh] overflow-y-auto rounded bg-white p-4 shadow-lg"
 		>
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 				<table class="health-system-table">
@@ -192,7 +130,7 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td> Tenant Name <span class="text-red-700"></span></td>
+							<td> Tenant Name <span class="text-red-700">*</span></td>
 							<td>
 								<input
 									type="text"
@@ -200,6 +138,7 @@
 									name="chatbotName"
 									placeholder="Enter name here..."
 									bind:value={tenantName}
+									disabled
 								/>
 								{#if errors?.Name}
 									<p class="text-error">{errors?.Name}</p>
@@ -207,7 +146,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td> Tenant Code <span class="text-red-700"></span></td>
+							<td> Tenant Code <span class="text-red-700">*</span></td>
 							<td>
 								<input
 									type="text"
@@ -215,6 +154,7 @@
 									name="tenantCode"
 									placeholder="Enter tenant code here..."
 									bind:value={tenantCode}
+									disabled
 								/>
 								{#if errors?.TenantCode}
 									<p class="text-error">{errors?.TenantCode}</p>
@@ -222,7 +162,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td> Default Language <span class="text-red-700"></span></td>
+							<td> Default Language <span class="text-red-700">*</span></td>
 							<td>
 								<select
 									class="health-system-input"
@@ -248,13 +188,13 @@
 									class="health-system-btn variant-filled-secondary"
 									onclick={() => (showAddMessageForm = true)}
 								>
-									Add Consent Message +
+									Add Message
 								</button></td
 							>
 						</tr>
 						{#if showAddMessageForm}
 							<tr>
-								<td> Language Code <span class="text-red-700"></span></td>
+								<td> Language Code <span class="text-red-700">*</span></td>
 								<td>
 									<select class="health-system-input" bind:value={newMessage.LanguageCode}>
 										<option value="" disabled selected>Select code</option>
@@ -265,7 +205,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td> Content <span class="text-red-700"></span></td>
+								<td> Content <span class="text-red-700">*</span></td>
 								<td>
 									<textarea
 										name="content"
@@ -294,14 +234,14 @@
 										type="button"
 										class="health-system-btn variant-filled-secondary"
 										onclick={() => {
-											if ($isEditing) {
+											if (editingIndex) {
 												updateMessage();
 											} else {
 												addMessage();
 											}
 										}}
 									>
-										{$isEditing ? 'Update Message' : 'Save Message'}
+										{editingIndex ? 'Update Message' : 'Save Message'}
 									</button>
 								</td>
 							</tr>
@@ -328,16 +268,20 @@
 										<td>{msg.LanguageCode}</td>
 										<td>{msg.Content}</td>
 										<td>{msg.WebsiteURL}</td>
-										<td>
+										<td class="flex flex-row space-x-2">
 											<Icon
 												icon="material-symbols:edit-outline"
 												class="cursor-pointer"
 												onclick={() => {
 													showAddMessageForm = true;
 													newMessage = { ...msg };
-													$editIndex = index;
-													$isEditing = true;
+													editingIndex = index;
 												}}
+											/>
+											<Icon
+												icon="material-symbols:delete-outline"
+												class="cursor-pointer text-red-600"
+												onclick={() => deleteMessage(index)}
 											/>
 										</td>
 									</tr>
@@ -346,7 +290,7 @@
 						</table>
 					</div>
 				{/if}
-				<div class="text-right">
+				<div class="mt-2 text-right">
 					{#await promise}
 						<button type="submit" class="upload-btn variant-filled-secondary" disabled>
 							Submiting

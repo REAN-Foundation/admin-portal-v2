@@ -6,35 +6,44 @@ import { getTenantSettingsByType } from '../../../../../../api/services/reancare
 ////////////////////////////////////////////////////////////////////////////
 
 export const load: PageServerLoad = async (event: RequestEvent) => {
+
     const sessionId = event.cookies.get('sessionId') as string;
-    let settings = undefined;
+    let chatbotSettings = undefined;
+    let consentSettings = undefined;
+
     try {
-        console.log('Event-', event)
+
         const tenantId = event.locals?.sessionUser?.tenantId;
         const tenantCode = event.locals?.sessionUser?.tenantCode;
         const tenantName = event.locals?.sessionUser?.tenantName;
-        const response = await getTenantSettingsByType(sessionId, tenantId, 'ChatBot');
-        // console.log("response of setting", response);
 
+        const chatbotSettingResponse = await getTenantSettingsByType(sessionId, tenantId, 'ChatBot');
 
-        if (response.Status === 'failure' || response.HttpCode !== 200) {
-            throw error(response.HttpCode, response.Message);
+        if (chatbotSettingResponse.Status === 'failure' || chatbotSettingResponse.HttpCode !== 200) {
+            throw error(chatbotSettingResponse.HttpCode, chatbotSettingResponse.Message);
         }
 
-        if (response.Data.TenantSettings) {
-            settings = response.Data.TenantSettings;
+        if (chatbotSettingResponse.Data.TenantSettings) {
+            chatbotSettings = chatbotSettingResponse.Data.TenantSettings;
         }
 
-        console.log('response=', JSON.stringify(settings, null, 2));
-        console.log('This is tenant name ', tenantName);
-        console.log('This is tenant code', tenantCode);
+        const consentSettingResponse = await getTenantSettingsByType(sessionId, tenantId, 'Consent');
+
+        if (consentSettingResponse.Status === 'failure' || consentSettingResponse.HttpCode !== 200) {
+            throw error(consentSettingResponse.HttpCode, consentSettingResponse.Message);
+        }
+
+        if (consentSettingResponse.Data.TenantSettings) {
+            consentSettings = consentSettingResponse.Data.TenantSettings;
+        }
 
         return {
             tenantCode,
             tenantName,
             sessionId,
             tenantId,
-            settings
+            chatbotSettings,
+            consentSettings
         };
     } catch (error) {
         console.error(`Error retriving tenant settings: ${error.message}`);

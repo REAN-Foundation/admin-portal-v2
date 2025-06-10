@@ -1,11 +1,21 @@
 <script lang="ts">
+	import Icons from '$lib/components/icons.svelte';
 	import { languages } from '$lib/utils/language';
 	import Icon from '@iconify/svelte';
-	import Icons from '../../../../../../../lib/components/icons.svelte';
 
-	let { chatBotSetting = $bindable(), edit, iconPaths, getSettingMeta, showCancelModel, onFileSelected } = $props();
+	////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	let currentSection = $state(0);
+	let {
+		chatBotSetting = $bindable(),
+		edit,
+		iconPaths,
+		getSettingMeta,
+		showCancelModel=$bindable(),
+		onFileSelected
+	} = $props();
+
+	// $inspect("model in ",showCancelModel)
+	let currentSection = $state(2);
 	let errors: Record<string, string> = $state({});
 
 	let fileinput = $state();
@@ -27,12 +37,12 @@
 	// 	console.log(formData);
 	// };
 
-
 	let openTab: string | null = $state(null);
 
 	function toggleTab(tab: string) {
 		openTab = openTab === tab ? null : tab;
 	}
+
 	let progressPercent = $derived(((currentSection + 1) / 3) * 100);
 </script>
 
@@ -51,11 +61,13 @@
 
 <div class="w-full rounded-lg border bg-white p-6 shadow">
 	{#if currentSection === 0}
-		<div class="mb-4">
-			<label class="mb-1 block font-medium">Name <span class="text-red-700">*</span></label>
+		<div class="mb-4 flex flex-row">
+			<label for="chatbotName" class="mb-1 block w-[30%] font-medium"
+				>Name <span class="text-red-700">*</span></label
+			>
 			<input
 				type="text"
-				class="health-system-input"
+				class="health-system-input w-[70%]"
 				name="chatbotName"
 				placeholder="Enter name here..."
 				bind:value={chatBotSetting.ChatBot.Name}
@@ -65,11 +77,11 @@
 			{/if}
 		</div>
 
-		<div class="mb-4">
-			<label class="mb-1 block font-medium">Organization Name</label>
+		<div class="mb-4 flex flex-row">
+			<label for="organizationName" class="mb-1 block w-[30%] font-medium">Organization Name</label>
 			<input
 				type="text"
-				class="health-system-input"
+				class="health-system-input w-[70%]"
 				name="organizationName"
 				placeholder="Enter organization name here..."
 				bind:value={chatBotSetting.ChatBot.OrganizationName}
@@ -79,11 +91,11 @@
 			{/if}
 		</div>
 
-		<div class="mb-4">
-			<label class="mb-1 block font-medium">Organization Logo</label>
+		<div class="mb-4 flex flex-row">
+			<label for="organizationLogo" class="mb-1 block w-[30%] font-medium">Organization Logo</label>
 			<input
 				type="text"
-				class="health-system-input"
+				class="health-system-input w-[70%]"
 				name="organizationLogo"
 				placeholder="Enter organization logo here..."
 				bind:value={chatBotSetting.ChatBot.OrganizationLogo}
@@ -93,11 +105,13 @@
 			{/if}
 		</div>
 
-		<div class="mb-4">
-			<label class="mb-1 block font-medium">Organization Website</label>
+		<div class="mb-4 flex flex-row">
+			<label for="organizationWebsite" class="mb-1 block w-[30%] font-medium"
+				>Organization Website</label
+			>
 			<input
 				type="text"
-				class="health-system-input"
+				class="health-system-input w-[70%]"
 				name="organizationWebsite"
 				placeholder="Enter organization website here..."
 				bind:value={chatBotSetting.ChatBot.OrganizationWebsite}
@@ -107,9 +121,9 @@
 			{/if}
 		</div>
 
-		<div class="mb-4">
-			<label class="mb-1 block font-medium">Favicon</label>
-			<div class="flex items-center space-x-4">
+		<div class="mb-4 flex flex-row">
+			<label for="favicon" class="mb-1 block w-[30%] font-medium">Favicon</label>
+			<div class="w-[100%]">
 				<label class="health-system-btn variant-filled-secondary">
 					Select File
 					<input type="file" class="hidden" onchange={onFileSelected} />
@@ -126,21 +140,21 @@
 			{/if}
 		</div>
 
-		<div class="mb-4">
-			<label class="mb-1 block font-medium">Description</label>
+		<div class="mb-4 flex flex-row">
+			<label for="description" class="mb-1 block w-[30%] font-medium">Description</label>
 			<textarea
 				bind:value={chatBotSetting.ChatBot.Description}
 				name="description"
 				placeholder="Enter description here..."
-				class="health-system-input"
+				class="health-system-input w-[70%]"
 			></textarea>
 		</div>
 
-		<div class="mb-4">
-			<label class="mb-1 block font-medium">Default Language</label>
+		<div class="mb-4 flex flex-row">
+			<label for="defaultLanguage" class="mb-1 block w-[30%] font-medium">Default Language</label>
 			<select
 				bind:value={chatBotSetting.ChatBot.DefaultLanguage}
-				class="w-full rounded border p-2 text-sm"
+				class=" w-[100%] rounded border p-2 text-sm"
 			>
 				<option value="" disabled selected>Select language</option>
 				{#each languages as lang}
@@ -160,8 +174,7 @@
 					<button
 						type="button"
 						onclick={() => toggleTab(groupName)}
-						class={`flex items-center justify-between rounded-t-md p-4
- 												 ${openTab === groupName ? ' bg-gray-200' : ''}
+						class={`flex items-center justify-between rounded-t-md p-4 ${openTab === groupName ? ' bg-gray-200' : ''}
 												`}
 					>
 						<div class="flex flex-1 items-center gap-2">
@@ -199,27 +212,19 @@
 									{@const meta = getSettingMeta(groupName, key)}
 
 									<div class="flex items-center gap-3">
-										{#if edit === true && chatBotSetting.ChatBot[groupName][key] === true}
-											<span class="text-green-500">✅</span>
-										{:else if edit === true && chatBotSetting.ChatBot[groupName][key] !== true}
-											<span>❌</span>
-										{:else}
-											<label class="flex items-center gap-2">
-												<input
-													type="checkbox"
-													class="checkbox checkbox-primary"
-													disabled={edit}
-													bind:checked={chatBotSetting.ChatBot[groupName][key]}
-												/>
-											</label>
-										{/if}
-										<Icons
-											cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 fill-none my-2"
-											h="70%"
-											w="70%"
-											iconPath={meta?.IconPath}
-										/>
+										<label class="flex items-center gap-2">
+											<input
+												type="checkbox"
+												class="checkbox checkbox-primary"
+												disabled={edit}
+												bind:checked={chatBotSetting.ChatBot[groupName][key]}
+											/>
+										</label>
+
+										<Icon icon={meta?.IconPath} width="16" height="16" class="h-5 w-5" />
+
 										<span>{meta?.Name ?? key}</span>
+										<!-- {JSON.stringify(meta)} -->
 									</div>
 								{/each}
 							</div>
@@ -229,51 +234,63 @@
 			{/if}
 		{/each}
 	{:else if currentSection === 2}
-		{#each Object.entries(chatBotSetting.ChatBot)
-			.filter(([_, val]) => typeof val === 'boolean')
-			.reduce((acc, curr, idx, arr) => {
-				if (idx % 2 === 0) acc.push(arr.slice(idx, idx + 2));
-				return acc;
-			}, []) as row}
-			{#each row as [groupName, groupItems]}
-				<div class="m-4 flex h-20 items-center justify-between rounded-xl border p-4">
-					<!-- Left: App Icon -->
-					<Icons cls="" h="24px" w="24px" iconPath="/tenant-setting/chatbot/whatsapp.svg#icon" />
+		<div class="flex flex-col gap-4">
+			{#each Object.entries(chatBotSetting.ChatBot)
+				.filter(([_, val]) => typeof val === 'boolean')
+				.reduce((acc, curr, idx, arr) => {
+					if (idx % 2 === 0) acc.push(arr.slice(idx, idx + 2));
+					return acc;
+				}, []) as row}
+				<div class="flex gap-4">
+					{#each row as [groupName, groupItems]}
+						<div class="w-1/2">
+							<div class="flex h-20 items-center justify-between rounded-xl border p-4">
+								<!-- Left: App Icon -->
+								<Icons
+									cls=""
+									h="24px"
+									w="24px"
+									iconPath="/tenant-setting/chatbot/whatsapp.svg#icon"
+								/>
 
-					<!-- Middle: Name & Description -->
-					<div class=" flex flex-grow flex-col">
-						<span class="font-semibold">{groupName}</span>
-						<p class="text-sm">
-							This is a short description for {groupName} chatbot setting.
-						</p>
-					</div>
+								<!-- Middle: Name & Description -->
+								<div class="flex flex-grow flex-col px-4">
+									<span class="font-semibold">{groupName}</span>
+									<p class="text-sm text-gray-500">
+										This is a short description for {groupName} chatbot setting.
+									</p>
+								</div>
 
-					<!-- Right: Toggle -->
-					<div class="flex items-center gap-2">
-						{#if groupName === 'Consent' && groupItems === true && edit === true}
-							<Icon
-								icon="material-symbols:edit-outline"
-								height="15"
-								width="15"
-								onclick={() => (showCancelModel = true)}
-							/>
-						{/if}
-						<label class="flex cursor-pointer items-center">
-							<input
-								type="checkbox"
-								class="checkbox checkbox-primary scale-125"
-								bind:checked={chatBotSetting.ChatBot[groupName]}
-								disabled={edit}
-							/>
-						</label>
-					</div>
+								<!-- Right: Toggle + Optional Edit -->
+								<div class="flex items-center gap-2">
+									{#if groupName === 'Consent' && groupItems === true && edit === true}
+										<Icon
+											icon="material-symbols:edit-outline"
+											height="15"
+											width="15"
+											onclick={() => (showCancelModel = true)}
+										/>
+									{/if}
+									<label class="flex cursor-pointer items-center">
+										<input
+											type="checkbox"
+											class="checkbox checkbox-primary scale-125"
+											bind:checked={chatBotSetting.ChatBot[groupName]}
+											disabled={edit}
+										/>
+									</label>
+								</div>
+							</div>
+						</div>
+					{/each}
+
+					{#if row.length === 1}
+						<!-- Fill the empty second column -->
+						<div class="w-1/2"></div>
+					{/if}
 				</div>
 			{/each}
-
-			{#if row.length === 1}
-				<td class="w-1/2"></td>
-			{/if}
-		{/each}
+		</div>
 	{/if}
 </div>
 

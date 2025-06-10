@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import Icon from '@iconify/svelte';
-	import { toastMessage } from '$lib/components/toast/toast.store';
+	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import Icons from '$lib/components/icons.svelte';
 	import InfoIcon from '$lib/components/infoIcon.svelte';
 	import {
@@ -18,13 +18,24 @@
 	import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema.js';
 	import type { ProfileFileUploadModel } from '$lib/types/profile.types.js';
 	import Progressive from './progressive.update.svelte';
+
 	///////////////////////////////////////////////////////////////////////
 
 	let { data, form } = $props();
 
 	$inspect('data', data);
 	let errors: Record<string, string> = $state({});
-	let chatBotSetting = $state({ ChatBot: data.settings });
+	let chatBotSetting = $state({
+		ChatBot: data.chatbotSettings
+	});
+	// let consentSetting = $state({
+	// 	Consent: data.chatbotSettings
+	// });
+
+	let consentSetting: ConsentSettings = $state(data.consentSettings);
+	let showCancelModel = $state(false);
+
+	$inspect('Updatd consent from page', consentSetting);
 
 	let promise = $state();
 	const userId = page.params.userId;
@@ -32,11 +43,10 @@
 	const tenantCode = $state(data.tenantCode);
 	const tenantName = $state(data.tenantName);
 	const tenantRoute = `/users/${userId}/tenants`;
-	let showCancelModel = $state(false);
-	let consentSetting = $state();
+
 	let previousConsent = $derived(chatBotSetting.ChatBot.Consent);
 
-	$inspect('chatbot setting', chatBotSetting);
+	// $inspect('chatbot setting', chatBotSetting);
 	let faviconUrl = $derived(chatBotSetting.ChatBot.Favicon);
 	let fileName = $state(undefined);
 	let selectFile = $state(undefined);
@@ -49,31 +59,7 @@
 
 	let disabled = $state(true);
 	let edit = $derived(disabled);
-	async function uploadFile(event: Event) {
-		if (formData.has('file')) {
-			try {
-				const res = await fetch(`/api/server/tenants/upload`, {
-					method: 'POST',
-					body: formData
-				});
-				const response = await res.json();
 
-				console.log('response from api endpoint', response);
-				if (response.HttpCode === 201 || response.HttpCode === 200) {
-					toastMessage(response);
-					// edit = true;
-					// return;
-				}
-				if (response.Errors) {
-					errors = response?.Errors || {};
-				} else {
-					toastMessage(response);
-				}
-			} catch (error) {
-				toastMessage();
-			}
-		}
-	}
 	const onFileSelected = async (e) => {
 		const input = e.target as HTMLInputElement;
 		const file = input.files?.[0];
@@ -100,11 +86,17 @@
 		formData.append('file', file);
 		formData.append('filename', file.name);
 	};
+
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
+		errors = {};
+
+		let isConsentSaved = false;
+		let isFaviconUploaded = false;
+		let isChatBotSaved = false;
 
 		try {
-			errors = {};
+			// ----------------------------- CONSENT SETTINGS -----------------------------
 			const consentSettingModel: ConsentSettings = {
 				TenantId: tenantId,
 				TenantCode: tenantCode,
@@ -113,10 +105,10 @@
 				Messages: consentSetting.Messages
 			};
 
-			const validationResult = ConsentSettingsSchema.safeParse(consentSettingModel);
-			if (!validationResult.success) {
+			const consentValidation = ConsentSettingsSchema.safeParse(consentSettingModel);
+			if (!consentValidation.success) {
 				errors = Object.fromEntries(
-					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+					Object.entries(consentValidation.error.flatten().fieldErrors).map(([key, val]) => [
 						key,
 						val?.[0] || 'This field is required'
 					])
@@ -124,61 +116,42 @@
 				return;
 			}
 
-			const res = await fetch(`/api/server/tenants/settings/${tenantId}/Consent`, {
+			const consentRes = await fetch(`/api/server/tenants/settings/${tenantId}/Consent`, {
 				method: 'PUT',
 				body: JSON.stringify(consentSettingModel),
 				headers: { 'content-type': 'application/json' }
 			});
-			const response = await res.json();
-			if (response.HttpCode === 201 || response.HttpCode === 200) {
-				toastMessage(response);
-				// edit = true;
-				// return;
+
+			const consentJson = await consentRes.json();
+			if (consentJson.HttpCode === 200 || consentJson.HttpCode === 201) {
+				isConsentSaved = true;
+			} else if (consentJson.Errors) {
+				errors = consentJson.Errors;
+				addToast({ message: 'Consent settings failed.', type: 'error', timeout: 3000 });
+				return;
 			}
-			if (response.Errors) {
-				errors = response?.Errors || {};
+
+			// ----------------------------- FAVICON UPLOAD -----------------------------
+			if (formData.has('file')) {
+				const fileRes = await fetch(`/api/server/tenants/upload`, {
+					method: 'POST',
+					body: formData
+				});
+
+				const fileJson = await fileRes.json();
+
+				if (fileJson.HttpCode === 200 || fileJson.HttpCode === 201) {
+					faviconUrl = fileJson.Data.FileResources[0].Url;
+					isFaviconUploaded = true;
+				} else {
+					addToast({ message: 'Favicon upload failed.', type: 'error', timeout: 3000 });
+					return;
+				}
 			} else {
-				toastMessage(response);
+				isFaviconUploaded = true; // no file, but treat as passed
 			}
-		} catch (error) {
-			toastMessage();
-		}
 
-		// console.log('faviconUrl', faviconUrl);
-
-		// if (formData.has('file')) {
-		// 	const res = await fetch(`/api/server/tenants/upload`, {
-		// 		method: 'POST',
-		// 		body: formData
-		// 	});
-		// 	const response = await res.json();
-		// 	// const uploadFileData = uploadFile(event);
-		// 	faviconUrl = response.Data.FileResources[0].Url;
-		// // 	try {
-		// // 		const res = await fetch(`/api/server/tenants/upload`, {
-		// // 			method: 'POST',
-		// // 			body: formData
-		// // 		});
-		// // 		const response = await res.json();
-
-		// // 		console.log('response from api endpoint', response);
-		// // 		if (response.HttpCode === 201 || response.HttpCode === 200) {
-		// // 			toastMessage(response);
-		// // 			// edit = true;
-		// // 			// return;
-		// // 		}
-		// // 		if (response.Errors) {
-		// // 			errors = response?.Errors || {};
-		// // 		} else {
-		// // 			toastMessage(response);
-		// // 		}
-		// // 	} catch (error) {
-		// // 		toastMessage();
-		// // 	}
-		// }
-
-		try {
-			errors = {};
+			// ----------------------------- CHATBOT SETTINGS -----------------------------
 			const chatbotCreateModel: ChatBotSettings = {
 				Name: chatBotSetting.ChatBot.Name,
 				Description: chatBotSetting.ChatBot.Description,
@@ -210,10 +183,10 @@
 				Emojis: chatBotSetting.ChatBot.Emojis
 			};
 
-			const validationResult = ChatBotSettingsSchema.safeParse(chatbotCreateModel);
-			if (!validationResult.success) {
+			const chatBotValidation = ChatBotSettingsSchema.safeParse(chatbotCreateModel);
+			if (!chatBotValidation.success) {
 				errors = Object.fromEntries(
-					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+					Object.entries(chatBotValidation.error.flatten().fieldErrors).map(([key, val]) => [
 						key,
 						val?.[0] || 'This field is required'
 					])
@@ -221,61 +194,71 @@
 				return;
 			}
 
-			const res = await fetch(`/api/server/tenants/settings/${tenantId}/ChatBot`, {
+			const chatBotRes = await fetch(`/api/server/tenants/settings/${tenantId}/ChatBot`, {
 				method: 'PUT',
 				body: JSON.stringify(chatbotCreateModel),
 				headers: { 'content-type': 'application/json' }
 			});
-			const response = await res.json();
-			if (response.HttpCode === 201 || response.HttpCode === 200) {
-				toastMessage(response);
-				edit = true;
+
+			const chatBotJson = await chatBotRes.json();
+			if (chatBotJson.HttpCode === 200 || chatBotJson.HttpCode === 201) {
+				isChatBotSaved = true;
+			} else if (chatBotJson.Errors) {
+				errors = chatBotJson.Errors;
+				addToast({ message: 'ChatBot settings failed.', type: 'error', timeout: 3000 });
 				return;
 			}
-			if (response.Errors) {
-				errors = response?.Errors || {};
-			} else {
-				toastMessage(response);
+
+			// ----------------------------- FINAL TOAST -----------------------------
+			if (isConsentSaved && isFaviconUploaded && isChatBotSaved) {
+				console.log('All settings saved successfully.');
+				//
+				toastMessage(chatBotJson);
+				edit = true;
 			}
-		} catch (error) {
-			toastMessage();
+		} catch (err) {
+			console.error('Submit Error:', err);
+			addToast({ message: 'Unexpected error occurred.', type: 'error', timeout: 3000 });
 		}
 	};
+
 	const iconPaths = {
 		MessageChannels: '/tenant-setting/chatbot/message_channel.svg#icon',
 		SupportChannels: '/tenant-setting/chatbot/support_channel.svg#icon'
 	};
 
-	let chatBotSettings: {
+	const chatBotSettings = {
 		MessageChannels: {
 			WhatsApp: {
-				Name: 'Whats App';
-				IconPath: '/tenant-setting/chatbot/whatsapp.svg#icon';
-			};
+				Name: 'Whats App',
+				IconPath: 'ic:twotone-whatsapp'
+			},
 			Telegram: {
-				Name: 'Telegram';
-				IconPath: '/tenant-setting/chatbot/telegram.svg#icon';
-			};
-		};
+				Name: 'Telegram',
+				IconPath: 'iconoir:telegram'
+			}
+		},
 		SupportChannels: {
 			ClickUp: {
-				Name: 'Click Up';
-				IconPath: '/tenant-setting/chatbot/clickup.svg#icon';
-			};
+				Name: 'Click Up',
+				IconPath: 'lineicons:clickup'
+			},
 			Slack: {
-				Name: 'Slack';
-				IconPath: '/tenant-setting/chatbot/slack.svg#icon';
-			};
+				Name: 'Slack',
+				IconPath: 'basil:slack-outline'
+			},
 			Email: {
-				Name: 'Email';
-				IconPath: '/tenant-setting/chatbot/email.svg#icon';
-			};
-		};
-	};
+				Name: 'Email',
+				IconPath: 'line-md:email'
+			}
+		}
+	} as const;
 
-	function getSettingMeta(group: string, key: string) {
+	function getSettingMeta(group: keyof typeof chatBotSettings, key: string) {
+		const setting = chatBotSettings?.[group]?.[key];
+
 		return (
-			chatBotSettings?.[group]?.[key] || {
+			setting || {
 				Name: key,
 				IconPath: '',
 				InfoText: key
@@ -290,43 +273,6 @@
 
 		previousConsent = chatBotSetting.ChatBot.Consent;
 	});
-
-	function onCloseModal() {
-		showCancelModel = false;
-	}
-
-	// const upload = async (imgBase64, file) => {
-	// 	const data = {};
-	// 	console.log(imgBase64);
-
-	// 	// const imgData = imgBase64.split(',');
-	// 	// data['image'] = imgData[1];
-
-	// 	if (!file) return;
-
-	// 	const formData = new FormData();
-	// 	formData.append('file', file);
-
-	// 	const res = await fetch(`/api/server/tenants/upload`, {
-	// 		method: 'POST',
-	// 		body: formData
-	// 	});
-
-	// 	const response = await res.json();
-	// 	console.log('response from api endpoint', response);
-
-	// 	if (response.Status === 'success' && response.HttpCode === 201) {
-	// 		return { success: true, resourceId: response.Data?.id, response };
-	// 	}
-	// 	if (response.Errors) {
-	// 		errors = response?.Errors || {};
-	// 		// showMessage(response.Message, 'error');
-	// 		return response;
-	// 	} else {
-	// 		// showMessage(response.Message, 'error');
-	// 		return { success: false, error: response.Message };
-	// 	}
-	// };
 
 	const formData = new FormData();
 </script>
@@ -369,7 +315,7 @@
 						{edit}
 						{iconPaths}
 						{getSettingMeta}
-						{showCancelModel}
+						bind:showCancelModel
 						{onFileSelected}
 					/>
 				</div>
