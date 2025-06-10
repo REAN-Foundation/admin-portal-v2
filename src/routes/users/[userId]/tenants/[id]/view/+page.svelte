@@ -7,7 +7,7 @@
 	//////////////////////////////////////////////////////////////////////////
 
 	const userId = page.params.userId;
-	const tenantId = page.params.tenantId;
+	const tenantId = page.params.id;
 	const editRoute = `/users/${userId}/tenants/${tenantId}/edit`;
 	const viewRoute = `/users/${userId}/tenants/${tenantId}/view`;
 	const tenantRoute = `/users/${userId}/tenants`;
@@ -35,54 +35,53 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-<!-- 
-<div class="flex w-full flex-wrap justify-end gap-2">
-	<a href={settingsRoute} class="btn variant-filled-secondary">
-		<span>Setting</span>
-	</a>
-	<a href={editRoute} class="btn variant-filled-secondary">
-		<Icon icon="material-symbols:edit-outline" />
-		<span>Edit</span>
-	</a>
-</div> -->
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<table class="table-c">
-				<thead>
-					<tr>
-						<th>View Tenant</th>
-						<th class="text-end">
-							<a href={tenantRoute} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded" class="" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Name</td>
-						<td>{name}</td>
-					</tr>
-					<tr>
-						<td>Description</td>
-						<td>{description}</td>
-					</tr>
-					<tr>
-						<td>Code</td>
-						<td>{code}</td>
-					</tr>
-					<tr>
-						<td>Contact Number</td>
-						<td>{phone}</td>
-					</tr>
-					<tr>
-						<td>Email</td>
-						<td>{email}</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<h2 class="form-titles">View Tenant</h2>
+		<a href={tenantRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
+		</a>
+	</div>
+
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<td class="table-label">Name</td>
+				<td class="table-data">{name}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Description</td>
+				<td class="table-data">{description}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Code</td>
+				<td class="table-data">{code}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Contact Number</td>
+				<td class="table-data">{phone}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Email</td>
+				<td class="table-data">{email}</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div class="btn-container">
+		<!-- <a
+		href={settingsRoute}
+		class="edit-btn variant-filled-secondary hover:!variant-soft-secondary text-[var(--color-info)]"
+	>
+		<span>Setting</span>
+	</a> -->
+		<a
+			href={editRoute}
+			class="edit-btn variant-filled-secondary hover:!variant-soft-secondary text-[var(--color-info)]"
+		>
+			<Icon icon="material-symbols:edit-outline" />
+			<span>Edit</span>
+		</a>
 	</div>
 </div>
