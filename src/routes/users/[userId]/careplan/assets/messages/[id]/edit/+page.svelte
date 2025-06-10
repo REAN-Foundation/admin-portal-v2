@@ -190,7 +190,7 @@
 							type="text"
 							bind:value={templateName}
 							name="templateName"
-							placeholder="Enter Template Name..."
+							placeholder="Enter template name..."
 							class="input {errors?.TemplateName ? 'input-text-error' : ''}"
 						/>
 						{#if errors?.TemplateName}
@@ -200,20 +200,19 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label align-top">Template Variables</td>
+					<td class="table-label">Template Variables</td>
 					<td class="table-data">
-						<textarea
-							name="templateVariablesText"
-							class="input resize-none {errors?.TemplateVariables ? 'input-text-error' : ''}"
-							bind:value={templateVariablesText}
-							placeholder="Enter Template Variables here..."
+					<textarea
+						name="templateVariablesText"
+						class="input resize-none {errors?.TemplateVariables ? 'border-error-300' : 'border-primary-200'}"
+						bind:value={templateVariablesText}
+						placeholder="Enter template variables here..."
 						></textarea>
-						{#if errors?.TemplateVariables}
-							<p class="error-text">{errors?.TemplateVariables}</p>
-						{/if}
+							{#if errors?.TemplateVariables}
+							<p class="error-text">{errors.TemplateVariables}</p>
+							{/if}
 					</td>
 				</tr>
-
 				<tr class="tables-row">
 					<td class="table-label">URL</td>
 					<td class="table-data">
@@ -221,7 +220,7 @@
 							type="url"
 							name="url"
 							bind:value={pathUrl}
-							placeholder="Enter URL here..."
+							placeholder="Enter url here..."
 							class="input {errors?.Url ? 'input-text-error' : ''}"
 						/>
 						{#if errors?.Url}
