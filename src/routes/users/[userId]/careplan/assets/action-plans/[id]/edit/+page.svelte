@@ -9,6 +9,7 @@
 	import { createOrUpdateSchema } from '$lib/validation/action.plan.schema';
 	import InputChips from '$lib/components/input-chips.svelte';
 	import Button from '$lib/components/button/button.svelte';
+	import Input from '$lib/components/input/input.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -123,16 +124,13 @@
 				<tr class="tables-row">
 					<td class="table-label">Name <span class="important-field">*</span></td>
 					<td class="table-data">
-						<input
-							type="text"
-							class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+						<Input
 							name="name"
+							type="text"
 							placeholder="Enter name here..."
 							bind:value={name}
+							error={errors?.Name}
 						/>
-						{#if errors?.Name}
-							<p class="error-text">{errors?.Name}</p>
-						{/if}
 					</td>
 				</tr>
 
@@ -164,12 +162,12 @@
 				<tr class="tables-row">
 					<td class="table-label">Version</td>
 					<td class="table-data">
-						<input
-							type="text"
-							class="input {form?.errors?.Version ? 'input-text-error' : ''}"
+						<Input
 							name="version"
+							type="text"
 							placeholder="V 1.0"
 							bind:value={version}
+							error={errors?.Version}
 						/>
 						{#if errors?.Version}
 							<p class="error-text">{errors?.Version}</p>

@@ -8,6 +8,7 @@
 	import type { ActionPlanCreateModel } from '$lib/types/action.plan.js';
 	import { createOrUpdateSchema } from '$lib/validation/action.plan.schema.js';
 	import Button from '$lib/components/button/button.svelte';
+	import Input from '$lib/components/input/input.svelte';
 
 	////////////////////////////////////////////////////////////////////////////
 	let { data, form } = $props();
@@ -107,16 +108,13 @@
 				<tr class="tables-row">
 					<td class="table-label">Name <span class="important-field">*</span></td>
 					<td class="table-data">
-						<input
-							type="text"
-							class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+						<Input
 							name="name"
+							type="text"
 							placeholder="Enter name here..."
 							bind:value={name}
+							error={errors?.Name}
 						/>
-						{#if errors?.Name}
-							<p class="error-text">{errors?.Name}</p>
-						{/if}
 					</td>
 				</tr>
 
@@ -143,23 +141,20 @@
 							id="keywords"
 							keywordsChanged={onUpdateKeywords}
 						/>
-						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<Input type="hidden" name="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>
 
 				<tr class="tables-row">
 					<td class="table-label">Version</td>
 					<td class="table-data">
-						<input
-							type="text"
-							class="input {form?.errors?.Version ? 'input-text-error' : ''}"
+						<Input
 							name="version"
+							type="text"
 							placeholder="V 1.0"
 							bind:value={version}
+							error={errors?.Version}
 						/>
-						{#if errors?.Version}
-							<p class="error-text">{errors?.Version}</p>
-						{/if}
 					</td>
 				</tr>
 			</tbody>
