@@ -9,6 +9,7 @@
 	import { createOrUpdateSchema } from '$lib/validation/action.plan.schema.js';
 	import Button from '$lib/components/button/button.svelte';
 	import Input from '$lib/components/input/input.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
 
 	////////////////////////////////////////////////////////////////////////////
 	let { data, form } = $props();
@@ -121,14 +122,12 @@
 				<tr class="tables-row">
 					<td class=" table-label">Description</td>
 					<td class="table-data">
-						<textarea
+						<Textarea
 							name="description"
-							class="input resize-none {errors?.Description
-								? 'border-error-300'
-								: 'border-primary-200'}"
-							bind:value={description}
 							placeholder="Enter description here..."
-						></textarea>
+							bind:value={description}
+							error={errors?.Description}
+						/>
 					</td>
 				</tr>
 
