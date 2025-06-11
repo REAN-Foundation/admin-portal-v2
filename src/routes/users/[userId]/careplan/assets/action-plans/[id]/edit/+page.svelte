@@ -11,6 +11,7 @@
 	import Button from '$lib/components/button/button.svelte';
 	import Input from '$lib/components/input/input.svelte';
 	import Textarea from '$lib/components/textarea/textarea.svelte';
+	import Label from '$lib/components/label/label.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -118,12 +119,12 @@
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
-					<td class="table-label">Asset Code</td>
+					<Label text="Asset Code" />
 					<td class="table-data">{assetCode}</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Name <span class="important-field">*</span></td>
+					<Label text="Name" required={true} />
 					<td class="table-data">
 						<Input
 							name="name"
@@ -136,7 +137,7 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Description</td>
+					<Label text="Description" />
 					<td class="table-data">
 						<Textarea
 							name="description"
@@ -148,7 +149,7 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Tags</td>
+					<Label text="Tags" />
 					<td class="table-data">
 						<InputChips
 							bind:keywords
@@ -161,7 +162,7 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Version</td>
+					<Label text="Version" />
 					<td class="table-data">
 						<Input
 							name="version"
