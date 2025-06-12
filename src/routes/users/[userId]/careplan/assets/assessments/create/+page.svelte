@@ -8,8 +8,9 @@
 	import type { AssessmentCreateModel } from '$lib/types/assessments.type.js';
 	import { createOrUpdateSchema } from '$lib/validation/assessments.schema.js';
 
-	let { data, form } = $props();
+	/////////////////////////////////////////////////////////////////////////////////////
 
+	let { data, form } = $props();
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let name = $state('');
@@ -19,10 +20,13 @@
 	let version = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
+	let assessmentTemplates = $state([]);
+
+	console.log('assessmentTemplates', assessmentTemplates);
 
 	data.title = 'Create Assessment';
 	const userId = page.params.userId;
-	const tenantId = data.sessionUser.tenantId;
+	const tenantId = data?.sessionUser?.tenantId;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/assessments/create`;
@@ -37,6 +41,8 @@
 		try {
 			event.preventDefault();
 			errors = {};
+			console.log("Version:", version);
+			console.log("TenantId:", tenantId);
 
 			const assessmentCreateModel: AssessmentCreateModel = {
 				Name: name,
@@ -59,7 +65,9 @@
 				);
 				return;
 			}
-			console.log(assessmentCreateModel);
+			// console.log(assessmentCreateModel);
+			console.log('Payload:', JSON.stringify(assessmentCreateModel, null, 2));
+			console.log('TenantId:', tenantId); 
 			const res = await fetch(`/api/server/careplan/assets/assessments`, {
 				method: 'POST',
 				body: JSON.stringify(assessmentCreateModel),
@@ -144,23 +152,25 @@
 						{/if}
 					</td>
 				</tr>
-
 				<tr class="tables-row">
-					<td class="table-label">Reference Template Code <span class="important-field">*</span></td>
-					<td class="table-data">
-						<input
-							type="text"
-							bind:value={referenceTemplateCode}
-							placeholder="Enter template code..."
-							class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
-						/>
-						{#if errors?.ReferenceTemplateCode}
-							<p class="error-text">{errors?.ReferenceTemplateCode}</p>
-						{/if}
-					</td>
-				</tr>
+	<td class="table-label">Reference Template Code <span class="important-field">*</span></td>
+	<td class="table-data">
+		<select
+			bind:value={referenceTemplateCode}
+			class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
+		>
+			<option disabled selected value="">Select reference template here...</option>
+			{#each assessmentTemplates as template}
+				<option value={template.DisplayCode}>{template.Title}</option>
+			{/each}
+		</select>
+		{#if errors?.ReferenceTemplateCode}
+			<p class="error-text">{errors?.ReferenceTemplateCode}</p>
+		{/if}
+	</td>
+</tr>
 
-				<tr class="tables-row">
+<tr class="tables-row">
 					<td class="table-label">Tags</td>
 					<td class="table-data">
 						<InputChips
