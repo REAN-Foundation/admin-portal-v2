@@ -20,8 +20,6 @@
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
 	let isDeleting = $state(false);
-	// let searchKeyword = $state(undefined);
-
 	let debounceTimeout;
 	let searchKeyword = $state(undefined);
 	let promise = $state();
@@ -51,8 +49,6 @@
 		size: totalTenantsCount,
 		amounts: [10, 20, 30, 50]
 	});
-
-	// $inspect('retrivedTenants', tenants);
 
 	async function searchTenants(filters) {
 	try {
@@ -120,23 +116,6 @@ function onSearchInput(e, field: 'name' | 'code') {
 		}, 400);
 	}
 
-
-	// $effect(() => {
-	// 	searchTenants({
-	// 		name: nameSearch,
-	// 		code: codeSearch,
-	// 		itemsPerPage: paginationSettings.limit,
-	// 		pageIndex: paginationSettings.page,
-	// 		sortBy,
-	// 		sortOrder
-	// 	});
-
-	// 	if (isDeleting) {
-	// 		retrivedTenants;
-	// 		isDeleting = false;
-	// 	}
-	// });
-
 	function sortTable(columnName) {
 		isSortingName = false;
 		isSortingCode = false;
@@ -165,7 +144,7 @@ function onSearchInput(e, field: 'name' | 'code') {
 	};
 
 	function onItemsPerPageChange() {
-		paginationSettings.page = 0; // reset to first page
+		paginationSettings.page = 0; 
 		searchTenants({
 				name: nameSearch,
 				code: codeSearch,
@@ -233,11 +212,6 @@ function onSearchInput(e, field: 'name' | 'code') {
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
 						/>
-						<!-- {#if nameSearch}
-							<button type="button" onclick={() => (nameSearch = '')} class="close-btn">
-								<Icon icon="material-symbols:close" />
-							</button>
-						{/if} -->
 					</div>
 
 					<div class="relative flex-1 pr-1.5">
@@ -252,11 +226,6 @@ function onSearchInput(e, field: 'name' | 'code') {
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
 						/>
-						<!-- {#if codeSearch}
-							<button type="button" onclick={() => (codeSearch = '')} class="close-btn">
-								<Icon icon="material-symbols:close" />
-							</button>
-						{/if} -->
 					</div>
 
 					<button class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
@@ -278,7 +247,6 @@ function onSearchInput(e, field: 'name' | 'code') {
 											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
 										{/if}
 									{/if}
-									<!-- Name {isSortingName ? (sortOrder === 'ascending' ? '▲' : '▼') : ''} -->
 								</button>
 							</th>
 							<th class="text-start">
@@ -290,7 +258,6 @@ function onSearchInput(e, field: 'name' | 'code') {
 											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
 										{/if}
 									{/if}
-									<!-- Code {isSortingCode ? (sortOrder === 'ascending' ? '▲' : '▼') : ''} -->
 								</button>
 							</th>
 							<th data-sort="Phone">Contact Number</th>
