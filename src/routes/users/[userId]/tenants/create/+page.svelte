@@ -20,7 +20,7 @@
 	let email = $state(undefined);
 	let promise = $state();
 
-	// data.title = 'Tenants Create';
+	data.title = 'Tenants Create';
 	const userId = page.params.userId;
 	const createRoute = `/users/${userId}/tenants/create`;
 	const tenantRoute = `/users/${userId}/tenants`;

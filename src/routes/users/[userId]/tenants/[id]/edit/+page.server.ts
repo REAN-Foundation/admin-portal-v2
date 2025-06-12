@@ -1,10 +1,10 @@
-import { type RequestEvent } from '@sveltejs/kit';
+import { type ServerLoadEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getTenantById } from '../../../../../api/services/reancare/tenants';
 
 /////////////////////////////////////////////////////////////////////////
 
-export const load: PageServerLoad = async (event: RequestEvent) => {
+export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
 	const tenantId = event.params.id;
 	const response = await getTenantById(sessionId, tenantId);

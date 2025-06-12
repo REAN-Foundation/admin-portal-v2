@@ -4,7 +4,6 @@
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-	import { invalidate } from '$app/navigation';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
@@ -14,13 +13,13 @@
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	let { data }: { data: PageServerData } = $props();
 
+	let debounceTimeout;
 	let isLoading = $state(false);
 	let tenants = $state(data.tenants.Items);
 	let retrivedTenants = $derived(tenants);
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
 	let isDeleting = $state(false);
-	let debounceTimeout;
 	let searchKeyword = $state(undefined);
 	let promise = $state();
 
@@ -50,31 +49,22 @@
 		amounts: [10, 20, 30, 50]
 	});
 
-	async function searchTenants(filters) {
-	try {
-		if (filters.name || filters.code) {
-			paginationSettings.page = 0;
-		}
+	$inspect('retrivedTenant, tenants');
 
+	async function searchTenants(model) {
+	try {
 		let url = `/api/server/tenants/search?`;
-		url += `sortOrder=${filters.sortOrder ?? sortOrder}`;
-		url += `&sortBy=${filters.sortBy ?? sortBy}`;
-		url += `&itemsPerPage=${filters.itemsPerPage ?? paginationSettings.limit}`;
-		url += `&pageIndex=${filters.pageIndex ?? paginationSettings.page}`;
-		if (filters.name) url += `&name=${filters.name}`;
-		if (filters.code) url += `&code=${filters.code}`;
+		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+		url += `&sortBy=${model.sortBy ?? sortBy}`;
+		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+		if (model.name) url += `&name=${model.name}`;
+		if (model.code) url += `&code=${model.code}`;
 
 		const res = await fetch(url, {
 			method: 'GET',
 			headers: { 'content-type': 'application/json' }
 		});
-
-		if (!res.ok) {
-			console.error(`Search failed with status ${res.status}`);
-			const errorText = await res.text();
-			console.error('Error body:', errorText);
-			throw new Error(`Search failed: ${res.status}`);
-		}
 
 		const searchResult = await res.json();
 		console.log('searchResult', searchResult);
@@ -87,7 +77,7 @@
 			index: index + 1
 		}));
 
-		searchKeyword = filters.name;
+		searchKeyword = model.name;
 	} catch (err) {
 		console.error('Search failed:', err);
 	} finally {
@@ -95,13 +85,11 @@
 	}
 }
 
-function onSearchInput(e, field: 'name' | 'code') {
+	function onSearchInput(e, field: 'name' | 'code') {
 		clearTimeout(debounceTimeout);
-		const keyword = e.target.value;
-
+		let keyword = e.target.value;
 		debounceTimeout = setTimeout(() => {
 			paginationSettings.page = 0;
-
 			if (field === 'name') nameSearch = keyword;
 			if (field === 'code') codeSearch = keyword;
 
