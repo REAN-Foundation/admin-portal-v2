@@ -73,6 +73,7 @@
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
+			errors={}
 
 			const formSettingUpdateModel: FormsSettings = {
 				Integrations: formSetting.Forms.Integrations,

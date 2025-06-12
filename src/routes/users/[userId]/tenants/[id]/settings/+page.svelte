@@ -50,28 +50,31 @@
 		// }
 	};
 	const handleSubmit = async (event: Event) => {
+		console.log("I am in submiot")
 		event.preventDefault();
 		try {
 			errors = {};
 
-			if (setttings.UserInterfaces.ChatBot === false) {
-				Object.keys(setttings.ChatBot).forEach((key) => {
-					setttings.ChatBot[key] = false;
-				});
-			}
+			console.log("This is setttings", setttings);
+			// if (setttings.UserInterfaces.ChatBot === false) {
+			// 	Object.keys(setttings.ChatBot).forEach((key) => {
+			// 		setttings.ChatBot[key] = false;
+			// 	});
+			// }
 
-			if (setttings.UserInterfaces.Forms === false) {
-				Object.keys(setttings.Forms).forEach((key) => {
-					setttings.Forms[key] = false;
-				});
-			}
+			// if (setttings.UserInterfaces.Forms === false) {
+			// 	Object.keys(setttings.Forms).forEach((key) => {
+			// 		setttings.Forms[key] = false;
+			// 	});
+			// }
 
-			if (setttings.UserInterfaces.Followup === false) {
-				setttings.Followup.Source = 'None';
-			}
+			// if (setttings.UserInterfaces.Followup === false) {
+			// 	setttings.Followup.Source = 'None';
+			// }
 
+			console.log("This is setttings", setttings);
 			const validationResult = UserInterfacesSchema.safeParse(setttings);
-
+			console.log("This is validation result", validationResult)
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -99,6 +102,7 @@
 				toastMessage(response);
 			}
 		} catch (error) {
+			console.error('Error submitting form:', error);
 			toastMessage();
 		}
 	};
