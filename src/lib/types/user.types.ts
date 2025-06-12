@@ -19,3 +19,9 @@ export interface UserUpdateModel {
 	SelectedUserRoleId: string;
 
 }
+
+export interface ChangePasswordModel {
+	OldPassword: string;
+	NewPassword: string;
+	ConfirmNewPassword: string;
+}
