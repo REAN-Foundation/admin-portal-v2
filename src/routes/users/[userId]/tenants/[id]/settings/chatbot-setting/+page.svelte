@@ -2,8 +2,6 @@
 	import { page } from '$app/state';
 	import Icon from '@iconify/svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
-	import Icons from '$lib/components/icons.svelte';
-	import InfoIcon from '$lib/components/infoIcon.svelte';
 	import {
 		ChatBotSettingsSchema,
 		ConsentSettingsSchema
@@ -14,51 +12,58 @@
 		FaviconUploadModel
 	} from '$lib/types/tenant.settings.types.js';
 	import ConsentModel from '$routes/users/[userId]/tenants/[id]/settings/chatbot-setting/consent.modal.svelte';
-	import { languages } from '$lib/utils/language.js';
 	import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema.js';
-	import type { ProfileFileUploadModel } from '$lib/types/profile.types.js';
 	import Progressive from './progressive.update.svelte';
 
 	///////////////////////////////////////////////////////////////////////
 
 	let { data, form } = $props();
 
-	$inspect('data', data);
-	let errors: Record<string, string> = $state({});
-	let chatBotSetting = $state({
-		ChatBot: data.chatbotSettings
-	});
-	// let consentSetting = $state({
-	// 	Consent: data.chatbotSettings
-	// });
-
-	let consentSetting: ConsentSettings = $state(data.consentSettings);
-	let showCancelModel = $state(false);
-
-	$inspect('Updatd consent from page', consentSetting);
-
-	let promise = $state();
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
 	const tenantCode = $state(data.tenantCode);
 	const tenantName = $state(data.tenantName);
 	const tenantRoute = `/users/${userId}/tenants`;
+	const formData = new FormData();
+	let errors: Record<string, string> = $state({});
+	let promise = $state();
+	let chatBotSetting = $state({
+		ChatBot: data.chatbotSettings
+	});
+	let consentSetting: ConsentSettings = $state(data.consentSettings || {});
+	let showCancelModel = $state(false);
 
 	let previousConsent = $derived(chatBotSetting.ChatBot.Consent);
-
-	// $inspect('chatbot setting', chatBotSetting);
 	let faviconUrl = $derived(chatBotSetting.ChatBot.Favicon);
-	let fileName = $state(undefined);
-	let selectFile = $state(undefined);
+	let disabled = $state(data.commonSettings.UserInterfaces.ChatBot);
+	let edit = $state(false);
 
-	let openTab: string | null = $state(null);
-
-	function toggleTab(tab: string) {
-		openTab = openTab === tab ? null : tab;
-	}
-
-	let disabled = $state(true);
-	let edit = $derived(disabled);
+	const toggleEdit = async () => {
+		if (disabled) {
+			if (edit) {
+				addToast({
+					message: 'Settings saved successfully',
+					type: 'success',
+					timeout: 3000
+				});
+				edit = false;
+			} else {
+				edit = true;
+				addToast({
+					message: 'Edit mode enabled',
+					type: 'info',
+					timeout: 3000
+				});
+			}
+		} else if (disabled === false) {
+			addToast({
+				message: 'This setting is disabled. Please update it from the main settings.',
+				type: 'warning',
+				timeout: 3000
+			});
+			return;
+		}
+	};
 
 	const onFileSelected = async (e) => {
 		const input = e.target as HTMLInputElement;
@@ -71,7 +76,6 @@
 		};
 
 		const fileValidationResult = imageUploadSchema.safeParse(fileCreateModel);
-		console.log('validation result of file', fileValidationResult);
 
 		if (!fileValidationResult.success) {
 			errors = Object.fromEntries(
@@ -273,8 +277,6 @@
 
 		previousConsent = chatBotSetting.ChatBot.Consent;
 	});
-
-	const formData = new FormData();
 </script>
 
 <ConsentModel
@@ -296,19 +298,17 @@
 						<button
 							type="button"
 							class="table-btn variant-filled-secondary gap-1"
-							onclick={() => {
-								disabled = !disabled;
-								edit = disabled;
-							}}
+							onclick={toggleEdit}
 						>
 							<Icon icon="material-symbols:edit-outline" />
-							<span>Edit</span>
+							<span>{edit ? 'Save' : 'Edit'}</span>
 						</button>
 						<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
 							<Icon icon="material-symbols:close-rounded" class=" h-5" />
 						</a>
 					</div>
 				</div>
+
 				<div>
 					<Progressive
 						bind:chatBotSetting

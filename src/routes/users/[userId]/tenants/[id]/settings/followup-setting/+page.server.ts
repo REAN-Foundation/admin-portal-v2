@@ -1,37 +1,41 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getTenantSettingsByType } from '../../../../../../api/services/reancare/tenant-settings';
+import { getTenantSettingsByType } from '$routes/api/services/reancare/tenant-settings';
 
 ////////////////////////////////////////////////////////////////////////////
 
 export const load: PageServerLoad = async (event: RequestEvent) => {
     const sessionId = event.cookies.get('sessionId') as string;
+    const tenantId = event.locals?.sessionUser?.tenantId;
     let settings = undefined;
+    let commonSettings = undefined;
+
     try {
-        console.log('Event-',event)
-        const tenantId = event.locals?.sessionUser?.tenantId;
-        // const response = await getTenantSettings(sessionId, tenantId);
-        const response = await getTenantSettingsByType(sessionId, tenantId,'Followup');
 
-        // console.log("response of setting", response);
-        
-
+        const response = await getTenantSettingsByType(sessionId, tenantId, 'Followup');
         if (response.Status === 'failure' || response.HttpCode !== 200) {
             throw error(response.HttpCode, response.Message);
         }
-
         if (response.Data.TenantSettings) {
             settings = response.Data.TenantSettings;
         }
 
-        console.log('response=',JSON.stringify(settings,null,2));
-    
+        const commonSettingResponse = await getTenantSettingsByType(sessionId, tenantId, 'Common');
+        if (commonSettingResponse.Status === 'failure' || commonSettingResponse.HttpCode !== 200) {
+            throw error(commonSettingResponse.HttpCode, commonSettingResponse.Message);
+        }
+        if (commonSettingResponse.Data.TenantSettings) {
+            commonSettings = commonSettingResponse.Data.TenantSettings;
+        }
+
         return {
             sessionId,
             tenantId,
-            settings
+            settings,
+            commonSettings
         };
+
     } catch (error) {
         console.error(`Error retriving tenant settings: ${error.message}`);
     }

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Icon from "@iconify/svelte";
+	import Icon from '@iconify/svelte';
 
 	let { model = $bindable() } = $props();
 
@@ -27,16 +27,16 @@
 
 <div class="my-2 flex gap-2">
 	<input
-	type="text"
-	placeholder="Key"
-	class="w-1/2 rounded border p-2 text-sm"
-	bind:value={newParamKey}
+		type="text"
+		placeholder="Key"
+		class="w-1/2 rounded border p-2 text-sm"
+		bind:value={newParamKey}
 	/>
 	<input
-	type="text"
-	placeholder="Value"
-	class="w-1/2 rounded border p-2 text-sm"
-	bind:value={newParamValue}
+		type="text"
+		placeholder="Value"
+		class="w-1/2 rounded border p-2 text-sm"
+		bind:value={newParamValue}
 	/>
 </div>
 <button type="button" class="table-btn variant-filled-secondary gap-1" onclick={addQueryParam}>
@@ -48,9 +48,8 @@
 		<div class="mb-1 flex items-center justify-between rounded bg-gray-50 px-2 py-1 text-sm">
 			<span class="truncate">{key}: {value}</span>
 			<button class="health-system-btn !text-red-600" onclick={() => removeQueryParam(key)}>
-				<Icon icon="material-symbols:delete-outline-rounded" height=15 width=15 />
+				<Icon icon="material-symbols:delete-outline-rounded" height="15" width="15" />
 			</button>
 		</div>
 	{/each}
 {/if}
-

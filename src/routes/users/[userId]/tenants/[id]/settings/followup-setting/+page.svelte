@@ -1,35 +1,83 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import FollowUpSettings from '$lib/components/follow-up-settings.svelte';
-	import ReminderScheduleForm from '$lib/components/reminder-schedule-form.svelte';
-	import ReminderScheduleList from '$lib/components/reminder-schedule-list.svelte';
-	import { toastMessage } from '$lib/components/toast/toast.store.js';
+	import { addToast, toastMessage } from '$lib/components/toast/toast.store.js';
 	import type { ReminderTrigger } from '$lib/types/tenant.settings.types.js';
 	import { FollowupSettingsSchema } from '$lib/validation/tenant.settings.schema';
 	import Icon from '@iconify/svelte';
+	import ReminderScheduleList from './reminder-schedule-list.svelte';
+	import ReminderScheduleForm from './reminder-schedule-form.svelte';
+	import FollowUpSettings from './follow-up-settings.svelte';
+	import { goto } from '$app/navigation';
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data, form } = $props();
 
-	let promise = $state();
-	let errors = $state({});
-
-
 	const userId = page.params.userId;
-
 	const tenantId = page.params.id;
 	const tenantRoute = `/users/${userId}/tenants/${tenantId}/settings/followup-setting`;
-	let reminderSchedules: ReminderTrigger[] = $state([]);
+	let promise = $state();
+	let errors: any = $state({});
+	let showReminderModal = $state(false);
+	let newReminder: ReminderTrigger = $state({
+		Type: 'PreviousDay',
+		OffsetValue: undefined,
+		OffsetUnit: 'hours',
+		TimeOfDay: ''
+	});
+	let editingIndex: number | null = null;
+	let openTab: string | null = $state(null);
+	let jsonError = $state('');
+	let disabled = $state(data.commonSettings.UserInterfaces.Followup);
+	$inspect('disabled', disabled);
+	let edit = $state(false);
+
+	const toggleEdit = async () => {
+		if (disabled) {
+			if (edit) {
+				addToast({
+					message: 'Settings saved successfully',
+					type: 'success',
+					timeout: 3000
+				});
+				edit = false;
+			} else {
+				edit = true;
+				addToast({
+					message: 'Edit mode enabled',
+					type: 'info',
+					timeout: 3000
+				});
+			}
+		} else if (disabled === false) {
+			addToast({
+				message: 'This setting is disabled. Please update it from the main settings.',
+				type: 'warning',
+				timeout: 3000
+			});
+			return;
+		}
+	};
+
+	function toggleTab(tab: string) {
+		openTab = openTab === tab ? null : tab;
+	}
+
+	function validateJSON() {
+		try {
+			JSON.parse(followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat);
+			jsonError = '';
+		} catch (error) {
+			jsonError = 'Invalid JSON format';
+		}
+	}
+
 	let followUpSettingUpdateModel = $state({
 		Source: data.settings.Source,
-		// FileUploadSettings:{},
 		FileUploadSettings: {
-			// FileUploadConfig: {
 			FileColumnFormat: data.settings.FileUploadSettings?.FileColumnFormat,
 			FileType: data.settings.FileUploadSettings?.FileType,
 			ReminderSchedule: data.settings.FileUploadSettings?.ReminderSchedule
-			// }
 		},
 		ApiIntegrationSettings: {
 			Auth: {
@@ -65,7 +113,6 @@
 		for (let i = 0; i < path.length - 1; i++) {
 			const key = path[i];
 			if (typeof key === 'number') {
-				// If key is an array index, ensure the array exists
 				if (!Array.isArray(current)) current = [];
 				if (!current[key]) current[key] = {};
 			} else {
@@ -82,28 +129,21 @@
 			errors = {};
 
 			if (followUpSettingUpdateModel.Source === 'Api') {
-				// followUpSettingUpdateModel.ApiIntegrationSettings.ReminderSchedule = reminderSchedules;
 				followUpSettingUpdateModel.FileUploadSettings = undefined;
-			}
-			if (followUpSettingUpdateModel.Source === 'File') {
-				// followUpSettingUpdateModel.FileUploadSettings.ReminderSchedule = reminderSchedules;
+			} else if (followUpSettingUpdateModel.Source === 'File') {
+				followUpSettingUpdateModel.ApiIntegrationSettings = undefined;
+			} else {
+				followUpSettingUpdateModel.FileUploadSettings = undefined;
 				followUpSettingUpdateModel.ApiIntegrationSettings = undefined;
 			}
 
-			console.log('FollowUp Setting UpdateModel:', followUpSettingUpdateModel);
 			const validationResult = FollowupSettingsSchema.safeParse(followUpSettingUpdateModel);
-			console.log('Validation Result:', validationResult);
-			// const validationResult = FollowupSettingsSchema.safeParse(followUpSettingUpdateModel);
+			console.log('This is validation result', validationResult);
 
 			if (!validationResult.success) {
-				// console.log('Raw Zod Errors:', validationResult.error.errors);
-
-				
 				for (const err of validationResult.error.errors) {
 					setNestedError(errors, err.path as string[], err.message);
 				}
-
-				// console.log('Parsed Errors:', errors);
 				return;
 			}
 
@@ -117,7 +157,7 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				// goto(`${labRecordTypesRoute}/${response?.Data?.LabRecordType?.id}/view`);
+				goto(`/users/${userId}/tenants/${tenantId}/settings`);
 				return;
 			}
 
@@ -130,20 +170,6 @@
 			toastMessage();
 		}
 	};
-
-	let disabled = $state(true);
-	let edit = $derived(disabled);
-
-	let showReminderModal = $state(false);
-
-	let newReminder: ReminderTrigger = $state({
-		Type: 'PreviousDay',
-		OffsetValue: undefined,
-		OffsetUnit: 'hours',
-		TimeOfDay: ''
-	});
-
-	let editingIndex: number | null = null;
 
 	const deleteSchedule = (index: number) => {
 		if (followUpSettingUpdateModel.Source === 'Api') {
@@ -167,9 +193,6 @@
 	};
 
 	const addSchedule = () => {
-		console.log('New Reminder:', newReminder);
-
-		// Safety: Ensure ReminderSchedule array is initialized
 		if (followUpSettingUpdateModel.Source === 'Api') {
 			if (!Array.isArray(followUpSettingUpdateModel.ApiIntegrationSettings.ReminderSchedule)) {
 				followUpSettingUpdateModel.ApiIntegrationSettings.ReminderSchedule = [];
@@ -181,7 +204,6 @@
 		}
 
 		if (editingIndex !== null) {
-			// update existing schedule
 			if (followUpSettingUpdateModel.Source === 'Api') {
 				followUpSettingUpdateModel.ApiIntegrationSettings.ReminderSchedule[editingIndex] = {
 					...newReminder
@@ -193,7 +215,6 @@
 			}
 			editingIndex = null;
 		} else {
-			// add new one
 			if (followUpSettingUpdateModel.Source === 'Api') {
 				followUpSettingUpdateModel.ApiIntegrationSettings.ReminderSchedule.push({
 					...newReminder
@@ -205,7 +226,6 @@
 			}
 		}
 
-		// Reset
 		newReminder = {
 			Type: 'PreviousDay',
 			OffsetValue: undefined,
@@ -215,27 +235,10 @@
 
 		showReminderModal = false;
 	};
-
-	let openTab: string | null = $state(null);
-
-	function toggleTab(tab: string) {
-		openTab = openTab === tab ? null : tab;
-	}
-	let jsonInput = $derived(followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat);
-	let jsonError = $state('');
-
-	function validateJSON() {
-		try {
-			JSON.parse(followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat);
-			jsonError = '';
-		} catch (error) {
-			jsonError = 'Invalid JSON format';
-		}
-	}
 </script>
 
 <div class="px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-2">
+	<!-- <div class="flex flex-wrap justify-end gap-2 py-2">
 		<button
 			class="table-btn variant-filled-secondary gap-1"
 			onclick={() => {
@@ -246,10 +249,26 @@
 			<Icon icon="material-symbols:edit-outline" />
 			<span>Edit</span>
 		</button>
-	</div>
+	</div> -->
 	<div class="mx-auto">
 		<div class="health-system-table-container">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+				<div class="flex items-center justify-between p-2">
+					<h1 class=" text-xl">Follow-Up Setting</h1>
+					<div class="flex items-center gap-2 text-end">
+						<button
+							type="button"
+							class="table-btn variant-filled-secondary gap-1"
+							onclick={toggleEdit}
+						>
+							<Icon icon="material-symbols:edit-outline" />
+							<span>{edit ? 'Save' : 'Edit'}</span>
+						</button>
+						<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
+							<Icon icon="material-symbols:close-rounded" class=" h-5" />
+						</a>
+					</div>
+				</div>
 				<table class="health-system-table">
 					<thead>
 						<tr>
@@ -268,19 +287,38 @@
 									<span class="text-sm">Source</span>
 								</label></td
 							>
-							<td>
-								<select
-									bind:value={followUpSettingUpdateModel.Source}
-									class="w-full rounded border p-2 text-sm"
-								>
-									<option value="None" selected>None</option>
-									<option value="File">Files</option>
-									<option value="Api">API</option>
-								</select>
-								{#if errors?.Source}
-									<p class="text-error">{errors?.Source}</p>
-								{/if}
-							</td>
+
+							{#if disabled}
+								<td>
+									<select
+										bind:value=  {followUpSettingUpdateModel.Source}
+										class="w-full rounded border p-2 text-sm"
+										disabled
+									>
+										<option value="None" selected>None</option>
+										<option value="File">Files</option>
+										<option value="Api">API</option>
+									</select>
+									{#if errors?.Source}
+										<p class="text-error">{errors?.Source}</p>
+									{/if}
+								</td>
+							{:else}
+								<td>
+									<select
+										bind:value={followUpSettingUpdateModel.Source}
+										class="w-full rounded border p-2 text-sm"
+										disabled
+									>
+										<option value="None" selected>None</option>
+										<option value="File">Files</option>
+										<option value="Api">API</option>
+									</select>
+									{#if errors?.Source}
+										<p class="text-error">{errors?.Source}</p>
+									{/if}
+								</td>
+							{/if}
 						</tr>
 						{#if followUpSettingUpdateModel.Source === 'File' || followUpSettingUpdateModel.Source === 'Api'}
 							{#if followUpSettingUpdateModel.Source === 'File'}
@@ -291,10 +329,12 @@
 									<td>
 										<textarea
 											cols="30"
+											rows="6"
 											bind:value={followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat}
 											placeholder="File column format in JSON format"
 											class="w-full rounded border p-2 text-sm"
 											oninput={validateJSON}
+											disabled={edit}
 										></textarea>
 
 										{#if jsonError}
@@ -316,6 +356,7 @@
 										<select
 											bind:value={followUpSettingUpdateModel.FileUploadSettings.FileType}
 											class="w-full rounded border p-2 text-sm"
+											disabled={edit}
 										>
 											<option value="" disabled selected>Select file type</option>
 											<option value="csv">CSV</option>
@@ -464,7 +505,9 @@
 												}
 											/>
 											{#if errors?.ApiIntegrationSettings?.Auth?.QueryParams}
-												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.QueryParams}</p>
+												<p class="text-error">
+													{errors?.ApiIntegrationSettings?.Auth?.QueryParams}
+												</p>
 											{/if}
 										</td>
 									</tr>
@@ -521,7 +564,9 @@
 												<option value="xml">XML</option>
 											</select>
 											{#if errors?.ApiIntegrationSettings?.Auth?.ResponseType}
-												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.ResponseType}</p>
+												<p class="text-error">
+													{errors?.ApiIntegrationSettings?.Auth?.ResponseType}
+												</p>
 											{/if}
 										</td>
 									</tr>
@@ -604,7 +649,9 @@
 												}
 											/>
 											{#if errors?.ApiIntegrationSettings?.Fetch?.QueryParams}
-												<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.QueryParams}</p>
+												<p class="text-error">
+													{errors?.ApiIntegrationSettings?.Fetch?.QueryParams}
+												</p>
 											{/if}
 										</td>
 									</tr>
@@ -654,7 +701,9 @@
 												<option value="xml">XML</option>
 											</select>
 											{#if errors?.ApiIntegrationSettings?.Fetch?.ResponseType}
-												<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.ResponseType}</p>
+												<p class="text-error">
+													{errors?.ApiIntegrationSettings?.Fetch?.ResponseType}
+												</p>
 											{/if}
 										</td>
 									</tr>

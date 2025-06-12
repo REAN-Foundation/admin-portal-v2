@@ -1,10 +1,9 @@
 <script lang="ts">
-	import type { PageServerData } from '../$types';
 	import { page } from '$app/state';
 	import Icon from '@iconify/svelte';
 	import Icons from '$lib/components/icons.svelte';
 	import InfoIcon from '$lib/components/infoIcon.svelte';
-	import { toastMessage } from '$lib/components/toast/toast.store';
+	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
 	import type { FormsSettings } from '$lib/types/tenant.settings.types';
 	import { FormsSettingsSchema } from '$lib/validation/tenant.settings.schema';
@@ -12,18 +11,44 @@
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 
-	let { data }: { data: PageServerData } = $props();
-
-	let formSetting = $state({ Forms: data.settings });
+	let { data, form } = $props();
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
 	const tenantRoute = `/users/${userId}/tenants/${tenantId}/settings/forms-setting`;
+	let formSetting = $state({ Forms: data.settings });
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let openTab: string | null = $state(null);
-	let disabled = $state(true);
-	let edit = $derived(disabled);
+	let disabled = $state(data.commonSettings.UserInterfaces.Forms);
+	let edit = $state(false);
+
+	const toggleEdit = async () => {
+		if (disabled) {
+			if (edit) {
+				addToast({
+					message: 'Settings saved successfully',
+					type: 'success',
+					timeout: 3000
+				});
+				edit = false;
+			} else {
+				edit = true;
+				addToast({
+					message: 'Edit mode enabled',
+					type: 'info',
+					timeout: 3000
+				});
+			}
+		} else if (disabled === false) {
+			addToast({
+				message: 'This setting is disabled. Please update it from the main settings.',
+				type: 'warning',
+				timeout: 3000
+			});
+			return;
+		}
+	};
 
 	function toggleTab(tab: string) {
 		openTab = openTab === tab ? null : tab;
@@ -45,7 +70,7 @@
 		FieldApp: '/tenant-setting/form/field_app.svg#icon'
 	};
 
-	const handleFormSettingSubmit = async (event: Event) => {
+	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
 
@@ -75,10 +100,9 @@
 
 			const response = await res.json();
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
-				edit = disabled;
 				toastMessage(response);
-				disabled = true;
-				edit = disabled;
+				edit = false;
+
 				goto(`${tenantRoute}`);
 				return;
 			}
@@ -94,7 +118,7 @@
 </script>
 
 <div class="px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-2">
+	<!-- <div class="flex flex-wrap justify-end gap-2 py-2">
 		<button
 			class="table-btn variant-filled-secondary gap-1"
 			onclick={() => {
@@ -105,11 +129,27 @@
 			<Icon icon="material-symbols:edit-outline" />
 			<span>Edit</span>
 		</button>
-	</div>
+	</div> -->
 
 	<div class="mx-auto">
 		<div class="table-container">
-			<form onsubmit={() => handleFormSettingSubmit(event)}>
+			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+				<div class="flex items-center justify-between p-2">
+					<h1 class=" text-xl">Forms Setting</h1>
+					<div class="flex items-center gap-2 text-end">
+						<button
+							type="button"
+							class="table-btn variant-filled-secondary gap-1"
+							onclick={toggleEdit}
+						>
+							<Icon icon="material-symbols:edit-outline" />
+							<span>{edit ? 'Save' : 'Edit'}</span>
+						</button>
+						<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
+							<Icon icon="material-symbols:close-rounded" class=" h-5" />
+						</a>
+					</div>
+				</div>
 				<table class="table-c">
 					<thead>
 						<tr>

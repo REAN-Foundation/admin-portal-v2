@@ -1,33 +1,54 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
-
-	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import { page } from '$app/state';
 	import Icon from '@iconify/svelte';
-	import { goto } from '$app/navigation';
-	import { toastMessage } from '$lib/components/toast/toast.store';
+	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import { UserInterfacesSchema } from '$lib/validation/tenant.settings.schema';
 
 	/////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 
-	console.log('data =>', data);
-
 	let setttings = data.settings.Common;
 	let errors: Record<string, string> = $state({});
 
-	// console.log('setttings:', JSON.stringify(setttings, null, 2));
-
+	// let disabled = $state(true);
 	let disabled = $state(true);
-	let edit = $derived(disabled);
 	let promise = $state();
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
 	const viewRoute = `/users/${userId}/tenants/${tenantId}/view`;
 	const tenantRoute = `/users/${userId}/tenants`;
+	// let disabled = $state(data.commonSettings.UserInterfaces.ChatBot);
+	// let edit = $state(false);
 
+	const toggleEdit = async () => {
+		// if (disabled) {
+		if (disabled) {
+			addToast({
+				message: 'Edit mode enabled',
+				type: 'info',
+				timeout: 3000
+			});
+			disabled = false;
+		} else {
+			addToast({
+				message: 'Settings saved successfully',
+				type: 'success',
+				timeout: 3000
+			});
+			disabled = true;
+		}
+		// } else if (!disabled) {
+		// 	addToast({
+		// 		message: 'This setting is disabled. Please update it from the main settings.',
+		// 		type: 'warning',
+		// 		timeout: 3000
+		// 	});
+		// 	return;
+		// }
+	};
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
 		try {
@@ -69,7 +90,7 @@
 			const response = await res.json();
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				edit = true;
+				disabled = false;
 				return;
 			}
 			if (response.Errors) {
@@ -84,7 +105,7 @@
 </script>
 
 <div class="px-6 py-2">
-	<div class="mb-2 flex w-full flex-wrap justify-end gap-2">
+	<!-- <div class="mb-2 flex w-full flex-wrap justify-end gap-2">
 		<button
 			class="table-btn variant-filled-secondary gap-1"
 			onclick={() => {
@@ -95,10 +116,26 @@
 			<Icon icon="material-symbols:edit-outline" />
 			<span>Edit</span>
 		</button>
-	</div>
+	</div> -->
 	<div class="mx-auto">
 		<div class="table-container">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+				<div class="flex items-center justify-between p-2">
+					<h1 class=" text-xl">ChatBot Setting</h1>
+					<div class="flex items-center gap-2 text-end">
+						<button
+							type="button"
+							class="table-btn variant-filled-secondary gap-1"
+							onclick={toggleEdit}
+						>
+							<Icon icon="material-symbols:edit-outline" />
+							<span>{disabled ? 'Edit' : 'Save'}</span>
+						</button>
+						<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
+							<Icon icon="material-symbols:close-rounded" class=" h-5" />
+						</a>
+					</div>
+				</div>
 				<table class="table-c">
 					<thead>
 						<tr>

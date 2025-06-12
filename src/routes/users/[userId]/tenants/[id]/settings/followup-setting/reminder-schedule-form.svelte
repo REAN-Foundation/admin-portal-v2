@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	import { fade, fly } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 
 	let { showReminderModal = $bindable(), addSchedule, newReminder = $bindable() } = $props();
 </script>

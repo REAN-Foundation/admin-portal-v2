@@ -7,30 +7,25 @@ import { getTenantSettingsByType } from '../../../../../../api/services/reancare
 
 export const load: PageServerLoad = async (event: RequestEvent) => {
 	const sessionId = event.cookies.get('sessionId') as string;
-    let settings = undefined;
+	const tenantId = event.locals?.sessionUser?.tenantId;
+	let settings = undefined;
+
 	try {
-        console.log('Event-',event)
-        const tenantId = event.locals?.sessionUser?.tenantId;
-		const response = await getTenantSettingsByType(sessionId, tenantId,'Common');
 
-        console.log("response of setting", JSON.stringify(response,null,2));
-        
-
+		const response = await getTenantSettingsByType(sessionId, tenantId, 'Common');
 		if (response.Status === 'failure' || response.HttpCode !== 200) {
 			throw error(response.HttpCode, response.Message);
 		}
+		if (response.Data.TenantSettings) {
+			settings = response.Data.TenantSettings;
+		}
 
-        if (response.Data.TenantSettings) {
-            settings = response.Data.TenantSettings;
-        }
-
-        console.log('response=',JSON.stringify(settings,null,2));
-	
 		return {
 			sessionId,
 			tenantId,
 			settings
 		};
+
 	} catch (error) {
 		console.error(`Error retriving tenant settings: ${error.message}`);
 	}

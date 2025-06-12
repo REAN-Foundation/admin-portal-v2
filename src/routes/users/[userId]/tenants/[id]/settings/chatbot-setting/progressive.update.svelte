@@ -10,19 +10,15 @@
 		edit,
 		iconPaths,
 		getSettingMeta,
-		showCancelModel=$bindable(),
+		showCancelModel = $bindable(),
 		onFileSelected
 	} = $props();
 
-	// $inspect("model in ",showCancelModel)
-	let currentSection = $state(2);
+	let currentSection = $state(0);
 	let errors: Record<string, string> = $state({});
-
-	let fileinput = $state();
-	let fileName = $state(undefined);
-	let selectFile = $state(undefined);
-
 	let promise = $state();
+	let openTab: string | null = $state(null);
+	let progressPercent = $derived(((currentSection + 1) / 3) * 100);
 
 	const nextSection = () => {
 		if (currentSection < 3 - 1) currentSection++;
@@ -32,18 +28,9 @@
 		if (currentSection > 0) currentSection--;
 	};
 
-	// const submitForm = () => {
-	// 	alert('Form submitted!');
-	// 	console.log(formData);
-	// };
-
-	let openTab: string | null = $state(null);
-
 	function toggleTab(tab: string) {
 		openTab = openTab === tab ? null : tab;
 	}
-
-	let progressPercent = $derived(((currentSection + 1) / 3) * 100);
 </script>
 
 <div class="my-6 flex flex-col items-center justify-center">
@@ -308,7 +295,7 @@
 	{#if currentSection < 3 - 1}
 		<button
 			type="button"
-			class="variant-filled-secondary rounded px-4 py-2 text-white"
+			class="variant-filled-secondary rounded px-4 py-2 !text-black"
 			onclick={nextSection}
 		>
 			Next

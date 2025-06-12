@@ -1,11 +1,8 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
-	import type { ConsentMessage, ConsentSettings } from '$lib/types/tenant.settings.types';
-	import {
-		ConsentMessageSchema,
-		ConsentSettingsSchema
-	} from '$lib/validation/tenant.settings.schema';
+	import type { ConsentSettings } from '$lib/types/tenant.settings.types';
+	import { ConsentSettingsSchema } from '$lib/validation/tenant.settings.schema';
 	import { languages } from '$lib/utils/language';
 
 	///////////////////////////////////////////////////////////////////////////
@@ -20,16 +17,12 @@
 	} = $props();
 
 	let promise = $state();
-
-	let message = $state(consentSetting.Messages);
-
+	let message = $state(consentSetting.Messages || []);
 	let defualtLang = $state('');
 	let defaultLangCode = $state('');
 	let newMessage = $state({ LanguageCode: '', Content: '', WebsiteURL: '' });
 	let showAddMessageForm = $state(false);
-
 	let editingIndex: number | null = $state();
-
 	let errors: Record<string, string> = $state({});
 
 	function handleModalClose() {
@@ -46,7 +39,7 @@
 			return;
 		}
 		message.push({ ...newMessage });
-		newMessage = { LanguageCode: '', Content: '', WebsiteURL: '' }; // reset
+		newMessage = { LanguageCode: '', Content: '', WebsiteURL: '' };
 		showAddMessageForm = false;
 	}
 

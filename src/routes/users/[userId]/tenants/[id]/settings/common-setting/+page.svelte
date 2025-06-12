@@ -4,70 +4,27 @@
 	import type { PageServerData } from '../$types';
 	import { page } from '$app/state';
 	import { commonUISettings } from './common-setting.types';
-	import { toastMessage } from '$lib/components/toast/toast.store';
+	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import { CommonSettingsSchema } from '$lib/validation/tenant.settings.schema';
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 
-	let commonSetting = $state(data.settings);
-
-	$inspect(commonSetting, 'commonSetting');
-
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
 	const tenantRoute = `/users/${userId}/tenants`;
+	let commonSetting = $state(data.settings);
 	let promise = $state();
 	let errors: Record<string, string> = $state({});
 
-	function handleCommonSettingSubmit(event, commonSetting) {
-		event.preventDefault();
-		// commonSetting = updated;
-		// console.log('New settings:common Setting ', commonSetting);
-		// console.log('New settings:updated ', updated);
-	}
-
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
-		// commonSetting = updated;
-		console.log('New settings:common Setting ', commonSetting);
-		// console.log("New settings:updated ", updated);
-		try {
-			errors = {};
-			// const chatbotCreateModel:  = {
-			// 	Name: commonSetting.ChatBot.Name,
-			// 	Description: commonSetting.ChatBot.Description,
-			// 	DefaultLanguage: commonSetting.ChatBot.DefaultLanguage,
-			// 	OrganizationName: commonSetting.ChatBot.OrganizationName,
-			// 	OrganizationLogo: commonSetting.ChatBot.OrganizationLogo,
-			// 	OrganizationWebsite: commonSetting.ChatBot.OrganizationWebsite,
-			// 	Favicon: commonSetting.ChatBot.Favicon,
-			// 	MessageChannels: {
-			// 		WhatsApp: commonSetting.ChatBot.MessageChannels?.WhatsApp,
-			// 		Telegram: commonSetting.ChatBot.MessageChannels?.Telegram
-			// 	},
-			// 	SupportChannels: {
-			// 		ClickUp: commonSetting.ChatBot.SupportChannels?.ClickUp,
-			// 		Slack: commonSetting.ChatBot.SupportChannels?.Slack,
-			// 		Email: commonSetting.ChatBot.SupportChannels?.Email
-			// 	},
-			// 	Personalization: commonSetting.ChatBot.Personalization,
-			// 	Localization: commonSetting.ChatBot.Localization,
-			// 	LocationContext: commonSetting.ChatBot.LocationContext,
-			// 	RemindersMedication: commonSetting.ChatBot.RemindersMedication,
-			// 	ReminderAppointment: commonSetting.ChatBot.ReminderAppointment,
-			// 	QnA: commonSetting.ChatBot.QnA,
-			// 	Consent: commonSetting.ChatBot.Consent,
-			// 	WelcomeMessage: commonSetting.ChatBot.WelcomeMessage,
-			// 	Feedback: commonSetting.ChatBot.Feedback,
-			// 	AppointmentFollowup: commonSetting.ChatBot.AppointmentFollowup,
-			// 	ConversationHistory: commonSetting.ChatBot.ConversationHistory,
-			// 	Emojis: commonSetting.ChatBot.Emojis
-			// };
+		errors = {};
 
+		try {
 			const validationResult = CommonSettingsSchema.safeParse(commonSetting);
-			console.log('This is validation result', validationResult);
+
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -78,15 +35,14 @@
 				return;
 			}
 
-			const updated = { Common: commonSetting };
-			console.log('New settings:updated ', updated);
-
 			const res = await fetch(`/api/server/tenants/settings/${tenantId}/Common`, {
 				method: 'PUT',
 				body: JSON.stringify(commonSetting),
 				headers: { 'content-type': 'application/json' }
 			});
+
 			const response = await res.json();
+
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				edit = true;
@@ -102,34 +58,60 @@
 		}
 	};
 
-	let disabled = $state(false);
+	let disabled = $state(true);
 	let edit = $derived(disabled);
+
+	const toggleEdit = async () => {
+		if (edit) {
+			disabled = false;
+			addToast({
+				message: 'Edit mode enabled',
+				type: 'info',
+				timeout: 3000
+			});
+		} else {
+			try {
+				disabled = true;
+				addToast({
+					message: 'Settings saved successfully',
+					type: 'success',
+					timeout: 3000
+				});
+			} catch (err) {
+				console.error('Save failed:', err);
+				addToast({
+					message: 'Failed to save settings',
+					type: 'error',
+					timeout: 3000
+				});
+			}
+		}
+	};
 </script>
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<form onsubmit={() => handleSubmit(event)}>
+		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 			<div class="flex items-center justify-between p-2">
-				<h1 class=" text-xl">Common Setting</h1>
+				<h1 class="text-xl">Common Setting</h1>
 				<div class="flex items-center gap-2 text-end">
 					<button
 						type="button"
 						class="table-btn variant-filled-secondary gap-1"
-						onclick={() => {
-							disabled = !disabled;
-							edit = disabled;
-						}}
+						onclick={toggleEdit}
 					>
 						<Icon icon="material-symbols:edit-outline" />
 						<span>{edit ? 'Edit' : 'Save'}</span>
 					</button>
+
 					<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
-						<Icon icon="material-symbols:close-rounded" class=" h-5" />
+						<Icon icon="material-symbols:close-rounded" class="h-5" />
 					</a>
 				</div>
 			</div>
 
 			<ExpandableSettings groupedSettings={commonUISettings} bind:commonSetting {edit} />
+
 			<div class="button-container">
 				{#await promise}
 					<button type="submit" class="table-btn variant-soft-secondary" disabled>
