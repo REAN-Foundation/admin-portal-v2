@@ -132,7 +132,7 @@
 	</div> -->
 
 	<div class="mx-auto">
-		<div class="table-container">
+		<div class=" mx-auto my-6 border !border-zinc-200">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 				<div
 					class="flex items-center justify-between !rounded-b-none border bg-[#F2F3F5] px-5 py-6"
