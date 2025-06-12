@@ -13,6 +13,7 @@
 		showCancelModel = $bindable(),
 		onFileSelected
 	} = $props();
+	$inspect(edit, 'edit');
 
 	let currentSection = $state(0);
 	let errors: Record<string, string> = $state({});
@@ -263,7 +264,7 @@
 											type="checkbox"
 											class="checkbox checkbox-primary scale-125"
 											bind:checked={chatBotSetting.ChatBot[groupName]}
-											disabled={edit}
+											disabled={!edit}
 										/>
 									</label>
 								</div>

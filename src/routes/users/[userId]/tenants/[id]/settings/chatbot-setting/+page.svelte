@@ -40,20 +40,20 @@
 
 	const toggleEdit = async () => {
 		if (disabled) {
-			if (edit) {
-				addToast({
-					message: 'Settings saved successfully',
-					type: 'success',
-					timeout: 3000
-				});
-				edit = false;
-			} else {
+			if (!edit) {
 				edit = true;
 				addToast({
 					message: 'Edit mode enabled',
 					type: 'info',
 					timeout: 3000
 				});
+			} else {
+				addToast({
+					message: 'Settings saved successfully',
+					type: 'success',
+					timeout: 3000
+				});
+				edit = false;
 			}
 		} else if (disabled === false) {
 			addToast({

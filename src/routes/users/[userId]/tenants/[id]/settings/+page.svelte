@@ -104,7 +104,7 @@
 	};
 </script>
 
-<div class="px-6 py-2">
+<div class="my-8 px-5 py-2">
 	<!-- <div class="mb-2 flex w-full flex-wrap justify-end gap-2">
 		<button
 			class="table-btn variant-filled-secondary gap-1"
@@ -120,8 +120,8 @@
 	<div class="mx-auto">
 		<div class="table-container">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<div class="flex items-center justify-between p-2">
-					<h1 class=" text-xl">ChatBot Setting</h1>
+				<div class="flex items-center justify-between bg-gray-100 px-5 py-6">
+					<h1 class=" ml-9 text-xl">Integrations</h1>
 					<div class="flex items-center gap-2 text-end">
 						<button
 							type="button"
@@ -136,7 +136,7 @@
 						</a>
 					</div>
 				</div>
-				<table class="table-c">
+				<!-- <table class="table-c">
 					<thead>
 						<tr>
 							<th>Integrations</th>
@@ -147,63 +147,75 @@
 							</th>
 						</tr>
 					</thead>
-					<tbody>
-						{#each Object.entries(setttings.UserInterfaces) as [key, value]}
-							<tr>
-								<td>
-									{#if key === 'ChatBot'}
-										<input
-											type="checkbox"
-											name="patientApp"
-											{disabled}
-											bind:checked={setttings.UserInterfaces[key]}
-											class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
-										/>
-										<span>Chat Bot</span>
-									{:else if key === 'Followup'}
-										<input
-											type="checkbox"
-											name="followup"
-											{disabled}
-											bind:checked={setttings.UserInterfaces[key]}
-											class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
-										/>
-										<span>Follow-up</span>
-									{:else if key === 'Forms'}
-										<input
-											type="checkbox"
-											name="forms"
-											{disabled}
-											bind:checked={setttings.UserInterfaces[key]}
-											class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
-										/>
-										<span>Forms</span>
-									{:else if key === 'PatientApp'}
-										<input
-											type="checkbox"
-											name="patientApp"
-											disabled
-											bind:checked={setttings.UserInterfaces[key]}
-											class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
-										/>
-										<span>Patient App</span>
-									{:else if key === 'PatientPortal'}
-										<input
-											type="checkbox"
-											name="patientPortal"
-											disabled
-											bind:checked={setttings.UserInterfaces[key]}
-											class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
-										/>
-										<span>Patient Portal</span>
-									{/if}
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
+					<tbody> -->
+				<div class="flex flex-col space-y-4 px-4 py-4">
+					{#each Object.entries(setttings.UserInterfaces) as [key, value]}
+						<!-- <tr>
+								<td> -->
+						{#if key === 'ChatBot'}
+							<div class="flex items-center space-x-4">
+								<input
+									type="checkbox"
+									name="patientApp"
+									{disabled}
+									bind:checked={setttings.UserInterfaces[key]}
+									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
+								/>
+								<span>Chat Bot</span>
+							</div>
+						{:else if key === 'Followup'}
+							<div class="flex items-center space-x-4">
+								<input
+									type="checkbox"
+									name="followup"
+									{disabled}
+									bind:checked={setttings.UserInterfaces[key]}
+									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
+								/>
+								<span>Follow-up</span>
+							</div>
+						{:else if key === 'Forms'}
+							<div class="flex items-center space-x-4">
+								<input
+									type="checkbox"
+									name="forms"
+									{disabled}
+									bind:checked={setttings.UserInterfaces[key]}
+									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
+								/>
+								<span>Forms</span>
+							</div>
+						{:else if key === 'PatientApp'}
+							<div class="flex items-center space-x-4">
+								<input
+									type="checkbox"
+									name="patientApp"
+									disabled
+									bind:checked={setttings.UserInterfaces[key]}
+									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
+								/>
+								<span>Patient App</span>
+							</div>
+						{:else if key === 'PatientPortal'}
+							<div class="flex items-center space-x-4">
+								<input
+									type="checkbox"
+									name="patientPortal"
+									disabled
+									bind:checked={setttings.UserInterfaces[key]}
+									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
+								/>
+								<span>Patient Portal</span>
+							</div>
+						{/if}
+						<!-- </td>
+											</tr> -->
+					{/each}
+				</div>
+				<!-- </tbody>
+				</table> -->
 
-				<div class="button-container">
+				<div class="button-container mb-4">
 					{#await promise}
 						<button type="submit" class="table-btn variant-soft-secondary" disabled>
 							Submiting

@@ -257,7 +257,7 @@
 												<input
 													type="checkbox"
 													class="checkbox checkbox-primary"
-													disabled={edit}
+													disabled={!edit}
 													bind:checked={formSetting.Forms[groupName]}
 												/>
 												<!-- </label> -->
