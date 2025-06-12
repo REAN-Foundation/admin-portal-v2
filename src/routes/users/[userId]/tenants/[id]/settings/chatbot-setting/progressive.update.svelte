@@ -11,11 +11,11 @@
 		iconPaths,
 		getSettingMeta,
 		showCancelModel = $bindable(),
-		onFileSelected
+		onFileSelected,
+		currentSection = $bindable()
 	} = $props();
 	$inspect(edit, 'edit');
 
-	let currentSection = $state(0);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let openTab: string | null = $state(null);
@@ -34,28 +34,15 @@
 	}
 </script>
 
-<div class="my-6 flex flex-col items-center justify-center">
-	<div class="h-2 w-96 overflow-hidden rounded-full bg-gray-200">
-		<div
-			class="progressive-bar h-full transition-all duration-300"
-			style="width: {progressPercent}%;"
-		></div>
-	</div>
-	<div class="mt-2 text-center text-sm text-gray-600">
-		Step {currentSection + 1} of {3}
-		<!-- <span class="font-medium">{sections[currentSection]}</span> -->
-	</div>
-</div>
-
-<div class="w-full rounded-lg border bg-white p-6 shadow">
+<div class="w-full rounded-lg p-6">
 	{#if currentSection === 0}
-		<div class="mb-4 flex flex-row">
-			<label for="chatbotName" class="mb-1 block w-[30%] font-medium"
+		<div class="my-2 flex flex-col md:flex-row md:items-center">
+			<label for="chatbotName" class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
 				>Name <span class="text-red-700">*</span></label
 			>
 			<input
 				type="text"
-				class="health-system-input w-[70%]"
+				class="input-field w-[70%]"
 				name="chatbotName"
 				placeholder="Enter name here..."
 				bind:value={chatBotSetting.ChatBot.Name}
@@ -65,11 +52,14 @@
 			{/if}
 		</div>
 
-		<div class="mb-4 flex flex-row">
-			<label for="organizationName" class="mb-1 block w-[30%] font-medium">Organization Name</label>
+		<div class="my-4 flex flex-col md:flex-row md:items-center">
+			<label
+				for="organizationName"
+				class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700">Organization Name</label
+			>
 			<input
 				type="text"
-				class="health-system-input w-[70%]"
+				class="input-field w-[70%]"
 				name="organizationName"
 				placeholder="Enter organization name here..."
 				bind:value={chatBotSetting.ChatBot.OrganizationName}
@@ -79,11 +69,14 @@
 			{/if}
 		</div>
 
-		<div class="mb-4 flex flex-row">
-			<label for="organizationLogo" class="mb-1 block w-[30%] font-medium">Organization Logo</label>
+		<div class="my-4 flex flex-col md:flex-row md:items-center">
+			<label
+				for="organizationLogo"
+				class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700">Organization Logo</label
+			>
 			<input
 				type="text"
-				class="health-system-input w-[70%]"
+				class="input-field w-[70%]"
 				name="organizationLogo"
 				placeholder="Enter organization logo here..."
 				bind:value={chatBotSetting.ChatBot.OrganizationLogo}
@@ -93,13 +86,15 @@
 			{/if}
 		</div>
 
-		<div class="mb-4 flex flex-row">
-			<label for="organizationWebsite" class="mb-1 block w-[30%] font-medium"
+		<div class="my-4 flex flex-col md:flex-row md:items-center">
+			<label
+				for="organizationWebsite"
+				class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
 				>Organization Website</label
 			>
 			<input
 				type="text"
-				class="health-system-input w-[70%]"
+				class="input-field w-[70%]"
 				name="organizationWebsite"
 				placeholder="Enter organization website here..."
 				bind:value={chatBotSetting.ChatBot.OrganizationWebsite}
@@ -109,10 +104,12 @@
 			{/if}
 		</div>
 
-		<div class="mb-4 flex flex-row">
-			<label for="favicon" class="mb-1 block w-[30%] font-medium">Favicon</label>
+		<div class="my-4 flex flex-col md:flex-row md:items-center">
+			<label for="favicon" class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
+				>Favicon</label
+			>
 			<div class="w-[100%]">
-				<label class="health-system-btn variant-filled-secondary">
+				<label class="table-btn variant-filled-secondary">
 					Select File
 					<input type="file" class="hidden" onchange={onFileSelected} />
 				</label>
@@ -128,22 +125,23 @@
 			{/if}
 		</div>
 
-		<div class="mb-4 flex flex-row">
-			<label for="description" class="mb-1 block w-[30%] font-medium">Description</label>
+		<div class="my-4 flex flex-col md:flex-row md:items-center">
+			<label for="description" class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
+				>Description</label
+			>
 			<textarea
 				bind:value={chatBotSetting.ChatBot.Description}
 				name="description"
 				placeholder="Enter description here..."
-				class="health-system-input w-[70%]"
+				class="input-field w-[70%]"
 			></textarea>
 		</div>
 
-		<div class="mb-4 flex flex-row">
-			<label for="defaultLanguage" class="mb-1 block w-[30%] font-medium">Default Language</label>
-			<select
-				bind:value={chatBotSetting.ChatBot.DefaultLanguage}
-				class=" w-[100%] rounded border p-2 text-sm"
+		<div class="my-4 flex flex-col md:flex-row md:items-center">
+			<label for="defaultLanguage" class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
+				>Default Language</label
 			>
+			<select bind:value={chatBotSetting.ChatBot.DefaultLanguage} class=" input-field w-[100%]">
 				<option value="" disabled selected>Select language</option>
 				{#each languages as lang}
 					<option value={lang.name}>{lang.name}</option>
@@ -157,15 +155,22 @@
 		{#each Object.entries(chatBotSetting.ChatBot) as [groupName, groupItems]}
 			{#if groupName === 'MessageChannels' || groupName === 'SupportChannels'}
 				<div
-					class={`sidebar-item my-2 flex w-full flex-col rounded-md border !p-0 py-2 transition-colors duration-200`}
+					class={`my-2 flex w-full flex-col rounded-md border !border-zinc-100 bg-white !p-0 py-2 transition-colors duration-200 ${
+						openTab === groupName ? 'border-hover ' : ''
+					} `}
 				>
 					<button
 						type="button"
 						onclick={() => toggleTab(groupName)}
-						class={`flex items-center justify-between rounded-t-md p-4 ${openTab === groupName ? ' bg-gray-200' : ''}
-												`}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-gray-700
+	 transition-all duration-200 ease-in-out  ${
+			openTab === groupName
+				? 'rounded-b-none bg-[#F2F2F2] text-black'
+				: `border-hover rounded bg-white`
+		} 
+	`}
 					>
-						<div class="flex flex-1 items-center gap-2">
+						<div class="flex items-center gap-2">
 							<Icons
 								cls="stroke-slate-800 my-2 stroke-2 fill-none"
 								h="80%"
@@ -173,7 +178,7 @@
 								iconPath={iconPaths[groupName] ?? ''}
 							/>
 							<div class=" text-start">
-								<div class="text-base">
+								<div class="text-base font-medium">
 									{#if groupName === 'MessageChannels'}
 										<p>Message Channels</p>
 									{:else if groupName === 'SupportChannels'}
@@ -204,7 +209,7 @@
 											<input
 												type="checkbox"
 												class="checkbox checkbox-primary"
-												disabled={edit}
+												disabled={!edit}
 												bind:checked={chatBotSetting.ChatBot[groupName][key]}
 											/>
 										</label>
@@ -232,7 +237,7 @@
 				<div class="flex gap-4">
 					{#each row as [groupName, groupItems]}
 						<div class="w-1/2">
-							<div class="flex h-20 items-center justify-between rounded-xl border p-4">
+							<div class="flex h-20 items-center text-gray-700 justify-between rounded-xl border p-4">
 								<!-- Left: App Icon -->
 								<Icons
 									cls=""
@@ -243,8 +248,8 @@
 
 								<!-- Middle: Name & Description -->
 								<div class="flex flex-grow flex-col px-4">
-									<span class="font-semibold">{groupName}</span>
-									<p class="text-sm text-gray-500">
+									<span class="text-base font-medium">{groupName}</span>
+									<p class="text-sm ">
 										This is a short description for {groupName} chatbot setting.
 									</p>
 								</div>
@@ -283,10 +288,12 @@
 </div>
 
 <!-- Navigation Buttons -->
-<div class="my-6 flex justify-between">
+<hr class="border-t border-[#F2F3F5]" />
+
+<div class="button-container my-4">
 	<button
 		type="button"
-		class="rounded bg-gray-300 px-4 py-2 text-gray-800 disabled:opacity-50"
+		class="cursor-pointer rounded-md bg-gray-300 px-3 py-2 text-gray-800 disabled:opacity-50"
 		onclick={prevSection}
 		disabled={currentSection === 0}
 	>
@@ -296,18 +303,16 @@
 	{#if currentSection < 3 - 1}
 		<button
 			type="button"
-			class="variant-filled-secondary rounded px-4 py-2 !text-black"
+			class="table-btn variant-filled-secondary !px-4 py-2 !text-black"
 			onclick={nextSection}
 		>
 			Next
 		</button>
 	{:else}
 		{#await promise}
-			<button type="submit" class="variant-filled-secondary rounded !px-4 !py-2" disabled>
-				Submiting
-			</button>
+			<button type="submit" class="table-btn variant-filled-secondary" disabled> Submiting </button>
 		{:then data}
-			<button type="submit" class=" variant-filled-secondary rounded !px-4 !py-2"> Submit </button>
+			<button type="submit" class="table-btn variant-filled-secondary"> Submit </button>
 		{/await}
 	{/if}
 </div>

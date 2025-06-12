@@ -48,7 +48,7 @@
 				href={basicSettingsLink}
 			>
 				<Icon icon="material-symbols:layers-outline" class="h-5 w-5" />
-				Basic
+				Common
 			</a>
 
 			<a

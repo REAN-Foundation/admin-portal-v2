@@ -38,6 +38,9 @@
 	let disabled = $state(data.commonSettings.UserInterfaces.ChatBot);
 	let edit = $state(false);
 
+	const totalSteps = 3;
+	let currentSection = $state(0);
+
 	const toggleEdit = async () => {
 		if (disabled) {
 			if (!edit) {
@@ -288,12 +291,53 @@
 	{tenantCode}
 />
 
-<div class="px-6 py-4">
+<div class="px-5 py-4">
 	<div class="mx-auto">
-		<div class="">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<div class="flex items-center justify-between p-2">
-					<h1 class=" text-xl">ChatBot Setting</h1>
+		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+			<!-- Stepper -->
+
+			<div class="my-6 flex flex-col items-center justify-center">
+				<div class="flex items-center">
+					{#each Array(totalSteps) as _, index}
+						<!-- Step circle -->
+						<div class="flex items-center">
+							<div
+								class={`step-number 
+					${
+						index < currentSection
+							? 'step-completed'
+							: index === currentSection
+								? 'stepper-active'
+								: 'stepper-inactive'
+					}`}
+							>
+								{index < currentSection ? index + 1 : index + 1}
+							</div>
+
+							<!-- Line between steps -->
+							{#if index < totalSteps - 1}
+								<div
+									class={`mx-2 h-0.5 w-6 
+						${index < currentSection ? 'filled-line' : 'bg-gray-300'}`}
+								></div>
+							{/if}
+						</div>
+					{/each}
+				</div>
+
+				<!-- Step label -->
+				<div class="mt-2 text-center text-sm text-gray-600">
+					Step {currentSection + 1} of {totalSteps}
+				</div>
+			</div>
+
+			<div class="table-container">
+				<!-- Heading -->
+
+				<div
+					class="flex items-center justify-between !rounded-b-none border bg-[#F2F3F5] px-5 py-6"
+				>
+					<h1 class=" mx-1 text-xl">Chatbot Settings</h1>
 					<div class="flex items-center gap-2 text-end">
 						<button
 							type="button"
@@ -303,12 +347,16 @@
 							<Icon icon="material-symbols:edit-outline" />
 							<span>{edit ? 'Save' : 'Edit'}</span>
 						</button>
-						<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
+						<a
+							href={tenantRoute}
+							class="inline-flex items-center justify-center rounded-md border-[0.5px] !border-red-200 px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+						>
 							<Icon icon="material-symbols:close-rounded" class=" h-5" />
 						</a>
 					</div>
 				</div>
 
+				<!-- content -->
 				<div>
 					<Progressive
 						bind:chatBotSetting
@@ -317,9 +365,10 @@
 						{getSettingMeta}
 						bind:showCancelModel
 						{onFileSelected}
+						bind:currentSection
 					/>
 				</div>
-			</form>
-		</div>
+			</div>
+		</form>
 	</div>
 </div>

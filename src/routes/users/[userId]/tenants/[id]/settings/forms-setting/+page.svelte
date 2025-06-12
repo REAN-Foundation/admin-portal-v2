@@ -134,8 +134,10 @@
 	<div class="mx-auto">
 		<div class="table-container">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<div class="flex items-center justify-between p-2">
-					<h1 class=" text-xl">Forms Setting</h1>
+				<div
+					class="flex items-center justify-between !rounded-b-none border bg-[#F2F3F5] px-5 py-6"
+				>
+					<h1 class=" text-xl">Forms Settings</h1>
 					<div class="flex items-center gap-2 text-end">
 						<button
 							type="button"
@@ -145,149 +147,141 @@
 							<Icon icon="material-symbols:edit-outline" />
 							<span>{edit ? 'Save' : 'Edit'}</span>
 						</button>
-						<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
+						<a
+							href={tenantRoute}
+							class="inline-flex items-center justify-center rounded-md border-[0.5px] !border-red-200 px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+						>
 							<Icon icon="material-symbols:close-rounded" class=" h-5" />
 						</a>
 					</div>
 				</div>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th class="w-full">Common Setting</th>
-							<th class="text-end">
-								<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each Object.entries(formSetting.Forms) as [groupName, groupItems]}
-							{#if groupName == 'Integrations'}
-								<tr>
-									<td colspan="2">
-										<button
-											type="button"
-											onclick={() => toggleTab(groupName)}
-											class={`sidebar-item flex w-full items-center justify-between rounded-md px-4 py-2 transition-colors duration-200 ${
-												openTab === groupName ? 'bg-slate-100 ' : ''
-											}`}
-										>
-											<div class="flex flex-1 items-center gap-2">
-												<Icons
-													cls="stroke-slate-800 my-2 stroke-2 fill-none"
-													h="80%"
-													w="80%"
-													iconPath={iconPaths[groupName] ?? ''}
-												/>
-												<span class="text-base">
-													<span>Integrations</span>
-												</span>
-											</div>
 
-											<InfoIcon
-												cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 cursor-pointer fill-none my-2"
-												h="80%"
-												w="80%"
-												iconPath="/tenant-setting/info.svg#icon"
-												title={`Settings under ${groupName}`}
-											/>
-											<!-- <span class:rotate-180={openTab === groupName} class="transition-transform duration-300"> -->
-											<span
-												class="transition-transform duration-300"
-												class:rotate-180={openTab === groupName}
-											>
-												<Icon
-													icon="icon-park-outline:down"
-													width="16"
-													height="16"
-													class="h-5 w-5"
-												/>
-											</span>
-										</button>
+				<div class="flex flex-col space-y-4 px-4 py-4">
+					{#each Object.entries(formSetting.Forms) as [groupName, groupItems]}
+						{#if groupName == 'Integrations'}
+							<div
+								class={`my-2 flex w-full flex-col rounded-md border !border-zinc-100 bg-white !p-0 py-2 transition-colors duration-200 ${
+									openTab === groupName ? 'border-hover ' : ''
+								} `}
+							>
+								<button
+									type="button"
+									onclick={() => toggleTab(groupName)}
+									class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-gray-700
+	transition-all duration-100 ease-in-out  ${
+		openTab === groupName
+			? 'rounded-b-none bg-[#F2F2F2] text-black'
+			: `border-hover rounded bg-white`
+	} 
+	`}
+								>
+									<div class="flex flex-1 items-center gap-2">
+										<Icons
+											cls="stroke-slate-800 my-2 stroke-2 fill-none"
+											h="80%"
+											w="80%"
+											iconPath={iconPaths[groupName] ?? ''}
+										/>
+										<div class=" text-start">
+											<p class="text-md font-medium">Integrations</p>
 
-										{#if openTab === groupName}
-											<div class="flex w-full justify-center py-5">
-												<div class="mx-20 grid w-full grid-cols-2 gap-x-10 gap-y-6 lg:grid-cols-2">
-													{#each Object.entries(groupItems) as [key, value]}
-														{@const meta = getSettingMeta(groupName, key)}
+											<p class=" text-sm">Settings under {groupName}</p>
+										</div>
+									</div>
 
-														<div class="flex items-center gap-3">
-															{#if edit === true && formSetting.Forms[groupName][key] === true}
-																<span class="text-green-500">✅</span>
-															{:else if edit === true && formSetting.Forms[groupName][key] !== true}
-																<span>❌</span>
-															{:else}
-																<label class="flex items-center gap-2">
-																	<input
-																		type="checkbox"
-																		class="checkbox checkbox-primary"
-																		disabled={edit}
-																		bind:checked={formSetting.Forms[groupName][key]}
-																	/>
-																</label>
-															{/if}
-															<Icons
-																cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 fill-none my-2"
-																h="70%"
-																w="70%"
-																iconPath={meta?.IconPath}
+									<!-- <span class:rotate-180={openTab === groupName} class="transition-transform duration-300"> -->
+									<span
+										class="transition-transform duration-300"
+										class:rotate-90={openTab === groupName}
+									>
+										<Icon
+											icon="icon-park-outline:down"
+											rotate="35"
+											width="16"
+											height="16"
+											class="h-5 w-5"
+										/>
+									</span>
+								</button>
+
+								{#if openTab === groupName}
+									<div class="flex w-full justify-center py-5">
+										<div class="mx-20 grid w-full grid-cols-2 gap-x-10 gap-y-6 lg:grid-cols-2">
+											{#each Object.entries(groupItems) as [key, value]}
+												{@const meta = getSettingMeta(groupName, key)}
+
+												<div class="flex items-center gap-3">
+													{#if edit === true && formSetting.Forms[groupName][key] === true}
+														<span class="text-green-500">✅</span>
+													{:else if edit === true && formSetting.Forms[groupName][key] !== true}
+														<span class="text-sm">❌</span>
+													{:else}
+														<label class="flex items-center gap-2">
+															<input
+																type="checkbox"
+																class="checkbox checkbox-primary"
+																disabled={edit}
+																bind:checked={formSetting.Forms[groupName][key]}
 															/>
-															<span>{meta?.Name ?? key}</span>
-														</div>
-													{/each}
+														</label>
+													{/if}
+													<!-- <Icons
+														cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 fill-none my-2"
+														h="70%"
+														w="70%"
+														iconPath={meta?.IconPath}
+													/> -->
+													<span>{meta?.Name ?? key}</span>
 												</div>
-											</div>
-										{/if}
-									</td>
-								</tr>
-							{/if}
-						{/each}
-						{#each Object.entries(formSetting.Forms) as [groupName, groupItems]}
-							{#if typeof groupItems === 'boolean'}
-								<tr>
-									<td>
-										<div class="flex items-center gap-2">
-											{#if edit === true && groupItems === true}
-												<span class="text-green-500">✅</span>
-											{:else if edit === true && groupItems !== true}
-												<span>❌</span>
-											{:else}
-												<!-- <label class="flex items-center gap-2"> -->
-												<input
-													type="checkbox"
-													class="checkbox checkbox-primary"
-													disabled={!edit}
-													bind:checked={formSetting.Forms[groupName]}
-												/>
-												<!-- </label> -->
-											{/if}
-											<Icons
-												cls="stroke-slate-800 my-2 stroke-2 fill-none"
-												h="80%"
-												w="80%"
-												iconPath={iconPaths[groupName] ?? ''}
-											/>
-											<span class="text-base">{groupName}</span>
+											{/each}
 										</div>
-									</td>
+									</div>
+								{/if}
+							</div>
+						{/if}
+					{/each}
+					{#each Object.entries(formSetting.Forms) as [groupName, groupItems]}
+						{#if typeof groupItems === 'boolean'}
+							<div class="flex items-center gap-2 px-1">
+								{#if edit === true && groupItems === true}
+									<span class="text-green-500">✅</span>
+								{:else if edit === true && groupItems !== true}
+									<span>❌</span>
+								{:else}
+									<!-- <label class="flex items-center gap-2"> -->
+									<input
+										type="checkbox"
+										class="checkbox checkbox-primary"
+										disabled={!edit}
+										bind:checked={formSetting.Forms[groupName]}
+									/>
+									<!-- </label> -->
+								{/if}
+								<Icons
+									cls="stroke-slate-800 my-2 stroke-2 fill-none"
+									h="80%"
+									w="80%"
+									iconPath={iconPaths[groupName] ?? ''}
+								/>
+								<div class=" text-start">
+									<p class="text-md font-medium">{groupName}</p>
 
-									<td>
-										<div class="flex items-center justify-end gap-2">
-											<InfoIcon
-												cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 cursor-pointer fill-none my-2"
-												h="80%"
-												w="80%"
-												iconPath="/tenant-setting/info.svg#icon"
-												title={`Settings under ${groupName}`}
-											/>
-										</div>
-									</td>
-								</tr>
-							{/if}
-						{/each}
-					</tbody>
-				</table>
+									<p class=" text-sm">Settings under {groupName}</p>
+								</div>
+							</div>
+
+							<!-- <div class="flex items-center justify-end gap-2">
+								<InfoIcon
+									cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 cursor-pointer fill-none my-2"
+									h="80%"
+									w="80%"
+									iconPath="/tenant-setting/info.svg#icon"
+									title={`Settings under ${groupName}`}
+								/>
+							</div> -->
+						{/if}
+					{/each}
+				</div>
 				<div class="button-container">
 					{#await promise}
 						<button type="submit" class="table-btn variant-soft-secondary" disabled>

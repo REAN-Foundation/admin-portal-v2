@@ -118,10 +118,10 @@
 		</button>
 	</div> -->
 	<div class="mx-auto">
-		<div class="table-container">
+		<div class="border border-zinc-200">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<div class="flex items-center justify-between bg-gray-100 px-5 py-6">
-					<h1 class=" ml-9 text-xl">Integrations</h1>
+				<div class="flex items-center justify-between rounded-t-lg bg-[#F2F3F5] px-5 py-6">
+					<h2 class=" text-gray-800l text-lg font-semibold">Integrations</h2>
 					<div class="flex items-center gap-2 text-end">
 						<button
 							type="button"
@@ -131,27 +131,17 @@
 							<Icon icon="material-symbols:edit-outline" />
 							<span>{disabled ? 'Edit' : 'Save'}</span>
 						</button>
-						<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
+						<a
+							href={tenantRoute}
+							class="inline-flex items-center justify-center rounded-md border-[0.5px] !border-red-200 px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+						>
 							<Icon icon="material-symbols:close-rounded" class=" h-5" />
 						</a>
 					</div>
 				</div>
-				<!-- <table class="table-c">
-					<thead>
-						<tr>
-							<th>Integrations</th>
-							<th class="text-end">
-								<a href={tenantRoute} class="cancel-btn">
-									<Icon icon="material-symbols:close-rounded" class="" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody> -->
-				<div class="flex flex-col space-y-4 px-4 py-4">
+
+				<div class="flex flex-col space-y-4 px-5 py-4">
 					{#each Object.entries(setttings.UserInterfaces) as [key, value]}
-						<!-- <tr>
-								<td> -->
 						{#if key === 'ChatBot'}
 							<div class="flex items-center space-x-4">
 								<input
@@ -159,7 +149,7 @@
 									name="patientApp"
 									{disabled}
 									bind:checked={setttings.UserInterfaces[key]}
-									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
+									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md"
 								/>
 								<span>Chat Bot</span>
 							</div>
@@ -170,7 +160,7 @@
 									name="followup"
 									{disabled}
 									bind:checked={setttings.UserInterfaces[key]}
-									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
+									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md"
 								/>
 								<span>Follow-up</span>
 							</div>
@@ -181,7 +171,7 @@
 									name="forms"
 									{disabled}
 									bind:checked={setttings.UserInterfaces[key]}
-									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
+									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md"
 								/>
 								<span>Forms</span>
 							</div>
@@ -192,7 +182,7 @@
 									name="patientApp"
 									disabled
 									bind:checked={setttings.UserInterfaces[key]}
-									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
+									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md"
 								/>
 								<span>Patient App</span>
 							</div>
@@ -203,19 +193,17 @@
 									name="patientPortal"
 									disabled
 									bind:checked={setttings.UserInterfaces[key]}
-									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-10"
+									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md"
 								/>
 								<span>Patient Portal</span>
 							</div>
 						{/if}
-						<!-- </td>
-											</tr> -->
 					{/each}
 				</div>
-				<!-- </tbody>
-				</table> -->
 
-				<div class="button-container mb-4">
+				<hr class="border-t border-[#F2F3F5]" />
+
+				<div class="button-container my-4">
 					{#await promise}
 						<button type="submit" class="table-btn variant-soft-secondary" disabled>
 							Submiting

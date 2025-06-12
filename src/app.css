@@ -903,3 +903,30 @@ tr {
 .progressive-bar {
 	@apply bg-[var(--color-active)];
 }
+
+
+/* chatbot settings classes */
+.border-hover {
+	@apply hover:ring-[0.5px] hover:ring-[var(--color-active)];
+}
+
+.stepper-active {
+	@apply border-2 border-[var(--color-active)] text-[var(--color-active)];
+}
+
+.stepper-inactive {
+	@apply border border-[var(--color-outline)] bg-[var(--color-accent)] text-gray-500;
+}
+.step-completed {
+	@apply border-2 border-[var(--color-active)] bg-[var(--color-active)] text-white;
+}
+.step-number {
+	@apply flex h-8 w-8 items-center justify-center rounded-full font-semibold;
+}
+
+.filled-line {
+	@apply bg-[var(--color-active)];
+}
+.input-field {
+	@apply w-full rounded border border-[var(--color-outline)]  p-2 text-[var(--color-info)] focus:outline-[0.5px] outline-[var(--color-active)];
+}

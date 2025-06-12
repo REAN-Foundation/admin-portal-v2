@@ -89,11 +89,11 @@
 	};
 </script>
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
+<div class="px-5 py-4">
+	<div class=" mx-auto my-6 border !border-zinc-200">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<div class="flex items-center justify-between p-2">
-				<h1 class="text-xl">Common Setting</h1>
+			<div class="flex items-center justify-between !rounded-b-none border bg-[#F2F3F5] px-5 py-6">
+				<h1 class=" text-xl">Common Settings</h1>
 				<div class="flex items-center gap-2 text-end">
 					<button
 						type="button"
@@ -103,16 +103,20 @@
 						<Icon icon="material-symbols:edit-outline" />
 						<span>{edit ? 'Edit' : 'Save'}</span>
 					</button>
-
-					<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
-						<Icon icon="material-symbols:close-rounded" class="h-5" />
+					<a
+						href={tenantRoute}
+						class="inline-flex items-center justify-center rounded-md border-[0.5px] !border-red-200 px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+					>
+						<Icon icon="material-symbols:close-rounded" class=" h-5" />
 					</a>
 				</div>
 			</div>
+			<div class="flex flex-col space-y-4 px-4 py-4">
+				<ExpandableSettings groupedSettings={commonUISettings} bind:commonSetting {edit} />
+			</div>
+			<hr class="border-t border-[#F2F3F5]" />
 
-			<ExpandableSettings groupedSettings={commonUISettings} bind:commonSetting {edit} />
-
-			<div class="button-container">
+			<div class="button-container my-4">
 				{#await promise}
 					<button type="submit" class="table-btn variant-soft-secondary" disabled>
 						Submiting
