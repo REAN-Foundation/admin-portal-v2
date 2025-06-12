@@ -28,6 +28,7 @@ export const POST = async (event: RequestEvent) => {
             });
         }
 
+        console.log("ReferenceTemplateCode:", data.ReferenceTemplateCode);
         const response = await createAssessment(
             sessionId,
             data.Name,
@@ -36,7 +37,7 @@ export const POST = async (event: RequestEvent) => {
             data.ReferenceTemplateCode,
             data.Tags, 
             data.Version ?? '',
-        data.TenantId,);
+            data.TenantId,);
 
         return ResponseHandler.success(response);
     } catch (error) {

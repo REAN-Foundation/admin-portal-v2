@@ -21,11 +21,9 @@
 	let version = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
-	let assessmentTemplates = $state([]);
-
-	let availableTemplates: { DisplayId: string; Title: string }[] = [];
-let selectedTemplateCode = $state('');
-
+	// let assessmentTemplates = $state([]);
+	
+	 let assessmentTemplates = data.assessmentTemplates ?? [];
 	console.log('assessmentTemplates', assessmentTemplates);
 
 	data.title = 'Create Assessment';
@@ -50,8 +48,7 @@ let selectedTemplateCode = $state('');
 				Name: name,
 				Description: description,
 				Template: template,
-				// ReferenceTemplateCode: referenceTemplateCode,
-				ReferenceTemplateCode: selectedTemplateCode || undefined,
+				ReferenceTemplateCode: referenceTemplateCode,
 				Version: version,
 				Tags: keywords,
 				TenantId: tenantId
@@ -68,9 +65,7 @@ let selectedTemplateCode = $state('');
 				);
 				return;
 			}
-			// console.log(assessmentCreateModel);
-			console.log('Payload:', JSON.stringify(assessmentCreateModel, null, 2));
-			console.log('TenantId:', tenantId); 
+			console.log(assessmentCreateModel); 
 			const res = await fetch(`/api/server/careplan/assets/assessments`, {
 				method: 'POST',
 				body: JSON.stringify(assessmentCreateModel),
@@ -94,18 +89,18 @@ let selectedTemplateCode = $state('');
 		}
 	};
 
-	onMount(async () => {
-	try {
-		const res = await fetch('/api/server/careplan/assets/assessments/template');
-		if (res.ok) {
-			availableTemplates = await res.json();
-		} else {
-			console.error('Failed to load templates');
-		}
-	} catch (error) {
-		console.error('Error fetching templates:', error);
-	}
-});
+// 	onMount(async () => {
+// 	try {
+// 		const res = await fetch('/api/server/careplan/assets/assessments/template');
+// 		if (res.ok) {
+// 			availableTemplates = await res.json();
+// 		} else {
+// 			console.error('Failed to load templates');
+// 		}
+// 	} catch (error) {
+// 		console.error('Error fetching templates:', error);
+// 	}
+// });
 
 	const onUpdateKeywords = (e: any) => {
 		keywords = e.detail;
@@ -168,7 +163,7 @@ let selectedTemplateCode = $state('');
 						{/if}
 					</td>
 				</tr>
-				<!-- <tr class="tables-row">
+				<tr class="tables-row">
 	<td class="table-label">Reference Template Code <span class="important-field">*</span></td>
 	<td class="table-data">
 		<select
@@ -184,9 +179,9 @@ let selectedTemplateCode = $state('');
 			<p class="error-text">{errors?.ReferenceTemplateCode}</p>
 		{/if}
 	</td>
-</tr> -->
+</tr>
 
-					<tr class="tables-row">
+					<!-- <tr class="tables-row">
 	<td class="table-label">Assessment Template</td>
 	<td class="table-data">
 		<select
@@ -202,7 +197,7 @@ let selectedTemplateCode = $state('');
 			<p class="text-error">{errors.ReferenceTemplateCode}</p>
 		{/if}
 	</td>
-</tr>
+</tr> -->
 
 <tr class="tables-row">
 					<td class="table-label">Tags</td>
