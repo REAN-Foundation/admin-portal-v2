@@ -1,3 +1,4 @@
+<!-- label.svelte  -->
 <script lang="ts">
 	let {
 		text = '',

@@ -62,67 +62,35 @@
 	};
 </script>
 
-{#if href}
-	<a
-		{href}
-		class={`${baseClasses} ${variantClasses[variant]} ${variant === 'icon' ? '' : sizeClasses[size]} ${disabled ? 'pointer-events-none opacity-50' : ''}`}
-		aria-disabled={disabled}
-	>
-		{#if variant === 'icon' && icon}
-			<div class="group relative">
-				<Icon {icon} class={iconSizes[iconSize]} style={color ? `color: ${color}` : undefined} />
-				{#if tooltip}
-					<div
-						class="absolute bottom-full left-1/2 z-50 mb-3 -translate-x-1/2 rounded bg-gray-500 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100"
-					>
-						{tooltip}
-					</div>
-				{/if}
-			</div>
-		{:else}
-			{#if iconBefore}
-				<Icon icon={iconBefore} class={`mr-1 ${iconSizes[iconSize]}`} />
+<svelte:element
+	this={href ? 'a' : 'button'}
+	class={`${baseClasses} ${variantClasses[variant]} ${variant === 'icon' ? '' : sizeClasses[size]} ${disabled ? 'pointer-events-none opacity-50' : ''}`}
+	{disabled}
+	aria-disabled={disabled}
+	{...href ? { href } : { type, onclick }}
+>
+	{#if variant === 'icon' && icon}
+		<div class="group relative">
+			<Icon {icon} class={iconSizes[iconSize]} style={color ? `color: ${color}` : undefined} />
+			{#if tooltip}
+				<div
+					class="absolute bottom-full left-1/2 z-50 mb-3 -translate-x-1/2 rounded bg-gray-500 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100"
+				>
+					{tooltip}
+				</div>
 			{/if}
-			{#if text}
-				{text}
-			{:else}
-				{@render children()}
-			{/if}
-			{#if iconAfter}
-				<Icon icon={iconAfter} class={`ml-1 ${iconSizes[iconSize]}`} />
-			{/if}
+		</div>
+	{:else}
+		{#if iconBefore}
+			<Icon icon={iconBefore} class={`mr-1 ${iconSizes[iconSize]}`} />
 		{/if}
-	</a>
-{:else}
-	<button
-		{type}
-		class={`${baseClasses} ${variantClasses[variant]} ${variant === 'icon' ? '' : sizeClasses[size]} ${disabled ? 'pointer-events-none opacity-50' : ''}`}
-		{disabled}
-		{onclick}
-	>
-		{#if variant === 'icon' && icon}
-			<div class="group relative">
-				<Icon {icon} class={iconSizes[iconSize]} style={color ? `color: ${color}` : undefined} />
-				{#if tooltip}
-					<div
-						class="absolute bottom-full left-1/2 z-50 mb-3 -translate-x-1/2 rounded bg-gray-500 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100"
-					>
-						{tooltip}
-					</div>
-				{/if}
-			</div>
+		{#if text}
+			{text}
 		{:else}
-			{#if iconBefore}
-				<Icon icon={iconBefore} class={`mr-1 ${iconSizes[iconSize]}`} />
-			{/if}
-			{#if text}
-				{text}
-			{:else}
-				{@render children()}
-			{/if}
-			{#if iconAfter}
-				<Icon icon={iconAfter} class={`ml-1 ${iconSizes[iconSize]}`} />
-			{/if}
+			{@render children()}
 		{/if}
-	</button>
-{/if}
+		{#if iconAfter}
+			<Icon icon={iconAfter} class={`ml-1 ${iconSizes[iconSize]}`} />
+		{/if}
+	{/if}
+</svelte:element>

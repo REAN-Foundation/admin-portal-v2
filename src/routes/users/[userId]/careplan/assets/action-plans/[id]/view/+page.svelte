@@ -5,6 +5,7 @@
 	import type { PageServerData } from './$types';
 	import Button from '$lib/components/button/button.svelte';
 	import Label from '$lib/components/label/label.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
 
 	////////////////////////////////////////////////////////
 
@@ -42,7 +43,7 @@
 
 <div class="mx-auto w-full px-6 py-4">
 	<div class="form-headers">
-		<h2 class="form-titles">View Action Plan</h2>
+		<Heading text="View Action Plan" />
 		<a href={assetRoute} class="cancel-btn">
 			<Icon icon="material-symbols:close-rounded" />
 		</a>
@@ -79,12 +80,7 @@
 		</tbody>
 	</table>
 	<div class=" btn-container">
-		<Button
-			href={editRoute}
-			text="Edit"
-			variant="primary"
-			iconBefore="mdi:edit"
-			iconSize="md"
+		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
 		></Button>
 	</div>
 </div>

@@ -11,6 +11,7 @@
 	import Input from '$lib/components/input/input.svelte';
 	import Textarea from '$lib/components/textarea/textarea.svelte';
 	import Label from '$lib/components/label/label.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
 
 	////////////////////////////////////////////////////////////////////////////
 	let { data, form } = $props();
@@ -99,7 +100,7 @@
 <div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Create Action Plan</h2>
+			<Heading text="Create Action Plan" />
 			<a href={assetRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
