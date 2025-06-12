@@ -110,8 +110,8 @@ function onSearchInput(e, field: 'name' | 'code') {
 			if (field === 'code') codeSearch = keyword;
 
 			searchTenants({
-				nameSearch,
-				codeSearch,
+				name: nameSearch,
+				code: codeSearch,
 				itemsPerPage: paginationSettings.limit,
 				pageIndex: 0,
 				sortBy,
@@ -150,8 +150,8 @@ function onSearchInput(e, field: 'name' | 'code') {
 		}
 		sortBy = columnName;
 		searchTenants({
-				nameSearch,
-				codeSearch,
+				name: nameSearch,
+				code: codeSearch,
 				itemsPerPage: paginationSettings.limit,
 				pageIndex: 0,
 				sortBy,
@@ -167,8 +167,8 @@ function onSearchInput(e, field: 'name' | 'code') {
 	function onItemsPerPageChange() {
 		paginationSettings.page = 0; // reset to first page
 		searchTenants({
-				nameSearch,
-				codeSearch,
+				name: nameSearch,
+				code: codeSearch,
 				itemsPerPage: paginationSettings.limit,
 				pageIndex: 0,
 				sortBy,
@@ -178,8 +178,8 @@ function onSearchInput(e, field: 'name' | 'code') {
 
 	function onPageChange() {
 		searchTenants({
-				nameSearch,
-				codeSearch,
+				name: nameSearch,
+				code: codeSearch,
 				itemsPerPage: paginationSettings.limit,
 				pageIndex: 0,
 				sortBy,
@@ -203,8 +203,8 @@ function onSearchInput(e, field: 'name' | 'code') {
 			toastMessage(res);
 		}
 		searchTenants({
-				nameSearch,
-				codeSearch,
+				name: nameSearch,
+				code: codeSearch,
 				itemsPerPage: paginationSettings.limit,
 				pageIndex: 0,
 				sortBy,

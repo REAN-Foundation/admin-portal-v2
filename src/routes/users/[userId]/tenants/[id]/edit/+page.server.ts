@@ -1,6 +1,6 @@
-import { error, type RequestEvent } from '@sveltejs/kit';
+import { type RequestEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getTenantById, updateTenant } from '../../../../../api/services/reancare/tenants';
+import { getTenantById } from '../../../../../api/services/reancare/tenants';
 
 /////////////////////////////////////////////////////////////////////////
 
