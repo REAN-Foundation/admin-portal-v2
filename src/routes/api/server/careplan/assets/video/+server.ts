@@ -44,9 +44,9 @@ export const POST = async (event: RequestEvent) => {
 			data.PathUrl,
 			userId,
 			data.Tags,
-			data.TenantId,
-			data.Version
-		);
+			data.Version,
+            data.TenantId
+            );
 
 		return ResponseHandler.success(response);
 	} catch (error) {

@@ -106,9 +106,9 @@ export const PUT = async (event: RequestEvent) => {
 			data.Description,
 			data.PathUrl,
 			data.Tags,
-			data.TenantId,
-			data.Version
-		);
+			data.Version,
+            data.TenantId
+            );
 
 		return ResponseHandler.success(response);
 	} catch (error) {

@@ -106,10 +106,9 @@ export const PUT = async (event: RequestEvent) => {
 			data.Description,
 			data.AdditionalResources,
 			data.Tags,
-			data.TenantId,
-			data.Version
-		);
-
+			data.Version,
+            data.TenantId
+            );
 		return ResponseHandler.success(response);
 	} catch (error) {
 		console.error('Error updating Word Power:', error);

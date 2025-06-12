@@ -93,8 +93,9 @@ export const PUT = async (event: RequestEvent) => {
             data.Template,
             data.ReferenceTemplateCode,
             data.Tags,
-            data.TenantId,
-            data.Version ?? '');
+            data.Version ?? '',
+            data.TenantId
+            );
         return ResponseHandler.success(response);
     } catch (error) {
         console.error("Error updating assessment:", error);

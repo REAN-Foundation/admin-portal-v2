@@ -93,8 +93,9 @@ export const PUT = async (event: RequestEvent) => {
             data.IntensityLevel,
             data.RecommendedDurationMin,
             data.Tags,
-            data.TenantId,
-            data.Version ?? '');
+            data.Version,
+            data.TenantId
+            );
 
         return ResponseHandler.success(response);
     } catch (error) {

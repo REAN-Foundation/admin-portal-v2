@@ -39,9 +39,8 @@ export const POST = async (event: RequestEvent) => {
 			data.AdditionalResources,
 			data.Tags,
 			data.Version,
-			data.TenantId,
-		);
-
+            data.TenantId
+            );
 		return ResponseHandler.success(response);
 	} catch (error) {
 		console.error('Error creating Word power:', error);

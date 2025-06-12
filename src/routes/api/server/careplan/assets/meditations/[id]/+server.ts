@@ -92,8 +92,9 @@ export const PUT = async (event: RequestEvent) => {
             data.ExerciseType,
             data.RecommendedDurationMin,
             data.Tags,
-            data.TenantId,
-            data.Version ?? '');
+            data.Version,
+            data.TenantId
+            );
 
         return ResponseHandler.success(response);
     } catch (error) {
