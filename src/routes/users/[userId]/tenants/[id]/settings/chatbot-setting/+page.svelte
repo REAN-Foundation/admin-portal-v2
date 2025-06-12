@@ -296,13 +296,12 @@
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 			<!-- Stepper -->
 
-			<div class="my-6 flex flex-col items-center justify-center">
-				<div class="flex items-center">
+			<div class="w-full py-4">
+				<div class="flex w-full items-center">
 					{#each Array(totalSteps) as _, index}
 						<!-- Step circle -->
-						<div class="flex items-center">
-							<div
-								class={`step-number 
+						<div
+							class={`step-number 
 					${
 						index < currentSection
 							? 'step-completed'
@@ -310,18 +309,17 @@
 								? 'stepper-active'
 								: 'stepper-inactive'
 					}`}
-							>
-								{index < currentSection ? index + 1 : index + 1}
-							</div>
-
-							<!-- Line between steps -->
-							{#if index < totalSteps - 1}
-								<div
-									class={`mx-2 h-0.5 w-6 
-						${index < currentSection ? 'filled-line' : 'bg-gray-300'}`}
-								></div>
-							{/if}
+						>
+							{index < currentSection ? index + 1 : index + 1}
 						</div>
+
+						<!-- Line between steps -->
+						{#if index < totalSteps - 1}
+							<div
+								class="mx-1 h-0.5 flex-1 bg-gray-300"
+								class:bg-blue-600={index < currentSection - 1}
+							></div>
+						{/if}
 					{/each}
 				</div>
 
