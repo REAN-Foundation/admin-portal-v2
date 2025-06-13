@@ -11,14 +11,17 @@
 	let id = data.promptTemplate.id;
 	let name = data.promptTemplate.Name;
 	let description = data.promptTemplate.Description;
-	let content = data.promptTemplate.Content;
-	let subgroup = data.promptTemplate.SubGroup;
-	let type = data.promptTemplate.Type;
-	let category = data.promptTemplate.Category;
+	let prompt = data.promptTemplate.Prompt;
+	let model = data.promptTemplate.Model;
+	let group = data.promptTemplate.Group;
+	let useCaseType = data.promptTemplate.UseCaseType;
 	let variable = data.promptTemplate.Variables;
-    console.log('variable', variable);
-    
-	let version = data.promptTemplate.Version;
+	let temperature = data.promptTemplate.Temperature;
+	let topP = data.promptTemplate.TopP;
+	let frequencyPenalty = data.promptTemplate.FrequencyPenalty;
+	let presencePenalty = data.promptTemplate.PresencePenalty;
+
+
 
 	const userId = page.params.userId;
 	const editRoute = `/users/${userId}/bot-content/prompt-template/${id}/edit`;
@@ -58,7 +61,7 @@
 						<th>View </th>
 						<th class="text-end">
 							<a href={promptsRoute} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded"/>
+								<Icon icon="material-symbols:close-rounded" />
 							</a>
 						</th>
 					</tr>
@@ -72,31 +75,43 @@
 						<td>Description</td>
 						<td>{description}</td>
 					</tr>
-					<tr>
-						<td>Content</td>
-						<td>{content}</td>
-					</tr>
 
 					<tr>
+						<td>Prompt</td>
+						<td>{prompt}</td>
+					</tr>
+					<tr>
+						<td>Model</td>
+						<td>{model}</td>
+					</tr><tr>
 						<td>SubGroup</td>
-						<td>{subgroup}</td>
+						<td>{group}</td>
 					</tr>
 					<tr>
 						<td>Type</td>
-						<td>{type}</td>
+						<td>{useCaseType}</td>
 					</tr>
-					<tr>
-						<td>Category</td>
-						<td>{category}</td>
-					</tr>
+
 					<tr>
 						<td>Variable</td>
 						<td>{variable}</td>
 					</tr>
+					<tr>
+						<td>Temperature</td>
+						<td>{temperature}</td>
+					</tr>
+					<tr>
+						<td>Top P</td>
+						<td>{topP}</td>
+					</tr>
 
 					<tr>
-						<td>Version</td>
-						<td>{version}</td>
+						<td>Frequency Penalty</td>
+						<td>{frequencyPenalty}</td>
+					</tr>
+					<tr>
+						<td>Presence Penalty</td>
+						<td>{presencePenalty}</td>
 					</tr>
 				</tbody>
 			</table>
