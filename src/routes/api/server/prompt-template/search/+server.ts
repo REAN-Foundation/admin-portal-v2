@@ -13,13 +13,8 @@ export const GET = async (event: RequestEvent) => {
 		const searchParams: URLSearchParams = event.url.searchParams;
 		const searchFilters = {
 			name: searchParams.get('name') ?? undefined,
-			orderBy: searchParams.get('sortBy') ?? 'CreatedAt',
-			order: searchParams.get('sortOrder') ?? 'ascending',
-			itemsPerPage: parseInt(searchParams.get('itemsPerPage') ?? '10'),
-			pageIndex: parseInt(searchParams.get('pageIndex') ?? '0')
 		};
 
-		console.log('Search parms: ', searchParams);
 		const response = await searchPromptTemplate(sessionId, searchFilters);
 		
 		return ResponseHandler.success(response);
