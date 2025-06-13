@@ -18,22 +18,32 @@
 			| 'tel'
 			| 'url'
 			| 'date'
-			| 'time';
+			| 'time'
+			| 'checkbox';
 		placeholder?: string;
-		value?: string;
+		value?: string | boolean;
 		error?: string;
 		className?: string;
 	}>();
 </script>
 
 <div>
-	<input
-		bind:value
-		{name}
-		{type}
-		{placeholder}
-		class={`input ${error ? 'input-text-error' : ''} ${className}`}
-	/>
+	{#if type === 'checkbox'}
+		<input
+			type="checkbox"
+			{name}
+			bind:checked={value}
+			class={`checkbox ${error ? 'input-text-error' : ''} ${className}`}
+		/>
+	{:else}
+		<input
+			{name}
+			{type}
+			{placeholder}
+			bind:value
+			class={`input  ${error ? 'input-text-error' : ''} ${className}`}
+		/>
+	{/if}
 
 	{#if error}
 		<p class="error-text">{error}</p>
