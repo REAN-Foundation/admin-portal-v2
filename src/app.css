@@ -762,7 +762,7 @@ tr {
 }
 
 .input-text-error {
-	@apply border-red-600 text-[var(--color-error)];
+	@apply border-red-600;
 }
 
 .text-error {
