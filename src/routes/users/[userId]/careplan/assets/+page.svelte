@@ -4,7 +4,6 @@
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-	import { invalidate } from '$app/navigation';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
@@ -16,14 +15,13 @@
 
 	let { data }: { data: PageServerData } = $props();
 
+	let debounceTimeout;
 	let isLoading = $state(false);
 	let assets = $state(data.assets.Items);
 	let retrivedAssets = $derived(assets);
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
 	let isDeleting = $state(false);
-
-	let debounceTimeout;
 	let searchKeyword = $state(undefined);
 	let promise = $state();
 
@@ -88,16 +86,18 @@
 	const viewRoute = (rowId: string) =>
 		`/users/${userId}/careplan/assets/${assetRouteMap[selectedAssetType]}/${rowId}/view`;
 
-	async function searchAssets(filters) {
+	const breadCrumbs = [{ name: 'Assets', path: assetRoute }];
+
+	async function searchAssets(model) {
 		try {
 			const selectedAssetRoute = assetRouteMap[selectedAssetType];
 			let url = `/api/server/careplan/assets/search?assetType=${selectedAssetRoute}`;
-			url += `&sortOrder=${filters.sortOrder ?? sortOrder}`;
-			url += `&sortBy=${filters.sortBy ?? sortBy}`;
-			url += `&itemsPerPage=${filters.itemsPerPage ?? paginationSettings.limit}`;
-			url += `&pageIndex=${filters.pageIndex ?? paginationSettings.page}`;
-			if (filters.nameAssetSearch) url += `&name=${filters.nameAssetSearch}`;
-			if (filters.codeAssetSearch) url += `&code=${filters.codeAssetSearch}`;
+			url += `&sortOrder=${model.sortOrder ?? sortOrder}`;
+			url += `&sortBy=${model.sortBy ?? sortBy}`;
+			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+			if (model.nameAssetSearch) url += `&name=${model.nameAssetSearch}`;
+			if (model.codeAssetSearch) url += `&code=${model.codeAssetSearch}`;
 
 			const res = await fetch(url, {
 				method: 'GET',
@@ -119,7 +119,7 @@
 				...item,
 				index: index + 1
 			}));
-			searchKeyword = filters.nameAssetSearch;
+			searchKeyword = model.nameAssetSearch;
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -138,7 +138,7 @@
 			if (field === 'code') codeAssetSearch = keyword;
 
 			searchAssets({
-				nameAssetSearch,
+				nameAssetSearch: searchKeyword,
 				codeAssetSearch,
 				itemsPerPage: paginationSettings.limit,
 				pageIndex: 0,
@@ -162,6 +162,7 @@
 		sortBy = columnName;
 		searchAssets({
 			nameAssetSearch: searchKeyword,
+			codeAssetSearch,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: 0,
 			sortBy,
@@ -185,6 +186,7 @@
 		paginationSettings.page = 0; // reset to first page
 		searchAssets({
 			nameAssetSearch: searchKeyword,
+			codeAssetSearch,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: 0,
 			sortBy,
@@ -195,6 +197,7 @@
 	function onPageChange() {
 		searchAssets({
 			nameAssetSearch: searchKeyword,
+			codeAssetSearch,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -222,22 +225,13 @@
 		}
 		searchAssets({
 			nameAssetSearch: searchKeyword,
+			codeAssetSearch,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
 	};
-
-	let breadCrumbs = $state();
-	$effect(() => {
-		breadCrumbs = [
-			{
-				name: 'Assets',
-				path: assetRoute
-			}
-		];
-	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
