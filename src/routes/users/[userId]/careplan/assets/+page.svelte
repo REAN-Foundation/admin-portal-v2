@@ -170,18 +170,11 @@
 		});
 	}
 
-	const onSelectAssetType = async (e) => {
-		selectedAssetType = e.currentTarget.value;
-		await searchAssets({
-			sessionId: data.sessionId,
-			selectedAssetType
-		});
-	};
-
 	const handleDeleteClick = (id: string) => {
 		openDeleteModal = true;
 		idToBeDeleted = id;
 	};
+
 	function onItemsPerPageChange() {
 		paginationSettings.page = 0; // reset to first page
 		searchAssets({
@@ -204,6 +197,15 @@
 			sortOrder
 		});
 	}
+
+	const onSelectAssetType = async (e) => {
+		selectedAssetType = e.currentTarget.value;
+		await searchAssets({
+			sessionId: data.sessionId,
+			selectedAssetType
+		});
+	};
+
 	const handleAssetsDelete = async (id) => {
 		console.log('Inside handleAssetsDelete', id);
 		const response = await fetch(
