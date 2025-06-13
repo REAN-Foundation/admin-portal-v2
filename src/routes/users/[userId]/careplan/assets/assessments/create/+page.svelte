@@ -28,7 +28,8 @@
 
 	data.title = 'Create Assessment';
 	const userId = page.params.userId;
-	const tenantId = data?.sessionUser?.tenantId;
+	// const tenantId = data?.sessionUser?.tenantId;
+	const tenantId = data?.tenantId;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/assessments/create`;
@@ -55,6 +56,7 @@
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentCreateModel);
+			console.log("Validation result", validationResult)
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
