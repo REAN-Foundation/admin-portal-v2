@@ -37,6 +37,7 @@
 	let faviconUrl = $derived(chatBotSetting.ChatBot.Favicon);
 	let disabled = $state(data.commonSettings.UserInterfaces.ChatBot);
 	let edit = $state(false);
+	let fileName = $state('')
 
 	const totalSteps = 3;
 	let currentSection = $state(0);
@@ -71,6 +72,7 @@
 	const onFileSelected = async (e) => {
 		const input = e.target as HTMLInputElement;
 		const file = input.files?.[0];
+		fileName = file.name
 
 		const fileCreateModel: FaviconUploadModel = {
 			UploadFile: file,
@@ -80,6 +82,8 @@
 
 		const fileValidationResult = imageUploadSchema.safeParse(fileCreateModel);
 
+		console.log("validation result", fileValidationResult);
+		
 		if (!fileValidationResult.success) {
 			errors = Object.fromEntries(
 				Object.entries(fileValidationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -364,6 +368,7 @@
 						bind:showCancelModel
 						{onFileSelected}
 						bind:currentSection
+						{fileName}
 					/>
 				</div>
 			</div>

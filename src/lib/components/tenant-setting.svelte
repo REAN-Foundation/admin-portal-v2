@@ -32,7 +32,7 @@
 		Clinical: '/tenant-setting/common-setting/clinical.svg#icon',
 		External: '/tenant-setting/common-setting/external.svg#icon',
 		Wellness: '/tenant-setting/common-setting/external.svg#icon',
-		EHR: '/tenant-setting/common-setting/ehr.svg#icon',
+		EHR: '/tenant-setting/common-setting/ehr/ehr.svg#icon',
 
 		Affiliations: '/tenant-setting/common-setting/external.svg#icon',
 		Analysis: '/tenant-setting/common-setting/external.svg#icon',
@@ -91,7 +91,7 @@
 					>
 						{#each Object.entries(groupItems) as [key, value]}
 							{@const meta = getSettingMeta(groupName, key)}
-							<div class="flex items-center md:gap-3">
+							<!-- <div class="flex items-center md:gap-3">
 								{#if edit === true && value.Enabled === true}
 									<span class="text-green-500">✅</span>
 								{:else if edit === true && value.Enabled !== true}
@@ -107,6 +107,30 @@
 									</label>
 								{/if}
 								<span>{meta?.Name ?? key}</span>
+							</div> -->
+							<div class=" border-hover rounded-xl border p-4 text-gray-700">
+								<div class="flex items-center justify-between gap-3">
+									<!-- Left: App Icon -->
+									<Icon icon={meta?.Path} class="h-5 w-5 hidden md:block" />
+
+									<!-- Middle: Name & Description -->
+									<div class="flex flex-grow flex-col">
+										<span class="text-sm font-medium">{meta?.Name ?? key}</span>
+										<p class="text-sm">
+											short description for {meta?.Name ?? key}.
+										</p>
+									</div>
+
+									<!-- Right: Toggle + Optional Edit -->
+									<div class="flex items-center">
+										<input
+											type="checkbox"
+											class="checkbox checkbox-primary scale-125 cursor-pointer"
+											bind:checked={commonSetting[groupName][key].Enabled}
+											disabled={edit}
+										/>
+									</div>
+								</div>
 							</div>
 						{/each}
 					</div>

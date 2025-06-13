@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Icons from '$lib/components/icons.svelte';
+	import Tooltip from '$lib/components/tooltip.svelte';
 	import { languages } from '$lib/utils/language';
 	import Icon from '@iconify/svelte';
 
@@ -12,7 +13,8 @@
 		getSettingMeta,
 		showCancelModel = $bindable(),
 		onFileSelected,
-		currentSection = $bindable()
+		currentSection = $bindable(),
+		fileName
 	} = $props();
 	$inspect(edit, 'edit');
 
@@ -108,16 +110,25 @@
 			<label for="favicon" class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
 				>Favicon</label
 			>
-			<div class="w-[100%]">
+			<div class="w-[100%] flex gap-3">
 				<label class="table-btn variant-filled-secondary">
 					Select File
 					<input type="file" class="hidden" onchange={onFileSelected} />
 				</label>
-				<input
+				<!-- <input
 					type="file"
-					class="hidden"
+					class=""
 					placeholder="select Image"
 					onchange={async (e) => await onFileSelected(e)}
+				/> -->
+
+				<input
+					type="text"
+					class="input bg-gray-100 text-gray-700 focus:outline-none"
+					onchange={async (e) => await onFileSelected(e)}
+					value={fileName}
+					readonly
+					placeholder="No file selected"
 				/>
 			</div>
 			{#if errors?.UploadFile}
@@ -204,7 +215,7 @@
 								{#each Object.entries(groupItems) as [key, value]}
 									{@const meta = getSettingMeta(groupName, key)}
 
-									<div class="flex items-center gap-3">
+									<!-- <div class="flex items-center gap-3">
 										<label class="flex items-center gap-2">
 											<input
 												type="checkbox"
@@ -217,7 +228,31 @@
 										<Icon icon={meta?.IconPath} width="16" height="16" class="h-5 w-5" />
 
 										<span>{meta?.Name ?? key}</span>
-										<!-- {JSON.stringify(meta)} -->
+									</div> -->
+
+									<div class=" border-hover rounded-xl border p-4 text-gray-700">
+										<div class="flex items-center justify-between gap-3">
+											<!-- Left: App Icon -->
+											<Icon icon={meta?.IconPath} class="h-5 w-5" />
+
+											<!-- Middle: Name & Description -->
+											<div class="flex flex-grow flex-col">
+												<span class="text-sm font-medium">{meta?.Name ?? key}</span>
+												<p class="text-sm">
+													short description for {meta?.Name ?? key}.
+												</p>
+											</div>
+
+											<!-- Right: Toggle + Optional Edit -->
+											<div class="flex items-center">
+												<input
+													type="checkbox"
+													class="checkbox checkbox-primary scale-125 cursor-pointer"
+													bind:checked={chatBotSetting.ChatBot[groupName][key]}
+													disabled={!edit}
+												/>
+											</div>
+										</div>
 									</div>
 								{/each}
 							</div>
@@ -236,42 +271,38 @@
 				}, []) as row}
 				<div class="flex gap-4">
 					{#each row as [groupName, groupItems]}
-						<div class="w-1/2">
-							<div class="flex h-20 items-center text-gray-700 justify-between rounded-xl border p-4">
+						<div class=" w-1/2">
+							<div
+								class="flex items-center justify-between gap-3 rounded-xl border p-4 text-gray-700"
+							>
 								<!-- Left: App Icon -->
-								<Icons
-									cls=""
-									h="24px"
-									w="24px"
-									iconPath="/tenant-setting/chatbot/whatsapp.svg#icon"
-								/>
+								<Icon icon="mdi:account-cog" class="h-5 w-5" />
 
 								<!-- Middle: Name & Description -->
-								<div class="flex flex-grow flex-col px-4">
-									<span class="text-base font-medium">{groupName}</span>
-									<p class="text-sm ">
-										This is a short description for {groupName} chatbot setting.
+								<div class="flex flex-grow flex-col">
+									<span class="text-sm font-medium">{groupName}</span>
+									<p class="text-sm">
+										short description for {groupName}
 									</p>
 								</div>
 
 								<!-- Right: Toggle + Optional Edit -->
-								<div class="flex items-center gap-2">
+								<div class="flex items-center">
 									{#if groupName === 'Consent' && groupItems === true && edit === true}
-										<Icon
-											icon="material-symbols:edit-outline"
-											height="15"
-											width="15"
-											onclick={() => (showCancelModel = true)}
-										/>
+										<Tooltip text="Edit" forceShow={true}>
+											<Icon
+												icon="material-symbols:edit-outline"
+												class="mx-3 h-4 w-4 cursor-pointer"
+												onclick={() => (showCancelModel = true)}
+											/>
+										</Tooltip>
 									{/if}
-									<label class="flex cursor-pointer items-center">
-										<input
-											type="checkbox"
-											class="checkbox checkbox-primary scale-125"
-											bind:checked={chatBotSetting.ChatBot[groupName]}
-											disabled={!edit}
-										/>
-									</label>
+									<input
+										type="checkbox"
+										class="checkbox checkbox-primary scale-125 cursor-pointer"
+										bind:checked={chatBotSetting.ChatBot[groupName]}
+										disabled={!edit}
+									/>
 								</div>
 							</div>
 						</div>

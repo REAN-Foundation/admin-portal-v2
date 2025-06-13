@@ -205,13 +205,12 @@
 								</button>
 
 								{#if openTab === groupName}
-									<div class="flex w-full justify-center py-5">
-										<div class="mx-20 grid w-full grid-cols-2 gap-x-10 gap-y-6 lg:grid-cols-2">
+										<div class=" px-4 py-4 grid md:grid-cols-2 gap-3">
 											{#each Object.entries(groupItems) as [key, value]}
 												{@const meta = getSettingMeta(groupName, key)}
 
-												<div class="flex items-center gap-3">
-													{#if edit === true && formSetting.Forms[groupName][key] === true}
+												<!-- <div class="flex items-center gap-3"> -->
+												<!-- {#if edit === true && formSetting.Forms[groupName][key] === true}
 														<span class="text-green-500">✅</span>
 													{:else if edit === true && formSetting.Forms[groupName][key] !== true}
 														<span class="text-sm">❌</span>
@@ -224,38 +223,62 @@
 																bind:checked={formSetting.Forms[groupName][key]}
 															/>
 														</label>
-													{/if}
-													<!-- <Icons
+													{/if} -->
+												<!-- <Icons
 														cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 fill-none my-2"
 														h="70%"
 														w="70%"
 														iconPath={meta?.IconPath}
 													/> -->
-													<span>{meta?.Name ?? key}</span>
+												<!-- <span>{meta?.Name ?? key}</span>
+												</div> -->
+
+												<div class=" border-hover rounded-xl border p-4 text-gray-700">
+													<div class="flex items-center justify-between gap-3">
+														<!-- Left: App Icon -->
+														<Icon icon="mdi:vector-link" class="h-5 w-5 hidden md:block" />
+
+														<!-- Middle: Name & Description -->
+														<div class="flex flex-grow flex-col">
+															<span class="text-sm font-medium">{meta?.Name ?? key}</span>
+															<p class="text-sm">
+																short description for {meta?.Name ?? key}.
+															</p>
+														</div>
+
+														<!-- Right: Toggle + Optional Edit -->
+														<div class="flex items-center">
+															<input
+																type="checkbox"
+																class="checkbox checkbox-primary scale-125 cursor-pointer"
+																bind:checked={formSetting.Forms[groupName][key]}
+																disabled={!edit}
+															/>
+														</div>
+													</div>
 												</div>
 											{/each}
 										</div>
-									</div>
 								{/if}
 							</div>
 						{/if}
 					{/each}
-					{#each Object.entries(formSetting.Forms) as [groupName, groupItems]}
-						{#if typeof groupItems === 'boolean'}
-							<div class="flex items-center gap-2 px-1">
+
+					<div class=" grid md:grid-cols-2 gap-4">
+						{#each Object.entries(formSetting.Forms) as [groupName, groupItems]}
+							{#if typeof groupItems === 'boolean'}
+								<!-- <div class="flex items-center gap-2 px-1">
 								{#if edit === true && groupItems === true}
 									<span class="text-green-500">✅</span>
 								{:else if edit === true && groupItems !== true}
 									<span>❌</span>
 								{:else}
-									<!-- <label class="flex items-center gap-2"> -->
 									<input
 										type="checkbox"
 										class="checkbox checkbox-primary"
 										disabled={!edit}
 										bind:checked={formSetting.Forms[groupName]}
 									/>
-									<!-- </label> -->
 								{/if}
 								<Icons
 									cls="stroke-slate-800 my-2 stroke-2 fill-none"
@@ -268,9 +291,9 @@
 
 									<p class=" text-sm">Settings under {groupName}</p>
 								</div>
-							</div>
+							</div> -->
 
-							<!-- <div class="flex items-center justify-end gap-2">
+								<!-- <div class="flex items-center justify-end gap-2">
 								<InfoIcon
 									cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 cursor-pointer fill-none my-2"
 									h="80%"
@@ -279,8 +302,34 @@
 									title={`Settings under ${groupName}`}
 								/>
 							</div> -->
-						{/if}
-					{/each}
+
+								<div class=" border-hover rounded-xl border p-4 text-gray-700">
+									<div class="flex items-center justify-between gap-3">
+										<!-- Left: App Icon -->
+										<Icon icon="mdi:vector-link" class="h-5 w-5" />
+
+										<!-- Middle: Name & Description -->
+										<div class="flex flex-grow flex-col">
+											<span class="text-sm font-medium">{groupName}</span>
+											<p class="text-sm">
+												short description for {groupName}.
+											</p>
+										</div>
+
+										<!-- Right: Toggle + Optional Edit -->
+										<div class="flex items-center">
+											<input
+												type="checkbox"
+												class="checkbox checkbox-primary scale-125 cursor-pointer"
+												bind:checked={formSetting.Forms[groupName]}
+												disabled={!edit}
+											/>
+										</div>
+									</div>
+								</div>
+							{/if}
+						{/each}
+					</div>
 				</div>
 				<div class="button-container">
 					{#await promise}
