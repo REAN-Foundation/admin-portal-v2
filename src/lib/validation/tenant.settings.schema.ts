@@ -2,11 +2,11 @@ import { TenantSettingsTypes } from "$lib/types/tenant.settings.types";
 import { z } from "zod";
 
 export const tenantSettingTypeSchema = z.nativeEnum(TenantSettingsTypes).refine(
-  (value) =>
-    Object.values(TenantSettingsTypes).includes(value),
-  {
-    message: `Value should be one of: ${Object.values(TenantSettingsTypes).join(', ')}.`
-  }
+    (value) =>
+        Object.values(TenantSettingsTypes).includes(value),
+    {
+        message: `Value should be one of: ${Object.values(TenantSettingsTypes).join(', ')}.`
+    }
 );
 
 const SettingSchema = z.object({
@@ -93,8 +93,8 @@ export const EducationalSchema = z.object({
 });
 
 export const AnalysisSettingsSchema = z.object({
-    Analytics: SettingSchema,
-    Reporting: SettingSchema,
+    CustomQueries: SettingSchema,
+    Quicksight: SettingSchema,
 });
 
 export const GeneralSchema = z.object({
@@ -102,8 +102,33 @@ export const GeneralSchema = z.object({
     ViewUsers: SettingSchema,
 });
 
+
+
+export const UserInterfacesSchema = z.object({
+    PatientApp: z.boolean({
+        required_error: "WhatsApp is required",
+        invalid_type_error: "WhatsApp must be a boolean",
+    }),
+    ChatBot: z.boolean({
+        required_error: "WhatsApp is required",
+        invalid_type_error: "WhatsApp must be a boolean",
+    }),
+    Forms: z.boolean({
+        required_error: "WhatsApp is required",
+        invalid_type_error: "WhatsApp must be a boolean",
+    }),
+    PatientPortal: z.boolean({
+        required_error: "WhatsApp is required",
+        invalid_type_error: "WhatsApp must be a boolean",
+    }),
+    Followup: z.boolean({
+        required_error: "WhatsApp is required",
+        invalid_type_error: "WhatsApp must be a boolean",
+    }),
+})
+
 export const CommonSettingsSchema = z.object({
-    //   UserInterfaces: UserInterfacesSchema,
+    UserInterfaces: UserInterfacesSchema,
     Clinical: ClinicalFeaturesSchema,
     Wellness: WellnessSchema,
     EHR: EHRSchema,
@@ -147,12 +172,12 @@ export const ChatBotSettingsSchema = z.object({
         required_error: "Name is required",
         invalid_type_error: "Name must be a string",
     }),
-    OrganizationName: z.string().optional(),
-    OrganizationLogo: z.string().optional(),
-    OrganizationWebsite: z.string().optional(),
-    Favicon: z.string().optional(),
-    Description: z.string().optional(),
-    DefaultLanguage: z.string().optional(),
+    OrganizationName: z.string().optional().nullable(),
+    OrganizationLogo: z.string().optional().nullable(),
+    OrganizationWebsite: z.string().optional().nullable(),
+    Favicon: z.string().optional().nullable(),
+    Description: z.string().optional().nullable(),
+    DefaultLanguage: z.string().optional().nullable(),
     MessageChannels: MessageChannelsSchema,
     SupportChannels: SupportChannelsSchema,
     Personalization: z.boolean({
@@ -223,7 +248,12 @@ const ReminderTriggerTypeEnum = z.enum([
 
 const HttpMethodEnum = z.enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH']);
 const ResponseTypeEnum = z.enum(['json', 'text', 'form', 'xml']);
-const FileTypeEnum = z.enum(['csv', 'xlsx', 'json', 'xml', 'txt', 'pdf']);
+// const FileTypeEnum = z.enum(['csv', 'xlsx', 'json', 'xml', 'txt', 'pdf']);
+const FileTypeEnum = z.enum(['csv', 'xlsx', 'json', 'xml', 'txt', 'pdf'],
+    {
+        required_error: "FileType is required",
+        invalid_type_error: "FileType must be one of the allowed values",
+    });
 
 const ReminderTriggerSchema = z.object({
     Type: ReminderTriggerTypeEnum,
@@ -309,7 +339,7 @@ export const FormsSettingsSchema = z.object({
 });
 
 // ConsentMessage Schema
-const ConsentMessageSchema = z.object({
+export const ConsentMessageSchema = z.object({
     LanguageCode: z.string().optional(),
     Content: z.string().optional(),
     WebsiteURL: z.string().optional(),

@@ -15,7 +15,10 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 		return true;
 	}
 	if (menuName === 'Analysis') {
-		if (tenantSettings.Common.Analysis.CustomQueries.Enabled || tenantSettings.Common.Analysis.Quicksight.Enabled) {
+		if (
+			tenantSettings.Common.Analysis.CustomQueries.Enabled ||
+			tenantSettings.Common.Analysis.Quicksight.Enabled
+		) {
 			return true;
 		}
 		return false;
@@ -574,14 +577,18 @@ function addAdministrationMenus(
 	const administration_: SidebarMenu = getMenu(menuList, 'Administration');
 	const clients: SidebarMenu = getMenu(menuList, 'Clients');
 	const tenants: SidebarMenu = getMenu(menuList, 'Tenants');
+
 	const personRole: SidebarMenu = getMenu(menuList, 'Person-Role');
 	const userManagement: SidebarMenu = getMenu(menuList, 'User-Managment');
 	const users: SidebarMenu = getMenu(menuList, 'Users');
+
 	administration_?.children.push(clients);
 	administration_?.children.push(tenants);
 	administration_?.children.push(personRole);
 	administration_?.children.push(userManagement);
 	administration_?.children.push(users);
+
+	console.log('Children under tenants after push:', tenants.children);
 
 	const administrationNavigation: NavigationMenu | null = toNavigation(
 		administration_,
