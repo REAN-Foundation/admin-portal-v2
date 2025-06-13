@@ -74,7 +74,7 @@ export const deleteAssessment = async (sessionId: string, assessmentId: string) 
     return await del(sessionId, url, true);
 };
 
-export const getAllAssessmentTemplates = async (sessionId: string) => {
-    const url = CAREPLAN_BACKEND_API_URL + '/assets/templates';
-    return await get(sessionId, url, true);
-};
+// export const getAllAssessmentTemplates = async (sessionId: string) => {
+//     const url = CAREPLAN_BACKEND_API_URL + '/assets/templates';
+//     return await get(sessionId, url, true);
+// };

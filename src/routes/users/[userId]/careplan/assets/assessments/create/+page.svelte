@@ -91,19 +91,6 @@
 		}
 	};
 
-// 	onMount(async () => {
-// 	try {
-// 		const res = await fetch('/api/server/careplan/assets/assessments/template');
-// 		if (res.ok) {
-// 			availableTemplates = await res.json();
-// 		} else {
-// 			console.error('Failed to load templates');
-// 		}
-// 	} catch (error) {
-// 		console.error('Error fetching templates:', error);
-// 	}
-// });
-
 	const onUpdateKeywords = (e: any) => {
 		keywords = e.detail;
 		keywordsStr = keywords?.join(', ');
@@ -182,24 +169,6 @@
 		{/if}
 	</td>
 </tr>
-
-					<!-- <tr class="tables-row">
-	<td class="table-label">Assessment Template</td>
-	<td class="table-data">
-		<select
-			class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
-			bind:value={selectedTemplateCode}
-		>
-			<option value="">Select a Template</option>
-			{#each availableTemplates as template}
-				<option value={template.DisplayId}>{template.Title}</option>
-			{/each}
-		</select>
-		{#if errors?.ReferenceTemplateCode}
-			<p class="text-error">{errors.ReferenceTemplateCode}</p>
-		{/if}
-	</td>
-</tr> -->
 
 <tr class="tables-row">
 					<td class="table-label">Tags</td>
