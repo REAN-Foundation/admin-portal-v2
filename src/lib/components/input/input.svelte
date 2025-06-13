@@ -33,7 +33,7 @@
 			type="checkbox"
 			{name}
 			bind:checked={value}
-			class={`checkbox ${error ? 'input-text-error' : ''} ${className}`}
+			class={`checkbox  checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md  ${error ? 'input-text-error' : ''} ${className}`}
 		/>
 	{:else}
 		<input

@@ -183,30 +183,24 @@
 				<tr class="tables-row">
 					<Label text="Serve List Node Children At Once" />
 					<td class="table-data">
-						<input
-							type="checkbox"
+						<Input
 							name="serveListNodeChildrenAtOnce"
-							bind:checked={serveListNodeChildrenAtOnce}
-							class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2"
+							type="checkbox"
+							bind:value={serveListNodeChildrenAtOnce}
+							error={errors?.ServeListNodeChildrenAtOnce}
 						/>
-						{#if errors?.ServeListNodeChildrenAtOnce}
-							<p class="text-error">{errors?.ServeListNodeChildrenAtOnce}</p>
-						{/if}
 					</td>
 				</tr>
 
 				<tr class="tables-row">
 					<Label text="Scoring Applicable" />
 					<td class="table-data">
-						<input
-							type="checkbox"
+						<Input
 							name="scoringApplicable"
-							bind:checked={scoringApplicable}
-							class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2"
+							type="checkbox"
+							bind:value={scoringApplicable}
+							error={errors?.ScoringApplicable}
 						/>
-						{#if errors?.ScoringApplicable}
-							<p class="text-error">{errors?.ScoringApplicable}</p>
-						{/if}
 					</td>
 				</tr>
 
