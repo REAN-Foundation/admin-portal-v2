@@ -33,7 +33,7 @@
 			type="checkbox"
 			{name}
 			bind:checked={value}
-			class={`checkbox ${error ? 'input-text-error' : ''} ${className}`}
+			class={`checkbox ${error ? '' : ''} ${className}`}
 		/>
 	{:else}
 		<input
@@ -41,7 +41,7 @@
 			{type}
 			{placeholder}
 			bind:value
-			class={`input  ${error ? 'input-text-error' : ''} ${className}`}
+			class={`input  placeholder-gray-400 ${error ? '' : ''} ${className}`}
 		/>
 	{/if}
 
