@@ -250,11 +250,10 @@
 			<span>Edit</span>
 		</button>
 	</div> -->
-	<div class="mx-auto">
-		<div class="health-system-table-container">
+	<div class=" mx-auto my-6 border !border-zinc-200">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<div class="flex items-center justify-between p-2">
-					<h1 class=" text-xl">Follow-Up Setting</h1>
+				<div class="flex items-center justify-between !rounded-b-none border bg-[#F2F3F5] px-5 py-6">
+					<h1 class=" text-xl">Follow-up Settings</h1>
 					<div class="flex items-center gap-2 text-end">
 						<button
 							type="button"
@@ -262,16 +261,19 @@
 							onclick={toggleEdit}
 						>
 							<Icon icon="material-symbols:edit-outline" />
-							<span>{edit ? 'Save' : 'Edit'}</span>
+							<span>{edit ? 'Edit' : 'Save'}</span>
 						</button>
-						<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
+						<a
+							href={tenantRoute}
+							class="inline-flex items-center justify-center rounded-md border-[0.5px] !border-red-200 px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+						>
 							<Icon icon="material-symbols:close-rounded" class=" h-5" />
 						</a>
 					</div>
 				</div>
 				<table class="health-system-table">
 					<thead>
-						<tr>
+						<!-- <tr>
 							<th class="w-[30%]">Follow-Up Setting</th>
 							<th class="w-[70%] text-end">
 								<a href={tenantRoute} class="cancel-btn">
@@ -279,7 +281,7 @@
 								</a>
 							</th>
 						</tr>
-					</thead>
+					</thead> -->
 					<tbody>
 						<tr>
 							<td
@@ -293,7 +295,7 @@
 									<select
 										bind:value=  {followUpSettingUpdateModel.Source}
 										class="w-full rounded border p-2 text-sm"
-										disabled
+										
 									>
 										<option value="None" selected>None</option>
 										<option value="File">Files</option>
@@ -308,7 +310,7 @@
 									<select
 										bind:value={followUpSettingUpdateModel.Source}
 										class="w-full rounded border p-2 text-sm"
-										disabled
+										disabled={!edit}
 									>
 										<option value="None" selected>None</option>
 										<option value="File">Files</option>
@@ -889,7 +891,7 @@
 			</form>
 		</div>
 	</div>
-</div>
+
 {#if showReminderModal}
 	<ReminderScheduleForm bind:showReminderModal bind:newReminder {addSchedule} />
 {/if}

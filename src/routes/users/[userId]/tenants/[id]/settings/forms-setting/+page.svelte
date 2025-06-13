@@ -168,13 +168,13 @@
 									type="button"
 									onclick={() => toggleTab(groupName)}
 									class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-gray-700
-	transition-all duration-100 ease-in-out  ${
-		openTab === groupName
-			? 'rounded-b-none bg-[#F2F2F2] text-black'
-			: `border-hover rounded bg-white`
-	} 
-	`}
-								>
+											transition-all duration-100 ease-in-out  ${
+											openTab === groupName
+											? 'rounded-b-none bg-[#F2F2F2] text-black'
+											: `border-hover rounded bg-white`
+											} 
+										`}
+									>
 									<div class="flex flex-1 items-center gap-2">
 										<Icons
 											cls="stroke-slate-800 my-2 stroke-2 fill-none"
@@ -205,12 +205,12 @@
 								</button>
 
 								{#if openTab === groupName}
-										<div class=" px-4 py-4 grid md:grid-cols-2 gap-3">
-											{#each Object.entries(groupItems) as [key, value]}
-												{@const meta = getSettingMeta(groupName, key)}
+									<div class=" grid gap-3 px-4 py-4 md:grid-cols-2">
+										{#each Object.entries(groupItems) as [key, value]}
+											{@const meta = getSettingMeta(groupName, key)}
 
-												<!-- <div class="flex items-center gap-3"> -->
-												<!-- {#if edit === true && formSetting.Forms[groupName][key] === true}
+											<!-- <div class="flex items-center gap-3"> -->
+											<!-- {#if edit === true && formSetting.Forms[groupName][key] === true}
 														<span class="text-green-500">✅</span>
 													{:else if edit === true && formSetting.Forms[groupName][key] !== true}
 														<span class="text-sm">❌</span>
@@ -224,47 +224,47 @@
 															/>
 														</label>
 													{/if} -->
-												<!-- <Icons
+											<!-- <Icons
 														cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 fill-none my-2"
 														h="70%"
 														w="70%"
 														iconPath={meta?.IconPath}
 													/> -->
-												<!-- <span>{meta?.Name ?? key}</span>
+											<!-- <span>{meta?.Name ?? key}</span>
 												</div> -->
 
-												<div class=" border-hover rounded-xl border p-4 text-gray-700">
-													<div class="flex items-center justify-between gap-3">
-														<!-- Left: App Icon -->
-														<Icon icon="mdi:vector-link" class="h-5 w-5 hidden md:block" />
+											<div class=" border-hover rounded-xl border p-4 text-gray-700">
+												<div class="flex items-center justify-between gap-3">
+													<!-- Left: App Icon -->
+													<Icon icon="mdi:vector-link" class="hidden h-5 w-5 md:block" />
 
-														<!-- Middle: Name & Description -->
-														<div class="flex flex-grow flex-col">
-															<span class="text-sm font-medium">{meta?.Name ?? key}</span>
-															<p class="text-sm">
-																short description for {meta?.Name ?? key}.
-															</p>
-														</div>
+													<!-- Middle: Name & Description -->
+													<div class="flex flex-grow flex-col">
+														<span class="text-sm font-medium">{meta?.Name ?? key}</span>
+														<p class="text-sm">
+															short description for {meta?.Name ?? key}.
+														</p>
+													</div>
 
-														<!-- Right: Toggle + Optional Edit -->
-														<div class="flex items-center">
-															<input
-																type="checkbox"
-																class="checkbox checkbox-primary scale-125 cursor-pointer"
-																bind:checked={formSetting.Forms[groupName][key]}
-																disabled={!edit}
-															/>
-														</div>
+													<!-- Right: Toggle + Optional Edit -->
+													<div class="flex items-center">
+														<input
+															type="checkbox"
+															class="checkbox checkbox-primary scale-125 cursor-pointer"
+															bind:checked={formSetting.Forms[groupName][key]}
+															disabled={!edit}
+														/>
 													</div>
 												</div>
-											{/each}
-										</div>
+											</div>
+										{/each}
+									</div>
 								{/if}
 							</div>
 						{/if}
 					{/each}
 
-					<div class=" grid md:grid-cols-2 gap-4">
+					<div class=" grid gap-4 md:grid-cols-2">
 						{#each Object.entries(formSetting.Forms) as [groupName, groupItems]}
 							{#if typeof groupItems === 'boolean'}
 								<!-- <div class="flex items-center gap-2 px-1">

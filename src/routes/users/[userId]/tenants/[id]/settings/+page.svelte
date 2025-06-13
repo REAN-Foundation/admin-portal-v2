@@ -11,6 +11,7 @@
 
 	let setttings = data.settings.Common;
 	let errors: Record<string, string> = $state({});
+	$inspect(setttings)
 
 	// let disabled = $state(true);
 	let disabled = $state(true);
@@ -51,26 +52,28 @@
 	};
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
+		console.log("I am in settings page",setttings);
 		try {
 			errors = {};
 
-			if (setttings.UserInterfaces.ChatBot === false) {
-				Object.keys(setttings.ChatBot).forEach((key) => {
-					setttings.ChatBot[key] = false;
-				});
-			}
+			// if (setttings.UserInterfaces.ChatBot === false) {
+			// 	Object.keys(setttings.ChatBot).forEach((key) => {
+			// 		setttings.ChatBot[key] = false;
+			// 	});
+			// }
 
-			if (setttings.UserInterfaces.Forms === false) {
-				Object.keys(setttings.Forms).forEach((key) => {
-					setttings.Forms[key] = false;
-				});
-			}
+			// if (setttings.UserInterfaces.Forms === false) {
+			// 	Object.keys(setttings.Forms).forEach((key) => {
+			// 		setttings.Forms[key] = false;
+			// 	});
+			// }
 
-			if (setttings.UserInterfaces.Followup === false) {
-				setttings.Followup.Source = 'None';
-			}
+			// if (setttings.UserInterfaces.Followup === false) {
+			// 	setttings.Followup.Source = 'None';
+			// }
 
-			const validationResult = UserInterfacesSchema.safeParse(setttings);
+			const validationResult = UserInterfacesSchema.safeParse(setttings.UserInterfaces);
+			console.log(validationResult);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -90,7 +93,7 @@
 			const response = await res.json();
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				disabled = false;
+				// disabled = false;
 				return;
 			}
 			if (response.Errors) {
