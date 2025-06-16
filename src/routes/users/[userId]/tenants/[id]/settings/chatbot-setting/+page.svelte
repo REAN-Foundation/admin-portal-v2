@@ -225,7 +225,7 @@
 				console.log('All settings saved successfully.');
 				//
 				toastMessage(chatBotJson);
-				edit = true;
+				edit = false;
 			}
 		} catch (err) {
 			console.error('Submit Error:', err);
