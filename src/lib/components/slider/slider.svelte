@@ -2,7 +2,7 @@
 	let {
 		value = $bindable(),
 		min = 0,
-		max = '100',
+		max = 100,
 		step = 0.1,
 		id = 'range',
 		disabled = false,
