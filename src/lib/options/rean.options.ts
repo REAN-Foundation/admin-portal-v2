@@ -26,6 +26,11 @@ export const Options: FeatureOptions[] = [
 		Name: 'Tenants',
 		Enabled: true
 	},
+	
+	{
+		Name: 'FollowUp-Setting',
+		Enabled: true
+	},
 	{
 		Name: 'Person-Role',
 		Enabled: true
@@ -192,7 +197,7 @@ export const Options: FeatureOptions[] = [
 	{ Name: 'Bot-Content', Enabled: true },
 	{
 		Name: 'Prompt-Template',
-		Enabled: false
+		Enabled: true
 	},
 	{
 		Name: 'Prompts',

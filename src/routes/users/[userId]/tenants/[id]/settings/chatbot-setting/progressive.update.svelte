@@ -1,0 +1,349 @@
+<script lang="ts">
+	import Icons from '$lib/components/icons.svelte';
+	import Tooltip from '$lib/components/tooltip.svelte';
+	import { languages } from '$lib/utils/language';
+	import Icon from '@iconify/svelte';
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	let {
+		chatBotSetting = $bindable(),
+		edit,
+		iconPaths,
+		getSettingMeta,
+		showCancelModel = $bindable(),
+		onFileSelected,
+		currentSection = $bindable(),
+		fileName
+	} = $props();
+	$inspect(edit, 'edit');
+
+	let errors: Record<string, string> = $state({});
+	let promise = $state();
+	let openTab: string | null = $state(null);
+	let progressPercent = $derived(((currentSection + 1) / 3) * 100);
+
+	const nextSection = () => {
+		if (currentSection < 3 - 1) currentSection++;
+	};
+
+	const prevSection = () => {
+		if (currentSection > 0) currentSection--;
+	};
+
+	function toggleTab(tab: string) {
+		openTab = openTab === tab ? null : tab;
+	}
+</script>
+
+<div class="w-full rounded-lg p-6">
+	{#if currentSection === 0}
+		<div class="my-2 flex flex-col md:flex-row md:items-center">
+			<label for="chatbotName" class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
+				>Name <span class="text-red-700">*</span></label
+			>
+			<input
+				type="text"
+				class="input-field w-[70%]"
+				name="chatbotName"
+				placeholder="Enter name here..."
+				bind:value={chatBotSetting.ChatBot.Name}
+			/>
+			{#if errors?.Name}
+				<p class="text-error">{errors?.Name}</p>
+			{/if}
+		</div>
+
+		<div class="my-4 flex flex-col md:flex-row md:items-center">
+			<label
+				for="organizationName"
+				class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700">Organization Name</label
+			>
+			<input
+				type="text"
+				class="input-field w-[70%]"
+				name="organizationName"
+				placeholder="Enter organization name here..."
+				bind:value={chatBotSetting.ChatBot.OrganizationName}
+			/>
+			{#if errors?.OrganiztionName}
+				<p class="text-error">{errors?.OrganiztionName}</p>
+			{/if}
+		</div>
+
+		<div class="my-4 flex flex-col md:flex-row md:items-center">
+			<label
+				for="organizationLogo"
+				class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700">Organization Logo</label
+			>
+			<input
+				type="text"
+				class="input-field w-[70%]"
+				name="organizationLogo"
+				placeholder="Enter organization logo here..."
+				bind:value={chatBotSetting.ChatBot.OrganizationLogo}
+			/>
+			{#if errors?.OrganizationLogo}
+				<p class="text-error">{errors?.OrganizationLogo}</p>
+			{/if}
+		</div>
+
+		<div class="my-4 flex flex-col md:flex-row md:items-center">
+			<label
+				for="organizationWebsite"
+				class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
+				>Organization Website</label
+			>
+			<input
+				type="text"
+				class="input-field w-[70%]"
+				name="organizationWebsite"
+				placeholder="Enter organization website here..."
+				bind:value={chatBotSetting.ChatBot.OrganizationWebsite}
+			/>
+			{#if errors?.OrganizationWebsite}
+				<p class="text-error">{errors?.OrganizationWebsite}</p>
+			{/if}
+		</div>
+
+		<div class="my-4 flex flex-col md:flex-row md:items-center">
+			<label for="favicon" class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
+				>Favicon</label
+			>
+			<div class="w-[100%] flex gap-3">
+				<label class="table-btn variant-filled-secondary">
+					Select File
+					<input type="file" class="hidden" onchange={onFileSelected} />
+				</label>
+				<!-- <input
+					type="file"
+					class=""
+					placeholder="select Image"
+					onchange={async (e) => await onFileSelected(e)}
+				/> -->
+
+				<input
+					type="text"
+					class="input bg-gray-100 text-gray-700 focus:outline-none"
+					onchange={async (e) => await onFileSelected(e)}
+					value={fileName}
+					readonly
+					placeholder="No file selected"
+				/>
+			</div>
+			{#if errors?.UploadFile}
+				<p class="text-error">{errors?.UploadFile}</p>
+			{/if}
+		</div>
+
+		<div class="my-4 flex flex-col md:flex-row md:items-center">
+			<label for="description" class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
+				>Description</label
+			>
+			<textarea
+				bind:value={chatBotSetting.ChatBot.Description}
+				name="description"
+				placeholder="Enter description here..."
+				class="input-field w-[70%]"
+			></textarea>
+		</div>
+
+		<div class="my-4 flex flex-col md:flex-row md:items-center">
+			<label for="defaultLanguage" class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
+				>Default Language</label
+			>
+			<select bind:value={chatBotSetting.ChatBot.DefaultLanguage} class=" input-field w-[100%]">
+				<option value="" disabled selected>Select language</option>
+				{#each languages as lang}
+					<option value={lang.name}>{lang.name}</option>
+				{/each}
+			</select>
+			{#if errors?.DefaultLanguage}
+				<p class="text-error">{errors?.DefaultLanguage}</p>
+			{/if}
+		</div>
+	{:else if currentSection === 1}
+		{#each Object.entries(chatBotSetting.ChatBot) as [groupName, groupItems]}
+			{#if groupName === 'MessageChannels' || groupName === 'SupportChannels'}
+				<div
+					class={`my-2 flex w-full flex-col rounded-md border !border-zinc-100 bg-white !p-0 py-2 transition-colors duration-200 ${
+						openTab === groupName ? 'border-hover ' : ''
+					} `}
+				>
+					<button
+						type="button"
+						onclick={() => toggleTab(groupName)}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-gray-700
+	 transition-all duration-200 ease-in-out  ${
+			openTab === groupName
+				? 'rounded-b-none bg-[#F2F2F2] text-black'
+				: `border-hover rounded bg-white`
+		} 
+	`}
+					>
+						<div class="flex items-center gap-2">
+							<Icons
+								cls="stroke-slate-800 my-2 stroke-2 fill-none"
+								h="80%"
+								w="80%"
+								iconPath={iconPaths[groupName] ?? ''}
+							/>
+							<div class=" text-start">
+								<div class="text-base font-medium">
+									{#if groupName === 'MessageChannels'}
+										<p>Message Channels</p>
+									{:else if groupName === 'SupportChannels'}
+										<p>Support Channels</p>
+									{/if}
+								</div>
+								<p class=" text-sm">Settings under {groupName}</p>
+							</div>
+						</div>
+
+						<!-- <span class:rotate-180={openTab === groupName} class="transition-transform duration-300"> -->
+						<span
+							class="transition-transform duration-300"
+							class:rotate-180={openTab === groupName}
+						>
+							<Icon icon="icon-park-outline:down" width="16" height="16" class="h-5 w-5" />
+						</span>
+					</button>
+
+					{#if openTab === groupName}
+						<div class="flex w-full justify-center py-5">
+							<div class="mx-20 grid w-full grid-cols-2 gap-x-10 gap-y-6 lg:grid-cols-2">
+								{#each Object.entries(groupItems) as [key, value]}
+									{@const meta = getSettingMeta(groupName, key)}
+
+									<!-- <div class="flex items-center gap-3">
+										<label class="flex items-center gap-2">
+											<input
+												type="checkbox"
+												class="checkbox checkbox-primary"
+												disabled={!edit}
+												bind:checked={chatBotSetting.ChatBot[groupName][key]}
+											/>
+										</label>
+
+										<Icon icon={meta?.IconPath} width="16" height="16" class="h-5 w-5" />
+
+										<span>{meta?.Name ?? key}</span>
+									</div> -->
+
+									<div class=" border-hover rounded-xl border p-4 text-gray-700">
+										<div class="flex items-center justify-between gap-3">
+											<!-- Left: App Icon -->
+											<Icon icon={meta?.IconPath} class="h-5 w-5" />
+
+											<!-- Middle: Name & Description -->
+											<div class="flex flex-grow flex-col">
+												<span class="text-sm font-medium">{meta?.Name ?? key}</span>
+												<p class="text-sm">
+													short description for {meta?.Name ?? key}.
+												</p>
+											</div>
+
+											<!-- Right: Toggle + Optional Edit -->
+											<div class="flex items-center">
+												<input
+													type="checkbox"
+													class="checkbox checkbox-primary scale-125 cursor-pointer"
+													bind:checked={chatBotSetting.ChatBot[groupName][key]}
+													disabled={!edit}
+												/>
+											</div>
+										</div>
+									</div>
+								{/each}
+							</div>
+						</div>
+					{/if}
+				</div>
+			{/if}
+		{/each}
+	{:else if currentSection === 2}
+		<div class="flex flex-col gap-4">
+			{#each Object.entries(chatBotSetting.ChatBot)
+				.filter(([_, val]) => typeof val === 'boolean')
+				.reduce((acc, curr, idx, arr) => {
+					if (idx % 2 === 0) acc.push(arr.slice(idx, idx + 2));
+					return acc;
+				}, []) as row}
+				<div class="flex gap-4">
+					{#each row as [groupName, groupItems]}
+						<div class=" w-1/2">
+							<div
+								class="flex items-center justify-between gap-3 rounded-xl border p-4 text-gray-700"
+							>
+								<!-- Left: App Icon -->
+								<Icon icon="mdi:account-cog" class="h-5 w-5" />
+
+								<!-- Middle: Name & Description -->
+								<div class="flex flex-grow flex-col">
+									<span class="text-sm font-medium">{groupName}</span>
+									<p class="text-sm">
+										short description for {groupName}
+									</p>
+								</div>
+
+								<!-- Right: Toggle + Optional Edit -->
+								<div class="flex items-center">
+									{#if groupName === 'Consent' && groupItems === true && edit === true}
+										<Tooltip text="Edit" forceShow={true}>
+											<Icon
+												icon="material-symbols:edit-outline"
+												class="mx-3 h-4 w-4 cursor-pointer"
+												onclick={() => (showCancelModel = true)}
+											/>
+										</Tooltip>
+									{/if}
+									<input
+										type="checkbox"
+										class="checkbox checkbox-primary scale-125 cursor-pointer"
+										bind:checked={chatBotSetting.ChatBot[groupName]}
+										disabled={!edit}
+									/>
+								</div>
+							</div>
+						</div>
+					{/each}
+
+					{#if row.length === 1}
+						<!-- Fill the empty second column -->
+						<div class="w-1/2"></div>
+					{/if}
+				</div>
+			{/each}
+		</div>
+	{/if}
+</div>
+
+<!-- Navigation Buttons -->
+<hr class="border-t border-[#F2F3F5]" />
+
+<div class="button-container my-4">
+	<button
+		type="button"
+		class="cursor-pointer rounded-md bg-gray-300 px-3 py-2 text-gray-800 disabled:opacity-50"
+		onclick={prevSection}
+		disabled={currentSection === 0}
+	>
+		Previous
+	</button>
+
+	{#if currentSection < 3 - 1}
+		<button
+			type="button"
+			class="table-btn variant-filled-secondary !px-4 py-2 !text-black"
+			onclick={nextSection}
+		>
+			Next
+		</button>
+	{:else}
+		{#await promise}
+			<button type="submit" class="table-btn variant-filled-secondary" disabled> Submiting </button>
+		{:then data}
+			<button type="submit" class="table-btn variant-filled-secondary"> Submit </button>
+		{/await}
+	{/if}
+</div>

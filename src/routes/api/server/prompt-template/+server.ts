@@ -23,9 +23,7 @@ export const POST = async (event: RequestEvent) => {
 		const request = event.request;
 		const data: PromptTemplateCreateModel = await request.json();
 
-		console.log('data', data);
 		const validationResult = createOrUpdateSchema.safeParse(data);
-		console.log('validation result', validationResult);
 
 		if (!validationResult.success) {
 			return ResponseHandler.success({
@@ -45,12 +43,15 @@ export const POST = async (event: RequestEvent) => {
 			sessionId,
 			data.Name,
 			data.Description,
-			data.Content,
-			data.Category,
-			data.SubGroup,
-			data.Type,
+			data.Model,
+			data.Prompt,
+			data.Group,
+			data.UseCaseType,
 			data.Variables,
-			data.Version,
+			data.Temperature,
+			data.TopP,
+			data.FrequencyPenalty,
+			data.PresencePenalty,
 			createdByUserId
 		);
 

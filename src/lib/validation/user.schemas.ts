@@ -15,12 +15,10 @@ export const createSchema = z.object({
 		})
 		.min(1, { message: 'Last name cannot be empty.' })
 		.max(256, { message: 'Last name must be at most 256 characters long.' }),
-	Phone: z
-		.string({
-			required_error: 'Phone number is required.',
-			invalid_type_error: 'Phone number must be a string.'
-		})
-		,
+	Phone: z.string({
+		required_error: 'Phone number is required.',
+		invalid_type_error: 'Phone number must be a string.'
+	}),
 	Email: z
 		.string({
 			required_error: 'Email is required.',
@@ -32,19 +30,17 @@ export const createSchema = z.object({
 		required_error: 'Role is required.',
 		invalid_type_error: 'Role must be one of: System User, Tenant User, or Tenant Admin.'
 	}),
-	Password: z.string().regex(
-		/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/, 
-		{
-		  message: 'The password should be at least 8 characters long and must contain at least 1 capital letter, 1 small letter, 1 digit, and 1 special character.'
-		}
-	  ).min(8, 
-		{
-		  message: "Password must be 8 characters"
-		}
-	  ),
-    SelectedUserRoleId: z.number(),
-    CountryCode:z.string(),
-
+	Password: z
+		.string()
+		.regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/, {
+			message:
+				'The password should be at least 8 characters long and must contain at least 1 capital letter, 1 small letter, 1 digit, and 1 special character.'
+		})
+		.min(8, {
+			message: 'Password must be 8 characters'
+		}),
+	SelectedUserRoleId: z.number(),
+	CountryCode: z.string()
 });
 
 export const updateSchema = z.object({
@@ -62,12 +58,10 @@ export const updateSchema = z.object({
 		})
 		.min(1, { message: 'Last name cannot be empty.' })
 		.max(256, { message: 'Last name must be at most 256 characters long.' }),
-	Phone: z
-		.string({
-			required_error: 'Phone number is required.',
-			invalid_type_error: 'Phone number must be a string.'
-		})
-		,
+	Phone: z.string({
+		required_error: 'Phone number is required.',
+		invalid_type_error: 'Phone number must be a string.'
+	}),
 	Email: z
 		.string({
 			required_error: 'Email is required.',
@@ -75,11 +69,37 @@ export const updateSchema = z.object({
 		})
 		.email({ message: 'Email must be a valid email address.' }),
 
-	Role: z.enum(['System user','System admin', 'Tenant user', 'Tenant admin'], {
+	Role: z.enum(['System user', 'System admin', 'Tenant user', 'Tenant admin'], {
 		required_error: 'Role is required.',
 		invalid_type_error: 'Role must be one of: System User, Tenant User, or Tenant Admin.'
 	}),
-    SelectedUserRoleId: z.number(),
-    CountryCode:z.string(),
-
+	SelectedUserRoleId: z.number(),
+	CountryCode: z.string()
 });
+
+export const changePasswordSchema = z
+	.object({
+		OldPassword: z.string().min(1, 'Old password is required'),
+		NewPassword: z
+			.string()
+			.regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/, {
+				message:
+					'Password should contain at least 1 capital letter, 1 small letter, 1 digit, and 1 special character.'
+			})
+			.min(8, {
+				message: 'Password must be 8 characters'
+			}),
+		ConfirmNewPassword: z
+			.string()
+			.regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/, {
+				message:
+					'Password should contain at least 1 capital letter, 1 small letter, 1 digit, and 1 special character.'
+			})
+			.min(8, {
+				message: 'Password must be 8 characters'
+			})
+	})
+	.refine((data) => data.NewPassword === data.ConfirmNewPassword, {
+		path: ['ConfirmNewPassword'],
+		message: 'New password and confirm new password must match'
+	});

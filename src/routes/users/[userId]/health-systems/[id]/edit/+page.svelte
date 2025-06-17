@@ -13,10 +13,10 @@
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
-    let healthSystemName = $state(data.healthSystem.Name);
+	let healthSystemName = $state(data.healthSystem.Name);
 	let keywords: string[] = $state(data.healthSystem.Tags);
-    let errors: Record<string, string> = $state({});
-    let promise = $state();
+	let errors: Record<string, string> = $state({});
+	let promise = $state();
 	// let keywords: string[] = $state([]);
 	let keywordsStr: string = $state('');
 
@@ -34,20 +34,20 @@
 
 	const handleReset = () => {
 		healthSystemName = data?.healthSystem?.Name;
-		healthSystemId = page.params.id;;
+		healthSystemId = page.params.id;
 		keywords = data?.healthSystem?.Tags;
-        errors = {};
-	}
+		errors = {};
+	};
 
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
 			errors = {};
 
-            const healthSystemUpdateModel: HealthSystemUpdateModel  = {
-                Name: healthSystemName,
-                Tags: keywords
-            }
+			const healthSystemUpdateModel: HealthSystemUpdateModel = {
+				Name: healthSystemName,
+				Tags: keywords
+			};
 
 			const validationResult = createOrUpdateSchema.safeParse(healthSystemUpdateModel);
 
@@ -75,20 +75,18 @@
 				return;
 			}
 			if (response.Errors) {
-                 errors = response?.Errors || {};
-             } else {
-                 toastMessage(response);
-             }
- 
-         } catch (error) {
-             toastMessage();
-         }
- 	}
+				errors = response?.Errors || {};
+			} else {
+				toastMessage(response);
+			}
+		} catch (error) {
+			toastMessage();
+		}
+	};
 	const onUpdateKeywords = (e: any) => {
 		keywords = e.detail;
 		keywordsStr = keywords?.join(', ');
 	};
-
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -130,17 +128,12 @@
 							<td class="!py-3">Tags</td>
 							<td>
 								<InputChips
-								bind:keywords
-								name="keywords"
-								id="keywords"
-								keywordsChanged={onUpdateKeywords}
-							/>
-							<input
-								type="hidden"
-								name="keywordsStr"
-								id="keywordsStr"
-								bind:value={keywordsStr}
-							/>
+									bind:keywords
+									name="keywords"
+									id="keywords"
+									keywordsChanged={onUpdateKeywords}
+								/>
+								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" bind:value={tags} /> -->
 							</td>
 						</tr>

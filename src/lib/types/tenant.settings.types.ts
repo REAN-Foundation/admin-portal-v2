@@ -1,28 +1,28 @@
 export interface Setting {
-    Name            : string,
-    Enabled         : boolean,
-    Navigable       : boolean,
-    Path?           : string,
-    Icon?           : string,
-    Description?    : string
+    Name: string,
+    Enabled?: boolean,
+    Navigable?: boolean,
+    Path?: string,
+    Icon?: string,
+    Description?: string
 }
 
 export enum TenantSettingsTypes {
-    Common              = 'Common',
-    Followup            = 'Followup',
-    ChatBot             = 'ChatBot',
-    Forms               = 'Forms',
-    Consent             = 'Consent',
+    Common = 'Common',
+    Followup = 'Followup',
+    ChatBot = 'ChatBot',
+    Forms = 'Forms',
+    Consent = 'Consent',
 }
 
 export enum WeekDay {
-    Sunday      = 'Sunday',
-    Monday      = 'Monday',
-    Tuesday     = 'Tuesday',
-    Wednesday   = 'Wednesday',
-    Thursday    = 'Thursday',
-    Friday      = 'Friday',
-    Saturday    = 'Saturday'
+    Sunday = 'Sunday',
+    Monday = 'Monday',
+    Tuesday = 'Tuesday',
+    Wednesday = 'Wednesday',
+    Thursday = 'Thursday',
+    Friday = 'Friday',
+    Saturday = 'Saturday'
 }
 
 export const TenantSettingsTypesList = [
@@ -34,95 +34,95 @@ export const TenantSettingsTypesList = [
 ];
 
 export interface UserInterfaces {
-    PatientApp    : boolean,
-    ChatBot       : boolean,
-    Forms         : boolean,
-    PatientPortal : boolean,
-    Followup      : boolean,
+    PatientApp: boolean,
+    ChatBot: boolean,
+    Forms: boolean,
+    PatientPortal: boolean,
+    Followup: boolean,
 }
 
-export interface ClinicalFeatures{
-    Vitals               : Setting;
-    LabRecords           : Setting;
-    Symptoms             : Setting;
-    SymptomAssessments   : Setting;
-    DrugsManagement      : Setting;
-    Medications          : Setting;
-    Careplans            : Setting;
-    Assessments          : Setting;
-    DailyAssessments     : Setting;
-    Appointments         : Setting;
-    Visits               : Setting;
-    Orders               : Setting;
-    Documents            : Setting;
-    PatientHealthReports : Setting;
-    
+export interface ClinicalFeatures {
+    Vitals: Setting;
+    LabRecords: Setting;
+    Symptoms: Setting;
+    SymptomAssessments: Setting;
+    DrugsManagement: Setting;
+    Medications: Setting;
+    Careplans: Setting;
+    Assessments: Setting;
+    DailyAssessments: Setting;
+    Appointments: Setting;
+    Visits: Setting;
+    Orders: Setting;
+    Documents: Setting;
+    PatientHealthReports: Setting;
+
 }
 
-export interface Wellness{
-    Exercise      : Setting;
-    Nutrition     : Setting;
-    Meditation    : Setting;
-    Priorities    : Setting;
-    Goals         : Setting;
+export interface Wellness {
+    Exercise: Setting;
+    Nutrition: Setting;
+    Meditation: Setting;
+    Priorities: Setting;
+    Goals: Setting;
     DeviceIntegration: Setting;
 }
 
 export interface EHR {
-    FHIRStorage    : Setting;
-    EHRIntegration : Setting;
-    ABDM           : Setting;
+    FHIRStorage: Setting;
+    EHRIntegration: Setting;
+    ABDM: Setting;
 }
 
-export interface Community{
-    UserGroups : Setting;
-    Chat       : Setting;
+export interface Community {
+    UserGroups: Setting;
+    Chat: Setting;
 }
 
-export interface Research{
-    Cohorts  : Setting;
+export interface Research {
+    Cohorts: Setting;
 }
 
-export interface Affiliations{
-    HealthCenters  : Setting;
-    HealthSystems  : Setting;
+export interface Affiliations {
+    HealthCenters: Setting;
+    HealthSystems: Setting;
 }
 
-export interface Miscellaneous{
-    Gamification  : Setting;
-    Notifications : Setting;
-    Newsfeeds     : Setting;
-    Notices       : Setting;
+export interface Miscellaneous {
+    Gamification: Setting;
+    Notifications: Setting;
+    Newsfeeds: Setting;
+    Notices: Setting;
 }
 
-export interface Educational{
-    Courses          : Setting;
-    LearningJourney  : Setting;
-    KnowledgeNuggets : Setting;
+export interface Educational {
+    Courses: Setting;
+    LearningJourney: Setting;
+    KnowledgeNuggets: Setting;
 }
 
-export interface General{
-    ViewPersonRoles : Setting;
-    ViewUsers       : Setting;
+export interface General {
+    ViewPersonRoles: Setting;
+    ViewUsers: Setting;
 }
 
 export interface AnalysisSettings {
     CustomQueries: Setting;
-    Quicksight   : Setting;
+    Quicksight: Setting;
 }
 
 export interface CommonSettings {
-    UserInterfaces  : UserInterfaces;
-    Clinical        : ClinicalFeatures;
-    Wellness        : Wellness;
-    EHR             : EHR;
-    Community       : Community;
-    Research        : Research;
-    Affiliations    : Affiliations;
-    Miscellaneous   : Miscellaneous;
-    Educational     : Educational;
-    Analysis        : AnalysisSettings;
-    General         : General;
+    UserInterfaces?: UserInterfaces;
+    Clinical: ClinicalFeatures;
+    Wellness: Wellness;
+    EHR: EHR;
+    Community: Community;
+    Research: Research;
+    Affiliations: Affiliations;
+    Miscellaneous: Miscellaneous;
+    Educational: Educational;
+    Analysis: AnalysisSettings;
+    General?: General;
 }
 
 
@@ -133,32 +133,32 @@ export interface MessageChannels {
 
 export interface SupportChannels {
     ClickUp: boolean;
-    Slack  : boolean;
-    Email  : boolean;
+    Slack: boolean;
+    Email: boolean;
 }
 
 export interface ChatBotSettings {
-    Name                : string;
-    OrganizationName?    : string;
-    OrganizationLogo?    : string;
-    OrganizationWebsite? : string;
-    Favicon?             : string;
-    Description?         : string;
-    DefaultLanguage?     : string;
-    MessageChannels     : MessageChannels;
-    SupportChannels     : SupportChannels;
-    Personalization     : boolean,
-    LocationContext     : boolean,
-    Localization        : boolean,
-    RemindersMedication : boolean,
-    QnA                 : boolean,
-    Consent             : boolean,
-    WelcomeMessage      : boolean,
-    Feedback            : boolean,
-    ReminderAppointment : boolean   ,
-    AppointmentFollowup : boolean,
-    ConversationHistory : boolean,
-    Emojis              : boolean
+    Name: string;
+    OrganizationName?: string;
+    OrganizationLogo?: string;
+    OrganizationWebsite?: string;
+    Favicon?: string;
+    Description?: string;
+    DefaultLanguage?: string;
+    MessageChannels: MessageChannels;
+    SupportChannels: SupportChannels;
+    Personalization: boolean,
+    LocationContext: boolean,
+    Localization: boolean,
+    RemindersMedication: boolean,
+    QnA: boolean,
+    Consent: boolean,
+    WelcomeMessage: boolean,
+    Feedback: boolean,
+    ReminderAppointment: boolean,
+    AppointmentFollowup: boolean,
+    ConversationHistory: boolean,
+    Emojis: boolean
 }
 
 export enum FollowupSource {
@@ -174,15 +174,15 @@ export enum ScheduleFrequency {
 }
 
 type ReminderTriggerType =
-  | 'PreviousDay'
-  | 'SameDayMorning'
-  | 'StartOfDay'
-  | 'XHoursBefore'
-  | 'XMinutesBefore'
-  | 'CustomTimeBefore'
-  | 'AfterAppointment'
-  | 'EndOfDay'
-  | 'NoReminder';
+    | 'PreviousDay'
+    | 'SameDayMorning'
+    | 'StartOfDay'
+    | 'XHoursBefore'
+    | 'XMinutesBefore'
+    | 'CustomTimeBefore'
+    | 'AfterAppointment'
+    | 'EndOfDay'
+    | 'NoReminder';
 
 export interface ReminderTrigger {
     Type: ReminderTriggerType;
@@ -193,7 +193,7 @@ export interface ReminderTrigger {
 
 export interface FileUploadConfig {
     FileColumnFormat: string;
-    FileType: 'csv' | 'xlsx' | 'json'| 'xml'| 'txt'| 'pdf';
+    FileType: 'csv' | 'xlsx' | 'json' | 'xml' | 'txt' | 'pdf';
     ReminderSchedule: ReminderTrigger[];
 }
 
@@ -205,7 +205,9 @@ interface ApiAuthConfig {
     Method: HttpMethod;
     Url: string;
     Body?: any;
+    // QueryParams?: string;
     QueryParams?: Record<string, string>;
+    // Headers?: string;
     Headers?: Record<string, string>;
     TokenPath: string;
     ResponseType?: ResponseType;
@@ -213,15 +215,17 @@ interface ApiAuthConfig {
         Location: 'header' | 'query' | 'body';
         Key: string;
         Prefix?: string;
-  };
+    };
 }
 
 interface ApiFetchConfig {
     Method: HttpMethod;
     Url: string;
     QueryParams?: Record<string, string>;
+    // QueryParams?: string;
     Body?: any;
     Headers?: Record<string, string>;
+    // Headers?: string;
     ResponseType?: ResponseType;
     ResponseField?: string;
 }
@@ -241,39 +245,56 @@ export interface FollowupSettings {
 
 export interface FormsIntegrations {
     KoboToolbox: boolean;
-    ODK        : boolean;
-    GoogleForm : boolean;
+    ODK: boolean;
+    GoogleForm: boolean;
+}
+
+export interface FormsUIIntegrations {
+    KoboToolbox: Setting;
+    ODK: Setting;
+    GoogleForms: Setting;
 }
 
 export interface FormsSettings {
-    Integrations  : FormsIntegrations,
+    Integrations: FormsIntegrations,
     OfflineSupport: boolean,
-    FieldApp      : boolean
+    FieldApp: boolean
+}
+
+export interface FormsUISettings {
+    Integrations: FormsUIIntegrations,
+    OfflineSupport: Setting,
+    FieldApp: Setting
 }
 
 export interface ConsentSettings {
-    TenantId?    : string;
-    TenantName?  : string;
-    TenantCode?  : string;
+    TenantId?: string;
+    TenantName?: string;
+    TenantCode?: string;
     DefaultLanguage?: string;
     Messages?: ConsentMessage[];
 }
 
 export interface ConsentMessage {
-    LanguageCode?  : string;
+    LanguageCode?: string;
     Content?: string;
-    WebsiteURL?  : string;
+    WebsiteURL?: string;
 }
 
 export interface TenantSettingsDomainModel {
-    Common?                 : CommonSettings,
-    Followup?               : FollowupSettings,
-    ChatBot?                : ChatBotSettings,
-    Forms?                  : FormsSettings,
-    Consent?                : ConsentSettings,
+    Common?: CommonSettings,
+    Followup?: FollowupSettings,
+    ChatBot?: ChatBotSettings,
+    Forms?: FormsSettings,
+    Consent?: ConsentSettings,
 }
 
 export interface TenantSettingsDto extends TenantSettingsDomainModel {
-    TenantId ?: string;
+    TenantId?: string;
 }
 
+export interface FaviconUploadModel {
+    UploadFile: File;
+    FileName: string;
+    FileType: string;
+}

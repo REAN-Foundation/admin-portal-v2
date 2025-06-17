@@ -298,3 +298,22 @@ export const addPermissionMatrix = async (
 	// console.log('Permission Matrix', permissionMatrix)
 	return permissionMatrix.length > 0 ? permissionMatrix : userRoleList;
 };
+
+export const changePassword = async (
+	sessionId: string,
+	oldPassword: string,
+	newPassword: string,
+	email?: string,
+	username?: string,
+	roleId?: string
+) => {
+	const body = {
+		Email: email,
+		OldPassword: oldPassword,
+		NewPassword: newPassword,
+		Username: username,
+		RoleId: roleId
+	};
+	const url = BACKEND_API_URL + `/users/change-password`;
+	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+};
