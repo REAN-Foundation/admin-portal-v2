@@ -74,12 +74,12 @@
 	</table>
 
 	<div class="btn-container">
-		<!-- <a
+		<a
 		href={settingsRoute}
 		class="edit-btn variant-filled-secondary hover:!variant-soft-secondary text-[var(--color-info)]"
 	>
 		<span>Setting</span>
-	</a> -->
+	</a>
 		<a
 			href={editRoute}
 			class="edit-btn variant-filled-secondary hover:!variant-soft-secondary text-[var(--color-info)]"
