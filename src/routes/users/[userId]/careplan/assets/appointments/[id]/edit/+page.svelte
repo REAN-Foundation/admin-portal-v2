@@ -197,10 +197,14 @@
 		</table>
 
 		<div class="btn-container">
-			<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary">
-				Reset
-			</button>
-			<Button />
+			<div class="btn-container">
+            <Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+            {#await promise}
+                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+            {:then data}
+                <Button type="submit" text="Submit" variant="primary" />
+            {/await}
+		</div>
 		</div>
 	</form>
 </div>
