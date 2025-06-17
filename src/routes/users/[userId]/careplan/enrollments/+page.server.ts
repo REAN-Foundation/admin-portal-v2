@@ -1,4 +1,4 @@
-import { error, type RequestEvent } from '@sveltejs/kit';
+import { type RequestEvent } from '@sveltejs/kit';
 import { redirect } from 'sveltekit-flash-message/server';
 import { errorMessage } from '$lib/utils/message.utils';
 import { searchEnrollments } from '../../../../api/services/careplan/enrollments';

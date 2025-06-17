@@ -1,4 +1,5 @@
 import { CAREPLAN_BACKEND_API_URL } from '$env/static/private';
+import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 import { del, get, post, put } from '../common.careplan';
 
 ////////////////////////////////////////////////////////////////
@@ -25,12 +26,19 @@ export const createAssessment = async (
     };
 
     const url = CAREPLAN_BACKEND_API_URL + '/assets/assessments';
+    await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
     return await post(sessionId, url, body, true);
 };
 
 export const getAssessmentById = async (sessionId: string, assessmentId: string) => {
     const url = CAREPLAN_BACKEND_API_URL + `/assets/assessments/${assessmentId}`;
-    return await get(sessionId, url, true);
+    const cacheKey = `session-${sessionId}:req-getAssessmentById-${assessmentId}`;
+	if (await DashboardManager.has(cacheKey)) {
+		return await DashboardManager.get(cacheKey);
+	}
+    const result = await get(sessionId, url, true);
+    await DashboardManager.set(cacheKey, result);
+	return result;
 };
 
 export const searchAssessment = async (sessionId: string, searchParams) => {
@@ -66,12 +74,19 @@ sessionId: string, assessmentId: string, name: string, description: string, temp
     };
 
     const url = CAREPLAN_BACKEND_API_URL + `/assets/assessments/${assessmentId}`;
-    return await put(sessionId, url, body, true);
+    const result = await put(sessionId, url, body, true);
+    await DashboardManager.deleteMany([`session-${sessionId}:req-getAssessmentById-${assessmentId}`]);
+	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
+    return result;
+    
 };
 
 export const deleteAssessment = async (sessionId: string, assessmentId: string) => {
     const url = CAREPLAN_BACKEND_API_URL + `/assets/assessments/${assessmentId}`;
-    return await del(sessionId, url, true);
+    const result = await del(sessionId, url, true);
+    await DashboardManager.deleteMany([`session-${sessionId}:req-getAssessmentById-${assessmentId}`]);
+	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
+    return result;
 };
 
 // export const getAllAssessmentTemplates = async (sessionId: string) => {
