@@ -7,7 +7,7 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { AssessmentCreateModel } from '$lib/types/assessments.type.js';
 	import { createOrUpdateSchema } from '$lib/validation/assessments.schema.js';
-	import { onMount } from 'svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
@@ -67,7 +67,7 @@
 				);
 				return;
 			}
-			console.log(assessmentCreateModel); 
+			// console.log(assessmentCreateModel); 
 			const res = await fetch(`/api/server/careplan/assets/assessments`, {
 				method: 'POST',
 				body: JSON.stringify(assessmentCreateModel),
@@ -78,10 +78,10 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				// console.log("Redirecting to:", response?.Data?.id);
-				console.log('Full response:', response);
-				await goto(`${assessmentRoute}/${response?.Data?.id}/view`);
-			} else if (response.Errors) {
+				// console.log('Full response:', response);
+			    goto(`${assessmentRoute}/${response?.Data?.id}/view`);
+			} 
+			if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
 				toastMessage(response);

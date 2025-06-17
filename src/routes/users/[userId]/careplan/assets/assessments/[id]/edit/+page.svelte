@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import type { PageServerData } from './$types'
+	import type { PageServerData } from './$types';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
@@ -16,10 +16,15 @@
 	let name = $state(data.assessment.Name);
 	let description = $state(data.assessment.Description);
 	let template = $state(data.assessment.Template);
-	let templateCode = $state(data.assessment.TemplateCode);
+	let templateCode = $state(data.assessment.ReferenceTemplateCode);
 	let version = $state(data.assessment.Version);
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
+
+	const assessmentTemplates = data.assessmentTemplates || [];
+	const assessmentTemplate = assessmentTemplates.find(
+		(template) => template.DisplayCode === templateCode
+	);
 
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
@@ -31,22 +36,22 @@
 	const assessmentRoute = `/users/${userId}/careplan/assets/assessments`;
 
 	const breadCrumbs = [
-		{ name: 'Asset', path:assetRoute },
+		{ name: 'Asset', path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
-	const handleReset =  () => {
-		 name = data?.assessment?.Name;
-		 assessmentId = page.params.id;
-		 description = data?.assessment?.Description;
-		 template = data?.assessment?.Template;
-		 templateCode = data?.assessment?.TemplateCode;
-		 version = data?.assessment?.Version;
-		 keywords = data?.assessment?.Tags;
-		 errors = {};
-		}
+	const handleReset = () => {
+		name = data?.assessment?.Name;
+		assessmentId = page.params.id;
+		description = data?.assessment?.Description;
+		template = data?.assessment?.Template;
+		templateCode = data?.assessment?.TemplateCode;
+		version = data?.assessment?.Version;
+		keywords = data?.assessment?.Tags;
+		errors = {};
+	};
 
-		const handleSubmit = async (event: Event) => {
+	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
 			errors = {};
@@ -83,9 +88,9 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				// console.log("Redirecting to:", response?.Data?.id); 
-				console.log("Full response:", response);
-				await goto(`${assessmentRoute}/${response?.Data?.id}/view`); 
+				// console.log("Redirecting to:", response?.Data?.id);
+				console.log('Full response:', response);
+				await goto(`${assessmentRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -100,7 +105,6 @@
 		keywords = e.detail;
 		keywordsStr = keywords?.join(', ');
 	};
-
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -159,7 +163,7 @@
 					</td>
 				</tr>
 
-				<tr class="tables-row">
+				<!-- <tr class="tables-row">
 					<td class="table-label">Template Code</td>
 					<td class="table-data">
 						<input
@@ -168,6 +172,29 @@
 							placeholder="Enter template code..."
 							class="input {errors?.TemplateCode ? 'input-text-error' : ''}"
 						/>
+						{#if errors?.TemplateCode}
+							<p class="error-text">{errors?.TemplateCode}</p>
+						{/if}
+					</td>
+				</tr> -->
+
+				<tr class="tables-row">
+					<td class="table-label">Template Code <span class="important-field">*</span></td>
+					<td class="table-data">
+						<select
+							bind:value={templateCode}
+							class="input {errors?.TemplateCode ? 'input-text-error' : ''}"
+						>
+							<option value="" disabled selected>
+								{assessmentTemplates?.length > 0 ? 'Select a template' : 'No templates available'}
+							</option>
+							{#each assessmentTemplate as template}
+								<option value={template.DisplayCode}>
+									{template.Title}
+								</option>
+							{/each}
+						</select>
+
 						{#if errors?.TemplateCode}
 							<p class="error-text">{errors?.TemplateCode}</p>
 						{/if}
@@ -206,11 +233,7 @@
 		</table>
 
 		<div class="btn-container">
-			<button
-				type="button"
-				onclick={handleReset}
-				class="table-btn variant-soft-secondary"
-			>
+			<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary">
 				Reset
 			</button>
 
@@ -219,9 +242,7 @@
 					Submitting
 				</button>
 			{:then data}
-				<button type="submit" class="table-btn variant-filled-secondary">
-					Submit
-				</button>
+				<button type="submit" class="table-btn variant-filled-secondary"> Submit </button>
 			{/await}
 		</div>
 	</form>

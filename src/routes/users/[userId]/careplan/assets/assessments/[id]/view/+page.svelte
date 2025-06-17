@@ -20,10 +20,16 @@
 	let name = assessment.Name;
 	let description = assessment.Description !== null ? assessment.Description : 'Not specified';
 	let template = assessment.Template;
-	let templateCode = assessment.TemplateCode;
+	let templateCode = assessment?.ReferenceTemplateCode?? null;
 	let tags_ = assessment.Tags;
 	let tags = tags_.join(', ');
 	let version = assessment.Version;
+
+	const assessmentTemplates = data.assessmentTemplates || [];
+
+  	const assessmentTemplate = templateCode
+		? assessmentTemplates.filter((template) => template.DisplayCode === templateCode)
+		: [];
 
 	const breadCrumbs = [
 		{
@@ -65,9 +71,15 @@
 				<td class="table-label">Template</td>
 				<td class="table-data">{template}</td>
 			</tr>
-			<tr class="tables-row">
+			<!-- <tr class="tables-row">
 				<td class="table-label">Template Code</td>
 				<td class="table-data">{templateCode}</td>
+			</tr> -->
+			<tr class="tables-row">
+   			<td class="table-label">Template Code</td>
+    		<td class="table-data">
+        		{assessmentTemplate.length > 0 ? assessmentTemplate[0].DisplayCode : templateCode || "Not specified"}
+    		</td>
 			</tr>
 			<tr class="tables-row">
 				<td class="table-label">Tags</td>
