@@ -7,22 +7,19 @@ import { getTenantSettings } from '../../../../../api/services/reancare/tenant-s
 
 export const load: PageServerLoad = async (event: RequestEvent) => {
 	const sessionId = event.cookies.get('sessionId') as string;
-    let settings = undefined;
+	let settings = undefined;
 	try {
-        console.log('Event-',event.params)
-        const tenantId = event.params.id as string;
+		const tenantId = event.params.id as string;
 		const response = await getTenantSettings(sessionId, tenantId);
 
 		if (response.Status === 'failure' || response.HttpCode !== 200) {
 			throw error(response.HttpCode, response.Message);
 		}
 
-        if (response.Data.TenantSettings) {
-            settings = response.Data.TenantSettings;
-        }
+		if (response.Data.TenantSettings) {
+			settings = response.Data.TenantSettings;
+		}
 
-        console.log('response=',JSON.stringify(settings,null,2));
-	
 		return {
 			sessionId,
 			tenantId,

@@ -5,6 +5,8 @@
 	import type { PageServerData } from './$types';
 
 	//////////////////////////////////////////////////////////////////////////
+	let { data }: { data: PageServerData } = $props();
+
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
@@ -13,7 +15,9 @@
 	const tenantRoute = `/users/${userId}/tenants`;
 	const settingsRoute = `/users/${userId}/tenants/${tenantId}/settings`;
 
-	let { data }: { data: PageServerData } = $props();
+	console.log("settingsRoute", page.params);
+	
+
 
 	let tenant = $state(data.tenant);
 	let name = tenant.Name;

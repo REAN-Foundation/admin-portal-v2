@@ -1,6 +1,5 @@
 import { API_CLIENT_INTERNAL_KEY, BOT_CONTENT_API_URL } from '$env/static/private';
 import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
-import { delete_, get_, post_, put_ } from '../common';
 import { del, get, post, put } from '../reancare/common.reancare';
 
 ////////////////////////////////////////////////////////////////
@@ -9,24 +8,30 @@ export const createPromptsTemplate = async (
 	sessionId: string,
 	name: string,
 	description: string,
-	content: string,
-	category: string,
+	model: string,
+	prompt: string,
 	subgroup: string,
 	type: string,
 	variable: string[],
-	version: number,
+	temperature: number,
+	topP: number,
+	frequencyPenalty: number,
+	presencePenalty: number,
 	createdByUserId: string,
 	isActive: boolean = true
 ) => {
 	const body = {
 		Name: name,
 		Description: description ? description : null,
-		Content: content ? content : null,
-		Category: category ? category : null,
-		SubGroup: subgroup ? subgroup : null,
-		Type: type ? type : null,
+		Model: model ? model : null,
+		Prompt: prompt ? prompt : null,
+		Group: subgroup ? subgroup : null,
+		UseCaseType: type ? type : null,
 		Variables: variable ? variable : null,
-		Version: version ? version : null,
+		Temperature: temperature ? temperature : null,
+		TopP: topP ? topP : null,
+		FrequencyPenalty: frequencyPenalty ? frequencyPenalty : null,
+		PresencePenalty: presencePenalty ? presencePenalty : null,
 		CreatedByUserId: createdByUserId ? createdByUserId : null,
 		IsActive: isActive
 	};
@@ -85,22 +90,30 @@ export const updatePromptTemplate = async (
 	promptId: string,
 	name: string,
 	description: string,
-	content: string,
+	model: string,
+	prompt: string,
 	subgroup: string,
-	type: string,
-	category: string,
+	useCaseType: string,
 	variables: string[],
+	temperature: number,
+	topP: number,
+	frequencyPenalty: number,
+	presencePenalty: number,
 	createdByUserId: string,
 	isActive: boolean = true
 ) => {
 	const body = {
 		Name: name ? name : null,
 		Description: description ? description : null,
-		Content: content ? content : null,
-		SubGroup: subgroup ? subgroup : null,
-		Type: type ? type : null,
-		Category: category ? category : null,
+		Model: model ? model : null,
+		Prompt: prompt ? prompt : null,
+		Group: subgroup ? subgroup : null,
+		UseCaseType: useCaseType ? useCaseType : null,
 		Variables: variables ? variables : null,
+		Temperature: temperature ? temperature : null,
+		TopP: topP ? topP : null,
+		FrequencyPenalty: frequencyPenalty ? frequencyPenalty : null,
+		PresencePenalty: presencePenalty ? presencePenalty : null,
 		CreatedByUserId: createdByUserId ? createdByUserId : null,
 		IsActive: isActive
 	};
@@ -117,7 +130,7 @@ export const updatePromptTemplate = async (
 export const deletePromptTemplate = async (sessionId: string, promptId: string) => {
 	const url = BOT_CONTENT_API_URL + `/llm-prompt-templates/${promptId}`;
 	console.log(url);
-	
+
 	const result = await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
 
 	const keysToBeDeleted = [`session-${sessionId}:req-getPromptTemplateById-${promptId}`];

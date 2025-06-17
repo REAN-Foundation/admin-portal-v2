@@ -3,14 +3,16 @@ import { ChatBotSettingsSchema, CommonSettingsSchema, ConsentSettingsSchema, Fol
 import { getTenantSettingsByType, updateTenantSettingsByType } from "$routes/api/services/reancare/tenant-settings";
 import type { RequestEvent } from "@sveltejs/kit";
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 export const GET = async (event: RequestEvent) => {
     try {
-        const sessionId = event.request.headers.get("session-id");
+        const sessionId = event.locals?.sessionUser?.sessionId;
         if (!sessionId) {
             return ResponseHandler.handleError(401, null, new Error("Access denied: Invalid session"));
         }
 
-        const result = await tenantSettingTypeSchema.safeParseAsync(event.params);
+        const result = await tenantSettingTypeSchema.safeParseAsync(event.params.type);
         if (!result.success) {
             const data = Object.fromEntries(
                 Object.entries(result.error.flatten().fieldErrors).map(([key, val]) => [key, val?.[0] || ""])
@@ -43,9 +45,11 @@ export const PUT = async (event: RequestEvent) => {
         const type = event.params.type;
         const request = event.request;
         const data = await request.json();
-        console.log('data', data);      
 
         const validationResult = validateRequestData(data, type);
+        console.log('Validation result:', validationResult.error);
+        console.log('Validation result:', JSON.stringify(validationResult, null, 2));
+        console.log('Data to be updated:', JSON.stringify(data, null, 2));
         if (!validationResult.success) {
             return ResponseHandler.success({
                 Status: 'failure',
@@ -60,7 +64,10 @@ export const PUT = async (event: RequestEvent) => {
             });
         }
 
-        const response = await updateTenantSettingsByType(sessionId, id, type, data);
+
+        const formData = { [type]: data };
+
+        const response = await updateTenantSettingsByType(sessionId, id, type, formData);
 
         return ResponseHandler.success(response);
     } catch (error) {
@@ -72,6 +79,8 @@ export const PUT = async (event: RequestEvent) => {
 const validateRequestData = (data: any, type: string) => {
     switch (type) {
         case 'Common':
+            console.log('Validating ChatBot settings');
+            console.log('Data:', data);
             return CommonSettingsSchema.safeParse(data);
         case 'ChatBot':
             return ChatBotSettingsSchema.safeParse(data);

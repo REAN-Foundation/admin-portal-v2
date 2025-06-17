@@ -11,12 +11,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 
 	event.depends('app:prompt-template');
 
-	const response = await searchPromptTemplate(sessionId, {
-		CreatedByUserId: createdByUserId,
-		orderBy: "Name",
-		order: "ascending",
-		itemsPerPage: 10
-	});
+	const response = await searchPromptTemplate(sessionId);
 
 	const prompts = response?.Data;
 

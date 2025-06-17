@@ -3,12 +3,12 @@
 	import Icon from '@iconify/svelte';
 	import { sidebarMenu, type TabDefinition } from './navigation.tabs';
 	import { buildSidebarMenu } from './sidebar.menus';
-
-	let { showSidebar = $bindable(), userId, tenantSettings, userRole } = $props();
+	import SidebarNavItems from './SidebarNavItems.svelte';
+	let { showSidebar = $bindable(), navParent, page_, userId, tenantSettings, userRole } = $props();
 
 	let activeTab = $state('');
 	const navData = buildSidebarMenu(userId, tenantSettings, userRole);
-	console.log('Tenant Setting', tenantSettings);
+	console.log('Tenant Setting', navData);
 
 	const sidebarTabs: TabDefinition[] = sidebarMenu();
 	$effect(() => {
@@ -66,7 +66,6 @@
 							<span class="sidebar-text">{navParent.title}</span>
 						</div>
 
-						<!-- Right-aligned dropdown icon with rotation -->
 						<span
 							class="transition-transform duration-300"
 							class:rotate-180={openTab === navParent.title}
@@ -80,50 +79,7 @@
 					<div class="mx-4">
 						<nav class="space-y-1">
 							{#each navParent.childNav as navItem}
-								{#if navItem.link}
-									<a
-										href={navItem.link}
-										class="sidebar-item items-center"
-										class:variant-soft-secondary={page.url.pathname === navItem.link}
-										onclick={() => (activeTab = navItem.title)}
-									>
-										{#if navItem.icon.endsWith('.png')}
-											<img src={navItem.icon} alt="" class="h-6 w-6 invert dark:filter-none" />
-										{:else}
-											<Icon
-												icon={page.url.pathname === navItem.link
-													? navItem.icon.replace('-outline', '')
-													: navItem.icon}
-												class="mx-1 text-2xl"
-											/>
-										{/if}
-										<span class="sidebar-text">{navItem.title}</span>
-									</a>
-								{:else if navItem.childNav}
-									<div>
-										<Icon icon={navItem.icon} class="text-2xl" />
-									</div>
-									<div>{navItem.title}</div>
-									<div>
-										<nav class="list-nav space-y-1">
-											{#each navItem.childNav as childItem}
-												<a
-													href={childItem.link}
-													class:!variant-soft-secondary={page.url.pathname === childItem.link}
-													onclick={() => (activeTab = childItem.title)}
-												>
-													<Icon
-														icon={page.url.pathname === childItem.link
-															? childItem.icon.replace('-outline', '')
-															: childItem.icon}
-														class="text-2xl"
-													/>
-													<span>{childItem.title}</span>
-												</a>
-											{/each}
-										</nav>
-									</div>
-								{/if}
+								<SidebarNavItems {navItem} {page} bind:activeTab />
 							{/each}
 						</nav>
 					</div>

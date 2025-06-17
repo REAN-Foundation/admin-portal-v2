@@ -12,16 +12,19 @@
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
-	console.log('data', data);
-
 	let name = $state(data.prompts.Name);
 	let description = $state(data.prompts.Description);
+	let prompt = $state(data.prompts.Prompt);
+	let model = $state(data.prompts.Model);
 	let content = $state(data.prompts.Content);
-	let subgroup = $state(data.prompts.SubGroup);
-	let type = $state(data.prompts.Type);
+	let group = $state(data.prompts.Group);
+	let useCaseType = $state(data.prompts.UseCaseType);
 	let category = $state(data.prompts.Category);
-	// let variables: string[] = $state(data.prompts.Variables);
-	let variablesRaw = $state(data.prompts.Variables); // used only in declaration
+	let temperature = $state(data.prompts.Temperature);
+	let topP = $state(data.prompts.TopP);
+	let frequencyPenalty = $state(data.prompts.FrequencyPenalty);
+	let presencePenalty = $state(data.prompts.PresencePenalty);
+	let variablesRaw = $state(data.prompts.Variables);
 	let variables: string[] = $derived(variablesRaw.split(',').map((v) => v.trim()));
 
 	let variableStr: string = $state('');
@@ -41,16 +44,11 @@
 		variableStr = variables?.join(', ');
 	}
 
-	function getColorClass(temp) {
-		if (temp >= 0 && temp < 0.25) {
-			return 'bg-red-500';
-		} else if (temp >= 0.25 && temp < 0.5) {
-			return 'bg-yellow-500';
-		} else if (temp >= 0.5 && temp < 0.75) {
-			return 'bg-green-500';
-		} else {
-			return 'bg-blue-500';
-		}
+	function getColorClass(val: number): string {
+		if (val < 0.25) return '#ef4444';
+		else if (val < 0.5) return '#facc15';
+		else if (val < 0.75) return '#22c55e';
+		else return '#3b82f6';
 	}
 
 	const userId = page.params.userId;
@@ -67,9 +65,9 @@
 		name = data?.prompts?.Name;
 		description = data?.prompts?.Description;
 		(content = data?.prompts?.Content),
-			(subgroup = data?.prompts?.SubGroup),
-			(type = data?.prompts?.Type),
-			// (variables = data?.prompts?.Variables),
+			(group = data?.prompts?.Group),
+			(useCaseType = data?.prompts?.UseCaseType),
+			(variables = data?.prompts?.Variables),
 			(version = data?.prompts?.Version),
 			(category = data?.prompts?.Category),
 			(errors = {});
@@ -83,16 +81,18 @@
 			const promptTemplateUpdateModel: PromptTemplateUpdateModel = {
 				Name: name,
 				Description: description,
-				Content: content,
-				Type: type,
-				Category: category,
-				SubGroup: subgroup,
+				Prompt: prompt,
+				Model: model,
+				UseCaseType: useCaseType,
+				Group: group,
 				Variables: variables,
-				Version: version
+				Temperature: parseFloat(temperature),
+				TopP: parseFloat(topP),
+				FrequencyPenalty: parseFloat(frequencyPenalty),
+				PresencePenalty: parseFloat(presencePenalty)
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(promptTemplateUpdateModel);
-			console.log('validation result', validationResult);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -171,62 +171,69 @@
 							</td>
 						</tr>
 						<tr>
-							<td>Version</td>
+							<td>Model *</td>
 							<td>
-								<input
-									type="text"
-									name="version"
-									placeholder="Enter version here..."
-									class="health-system-input"
-									bind:value={version}
-								/>
+								<select
+									class="select w-full"
+									required
+									name="model"
+									bind:value={model}
+									placeholder="Select type here..."
+								>
+									<option value="OpenAi GPT 3.5 Turbo">OpenAi GPT 3.5 Turbo</option>
+									<option value="OpenAi GPT 3.5">OpenAi GPT 3.5</option>
+									<option value="OpenAi GPT 4 Turbo">OpenAi GPT 4 Turbo</option>
+									<option value="OpenAi GPT 4">OpenAi GPT 4</option>
+									<option value="OpenAi GPT 4o">OpenAi GPT 4o</option>
+									<option value="OpenAi GPT 3.5 Turbo">OpenAi GPT 3.5 Turbo</option>
+								</select>
 							</td>
 						</tr>
 						<tr>
-							<td>Content <span class=" text-red-600">*</span></td>
+							<td>Prompt</td>
 							<td>
-								<input
-									class="health-system-input"
-									bind:value={content}
-									name="content"
-									placeholder="Enter Content here..."
-								/>
+								<textarea
+									name="prompt"
+									bind:value={prompt}
+									required
+									placeholder="Enter prompt here..."
+									class="input"
+									oninput={updateVariables}
+								>
+								</textarea>
 							</td>
 						</tr>
+
 						<tr>
-							<td>SubGroup <span class=" text-red-600">*</span></td>
+							<td>Group <span class=" text-red-600">*</span></td>
 							<td>
 								<textarea
 									name="subgroup"
-									bind:value={subgroup}
+									bind:value={group}
 									placeholder="Enter Subgroup here..."
 									class="health-system-input"
 								></textarea>
 							</td>
 						</tr>
 						<tr>
-							<td>Type <span class=" text-red-600">*</span></td>
+							<td>Use Case Type </td>
 							<td>
-								<input
-									class="health-system-input"
-									bind:value={type}
-									name="type"
-									placeholder="Enter type here..."
-								/>
-							</td>
-						</tr>
-						<tr>
-							<td class="align-top">Category <span class=" text-red-600">*</span></td>
-							<td>
-								<input
-									class="health-system-input"
+								<select
+									class="select w-full"
 									required
-									bind:value={category}
-									name="category"
-									placeholder="Enter category here..."
-								/>
+									name="useCaseType"
+									bind:value={useCaseType}
+									placeholder="Select type here..."
+								>
+									<option value="Chat">Chat</option>
+									<option value="Classification">Classification</option>
+									<option value="Extraction">Extraction</option>
+									<option value="Summarization">Summarization</option>
+									<option value="Generation">Generation</option>
+								</select>
 							</td>
 						</tr>
+
 						<tr>
 							<td class="align-top">Variables</td>
 							<td class="">
@@ -238,6 +245,89 @@
 										oninput={updateVariables}
 									/>
 								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>Temperature</td>
+							<td>
+								<input
+									name="temperature"
+									type="range"
+									min="0"
+									max="1"
+									step="0.01"
+									bind:value={temperature}
+									class="h-2 w-full cursor-pointer appearance-none rounded-lg"
+									style="background: linear-gradient(to right, {getColorClass(
+										temperature
+									)} 0%, {getColorClass(temperature)} {temperature * 100}%, #e5e7eb {temperature *
+										100}%, #e5e7eb 100%);"
+								/>
+								<span class="">
+									{temperature}
+								</span></td
+							>
+						</tr>
+						<tr>
+							<td>Top P</td>
+							<td>
+								<input
+									name="topp"
+									type="range"
+									min="0"
+									max="1"
+									step="0.01"
+									bind:value={topP}
+									class="relative z-10 h-2 w-full cursor-pointer appearance-none rounded-full"
+									style="background: linear-gradient(to right, {getColorClass(
+										topP
+									)} 0%, {getColorClass(topP)} {topP * 100}%, #d1d5db {topP * 100}%, #d1d5db 100%);"
+								/>
+								<span class="">
+									{topP}
+								</span>
+							</td>
+						</tr>
+						<tr>
+							<td>Frequency Penalty</td>
+							<td>
+								<input
+									name="frequencyPenalty"
+									type="range"
+									min="0"
+									max="1"
+									step="0.01"
+									bind:value={frequencyPenalty}
+									class="relative z-10 h-2 w-full cursor-pointer appearance-none rounded-full"
+									style="background: linear-gradient(to right, {getColorClass(
+										frequencyPenalty
+									)} 0%, {getColorClass(frequencyPenalty)} {frequencyPenalty *
+										100}%, #d1d5db {frequencyPenalty * 100}%, #d1d5db 100%);"
+								/>
+								<span class="">
+									{frequencyPenalty}
+								</span>
+							</td>
+						</tr>
+						<tr>
+							<td>Presence Penalty</td>
+							<td>
+								<input
+									name="presencePenalty"
+									type="range"
+									min="0"
+									max="1"
+									step="0.01"
+									bind:value={presencePenalty}
+									class="relative z-10 h-2 w-full cursor-pointer appearance-none rounded-full"
+									style="background: linear-gradient(to right, {getColorClass(
+										presencePenalty
+									)} 0%, {getColorClass(presencePenalty)} {presencePenalty *
+										100}%, #d1d5db {presencePenalty * 100}%, #d1d5db 100%);"
+								/>
+								<span class="">
+									{presencePenalty}
+								</span>
 							</td>
 						</tr>
 					</tbody>
