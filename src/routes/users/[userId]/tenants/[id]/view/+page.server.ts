@@ -5,22 +5,17 @@ import { getTenantById } from '../../../../../api/services/reancare/tenants';
 
 export const load: PageServerLoad = async (event: RequestEvent) => {
 	const sessionId = event.cookies.get('sessionId');
+	const tenantId = event.params.id;
 
-	try {
-		const tenantId = event.params.id;
-		const response = await getTenantById(sessionId, tenantId);
+	const response = await getTenantById(sessionId, tenantId);
 
-		if (response.Status === 'failure' || response.HttpCode !== 200) {
-			throw error(response.HttpCode, response.Message);
-		}
-		const tenant = response.Data.Tenant;
-		const id = response.Data.Tenant.id;
+		const tenant = response?.Data?.Tenant;
+		const id = response?.Data?.Tenant?.id;
 		return {
 			location: `${id}/edit`,
 			tenant,
-			message: response.Message
+			message: response?.Message || 'Tenant retrieved successfully',
+			title: 'Tenant View'
 		};
-	} catch (error) {
-		console.error(`Error retriving tenant: ${error.message}`);
-	}
+	
 };
