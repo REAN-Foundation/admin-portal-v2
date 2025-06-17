@@ -165,7 +165,7 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4 w-72">
+<div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container mb-6 shadow">
 			<div class="health-system-search-border">
