@@ -18,7 +18,7 @@
 	let assetCode = data.animation.AssetCode;
 	let name = data.animation.Name;
 	let transcript = data.animation.Transcript !== null ? data.animation.Transcript : 'Not specified';
-	let pathUrl = data.animation.PathUrl !== null ? data.animation.PathUrl : 'Not specified';
+	let pathUrl = data.animation.Url !== null ? data.animation.Url : 'Not specified';
 	let tags_ = data.animation.Tags;
 	let version = data.animation.Version;
 	let tags = tags_.join(', ');
