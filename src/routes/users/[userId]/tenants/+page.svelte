@@ -182,88 +182,74 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-2">
+<div class="px-6 py-4">
 	<div class="mx-auto">
-		
 		<div class="table-container mb-6 shadow">
-			<div class="search-border">
+			<div class="search-border p-4">
 				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="relative flex-1 pr-1.5">
+					<div class="relative w-auto grow">
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
 						<input
 							type="text"
 							name="name"
 							placeholder="Search by name"
 							oninput={(event) => onSearchInput(event, 'name')}
-							class="table-input-field !pr-4 !pl-10"
+							class="input !pr-4 !pl-10"
 						/>
+					</div>
+
+					<div class="relative w-auto grow">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
 						/>
-					</div>
-
-					<div class="relative flex-1 pr-1.5">
 						<input
 							type="text"
 							name="code"
 							placeholder="Search by code"
 							oninput={(event) => onSearchInput(event, 'code')}
-							class="table-input-field !pr-4 !pl-10"
-						/>
-						<Icon
-							icon="heroicons:magnifying-glass"
-							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+							class="input !pr-4 !pl-10"
 						/>
 					</div>
 
 					<button class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
-						<a href={createRoute} class="">Add New</a>
+						<a href={createRoute}>Add New</a>
 					</button>
 				</div>
 			</div>
+
 			<div class="overflow-x-auto">
 				<table class="table-c min-w-full">
-					<thead class="">
+					<thead>
 						<tr>
 							<th class="w-12"></th>
-							<th class="text-start">
+							<th class="w-70 text-start">
 								<button onclick={() => sortTable('Name')}>
-									Name {#if isSortingName}
-										{#if sortOrder === 'ascending'}
-											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
-										{:else}
-											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
-										{/if}
-									{/if}
+									Name {#if isSortingName}{sortOrder === 'ascending' ? '▲' : '▼'}{/if}
 								</button>
 							</th>
-							<th class="text-start">
+							<th class="w-64 text-start">
 								<button onclick={() => sortTable('Code')}>
-									Code {#if isSortingCode}
-										{#if sortOrder === 'ascending'}
-											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
-										{:else}
-											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
-										{/if}
-									{/if}
+									Code {#if isSortingCode}{sortOrder === 'ascending' ? '▲' : '▼'}{/if}
 								</button>
 							</th>
-							<th data-sort="Phone">Contact Number</th>
-							<th>Email</th>
+							<th class="w-40">Contact Number</th>
+							<th class="w-64">Email</th>
+							<th class="w-20"></th>
 						</tr>
 					</thead>
 					<tbody>
 						{#if retrivedTenants.length <= 0}
-							<tr>
-								<td colspan="6">
-									{isLoading ? 'Loading...' : 'No records found'}</td>
+							<tr class="text-center">
+								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}
 							{#each retrivedTenants as row, index}
 								<tr>
-									<td>
-										{paginationSettings.page * paginationSettings.limit + index + 1}
-									</td>
+									<td>{paginationSettings.page * paginationSettings.limit + index + 1}</td>
 
 									<td>
 										<Tooltip text={row.Code || 'Not specified'}>
@@ -274,15 +260,11 @@
 											</a>
 										</Tooltip>
 									</td>
-									<td role="gridcell" aria-colindex={4} tabindex="0"
-										>{row.Code !== null ? row.Code : 'Not specified'}</td
-									>
-									<td role="gridcell" aria-colindex={4} tabindex="0"
-										>{row.Phone !== null ? row.Phone : 'Not specified'}</td
-									>
-									<td role="gridcell" aria-colindex={4} tabindex="0"
-										>{row.Email !== null ? row.Email : 'Not specified'}</td
-									>
+
+									<td>{row.Code !== null ? row.Code : 'Not specified'}</td>
+									<td>{row.Phone !== null ? row.Phone : 'Not specified'}</td>
+									<td>{row.Email !== null ? row.Email : 'Not specified'}</td>
+
 									<td>
 										<div class="flex">
 											<Tooltip text="Edit" forceShow={true}>
@@ -296,17 +278,14 @@
 											<Tooltip text="View" forceShow={true}>
 												<button>
 													<a href={viewRoute(row.id)} class="table-btn group">
-														<Icon
-															icon="icon-park-outline:preview-open"
-															class="health-system-icon"
-														/>
+														<Icon icon="icon-park-outline:preview-open" class="health-system-icon" />
 													</a>
 												</button>
 											</Tooltip>
 
 											<Tooltip text="Delete" forceShow={true}>
 												<button
-													class="table-btn !text-red-600"
+													class="health-system-btn !text-red-600"
 													onclick={() => handleDeleteClick(row.id)}
 												>
 													<Icon icon="material-symbols:delete-outline-rounded" />
@@ -323,6 +302,7 @@
 		</div>
 	</div>
 </div>
+
 <Confirmation
 	bind:isOpen={openDeleteModal}
 	title="Delete Tenant"
