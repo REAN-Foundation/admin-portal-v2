@@ -7,7 +7,6 @@
 	//////////////////////////////////////////////////////////////////////////
 	let { data }: { data: PageServerData } = $props();
 
-
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
 	const editRoute = `/users/${userId}/tenants/${tenantId}/edit`;
@@ -15,9 +14,7 @@
 	const tenantRoute = `/users/${userId}/tenants`;
 	const settingsRoute = `/users/${userId}/tenants/${tenantId}/settings`;
 
-	console.log("settingsRoute", page.params);
-	
-
+	console.log('settingsRoute', page.params);
 
 	let tenant = $state(data.tenant);
 	let name = tenant.Name;
@@ -41,6 +38,21 @@
 <BreadCrumbs crumbs={breadCrumbs} />
 
 <div class="px-6 py-4">
+	<div class="button-container mt-4 flex gap-4">
+		<a
+			href={settingsRoute}
+			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary text-[var(--color-info)]"
+		>
+			<span>Setting</span>
+		</a>
+		<a
+			href={editRoute}
+			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary text-[var(--color-info)]"
+		>
+			<Icon icon="material-symbols:edit-outline" />
+			<span>Edit</span>
+		</a>
+	</div>
 	<div class="mx-auto">
 		<div class="health-system-table-container">
 			<table class="health-system-table">
@@ -77,23 +89,6 @@
 					</tr>
 				</tbody>
 			</table>
-
-			<div class="button-container mt-4 flex gap-4">
-				<a
-					href={settingsRoute}
-					class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary text-[var(--color-info)]"
-				>
-					<span>Setting</span>
-				</a>
-				<a
-					href={editRoute}
-					class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary text-[var(--color-info)]"
-				>
-					<Icon icon="material-symbols:edit-outline" />
-					<span>Edit</span>
-				</a>
-			</div>
 		</div>
 	</div>
 </div>
-
