@@ -27,6 +27,8 @@
 
 	const userId = page.params.userId;
 	const nutritionId = page.params.id;
+	const tenantId = data.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/nutritions/${nutritionId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/nutritions/${nutritionId}/view`;
@@ -58,7 +60,9 @@
 				Name: name,
 				Description: description,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
+
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(nutritionUpdateModel);

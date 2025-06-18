@@ -27,6 +27,8 @@
 
 	const userId = page.params.userId;
 	const priorityId = page.params.id;
+	const tenantId = data.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/priorities/${priorityId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/priorities/${priorityId}/view`;
@@ -59,7 +61,8 @@
 				Name: name,
 				Description: description,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(priorityUpdateModel);

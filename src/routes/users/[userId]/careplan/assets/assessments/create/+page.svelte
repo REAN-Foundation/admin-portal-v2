@@ -7,9 +7,11 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { AssessmentCreateModel } from '$lib/types/assessments.type.js';
 	import { createOrUpdateSchema } from '$lib/validation/assessments.schema.js';
+	import Button from '$lib/components/button/button.svelte';
+
+	/////////////////////////////////////////////////////////////////////////////////////
 
 	let { data, form } = $props();
-
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let name = $state('');
@@ -19,9 +21,16 @@
 	let version = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
+	// let assessmentTemplates = $state([]);
+	
+	 let assessmentTemplates = data.assessmentTemplates ?? [];
+	console.log('assessmentTemplates', assessmentTemplates);
 
 	data.title = 'Create Assessment';
 	const userId = page.params.userId;
+	// const tenantId = data?.sessionUser?.tenantId;
+	const tenantId = data?.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/assessments/create`;
 	const assessmentRoute = `/users/${userId}/careplan/assets/assessments`;
@@ -42,10 +51,12 @@
 				Template: template,
 				ReferenceTemplateCode: referenceTemplateCode,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentCreateModel);
+			console.log("Validation result", validationResult)
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -56,7 +67,7 @@
 				);
 				return;
 			}
-			console.log(assessmentCreateModel);
+			// console.log(assessmentCreateModel); 
 			const res = await fetch(`/api/server/careplan/assets/assessments`, {
 				method: 'POST',
 				body: JSON.stringify(assessmentCreateModel),
@@ -67,10 +78,10 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				// console.log("Redirecting to:", response?.Data?.id);
-				console.log('Full response:', response);
-				await goto(`${assessmentRoute}/${response?.Data?.id}/view`);
-			} else if (response.Errors) {
+				// console.log('Full response:', response);
+			    goto(`${assessmentRoute}/${response?.Data?.id}/view`);
+			} 
+			if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
 				toastMessage(response);
@@ -141,23 +152,25 @@
 						{/if}
 					</td>
 				</tr>
-
 				<tr class="tables-row">
-					<td class="table-label">Reference Template Code <span class="important-field">*</span></td>
-					<td class="table-data">
-						<input
-							type="text"
-							bind:value={referenceTemplateCode}
-							placeholder="Enter template code..."
-							class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
-						/>
-						{#if errors?.ReferenceTemplateCode}
-							<p class="error-text">{errors?.ReferenceTemplateCode}</p>
-						{/if}
-					</td>
-				</tr>
+	<td class="table-label">Reference Template Code <span class="important-field">*</span></td>
+	<td class="table-data">
+		<select
+			bind:value={referenceTemplateCode}
+			class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
+		>
+			<option disabled selected value="">Select reference template here...</option>
+			{#each assessmentTemplates as template}
+				<option value={template.DisplayCode}>{template.Title}</option>
+			{/each}
+		</select>
+		{#if errors?.ReferenceTemplateCode}
+			<p class="error-text">{errors?.ReferenceTemplateCode}</p>
+		{/if}
+	</td>
+</tr>
 
-				<tr class="tables-row">
+<tr class="tables-row">
 					<td class="table-label">Tags</td>
 					<td class="table-data">
 						<InputChips

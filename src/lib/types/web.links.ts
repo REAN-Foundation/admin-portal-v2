@@ -4,6 +4,8 @@ export interface WebLinksCreateModel {
 	PathUrl: string;
 	Tags?: string[];
 	Version: string;
+	TenantId?: string;
+
 }
 
 export interface WebLinksUpdateModel {
@@ -12,4 +14,5 @@ export interface WebLinksUpdateModel {
 	PathUrl: string;
 	Tags?: string[];
 	Version: string;
+	TenantId?: string;
 }

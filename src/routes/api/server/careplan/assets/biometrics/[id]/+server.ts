@@ -92,7 +92,9 @@ export const PUT = async (event: RequestEvent) => {
             data.BiometricsType,
             data.MeasurementUnit,
             data.Tags,
-            data.Version ?? '');
+            data.Version,
+            data.TenantId
+            );
 
         return ResponseHandler.success(response);
     } catch (error) {

@@ -21,12 +21,6 @@ export const createOrUpdateSchema = z.object({
         })
         .optional(),
 
-		// PathUrl: z
-	// 	.string({
-	// 		invalid_type_error: 'Path URL must be a string.',
-	// 	})
-	// 	.optional(),
-
 	Tags: z.array(z.string()).optional(),
 
 	Version: z
@@ -34,4 +28,10 @@ export const createOrUpdateSchema = z.object({
 			invalid_type_error: 'Version must be a string.',
 		})
 		.optional(),
+
+	TenantId: z
+		.string({
+			required_error: 'TenantId is required.',
+			invalid_type_error: 'TenantId must be a string.'
+		})
 });

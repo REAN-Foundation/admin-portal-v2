@@ -31,9 +31,11 @@ export const POST = async (event: RequestEvent) => {
             sessionId,
             data.Name,
             data.Description,     
-            data.PathUrl,
+            data.Url,
             data.Tags,
-            data.Version ?? '');
+            data.Version,
+            data.TenantId
+            );
 
         return ResponseHandler.success(response);
     } catch (error) {

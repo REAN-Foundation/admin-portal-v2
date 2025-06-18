@@ -28,14 +28,16 @@ export const POST = async (event: RequestEvent) => {
             });
         }
 
+        console.log("ReferenceTemplateCode:", data.ReferenceTemplateCode);
         const response = await createAssessment(
             sessionId,
             data.Name,
             data.Description,     
             data.Template,
             data.ReferenceTemplateCode,
-            data.Tags,
-            data.Version ?? '');
+            data.Tags, 
+            data.Version ?? '',
+            data.TenantId,);
 
         return ResponseHandler.success(response);
     } catch (error) {

@@ -7,6 +7,8 @@ import { getNutritionById } from '$routes/api/services/careplan/assets/nutrition
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
 	const nutritionId = event.params.id;
+	const tenantId = event.locals.sessionUser.tenantId;
+
 	const response = await getNutritionById(sessionId, nutritionId);
 
 	const nutrition = response?.Data;
@@ -15,6 +17,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	return {
 		location: `${id}/edit`,
 		nutrition,
+		tenantId,
 		message: response?.Message || 'Nutrition retrieved successfully',
 		title: 'Nutrition Edit'
 	};

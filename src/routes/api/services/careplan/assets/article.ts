@@ -10,13 +10,15 @@ export const createArticle = async (
 	summary: string,
 	pathUrl: string,
 	tags: string[],
-	version: string
+	version: string,
+	tenantId: string
 ) => {
 	const body = {
 		Name: name,
 		Summary: summary,
 		Url: pathUrl,
 		Tags: tags,
+		TenantId: tenantId,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
 
@@ -72,13 +74,15 @@ export const updateArticle = async (
 	summary: string,
 	pathUrl: string,
 	tags: string[],
-	version: string
+	version: string,
+	tenantId: string
 ) => {
 	const body = {
 		Name: name,
 		Summary: summary,
 		Url: pathUrl,
 		Tags: tags,
+		TenantId: tenantId,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
 

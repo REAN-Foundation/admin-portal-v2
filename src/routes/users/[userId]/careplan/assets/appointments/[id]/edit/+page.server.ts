@@ -7,6 +7,7 @@ import { getAppointmentById } from '$routes/api/services/careplan/assets/appoint
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
 	const appointmentId = event.params.id;
+	const tenantId = event.locals.sessionUser.tenantId;
 	const response = await getAppointmentById(sessionId, appointmentId);
 
 	const appointment = response?.Data;
@@ -15,6 +16,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	return {
 		location: `${id}/edit`,
 		appointment,
+		tenantId,
 		message: response?.Message || 'Appointment retrieved successfully',
 		title: 'Appointment Edit'
 	};

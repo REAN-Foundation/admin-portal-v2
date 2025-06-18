@@ -10,13 +10,15 @@ export const createWebLink = async (
 	description: string,
 	pathUrl: string,
 	tags: string[],
-	version: string
+	version: string,
+	tenantId: string
 ) => {
 	const body = {
 		Name: name,
 		Description: description,
 		Url: pathUrl,
 		Tags: tags,
+		TenantId: tenantId,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
 	const url = CAREPLAN_BACKEND_API_URL + '/assets/web-links';
@@ -73,13 +75,15 @@ export const updateWebLink = async (
 	description: string,
 	pathUrl: string,
 	tags: string[],
-	version: string
+	version: string,
+	tenantId: string
 ) => {
 	const body = {
 		Name: name,
 		Description: description,
 		Url: pathUrl,
 		Tags: tags,
+		TenantId: tenantId,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/web-links/${webLinkId}`;

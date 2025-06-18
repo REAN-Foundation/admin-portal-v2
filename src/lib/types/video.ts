@@ -4,6 +4,7 @@ export interface VideoCreateModel {
 	PathUrl: string;
 	Tags?: string[];
 	Version: string;
+	TenantId?: string;
 }
 
 export interface VideoUpdateModel {
@@ -12,4 +13,5 @@ export interface VideoUpdateModel {
 	PathUrl: string;
 	Tags?: string[];
 	Version: string;
+	TenantId?: string;
 }

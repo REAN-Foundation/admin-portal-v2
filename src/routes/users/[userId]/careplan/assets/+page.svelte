@@ -4,26 +4,25 @@
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-	import { invalidate } from '$app/navigation';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 
+	let debounceTimeout;
 	let isLoading = $state(false);
 	let assets = $state(data.assets.Items);
 	let retrivedAssets = $derived(assets);
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
 	let isDeleting = $state(false);
-
-	let debounceTimeout;
 	let searchKeyword = $state(undefined);
 	let promise = $state();
 
@@ -88,16 +87,18 @@
 	const viewRoute = (rowId: string) =>
 		`/users/${userId}/careplan/assets/${assetRouteMap[selectedAssetType]}/${rowId}/view`;
 
-	async function searchAssets(filters) {
+	const breadCrumbs = [{ name: 'Assets', path: assetRoute }];
+
+	async function searchAssets(model) {
 		try {
 			const selectedAssetRoute = assetRouteMap[selectedAssetType];
 			let url = `/api/server/careplan/assets/search?assetType=${selectedAssetRoute}`;
-			url += `&sortOrder=${filters.sortOrder ?? sortOrder}`;
-			url += `&sortBy=${filters.sortBy ?? sortBy}`;
-			url += `&itemsPerPage=${filters.itemsPerPage ?? paginationSettings.limit}`;
-			url += `&pageIndex=${filters.pageIndex ?? paginationSettings.page}`;
-			if (filters.nameAssetSearch) url += `&name=${filters.nameAssetSearch}`;
-			if (filters.codeAssetSearch) url += `&code=${filters.codeAssetSearch}`;
+			url += `&sortOrder=${model.sortOrder ?? sortOrder}`;
+			url += `&sortBy=${model.sortBy ?? sortBy}`;
+			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+			if (model.nameAssetSearch) url += `&name=${model.nameAssetSearch}`;
+			if (model.codeAssetSearch) url += `&code=${model.codeAssetSearch}`;
 
 			const res = await fetch(url, {
 				method: 'GET',
@@ -119,7 +120,7 @@
 				...item,
 				index: index + 1
 			}));
-			searchKeyword = filters.nameAssetSearch;
+			searchKeyword = model.nameAssetSearch;
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -138,7 +139,7 @@
 			if (field === 'code') codeAssetSearch = keyword;
 
 			searchAssets({
-				nameAssetSearch,
+				nameAssetSearch: searchKeyword,
 				codeAssetSearch,
 				itemsPerPage: paginationSettings.limit,
 				pageIndex: 0,
@@ -162,8 +163,37 @@
 		sortBy = columnName;
 		searchAssets({
 			nameAssetSearch: searchKeyword,
+			codeAssetSearch,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
+	const handleDeleteClick = (id: string) => {
+		openDeleteModal = true;
+		idToBeDeleted = id;
+	};
+
+	function onItemsPerPageChange() {
+		paginationSettings.page = 0; // reset to first page
+		searchAssets({
+			nameAssetSearch: searchKeyword,
+			codeAssetSearch,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
+	function onPageChange() {
+		searchAssets({
+			nameAssetSearch: searchKeyword,
+			codeAssetSearch,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -177,30 +207,6 @@
 		});
 	};
 
-	const handleDeleteClick = (id: string) => {
-		openDeleteModal = true;
-		idToBeDeleted = id;
-	};
-	function onItemsPerPageChange() {
-		paginationSettings.page = 0; // reset to first page
-		searchAssets({
-			nameAssetSearch: searchKeyword,
-			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
-			sortBy,
-			sortOrder
-		});
-	}
-
-	function onPageChange() {
-		searchAssets({
-			nameAssetSearch: searchKeyword,
-			itemsPerPage: paginationSettings.limit,
-			pageIndex: paginationSettings.page,
-			sortBy,
-			sortOrder
-		});
-	}
 	const handleAssetsDelete = async (id) => {
 		console.log('Inside handleAssetsDelete', id);
 		const response = await fetch(
@@ -222,22 +228,13 @@
 		}
 		searchAssets({
 			nameAssetSearch: searchKeyword,
+			codeAssetSearch,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
 	};
-
-	let breadCrumbs = $state();
-	$effect(() => {
-		breadCrumbs = [
-			{
-				name: 'Assets',
-				path: assetRoute
-			}
-		];
-	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -288,10 +285,10 @@
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
 						/>
 					</div>
-
-					<button class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
+					<Button href={createRoute} text="Add New" variant="primary"></Button>
+					<!-- <button class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
 						<a href={createRoute} class="">Add New</a>
-					</button>
+					</button> -->
 				</div>
 			</div>
 			<div class="overflow-x-auto">
@@ -353,7 +350,29 @@
 									</td>
 									<td>
 										<div class="flex">
-											<Tooltip text="Edit" forceShow={true}>
+											<Button
+                                                href={editRoute(row.id)}
+                                                variant="icon"
+                                                icon="material-symbols:edit-outline"
+                                                iconSize="sm"
+                                                tooltip="Edit"
+                                            />
+                                            <Button
+                                                href={viewRoute(row.id)}
+                                                variant="icon"
+                                                icon="icon-park-outline:preview-open"
+                                                iconSize="sm"
+                                                tooltip="View"
+                                            />
+                                            <Button
+                                                onclick={() => handleDeleteClick(row.id)}
+                                                variant="icon"
+                                                icon="material-symbols:delete-outline-rounded"
+                                                iconSize="sm"
+                                                color="red"
+                                                tooltip="Delete"
+                                            />
+											<!-- <Tooltip text="Edit" forceShow={true}>
 												<button>
 													<a href={editRoute(row.id)} class="table-btn group">
 														<Icon icon="material-symbols:edit-outline" class="health-system-icon" />
@@ -379,7 +398,7 @@
 												>
 													<Icon icon="material-symbols:delete-outline-rounded" />
 												</button>
-											</Tooltip>
+											</Tooltip> -->
 										</div>
 									</td>
 								</tr>

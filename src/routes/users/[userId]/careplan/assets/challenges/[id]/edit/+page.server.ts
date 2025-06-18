@@ -7,6 +7,8 @@ import { getChallengesById } from '$routes/api/services/careplan/assets/challeng
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
 	const challengesId = event.params.id;
+	const tenantId = event.locals.sessionUser.tenantId;
+
 	const response = await getChallengesById(sessionId, challengesId);
 
 	const challenges = response?.Data;
@@ -15,6 +17,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	return {
 		location: `${id}/edit`,
 		challenges,
+		tenantId,
 		message: response?.Message || 'audio retrieved successfully',
 		title: 'Challenges Edit'
 	};

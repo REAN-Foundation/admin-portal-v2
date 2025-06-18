@@ -23,6 +23,7 @@
 	let keywords: string[] = $state(data.biometrics.Tags);
 
 	const userId = page.params.userId;
+	const tenantId = data.tenantId;
 	var biometricsId = page.params.id;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
@@ -57,7 +58,8 @@
 				MeasurementUnit: measurementUnit,
 				Version: version,
 				BiometricsType: biometricsType,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(biometricsUpdateModel);

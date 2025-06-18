@@ -21,6 +21,8 @@
 
 	data.title = 'Create Audio';
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/audio/create`;
 	const audioRoute = `/users/${userId}/careplan/assets/audio`;
@@ -40,7 +42,8 @@
 				Transcript: transcript,
 				PathUrl: pathUrl,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(audioCreateModel);

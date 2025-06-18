@@ -96,7 +96,17 @@ export const PUT = async (event: RequestEvent) => {
 			});
 		}
 
-		const response = await updateCarePlan(sessionId, carePlanId, data.Name, data.Tags);
+		const response = await updateCarePlan(
+			sessionId,
+			carePlanId,
+			data.Code,
+			data.Name,
+			data.Description,
+			data.Tags,
+			data.Version,
+			data.OwnerUserId,
+			data.TenantId
+		);
 
 		return ResponseHandler.success(response);
 	} catch (error) {

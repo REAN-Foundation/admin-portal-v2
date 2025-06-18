@@ -27,6 +27,7 @@
 	let keywords: string[] = $state(data.appointment.Tags);
 
 	const userId = page.params.userId;
+	const tenantId = data.tenantId;
 	const appointmentId = page.params.id;
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/appointments/${appointmentId}/edit`;
@@ -63,7 +64,8 @@
 				Description: description,
 				AppointmentType: appointmentType,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(appointmentUpdateModel);
@@ -195,10 +197,14 @@
 		</table>
 
 		<div class="btn-container">
-			<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary">
-				Reset
-			</button>
-			<Button />
+			<div class="btn-container">
+            <Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+            {#await promise}
+                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+            {:then data}
+                <Button type="submit" text="Submit" variant="primary" />
+            {/await}
+		</div>
 		</div>
 	</form>
 </div>

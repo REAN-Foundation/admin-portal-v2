@@ -23,7 +23,9 @@
 	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
+	const tenantId = data.tenantId;
 	var exerciseId = page.params.id;
+	
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/exercises/${exerciseId}/edit`;
@@ -59,7 +61,8 @@
 				IntensityLevel: intensityLevel,
 				RecommendedDurationMin: recommendedDurationMin,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(exerciseUpdateModel);

@@ -89,9 +89,11 @@ export const PUT = async (event: RequestEvent) => {
             audioId,
             data.Name,
             data.Description,     
-            data.PathUrl,
+            data.Url,
             data.Tags,
-            data.Version ?? '');
+           data.Version,
+            data.TenantId
+            );
         return ResponseHandler.success(response);
     } catch (error) {
         console.error("Error updating infographics:", error);

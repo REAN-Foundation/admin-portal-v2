@@ -20,6 +20,8 @@
 
 	data.title = 'Create Challenges';
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/challenges/create`;
 	const challengesRoute = `/users/${userId}/careplan/assets/challenges`;
@@ -39,7 +41,8 @@
 				Name: name,
 				Description: description,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(challengesCreateModel);

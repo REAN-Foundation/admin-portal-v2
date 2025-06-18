@@ -28,6 +28,8 @@
 
 	const userId = page.params.userId;
 	const videoId = page.params.id;
+	const tenantId = data.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/video/${videoId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/video/${videoId}/view`;
@@ -63,7 +65,8 @@
 				Transcript: transcript,
 				PathUrl: pathUrl,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(videoUpdateModel);
