@@ -3,6 +3,7 @@ export interface MedicationCreateModel {
 	Description?: string;
 	Tags?: string[];
 	Version?: string;
+	TenantId?: string;
 }
 
 export interface MedicationUpdateModel {
@@ -10,4 +11,5 @@ export interface MedicationUpdateModel {
 	Description?: string;
 	Tags?: string[];
 	Version?: string;
+	TenantId?: string;
 }

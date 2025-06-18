@@ -3,6 +3,7 @@ export interface RemindersCreateModel {
 	Description?: string;
 	Tags?: string[];
 	Version?: string;
+	TenantId?: string;
 }
 
 export interface RemindersUpdateModel {
@@ -10,4 +11,5 @@ export interface RemindersUpdateModel {
 	Description?: string;
 	Tags?: string[];
 	Version?: string;
+	TenantId?: string;
 }

@@ -5,6 +5,7 @@ export interface MeditationCreateModel {
   RecommendedDurationMin?: number;
   Tags?: string[];
   Version?: string;
+  TenantId?: string;
 }
 
 export interface MeditationUpdateModel {
@@ -14,4 +15,5 @@ export interface MeditationUpdateModel {
   RecommendedDurationMin?: number;
   Tags?: string[];
   Version?: string;
+  TenantId?: string;
 }

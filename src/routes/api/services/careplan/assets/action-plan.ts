@@ -9,13 +9,15 @@ export const createActionPlan = async (
 	name: string,
 	description: string,
 	tags: string[],
-	version: string
+	version: string,
+	tenantId: string
 ) => {
 	const body = {
 		Name: name,
 		Description: description,
 		Tags: tags,
-		Version: !version || version.length === 0 ? 'V 1.0' : version
+		Version: !version || version.length === 0 ? 'V 1.0' : version,
+		TenantId: tenantId,
 	};
 
 	const url = CAREPLAN_BACKEND_API_URL + '/assets/action-plans';
@@ -72,13 +74,15 @@ export const updateActionPlan = async (
 	name: string,
 	description: string,
 	tags: string[],
-	version: string
+	version: string,
+	tenantId: string
 ) => {
 	const body = {
 		Name: name,
 		Description: description,
 		Tags: tags,
-		Version: !version || version.length === 0 ? 'V 1.0' : version
+		Version: !version || version.length === 0 ? 'V 1.0' : version,
+		TenantId: tenantId,
 	};
 
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/action-plans/${actionPlanId}`;

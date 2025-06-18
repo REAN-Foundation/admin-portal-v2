@@ -6,6 +6,8 @@ import { getPhysiotherapyById } from '$routes/api/services/careplan/assets/physi
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
 	const physiotherapyId = event.params.id;
+	const tenantId = event.locals.sessionUser.tenantId;
+
 	const response = await getPhysiotherapyById(sessionId, physiotherapyId);
 
 	const physiotherapy = response?.Data;
@@ -14,6 +16,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	return {
 		location: `${id}/edit`,
 		physiotherapy,
+		tenantId,
 		message: response?.Message || 'Physiotherapy retrieved successfully',
 		title: 'Physiotherapy Edit'
 	};

@@ -7,6 +7,8 @@ import { getVideoById } from '$routes/api/services/careplan/assets/video';
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
 	const videoId = event.params.id;
+	const tenantId = event.locals.sessionUser.tenantId;
+
 	const response = await getVideoById(sessionId, videoId);
 
 	const video = response?.Data;
@@ -15,6 +17,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	return {
 		location: `${id}/edit`,
 		video,
+		tenantId,
 		message: response?.Message || 'Video retrieved successfully',
 		title: 'Video Edit'
 	};

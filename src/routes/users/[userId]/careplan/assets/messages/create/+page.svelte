@@ -25,6 +25,8 @@
 
 	data.title = 'Create Message';
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/messages/create`;
 	const messagesRoute = `/users/${userId}/careplan/assets/messages`;
@@ -53,6 +55,7 @@
 				PathUrl: pathUrl,
 				Version: version,
 				Tags: keywords,
+				TenantId: tenantId,
 				TemplateVariables: parsedTemplateVars
 
 			};
@@ -181,7 +184,7 @@ const onUpdateKeywords = (e: any) => {
 						<input
 							type="text"
 							class="input {errors?.TemplateName ? 'input-text-error' : ''}"
-							placeholder="Enter Template Name..."
+							placeholder="Enter template name..."
 							bind:value={templateName}
 						/>
 						{#if errors?.TemplateName}
@@ -197,8 +200,11 @@ const onUpdateKeywords = (e: any) => {
 							name="templateVariablesText"
 							class="input resize-none {errors?.TemplateVariables ? 'border-error-300' : 'border-primary-200'}"
 							bind:value={templateVariablesText}
-							placeholder="Enter Template Variables here..."
+							placeholder="Enter template variables here..."
 						></textarea>
+							{#if errors?.TemplateVariables}
+							<p class="error-text">{errors.TemplateVariables}</p>
+							{/if}
 					</td>
 				</tr>
 

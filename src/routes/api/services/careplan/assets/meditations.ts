@@ -11,7 +11,8 @@ export const createMeditation = async (
     meditationType: string,
     recommendedDurationMin: number,
     tags: string[],
-    version: string
+    version: string,
+    tenantId: string
 ) => {
     const body = {
         Name                  : name,
@@ -19,6 +20,7 @@ export const createMeditation = async (
         MeditationType        : meditationType,
         RecommendedDurationMin: recommendedDurationMin,
         Tags                  : tags,
+        TenantId              : tenantId,
         Version               : !version || version?.length === 0 ? 'V 1.0' : version
     };
 
@@ -72,7 +74,8 @@ export const updateMeditation = async (
     meditationType: string,
     recommendedDurationMin: number,
     tags: string[],
-    version: string
+    version: string,
+    tenantId: string
 ) => {
     const body = {
         Name                  : name,
@@ -80,6 +83,7 @@ export const updateMeditation = async (
         MeditationType          : meditationType,
         RecommendedDurationMin: recommendedDurationMin,
         Tags                  : tags,
+        TenantId              : tenantId,
         Version               : !version || version?.length === 0 ? 'V 1.0' : version
     };
 

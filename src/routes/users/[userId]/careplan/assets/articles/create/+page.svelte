@@ -22,6 +22,8 @@
 	let version = $state(undefined);
 
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/articles/create`;
 	const articleRoute = `/users/${userId}/careplan/assets/articles`;
@@ -48,7 +50,8 @@
 				Summary: summary,
 				PathUrl: pathUrl,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(articlesCreateModel);
@@ -177,7 +180,11 @@
 			</tbody>
 		</table>
 		<div class="btn-container">
-			<Button/>
-		</div>
+            {#await promise}
+                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+            {:then data}
+                <Button type="submit" text="Submit" variant="primary" />
+            {/await}
+        </div>
 	</form>
 </div>

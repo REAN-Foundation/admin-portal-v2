@@ -4,6 +4,7 @@ export interface PhysiotherapyCreateModel {
   RecommendedDurationMin?: number;
   Tags?: string[];
   Version?: string;
+  TenantId?: string;
 }
 
 export interface PhysiotherapyUpdateModel {
@@ -12,4 +13,5 @@ export interface PhysiotherapyUpdateModel {
   RecommendedDurationMin?: number;
   Tags?: string[];
   Version?: string;
+  TenantId?: string;
 }

@@ -16,11 +16,21 @@ export const createOrUpdateSchema = z.object({
     Template: z.string()
         .max(1024, { message: 'Template Type must be at most 1024 characters long.' })
         .optional(),
+
     ReferenceTemplateCode: z.string()
-        .max(1024, { message: 'TemplateCode must be at most 1024 characters long.' })
-        .optional(),
+    .max(1024, { message: 'TemplateCode must be at most 1024 characters long.' })
+    .optional()
+    .or(z.literal('')),
+    // ReferenceTemplateCode: z.string()
+    //     .max(1024, { message: 'TemplateCode must be at most 1024 characters long.' })
+    //     .optional(),
     Tags: z.array(z.string()).optional(),
     Version: z.string()
         .max(1024, { message: 'Version must be at most 1024 characters long.' })
         .optional(),
+    TenantId: z
+		.string({
+			required_error: 'TenantId is required.',
+			invalid_type_error: 'TenantId must be a string.'
+		})
 });

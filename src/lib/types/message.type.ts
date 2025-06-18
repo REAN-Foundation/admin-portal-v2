@@ -7,6 +7,7 @@ export interface MessageCreateModel {
 	PathUrl?: string;
 	Tags?: string[];
 	Version?: string;
+	TenantId?: string;
 }
 
 export interface MessageUpdateModel {
@@ -18,4 +19,5 @@ export interface MessageUpdateModel {
 	PathUrl?: string;
 	Tags?: string[];
 	Version?: string;
+	TenantId?: string;
 }

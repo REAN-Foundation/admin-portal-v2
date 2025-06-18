@@ -4,6 +4,7 @@ export interface WebNewsfeedsCreateModel {
 	PathUrl: string;
 	Tags?: string[];
 	Version: string;
+	TenantId?: string;
 }
 
 export interface WebNewsfeedsUpdateModel {
@@ -12,4 +13,5 @@ export interface WebNewsfeedsUpdateModel {
 	PathUrl: string;
 	Tags?: string[];
 	Version: string;
+	TenantId?: string;
 }

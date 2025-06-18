@@ -28,6 +28,8 @@
 
 	const userId = page.params.userId;
 	const wordPowerId = page.params.id;
+	const tenantId = data.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/word-power/${wordPowerId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/word-power/${wordPowerId}/view`;
@@ -61,7 +63,8 @@
 				Description: description,
 				AdditionalResources: additionalResources,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(WordPowerUpdateModel);

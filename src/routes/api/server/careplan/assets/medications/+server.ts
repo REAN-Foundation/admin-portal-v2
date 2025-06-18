@@ -1,4 +1,3 @@
-import type { ChallengesCreateModel } from "$lib/types/challenges.types";
 import type { MedicationCreateModel } from "$lib/types/medication.types";
 import { ResponseHandler } from "$lib/utils/response.handler";
 import { createOrUpdateSchema } from "$lib/validation/medications.schema";
@@ -34,8 +33,9 @@ export const POST = async (event: RequestEvent) => {
             data.Name,
             data.Description,     
             data.Tags,
-            data.Version ?? '');
-
+            data.Version,
+            data.TenantId
+            );
         return ResponseHandler.success(response);
     } catch (error) {
         console.error("Error creating medication:", error);

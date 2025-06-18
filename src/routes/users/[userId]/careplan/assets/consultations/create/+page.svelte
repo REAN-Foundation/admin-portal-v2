@@ -21,6 +21,8 @@
 
 	data.title = 'Create Consultation';
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/consultations/create`;
 	const consultationRoute = `/users/${userId}/careplan/assets/consultations`;
@@ -40,7 +42,8 @@
 				Description: description,
 				Version: version,
 				ConsultationType: consultationType,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(consultationCreateModel);

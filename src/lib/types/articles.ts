@@ -4,6 +4,7 @@ export interface ArticlesCreateModel {
 	PathUrl: string;
 	Tags?: string[];
 	Version: string;
+	TenantId?: string;
 }
 
 export interface ArticlesUpdateModel {
@@ -12,4 +13,5 @@ export interface ArticlesUpdateModel {
 	PathUrl: string;
 	Tags?: string[];
 	Version: string;
+	TenantId?: string;
 }

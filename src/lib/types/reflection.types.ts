@@ -3,6 +3,7 @@ export interface ReflectionCreateModel {
 	Description: string;
 	Tags?: string[];
 	Version: string;
+	TenantId?: string;
 }
 
 export interface ReflectionUpdateModel {
@@ -10,4 +11,5 @@ export interface ReflectionUpdateModel {
 	Description: string;
 	Tags?: string[];
 	Version: string;
+	TenantId?: string;
 }

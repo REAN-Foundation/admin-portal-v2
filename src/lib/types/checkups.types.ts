@@ -3,6 +3,7 @@ export interface CheckupsCreateModel {
 	Description?: string;
 	Tags?: string[];
 	Version?: string;
+	TenantId?: string;
 }
 
 export interface CheckupsUpdateModel {
@@ -10,4 +11,5 @@ export interface CheckupsUpdateModel {
 	Description?: string;
 	Tags?: string[];
 	Version?: string;
+	TenantId?: string;
 }

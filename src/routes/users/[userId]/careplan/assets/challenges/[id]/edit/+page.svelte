@@ -23,6 +23,7 @@
 
 	const userId = page.params.userId;
 	var challengesId = page.params.id;
+	const tenantId = data.tenantId;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/challenges/${challengesId}/edit`;
@@ -52,7 +53,8 @@
 				Name: name,
 				Description: description,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(challengesUpdateModel);

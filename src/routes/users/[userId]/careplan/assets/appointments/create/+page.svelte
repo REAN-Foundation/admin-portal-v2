@@ -23,6 +23,8 @@
 	let version = $state(undefined);
 
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/appointments/create`;
 	const appointmentRoute = `/users/${userId}/careplan/assets/appointments`;
@@ -49,7 +51,8 @@
 				Description: description,
 				AppointmentType: appointmentType,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(appointmentCreateModel);
@@ -178,7 +181,11 @@
 			</tbody>
 		</table>
 		<div class="btn-container">
-			<Button />
-		</div>
+            {#await promise}
+                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+            {:then data}
+                <Button type="submit" text="Submit" variant="primary" />
+            {/await}
+        </div>
 	</form>
 </div>
