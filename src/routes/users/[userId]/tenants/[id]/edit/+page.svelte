@@ -98,106 +98,122 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="p-6">
-	<form onsubmit={(event) => (promise = handleSubmit(event))}>
-		<div class="form-headers">
-			<h2 class="form-titles">Edit Tenant</h2>
-			<a href={viewRoute} class="form-cancel-btn">
-				<Icon icon="material-symbols:close-rounded" />
-			</a>
+<div class="px-6 py-4">
+	<div class="mx-auto">
+		<div class="health-system-table-container">
+			<form onsubmit={(event) => (promise = handleSubmit(event))}>
+				<table class="health-system-table">
+					<thead>
+						<tr>
+							<th>Edit Tenant</th>
+							<th class="text-end">
+								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
+									<Icon icon="material-symbols:close-rounded" />
+								</a>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Name <span class="text-red-600">*</span></td>
+							<td>
+								<input
+									type="text"
+									name="name"
+									placeholder="Enter name here..."
+									class="health-system-input"
+									bind:value={name}
+								/>
+								{#if errors?.Name}
+									<p class="text-error">{errors?.Name}</p>
+								{/if}
+							</td>
+						</tr>
+
+						<tr>
+							<td>Description</td>
+							<td>
+								<textarea
+									name="description"
+									placeholder="Enter description here..."
+									class="health-system-input resize-none"
+									bind:value={description}
+								></textarea>
+								{#if errors?.Description}
+									<p class="text-error">{errors?.Description}</p>
+								{/if}
+							</td>
+						</tr>
+
+						<tr>
+							<td>Code</td>
+							<td>
+								<input
+									type="text"
+									name="code"
+									placeholder="Enter code here..."
+									class="health-system-input"
+									bind:value={code}
+								/>
+								{#if errors?.Code}
+									<p class="text-error">{errors?.Code}</p>
+								{/if}
+							</td>
+						</tr>
+
+						<tr>
+							<td>Phone</td>
+							<td>
+								<input
+									type="text"
+									name="phone"
+									placeholder="Enter phone here..."
+									class="health-system-input"
+									bind:value={phone}
+								/>
+								{#if errors?.Phone}
+									<p class="text-error">{errors?.Phone}</p>
+								{/if}
+							</td>
+						</tr>
+
+						<tr>
+							<td>Email</td>
+							<td>
+								<input
+									type="email"
+									name="email"
+									placeholder="Enter email here..."
+									class="health-system-input"
+									bind:value={email}
+								/>
+								{#if errors?.Email}
+									<p class="text-error">{errors?.Email}</p>
+								{/if}
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="button-container mt-4 flex gap-4">
+					<button
+						type="button"
+						onclick={handleReset}
+						class="health-system-btn variant-soft-secondary"
+					>
+						Reset
+					</button>
+					{#await promise}
+						<button type="submit" class="health-system-btn variant-filled-secondary" disabled>
+							Submitting...
+						</button>
+					{:then}
+						<button type="submit" class="health-system-btn variant-filled-secondary">
+							Submit
+						</button>
+					{/await}
+				</div>
+			</form>
 		</div>
-
-		<table class="w-full">
-			<tbody>
-				<tr class="tables-row">
-					<td class="table-label">Name <span class="important-field">*</span></td>
-					<td class="table-data">
-						<input
-							type="text"
-							name="name"
-							placeholder="Enter name here..."
-							class="input {form?.errors?.Name ? 'input-text-error' : ''}"
-							bind:value={name}
-						/>
-						{#if errors?.Name}
-							<p class="error-text">{errors?.Name}</p>
-						{/if}
-					</td>
-				</tr>
-
-				<tr class="tables-row">
-					<td class="table-label">Description</td>
-					<td class="table-data">
-						<textarea
-							name="description"
-							placeholder="Enter description here..."
-							class="input resize-none {errors?.Description ? 'border-error-300' : 'border-primary-200'}"
-							bind:value={description}
-						></textarea>
-					</td>
-				</tr>
-
-				<tr class="tables-row">
-					<td class="table-label">Code</td>
-					<td class="table-data">
-						<input
-							type="text"
-							name="code"
-							placeholder="Enter code here..."
-							class="input {form?.errors?.Code ? 'input-text-error' : ''}"
-							bind:value={code}
-						/>
-						{#if errors?.Code}
-							<p class="error-text">{errors?.Code}</p>
-						{/if}
-					</td>
-				</tr>
-
-				<tr class="tables-row">
-					<td class="table-label">Phone</td>
-					<td class="table-data">
-						<input
-							type="text"
-							name="phone"
-							placeholder="Enter phone here..."
-							class="input {form?.errors?.Phone ? 'input-text-error' : ''}"
-							bind:value={phone}
-						/>
-						{#if errors?.Phone}
-							<p class="error-text">{errors?.Phone}</p>
-						{/if}
-					</td>
-				</tr>
-
-				<tr class="tables-row">
-					<td class="table-label">Email</td>
-					<td class="table-data">
-						<input
-							type="email"
-							name="email"
-							placeholder="Enter email here..."
-							class="input {form?.errors?.Email ? 'input-text-error' : ''}"
-							bind:value={email}
-						/>
-						{#if errors?.Email}
-							<p class="error-text">{errors?.Email}</p>
-						{/if}
-					</td>
-				</tr>
-			</tbody>
-		</table>
-
-		<div class="btn-container">
-			<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary">
-				Reset
-			</button>
-			{#await promise}
-				<button type="submit" class="table-btn variant-filled-secondary" disabled>
-					Submitting...
-				</button>
-			{:then}
-				<button type="submit" class="table-btn variant-filled-secondary">Submit</button>
-			{/await}
-		</div>
-	</form>
+	</div>
 </div>

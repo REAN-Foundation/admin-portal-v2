@@ -84,7 +84,119 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="p-6">
+<div class="px-6 py-4">
+	<div class="mx-auto">
+		<div class="health-system-table-container">
+			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+				<table class="health-system-table">
+					<thead>
+						<tr>
+							<th>Create Tenant</th>
+							<th class="text-end">
+								<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
+									<Icon icon="material-symbols:close-rounded" />
+								</a>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Name <span class="text-red-600">*</span></td>
+							<td>
+								<input
+									type="text"
+									bind:value={name}
+									class="health-system-input"
+									name="name"
+									placeholder="Enter name here..."
+								/>
+								{#if errors?.Name}
+									<p class="text-error">{errors?.Name}</p>
+								{/if}
+							</td>
+						</tr>
+
+						<tr>
+							<td>Description</td>
+							<td>
+								<textarea
+									bind:value={description}
+									name="description"
+									placeholder="Enter description here..."
+									class="health-system-input resize-none"
+								></textarea>
+								{#if errors?.Description}
+									<p class="text-error">{errors?.Description}</p>
+								{/if}
+							</td>
+						</tr>
+
+						<tr>
+							<td>Code <span class="text-red-600">*</span></td>
+							<td>
+								<input
+									type="text"
+									bind:value={code}
+									class="health-system-input"
+									name="code"
+									placeholder="Enter code here..."
+								/>
+								{#if errors?.Code}
+									<p class="text-error">{errors?.Code}</p>
+								{/if}
+							</td>
+						</tr>
+
+						<tr>
+							<td>Contact Number <span class="text-red-600">*</span></td>
+							<td>
+								<input
+									type="text"
+									bind:value={phone}
+									class="health-system-input"
+									name="phone"
+									placeholder="Enter contact number here..."
+								/>
+								{#if errors?.Phone}
+									<p class="text-error">{errors?.Phone}</p>
+								{/if}
+							</td>
+						</tr>
+
+						<tr>
+							<td>Email <span class="text-red-600">*</span></td>
+							<td>
+								<input
+									type="email"
+									bind:value={email}
+									class="health-system-input"
+									name="email"
+									placeholder="Enter email here..."
+								/>
+								{#if errors?.Email}
+									<p class="text-error">{errors?.Email}</p>
+								{/if}
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="button-container">
+					{#await promise}
+						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+							Submitting
+						</button>
+					{:then data}
+						<button type="submit" class="health-system-btn variant-soft-secondary">Submit</button>
+					{/await}
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+<!-- <div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
 			<h2 class="form-titles">Create Tenant</h2>
@@ -177,4 +289,4 @@
 			<Button />
 		</div>
 	</form>
-</div>
+</div> -->
