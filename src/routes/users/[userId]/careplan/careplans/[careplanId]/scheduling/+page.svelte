@@ -8,6 +8,7 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
+	import { onMount } from 'svelte';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -42,6 +43,8 @@
 	]);
 
 	let items = $state([]);
+	// let items = $state(data.actionplanAssets.Items);
+	$inspect('items', items);
 	let show = $state(false); // FIXED: should be a $state
 	let selectedAssetType = $state('Action plan');
 
@@ -208,6 +211,13 @@
 			toastMessage();
 		}
 	};
+
+	onMount(() => {
+	searchAssets({
+		sessionId: data.sessionId,
+		selectedAssetType
+	});
+});
 </script>
 
 <!-- Breadcrumbs -->
