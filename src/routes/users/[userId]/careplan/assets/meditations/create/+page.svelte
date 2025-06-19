@@ -13,7 +13,7 @@
 	let promise = $state();
 	let name = $state('');
 	let description = $state('');
-	let meditationType = $state('');
+	let meditationType ="Mindfulness";
 	let recommendedDurationMin = $state<number>();
 	let version = $state('');
 	let keywords: string[] = $state([]);
