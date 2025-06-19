@@ -302,6 +302,7 @@
 										bind:value={day}
 										placeholder="Enter day here...."
 										class="health-system-input {form?.errors?.day ? 'input-text-error' : ''}"
+										min=1
 									/>
 									{#if errors?.Day}
 										<p class="text-error">{errors?.Day}</p>
