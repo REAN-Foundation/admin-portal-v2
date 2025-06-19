@@ -61,7 +61,7 @@
 				<td class="table-data">{description}</td>
 			</tr>
 			<tr class="tables-row">
-				<td class="table-label">Url</td>
+				<td class="table-label">URL</td>
 				<td class="table-data">{pathUrl}</td>
 			</tr>
 			<tr class="tables-row">
