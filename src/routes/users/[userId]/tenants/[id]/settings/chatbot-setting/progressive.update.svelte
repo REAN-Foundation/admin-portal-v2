@@ -288,7 +288,7 @@
 
 								<!-- Right: Toggle + Optional Edit -->
 								<div class="flex items-center">
-									{#if groupName === 'Consent' && groupItems === true && edit === true}
+									<!-- {#if groupName === 'Consent' && groupItems === true && edit === true}
 										<Tooltip text="Edit" forceShow={true}>
 											<Icon
 												icon="material-symbols:edit-outline"
@@ -296,7 +296,7 @@
 												onclick={() => (showCancelModel = true)}
 											/>
 										</Tooltip>
-									{/if}
+									{/if} -->
 									<input
 										type="checkbox"
 										class="checkbox checkbox-primary scale-125 cursor-pointer"

@@ -9,11 +9,11 @@
 
 	let { data }: { data: PageServerData } = $props();
 
-	let setttings = data.settings.Common;
+	let commonSettings = $state(data.commonSettings);
 	let errors: Record<string, string> = $state({});
-	$inspect(setttings)
 
-	// let disabled = $state(true);
+	$inspect(commonSettings)
+
 	let disabled = $state(true);
 	let promise = $state();
 
@@ -24,36 +24,39 @@
 	// let disabled = $state(data.commonSettings.UserInterfaces.ChatBot);
 	// let edit = $state(false);
 
-	const toggleEdit = async () => {
+	const handleEditClick = async () => {
+        disabled = !disabled;
 		// if (disabled) {
-		if (disabled) {
-			addToast({
-				message: 'Edit mode enabled',
-				type: 'info',
-				timeout: 3000
-			});
-			disabled = false;
-		} else {
-			addToast({
-				message: 'Settings saved successfully',
-				type: 'success',
-				timeout: 3000
-			});
-			disabled = true;
-		}
-		// } else if (!disabled) {
+		// if (disabled) {
 		// 	addToast({
-		// 		message: 'This setting is disabled. Please update it from the main settings.',
-		// 		type: 'warning',
+		// 		message: 'Edit mode enabled',
+		// 		type: 'info',
 		// 		timeout: 3000
 		// 	});
-		// 	return;
+		// 	disabled = false;
+		// } else {
+		// 	addToast({
+		// 		message: 'Settings saved successfully',
+		// 		type: 'success',
+		// 		timeout: 3000
+		// 	});
+		// 	disabled = true;
 		// }
+
 	};
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
-		console.log("I am in settings page",setttings);
+		console.log("I am in settings page",commonSettings.Wellness);
 		try {
+            if (disabled) {
+                addToast({
+                    message: 'Nothing to edit !',
+                    type: 'warning',
+                    timeout: 3000
+                });
+                return;
+            }
+
 			errors = {};
 
 			// if (setttings.UserInterfaces.ChatBot === false) {
@@ -72,7 +75,7 @@
 			// 	setttings.Followup.Source = 'None';
 			// }
 
-			const validationResult = UserInterfacesSchema.safeParse(setttings.UserInterfaces);
+			const validationResult = UserInterfacesSchema.safeParse(commonSettings.UserInterfaces);
 			console.log(validationResult);
 
 			if (!validationResult.success) {
@@ -87,13 +90,13 @@
 
 			const res = await fetch(`/api/server/tenants/settings/${tenantId}/Common`, {
 				method: 'PUT',
-				body: JSON.stringify(setttings),
+				body: JSON.stringify(commonSettings),
 				headers: { 'content-type': 'application/json' }
 			});
 			const response = await res.json();
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				// disabled = false;
+				disabled = true;
 				return;
 			}
 			if (response.Errors) {
@@ -108,18 +111,7 @@
 </script>
 
 <div class="my-8 px-5 py-2">
-	<!-- <div class="mb-2 flex w-full flex-wrap justify-end gap-2">
-		<button
-			class="table-btn variant-filled-secondary gap-1"
-			onclick={() => {
-				disabled = !disabled;
-				edit = disabled;
-			}}
-		>
-			<Icon icon="material-symbols:edit-outline" />
-			<span>Edit</span>
-		</button>
-	</div> -->
+
 	<div class="mx-auto">
 		<div class="border border-zinc-200">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
@@ -129,10 +121,10 @@
 						<button
 							type="button"
 							class="table-btn variant-filled-secondary gap-1"
-							onclick={toggleEdit}
+							onclick={handleEditClick}
 						>
 							<Icon icon="material-symbols:edit-outline" />
-							<span>{disabled ? 'Edit' : 'Save'}</span>
+							<!-- <span>{disabled ? 'Edit' : 'Save'}</span> -->
 						</button>
 						<a
 							href={tenantRoute}
@@ -144,14 +136,14 @@
 				</div>
 
 				<div class="flex flex-col space-y-4 px-5 py-4">
-					{#each Object.entries(setttings.UserInterfaces) as [key, value]}
+					{#each Object.entries(commonSettings.UserInterfaces) as [key, value]}
 						{#if key === 'ChatBot'}
 							<div class="flex items-center space-x-4">
 								<input
 									type="checkbox"
 									name="patientApp"
 									{disabled}
-									bind:checked={setttings.UserInterfaces[key]}
+									bind:checked={commonSettings.UserInterfaces[key]}
 									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md"
 								/>
 								<span>Chat Bot</span>
@@ -162,7 +154,7 @@
 									type="checkbox"
 									name="followup"
 									{disabled}
-									bind:checked={setttings.UserInterfaces[key]}
+									bind:checked={commonSettings.UserInterfaces[key]}
 									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md"
 								/>
 								<span>Follow-up</span>
@@ -173,7 +165,7 @@
 									type="checkbox"
 									name="forms"
 									{disabled}
-									bind:checked={setttings.UserInterfaces[key]}
+									bind:checked={commonSettings.UserInterfaces[key]}
 									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md"
 								/>
 								<span>Forms</span>
@@ -184,7 +176,7 @@
 									type="checkbox"
 									name="patientApp"
 									disabled
-									bind:checked={setttings.UserInterfaces[key]}
+									bind:checked={commonSettings.UserInterfaces[key]}
 									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md"
 								/>
 								<span>Patient App</span>
@@ -195,7 +187,7 @@
 									type="checkbox"
 									name="patientPortal"
 									disabled
-									bind:checked={setttings.UserInterfaces[key]}
+									bind:checked={commonSettings.UserInterfaces[key]}
 									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md"
 								/>
 								<span>Patient Portal</span>

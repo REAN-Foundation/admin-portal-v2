@@ -2,9 +2,7 @@
 	import { page } from '$app/state';
 	import Icon from '@iconify/svelte';
 	import Icons from '$lib/components/icons.svelte';
-	import InfoIcon from '$lib/components/infoIcon.svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
-	import { goto } from '$app/navigation';
 	import type { FormsSettings } from '$lib/types/tenant.settings.types';
 	import { FormsSettingsSchema } from '$lib/validation/tenant.settings.schema';
 	import { formsUISettings } from './forms-setting.types';
@@ -16,38 +14,49 @@
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
 	const tenantRoute = `/users/${userId}/tenants/${tenantId}/settings/forms-setting`;
+    
 	let formSetting = $state({ Forms: data.settings });
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let openTab: string | null = $state(null);
-	let disabled = $state(data.commonSettings.UserInterfaces.Forms);
+
+	let disabled = $state(data.isFormsEnabled);
 	let edit = $state(false);
 
-	const toggleEdit = async () => {
-		if (disabled) {
-			if (edit) {
-				addToast({
-					message: 'Settings saved successfully',
-					type: 'success',
-					timeout: 3000
-				});
-				edit = false;
-			} else {
-				edit = true;
-				addToast({
-					message: 'Edit mode enabled',
-					type: 'info',
-					timeout: 3000
-				});
-			}
-		} else if (disabled === false) {
-			addToast({
-				message: 'This setting is disabled. Please update it from the main settings.',
-				type: 'warning',
-				timeout: 3000
-			});
-			return;
-		}
+	const handleEditClick = async () => {
+        if (!disabled) {
+            addToast({
+                message: 'This setting is disabled. Please update it from the main settings.',
+                type: 'warning',
+                timeout: 3000
+            });
+            return;
+        }
+        edit = !edit;
+		// if (disabled) {
+		// 	if (edit) {
+		// 		addToast({
+		// 			message: 'Settings saved successfully',
+		// 			type: 'success',
+		// 			timeout: 3000
+		// 		});
+		// 		edit = false;
+		// 	} else {
+		// 		edit = true;
+		// 		addToast({
+		// 			message: 'Edit mode enabled',
+		// 			type: 'info',
+		// 			timeout: 3000
+		// 		});
+		// 	}
+		// } else if (disabled === false) {
+		// 	addToast({
+		// 		message: 'This setting is disabled. Please update it from the main settings.',
+		// 		type: 'warning',
+		// 		timeout: 3000
+		// 	});
+		// 	return;
+		// }
 	};
 
 	function toggleTab(tab: string) {
@@ -73,7 +82,15 @@
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
-
+            console.log('edit', edit);
+            if (!edit) {
+                addToast({
+                    message: 'Nothing to edit !',
+                    type: 'warning',
+                    timeout: 3000
+                });
+                return;
+            }
 			const formSettingUpdateModel: FormsSettings = {
 				Integrations: formSetting.Forms.Integrations,
 				OfflineSupport: formSetting.Forms.OfflineSupport,
@@ -102,8 +119,6 @@
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				edit = false;
-
-				goto(`${tenantRoute}`);
 				return;
 			}
 			if (response.Errors) {
@@ -142,10 +157,10 @@
 						<button
 							type="button"
 							class="table-btn variant-filled-secondary gap-1"
-							onclick={toggleEdit}
+							onclick={handleEditClick}
 						>
 							<Icon icon="material-symbols:edit-outline" />
-							<span>{edit ? 'Save' : 'Edit'}</span>
+							<!-- <span>{edit ? 'Save' : 'Edit'}</span> -->
 						</button>
 						<a
 							href={tenantRoute}
@@ -196,7 +211,7 @@
 									>
 										<Icon
 											icon="icon-park-outline:down"
-											rotate="35"
+											rotate={35}
 											width="16"
 											height="16"
 											class="h-5 w-5"
