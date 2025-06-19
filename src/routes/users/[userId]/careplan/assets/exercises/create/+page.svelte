@@ -14,8 +14,8 @@
 	let promise = $state();
 	let name = $state('');
 	let description = $state('');
-	let exerciseType = $state('');
-	let intensityLevel = $state('');
+	let exerciseType = 'Aerobic';
+	let intensityLevel = "Moderate";
 	let recommendedDurationMin = $state<number>();
 	let version = $state('');
 	let keywords: string[] = $state([]);
