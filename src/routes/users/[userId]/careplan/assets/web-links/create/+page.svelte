@@ -96,7 +96,113 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
+
 <div class="p-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Create Web Link</h2>
+			<a href={assetRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>
+
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">
+						Name <span class="important-field">*</span>
+					</td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+							name="name"
+							placeholder="Enter name here..."
+							bind:value={name}
+						/>
+						{#if errors?.Name}
+							<p class="error-text">{errors?.Name}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label align-top">Description</td>
+					<td class="table-data">
+						<textarea
+							name="description"
+							class="input resize-none {errors?.Description ? 'border-error-300' : 'border-primary-200'}"
+							bind:value={description}
+							placeholder="Enter description here..."
+						></textarea>
+						{#if errors?.Description}
+							<p class="error-text">{errors?.Description}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">URL</td>
+					<td class="table-data">
+						<input
+							type="url"
+							name="url"
+							class="input {errors?.Url ? 'input-text-error' : ''}"
+							placeholder="Enter url here"
+							bind:value={pathUrl}
+						/>
+						{#if errors?.Url}
+							<p class="error-text">{errors?.Url}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label !py-3 align-top">Tags</td>
+					<td class="table-data">
+						<InputChips
+							bind:keywords
+							name="keywords"
+							id="keywords"
+							keywordsChanged={onUpdateKeywords}
+						/>
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Version</td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {form?.errors?.Version ? 'input-text-error' : ''}"
+							name="version"
+							placeholder="V 1.0"
+							bind:value={version}
+						/>
+						{#if errors?.Version}
+							<p class="error-text">{errors?.Version}</p>
+						{/if}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container">
+			{#await promise}
+				<button type="submit" class="table-btn variant-soft-secondary" disabled>
+					Submitting
+				</button>
+			{:then data}
+				<button type="submit" class="table-btn variant-soft-secondary">
+					Submit
+				</button>
+			{/await}
+		</div>
+	</form>
+</div>
+
+<!-- <div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
 			<h2 class="form-titles">Create Web link</h2>
@@ -183,4 +289,4 @@
 			<Button />
 		</div>
 	</form>
-</div>
+</div> -->
