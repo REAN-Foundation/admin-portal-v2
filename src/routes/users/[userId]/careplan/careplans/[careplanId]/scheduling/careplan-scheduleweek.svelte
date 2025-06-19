@@ -12,14 +12,15 @@
 		`/users/${userId}/careplan/careplans/${careplanId}/scheduling/${id}/view`;
 	const editRoute = (id) =>
 		`/users/${userId}/careplan/careplans/${careplanId}/scheduling/${id}/edit`;
+		console.log('classifiedByWeek',classifiedByWeek);
 </script>
 
 <section class="space-y-4 overflow-auto bg-white p-4 dark:bg-inherit">
 	{#each classifiedByWeek as week, i}
-		<CollapsibleSection headerText={`Week ${i + 1}`}>
+		<CollapsibleSection headerText={`Week ${week.Week}`}>
 			<div class="space-y-4">
 				{#each week.Days as day, j}
-					<CollapsibleSection headerText={`Day ${j + 1}`}>
+					<CollapsibleSection headerText={`Day ${day.Day}`}>
 						<div
 							class="border-secondary-100 dark:border-surface-700 overflow-x-auto rounded-lg border"
 						>
