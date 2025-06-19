@@ -40,10 +40,10 @@
 
 <div class="mx-auto w-full px-6 py-4">
 	<div class="form-headers">
-		<h2 class="form-title">View Audio</h2>
+		<h2 class="form-titles">View Audio</h2>
 		<a href={assetRoute} class="cancel-btn">
-				<Icon icon="material-symbols:close-rounded" />
-			</a>
+			<Icon icon="material-symbols:close-rounded" />
+		</a>
 	</div>
 
 		<table class="w-full">
