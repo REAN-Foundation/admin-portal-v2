@@ -17,7 +17,7 @@
 	let assetCode = data.video.AssetCode;
 	let name = data.video.Name;
 	let transcript = data.video.Transcript !== null ? data.video.Transcript : 'Not specified';
-	let pathUrl = data.video.PathUrl !== null ? data.video.PathUrl : 'Not specified';
+	let pathUrl = data.video.Url !== null ? data.video.Url : 'Not specified';
 	let tags_ = data.video.Tags;
 	let version = data.video.Version;
 	let tags = tags_.join(', ');
