@@ -203,7 +203,11 @@
 			<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary">
 				Reset
 			</button>
-			<Button />
+			{#await promise}
+				<button type="submit" class="table-btn variant-filled-secondary" disabled>Submitting</button>
+			{:then data}
+				<button type="submit" class="table-btn variant-filled-secondary">Submit</button>
+			{/await}
 		</div>
 	</form>
 </div>

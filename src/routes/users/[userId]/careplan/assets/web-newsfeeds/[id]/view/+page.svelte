@@ -18,7 +18,7 @@
 	let name = data.webNewsfeed.Name;
 	let description =
 		data.webNewsfeed.Description !== null ? data.webNewsfeed.Description : 'Not specified';
-	let pathUrl = data.webNewsfeed.PathUrl !== null ? data.webNewsfeed.PathUrl : 'Not specified';
+	let pathUrl = data.webNewsfeed.Url !== null ? data.webNewsfeed.Url : 'Not specified';
 	let tags_ = data.webNewsfeed.Tags;
 	let version = data.webNewsfeed.Version;
 	let tags = tags_.join(', ');
