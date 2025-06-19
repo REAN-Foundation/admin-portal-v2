@@ -40,7 +40,7 @@
 
 <div class="mx-auto w-full px-6 py-4">
 	<div class="form-headers">
-		<h2 class="form-titles">View Infographics</h2>
+		<h2 class="form-titles">View Infographic</h2>
 		<a href={assetRoute} class="cancel-btn">
 			<Icon icon="material-symbols:close-rounded" />
 		</a>
