@@ -39,7 +39,7 @@
 <BreadCrumbs crumbs={breadCrumbs} />
 
 <div class="px-6 py-4">
-	<div class=" btn-container mr-5 mb-2">
+	<div class=" btn-container mb-2">
 		<Button href={settingsRoute} size="md" text="Setting" variant="primary"></Button>
 
 		<Button
