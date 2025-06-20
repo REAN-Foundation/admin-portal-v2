@@ -8,6 +8,7 @@
 	import { goto } from '$app/navigation';
 	import type { PersonRoleUpdateModel } from '$lib/types/person.role.types';
 	import { createOrUpdateSchema } from '$lib/validation/person.role.schemas';
+	import Button from '$lib/components/button/button.svelte';
 
 	//////////////////////////////////////////////////////////////
 
@@ -25,7 +26,7 @@
 	}
 
 	const userId = page.params.userId;
-	let personRoleId = page.params.id
+	let personRoleId = page.params.id;
 	const editRoute = `/users/${userId}/user-roles/${personRoleId}/edit`;
 	const viewRoute = `/users/${userId}/user-roles/${personRoleId}/view`;
 	const personRoleTypesRoute = `/users/${userId}/user-roles`;
@@ -98,7 +99,7 @@
 						<tr>
 							<th>Edit User Role</th>
 							<th class="text-end">
-								<a href={viewRoute} class="cancel-btn">
+								<a href={viewRoute} class="form-cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -136,18 +137,12 @@
 						</tr>
 					</tbody>
 				</table>
-				<div class="button-container">
-					<button
-						type="button"
-						onclick={handleReset}
-						class="table-btn variant-soft-secondary">Reset</button
-					>
+				<div class="btn-container mr-5 mb-2">
+					<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
 					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
+						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
 					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
+						<Button size="md" type="submit" text="Submit" variant="primary" />
 					{/await}
 				</div>
 			</form>

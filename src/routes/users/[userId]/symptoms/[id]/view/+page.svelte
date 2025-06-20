@@ -49,7 +49,7 @@
 					<tr>
 						<th>View Symptom</th>
 						<th class="text-end">
-							<a href={symptomRoute} class="health-system-btn variant-soft-secondary">
+							<a href={symptomRoute} class="cancel-btn">
 								<Icon icon="material-symbols:close-rounded" />
 							</a>
 						</th>
