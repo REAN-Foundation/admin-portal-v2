@@ -58,7 +58,7 @@
 					<tr>
 						<th>View Lab Record</th>
 						<th class="text-end">
-							<a href={labRecordTypesRoute} class="health-system-btn variant-soft-secondary">
+							<a href={labRecordTypesRoute} class="cancel-btn">
 								<Icon icon="material-symbols:close-rounded" />
 							</a>
 						</th>

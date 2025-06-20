@@ -6,6 +6,7 @@
 	import { goto } from '$app/navigation';
 	import type { LabRecordCreateModel } from '$lib/types/lab.records.types.js';
 	import { createOrUpdateSchema } from '$lib/validation/lab.records.schema.js';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -64,7 +65,7 @@
 			});
 
 			const response = await res.json();
-			
+
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				goto(`${labRecordTypesRoute}/${response?.Data?.LabRecordType?.id}/view`);
@@ -93,7 +94,7 @@
 						<tr>
 							<th>Create Lab Record</th>
 							<th class="text-end">
-								<a href={labRecordTypesRoute} class="health-system-btn variant-soft-secondary">
+								<a href={labRecordTypesRoute} class="form-cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -207,13 +208,11 @@
 						</tr>
 					</tbody>
 				</table>
-				<div class="button-container">
+				<div class="btn-container mr-5 mb-2">
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
+						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+						<Button size="md" type="submit" text="Submit" variant="primary" />
 					{/await}
 				</div>
 			</form>
