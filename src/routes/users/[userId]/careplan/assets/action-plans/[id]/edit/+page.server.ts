@@ -7,6 +7,7 @@ import { getActionPlanById } from '$routes/api/services/careplan/assets/action-p
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
 	const actionPlanId = event.params.id;
+	const tenantId = event.locals.sessionUser.tenantId;
 	const response = await getActionPlanById(sessionId, actionPlanId);
 
 	const actionPlan = response?.Data;
@@ -15,6 +16,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	return {
 		location: `${id}/edit`,
 		actionPlan,
+		tenantId,
 		message: response?.Message || 'Action Plan retrieved successfully',
 		title: 'Action Plan Edit'
 	};

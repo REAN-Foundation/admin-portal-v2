@@ -9,6 +9,7 @@
 	import type { TenantsUpdateModel } from '$lib/types/tenants.types';
 
 	//////////////////////////////////////////////////////////////////////
+
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let id = data.tenant.id;
@@ -43,7 +44,6 @@
 		code = data?.tenant?.Code;
 		phone = data?.tenant?.Phone;
 		email = data?.tenant?.Email;
-		errors = {};
 	};
 
 	const handleSubmit = async (event: Event) => {
@@ -100,14 +100,14 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="table-container">
+		<div class="health-system-table-container">
 			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
+				<table class="health-system-table">
 					<thead>
 						<tr>
 							<th>Edit Tenant</th>
 							<th class="text-end">
-								<a href={viewRoute} class="cancel-btn">
+								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -115,88 +115,102 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td>Name *</td>
+							<td>Name <span class="text-red-600">*</span></td>
 							<td>
 								<input
 									type="text"
-									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
 									name="name"
 									placeholder="Enter name here..."
+									class="health-system-input"
 									bind:value={name}
 								/>
 								{#if errors?.Name}
-									<p class="text-error-500 text-xs">{errors?.Name}</p>
+									<p class="text-error">{errors?.Name}</p>
 								{/if}
 							</td>
 						</tr>
+
 						<tr>
 							<td>Description</td>
 							<td>
 								<textarea
 									name="description"
-									class="input w-full {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
-									bind:value={description}
 									placeholder="Enter description here..."
+									class="health-system-input resize-none"
+									bind:value={description}
 								></textarea>
+								{#if errors?.Description}
+									<p class="text-error">{errors?.Description}</p>
+								{/if}
 							</td>
 						</tr>
+
 						<tr>
 							<td>Code</td>
 							<td>
 								<input
 									type="text"
-									class="input {form?.errors?.Code ? 'input-text-error' : ''}"
 									name="code"
 									placeholder="Enter code here..."
+									class="health-system-input"
 									bind:value={code}
 								/>
 								{#if errors?.Code}
-									<p class="text-error-500 text-xs">{errors?.Code}</p>
+									<p class="text-error">{errors?.Code}</p>
 								{/if}
 							</td>
 						</tr>
+
 						<tr>
 							<td>Phone</td>
 							<td>
 								<input
 									type="text"
-									class="input {form?.errors?.Phone ? 'input-text-error' : ''}"
 									name="phone"
 									placeholder="Enter phone here..."
+									class="health-system-input"
 									bind:value={phone}
 								/>
 								{#if errors?.Phone}
-									<p class="text-error-500 text-xs">{errors?.Phone}</p>
+									<p class="text-error">{errors?.Phone}</p>
 								{/if}
 							</td>
 						</tr>
+
 						<tr>
 							<td>Email</td>
 							<td>
 								<input
-									type="text"
-									class="input {form?.errors?.Email ? 'input-text-error' : ''}"
+									type="email"
 									name="email"
 									placeholder="Enter email here..."
+									class="health-system-input"
 									bind:value={email}
 								/>
 								{#if errors?.Email}
-									<p class="text-error-500 text-xs">{errors?.Email}</p>
+									<p class="text-error">{errors?.Email}</p>
 								{/if}
 							</td>
 						</tr>
 					</tbody>
 				</table>
-				<div class="button-container">
-					<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary"
-						>Reset</button
+
+				<div class="button-container mt-4 flex gap-4">
+					<button
+						type="button"
+						onclick={handleReset}
+						class="health-system-btn variant-soft-secondary"
 					>
+						Reset
+					</button>
 					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
+						<button type="submit" class="health-system-btn variant-filled-secondary" disabled>
+							Submitting...
 						</button>
-					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
+					{:then}
+						<button type="submit" class="health-system-btn variant-filled-secondary">
+							Submit
+						</button>
 					{/await}
 				</div>
 			</form>

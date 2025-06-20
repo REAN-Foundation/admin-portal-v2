@@ -22,6 +22,7 @@
 
 	const userId = page.params.userId;
 	var consultationId = page.params.id;
+	const tenantId = data.tenantId;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/consultations/${consultationId}/edit`;
@@ -53,7 +54,8 @@
 				Description: description,
 				Version: version,
 				ConsultationType: consultationType,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(consultationUpdateModel);

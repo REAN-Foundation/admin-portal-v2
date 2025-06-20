@@ -21,6 +21,8 @@
 	let version = $state(undefined);
 
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/nutritions/create`;
 	const nutritionRoute = `/users/${userId}/careplan/assets/nutritions`;
@@ -45,7 +47,8 @@
 				Name: name,
 				Description: description,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(nutritionCreateModel);

@@ -13,7 +13,7 @@
 	let promise = $state();
 	let name = $state('');
 	let description = $state('');
-	let meditationType = $state('');
+	let meditationType ="Mindfulness";
 	let recommendedDurationMin = $state<number>();
 	let version = $state('');
 	let keywords: string[] = $state([]);
@@ -21,6 +21,8 @@
 
 	data.title = 'Create Meditation';
 	const userId = page.params.userId;
+  const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/meditations/create`;
 	const meditationRoute = `/users/${userId}/careplan/assets/meditations`;
@@ -41,7 +43,8 @@
 				MeditationType: meditationType,
 				RecommendedDurationMin: recommendedDurationMin,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+        TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(meditationCreateModel);

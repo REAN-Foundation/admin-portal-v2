@@ -85,7 +85,6 @@ export const PUT = async (event: RequestEvent) => {
 		const request = event.request;
 		const data: PromptTemplateUpdateModel = await request.json();
 
-		console.log('data', data);
 		const validationResult = createOrUpdateSchema.safeParse(data);
 		
 		if (!validationResult.success) {
@@ -107,11 +106,15 @@ export const PUT = async (event: RequestEvent) => {
 			promptTemplateId,
 			data.Name,
 			data.Description,
-			data.Content,
-			data.SubGroup,
-			data.Type,
-			data.Category,
+			data.Model,
+			data.Prompt,
+			data.Group,
+			data.UseCaseType,
 			data.Variables,
+			data.Temperature,
+			data.TopP,
+			data.FrequencyPenalty,
+			data.PresencePenalty,
 			createdByUserId
 		);
 

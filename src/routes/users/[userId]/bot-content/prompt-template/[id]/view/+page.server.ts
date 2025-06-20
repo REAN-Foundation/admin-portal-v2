@@ -11,7 +11,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 
 	const promptTemplate = response?.Data;
 	const id = response?.Data?.id;
-
+	
 	return {
 		location: `${id}/edit`,
 		promptTemplate,

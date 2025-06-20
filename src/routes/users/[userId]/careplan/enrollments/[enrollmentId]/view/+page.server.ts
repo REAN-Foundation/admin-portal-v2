@@ -10,6 +10,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 
 	const response = await getEnrollmentById(sessionId, enrollmentId);
 	const enrollment = response?.Data;
+	console.log("enrollment---", enrollment)
 	const participantId = enrollment?.ParticipantId;
 
 	const statsResponse = await getEnrollmentStats(sessionId, participantId);

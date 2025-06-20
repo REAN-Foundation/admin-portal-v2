@@ -28,6 +28,8 @@
 
 	const userId = page.params.userId;
 	const webLinkId = page.params.id;
+	const tenantId = data.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/web-links/${webLinkId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/web-links/${webLinkId}/view`;
@@ -62,7 +64,8 @@
 				Description: description,
 				PathUrl: pathUrl,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(webLinksUpdateModel);
@@ -152,7 +155,7 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Path Url</td>
+					<td class="table-label">URL</td>
 					<td class="table-data">
 						<input
 							type="url"

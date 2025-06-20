@@ -4,7 +4,6 @@
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-	import { invalidate } from '$app/navigation';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
@@ -14,15 +13,18 @@
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	let { data }: { data: PageServerData } = $props();
 
+	let debounceTimeout;
 	let isLoading = $state(false);
 	let tenants = $state(data.tenants.Items);
 	let retrivedTenants = $derived(tenants);
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
 	let isDeleting = $state(false);
-	// let searchKeyword = $state(undefined);
+	let searchKeyword = $state(undefined);
+	let promise = $state();
 
 	const userId = page.params.userId;
+
 	const tenantRoute = `/users/${userId}/tenants`;
 	const editRoute = (id) => `/users/${userId}/tenants/${id}/edit`;
 	const viewRoute = (id) => `/users/${userId}/tenants/${id}/view`;
@@ -47,56 +49,60 @@
 		amounts: [10, 20, 30, 50]
 	});
 
-	$inspect('retrivedTenants', tenants);
+	$inspect('retrivedTenant, tenants');
 
-	async function searchTenants(filters) {
-		if (nameSearch || codeSearch) {
-			paginationSettings.page = 0;
-		}
+	async function searchTenants(model) {
+	try {
 		let url = `/api/server/tenants/search?`;
-		url += `sortOrder=${filters.sortOrder ?? sortOrder}`;
-		url += `&sortBy=${filters.sortBy ?? sortBy}`;
-		url += `&itemsPerPage=${filters.itemsPerPage ?? paginationSettings.limit}`;
-		url += `&pageIndex=${filters.pageIndex ?? paginationSettings.page}`;
-		if (nameSearch) url += `&name=${filters.name}`;
-		if (codeSearch) url += `&code=${filters.code}`;
+		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+		url += `&sortBy=${model.sortBy ?? sortBy}`;
+		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+		if (model.name) url += `&name=${model.name}`;
+		if (model.code) url += `&code=${model.code}`;
 
-		try {
-			const res = await fetch(url, {
-				method: 'GET',
-				headers: { 'content-type': 'application/json' }
-			});
-			const searchResult = await res.json();
-			console.log('searchResult', searchResult);
-			totalTenantsCount = searchResult.Data.TenantRecords.TotalCount;
-			paginationSettings.size = totalTenantsCount;
-
-			tenants = searchResult.Data.TenantRecords.Items.map((item, index) => ({
-				...item,
-				index: index + 1
-			}));
-		} catch (err) {
-			console.error('Search failed:', err);
-		} finally {
-			isLoading = false;
-		}
-	}
-
-	$effect(() => {
-		searchTenants({
-			name: nameSearch,
-			code: codeSearch,
-			itemsPerPage: paginationSettings.limit,
-			pageIndex: paginationSettings.page,
-			sortBy,
-			sortOrder
+		const res = await fetch(url, {
+			method: 'GET',
+			headers: { 'content-type': 'application/json' }
 		});
 
-		if (isDeleting) {
-			retrivedTenants;
-			isDeleting = false;
-		}
-	});
+		const searchResult = await res.json();
+		console.log('searchResult', searchResult);
+
+		totalTenantsCount = searchResult.Data.TenantRecords.TotalCount;
+		paginationSettings.size = totalTenantsCount;
+
+		tenants = searchResult.Data.TenantRecords.Items.map((item, index) => ({
+			...item,
+			index: index + 1
+		}));
+
+		searchKeyword = model.name;
+	} catch (err) {
+		console.error('Search failed:', err);
+	} finally {
+		isLoading = false;
+	}
+}
+
+	function onSearchInput(e, field: 'name' | 'code') {
+		clearTimeout(debounceTimeout);
+		let keyword = e.target.value;
+		debounceTimeout = setTimeout(() => {
+			paginationSettings.page = 0;
+			if (field === 'name') nameSearch = keyword;
+			if (field === 'code') codeSearch = keyword;
+
+			searchTenants({
+				name: nameSearch,
+				code: codeSearch,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortBy,
+				sortOrder
+			});
+		}, 400);
+	}
 
 	function sortTable(columnName) {
 		isSortingName = false;
@@ -110,12 +116,44 @@
 			isSortingCode = true;
 		}
 		sortBy = columnName;
+		searchTenants({
+				name: nameSearch,
+				code: codeSearch,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortBy,
+				sortOrder
+			});
 	}
 
 	const handleDeleteClick = (id: string) => {
 		openDeleteModal = true;
 		idToBeDeleted = id;
 	};
+
+	function onItemsPerPageChange() {
+		paginationSettings.page = 0; 
+		searchTenants({
+				name: nameSearch,
+				code: codeSearch,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortBy,
+				sortOrder
+			});
+	}
+
+	function onPageChange() {
+		searchTenants({
+				name: nameSearch,
+				code: codeSearch,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortBy,
+				sortOrder
+			});
+		}
+
 	const handleTenantsDelete = async (id) => {
 		console.log('Inside handleTenantsDelete', id);
 		const response = await fetch(`/api/server/tenants/${id}`, {
@@ -128,90 +166,90 @@
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
+		} else {
+			toastMessage(res);
 		}
-		invalidate('app:Tenants');
+		searchTenants({
+				name: nameSearch,
+				code: codeSearch,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortBy,
+				sortOrder
+			});
 	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
+
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="table-container mb-6 shadow">
-			<div class="search-border">
+			<div class="search-border p-4">
 				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="relative flex-1 pr-1.5">
-						<input
-							type="text"
-							name="name"
-							placeholder="Search by name"
-							bind:value={nameSearch}
-							class="table-input-field !pr-4 !pl-10"
-						/>
+					<div class="relative w-auto grow">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
 						/>
-						{#if nameSearch}
-							<button type="button" onclick={() => (nameSearch = '')} class="close-btn">
-								<Icon icon="material-symbols:close" />
-							</button>
-						{/if}
+						<input
+							type="text"
+							name="name"
+							placeholder="Search by name"
+							oninput={(event) => onSearchInput(event, 'name')}
+							class="input !pr-4 !pl-10"
+						/>
 					</div>
 
-					<div class="relative flex-1 pr-1.5">
+					<div class="relative w-auto grow">
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
 						<input
 							type="text"
 							name="code"
 							placeholder="Search by code"
-							bind:value={codeSearch}
-							class="table-input-field !pr-4 !pl-10"
+							oninput={(event) => onSearchInput(event, 'code')}
+							class="input !pr-4 !pl-10"
 						/>
-						<Icon
-							icon="heroicons:tag"
-							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
-						/>
-						{#if codeSearch}
-							<button type="button" onclick={() => (codeSearch = '')} class="close-btn">
-								<Icon icon="material-symbols:close" />
-							</button>
-						{/if}
 					</div>
 
 					<button class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
-						<a href={createRoute} class="">Add New</a>
+						<a href={createRoute}>Add New</a>
 					</button>
 				</div>
 			</div>
+
 			<div class="overflow-x-auto">
 				<table class="table-c min-w-full">
-					<thead class="">
+					<thead>
 						<tr>
 							<th class="w-12"></th>
-							<th class="text-start">
+							<th class="w-70 text-start">
 								<button onclick={() => sortTable('Name')}>
-									Name {isSortingName ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
+									Name {#if isSortingName}{sortOrder === 'ascending' ? '▲' : '▼'}{/if}
 								</button>
 							</th>
-							<th class="text-start">
+							<th class="w-64 text-start">
 								<button onclick={() => sortTable('Code')}>
-									Code {isSortingCode ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
+									Code {#if isSortingCode}{sortOrder === 'ascending' ? '▲' : '▼'}{/if}
 								</button>
 							</th>
-							<th data-sort="Phone">Contact Number</th>
-							<th>Email</th>
+							<th class="w-40">Contact Number</th>
+							<th class="w-64">Email</th>
+							<th class="w-20"></th>
 						</tr>
 					</thead>
 					<tbody>
 						{#if retrivedTenants.length <= 0}
-							<tr>
+							<tr class="text-center">
 								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}
 							{#each retrivedTenants as row, index}
 								<tr>
-									<td>
-										{paginationSettings.page * paginationSettings.limit + index + 1}
-									</td>
+									<td>{paginationSettings.page * paginationSettings.limit + index + 1}</td>
 
 									<td>
 										<Tooltip text={row.Code || 'Not specified'}>
@@ -222,15 +260,11 @@
 											</a>
 										</Tooltip>
 									</td>
-									<td role="gridcell" aria-colindex={4} tabindex="0"
-										>{row.Code !== null ? row.Code : 'Not specified'}</td
-									>
-									<td role="gridcell" aria-colindex={4} tabindex="0"
-										>{row.Phone !== null ? row.Phone : 'Not specified'}</td
-									>
-									<td role="gridcell" aria-colindex={4} tabindex="0"
-										>{row.Email !== null ? row.Email : 'Not specified'}</td
-									>
+
+									<td>{row.Code !== null ? row.Code : 'Not specified'}</td>
+									<td>{row.Phone !== null ? row.Phone : 'Not specified'}</td>
+									<td>{row.Email !== null ? row.Email : 'Not specified'}</td>
+
 									<td>
 										<div class="flex">
 											<Tooltip text="Edit" forceShow={true}>
@@ -244,17 +278,14 @@
 											<Tooltip text="View" forceShow={true}>
 												<button>
 													<a href={viewRoute(row.id)} class="table-btn group">
-														<Icon
-															icon="icon-park-outline:preview-open"
-															class="health-system-icon"
-														/>
+														<Icon icon="icon-park-outline:preview-open" class="health-system-icon" />
 													</a>
 												</button>
 											</Tooltip>
 
 											<Tooltip text="Delete" forceShow={true}>
 												<button
-													class="table-btn !text-red-600"
+													class="health-system-btn !text-red-600"
 													onclick={() => handleDeleteClick(row.id)}
 												>
 													<Icon icon="material-symbols:delete-outline-rounded" />
@@ -271,6 +302,7 @@
 		</div>
 	</div>
 </div>
+
 <Confirmation
 	bind:isOpen={openDeleteModal}
 	title="Delete Tenant"
@@ -278,4 +310,4 @@
 	id={idToBeDeleted}
 />
 
-<Pagination bind:paginationSettings />
+<Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />

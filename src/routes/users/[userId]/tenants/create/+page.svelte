@@ -6,8 +6,10 @@
 	import { goto } from '$app/navigation';
 	import { createOrUpdateSchema } from '$lib/validation/tenants.schema.js';
 	import type { TenantsCreateModel } from '$lib/types/tenants.types';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////
+
 	let { data, form } = $props();
 
 	let errors: Record<string, string> = $state({});
@@ -60,7 +62,9 @@
 			});
 
 			const response = await res.json();
+
 			console.log(response);
+
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				goto(`${tenantRoute}/${response?.Data?.Tenant?.id}/view`);
@@ -82,14 +86,14 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="table-container">
+		<div class="health-system-table-container">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
+				<table class="health-system-table">
 					<thead>
 						<tr>
 							<th>Create Tenant</th>
 							<th class="text-end">
-								<a href={tenantRoute} class="cancel-btn">
+								<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -97,77 +101,80 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td>Name *</td>
+							<td>Name <span class="text-red-600">*</span></td>
 							<td>
 								<input
 									type="text"
-									name="name"
 									bind:value={name}
-									class="input w-full {errors?.Name ? 'border-error-300' : 'border-primary-200'}"
+									class="health-system-input"
+									name="name"
 									placeholder="Enter name here..."
 								/>
 								{#if errors?.Name}
-									<p class="text-error-500 text-xs">{errors?.Name}</p>
+									<p class="text-error">{errors?.Name}</p>
 								{/if}
 							</td>
 						</tr>
 
 						<tr>
-							<td class="align-top">Description</td>
+							<td>Description</td>
 							<td>
 								<textarea
-									name="description"
-									class="input w-full {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
 									bind:value={description}
+									name="description"
 									placeholder="Enter description here..."
+									class="health-system-input resize-none"
 								></textarea>
+								{#if errors?.Description}
+									<p class="text-error">{errors?.Description}</p>
+								{/if}
 							</td>
 						</tr>
 
 						<tr>
-							<td>Code *</td>
+							<td>Code <span class="text-red-600">*</span></td>
 							<td>
 								<input
 									type="text"
-									name="code"
 									bind:value={code}
-									class="input w-full {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
+									class="health-system-input"
+									name="code"
 									placeholder="Enter code here..."
 								/>
 								{#if errors?.Code}
-									<p class="text-error-500 text-xs">{errors?.Code}</p>
+									<p class="text-error">{errors?.Code}</p>
 								{/if}
 							</td>
 						</tr>
 
 						<tr>
-							<td>Contact Number *</td>
+							<td>Contact Number <span class="text-red-600">*</span></td>
 							<td>
 								<input
 									type="text"
-									name="phone"
 									bind:value={phone}
-									class="input w-full {errors?.Phone ? 'border-error-300' : 'border-primary-200'}"
-									placeholder="Enter phone here..."
+									class="health-system-input"
+									name="phone"
+									placeholder="Enter contact number here..."
 								/>
 								{#if errors?.Phone}
-									<p class="text-error-500 text-xs">{errors?.Phone}</p>
+									<p class="text-error">{errors?.Phone}</p>
 								{/if}
 							</td>
 						</tr>
 
 						<tr>
-							<td>Email *</td>
+							<td>Email <span class="text-red-600">*</span></td>
 							<td>
 								<input
 									type="email"
-									name="email"
 									bind:value={email}
-									class="input w-full {errors?.Email ? 'border-error-300' : 'border-primary-200'}"
+									class="health-system-input"
+									name="email"
 									placeholder="Enter email here..."
 								/>
 								{#if errors?.Email}
-									<p class="text-error-500 text-xs">{errors?.Email}</p>
+									<p class="text-error">{errors?.Email}</p>
 								{/if}
 							</td>
 						</tr>
@@ -176,14 +183,110 @@
 
 				<div class="button-container">
 					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
+						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+							Submitting
 						</button>
 					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
+						<button type="submit" class="health-system-btn variant-soft-secondary">Submit</button>
 					{/await}
 				</div>
 			</form>
 		</div>
 	</div>
 </div>
+
+
+<!-- <div class="p-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Create Tenant</h2>
+			<a href={tenantRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>
+
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Name <span class="important-field">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="name"
+							bind:value={name}
+							class="input {errors?.Name ? 'input-text-error' : ''}"
+							placeholder="Enter name here..."
+						/>
+						{#if errors?.Name}
+							<p class="error-text">{errors?.Name}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Description</td>
+					<td class="table-data">
+						<textarea
+							name="description"
+							bind:value={description}
+							class="input resize-none {errors?.Description ? 'border-error-300' : 'border-primary-200'}"
+							placeholder="Enter description here..."
+						></textarea>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Code <span class="important-field">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="code"
+							bind:value={code}
+							class="input {errors?.Code ? 'input-text-error' : ''}"
+							placeholder="Enter code here..."
+						/>
+						{#if errors?.Code}
+							<p class="error-text">{errors?.Code}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Contact Number <span class="important-field">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="phone"
+							bind:value={phone}
+							class="input {errors?.Phone ? 'input-text-error' : ''}"
+							placeholder="Enter phone here..."
+						/>
+						{#if errors?.Phone}
+							<p class="error-text">{errors?.Phone}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Email <span class="important-field">*</span></td>
+					<td class="table-data">
+						<input
+							type="email"
+							name="email"
+							bind:value={email}
+							class="input {errors?.Email ? 'input-text-error' : ''}"
+							placeholder="Enter email here..."
+						/>
+						{#if errors?.Email}
+							<p class="error-text">{errors?.Email}</p>
+						{/if}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container">
+			<Button />
+		</div>
+	</form>
+</div> -->

@@ -20,6 +20,7 @@
 	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
+	const tenantId = data.tenantId;
 	var goalsId = page.params.id;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
@@ -50,7 +51,8 @@
 				Name: name,
 				Description: description,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(goalsUpdateModel);
@@ -98,7 +100,7 @@
 <div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Edit Goals</h2>
+			<h2 class="form-titles">Edit Goal</h2>
 			<a href={viewRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>

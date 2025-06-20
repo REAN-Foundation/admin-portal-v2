@@ -7,6 +7,8 @@ import { getMedicationById } from '$routes/api/services/careplan/assets/medicati
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
 	const medicationsId = event.params.id;
+	const tenantId = event.locals.sessionUser.tenantId;
+
 	const response = await getMedicationById(sessionId, medicationsId);
 
 	const medications = response?.Data;
@@ -15,6 +17,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	return {
 		location: `${id}/edit`,
 		medications,
+		tenantId,
 		message: response?.Message || 'medications retrieved successfully',
 		title: 'Medications Edit'
 	};

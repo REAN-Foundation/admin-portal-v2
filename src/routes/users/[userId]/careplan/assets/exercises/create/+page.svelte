@@ -14,8 +14,8 @@
 	let promise = $state();
 	let name = $state('');
 	let description = $state('');
-	let exerciseType = $state('');
-	let intensityLevel = $state('');
+	let exerciseType = 'Aerobic';
+	let intensityLevel = "Moderate";
 	let recommendedDurationMin = $state<number>();
 	let version = $state('');
 	let keywords: string[] = $state([]);
@@ -23,6 +23,8 @@
 
 	data.title = 'Create Exercise';
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/exercises/create`;
 	const exerciseRoute = `/users/${userId}/careplan/assets/exercises`;
@@ -44,7 +46,8 @@
 				IntensityLevel:intensityLevel,
 				RecommendedDurationMin: recommendedDurationMin,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(exerciseCreateModel);

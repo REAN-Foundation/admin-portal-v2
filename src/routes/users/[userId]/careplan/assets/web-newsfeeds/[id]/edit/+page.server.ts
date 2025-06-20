@@ -7,6 +7,8 @@ import { getWebNewsfeedById } from '$routes/api/services/careplan/assets/web-new
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
 	const webnewsfeedId = event.params.id;
+	const tenantId = event.locals.sessionUser.tenantId;
+
 	const response = await getWebNewsfeedById(sessionId, webnewsfeedId);
 
 	const webNewsfeed = response?.Data;
@@ -15,6 +17,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	return {
 		location: `${id}/edit`,
 		webNewsfeed,
+		tenantId,
 		message: response?.Message || 'Web-Newsfeed retrieved successfully',
 		title: 'Web-Newsfeed Edit'
 	};

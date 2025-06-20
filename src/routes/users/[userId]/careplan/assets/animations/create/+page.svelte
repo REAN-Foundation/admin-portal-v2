@@ -23,6 +23,8 @@
 	let version = $state(undefined);
 
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/animations/create`;
 	const animationRoute = `/users/${userId}/careplan/assets/animations`;
@@ -49,7 +51,8 @@
 				Transcript: transcript,
 				PathUrl: pathUrl,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(animationsCreateModel);
@@ -134,7 +137,7 @@
 					</td>
 				</tr>
 				<tr class="tables-row">
-					<td class="table-label">Url</td>
+					<td class="table-label">URL</td>
 					<td class="table-data">
 						<input
 							type="url"
@@ -178,7 +181,11 @@
 			</tbody>
 		</table>
 		<div class="btn-container">
-			<Button />
-		</div>
+            {#await promise}
+                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+            {:then data}
+                <Button type="submit" text="Submit" variant="primary" />
+            {/await}
+        </div>
 	</form>
 </div>

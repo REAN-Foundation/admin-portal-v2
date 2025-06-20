@@ -21,6 +21,7 @@
 	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
+	const tenantId = data.tenantId;
 	var infographicsId = page.params.id;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
@@ -53,7 +54,8 @@
 				Description: description,
 				Url: pathUrl,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(infographicsUpdateModel);
@@ -101,7 +103,7 @@
 <div class="p-6">
 	<form onsubmit={(event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Edit Infographics</h2>
+			<h2 class="form-titles">Edit Infographic</h2>
 			<a href={viewRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
@@ -141,7 +143,7 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Url</td>
+					<td class="table-label">URL</td>
 					<td class="table-data">
 						<input
 							type="url"

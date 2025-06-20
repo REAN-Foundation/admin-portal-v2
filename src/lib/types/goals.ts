@@ -3,6 +3,7 @@ export interface GoalsCreateModel {
 	Description?: string;
 	Tags?: string[];
 	Version?: string;
+	TenantId?: string;
 }
 
 export interface GoalsUpdateModel {
@@ -10,4 +11,5 @@ export interface GoalsUpdateModel {
 	Description?: string;
 	Tags?: string[];
 	Version?: string;
+	TenantId?: string;
 }

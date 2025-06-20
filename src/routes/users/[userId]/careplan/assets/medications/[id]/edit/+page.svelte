@@ -21,6 +21,7 @@
 
 	const userId = page.params.userId;
 	var medicationsId = page.params.id;
+	const tenantId = data.tenantId;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/medications/${medicationsId}/edit`;
@@ -50,7 +51,8 @@
 				Name: name,
 				Description: description,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(medicationsUpdateModel);
@@ -99,7 +101,7 @@
 <div class="p-6">
 	<form onsubmit={(event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Edit Medications</h2>
+			<h2 class="form-titles">Edit Medication</h2>
 			<a href={viewRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>

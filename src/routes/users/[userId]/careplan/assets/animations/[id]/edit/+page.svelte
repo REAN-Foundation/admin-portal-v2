@@ -27,7 +27,9 @@
 	let keywords: string[] = $state(data.animation.Tags);
 
 	const userId = page.params.userId;
+	const tenantId = data.tenantId;
 	const animationId = page.params.id;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/animations/${animationId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/animations/${animationId}/view`;
@@ -62,7 +64,8 @@
 				Transcript: transcript,
 				PathUrl: pathUrl,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(animationsUpdateModel);
@@ -152,7 +155,7 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Path Url</td>
+					<td class="table-label">URL</td>
 					<td class="table-data">
 						<input
 							type="url"
@@ -197,10 +200,12 @@
 			</tbody>
 		</table>
 		<div class="btn-container">
-			<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary">
-				Reset
-			</button>
-			<Button />
+            <Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+            {#await promise}
+                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+            {:then data}
+                <Button type="submit" text="Submit" variant="primary" />
+            {/await}
 		</div>
 	</form>
 </div>

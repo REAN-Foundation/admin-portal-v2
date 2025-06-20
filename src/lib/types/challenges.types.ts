@@ -3,6 +3,7 @@ export interface ChallengesCreateModel {
 	Description?: string;
 	Tags?: string[];
 	Version?: string;
+	TenantId?: string;
 }
 
 export interface ChallengesUpdateModel {
@@ -10,4 +11,5 @@ export interface ChallengesUpdateModel {
 	Description?: string;
 	Tags?: string[];
 	Version?: string;
+	TenantId?: string;
 }

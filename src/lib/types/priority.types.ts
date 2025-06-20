@@ -3,6 +3,7 @@ export interface PriorityCreateModel {
 	Description: string;
 	Tags?: string[];
 	Version: string;
+	TenantId?: string;
 }
 
 export interface PriorityUpdateModel {
@@ -10,4 +11,5 @@ export interface PriorityUpdateModel {
 	Description: string;
 	Tags?: string[];
 	Version: string;
+	TenantId?: string;
 }

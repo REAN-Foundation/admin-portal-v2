@@ -24,6 +24,7 @@
 
 
 	const userId = page.params.userId;
+	const tenantId = data.tenantId;
 	var audioId = page.params.id;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
@@ -56,7 +57,8 @@
 				Transcript: transcript,
 				PathUrl: pathUrl,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(audioUpdateModel);
@@ -144,7 +146,7 @@
 						</tr>
 
 						<tr class="tables-row">
-                            <td class="table-label">Url</td>
+                            <td class="table-label">URL</td>
                             <td class="table-data">
                                 <input
                                     type="url"

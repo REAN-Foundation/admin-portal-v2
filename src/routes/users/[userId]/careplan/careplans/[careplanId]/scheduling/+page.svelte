@@ -8,6 +8,7 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
+	import { onMount } from 'svelte';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -42,7 +43,8 @@
 	]);
 
 	let items = $state([]);
-	let show = $state(false); // FIXED: should be a $state
+	$inspect('items', items);
+	let show = $state(false);
 	let selectedAssetType = $state('Action plan');
 
 	function hideForm() {
@@ -51,14 +53,18 @@
 
 	const sanitizeActivities = (activities) => {
 		return activities.map((a) => {
-			if (a.Day == null) a.Day = 1;
-			return a;
+			let day = Number(a.Day);
+			if (isNaN(day) || day <= 0) day = 1;
+			return { ...a, Day: day };
 		});
 	};
 
 	const classifyActivitiesByDay = (activities) => {
-		const daysSet = new Set(activities.map((x) => x.Day));
-		return [...daysSet].map((d) => ({
+		const days = Array.from(
+			new Set(activities.map((x) => x.Day))
+		).sort((a: number, b: number) => a - b); // Sort days ascending
+
+		return days.map((d) => ({
 			Day: d,
 			Activities: activities.filter((x) => x.Day === d)
 		}));
@@ -208,6 +214,13 @@
 			toastMessage();
 		}
 	};
+
+	onMount(() => {
+	searchAssets({
+		sessionId: data.sessionId,
+		selectedAssetType
+	});
+});
 </script>
 
 <!-- Breadcrumbs -->

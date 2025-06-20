@@ -20,6 +20,8 @@
 
 	data.title = 'Create Goals';
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/goals/create`;
 	const goalsRoute = `/users/${userId}/careplan/assets/goals`;
@@ -38,7 +40,8 @@
 				Name: name,
 				Description: description,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(goalsCreateModel);
@@ -86,7 +89,7 @@
 <div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Create Goals</h2>
+			<h2 class="form-titles">Create Goal</h2>
 			<a href={assetRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>

@@ -94,6 +94,7 @@ export const PUT = async (event: RequestEvent) => {
             data.PathUrl,
             data.Tags,
             data.Version ?? '',
+            data.TenantId,
             data.TemplateVariables);
         return ResponseHandler.success(response);
     } catch (error) {

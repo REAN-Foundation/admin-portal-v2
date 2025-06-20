@@ -23,9 +23,27 @@ export const createOrUpdateSchema = z.object({
         .max(1024, { message: 'Template Name must be at most 1024 characters long.' })
         .optional(),
 
-    TemplateVariables: z
-		.record(z.union([z.string(), z.number(), z.boolean(), z.null()]))
-		.optional(),
+     TemplateVariables: z
+        .record(z.union([z.string(), z.number(), z.boolean(), z.null()]), {
+            invalid_type_error: "TemplateVariables must be an object with values of type string, number, boolean, or null",
+        })
+        .optional()
+        .refine(
+            (val) =>
+                val === undefined ||
+                Object.values(val).every(
+                    (v) =>
+                        typeof v === "string" ||
+                        typeof v === "number" ||
+                        typeof v === "boolean" ||
+                        v === null
+                ),
+            {
+                message:
+                    "Each value in TemplateVariables must be string, number, boolean, or null",
+            }
+        ),
+
     PathUrl: z
         .string({
             invalid_type_error: 'Path URL must be a string.'
@@ -39,4 +57,11 @@ export const createOrUpdateSchema = z.object({
             invalid_type_error: 'Version must be a string.',
         })
         .optional(),
+    
+    TenantId: z
+		.string({
+			required_error: 'TenantId is required.',
+			invalid_type_error: 'TenantId must be a string.'
+		})
+
 });

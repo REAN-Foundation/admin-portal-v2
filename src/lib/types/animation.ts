@@ -4,6 +4,7 @@ export interface AnimationsCreateModel {
 	PathUrl: string;
 	Tags?: string[];
 	Version: string;
+	TenantId?: string;
 }
 
 export interface AnimationsUpdateModel {
@@ -12,4 +13,5 @@ export interface AnimationsUpdateModel {
 	PathUrl: string;
 	Tags?: string[];
 	Version: string;
+	TenantId?: string;
 }

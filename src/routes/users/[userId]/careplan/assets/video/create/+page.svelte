@@ -23,6 +23,8 @@
 	let version = $state(undefined);
 
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/video/create`;
 	const videoRoute = `/users/${userId}/careplan/assets/video`;
@@ -49,7 +51,8 @@
 				Transcript: transcript,
 				PathUrl: pathUrl,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(videoCreateModel);
@@ -94,7 +97,98 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
+
 <div class="p-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+
+	<div class="form-headers">
+			<h2 class="form-titles">Create Video</h2>
+			<a href={assetRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>
+				<table class="w-full">
+					<tbody>
+						<tr class="tables-row">
+							<td class="table-label">Name <span class="text-red-700">*</span></td>
+							<td class="table-data">
+								<input
+									type="text"
+									class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+									name="name"
+									placeholder="Enter name here..."
+									bind:value={name}
+								/>
+								{#if errors?.Name}
+									<p class="text-error">{errors?.Name}</p>
+								{/if}
+							</td>
+						</tr>
+
+						<tr class="tables-row">
+							<td class="table-label">Transcript</td>
+							<td class="table-data">
+								<textarea
+									name="transcript"
+									class="input w-full {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
+									bind:value={transcript}
+									placeholder="Enter transcript here..."
+								></textarea>
+							</td>
+						</tr>
+
+						<tr class="tables-row">
+							<td class="table-label">URL</td>
+							<td class="table-data">
+								<input
+									type="url"
+									name="url"
+									bind:value={pathUrl}
+									placeholder="Enter url here"
+                                    class="input {errors?.Url ? 'input-text-error' : ''}"
+                                />
+                                {#if errors?.Url}
+                                    <p class="text-error">{errors?.Url}</p>
+                                {/if}
+                            </td>
+                        </tr>
+						<tr class="tables-row">
+                            <td class="table-label">Tags</td>
+                            <td class="table-data">
+                                <InputChips
+                                    bind:keywords
+                                    name="keywords"
+                                    id="keywords"
+                                    keywordsChanged={onUpdateKeywords}
+                                />
+                                <input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+                                <!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
+                            </td>
+                        </tr>
+						<tr class="tables-row">
+							<td class="table-label">Version</td>
+							<td class="table-data">
+								<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="button-container">
+					{#await promise}
+						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+							Submiting
+						</button>
+					{:then data}
+						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+					{/await}
+				</div>
+			</form>
+		</div>
+	
+
+
+<!-- <div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
 			<h2 class="form-titles">Create Video</h2>
@@ -134,7 +228,7 @@
 					</td>
 				</tr>
 				<tr class="tables-row">
-					<td class="table-label">Url</td>
+					<td class="table-label">URL</td>
 					<td class="table-data">
 						<input
 							type="url"
@@ -181,4 +275,4 @@
 			<Button />
 		</div>
 	</form>
-</div>
+</div> -->

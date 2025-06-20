@@ -12,7 +12,8 @@ export const createExercise = async (
 	intensityLevel: string,
 	recommendedDurationMin: number,
 	tags: string[],
-	version: string
+	version: string,
+	tenantId: string
 ) => {
 	const body = {
 		Name                  : name,
@@ -21,6 +22,7 @@ export const createExercise = async (
 		IntensityLevel        : intensityLevel,
 		RecommendedDurationMin: recommendedDurationMin,
 		Tags                  : tags,
+		TenantId              : tenantId,
 		Version               : !version || version?.length === 0 ? 'V 1.0' : version
 	};
 
@@ -75,7 +77,8 @@ export const updateExercise = async (
 	intensityLevel: string,
 	recommendedDurationMin: number,
 	tags: string[],
-	version: string
+	version: string,
+	tenantId: string
 ) => {
 	const body = {
 		Name                  : name,
@@ -84,6 +87,7 @@ export const updateExercise = async (
 		IntensityLevel        : intensityLevel,
 		RecommendedDurationMin: recommendedDurationMin,
 		Tags                  : tags,
+		TenantId              : tenantId,
 		Version               : !version || version?.length === 0 ? 'V 1.0' : version
 	};
 

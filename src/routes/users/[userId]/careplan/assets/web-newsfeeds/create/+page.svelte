@@ -22,6 +22,8 @@
 	let version = $state(undefined);
 
 	const userId = page.params.userId;
+	const tenantId = data.sessionUser.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/web-newsfeeds`;
 	const webNewsfeedRoute = `/users/${userId}/careplan/assets/web-newsfeeds`;
@@ -48,7 +50,8 @@
 				Description: description,
 				PathUrl: pathUrl,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(webNewsfeedsCreateModels);
@@ -133,7 +136,7 @@
 					</td>
 				</tr>
 				<tr class="tables-row">
-					<td class="table-label">Url</td>
+					<td class="table-label">URL</td>
 					<td class="table-data">
 						<input
 							type="url"
@@ -177,7 +180,16 @@
 			</tbody>
 		</table>
 		<div class="btn-container">
-			<Button />
+			{#await promise}
+				<button type="submit" class="table-btn variant-soft-secondary" disabled>
+					Submitting
+				</button>
+			{:then data}
+				<button type="submit" class="table-btn variant-soft-secondary">Submit</button>
+			{/await}
 		</div>
+		<!-- <div class="btn-container">
+			<Button />
+		</div> -->
 	</form>
 </div>

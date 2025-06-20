@@ -21,6 +21,8 @@
 	let version = $state(undefined);
 
 	const userId = page.params.userId;
+	const tenantId = data.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/priorities/create`;
 	const priorityRoute = `/users/${userId}/careplan/assets/priorities`;
@@ -45,7 +47,8 @@
 				Name: name,
 				Description: description,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(priorityCreateModel);

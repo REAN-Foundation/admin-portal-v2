@@ -3,6 +3,7 @@ export interface ActionPlanCreateModel {
 	Description: string;
 	Tags?: string[];
 	Version: string;
+	TenantId?: string;
 }
 
 export interface ActionPlanUpdateModel {
@@ -10,4 +11,5 @@ export interface ActionPlanUpdateModel {
 	Description: string;
 	Tags?: string[];
 	Version: string;
+	TenantId?: string;
 }

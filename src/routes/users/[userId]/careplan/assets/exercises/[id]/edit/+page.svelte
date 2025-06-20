@@ -23,7 +23,9 @@
 	let keywordsStr = $state('');
 
 	const userId = page.params.userId;
+	const tenantId = data.tenantId;
 	var exerciseId = page.params.id;
+	
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/exercises/${exerciseId}/edit`;
@@ -59,7 +61,8 @@
 				IntensityLevel: intensityLevel,
 				RecommendedDurationMin: recommendedDurationMin,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(exerciseUpdateModel);
@@ -108,7 +111,7 @@
 <div class="p-6">
 	<form onsubmit={(event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Edit Biometric</h2>
+			<h2 class="form-titles">Edit Exercise</h2>
 			<a href={viewRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>

@@ -7,6 +7,8 @@ import { getInfographicsById } from '$routes/api/services/careplan/assets/infogr
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
 	const infographicsId = event.params.id;
+	const tenantId = event.locals.sessionUser.tenantId;
+
 	const response = await getInfographicsById(sessionId, infographicsId);
 
 	const infographics = response?.Data;
@@ -15,6 +17,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	return {
 		location: `${id}/edit`,
 		infographics,
+		tenantId,
 		message: response?.Message || 'infographics retrieved successfully',
 		title: 'infographics Edit'
 	};

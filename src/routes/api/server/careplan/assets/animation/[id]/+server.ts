@@ -105,7 +105,8 @@ export const PUT = async (event: RequestEvent) => {
 			data.Transcript,
 			data.PathUrl,
 			data.Tags,
-			data.Version
+			data.Version,
+			data.TenantId
 		);
 
 		return ResponseHandler.success(response);

@@ -28,6 +28,8 @@
 
 	const userId = page.params.userId;
 	const webNewsfeedId = page.params.id;
+	const tenantId = data.tenantId;
+
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/web-newsfeeds/${webNewsfeedId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/web-newsfeeds/${webNewsfeedId}/view`;
@@ -62,7 +64,8 @@
 				Description: description,
 				PathUrl: pathUrl,
 				Tags: keywords,
-				Version: version
+				Version: version,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(webNewsfeedsUpdateModel);
@@ -152,7 +155,7 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Path Url</td>
+					<td class="table-label">URL</td>
 					<td class="table-data">
 						<input
 							type="url"
@@ -200,7 +203,11 @@
 			<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary">
 				Reset
 			</button>
-			<Button />
+			{#await promise}
+				<button type="submit" class="table-btn variant-filled-secondary" disabled>Submitting</button>
+			{:then data}
+				<button type="submit" class="table-btn variant-filled-secondary">Submit</button>
+			{/await}
 		</div>
 	</form>
 </div>

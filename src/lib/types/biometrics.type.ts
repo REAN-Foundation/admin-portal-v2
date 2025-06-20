@@ -5,6 +5,7 @@ export interface BiometricsCreateModel {
     MeasurementUnit?: string;
     Tags?: string[];
     Version?: string;
+    TenantId?: string;
 }
 
 export interface BiometricsUpdateModel {
@@ -14,4 +15,5 @@ export interface BiometricsUpdateModel {
     MeasurementUnit?: string;
     Tags?: string[];
     Version?: string;
+    TenantId?: string;
 }

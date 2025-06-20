@@ -10,13 +10,15 @@ export const createPhysiotherapy = async (
     description: string,
     recommendedDurationMin: number,
     tags: string[],
-    version: string
+    version: string,
+    tenantId: string
 ) => {
     const body = {
         Name                  : name,
         Description           : description,
         RecommendedDurationMin: recommendedDurationMin,
         Tags                  : tags,
+        TenantId              : tenantId,
         Version               : !version || version?.length === 0 ? 'V 1.0' : version
     };
 
@@ -69,13 +71,15 @@ export const updatePhysiotherapy = async (
     description: string,
     recommendedDurationMin: number,
     tags: string[],
-    version: string
+    version: string,
+    tenantId: string
 ) => {
     const body = {
         Name                  : name,
         Description           : description,
         RecommendedDurationMin: recommendedDurationMin,
         Tags                  : tags,
+        TenantId              : tenantId,
         Version               : !version || version?.length === 0 ? 'V 1.0' : version
     };
 

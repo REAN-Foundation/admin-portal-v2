@@ -5,6 +5,7 @@ export interface AssessmentCreateModel {
     ReferenceTemplateCode?: string;
     Tags?: string[];
     Version?: string;
+    TenantId?: string;
 }
 
 export interface AssessmentUpdateModel {
@@ -14,4 +15,5 @@ export interface AssessmentUpdateModel {
     ReferenceTemplateCode?: string;
     Tags?: string[];
     Version?: string;
+    TenantId?: string;
 }

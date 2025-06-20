@@ -23,6 +23,7 @@
 
 	const userId = page.params.userId;
 	var meditationId = page.params.id;
+  const tenantId = data.tenantId;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/meditations/${meditationId}/edit`;
@@ -56,7 +57,8 @@
 				MeditationType: meditationType,
 				RecommendedDurationMin: recommendedDurationMin,
 				Version: version,
-				Tags: keywords
+				Tags: keywords,
+        TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(meditationUpdateModel);

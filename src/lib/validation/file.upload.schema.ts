@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 const allowedTypes = [
 	'application/pdf',
@@ -25,7 +25,7 @@ export const fileUploadSchema = z.object({
 		},
 		{
 			message:
-				'Upload file must be a PDF, XML, TEXT, JSON, or Excel file and less than 5MB.'
+				'Upload file must be a PDF, XML, TEXT, JSON, or Excel file and less than 10MB.'
 		}
 	),
 	FileName: z.string({

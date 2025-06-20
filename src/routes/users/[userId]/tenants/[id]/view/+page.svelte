@@ -5,15 +5,16 @@
 	import type { PageServerData } from './$types';
 
 	//////////////////////////////////////////////////////////////////////////
+	let { data }: { data: PageServerData } = $props();
 
 	const userId = page.params.userId;
-	const tenantId = page.params.tenantId;
+	const tenantId = page.params.id;
 	const editRoute = `/users/${userId}/tenants/${tenantId}/edit`;
 	const viewRoute = `/users/${userId}/tenants/${tenantId}/view`;
 	const tenantRoute = `/users/${userId}/tenants`;
 	const settingsRoute = `/users/${userId}/tenants/${tenantId}/settings`;
 
-	let { data }: { data: PageServerData } = $props();
+	console.log('settingsRoute', page.params);
 
 	let tenant = $state(data.tenant);
 	let name = tenant.Name;
@@ -35,27 +36,32 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-<!-- 
-<div class="flex w-full flex-wrap justify-end gap-2">
-	<a href={settingsRoute} class="btn variant-filled-secondary">
-		<span>Setting</span>
-	</a>
-	<a href={editRoute} class="btn variant-filled-secondary">
-		<Icon icon="material-symbols:edit-outline" />
-		<span>Edit</span>
-	</a>
-</div> -->
 
 <div class="px-6 py-4">
+	<div class="button-container mt-4 flex gap-4">
+		<a
+			href={settingsRoute}
+			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary text-[var(--color-info)]"
+		>
+			<span>Setting</span>
+		</a>
+		<a
+			href={editRoute}
+			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary text-[var(--color-info)]"
+		>
+			<Icon icon="material-symbols:edit-outline" />
+			<span>Edit</span>
+		</a>
+	</div>
 	<div class="mx-auto">
-		<div class="table-container">
-			<table class="table-c">
+		<div class="health-system-table-container">
+			<table class="health-system-table">
 				<thead>
 					<tr>
 						<th>View Tenant</th>
 						<th class="text-end">
-							<a href={tenantRoute} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded" class="" />
+							<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
+								<Icon icon="material-symbols:close-rounded" />
 							</a>
 						</th>
 					</tr>

@@ -3,14 +3,12 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-	import { invalidate } from '$app/navigation';
 	import { Helper } from '$lib/utils/helper';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
 	import { toastMessage } from '$lib/components/toast/toast.store';
-	import type { SYSTEM_NAME } from '$env/static/private';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -219,30 +217,6 @@
 				</div>
 			</div>
 
-			<div class="flex items-center justify-center py-4">
-				<div class="flex w-full max-w-3xl flex-col gap-4 px-4 sm:flex-row">
-					<!-- Group Selector -->
-					<div class="flex w-full flex-col items-center gap-2 sm:flex-row">
-						<label for="group" class="text-md block w-24">Group</label>
-						<select id="group" name="group" class="input w-full">
-							<option>All</option>
-							<option></option>
-							<option></option>
-						</select>
-					</div>
-
-					<!-- Source Selector -->
-					<div class="flex w-full flex-col items-center gap-2 sm:flex-row">
-						<label for="source" class="text-md block w-24">Source</label>
-						<select id="source" name="source" class="input w-full">
-							<option>All</option>
-							<option></option>
-							<option></option>
-						</select>
-					</div>
-				</div>
-			</div>
-
 			<div class="overflow-x-auto">
 				<table class="health-system-table min-w-full">
 					<thead>
@@ -250,12 +224,11 @@
 							<th></th>
 							<th>Prompt Template</th>
 
-							<th>Category</th>
-							<th>SubGroup</th>
+							<th>Model</th>
+							<th>Group</th>
+							<th>UseCaseType</th>
 							<th>Active</th>
-							<th>Version</th>
-							<th>Content</th>
-							<th></th>
+							<th>Action</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -278,13 +251,18 @@
 									</td>
 
 									<td>
-										{row.Category !== null && row.Category !== ''
-											? Helper.truncateText(row.Category, 40)
+										{row.Model !== null && row.Model !== ''
+											? Helper.truncateText(row.Model, 40)
 											: 'Not specified'}
 									</td>
 									<td>
-										{row.SubGroup !== null && row.SubGroup !== ''
-											? Helper.truncateText(row.SubGroup, 40)
+										{row.Group !== null && row.Group !== ''
+											? Helper.truncateText(row.Group, 40)
+											: 'Not specified'}
+									</td>
+									<td>
+										{row.UseCaseType !== null && row.UseCaseType !== ''
+											? Helper.truncateText(row.UseCaseType, 40)
 											: 'Not specified'}
 									</td>
 									<td>
@@ -297,16 +275,6 @@
 										{:else}
 											Not specified
 										{/if}
-									</td>
-									<td>
-										{row.Version !== null && row.Version !== ''
-											? Helper.truncateText(row.Version, 40)
-											: 'Not specified'}
-									</td>
-									<td>
-										{row.Content !== null && row.Content !== ''
-											? Helper.truncateText(row.Content, 40)
-											: 'Not specified'}
 									</td>
 
 									<td>

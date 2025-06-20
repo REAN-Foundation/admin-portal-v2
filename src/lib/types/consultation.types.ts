@@ -4,6 +4,7 @@ export interface ConsultationCreateModel {
     ConsultationType?: string;
     Tags?: string[];
     Version?: string;
+    TenantId?: string;
 }
 
 export interface ConsultationUpdateModel {
@@ -12,4 +13,5 @@ export interface ConsultationUpdateModel {
     ConsultationType?: string;
     Tags?: string[];
     Version?: string;
+    TenantId?: string;
 }
