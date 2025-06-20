@@ -19,7 +19,7 @@
 	let assetCode = data.article.AssetCode;
 	let name = data.article.Name;
 	let summary = data.article.Description !== null ? data.article.Summary : 'Not specified';
-	let pathUrl = data.article.PathUrl !== null ? data.article.PathUrl : 'Not specified';
+	let pathUrl = data.article.Url !== null ? data.article.Url : 'Not specified';
 	let tags_ = data.article.Tags;
 	let version = data.article.Version;
 	let tags = tags_.join(', ');
@@ -62,7 +62,7 @@
 				<td class="table-data">{summary}</td>
 			</tr>
 			<tr class="tables-row">
-				<td class="table-label">Url</td>
+				<td class="table-label">URL</td>
 				<td class="table-data">{pathUrl}</td>
 			</tr>
 			<tr class="tables-row">

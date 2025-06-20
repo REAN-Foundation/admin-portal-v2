@@ -128,7 +128,7 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Tags</td>
+					<td class="table-label align-top">Tags</td>
 					<td class="table-data">
 						<InputChips
 							bind:keywords
@@ -158,16 +158,14 @@
 			</tbody>
 		</table>
 
-		<!-- Buttons -->
 		<div class="btn-container">
 			{#await promise}
-				<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
+				<button type="submit" class="table-btn variant-soft-secondary" disabled>
 					Submitting
 				</button>
 			{:then data}
-				<Button />
+				<button type="submit" class="table-btn variant-soft-secondary">Submit</button>
 			{/await}
 		</div>
 	</form>
 </div>
-

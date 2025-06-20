@@ -146,7 +146,7 @@
 						</tr>
 
 						<tr class="tables-row">
-                            <td class="table-label">Url</td>
+                            <td class="table-label">URL</td>
                             <td class="table-data">
                                 <input
                                     type="url"

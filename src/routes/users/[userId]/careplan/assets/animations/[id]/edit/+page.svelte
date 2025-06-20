@@ -155,7 +155,7 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Path Url</td>
+					<td class="table-label">URL</td>
 					<td class="table-data">
 						<input
 							type="url"

@@ -17,7 +17,7 @@
 	let assetCode = data.webLink.AssetCode;
 	let name = data.webLink.Name;
 	let description = data.webLink.Description !== null ? data.webLink.Description : 'Not specified';
-	let pathUrl = data.webLink.PathUrl !== null ? data.webLink.PathUrl : 'Not specified';
+	let pathUrl = data.webLink.Url !== null ? data.webLink.Url : 'Not specified';
 	let tags_ = data.webLink.Tags;
 	let version = data.webLink.Version;
 	let tags = tags_.join(', ');
@@ -60,7 +60,7 @@
 				<td class="table-data">{description}</td>
 			</tr>
 			<tr class="tables-row">
-				<td class="table-label">Url</td>
+				<td class="table-label">URL</td>
 				<td class="table-data">{pathUrl}</td>
 			</tr>
 			<tr class="tables-row">

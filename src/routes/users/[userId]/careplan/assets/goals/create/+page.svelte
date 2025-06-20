@@ -89,7 +89,7 @@
 <div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Create Goals</h2>
+			<h2 class="form-titles">Create Goal</h2>
 			<a href={assetRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>

@@ -103,7 +103,7 @@
 <div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Edit Challenges</h2>
+			<h2 class="form-titles">Edit Challenge</h2>
 			<a href={viewRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>

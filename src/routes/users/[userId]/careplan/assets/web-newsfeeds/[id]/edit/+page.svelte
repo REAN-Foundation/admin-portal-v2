@@ -155,7 +155,7 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Path Url</td>
+					<td class="table-label">URL</td>
 					<td class="table-data">
 						<input
 							type="url"
@@ -203,7 +203,11 @@
 			<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary">
 				Reset
 			</button>
-			<Button />
+			{#await promise}
+				<button type="submit" class="table-btn variant-filled-secondary" disabled>Submitting</button>
+			{:then data}
+				<button type="submit" class="table-btn variant-filled-secondary">Submit</button>
+			{/await}
 		</div>
 	</form>
 </div>

@@ -91,7 +91,7 @@
 <div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Create Infographics</h2>
+			<h2 class="form-titles">Create Infographic</h2>
 			<a href={assetRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
@@ -133,7 +133,7 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Url</td>
+					<td class="table-label">URL</td>
 					<td class="table-data">
 						<input
 							type="url"
