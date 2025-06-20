@@ -13,7 +13,7 @@
 	let { data, form } = $props();
 
 	let errors: Record<string, string> = $state({});
-	let carePlanName = $state('');
+	let name = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
 	let code = $state('');
@@ -47,7 +47,7 @@
 			errors = {};
 
 			const payload: CarePlanCreateModel = {
-				Name: carePlanName,
+				Name: name,
 				Description: description,
 				Code: code,
 				CategoryId: categoryId,
@@ -118,10 +118,11 @@
                             <td>
                                 <input
                                     type="text"
-                                    class="health-system-input {errors?.carePlanName ? 'input-text-error' : ''}"
-                                    name="carePlanName"
+                                    class="health-system-input {errors?.name ? 'input-text-error' : ''}"
+                                    name="name"
                                     placeholder="Enter name here..."
-                                    bind:value={carePlanName}
+                                    bind:value={name}
+                                    required
                                 />
                                 {#if errors?.Name}
                                     <p class="text-error">{errors?.Name}</p>
@@ -137,6 +138,7 @@
                                     name="healthSystemName"
                                     placeholder="Enter code here..."
                                     bind:value={code}
+                                    required
                                 />
                                 {#if errors?.Code}
                                     <p class="text-error">{errors?.Code}</p>
@@ -152,12 +154,14 @@
                                         ? 'input-text-error'
                                         : ''}"
                                     bind:value={categoryId}
+                                    required
                                 >
                                     <option disabled selected>Select category of plan here...</option>
                                     {#each careplanCategories as category}
                                         <option value={category.id}>{category.Type}</option>
                                     {/each}
                                 </select>
+                                
                                 {#if errors?.Code}
                                     <p class="text-error">{errors?.Code}</p>
                                 {/if}
