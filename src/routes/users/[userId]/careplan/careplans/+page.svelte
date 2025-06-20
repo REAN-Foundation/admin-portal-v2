@@ -169,32 +169,33 @@
 		<div class="health-system-table-container mb-6 shadow">
 			<div class="health-system-search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="flex-1">
-						<div class="relative pr-1.5">
-							<Icon
-								icon="heroicons:magnifying-glass"
-								class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
-							/>
-							<input
-								name="carePlanName"
-								type="text"
-								oninput={(event) => onSearchInput(event)}
-								placeholder="Search by name"
-								class="health-system-input !pr-4 !pl-10"
-							/>
-							{#if carePlanName}
-								<button
-									type="button"
-									onclick={() => {
-										carePlanName = '';
-									}}
-									class="close-btn"
-								>
-									<Icon icon="material-symbols:close" />
-								</button>
-							{/if}
-						</div>
+					 <div class="relative w-auto grow">
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
+						<input
+							type="text"
+							name="title"
+							oninput={(event) => onSearchInput(event)}
+							placeholder="Search by careplan name"
+							bind:value={carePlanName}
+							class="health-system-input !pr-4 !pl-10"
+						/>
+						{#if carePlanName}
+							<button
+								type="button"
+								onclick={() => {
+									carePlanName = '';
+									onSearchInput({ target: { name: 'carePlanName', value: '' } });
+								}}
+								class="close-btn"
+							>
+								<Icon icon="material-symbols:close" />
+							</button>
+						{/if}
 					</div>
+
 					<button class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary">
 						<a href={importRoute} class="">Import</a>
 					</button>
