@@ -7,6 +7,7 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
 	import type { DrugUpdateModel } from '$lib/types/drug.types';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -59,9 +60,8 @@
 				OtherInformation: otherInformation
 			};
 
-			
 			const validationResult = createOrUpdateSchema.safeParse(drugUpdateModel);
-			
+
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -108,7 +108,7 @@
 						<tr>
 							<th>Edit Drug</th>
 							<th class="text-end">
-								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
+								<a href={viewRoute} class="form-cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -139,7 +139,7 @@
 									name="genericName"
 									bind:value={genericName}
 									placeholder="Enter generic name here..."
-									class="health-system-input "
+									class="health-system-input"
 								/>
 								{#if errors?.GenericName}
 									<p class="text-error">{errors?.GenericName}</p>
@@ -154,7 +154,7 @@
 									name="ingredients"
 									bind:value={ingredients}
 									placeholder="Enter ingredients here..."
-									class="health-system-input "
+									class="health-system-input"
 								/>
 								{#if errors?.Ingredients}
 									<p class="text-error">{errors?.Ingredients}</p>
@@ -164,11 +164,7 @@
 						<tr>
 							<td>Strength</td>
 							<td>
-								<select
-									name="strength"
-									bind:value={strength}
-									class="health-system-input "
-								>
+								<select name="strength" bind:value={strength} class="health-system-input">
 									<option value="High">High</option>
 									<option value="Auto">Auto</option>
 									<option>Medium</option>
@@ -187,7 +183,7 @@
 									name="otherCommercialNames"
 									bind:value={otherCommercialNames}
 									placeholder="Enter commercial name here..."
-									class="health-system-input "
+									class="health-system-input"
 								/>
 								{#if errors?.OtherCommercialNames}
 									<p class="text-error">{errors?.OtherCommercialNames}</p>
@@ -202,7 +198,7 @@
 									name="manufacturer"
 									bind:value={manufacturer}
 									placeholder="Enter manufacture here..."
-									class="health-system-input "
+									class="health-system-input"
 								/>
 								{#if errors?.Manufacturer}
 									<p class="text-error">{errors?.Manufacturer}</p>
@@ -217,7 +213,7 @@
 									name="otherInformation"
 									bind:value={otherInformation}
 									placeholder="Enter other information here..."
-									class="health-system-input "
+									class="health-system-input"
 								/>
 								{#if errors?.OtherInformation}
 									<p class="text-error">{errors?.OtherInformation}</p>
@@ -226,18 +222,12 @@
 						</tr>
 					</tbody>
 				</table>
-				<div class="button-container">
-					<button
-						type="button"
-						onclick={handleReset}
-						class="health-system-btn variant-soft-secondary">Reset</button
-					>
+				<div class="btn-container mr-5 mb-2">
+					<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
+						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+						<Button size="md" type="submit" text="Submit" variant="primary" />
 					{/await}
 				</div>
 			</form>

@@ -3,6 +3,7 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
+	import Button from '$lib/components/button/button.svelte';
 
 	////////////////////////////////////////////////////////
 
@@ -46,14 +47,26 @@
 <BreadCrumbs crumbs={breadCrumbs} />
 
 <div class="px-6 py-4">
+	<div class="flex flex-wrap justify-end gap-2 py-2">
+		<div class=" btn-container">
+			<Button
+				size="md"
+				href={editRoute}
+				text="Edit"
+				variant="primary"
+				iconBefore="mdi:edit"
+				iconSize="md"
+			></Button>
+		</div>
+	</div>
 	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<table class="health-system-table">
+		<div class="table-container">
+			<table class="table-c">
 				<thead>
 					<tr>
 						<th>View Drug</th>
 						<th class="text-end">
-							<a href={drugRoute} class="health-system-btn variant-soft-secondary">
+							<a href={drugRoute} class="cancel-btn">
 								<Icon icon="material-symbols:close-rounded" />
 							</a>
 						</th>

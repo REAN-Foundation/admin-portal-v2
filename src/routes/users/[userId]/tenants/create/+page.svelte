@@ -93,7 +93,7 @@
 						<tr>
 							<th>Create Tenant</th>
 							<th class="text-end">
-								<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
+								<a href={tenantRoute} class="form-cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -181,20 +181,17 @@
 					</tbody>
 				</table>
 
-				<div class="button-container">
+				<div class="btn-container mr-5 mb-2">
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-							Submitting
-						</button>
+						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary">Submit</button>
+						<Button size="md" type="submit" text="Submit" variant="primary" />
 					{/await}
 				</div>
 			</form>
 		</div>
 	</div>
 </div>
-
 
 <!-- <div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>

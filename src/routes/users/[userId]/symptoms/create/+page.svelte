@@ -7,6 +7,7 @@
 	import { createOrUpdateSchema } from '$lib/validation/symptoms.schema.js';
 	import type { SymptomCreateModel } from '$lib/types/symptoms.types.js';
 	import InputChips from '$lib/components/input-chips.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	////////////////////////////////////////////////////////////////////////
 
@@ -24,7 +25,7 @@
 
 	data.title = 'Clinical-Symptoms Create';
 	const userId = page.params.userId;
-	
+
 	let symptomImage;
 
 	let errorMessage = {
@@ -166,7 +167,7 @@
 						<tr>
 							<th>Create Symptom</th>
 							<th class="text-end">
-								<a href={symptomRoute} class="health-system-btn variant-soft-secondary">
+								<a href={symptomRoute} class="form-cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -245,13 +246,11 @@
 						</tr>
 					</tbody>
 				</table>
-				<div class="button-container">
+				<div class="btn-container mr-5 mb-2">
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
+						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+						<Button size="md" type="submit" text="Submit" variant="primary" />
 					{/await}
 				</div>
 			</form>

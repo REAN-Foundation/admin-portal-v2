@@ -7,6 +7,7 @@
 	import { goto } from '$app/navigation';
 	import type { LabRecordUpdateModel } from '$lib/types/lab.records.types';
 	import { createOrUpdateSchema } from '$lib/validation/lab.records.schema';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -114,7 +115,7 @@
 						<tr>
 							<th>Edit Lab Record</th>
 							<th class="text-end">
-								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
+								<a href={viewRoute} class="form-cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -129,7 +130,7 @@
 									name="typeName"
 									bind:value={typeName}
 									placeholder="Enter type name here..."
-									class="health-system-input "
+									class="health-system-input"
 								/>
 								{#if errors?.TypeName}
 									<p class="text-error">{errors?.TypeName}</p>
@@ -144,7 +145,7 @@
 									name="displayName"
 									bind:value={displayName}
 									placeholder="Enter display name here..."
-									class="health-system-input "
+									class="health-system-input"
 								/>
 								{#if errors?.DisplayName}
 									<p class="text-error">{errors?.DisplayName}</p>
@@ -232,18 +233,12 @@
 						</tr>
 					</tbody>
 				</table>
-				<div class="button-container">
-					<button
-						type="button"
-						onclick={handleReset}
-						class="health-system-btn variant-soft-secondary">Reset</button
-					>
+				<div class="btn-container mr-5 mb-2">
+					<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
+						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+						<Button size="md" type="submit" text="Submit" variant="primary" />
 					{/await}
 				</div>
 			</form>

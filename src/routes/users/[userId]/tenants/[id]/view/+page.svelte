@@ -3,6 +3,7 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
+	import Button from '$lib/components/button/button.svelte';
 
 	//////////////////////////////////////////////////////////////////////////
 	let { data }: { data: PageServerData } = $props();
@@ -38,21 +39,19 @@
 <BreadCrumbs crumbs={breadCrumbs} />
 
 <div class="px-6 py-4">
-	<div class="button-container mt-4 flex gap-4">
-		<a
-			href={settingsRoute}
-			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary text-[var(--color-info)]"
-		>
-			<span>Setting</span>
-		</a>
-		<a
+	<div class=" btn-container mb-2">
+		<Button href={settingsRoute} size="md" text="Setting" variant="primary"></Button>
+
+		<Button
 			href={editRoute}
-			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary text-[var(--color-info)]"
-		>
-			<Icon icon="material-symbols:edit-outline" />
-			<span>Edit</span>
-		</a>
+			size="md"
+			text="Edit"
+			variant="primary"
+			iconBefore="mdi:edit"
+			iconSize="md"
+		></Button>
 	</div>
+
 	<div class="mx-auto">
 		<div class="health-system-table-container">
 			<table class="health-system-table">
@@ -60,7 +59,7 @@
 					<tr>
 						<th>View Tenant</th>
 						<th class="text-end">
-							<a href={tenantRoute} class="health-system-btn variant-soft-secondary">
+							<a href={tenantRoute} class="form-cancel-btn">
 								<Icon icon="material-symbols:close-rounded" />
 							</a>
 						</th>

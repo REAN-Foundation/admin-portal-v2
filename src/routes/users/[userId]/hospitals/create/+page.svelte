@@ -8,6 +8,7 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
 	import InputChips from '$lib/components/input-chips.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	////////////////////////////////////////////////////////////////////
 
@@ -87,21 +88,19 @@
 		keywords = e.detail;
 		keywordsStr = keywords?.join(', ');
 	};
-
-
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="table-container shadow ">
+		<div class="table-container shadow">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 				<table class="table-c">
 					<thead>
 						<tr>
 							<th>Add Hospital</th>
 							<th class="text-end">
-								<a href={hospitalsRoute} class=" cancel-btn">
+								<a href={hospitalsRoute} class="form-cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -126,14 +125,17 @@
 						<tr>
 							<td>Health System <span class="text-red-600">*</span></td>
 							<td>
-								<select  name="healthSystemId" class="input !pr-4" bind:value={selectedHealthSystemId}>
+								<select
+									name="healthSystemId"
+									class="input !pr-4"
+									bind:value={selectedHealthSystemId}
+								>
 									{#each healthSystems as healthSystem}
 										{#if healthSystemId !== healthSystem.id}
 											<option value={healthSystem.id}>{healthSystem.Name}</option>
 										{/if}
 									{/each}
 								</select>
-								
 							</td>
 						</tr>
 						<tr>
@@ -157,13 +159,11 @@
 						</tr>
 					</tbody>
 				</table>
-				<div class="button-container">
+				<div class="btn-container mr-5 mb-2">
 					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
+						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
 					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
+						<Button size="md" type="submit" text="Submit" variant="primary" />
 					{/await}
 				</div>
 			</form>

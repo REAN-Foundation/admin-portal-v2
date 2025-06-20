@@ -15,6 +15,7 @@
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
+	import Button from '$lib/components/button/button.svelte';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -250,7 +251,7 @@
 							</button>
 						{/if}
 					</div>
-					<a href={createRoute} class="table-btn variant-filled-secondary">Add New</a>
+					<Button href={createRoute} text="Add New" variant="primary"></Button>
 				</div>
 			</div>
 			<div class="overflow-x-auto">
@@ -311,49 +312,42 @@
 											</a>
 										</Tooltip>
 									</td>
-									<td  tabindex="0">
+									<td tabindex="0">
 										<Tooltip text={row.HealthSystemName || 'Not specified'}>
 											{row.HealthSystemName !== null && row.HealthSystemName !== ''
 												? Helper.truncateText(row.HealthSystemName, 50)
 												: 'Not specified'}
 										</Tooltip>
 									</td>
-									<td  tabindex="0"
-										>{row.Tags.length > 0 ? row.Tags : 'Not specified'}</td
-									>
-									<td  tabindex="0">
+									<td tabindex="0">{row.Tags.length > 0 ? row.Tags : 'Not specified'}</td>
+									<td tabindex="0">
 										{TimeHelper.formatDateToReadable(row.CreatedAt, LocaleIdentifier.EN_US)}
 									</td>
 
 									<td>
 										<div class="flex">
-											<Tooltip text="Edit" forceShow={true}>
-												<button class="">
-													<a href={editRoute(row.id)} class="table-btn group">
-														<Icon icon="material-symbols:edit-outline" class="health-system-icon" />
-													</a>
-												</button>
-											</Tooltip>
-
-											<Tooltip text="View" forceShow={true}>
-												<button>
-													<a href={viewRoute(row.id)} class=" table-btn group"
-														><Icon
-															icon="icon-park-outline:preview-open"
-															class="health-system-icon"
-														/>
-													</a>
-												</button>
-											</Tooltip>
-
-											<Tooltip text="Delete" forceShow={true}>
-												<button
-													class="table-btn !text-red-600"
-													onclick={() => handleDeleteClick(row.id)}
-												>
-													<Icon icon="material-symbols:delete-outline-rounded" />
-												</button>
-											</Tooltip>
+											<Button
+												href={editRoute(row.id)}
+												variant="icon"
+												icon="material-symbols:edit-outline"
+												iconSize="sm"
+												tooltip="Edit"
+											/>
+											<Button
+												href={viewRoute(row.id)}
+												variant="icon"
+												icon="icon-park-outline:preview-open"
+												iconSize="sm"
+												tooltip="View"
+											/>
+											<Button
+												onclick={() => handleDeleteClick(row.id)}
+												variant="icon"
+												icon="material-symbols:delete-outline-rounded"
+												iconSize="sm"
+												color="red"
+												tooltip="Delete"
+											/>
 										</div>
 									</td>
 								</tr>
