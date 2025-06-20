@@ -8,6 +8,7 @@
 	import { createOrUpdatSchedulingeSchema } from '$lib/validation/careplan.scheduling.schema';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	//////////////////////////////////////////////////////////////////////////
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
@@ -79,7 +80,7 @@
 		'Word power': 'word-power'
 	};
 
-	let selectedAssetType = 'Action plan';
+	let selectedAssetType = assetType;
 
 	const onSelectAssetType = async (e) => {
 		selectedAssetType = e.currentTarget.value;
@@ -160,6 +161,12 @@
 			toastMessage();
 		}
 	};
+	onMount(() => {
+		searchAssets({
+				sessionId: data.sessionId,
+				selectedAssetType: assetType
+		});
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -205,7 +212,7 @@
 										<option value={val.value}>{val.label}</option>
 									{/each}
 								</select>
-								<input type="text" hidden bind:value={assetId} />
+								<!-- <input type="text" hidden bind:value={assetId} /> -->
 							</td>
 						</tr>
 						<tr>
