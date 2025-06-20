@@ -115,7 +115,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+							class="input {errors?.Name ? 'input-text-error' : ''}"
 							name="assessmentName"
 							placeholder="Enter name here..."
 							bind:value={name}
@@ -189,7 +189,7 @@
 						<input
 							type="text"
 							bind:value={version}
-							class="input {form?.errors?.Version ? 'input-text-error' : ''}"
+							class="input {errors?.Version ? 'input-text-error' : ''}"
 							placeholder="V 1.0"
 							name="version"
 						/>
