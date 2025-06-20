@@ -253,7 +253,7 @@
 								<td>
 									<select
 										name="assetType"
-										class="health-system-input {form?.errors?.assetType ? 'input-text-error' : ''}"
+										class="health-system-input {errors?.assetType ? 'input-text-error' : ''}"
 										onchange={onSelectAssetType}
 										bind:value={assetType}
 									>
@@ -271,7 +271,7 @@
 								<td>
 									<select
 										name="assetId"
-										class="health-system-input {form?.errors?.assetId ? 'input-text-error' : ''}"
+										class="health-system-input {errors?.assetId ? 'input-text-error' : ''}"
 										bind:value={assetId}
 									>
 										{#each items as val}
@@ -288,7 +288,7 @@
 										name="day"
 										bind:value={day}
 										placeholder="Enter day here...."
-										class="health-system-input {form?.errors?.day ? 'input-text-error' : ''}"
+										class="health-system-input {errors?.day ? 'input-text-error' : ''}"
 									/>
 									{#if errors?.Day}
 										<p class="text-error">{errors?.Day}</p>

@@ -227,7 +227,9 @@
 					<tbody class="">
 						{#if retrivedCarePlan.length <= 0}
 							<tr>
-								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
+								<td class=" text-center" colspan="6"
+									>{isLoading ? 'Loading...' : 'No records found'}</td
+								>
 							</tr>
 						{:else}
 							{#each retrivedCarePlan as row, index}
