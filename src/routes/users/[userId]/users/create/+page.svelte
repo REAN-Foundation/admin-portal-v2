@@ -10,6 +10,7 @@
 	import { goto } from '$app/navigation';
 	import type { UserCreateModel } from '$lib/types/user.types.js';
 	import { createSchema } from '$lib/validation/user.schemas.js';
+	import Button from '$lib/components/button/button.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -116,7 +117,7 @@
 						<tr>
 							<th>Create User</th>
 							<th class="text-end">
-								<a href={userRoute} class="cancel-btn">
+								<a href={userRoute} class="form-cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -156,11 +157,7 @@
 						<tr>
 							<td>Contact Number <span class="text-red-700">*</span></td>
 							<td class="flex gap-2">
-								<select
-									name="countryCode"
-									bind:value={countryCode}
-									class="input !w-20"
-								>
+								<select name="countryCode" bind:value={countryCode} class="input !w-20">
 									<option>+1</option>
 									<option>+91</option>
 								</select>
@@ -225,13 +222,11 @@
 						</tr>
 					</tbody>
 				</table>
-				<div class="button-container">
+				<div class="btn-container mr-5 mb-2">
 					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
+						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
 					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
+						<Button size="md" type="submit" text="Submit" variant="primary" />
 					{/await}
 				</div>
 			</form>
