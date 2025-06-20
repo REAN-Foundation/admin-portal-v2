@@ -7,6 +7,7 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { MeditationCreateModel } from '$lib/types/meditations.types.js';
 	import { createOrUpdateSchema } from '$lib/validation/meditations.schema.js';
+	import Button from '$lib/components/button/button.svelte';
 	let { data, form } = $props();
 
 	let errors: Record<string, string> = $state({});
@@ -107,7 +108,7 @@
           <td class="table-data">
             <input
               type="text"
-              class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+              class="input {errors?.Name ? 'input-text-error' : ''}"
               name="name"
               placeholder="Enter name here..."
               bind:value={name}
@@ -185,7 +186,7 @@
           <td class="table-data">
             <input
               type="text"
-              class="input {form?.errors?.Version ? 'input-text-error' : ''}"
+              class="input {errors?.Version ? 'input-text-error' : ''}"
               name="version"
               placeholder="V 1.0"
               bind:value={version}
@@ -199,15 +200,12 @@
     </table>
 
     <div class="btn-container">
-      {#await promise}
-        <button type="submit" class="table-btn variant-soft-secondary" disabled>
-          Submitting
-        </button>
-      {:then data}
-        <button type="submit" class="table-btn variant-filled-primary">
-          Submit
-        </button>
-      {/await}
+            {#await promise}
+                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+            {:then data}
+                <Button type="submit" text="Submit" variant="primary" />
+            {/await}
     </div>
+
   </form>
 </div>
