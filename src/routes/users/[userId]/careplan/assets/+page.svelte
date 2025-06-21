@@ -120,7 +120,6 @@
 				...item,
 				index: index + 1
 			}));
-			searchKeyword = model.nameAssetSearch;
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -139,8 +138,8 @@
 			if (field === 'code') codeAssetSearch = keyword;
 
 			searchAssets({
-				nameAssetSearch: searchKeyword,
-				codeAssetSearch,
+				nameAssetSearch: nameAssetSearch,
+				codeAssetSearch: codeAssetSearch,
 				itemsPerPage: paginationSettings.limit,
 				pageIndex: 0,
 				sortBy,
@@ -162,8 +161,8 @@
 		}
 		sortBy = columnName;
 		searchAssets({
-			nameAssetSearch: searchKeyword,
-			codeAssetSearch,
+			nameAssetSearch: nameAssetSearch,
+			codeAssetSearch: codeAssetSearch,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: 0,
 			sortBy,
@@ -179,8 +178,8 @@
 	function onItemsPerPageChange() {
 		paginationSettings.page = 0; // reset to first page
 		searchAssets({
-			nameAssetSearch: searchKeyword,
-			codeAssetSearch,
+			nameAssetSearch: nameAssetSearch,
+			codeAssetSearch: codeAssetSearch,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: 0,
 			sortBy,
@@ -190,8 +189,8 @@
 
 	function onPageChange() {
 		searchAssets({
-			nameAssetSearch: searchKeyword,
-			codeAssetSearch,
+			nameAssetSearch: nameAssetSearch,
+			codeAssetSearch: codeAssetSearch,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -227,8 +226,8 @@
 			toastMessage(res);
 		}
 		searchAssets({
-			nameAssetSearch: searchKeyword,
-			codeAssetSearch,
+			nameAssetSearch: nameAssetSearch,
+			codeAssetSearch: codeAssetSearch,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,

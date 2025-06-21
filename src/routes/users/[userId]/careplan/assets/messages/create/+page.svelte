@@ -21,8 +21,7 @@
 	let version = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
-	let templateVariablesText = $state('');
-	let templateVariables: { [key: string]: any } = $state({});
+	let templateVariablesText = '{}';
 
 	data.title = 'Create Message';
 	const userId = page.params.userId;
