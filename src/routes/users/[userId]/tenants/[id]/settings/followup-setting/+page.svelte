@@ -16,6 +16,7 @@
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
 	const tenantRoute = `/users/${userId}/tenants/${tenantId}/settings/followup-setting`;
+    
 	let promise = $state();
 	let errors: any = $state({});
 	let showReminderModal = $state(false);
@@ -28,36 +29,25 @@
 	let editingIndex: number | null = null;
 	let openTab: string | null = $state(null);
 	let jsonError = $state('');
-	let disabled = $state(data.commonSettings.UserInterfaces.Followup);
+	// let disabled = $state(data.commonSettings.UserInterfaces.Followup);
+	let disabled = $state(data.isFollowupEnabled);
+
 	$inspect('disabled', disabled);
 	let edit = $state(false);
 
-	const toggleEdit = async () => {
-		if (disabled) {
-			if (edit) {
-				addToast({
-					message: 'Settings saved successfully',
-					type: 'success',
-					timeout: 3000
-				});
-				edit = false;
-			} else {
-				edit = true;
-				addToast({
-					message: 'Edit mode enabled',
-					type: 'info',
-					timeout: 3000
-				});
-			}
-		} else if (disabled === false) {
-			addToast({
-				message: 'This setting is disabled. Please update it from the main settings.',
-				type: 'warning',
-				timeout: 3000
-			});
-			return;
-		}
-	};
+	const handleEditClick = async () => {
+        if (!disabled) {
+            addToast({
+                message: 'This setting is disabled. Please update it from the main settings.',
+                type: 'warning',
+                timeout: 3000
+            });
+            return;
+        }
+
+        edit = !edit;
+    }
+
 
 	function toggleTab(tab: string) {
 		openTab = openTab === tab ? null : tab;
@@ -126,6 +116,14 @@
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
+            if (!edit) {
+                addToast({
+                    message: 'Nothing to edit !',
+                    type: 'warning',
+                    timeout: 3000
+                });
+                return;
+            }
 			errors = {};
 
 			if (followUpSettingUpdateModel.Source === 'Api') {
@@ -157,7 +155,8 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				goto(`/users/${userId}/tenants/${tenantId}/settings`);
+				// goto(`/users/${userId}/tenants/${tenantId}/settings`);
+                edit = false;
 				return;
 			}
 
@@ -258,10 +257,10 @@
 						<button
 							type="button"
 							class="table-btn variant-filled-secondary gap-1"
-							onclick={toggleEdit}
+							onclick={handleEditClick}
 						>
 							<Icon icon="material-symbols:edit-outline" />
-							<span>{edit ? 'Edit' : 'Save'}</span>
+							<!-- <span>{edit ? 'Save' : 'Edit'}</span> -->
 						</button>
 						<a
 							href={tenantRoute}
@@ -290,7 +289,7 @@
 								</label></td
 							>
 
-							{#if disabled}
+							{#if disabled && edit}
 								<td>
 									<select
 										bind:value=  {followUpSettingUpdateModel.Source}
@@ -336,7 +335,7 @@
 											placeholder="File column format in JSON format"
 											class="w-full rounded border p-2 text-sm"
 											oninput={validateJSON}
-											disabled={edit}
+											disabled={!edit}
 										></textarea>
 
 										{#if jsonError}
@@ -358,7 +357,7 @@
 										<select
 											bind:value={followUpSettingUpdateModel.FileUploadSettings.FileType}
 											class="w-full rounded border p-2 text-sm"
-											disabled={edit}
+											disabled={!edit}
 										>
 											<option value="" disabled selected>Select file type</option>
 											<option value="csv">CSV</option>
@@ -387,6 +386,7 @@
 											onclick={(event) => {
 												event.preventDefault();
 												showReminderModal = true;
+                                                disabled=!edit
 											}}
 											class="table-btn variant-filled-secondary gap-1"
 										>
