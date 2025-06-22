@@ -7,7 +7,7 @@ import { getTenantSettingsByType } from '$routes/api/services/reancare/tenant-se
 
 export const load: PageServerLoad = async (event: RequestEvent) => {
     const sessionId = event.cookies.get('sessionId') as string;
-    const tenantId = event.locals?.sessionUser?.tenantId;
+    const tenantId = event.params.id;
 
     let settings = undefined;
     let commonSettings = undefined;
@@ -30,6 +30,8 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
     }
 
     const isFollowupEnabled = commonSettings?.UserInterfaces?.Followup;
+
+    console.log('isFollowupEnabled:', isFollowupEnabled);
 
     return {
         sessionId,
