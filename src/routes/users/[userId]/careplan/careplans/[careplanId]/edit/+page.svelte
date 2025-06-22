@@ -22,6 +22,9 @@
 	let keywords: string[] = $state(data.carePlan.Tags);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
+    let careplanCategory = $state(data.carePlan.Category.Type);
+    let categoryId = $state(data.carePlan.CategoryId);
+    let careplanCategories = $state(data.careplanCategories);
 
 	let keywordsStr: string = $state('');
 
@@ -55,6 +58,7 @@
 			const careplanUpdateModel: CarePlanUpdateModel = {
 				Name: carePlanName,
 				Code: code,
+                CategoryId: categoryId,
 				Description: description,
 				Version: version,
 				Tags: keywords,
@@ -154,6 +158,27 @@
                                 {/if}
                             </td>
                         </tr>
+                         <tr>
+                            <td>Category <span class="text-red-700">*</span></td>
+                            <td>
+                                <select
+                                    name="categoryId"
+                                    class="select select-primary w-full {errors?.categoryId
+                                        ? 'input-text-error'
+                                        : ''}"
+                                    bind:value={categoryId}
+                                    required
+                                >
+                                    <option disabled selected>Select category of plan here...</option>
+                                    {#each careplanCategories as category}
+                                        <option value={category.id}>{category.Type}</option>
+                                    {/each}
+                                </select>
+                                
+                                {#if errors?.Code}
+                                    <p class="text-error">{errors?.Code}</p>
+                                {/if}
+                            </td>
                         <tr>
                             <td>Description <span class=" text-red-600"></span></td>
                             <td>
