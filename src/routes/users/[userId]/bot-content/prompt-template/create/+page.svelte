@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import Icon from '@iconify/svelte';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
 	import type { PromptTemplateCreateModel } from '$lib/types/prompt.template.types.js';
 	import { createOrUpdateSchema } from '$lib/validation/prompt.template.schema.js';
-	import Icon from '@iconify/svelte';
+	import InputPrompts from '../prompt.variables.svelte';
 
 	////////////////////////////////////////////////////////////////////////////////
-	let { form } = $props();
+
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 
@@ -22,21 +23,16 @@
 	];
 
 	let variables: string[] = $state([]);
-	let variableInput = $state('');
 	let name = $state('');
 	let description = $state('');
-	let content = $state('');
-	let group = $state('');
-
-	let category = $state('');
-	let version = $state(undefined);
+	let group = $state();
 	let frequency = $state(0);
 	let temperature = $state(0);
 	let topP = $state(0);
 	let prompt = $state('');
 	let presence = $state(0);
-	let model = $state('');
-	let useCaseType = $state('');
+	let model = $state();
+	let useCaseType = $state();
 
 	const handleSubmit = async (event: Event) => {
 		try {
@@ -46,20 +42,16 @@
 			const promptTemplateCreateModel: PromptTemplateCreateModel = {
 				Name: name,
 				Description: description,
-
-				UseCaseType: useCaseType,
-
-				Group: group,
+				UseCaseType: useCaseType as string,
+				Group: group as string,
 				Variables: variables,
-
 				Temperature: temperature,
 				TopP: topP,
 				FrequencyPenalty: frequency,
 				PresencePenalty: presence,
-				Model: model,
+				Model: model as string,
 				Prompt: prompt
 			};
-			console.log('promptTemplateCreateModel', typeof temperature);
 			const validationResult = createOrUpdateSchema.safeParse(promptTemplateCreateModel);
 
 			console.log('validation result', validationResult);
@@ -99,16 +91,38 @@
 		}
 	};
 
-	function updateVariables(event) {
-		const inputValue = event.target.value;
+	function extractPlaceholdersFromPrompt(promptText: string): string[] {
+		// Regex to match text inside curly braces
+		const placeholderRegex = /\{([^}]+)\}/g;
+		const matches = [];
+		let match;
+		
+		while ((match = placeholderRegex.exec(promptText)) !== null) {
+			const placeholder = match[1].trim();
+			if (placeholder && !matches.includes(placeholder)) {
+				matches.push(placeholder);
+			}
+		}
+		
+		return matches;
+	}
 
-		const matches = inputValue
-			.split(',')
-			.map((item) => item.trim())
-			.filter((item) => item !== '');
+	function updateVariablesFromPrompt(event) {
+		const promptText = event.target.value;
+		
+		// Extract placeholders from prompt
+		const extractedVariables = extractPlaceholdersFromPrompt(promptText);
+		
+		// Update variables array
+		variables = extractedVariables;
+		
+		console.log('Extracted variables from prompt:', variables);
+	}
 
-		variables = matches;
-		console.log('Input value:', variables);
+	// Add this new function to handle when variables are manually changed via InputChips
+	function handleVariablesChanged(newVariables: string[]) {
+		variables = newVariables;
+		console.log('Variables updated via InputChips:', variables);
 	}
 
 	function getColorClass(val: number): string {
@@ -177,7 +191,7 @@
 									bind:value={model}
 									placeholder="Select type here..."
 								>
-									<option value="OpenAi GPT 3.5 Turbo">OpenAi GPT 3.5 Turbo</option>
+									<option value="OpenAi GPT 3.5 Turbo" selected>OpenAi GPT 3.5 Turbo</option>
 									<option value="OpenAi GPT 3.5">OpenAi GPT 3.5</option>
 									<option value="OpenAi GPT 4 Turbo">OpenAi GPT 4 Turbo</option>
 									<option value="OpenAi GPT 4">OpenAi GPT 4</option>
@@ -192,15 +206,29 @@
 								<textarea
 									name="prompt"
 									bind:value={prompt}
-									required
-									placeholder="Enter prompt here..."
+									placeholder="Enter prompt here... Use for placeholders"
 									class="input"
-									oninput={updateVariables}
+									oninput={updateVariablesFromPrompt}
 								>
 								</textarea>
+                                {#if errors?.Prompt}
+									<p class="text-error">{errors?.Prompt}</p>
+								{/if}
 							</td>
 						</tr>
-
+                        <tr>
+							<td class="align-top">Variables</td>
+							<td class="">
+								<div class="">
+									<InputPrompts 
+										bind:keywords={variables}
+										keywordsChanged={handleVariablesChanged}
+										name="variables"
+										id="variables"
+									/>
+								</div>
+							</td>
+						</tr>
 						<tr>
 							<td>Use Case Type <span class="text-red-700">*</span></td>
 							<td>
@@ -211,7 +239,7 @@
 									bind:value={useCaseType}
 									placeholder="Select type here..."
 								>
-									<option value="Chat">Chat</option>
+									<option value="Chat" selected>Chat</option>
 									<option value="Classification">Classification</option>
 									<option value="Extraction">Extraction</option>
 									<option value="Summarization">Summarization</option>
@@ -230,7 +258,7 @@
 									bind:value={group}
 									placeholder="Select Group here..."
 								>
-									<option value="Chat Defaul">Chat Defaul</option>
+									<option value="Chat Default" selected>Chat Default</option>
 									<option value="Content Generation">Content Generation</option>
 									<option value="Generic">Generic</option>
 									<option value="Miscellaneous">Miscellaneous</option>
@@ -239,20 +267,7 @@
 								</select>
 							</td>
 						</tr>
-						<tr>
-							<td class="align-top">Variables</td>
-							<td class="">
-								<div class="">
-									<textarea
-										name="variable"
-										bind:value={variableInput}
-										class="health-system-input"
-										oninput={updateVariables}
-										placeholder="Enter variables here..."
-									></textarea>
-								</div>
-							</td>
-						</tr>
+						
 
 						<tr>
 							<td>Temperature</td>
