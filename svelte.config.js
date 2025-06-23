@@ -9,11 +9,20 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		adapter: adapter({ out: 'build' }),
+		adapter: adapter({ 
+			out: 'build',
+			// Add server configuration for larger body sizes
+			server: {
+				// Increase body parser limit
+				bodyParser: {
+					limit: '10mb'
+				}
+			}
+		}),
 		alias: {
 			$routes: path.resolve('./src/routes'),
 			$lib: path.resolve('./src/lib')
-		  }
+		}
 	}
 };
 
