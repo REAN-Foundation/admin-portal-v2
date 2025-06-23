@@ -134,7 +134,7 @@
                                 <input
                                     type="text"
                                     class="health-system-input {form?.errors?.carePlanName ? 'input-text-error' : ''}"
-                                    name="healthSystemName"
+                                    name="name"
                                     placeholder="Enter name here..."
                                     bind:value={carePlanName}
                                 />
@@ -149,7 +149,7 @@
                                 <input
                                     type="text"
                                     class="health-system-input {form?.errors?.code ? 'input-text-error' : ''}"
-                                    name="healthSystemName"
+                                    name="code"
                                     placeholder="Enter name here..."
                                     bind:value={code}
                                 />
@@ -175,8 +175,8 @@
                                     {/each}
                                 </select>
                                 
-                                {#if errors?.Code}
-                                    <p class="text-error">{errors?.Code}</p>
+                                {#if errors?.CategoryId}
+                                    <p class="text-error">{errors?.CategoryId}</p>
                                 {/if}
                             </td>
                         <tr>
@@ -185,8 +185,8 @@
                                 <input
                                     type="text"
                                     class="health-system-input {form?.errors?.description ? 'input-text-error' : ''}"
-                                    name="healthSystemName"
-                                    placeholder="Enter name here..."
+                                    name="description"
+                                    placeholder="Enter description here..."
                                     bind:value={description}
                                 />
                                 {#if errors?.Description}
@@ -212,7 +212,7 @@
                                     type="text"
                                     class="health-system-input {form?.errors?.version ? 'input-text-error' : ''}"
                                     name="version"
-                                    placeholder="Enter name here..."
+                                    placeholder="Enter version here..."
                                     bind:value={version}
                                 />
                                 {#if errors?.Version}

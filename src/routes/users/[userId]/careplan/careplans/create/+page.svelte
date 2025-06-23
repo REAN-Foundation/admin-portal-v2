@@ -149,8 +149,24 @@
                         </tr>
                         <tr>
                             <td>Category <span class="text-red-700">*</span></td>
-                            <td>
+                            <td  class="relative flex">
+                                 <div class="relative w-full">
                                 <select
+                                    name="categoryId"
+                                    class="select select-primary w-full pr-10 {errors?.categoryId ? 'input-text-error' : ''}"
+                                    bind:value={categoryId}
+                                    required
+                                >
+                                    <option disabled selected>Select category of plan here...</option>
+                                    {#each careplanCategories as category}
+                                        <option value={category.id}>{category.Type}</option>
+                                    {/each}
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+                                    <Icon icon="mdi:chevron-down" class="text-info h-5 w-5" />
+                                </div>
+                            </div>
+                                <!-- <select
                                     name="categoryId"
                                     class="select select-primary w-full {errors?.categoryId
                                         ? 'input-text-error'
@@ -163,10 +179,12 @@
                                         <option value={category.id}>{category.Type}</option>
                                     {/each}
                                 </select>
-                                
-                                {#if errors?.Code}
-                                    <p class="text-error">{errors?.Code}</p>
-                                {/if}
+                                	<div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+                                        <Icon icon="mdi:chevron-down" class="text-info h-5 w-5" />
+                                    </div>
+                                {#if errors?.CategoryId}
+                                    <p class="text-error">{errors?.CategoryId}</p>
+                                {/if} -->
                             </td>
                         </tr>
                         <tr>
@@ -206,12 +224,12 @@
                                     class="health-system-input {errors?.healthSystemName
                                         ? 'input-text-error'
                                         : ''}"
-                                    name="healthSysdddddddtemName"
+                                    name="version"
                                     placeholder="Enter version here..."
                                     bind:value={version}
                                 />
-                                {#if errors?.Name}
-                                    <p class="text-error">{errors?.Name}</p>
+                                {#if errors?.Version}
+                                    <p class="text-error">{errors?.Version}</p>
                                 {/if}
                             </td>
                         </tr>
