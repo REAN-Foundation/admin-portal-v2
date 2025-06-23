@@ -293,7 +293,7 @@
 							{#if disabled}
 								<td>
 									<select
-										bind:value=  {followUpSettingUpdateModel.Source}
+										bind:value={followUpSettingUpdateModel.Source}
 										class="w-full rounded border p-2 text-sm"
 										
 									>

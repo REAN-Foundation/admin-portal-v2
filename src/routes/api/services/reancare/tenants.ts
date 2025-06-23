@@ -79,3 +79,19 @@ export const deleteTenant = async (sessionId: string, tenantId: string) => {
 	const url = BACKEND_API_URL + `/tenants/${tenantId}`;
 	return await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
 };
+
+export const createBotSecret = async (sessionId: string, tenantId: string, body: any) => {
+	const url = BACKEND_API_URL + `/tenants/${tenantId}/settings/secret/create-bot-secret`;
+	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+};
+
+export const getBotSecret = async (sessionId: string, tenantId: string) => {
+	console.log("Here in service file", sessionId, tenantId)
+	const url = BACKEND_API_URL + `/tenants/${tenantId}/settings/secret`;
+	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+};
+
+export const updateBotSecret = async (sessionId: string, tenantId: string, body: any) => {
+	const url = BACKEND_API_URL + `/tenants/${tenantId}/settings/secret/`;
+	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+};

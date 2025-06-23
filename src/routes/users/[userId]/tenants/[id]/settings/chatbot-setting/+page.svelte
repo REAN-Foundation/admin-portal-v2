@@ -14,6 +14,7 @@
 	import ConsentModel from '$routes/users/[userId]/tenants/[id]/settings/chatbot-setting/consent.modal.svelte';
 	import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema.js';
 	import Progressive from './progressive.update.svelte';
+	import ExportSettingsDialog from './export-settings.dialog.svelte';
 
 	///////////////////////////////////////////////////////////////////////
 
@@ -32,12 +33,14 @@
 	});
 	let consentSetting: ConsentSettings = $state(data.consentSettings || {});
 	let showCancelModel = $state(false);
+	let showExportDialog = $state(false);
+	let isCreatingSecret = $state(false);
 
 	let previousConsent = $derived(chatBotSetting.ChatBot.Consent);
 	let faviconUrl = $derived(chatBotSetting.ChatBot.Favicon);
 	let disabled = $state(data.commonSettings.UserInterfaces.ChatBot);
 	let edit = $state(false);
-	let fileName = $state('')
+	let fileName = $state('');
 
 	const totalSteps = 3;
 	let currentSection = $state(0);
@@ -72,7 +75,7 @@
 	const onFileSelected = async (e) => {
 		const input = e.target as HTMLInputElement;
 		const file = input.files?.[0];
-		fileName = file.name
+		fileName = file.name;
 
 		const fileCreateModel: FaviconUploadModel = {
 			UploadFile: file,
@@ -82,8 +85,8 @@
 
 		const fileValidationResult = imageUploadSchema.safeParse(fileCreateModel);
 
-		console.log("validation result", fileValidationResult);
-		
+		console.log('validation result', fileValidationResult);
+
 		if (!fileValidationResult.success) {
 			errors = Object.fromEntries(
 				Object.entries(fileValidationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -284,6 +287,32 @@
 
 		previousConsent = chatBotSetting.ChatBot.Consent;
 	});
+
+	async function getBotSecret() {
+		// isCreatingSecret = true;
+		showExportDialog = true;
+		// try {
+		// 	const res = await fetch(`/api/server/tenants/${tenantId}/secret`, {
+		// 		method: 'GET',
+		// 		headers: { 'content-type': 'application/json' }
+		// 	});
+		// 	const data = await res.json();
+		// 	console.log("Ths is get secret", data)
+		// 	if (res.ok && data.secret) {
+		// 		addToast({ message: `Bot Secret: ${data.secret}`, type: 'success', timeout: 5000 });
+		// 	} else {
+		// 		addToast({
+		// 			message: data?.Message || 'Failed to fetch bot secret',
+		// 			type: 'error',
+		// 			timeout: 5000
+		// 		});
+		// 	}
+		// } catch (err) {
+		// 	addToast({ message: 'Error fetching bot secret', type: 'error', timeout: 5000 });
+		// } finally {
+		// 	isCreatingSecret = false;
+		// }
+	}
 </script>
 
 <ConsentModel
@@ -299,37 +328,48 @@
 	<div class="mx-auto">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 			<!-- Stepper -->
-
 			<div class="w-full py-4">
-				<div class="flex w-full items-center">
-					{#each Array(totalSteps) as _, index}
-						<!-- Step circle -->
-						<div
-							class={`step-number 
-					${
-						index < currentSection
-							? 'step-completed'
-							: index === currentSection
-								? 'stepper-active'
-								: 'stepper-inactive'
-					}`}
-						>
-							{index < currentSection ? index + 1 : index + 1}
+				<div class="flex w-full items-start justify-between">
+					<div class="flex flex-col items-center flex-1">
+						<div class="flex w-full items-center">
+							{#each Array(totalSteps) as _, index}
+								<!-- Step circle -->
+								<div
+									class={`step-number 
+									${
+										index < currentSection
+											? 'step-completed'
+											: index === currentSection
+												? 'stepper-active'
+												: 'stepper-inactive'
+									}`}
+								>
+									{index < currentSection ? index + 1 : index + 1}
+								</div>
+								<!-- Line between steps -->
+								{#if index < totalSteps - 1}
+									<div
+										class="mx-1 h-0.5 flex-1 bg-gray-300"
+										class:bg-blue-600={index < currentSection - 1}
+									></div>
+								{/if}
+							{/each}
 						</div>
-
-						<!-- Line between steps -->
-						{#if index < totalSteps - 1}
-							<div
-								class="mx-1 h-0.5 flex-1 bg-gray-300"
-								class:bg-blue-600={index < currentSection - 1}
-							></div>
-						{/if}
-					{/each}
-				</div>
-
-				<!-- Step label -->
-				<div class="mt-2 text-center text-sm text-gray-600">
-					Step {currentSection + 1} of {totalSteps}
+						<!-- Step label -->
+						<div class="mt-2 text-center text-sm text-gray-600">
+							Step {currentSection + 1} of {totalSteps}
+						</div>
+					</div>
+					<!-- Create Secret Button -->
+					<button
+						type="button"
+						class="table-btn variant-filled-secondary ml-4"
+						onclick={getBotSecret}
+						disabled={isCreatingSecret}
+					>
+						<Icon icon="material-symbols:upload" class="mr-1" />
+						{isCreatingSecret ? 'Creating...' : 'Create Secret'}
+					</button>
 				</div>
 			</div>
 
@@ -375,3 +415,10 @@
 		</form>
 	</div>
 </div>
+
+<!-- Export Settings Dialog -->
+<ExportSettingsDialog
+	open={showExportDialog}
+	onclose={() => (showExportDialog = false)}
+	{tenantId}
+/>
