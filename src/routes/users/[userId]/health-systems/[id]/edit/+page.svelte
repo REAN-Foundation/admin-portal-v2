@@ -110,7 +110,7 @@
 					<Label text="Name" required={true} />
 					<td class="table-data">
 						<Input
-							name="name"
+							name="healthSystemName"
 							type="text"
 							placeholder="Enter name here..."
 							bind:value={healthSystemName}
