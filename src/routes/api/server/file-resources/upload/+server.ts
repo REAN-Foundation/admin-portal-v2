@@ -4,6 +4,7 @@ import { fileUploadSchema } from '$lib/validation/file.upload.schema';
 import { uploadBinary } from '$routes/api/services/reancare/file.resource';
 import type { RequestEvent, RequestHandler } from './$types';
 import * as fs from 'fs';
+import { json } from '@sveltejs/kit';
 
 //////////////////////////////////////////////////////////////
 
@@ -49,25 +50,122 @@ import * as fs from 'fs';
 // 		return new Response(err.message);
 // 	}
 // }) satisfies RequestHandler;
-export const POST: RequestHandler = async (event: RequestEvent) => {
+// export const POST: RequestHandler = async (event: RequestEvent) => {
+// 	try {
+// 		console.log(`Upload in progress---`);
+
+// 		const formData = await event.request.formData();
+// 		console.log('formData', formData);
+// 		const file = formData.get('file') as File;
+// 		const filename = file.name;
+
+// 		const fileCreateModel: FileUploadModel = {
+// 			UploadFile: file,
+// 			FileName: file.name,
+// 			FileType: file.type
+// 		};
+
+// 		const validationResult = fileUploadSchema.safeParse(fileCreateModel);
+// 		console.log('validation result from server', validationResult);
+// 		if (!validationResult.success) {
+// 			return ResponseHandler.success({
+// 				Status: 'failure',
+// 				HttpCode: 400,
+// 				Message: 'Validation failed',
+// 				Errors: Object.fromEntries(
+// 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+// 						key,
+// 						val?.[0] || ''
+// 					])
+// 				)
+// 			});
+// 		}
+
+// 		const buffer = await file.arrayBuffer();
+// 		const filePath = `/tmp/${filename}`;
+// 		fs.writeFileSync(filePath, Buffer.from(buffer));
+
+// 		if (fs.existsSync(filePath)) {
+// 			console.log(`Copied file ${filename} to server /tmp.`);
+// 		}
+
+// 		const sessionId = event.locals?.sessionUser?.sessionId;
+// 		const tenantId = event.locals?.sessionUser?.tenantCode;
+// 		const fileBuffer = fs.readFileSync(filePath);
+
+// 		console.log('Uploading file resource ...');
+// 		const response = await uploadBinary(sessionId, tenantId, fileBuffer, filename, true);
+// 		console.log(JSON.stringify(response, null, 2));
+
+// 		fs.unlinkSync(filePath);
+
+// 		return new Response(JSON.stringify(response), { status: 201 });
+// 	} catch (err) {
+// 		console.error(`Error uploading file: ${err}`);
+// 		return new Response(JSON.stringify({ Status: 'error', Message: err.message }), { status: 500 });
+// 	}
+// };
+
+export const config = {
+	// Set max body size to 50MB (in bytes)
+	maxBodySize: 50 * 1024 * 1024,
+	// Or use a string format:
+	// maxBodySize: '50mb'
+};
+
+export const POST = async (event: RequestEvent) => {
+	let filePath = null;
+	
 	try {
-		console.log(`Upload in progress---`);
-
+		console.log('Large file upload in progress...');
+		
+		// Check content length before processing
+		const contentLength = event.request.headers.get('content-length');
+		const maxSize = 50 * 1024 * 1024; // 50MB
+		
+		if (contentLength && parseInt(contentLength) > maxSize) {
+			return json({
+				Status: 'failure',
+				HttpCode: 413,
+				Message: `File too large. Maximum size is ${maxSize / 1024 / 1024}MB`
+			}, { status: 413 });
+		}
+		
+		console.log(`Processing file of size: ${contentLength} bytes`);
+		
+		// Use a more memory-efficient approach for large files
 		const formData = await event.request.formData();
-		console.log('formData', formData);
-		const file = formData.get('file') as File;
+		const file = formData.get('file');
+		
+		if (!file || !(file instanceof File)) {
+			return json({
+				Status: 'failure',
+				HttpCode: 400,
+				Message: 'No valid file provided'
+			}, { status: 400 });
+		}
+		
+		// Validate file size
+		if (file.size > maxSize) {
+			return json({
+				Status: 'failure',
+				HttpCode: 413,
+				Message: `File too large. Size: ${(file.size / 1024 / 1024).toFixed(2)}MB, Maximum: ${maxSize / 1024 / 1024}MB`
+			}, { status: 413 });
+		}
+		
 		const filename = file.name;
-
-		const fileCreateModel: FileUploadModel = {
+		
+		// Validation
+		const fileCreateModel = {
 			UploadFile: file,
-			FileName: file.name,
+			FileName: filename,
 			FileType: file.type
 		};
-
+		
 		const validationResult = fileUploadSchema.safeParse(fileCreateModel);
-		console.log('validation result from server', validationResult);
 		if (!validationResult.success) {
-			return ResponseHandler.success({
+			return json({
 				Status: 'failure',
 				HttpCode: 400,
 				Message: 'Validation failed',
@@ -77,30 +175,75 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
 						val?.[0] || ''
 					])
 				)
-			});
+			}, { status: 400 });
 		}
-
+		
+		// For large files, process in chunks to avoid memory issues
 		const buffer = await file.arrayBuffer();
-		const filePath = `/tmp/${filename}`;
-		fs.writeFileSync(filePath, Buffer.from(buffer));
-
-		if (fs.existsSync(filePath)) {
-			console.log(`Copied file ${filename} to server /tmp.`);
+		filePath = `/tmp/${Date.now()}-${filename}`;
+		
+		// Write file in chunks for better memory management
+		const chunkSize = 64 * 1024; // 64KB chunks
+		const uint8Array = new Uint8Array(buffer);
+		const fd = fs.openSync(filePath, 'w');
+		
+		try {
+			for (let i = 0; i < uint8Array.length; i += chunkSize) {
+				const chunk = uint8Array.slice(i, i + chunkSize);
+				fs.writeSync(fd, chunk);
+			}
+		} finally {
+			fs.closeSync(fd);
 		}
-
+		
+		console.log(`Created temporary file: ${filePath}, size: ${file.size} bytes`);
+		
+		// Get session info
 		const sessionId = event.locals?.sessionUser?.sessionId;
 		const tenantId = event.locals?.sessionUser?.tenantCode;
+		
+		if (!sessionId || !tenantId) {
+			throw new Error('Missing session or tenant information');
+		}
+		
+		// Read and upload file
 		const fileBuffer = fs.readFileSync(filePath);
-
-		console.log('Uploading file resource ...');
+		console.log('Uploading large file resource...');
+		
 		const response = await uploadBinary(sessionId, tenantId, fileBuffer, filename, true);
-		console.log(JSON.stringify(response, null, 2));
-
-		fs.unlinkSync(filePath);
-
-		return new Response(JSON.stringify(response), { status: 201 });
+		console.log('Large file upload response:', JSON.stringify(response, null, 2));
+		
+		return json(response, { status: 201 });
+		
 	} catch (err) {
-		console.error(`Error uploading file: ${err}`);
-		return new Response(JSON.stringify({ Status: 'error', Message: err.message }), { status: 500 });
+		console.error('Error uploading large file:', err);
+		
+		// Handle specific error types
+		let status = 500;
+		let message = err.message || 'Internal server error';
+		
+		if (err.message.includes('request entity too large') || 
+		    err.message.includes('PayloadTooLargeError')) {
+			status = 413;
+			message = 'File too large for upload';
+		}
+		
+		return json({
+			Status: 'error',
+			HttpCode: status,
+			Message: message
+		}, { status });
+		
+	} finally {
+		// Clean up temporary file
+		if (filePath && fs.existsSync(filePath)) {
+			try {
+				fs.unlinkSync(filePath);
+				console.log(`Cleaned up temporary file: ${filePath}`);
+			} catch (cleanupError) {
+				console.error('Error cleaning up temporary file:', cleanupError);
+			}
+		}
 	}
 };
+
