@@ -11,7 +11,6 @@
 		edit,
 		iconPaths,
 		getSettingMeta,
-		showCancelModel = $bindable(),
 		onFileSelected,
 		currentSection = $bindable(),
 		fileName
@@ -288,15 +287,6 @@
 
 								<!-- Right: Toggle + Optional Edit -->
 								<div class="flex items-center">
-									{#if groupName === 'Consent' && groupItems === true && edit === true}
-										<Tooltip text="Edit" forceShow={true}>
-											<Icon
-												icon="material-symbols:edit-outline"
-												class="mx-3 h-4 w-4 cursor-pointer"
-												onclick={() => (showCancelModel = true)}
-											/>
-										</Tooltip>
-									{/if}
 									<input
 										type="checkbox"
 										class="checkbox checkbox-primary scale-125 cursor-pointer"

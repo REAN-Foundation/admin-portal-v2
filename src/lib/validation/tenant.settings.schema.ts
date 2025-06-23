@@ -342,7 +342,7 @@ export const FormsSettingsSchema = z.object({
 export const ConsentMessageSchema = z.object({
     LanguageCode: z.string().optional(),
     Content: z.string().optional(),
-    WebsiteURL: z.string().optional(),
+    WebsiteURL: z.string().trim().url('Invalid URL').or(z.literal('')).optional()
 });
 
 // ConsentSettings Schema

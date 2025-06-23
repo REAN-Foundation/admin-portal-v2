@@ -11,7 +11,6 @@
 		ConsentSettings,
 		FaviconUploadModel
 	} from '$lib/types/tenant.settings.types.js';
-	import ConsentModel from '$routes/users/[userId]/tenants/[id]/settings/chatbot-setting/consent.modal.svelte';
 	import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema.js';
 	import Progressive from './progressive.update.svelte';
 
@@ -21,8 +20,6 @@
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
-	const tenantCode = $state(data.tenantCode);
-	const tenantName = $state(data.tenantName);
 	const tenantRoute = `/users/${userId}/tenants`;
 	const formData = new FormData();
 	let errors: Record<string, string> = $state({});
@@ -30,9 +27,7 @@
 	let chatBotSetting = $state({
 		ChatBot: data.chatbotSettings
 	});
-	let consentSetting: ConsentSettings = $state(data.consentSettings || {});
 	let showCancelModel = $state(false);
-
 	let previousConsent = $derived(chatBotSetting.ChatBot.Consent);
 	let faviconUrl = $derived(chatBotSetting.ChatBot.Favicon);
 	let disabled = $state(data.commonSettings.UserInterfaces.ChatBot);
@@ -102,45 +97,10 @@
 		event.preventDefault();
 		errors = {};
 
-		let isConsentSaved = false;
 		let isFaviconUploaded = false;
 		let isChatBotSaved = false;
 
 		try {
-			// ----------------------------- CONSENT SETTINGS -----------------------------
-			const consentSettingModel: ConsentSettings = {
-				TenantId: tenantId,
-				TenantCode: tenantCode,
-				TenantName: tenantName,
-				DefaultLanguage: consentSetting.DefaultLanguage,
-				Messages: consentSetting.Messages
-			};
-
-			const consentValidation = ConsentSettingsSchema.safeParse(consentSettingModel);
-			if (!consentValidation.success) {
-				errors = Object.fromEntries(
-					Object.entries(consentValidation.error.flatten().fieldErrors).map(([key, val]) => [
-						key,
-						val?.[0] || 'This field is required'
-					])
-				);
-				return;
-			}
-
-			const consentRes = await fetch(`/api/server/tenants/settings/${tenantId}/Consent`, {
-				method: 'PUT',
-				body: JSON.stringify(consentSettingModel),
-				headers: { 'content-type': 'application/json' }
-			});
-
-			const consentJson = await consentRes.json();
-			if (consentJson.HttpCode === 200 || consentJson.HttpCode === 201) {
-				isConsentSaved = true;
-			} else if (consentJson.Errors) {
-				errors = consentJson.Errors;
-				addToast({ message: 'Consent settings failed.', type: 'error', timeout: 3000 });
-				return;
-			}
 
 			// ----------------------------- FAVICON UPLOAD -----------------------------
 			if (formData.has('file')) {
@@ -221,7 +181,7 @@
 			}
 
 			// ----------------------------- FINAL TOAST -----------------------------
-			if (isConsentSaved && isFaviconUploaded && isChatBotSaved) {
+			if (isFaviconUploaded && isChatBotSaved) {
 				console.log('All settings saved successfully.');
 				//
 				toastMessage(chatBotJson);
@@ -277,23 +237,7 @@
 		);
 	}
 
-	$effect(() => {
-		if (edit === false && chatBotSetting.ChatBot.Consent === true && previousConsent === false) {
-			showCancelModel = true;
-		}
-
-		previousConsent = chatBotSetting.ChatBot.Consent;
-	});
 </script>
-
-<ConsentModel
-	{showCancelModel}
-	onClose={() => (showCancelModel = false)}
-	{form}
-	bind:consentSetting
-	{tenantName}
-	{tenantCode}
-/>
 
 <div class="px-5 py-4">
 	<div class="mx-auto">
@@ -365,7 +309,6 @@
 						{edit}
 						{iconPaths}
 						{getSettingMeta}
-						bind:showCancelModel
 						{onFileSelected}
 						bind:currentSection
 						{fileName}

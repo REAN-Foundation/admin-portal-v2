@@ -30,7 +30,7 @@
 	let chatBotSettingsLink = `${tenantRoute}/${tenantId}/settings/chatbot-setting`;
 	let formSettingsLink = `${tenantRoute}/${tenantId}/settings/forms-setting`;
 	let followupSettingsLink = `${tenantRoute}/${tenantId}/settings/followup-setting`;
-	// let concentSettingsLink = `${tenantRoute}/${tenantId}/settings/followup-setting`;
+	let consentSettingsLink = `${tenantRoute}/${tenantId}/settings/consent-setting`;
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -60,10 +60,19 @@
 				<Icon icon="octicon:people-16" class="h-5 w-5 shrink-0" />
 				Chat Bot
 			</a>
+			<a
+                class="btn !bg-green-500 {page.url.pathname === consentSettingsLink
+                    ? 'variant-filled-secondary'
+                    : 'variant-soft-secondary'} flex items-center justify-center gap-2"
+                href={consentSettingsLink}
+            >
+                <Icon icon="material-symbols:privacy-tip-outline" class="h-5 w-5 shrink-0" />
+                Consent
+            </a>
 
 			<!-- Row 2 -->
 			<a
-				class="btn {page.url.pathname === formSettingsLink
+				class="btn !bg-red-500 {page.url.pathname === formSettingsLink
 					? 'variant-filled-secondary'
 					: 'variant-soft-secondary'} flex items-center justify-center gap-2"
 				href={formSettingsLink}
