@@ -17,7 +17,7 @@
 	const tenantId = page.params.id;
     let tenantName = $state(data.tenantName || '');
     let tenantCode = $state(data.tenantCode || '');
-	let defualtLang = $state('english');
+	let defualtLang = $state(data.consentSettings.DefaultLanguage);
     let consentSetting: ConsentSettings = $state(data.consentSettings)
 	let checkConsent = $state(data.chatbotSettings);
 	

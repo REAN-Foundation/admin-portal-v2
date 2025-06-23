@@ -61,7 +61,7 @@
 				Chat Bot
 			</a>
 			<a
-                class="btn !bg-green-500 {page.url.pathname === consentSettingsLink
+                class="btn {page.url.pathname === consentSettingsLink
                     ? 'variant-filled-secondary'
                     : 'variant-soft-secondary'} flex items-center justify-center gap-2"
                 href={consentSettingsLink}
@@ -72,7 +72,7 @@
 
 			<!-- Row 2 -->
 			<a
-				class="btn !bg-red-500 {page.url.pathname === formSettingsLink
+				class="btn {page.url.pathname === formSettingsLink
 					? 'variant-filled-secondary'
 					: 'variant-soft-secondary'} flex items-center justify-center gap-2"
 				href={formSettingsLink}
