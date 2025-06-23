@@ -210,7 +210,7 @@
 							bind:value={hospitalName}
 							placeholder="Search by name"
 							oninput={(event) => onSearchInput(event)}
-							class="table-input-field !pr-4 !pl-10"
+							class="input !pr-4 !pl-10"
 						/>
 						{#if hospitalName}
 							<button
@@ -236,7 +236,7 @@
 							bind:value={tags}
 							oninput={(event) => onSearchInput(event)}
 							placeholder="Search by tags"
-							class="table-input-field !pr-4 !pl-10"
+							class="input !pr-4 !pl-10"
 						/>
 						{#if tags}
 							<button
