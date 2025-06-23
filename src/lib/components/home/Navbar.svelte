@@ -72,14 +72,17 @@
 	onMount(() => {
 		const storedMode = localStorage.getItem('themeMode');
 		const storedOption = localStorage.getItem('themeOption');
+
 		if (storedMode) {
 			selectedMode = storedMode;
 			document.documentElement.setAttribute('data-theme', storedMode.toLowerCase());
 		}
+
 		if (storedOption) {
 			selectedOption = storedOption;
-			applyThemeOption();
 		}
+
+		applyThemeOption();
 	});
 
 	function openLogoutModal() {
@@ -88,11 +91,11 @@
 
 	function handleLogoutConfirm() {
 		// selectedMode = 'Light';
-		selectedOption = '';
-		localStorage.setItem('themeMode', 'Light');
-		localStorage.removeItem('themeOption');
-		applyThemeOption();
+		// selectedOption = '';
+		// localStorage.setItem('themeMode', 'Light');
+		// applyThemeOption();
 		if (logout) logout();
+		localStorage.removeItem('themeOption');
 		showConfirmLogout_ = false;
 	}
 
