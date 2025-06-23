@@ -14,6 +14,7 @@
 	import { createOrUpdateSchema } from '$lib/validation/follow-up/followup.upload.schema';
 	import type { FollowUpUploadModel } from '$lib/types/follow-up/followup.upload';
 	import CancelModel from '$routes/users/[userId]/appointment-followup/summary-uploads/cancel.appointment.modal.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -70,7 +71,7 @@
 			console.log('model', model);
 			if (model.appointmentDate) url += `&appointmentDate=${model.appointmentDate}`;
 			if (model.reply) url += `&repliedStatus=${model.reply}`;
-				console.log('model', model);
+			console.log('model', model);
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
@@ -105,23 +106,23 @@
 	}
 
 	async function onSearchInput(e) {
-			clearTimeout(debounceTimeout);
-			const { name, value } = e.target;
+		clearTimeout(debounceTimeout);
+		const { name, value } = e.target;
 
-			updateSearchField(name, value)
-			console.log('event', e.target);
-			debounceTimeout = setTimeout(() => {
-				paginationSettings.page = 0; // reset page when typing new search
-				searchAppointments({
-					appointmentDate,
-					reply,
-					itemsPerPage: paginationSettings.limit,
-					pageIndex: 0,
-					sortBy,
-					sortOrder
-				});
-			}, 400);
-		}
+		updateSearchField(name, value);
+		console.log('event', e.target);
+		debounceTimeout = setTimeout(() => {
+			paginationSettings.page = 0; // reset page when typing new search
+			searchAppointments({
+				appointmentDate,
+				reply,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortBy,
+				sortOrder
+			});
+		}, 400);
+	}
 
 	function sortTable(columnName) {
 		isSortingName = false;
@@ -185,39 +186,45 @@
 	// 	];
 	// 	return statistics
 	//  }
-
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-<div class="flex flex-col mx-6 gap-4 md:flex-row">
-		{#if extraction === "FileBased"}
-			<div class="relative w-auto grow pl-1.5">
-				<button class="btn variant-filled-secondary" onclick={() => showUploadModal = true}>
-					Upload Appointment Schedules
-				</button>
-			</div>
-		{:else}
-			<div class="relative w-auto grow">
-				<button class="btn variant-filled-secondary">
-					Extract Appointment Schedules
-				</button>
-			</div>
-		{/if}
-			<div class="relative w-auto grow">
-				<button class="btn variant-filled-secondary" onclick={() => showCancelModel = true}>
-					Cancel Appointments
-				</button>
-			</div>
-			<div class="relative w-auto grow">
-				<button class="btn variant-filled-secondary">
-					<a href={`/users/${userId}/appointment-followup/view-cancellation`}>View Cancellations</a>
-		
-				</button>
-			</div>
-</div> 
 
-<UploadModal showUploadModel = {showUploadModal} onClose = {() => showUploadModal = false} />
-<CancelModel showCancelModel = {showCancelModel} onClose = {() => showCancelModel = false} />
+<div class="mx-6 flex flex-col gap-4 md:flex-row">
+	{#if extraction === 'FileBased'}
+		<div class="relative">
+			<Button
+				text="Upload Appointment Schedules"
+				size="md"
+				variant="primary"
+				onclick={() => (showUploadModal = true)}
+			/>
+		</div>
+	{:else}
+		<div class="relative">
+			<Button type="submit" text="Extract Appointment Schedules" size="md" variant="primary" />
+		</div>
+	{/if}
+	<div class="relative">
+		<Button
+			text="Cancel Appointments"
+			size="md"
+			variant="primary"
+			onclick={() => (showCancelModel = true)}
+		/>
+	</div>
+	<div class="relative">
+		<Button
+			href={`/users/${userId}/appointment-followup/view-cancellation`}
+			text="View Cancellations"
+			size="md"
+			variant="primary"
+		/>
+	</div>
+</div>
+
+<UploadModal showUploadModel={showUploadModal} onClose={() => (showUploadModal = false)} />
+<CancelModel {showCancelModel} onClose={() => (showCancelModel = false)} />
 
 <!-- <div class="mt-4 mx-6 overflow-x-auto rounded-lg border border-[var(--color-outline)]">
 	<div class="mx-auto">
@@ -237,7 +244,7 @@
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container mb-6 shadow">
-		<div class="health-system-search-border p-4">
+			<div class="health-system-search-border p-4">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow pl-1.5">
 						<Icon
@@ -270,7 +277,7 @@
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
 						/> -->
-						   <select
+						<select
 							name="reply"
 							bind:value={reply}
 							oninput={(event) => onSearchInput(event)}
@@ -280,11 +287,11 @@
 							<option value="Yes">Yes</option>
 							<option value="No">No</option>
 							<option value="Not replied">Not Replied</option>
-							</select>
-							<div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+						</select>
+						<div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
 							<Icon icon="mdi:chevron-down" class="text-info h-5 w-5" />
 						</div>
-									<!-- {#if reply}
+						<!-- {#if reply}
 							<button
 								type="button"
 								onclick={() => {
@@ -367,7 +374,7 @@
 									> -->
 									<td class="flex items-center gap-2">
 										{#if row.is_cancelled}
-										 	<Icon icon="mdi:check-circle" class="text-green-500" />
+											<Icon icon="mdi:check-circle" class="text-green-500" />
 											<span class="lable">True</span>
 										{:else}
 											<Icon icon="mdi:close-circle" class="text-red-500" />
