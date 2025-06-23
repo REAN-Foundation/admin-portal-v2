@@ -190,37 +190,40 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="mx-6 flex flex-col gap-4 md:flex-row">
+<div class="mx-6 grid gap-4 md:grid-cols-3">
 	{#if extraction === 'FileBased'}
-		<div class="relative">
-			<Button
-				text="Upload Appointment Schedules"
-				size="md"
-				variant="primary"
-				onclick={() => (showUploadModal = true)}
-			/>
-		</div>
+		<Button
+			text="Upload Appointment Schedules"
+			size="md"
+			variant="primary"
+			className="w-full"
+			onclick={() => (showUploadModal = true)}
+		/>
 	{:else}
-		<div class="relative">
-			<Button type="submit" text="Extract Appointment Schedules" size="md" variant="primary" />
-		</div>
+		<Button
+			type="submit"
+			text="Extract Appointment Schedules"
+			size="md"
+			variant="primary"
+			className="w-full"
+		/>
 	{/if}
-	<div class="relative">
-		<Button
-			text="Cancel Appointments"
-			size="md"
-			variant="primary"
-			onclick={() => (showCancelModel = true)}
-		/>
-	</div>
-	<div class="relative">
-		<Button
-			href={`/users/${userId}/appointment-followup/view-cancellation`}
-			text="View Cancellations"
-			size="md"
-			variant="primary"
-		/>
-	</div>
+
+	<Button
+		text="Cancel Appointments"
+		size="md"
+		variant="primary"
+		className="w-full"
+		onclick={() => (showCancelModel = true)}
+	/>
+
+	<Button
+		href={`/users/${userId}/appointment-followup/view-cancellation`}
+		text="View Cancellations"
+		size="md"
+		variant="primary"
+		className="w-full"
+	/>
 </div>
 
 <UploadModal showUploadModel={showUploadModal} onClose={() => (showUploadModal = false)} />
