@@ -1,249 +1,291 @@
 import type { FileUploadModel } from '$lib/types/file.upload.types';
-import { ResponseHandler } from '$lib/utils/response.handler';
 import { fileUploadSchema } from '$lib/validation/file.upload.schema';
 import { uploadBinary } from '$routes/api/services/reancare/file.resource';
-import type { RequestEvent, RequestHandler } from './$types';
+import type { RequestEvent } from './$types';
 import * as fs from 'fs';
 import { json } from '@sveltejs/kit';
 
-//////////////////////////////////////////////////////////////
-
-// export const POST = (async (event: RequestEvent) => {
-// 	try {
-// 		console.log(`Upload in progress---`);
-
-// 		// console.log(JSON.stringify(event, null, 2));
-// 		console.log("Event",event);
-// 		const formData = await event.request.formData();
-// 		// console.log(JSON.stringify(event, null, 2));
-//     const file = formData.get('file') as File;
-//     const filename = formData.get('filename');
-// 		// const data_ = await event.request.json();
-// 		// const params: URLSearchParams = event.url.searchParams;
-// 		// console.log(`search params : ` + params);
-// 		// const filename = event.request.headers.get('filename');
-// 		console.log("filename............",filename);
-
-// 		const fileBuffer = data_['image'];
-// 		const filePath = filename;
-// 		fs.writeFileSync(filePath, fileBuffer, 'base64');
-
-// 		if (fs.existsSync(filePath)) {
-// 			console.log(Date.now().toString());
-// 			console.log(`Copied file ${filename} to server stats/temp.`);
-// 		}
-
-// 		const sessionId = event.locals.sessionUser.sessionId;
-// 		const buffer = fs.readFileSync(filePath);
-
-// 		console.log('Uploading file resource ...');
-// 		//const location = path.join(process.cwd(), filePath);
-// 		const response = await uploadBinary(sessionId, buffer, filename, true);
-// 		console.log(JSON.stringify(response, null, 2));
-
-// 		fs.unlinkSync(filePath);
-
-// 		return new Response(JSON.stringify(response));
-// 	} catch (err) {
-// 		//console.error(`Error uploading file: ${err.message}`);
-// 		console.error(`Error uploading file: ${JSON.stringify(err.stack.split('\n'), null, 2)}`);
-// 		return new Response(err.message);
-// 	}
-// }) satisfies RequestHandler;
-// export const POST: RequestHandler = async (event: RequestEvent) => {
-// 	try {
-// 		console.log(`Upload in progress---`);
-
-// 		const formData = await event.request.formData();
-// 		console.log('formData', formData);
-// 		const file = formData.get('file') as File;
-// 		const filename = file.name;
-
-// 		const fileCreateModel: FileUploadModel = {
-// 			UploadFile: file,
-// 			FileName: file.name,
-// 			FileType: file.type
-// 		};
-
-// 		const validationResult = fileUploadSchema.safeParse(fileCreateModel);
-// 		console.log('validation result from server', validationResult);
-// 		if (!validationResult.success) {
-// 			return ResponseHandler.success({
-// 				Status: 'failure',
-// 				HttpCode: 400,
-// 				Message: 'Validation failed',
-// 				Errors: Object.fromEntries(
-// 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-// 						key,
-// 						val?.[0] || ''
-// 					])
-// 				)
-// 			});
-// 		}
-
-// 		const buffer = await file.arrayBuffer();
-// 		const filePath = `/tmp/${filename}`;
-// 		fs.writeFileSync(filePath, Buffer.from(buffer));
-
-// 		if (fs.existsSync(filePath)) {
-// 			console.log(`Copied file ${filename} to server /tmp.`);
-// 		}
-
-// 		const sessionId = event.locals?.sessionUser?.sessionId;
-// 		const tenantId = event.locals?.sessionUser?.tenantCode;
-// 		const fileBuffer = fs.readFileSync(filePath);
-
-// 		console.log('Uploading file resource ...');
-// 		const response = await uploadBinary(sessionId, tenantId, fileBuffer, filename, true);
-// 		console.log(JSON.stringify(response, null, 2));
-
-// 		fs.unlinkSync(filePath);
-
-// 		return new Response(JSON.stringify(response), { status: 201 });
-// 	} catch (err) {
-// 		console.error(`Error uploading file: ${err}`);
-// 		return new Response(JSON.stringify({ Status: 'error', Message: err.message }), { status: 500 });
-// 	}
-// };
-
 export const config = {
-	// Set max body size to 50MB (in bytes)
-	maxBodySize: 50 * 1024 * 1024,
-	// Or use a string format:
-	// maxBodySize: '50mb'
+	// Completely disable SvelteKit's body parsing
+	maxBodySize: 0
 };
 
 export const POST = async (event: RequestEvent) => {
-	let filePath = null;
-	
-	try {
-		console.log('Large file upload in progress...');
-		
-		// Check content length before processing
-		const contentLength = event.request.headers.get('content-length');
-		const maxSize = 50 * 1024 * 1024; // 50MB
-		
-		if (contentLength && parseInt(contentLength) > maxSize) {
-			return json({
-				Status: 'failure',
-				HttpCode: 413,
-				Message: `File too large. Maximum size is ${maxSize / 1024 / 1024}MB`
-			}, { status: 413 });
-		}
-		
-		console.log(`Processing file of size: ${contentLength} bytes`);
-		
-		// Use a more memory-efficient approach for large files
-		const formData = await event.request.formData();
-		const file = formData.get('file');
-		
-		if (!file || !(file instanceof File)) {
-			return json({
-				Status: 'failure',
-				HttpCode: 400,
-				Message: 'No valid file provided'
-			}, { status: 400 });
-		}
-		
-		// Validate file size
-		if (file.size > maxSize) {
-			return json({
-				Status: 'failure',
-				HttpCode: 413,
-				Message: `File too large. Size: ${(file.size / 1024 / 1024).toFixed(2)}MB, Maximum: ${maxSize / 1024 / 1024}MB`
-			}, { status: 413 });
-		}
-		
-		const filename = file.name;
-		
-		// Validation
-		const fileCreateModel = {
-			UploadFile: file,
-			FileName: filename,
-			FileType: file.type
-		};
-		
-		const validationResult = fileUploadSchema.safeParse(fileCreateModel);
-		if (!validationResult.success) {
-			return json({
-				Status: 'failure',
-				HttpCode: 400,
-				Message: 'Validation failed',
-				Errors: Object.fromEntries(
-					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-						key,
-						val?.[0] || ''
-					])
-				)
-			}, { status: 400 });
-		}
-		
-		// For large files, process in chunks to avoid memory issues
-		const buffer = await file.arrayBuffer();
-		filePath = `/tmp/${Date.now()}-${filename}`;
-		
-		// Write file in chunks for better memory management
-		const chunkSize = 64 * 1024; // 64KB chunks
-		const uint8Array = new Uint8Array(buffer);
-		const fd = fs.openSync(filePath, 'w');
-		
-		try {
-			for (let i = 0; i < uint8Array.length; i += chunkSize) {
-				const chunk = uint8Array.slice(i, i + chunkSize);
-				fs.writeSync(fd, chunk);
-			}
-		} finally {
-			fs.closeSync(fd);
-		}
-		
-		console.log(`Created temporary file: ${filePath}, size: ${file.size} bytes`);
-		
-		// Get session info
-		const sessionId = event.locals?.sessionUser?.sessionId;
-		const tenantId = event.locals?.sessionUser?.tenantCode;
-		
-		if (!sessionId || !tenantId) {
-			throw new Error('Missing session or tenant information');
-		}
-		
-		// Read and upload file
-		const fileBuffer = fs.readFileSync(filePath);
-		console.log('Uploading large file resource...');
-		
-		const response = await uploadBinary(sessionId, tenantId, fileBuffer, filename, true);
-		console.log('Large file upload response:', JSON.stringify(response, null, 2));
-		
-		return json(response, { status: 201 });
-		
-	} catch (err) {
-		console.error('Error uploading large file:', err);
-		
-		// Handle specific error types
-		let status = 500;
-		let message = err.message || 'Internal server error';
-		
-		if (err.message.includes('request entity too large') || 
-		    err.message.includes('PayloadTooLargeError')) {
-			status = 413;
-			message = 'File too large for upload';
-		}
-		
-		return json({
-			Status: 'error',
-			HttpCode: status,
-			Message: message
-		}, { status });
-		
-	} finally {
-		// Clean up temporary file
-		if (filePath && fs.existsSync(filePath)) {
-			try {
-				fs.unlinkSync(filePath);
-				console.log(`Cleaned up temporary file: ${filePath}`);
-			} catch (cleanupError) {
-				console.error('Error cleaning up temporary file:', cleanupError);
-			}
-		}
-	}
+    console.log("File upload request received");
+    
+    const maxFileSize = 50 * 1024 * 1024; // 50MB
+    let filePath: string | null = null;
+    
+    try {
+        // Get content info from headers
+        const contentType = event.request.headers.get('content-type') || '';
+        const contentLength = parseInt(event.request.headers.get('content-length') || '0');
+        
+        console.log('Content-Type:', contentType);
+        console.log('Content-Length:', contentLength);
+        
+        // Check if it's multipart form data
+        if (!contentType.includes('multipart/form-data')) {
+            return json({
+                Status: 'failure',
+                HttpCode: 400,
+                Message: 'Request must be multipart/form-data'
+            }, { status: 400 });
+        }
+        
+        // Check size before processing
+        if (contentLength > maxFileSize) {
+            console.log(`Request too large: ${contentLength} bytes`);
+            return json({
+                Status: 'failure',
+                HttpCode: 413,
+                Message: `Request too large. Size: ${(contentLength / 1024 / 1024).toFixed(2)}MB, Maximum: ${maxFileSize / 1024 / 1024}MB`
+            }, { status: 413 });
+        }
+        
+        console.log("Reading raw request body...");
+        
+        // Read the raw body as ArrayBuffer (this bypasses SvelteKit's parsing)
+        const arrayBuffer = await event.request.arrayBuffer();
+        console.log(`Raw body received: ${arrayBuffer.byteLength} bytes`);
+        
+        // Extract boundary from content-type header
+        const boundaryMatch = contentType.match(/boundary=([^;]+)/);
+        if (!boundaryMatch) {
+            return json({
+                Status: 'failure',
+                HttpCode: 400,
+                Message: 'No boundary found in multipart data'
+            }, { status: 400 });
+        }
+        
+        const boundary = boundaryMatch[1].replace(/"/g, ''); // Remove quotes if present
+        console.log('Boundary:', boundary);
+        
+        // Parse the multipart data
+        const { file, fileName, fileType } = parseMultipartFormData(arrayBuffer, boundary);
+        
+        if (!file || !fileName) {
+            console.log("No file found in multipart data");
+            return json({
+                Status: 'failure',
+                HttpCode: 400,
+                Message: 'No file provided in form data'
+            }, { status: 400 });
+        }
+
+        console.log("File parsed:", {
+            name: fileName,
+            size: file.byteLength,
+            type: fileType,
+            hasFile: !!file,
+            hasFileName: !!fileName
+        });
+
+        // Check file size again
+        if (file.byteLength > maxFileSize) {
+            console.log(`File too large: ${file.byteLength} bytes`);
+            return json({
+                Status: 'failure',
+                HttpCode: 413,
+                Message: `File too large. Size: ${(file.byteLength / 1024 / 1024).toFixed(2)}MB, Maximum: ${maxFileSize / 1024 / 1024}MB`
+            }, { status: 413 });
+        }
+
+        // Create a mock File object for validation
+        const mockFile = {
+            name: fileName,
+            size: file.byteLength,
+            type: fileType || 'application/octet-stream'
+        } as File;
+
+        // Validate using your existing schema
+        const fileCreateModel: FileUploadModel = {
+            UploadFile: mockFile,
+            FileName: fileName,
+            FileType: fileType || 'application/octet-stream'
+        };
+
+        console.log("Mock file for validation:", {
+            name: mockFile.name,
+            size: mockFile.size,
+            type: mockFile.type
+        });
+
+        console.log("File create model:", fileCreateModel);
+
+        console.log("Validating file...");
+        const validationResult = fileUploadSchema.safeParse(fileCreateModel);
+        if (!validationResult.success) {
+            console.log("File validation failed:", validationResult.error);
+            return json({
+                Status: 'failure',
+                HttpCode: 400,
+                Message: 'Validation failed',
+                Errors: Object.fromEntries(
+                    Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+                        key,
+                        val?.[0] || ''
+                    ])
+                )
+            }, { status: 400 });
+        }
+
+        console.log("File validation passed, creating buffer...");
+        
+        // Convert to Buffer
+        const buffer = Buffer.from(file);
+        
+        // Create unique temporary file path
+        const timestamp = Date.now();
+        const safeName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
+        filePath = `/tmp/${timestamp}-${safeName}`;
+        
+        // Write to temporary file
+        fs.writeFileSync(filePath, buffer);
+        console.log(`Temporary file created: ${filePath}, size: ${buffer.length} bytes`);
+
+        // Get session details
+        const sessionId = event.locals?.sessionUser?.sessionId;
+        const tenantId = event.locals?.sessionUser?.tenantCode;
+
+        if (!sessionId || !tenantId) {
+            console.log("Missing session or tenant information");
+            throw new Error('Missing session or tenant information');
+        }
+
+        console.log("Uploading to backend service...");
+        
+        // Upload to your backend
+        const response = await uploadBinary(sessionId, tenantId, buffer, fileName, true);
+        
+        console.log("Upload successful:", response);
+        return json(response, { status: 201 });
+
+    } catch (err: any) {
+        console.error('Error in file upload:', err);
+        
+        let status = 500;
+        let message = err.message || 'Internal server error';
+
+        return json({
+            Status: 'error',
+            HttpCode: status,
+            Message: message
+        }, { status });
+        
+    } finally {
+        // Clean up temporary file
+        if (filePath && fs.existsSync(filePath)) {
+            try {
+                fs.unlinkSync(filePath);
+                console.log(`Cleaned up temporary file: ${filePath}`);
+            } catch (cleanupError) {
+                console.error('Error cleaning up temporary file:', cleanupError);
+            }
+        }
+    }
 };
+
+// Function to manually parse multipart form data
+function parseMultipartFormData(arrayBuffer: ArrayBuffer, boundary: string): { 
+    file: ArrayBuffer | null, 
+    fileName: string, 
+    fileType: string 
+} {
+    const data = new Uint8Array(arrayBuffer);
+    const boundaryBytes = new TextEncoder().encode(`--${boundary}`);
+    const doubleNewline = new TextEncoder().encode('\r\n\r\n');
+    
+    // Find file part
+    let fileStart = -1;
+    let fileEnd = -1;
+    let fileName = '';
+    let fileType = '';
+    
+    // Convert the beginning to string to parse headers
+    const headerSection = new TextDecoder('utf-8', { fatal: false }).decode(data.slice(0, Math.min(4096, data.length)));
+    const parts = headerSection.split(`--${boundary}`);
+    
+    for (let i = 0; i < parts.length; i++) {
+        const part = parts[i];
+        if (part.includes('Content-Disposition: form-data') && part.includes('filename=')) {
+            // Extract filename
+            const fileNameMatch = part.match(/filename="([^"]+)"/);
+            if (fileNameMatch) {
+                fileName = fileNameMatch[1];
+            }
+            
+            // Extract content type
+            const contentTypeMatch = part.match(/Content-Type:\s*([^\r\n]+)/);
+            if (contentTypeMatch) {
+                fileType = contentTypeMatch[1].trim();
+            }
+            
+            // Find the actual start of file data
+            const partBytes = new TextEncoder().encode(part);
+            let searchStart = 0;
+            
+            // Find this part in the original data
+            for (let j = 0; j <= data.length - partBytes.length; j++) {
+                let found = true;
+                for (let k = 0; k < Math.min(partBytes.length, 100); k++) { // Only check first 100 bytes
+                    if (data[j + k] !== partBytes[k]) {
+                        found = false;
+                        break;
+                    }
+                }
+                if (found) {
+                    searchStart = j;
+                    break;
+                }
+            }
+            
+            // Find the double newline that separates headers from data
+            for (let j = searchStart; j <= data.length - doubleNewline.length; j++) {
+                let found = true;
+                for (let k = 0; k < doubleNewline.length; k++) {
+                    if (data[j + k] !== doubleNewline[k]) {
+                        found = false;
+                        break;
+                    }
+                }
+                if (found) {
+                    fileStart = j + doubleNewline.length;
+                    break;
+                }
+            }
+            
+            // Find the end (next boundary)
+            if (fileStart !== -1) {
+                for (let j = fileStart; j <= data.length - boundaryBytes.length; j++) {
+                    let found = true;
+                    for (let k = 0; k < boundaryBytes.length; k++) {
+                        if (data[j + k] !== boundaryBytes[k]) {
+                            found = false;
+                            break;
+                        }
+                    }
+                    if (found) {
+                        fileEnd = j - 2; // -2 for \r\n before boundary
+                        break;
+                    }
+                }
+            }
+            
+            break;
+        }
+    }
+    
+    if (fileStart !== -1 && fileEnd !== -1 && fileStart < fileEnd) {
+        const fileData = data.slice(fileStart, fileEnd);
+        return {
+            file: fileData.buffer.slice(fileData.byteOffset, fileData.byteOffset + fileData.byteLength),
+            fileName,
+            fileType
+        };
+    }
+    
+    return { file: null, fileName: '', fileType: '' };
+}
 
