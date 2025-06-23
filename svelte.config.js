@@ -7,17 +7,17 @@ const config = {
 	// Consult https://svelte.dev/docs/kit/integrations
 	// for more information about preprocessors
 	preprocess: vitePreprocess(),
-
+    maxRequestSize: 10 * 1024 * 1024,
 	kit: {
 		adapter: adapter({ 
 			out: 'build',
 			// Add server configuration for larger body sizes
-			server: {
-				// Increase body parser limit
-				bodyParser: {
-					limit: '10mb'
-				}
-			}
+			// server: {
+			// 	// Increase body parser limit
+			// 	bodyParser: {
+			// 		limit: '10mb'
+			// 	}
+			// }
 		}),
 		alias: {
 			$routes: path.resolve('./src/routes'),
