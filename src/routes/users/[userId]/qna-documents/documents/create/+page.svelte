@@ -90,6 +90,9 @@
 		}
 	};
 
+    // Update your upload function in +page.svelte
+
+
 	// Function triggered when file is selected
 	const onFileSelected = async (e) => {
 		let f = e.target.files[0];

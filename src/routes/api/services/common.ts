@@ -52,9 +52,8 @@ export const get_ = async (url: string, authorizeUser: boolean = false, sessionI
 			method: 'GET',
 			headers
 		});
-
+		
 		const response = await res.json();
-
 		const message = response.Message;
 
 		if (!res.ok) {

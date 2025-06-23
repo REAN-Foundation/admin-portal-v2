@@ -19,10 +19,11 @@ export const POST = async (event: RequestEvent) => {
 		}
 
 		const createdByUserId = event.locals?.sessionUser?.userId;
+        const tenantCode = event.locals?.sessionUser?.tenantCode;
 
 		const request = event.request;
 		const data: PromptTemplateCreateModel = await request.json();
-
+        console.log('data!!', data);
 		const validationResult = createOrUpdateSchema.safeParse(data);
 
 		if (!validationResult.success) {
@@ -52,7 +53,9 @@ export const POST = async (event: RequestEvent) => {
 			data.TopP,
 			data.FrequencyPenalty,
 			data.PresencePenalty,
-			createdByUserId
+			createdByUserId,
+			true,
+			tenantCode
 		);
 
 		return ResponseHandler.success(response);
