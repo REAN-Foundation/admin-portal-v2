@@ -9,7 +9,7 @@ export interface AnimationsCreateModel {
 
 export interface AnimationsUpdateModel {
 	Name: string;
-	Transcript: string;
+	Transcript?: string;
 	PathUrl: string;
 	Tags?: string[];
 	Version: string;

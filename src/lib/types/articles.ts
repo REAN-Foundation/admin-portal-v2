@@ -9,8 +9,8 @@ export interface ArticlesCreateModel {
 
 export interface ArticlesUpdateModel {
 	Name: string;
-	Summary: string;
-	PathUrl: string;
+	Summary?: string;
+	PathUrl?: string;
 	Tags?: string[];
 	Version: string;
 	TenantId?: string;
