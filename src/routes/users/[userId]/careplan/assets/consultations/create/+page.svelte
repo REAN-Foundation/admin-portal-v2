@@ -7,6 +7,7 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { ConsultationCreateModel } from '$lib/types/consultation.types.js';
 	import { createOrUpdateSchema } from '$lib/validation/consultation.schema.js';
+	import Button from '$lib/components/button/button.svelte';
 
 	let { data, form } = $props();
 
@@ -15,7 +16,7 @@
 	let name = $state('');
 	let description = $state('');
 	let version = $state('');
-	let consultationType = $state('');
+	let consultationType = 'Tele-consultation';
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
 
@@ -105,7 +106,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+							class="input {errors?.Name ? 'input-text-error' : ''}"
 							name="name"
 							placeholder="Enter name here..."
 							bind:value={name}
@@ -158,7 +159,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {form?.errors?.Version ? 'input-text-error' : ''}"
+							class="input {errors?.Version ? 'input-text-error' : ''}"
 							name="version"
 							placeholder="V 1.0"
 							bind:value={version}
@@ -172,16 +173,12 @@
 		</table>
 
 		<div class="btn-container">
-			{#await promise}
-				<button type="submit" class="table-btn variant-filled-secondary" disabled>
-					Submitting
-				</button>
-			{:then data}
-				<button type="submit" class="table-btn variant-filled-secondary">
-					Submit
-				</button>
-			{/await}
-		</div>
+            {#await promise}
+                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+            {:then data}
+                <Button type="submit" text="Submit" variant="primary" />
+            {/await}
+</div>
 	</form>
 </div>
 

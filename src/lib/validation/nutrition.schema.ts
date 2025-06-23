@@ -10,9 +10,8 @@ export const createOrUpdateSchema = z.object({
 		.max(128, { message: 'Audio name must be at most 128 characters long.' }),
 
 	Description: z
-		.string({
-			invalid_type_error: 'Description must be a string.'
-		})
+		.string()
+		.max(1024, { message: 'Description must be at most 1024 characters long.' })
 		.optional(),
 
 	Tags: z.array(z.string()).optional(),

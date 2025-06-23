@@ -19,7 +19,7 @@
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
 	let description = $state(undefined);
-	let appointmentType = $state(undefined);
+	let appointmentType = "Doctor";
 	let version = $state(undefined);
 
 	const userId = page.params.userId;
@@ -114,7 +114,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+							class="input {errors?.Name ? 'input-text-error' : ''}"
 							name="name"
 							placeholder="Enter name here..."
 							bind:value={name}
@@ -168,7 +168,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {form?.errors?.Version ? 'input-text-error' : ''}"
+							class="input {errors?.Version ? 'input-text-error' : ''}"
 							name="version"
 							placeholder="V 1.0"
 							bind:value={version}

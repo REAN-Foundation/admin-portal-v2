@@ -109,7 +109,7 @@
 					<input
 						required
 						type="text"
-						class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+						class="input {errors?.Name ? 'input-text-error' : ''}"
 						name="biometricsName"
 						placeholder="Enter name here..."
 						bind:value={biometricsName}
