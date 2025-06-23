@@ -18,7 +18,8 @@ export const createPromptsTemplate = async (
 	frequencyPenalty: number,
 	presencePenalty: number,
 	createdByUserId: string,
-	isActive: boolean = true
+	isActive: boolean = true,
+	tenantCode: string
 ) => {
 	const body = {
 		Name: name,
@@ -28,16 +29,18 @@ export const createPromptsTemplate = async (
 		Group: subgroup ? subgroup : null,
 		UseCaseType: type ? type : null,
 		Variables: variable ? variable : null,
-		Temperature: temperature ? temperature : null,
-		TopP: topP ? topP : null,
-		FrequencyPenalty: frequencyPenalty ? frequencyPenalty : null,
-		PresencePenalty: presencePenalty ? presencePenalty : null,
+		Temperature: temperature !== undefined && temperature !== null ? temperature : null,
+		TopP: topP !== undefined && topP !== null ? topP : null,
+		FrequencyPenalty: frequencyPenalty !== undefined && frequencyPenalty !== null ? frequencyPenalty : null,
+		PresencePenalty: presencePenalty !== undefined && presencePenalty !== null ? presencePenalty : null,
 		CreatedByUserId: createdByUserId ? createdByUserId : null,
-		IsActive: isActive
+		IsActive: isActive,
+		TenantId: tenantCode ? tenantCode : null
 	};
 	console.log();
 
-	const url = BOT_CONTENT_API_URL + '/llm-prompt-templates';
+	// const url = BOT_CONTENT_API_URL + '/llm-prompt-templates';
+	const url = BOT_CONTENT_API_URL + '/llm-prompts';
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 
 	const findAndClearKeys = [`session-${sessionId}:req-searchPromptTemplate`];
@@ -47,7 +50,8 @@ export const createPromptsTemplate = async (
 };
 
 export const getPromptTemplateById = async (sessionId: string, promptId: string) => {
-	const url = BOT_CONTENT_API_URL + `/llm-prompt-templates/${promptId}`;
+	// const url = BOT_CONTENT_API_URL + `/llm-prompt-templates/${promptId}`;
+	const url = BOT_CONTENT_API_URL + `/llm-prompts/${promptId}`;
 	const cacheKey = `session-${sessionId}:req-getPromptTemplateById-${promptId}`;
 	if (await DashboardManager.has(cacheKey)) {
 		return await DashboardManager.get(cacheKey);
@@ -73,7 +77,8 @@ export const searchPromptTemplate = async (sessionId: string, searchParams?: any
 			searchString += params.join('&');
 		}
 	}
-	const url = BOT_CONTENT_API_URL + `/llm-prompt-templates/search${searchString}`;
+	// const url = BOT_CONTENT_API_URL + `/llm-prompt-templates/search${searchString}`;
+	const url = BOT_CONTENT_API_URL + `/llm-prompts/search${searchString}`;
 	console.log('url', url);
 	const cacheKey = `session-${sessionId}:req-searchPromptTemplate:${searchString}`;
 	if (await DashboardManager.has(cacheKey)) {
@@ -81,6 +86,7 @@ export const searchPromptTemplate = async (sessionId: string, searchParams?: any
 	}
 
 	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	console.log('result', result);
 	await DashboardManager.set(cacheKey, result);
 	return result;
 };
@@ -110,14 +116,15 @@ export const updatePromptTemplate = async (
 		Group: subgroup ? subgroup : null,
 		UseCaseType: useCaseType ? useCaseType : null,
 		Variables: variables ? variables : null,
-		Temperature: temperature ? temperature : null,
-		TopP: topP ? topP : null,
-		FrequencyPenalty: frequencyPenalty ? frequencyPenalty : null,
-		PresencePenalty: presencePenalty ? presencePenalty : null,
+		Temperature: temperature !== undefined && temperature !== null ? temperature : null,
+		TopP: topP !== undefined && topP !== null ? topP : null,
+		FrequencyPenalty: frequencyPenalty !== undefined && frequencyPenalty !== null ? frequencyPenalty : null,
+		PresencePenalty: presencePenalty !== undefined && presencePenalty !== null ? presencePenalty : null,
 		CreatedByUserId: createdByUserId ? createdByUserId : null,
 		IsActive: isActive
 	};
-	const url = BOT_CONTENT_API_URL + `/llm-prompt-templates/${promptId}`;
+	// const url = BOT_CONTENT_API_URL + `/llm-prompt-templates/${promptId}`;
+	const url = BOT_CONTENT_API_URL + `/llm-prompts/${promptId}`;
 	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 	const keysToBeDeleted = [`session-${sessionId}:req-getPromptTemplateById-${promptId}`];
 	await DashboardManager.deleteMany(keysToBeDeleted);
@@ -128,7 +135,8 @@ export const updatePromptTemplate = async (
 };
 
 export const deletePromptTemplate = async (sessionId: string, promptId: string) => {
-	const url = BOT_CONTENT_API_URL + `/llm-prompt-templates/${promptId}`;
+	// const url = BOT_CONTENT_API_URL + `/llm-prompt-templates/${promptId}`;
+	const url = BOT_CONTENT_API_URL + `/llm-prompts/${promptId}`;
 	console.log(url);
 
 	const result = await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);

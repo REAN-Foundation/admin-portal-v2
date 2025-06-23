@@ -11,6 +11,7 @@ export interface PromptTemplateCreateModel {
     FrequencyPenalty: number;
     PresencePenalty: number;
 }
+
 export interface PromptTemplateUpdateModel {
     Name: string;
     Description?: string;
