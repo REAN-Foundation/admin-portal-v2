@@ -182,7 +182,7 @@
 								type="text"
 								oninput={(event) => onSearchInput(event)}
 								placeholder="Search by name"
-								class="health-system-input !pr-4 !pl-10"
+								class="input !pr-4 !pl-10"
 							/>
 							{#if healthSystemName}
 								<button
