@@ -9,6 +9,9 @@
 	import { goto } from '$app/navigation';
 	import InputChips from '$lib/components/input-chips.svelte';
 	import Button from '$lib/components/button/button.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Input from '$lib/components/input/input.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -92,63 +95,52 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th>Edit Health System</th>
-							<th class="text-end">
-								<a href={viewRoute} class="form-cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Name <span class=" text-red-600">*</span></td>
-							<td>
-								<input
-									type="text"
-									class="health-system-input {form?.errors?.healthSystemName
-										? 'input-text-error'
-										: ''}"
-									name="healthSystemName"
-									placeholder="Enter name here..."
-									bind:value={healthSystemName}
-								/>
-								{#if errors?.Name}
-									<p class="text-error-500 text-xs">{errors?.Name}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td class="!py-3">Tags</td>
-							<td>
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-									keywordsChanged={onUpdateKeywords}
-								/>
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" bind:value={tags} /> -->
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="btn-container mr-5 mb-2">
-					<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
-					{#await promise}
-						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
-					{:then data}
-						<Button size="md" type="submit" text="Submit" variant="primary" />
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<Heading text="Edit Health System" />
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<Label text="Name" required={true} />
+					<td class="table-data">
+						<Input
+							name="name"
+							type="text"
+							placeholder="Enter name here..."
+							bind:value={healthSystemName}
+							error={errors?.Name}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Tags" />
+					<td class="table-data">
+						<InputChips
+							bind:keywords
+							name="keywords"
+							id="keywords"
+							keywordsChanged={onUpdateKeywords}
+						/>
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container">
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>
