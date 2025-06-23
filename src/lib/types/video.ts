@@ -9,8 +9,8 @@ export interface VideoCreateModel {
 
 export interface VideoUpdateModel {
 	Name: string;
-	Transcript: string;
-	PathUrl: string;
+	Transcript?: string;
+	PathUrl?: string;
 	Tags?: string[];
 	Version: string;
 	TenantId?: string;
