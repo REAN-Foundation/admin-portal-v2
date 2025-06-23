@@ -3,6 +3,7 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
+	import Button from '$lib/components/button/button.svelte';
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -77,12 +78,7 @@
 		</tbody>
 	</table>
 	<div class=" btn-container">
-		<a
-			href={editRoute}
-			class="edit-btn variant-filled-secondary hover:!variant-soft-secondary text-[var(--color-info)]"
-		>
-			<Icon icon="material-symbols:edit-outline" />
-			<span>Edit</span>
-		</a>
-	</div>
+        <Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
+        ></Button>
+</div>
 </div>

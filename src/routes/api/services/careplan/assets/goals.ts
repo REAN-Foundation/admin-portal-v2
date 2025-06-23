@@ -63,8 +63,8 @@ export const searchGoals = async (sessionId: string, searchParams: Record<string
 };
 
 export const updateGoals = async (
-	sessionId: string,
 	goalsId: string,
+	sessionId: string,
 	name: string,
 	description: string,
 	tags: string[],

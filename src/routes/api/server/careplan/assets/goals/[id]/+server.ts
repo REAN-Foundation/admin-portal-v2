@@ -70,7 +70,7 @@ export const PUT = async (event: RequestEvent) => {
             return ResponseHandler.handleError(401, null, new Error("Access denied: Invalid session."));
         }
 
-        const audioId = event.params.id;
+        const goalId = event.params.id;
         const request = event.request;
         const data: GoalsUpdateModel = await request.json();
 
@@ -86,7 +86,7 @@ export const PUT = async (event: RequestEvent) => {
         }
 
         const response = await updateGoals(
-            audioId,
+            goalId,
             sessionId,
             data.Name,
             data.Description,

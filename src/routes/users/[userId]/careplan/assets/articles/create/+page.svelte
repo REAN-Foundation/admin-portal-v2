@@ -112,7 +112,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {form?.errors?.name ? 'input-text-error' : ''}"
+							class="input {errors?.name ? 'input-text-error' : ''}"
 							name="name"
 							placeholder="Enter name here..."
 							bind:value={name}
@@ -140,7 +140,7 @@
 					<td class="table-data">
 						<input
 							type="url"
-							class="input {form?.errors?.Url ? 'input-text-error' : ''}"
+							class="input {errors?.Url ? 'input-text-error' : ''}"
 							name="url"
 							placeholder="Enter url here"
 							bind:value={pathUrl}
@@ -167,7 +167,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {form?.errors?.version ? 'input-text-error' : ''}"
+							class="input {errors?.version ? 'input-text-error' : ''}"
 							name="version"
 							placeholder="V 1.0"
 							bind:value={version}

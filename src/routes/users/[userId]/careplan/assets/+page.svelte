@@ -264,7 +264,7 @@
 							name="name"
 							placeholder="Search by name"
 							oninput={(event) => onSearchInput(event, 'name')}
-							class="table-input-field !pr-4 !pl-10"
+							class="input !pr-4 !pl-10"
 						/>
 						<Icon
 							icon="heroicons:magnifying-glass"
@@ -278,17 +278,15 @@
 							name="code"
 							placeholder="Search by code"
 							oninput={(event) => onSearchInput(event, 'code')}
-							class="table-input-field !pr-4 !pl-10"
+							class="input !pr-4 !pl-10"
 						/>
 						<Icon
-							icon="heroicons:tag"
+							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
 						/>
 					</div>
 					<Button href={createRoute} text="Add New" variant="primary"></Button>
-					<!-- <button class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
-						<a href={createRoute} class="">Add New</a>
-					</button> -->
+					
 				</div>
 			</div>
 			<div class="overflow-x-auto">
