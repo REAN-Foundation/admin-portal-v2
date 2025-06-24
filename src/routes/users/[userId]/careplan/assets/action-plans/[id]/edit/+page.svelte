@@ -17,7 +17,7 @@
 	let id = data.actionPlan.id;
 	let assetCode = data.actionPlan.AssetCode;
 	let name = $state(data.actionPlan.Name);
-	let description = $state(data.actionPlan.Description);
+	let description = $state(data.actionPlan.Description || undefined);
 	let tags = $state(data.actionPlan.Tags);
 	let version = $state(data.actionPlan.Version);
 	let errors: Record<string, string> = $state({});

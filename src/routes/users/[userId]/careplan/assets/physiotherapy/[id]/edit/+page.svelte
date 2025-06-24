@@ -15,7 +15,7 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let name = $state(data.physiotherapy.Name);
-	let description = $state(data.physiotherapy.Description);
+	let description = $state(data.physiotherapy.Description || undefined);
 	let recommendedDurationMin = $state<number>(data.physiotherapy.RecommendedDurationMin);
 	let version = $state(data.physiotherapy.Version);
 	let keywords: string[] = $state(data.physiotherapy.Tags);
@@ -51,7 +51,7 @@
 			errors = {};
 
 			const physiotherapyUpdateModel: PhysiotherapyUpdateModel = {
-				Name: name,
+				Name: name, 
 				Description: description,
 				RecommendedDurationMin: recommendedDurationMin,
 				Version: version,
@@ -60,7 +60,7 @@
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(physiotherapyUpdateModel);
-
+			console.log("validation result",validationResult)
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [

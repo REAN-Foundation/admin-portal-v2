@@ -17,7 +17,7 @@
 	let id = data.nutrition.id;
 	let assetCode = data.nutrition.AssetCode;
 	let name = $state(data.nutrition.Name);
-	let description = $state(data.nutrition.Description);
+	let description = $state(data.nutrition.Description || undefined);
 	let tags = $state(data.nutrition.Tags);
 	let version = $state(data.nutrition.Version);
 	let errors: Record<string, string> = $state({});

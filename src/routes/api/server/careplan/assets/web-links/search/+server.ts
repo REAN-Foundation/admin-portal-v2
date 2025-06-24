@@ -12,16 +12,16 @@ export const GET = async (event: RequestEvent) => {
 		}
 
 		const searchParams: URLSearchParams = event.url.searchParams;
-		const searchFilters = {
-			name: searchParams.get('name') ?? undefined,
-			orderBy: searchParams.get('sortBy') ?? 'CreatedAt',
-			order: searchParams.get('sortOrder') ?? 'ascending',
-			itemsPerPage: parseInt(searchParams.get('itemsPerPage') ?? '10'),
-			pageIndex: parseInt(searchParams.get('pageIndex') ?? '0')
-		};
-
-		console.log('Search Parameters:', searchFilters);
-		const response = await searchWebLink(sessionId, searchFilters);
+		const searchFilters: Record<string, string> = {
+							name: searchParams.get('name') ?? '',
+							code: searchParams.get('code') ?? '',
+							orderBy: searchParams.get('sortBy') ?? 'CreatedAt',
+							order: searchParams.get('sortOrder') ?? 'ascending',
+							itemsPerPage: (searchParams.get('itemsPerPage') ?? '10').toString(),
+							pageIndex: (searchParams.get('pageIndex') ?? '0').toString()
+						};
+						console.log('Search Parameters:', searchFilters);
+						const response = await searchWebLink(sessionId, searchFilters);
 		return ResponseHandler.success(response);
 	} catch (error) {
 		console.error('Error retrieving Web-link:', error);

@@ -15,7 +15,7 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let name = $state(data.assessment.Name);
-	let description = $state(data.assessment.Description);
+	let description = $state(data.assessment.Description || undefined);
 	let template = $state(data.assessment.Template);
 	let templateCode = $state(data.assessment.ReferenceTemplateCode);
 	let version = $state(data.assessment.Version);

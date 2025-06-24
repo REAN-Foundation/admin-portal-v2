@@ -17,8 +17,8 @@
 	let id = data.webLink.id;
 	let assetCode = data.webLink.AssetCode;
 	let name = $state(data.webLink.Name);
-	let description = $state(data.webLink.Description);
-	let pathUrl = $state(data.webLink.Url);
+	let description = $state(data.webLink.Description || undefined);
+	let pathUrl = $state(data.webLink.Url || undefined);
 	let tags = $state(data.webLink.Tags);
 	let version = $state(data.webLink.Version);
 	let errors: Record<string, string> = $state({});
@@ -69,6 +69,7 @@
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(webLinksUpdateModel);
+			console.log("Edit result",validationResult)
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
