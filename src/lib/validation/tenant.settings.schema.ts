@@ -340,9 +340,16 @@ export const FormsSettingsSchema = z.object({
 
 // ConsentMessage Schema
 export const ConsentMessageSchema = z.object({
-    LanguageCode: z.string().optional(),
-    Content: z.string().optional(),
-    WebsiteURL: z.string().trim().url('Invalid URL').or(z.literal('')).optional()
+    LanguageCode: z.string().min(1, 'Language is required'),
+    Content: z.string().min(1, 'Content is required'),
+    WebsiteURL: z.string()
+        .trim()
+        .min(1, "Website URL is required")
+        .url('Invalid URL')
+        .refine(
+            val => /\.[a-z]{2,}/i.test(val.split('/')[2] || ''),
+            { message: 'URL must contain a valid domain.' }
+        )
 });
 
 // ConsentSettings Schema

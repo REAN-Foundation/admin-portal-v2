@@ -4,31 +4,25 @@
 	import type { ConsentSettings } from '$lib/types/tenant.settings.types';
 	import { ConsentSettingsSchema } from '$lib/validation/tenant.settings.schema';
 	import { languages } from '$lib/utils/language';
-	import type { PageServerData } from '../$types';
 	import MessageModal from './message.modal.svelte';
 	import { page } from '$app/state';
 
 	///////////////////////////////////////////////////////////////////////////
 
-    let { data, form } = $props();
+	let { data, form } = $props();
 
-    $inspect(data, "Consecnt setting data")
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
-    let tenantName = $state(data.tenantName || '');
-    let tenantCode = $state(data.tenantCode || '');
-	let defualtLang = $state(data.consentSettings.DefaultLanguage);
-    let consentSetting: ConsentSettings = $state(data.consentSettings)
+	let tenantName = $state(data.tenantResponse?.Data?.Tenant?.Name || '');
+	let tenantCode = $state(data.tenantResponse?.Data?.Tenant?.Code || '');
+	let defualtLang = $state(data.consentSettings?.DefaultLanguage || 'English');
+	let consentSetting: ConsentSettings = $state(data.consentSettings);
 	let checkConsent = $state(data.chatbotSettings);
-	
-
 	let edit = $state(false);
 	let promise = $state();
-	let message = $state(data.consentSettings.Messages || []);
+	const tenantRoute = `/users/${userId}/tenants`;
+	let message = $state(data.consentSettings?.Messages || []);
 	let defaultLangCode = $state('');
-	let newMessage = $state({ LanguageCode: '', Content: '', WebsiteURL: '' });
-	let showAddMessageForm = $state(false);
-	let editingIndex: number | null = $state();
 	let errors: Record<string, string> = $state({});
 	let showMessageModal = $state(false);
 	let isEditMessage = $state(false);
@@ -63,7 +57,7 @@
 	};
 
 	function deleteMessage(index: number) {
-		const defaultLangCode = languages.find(l => l.name === defualtLang)?.code;
+		const defaultLangCode = languages.find((l) => l.name === defualtLang)?.code;
 		if (message[index].LanguageCode === defaultLangCode) {
 			addToast({
 				message: 'Cannot delete the message for the default language.',
@@ -90,6 +84,17 @@
 		try {
 			event.preventDefault();
 			errors = {};
+
+			const defaultLangCode = languages.find((l) => l.name === defualtLang)?.code;
+			const hasDefaultLangMessage = message.some((msg) => msg.LanguageCode === defaultLangCode);
+			if (!hasDefaultLangMessage) {
+				addToast({
+					message: `A message for the default language (${defualtLang}) is required.`,
+					type: 'error',
+					timeout: 3000
+				});
+				return;
+			}
 
 			const consentSettingModel: ConsentSettings = {
 				TenantName: tenantName,
@@ -118,7 +123,6 @@
 			});
 
 			consentSetting = validationResult.data;
-			
 
 			addToast({
 				message: 'Consent settings updated successfully.',
@@ -152,13 +156,14 @@
 	}
 </script>
 
-
 <div class="px-5 py-4">
 	<div class="mx-auto">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 			<div class="table-container">
 				<!-- Heading -->
-				<div class="flex items-center justify-between !rounded-b-none border bg-[#F2F3F5] px-5 py-6">
+				<div
+					class="flex items-center justify-between !rounded-b-none border bg-[#F2F3F5] px-5 py-6"
+				>
 					<h1 class="mx-1 text-xl">Consent Settings</h1>
 					<div class="flex items-center gap-2 text-end">
 						<button
@@ -170,7 +175,7 @@
 							<span>{edit ? 'Save' : 'Edit'}</span>
 						</button>
 						<a
-							href="../"
+							href={tenantRoute}
 							class="inline-flex items-center justify-center rounded-md border-[0.5px] !border-red-200 px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
 						>
 							<Icon icon="material-symbols:close-rounded" class="h-5" />
@@ -182,35 +187,44 @@
 				<div class="px-5 py-6">
 					<div class="space-y-4">
 						<div class="my-4 flex flex-col md:flex-row md:items-center">
-							<label class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700" for="tenantName">Tenant Name <span class="text-red-700">*</span></label>
+							<label
+								class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
+								for="tenantName">Tenant Name <span class="text-red-700">*</span></label
+							>
 							<input
 								type="text"
 								class="input-field w-[70%] {errors?.tenantName ? 'input-text-error' : ''}"
 								name="tenantName"
 								placeholder="Enter name here..."
 								bind:value={tenantName}
-								disabled={!edit}
+								readOnly
 							/>
 							{#if errors?.Name}
 								<p class="text-error">{errors?.Name}</p>
 							{/if}
 						</div>
 						<div class="my-4 flex flex-col md:flex-row md:items-center">
-							<label class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700" for="tenantCode">Tenant Code <span class="text-red-700">*</span></label>
+							<label
+								class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
+								for="tenantCode">Tenant Code <span class="text-red-700">*</span></label
+							>
 							<input
 								type="text"
 								class="input-field w-[70%] {errors?.tenantCode ? 'input-text-error' : ''}"
 								name="tenantCode"
 								placeholder="Enter tenant code here..."
 								bind:value={tenantCode}
-								disabled={!edit}
+								readOnly
 							/>
 							{#if errors?.TenantCode}
 								<p class="text-error">{errors?.TenantCode}</p>
 							{/if}
 						</div>
 						<div class="my-4 flex flex-col md:flex-row md:items-center">
-							<label class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700" for="defaultLanguage">Default Language <span class="text-red-700">*</span></label>
+							<label
+								class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
+								for="defaultLanguage">Default Language <span class="text-red-700">*</span></label
+							>
 							<select
 								class="input-field w-[70%]"
 								name="defaultLanguage"
@@ -229,7 +243,7 @@
 						</div>
 						<div class="my-4 flex flex-col md:flex-row md:items-center">
 							<div class="w-[30%]"></div>
-							<div class="w-[70%] flex justify-end">
+							<div class="flex w-[70%] justify-end">
 								<button
 									type="button"
 									class="health-system-btn variant-filled-secondary"
@@ -247,31 +261,38 @@
 							<table class="health-system-table w-full">
 								<thead>
 									<tr>
-										<th>Sr</th>
 										<th>Language </th>
 										<th>Content</th>
 										<th>Website URL</th>
-										<th>Action</th>
 									</tr>
 								</thead>
 								<tbody>
 									{#each message as msg, index}
 										<tr>
-											<td>{index + 1}</td>
-											<td>{languages.find(l => l.code === msg.LanguageCode)?.name || msg.LanguageCode}</td>
+											<td
+												>{languages.find((l) => l.code === msg.LanguageCode)?.name ||
+													msg.LanguageCode}</td
+											>
 											<td>{msg.Content}</td>
 											<td>{msg.WebsiteURL}</td>
 											<td>
 												<div class="flex flex-row space-x-2">
 													<Icon
 														icon="material-symbols:edit-outline"
-														class="cursor-pointer {!edit ? 'opacity-50 cursor-not-allowed' : ''}"
+														class="cursor-pointer {!edit ? 'cursor-not-allowed opacity-50' : ''}"
 														onclick={() => edit && openEditMessageModal(index)}
 													/>
 													<Icon
 														icon="material-symbols:delete-outline"
-														class="cursor-pointer text-red-600 {(!edit || msg.LanguageCode === (languages.find(l => l.name === defualtLang)?.code)) ? 'opacity-50 cursor-not-allowed' : ''}"
-														onclick={() => edit && msg.LanguageCode !== (languages.find(l => l.name === defualtLang)?.code) && deleteMessage(index)}
+														class="cursor-pointer text-red-600 {!edit ||
+														msg.LanguageCode === languages.find((l) => l.name === defualtLang)?.code
+															? 'cursor-not-allowed opacity-50'
+															: ''}"
+														onclick={() =>
+															edit &&
+															msg.LanguageCode !==
+																languages.find((l) => l.name === defualtLang)?.code &&
+															deleteMessage(index)}
 													/>
 												</div>
 											</td>
@@ -287,7 +308,12 @@
 								Submiting
 							</button>
 						{:then data}
-							<button type="submit" class="health-system-btn variant-filled-secondary" disabled={!edit} title={!edit ? 'Enable edit mode to submit changes' : ''}>
+							<button
+								type="submit"
+								class="health-system-btn variant-filled-secondary"
+								disabled={!edit}
+								title={!edit ? 'Enable edit mode to submit changes' : ''}
+							>
 								Submit
 							</button>
 						{/await}
@@ -297,7 +323,10 @@
 		</form>
 		<MessageModal
 			isOpen={showMessageModal}
-			onClose={() => { showMessageModal = false; editingMessageIndex = null; }}
+			onClose={() => {
+				showMessageModal = false;
+				editingMessageIndex = null;
+			}}
 			onSave={handleSaveMessage}
 			message={modalMessage}
 			isEdit={isEditMessage}

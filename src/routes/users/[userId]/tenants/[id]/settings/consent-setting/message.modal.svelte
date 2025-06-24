@@ -4,18 +4,18 @@
 	import { ConsentMessageSchema } from '$lib/validation/tenant.settings.schema';
 	import Icon from '@iconify/svelte';
 
-	let { 
-		isOpen = false, 
-		onClose = () => {}, 
-		onSave = (msg) => {}, 
-		message = { LanguageCode: '', Content: '', WebsiteURL: '' }, 
+	let {
+		isOpen = false,
+		onClose = () => {},
+		onSave = (msg) => {},
+		message = { LanguageCode: '', Content: '', WebsiteURL: '' },
 		isEdit = false,
 		allMessages = [],
 		editingIndex = null
 	} = $props();
 
 	let localMessage = $state({ ...message });
-	
+
 	let errors: Record<string, string> = $state({});
 
 	$effect(() => {
@@ -28,22 +28,22 @@
 	function handleSave() {
 		errors = {};
 
-		const messageModel : ConsentMessage = {
+		const messageModel: ConsentMessage = {
 			LanguageCode: localMessage.LanguageCode,
 			Content: localMessage.Content,
 			WebsiteURL: localMessage.WebsiteURL
 		};
-		
+
 		const validationResult = ConsentMessageSchema.safeParse(messageModel);
 		if (!validationResult.success) {
-				errors = Object.fromEntries(
-					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-						key,
-						val?.[0] || 'This field is required'
-					])
-				);
-				return;
-			}
+			errors = Object.fromEntries(
+				Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+					key,
+					val?.[0] || 'This field is required'
+				])
+			);
+			return;
+		}
 
 		const languageExists = allMessages.some((msg, index) => {
 			if (isEdit && index === editingIndex) {
@@ -55,31 +55,37 @@
 		if (languageExists) {
 			errors.LanguageCode = `Language '${localMessage.LanguageCode}' already exists.`;
 		}
-		
+
 		if (Object.keys(errors).length) return;
 
 		onSave(messageModel);
 		onClose();
 	}
 
-	function getLanguageName(code: string) {
-		const lang = languages.find(l => l.code === code);
-		return lang ? lang.name : code;
-	}
 </script>
 
 {#if isOpen}
 	<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-		<div class="relative w-[90%] max-w-lg rounded-xl border border-[var(--color-outline)] bg-[var(--color-secondary)] p-6 shadow-lg">
-			<div class="flex justify-between items-center mb-4">
-				<h2 class="text-xl font-semibold text-[var(--color-info)]">{isEdit ? 'Edit Message' : 'Add Message'}</h2>
-				<button class="inline-flex items-center justify-center rounded-md border-[0.5px] !border-red-200 px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200" onclick={() => onClose()}>
+		<div
+			class="relative w-[90%] max-w-lg rounded-xl border border-[var(--color-outline)] bg-[var(--color-secondary)] p-6 shadow-lg"
+		>
+			<div class="mb-4 flex items-center justify-between">
+				<h2 class="text-xl font-semibold text-[var(--color-info)]">
+					{isEdit ? 'Edit Message' : 'Add Message'}
+				</h2>
+				<button
+					class="inline-flex items-center justify-center rounded-md border-[0.5px] !border-red-200 px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+					onclick={() => onClose()}
+				>
 					<Icon icon="material-symbols:close-rounded" class="h-5" />
 				</button>
 			</div>
 			<div class="space-y-4">
 				<div class="my-4 flex flex-col md:flex-row md:items-center">
-					<label class="mx-1 mb-2 block w-[30%] text-sm font-medium text-[var(--color-info)]" for="languageCode">Language<span class="text-red-700">*</span></label>
+					<label
+						class="mx-1 mb-2 block w-[30%] text-sm font-medium text-[var(--color-info)]"
+						for="languageCode">Language<span class="text-red-700">*</span></label
+					>
 					<select class="input-field w-[70%]" bind:value={localMessage.LanguageCode}>
 						<option value="" disabled selected>Select language</option>
 						{#each languages as lang}
@@ -87,11 +93,14 @@
 						{/each}
 					</select>
 				</div>
-			{#if errors.LanguageCode}
-					<p class="text-error ml-[30%]">{errors.LanguageCode}</p>
+				{#if errors.LanguageCode}
+					<p class="text-error ml-[25%]">{errors.LanguageCode}</p>
 				{/if}
 				<div class="my-4 flex flex-col md:flex-row md:items-center">
-					<label class="mx-1 mb-2 block w-[30%] text-sm font-medium text-[var(--color-info)]" for="content">Content</label>
+					<label
+						class="mx-1 mb-2 block w-[30%] text-sm font-medium text-[var(--color-info)]"
+						for="content">Content</label
+					>
 					<textarea
 						name="content"
 						class="input-field w-[70%]"
@@ -100,10 +109,13 @@
 					></textarea>
 				</div>
 				{#if errors.Content}
-					<p class="text-error ml-[30%]">{errors.Content}</p>
+					<p class="text-error ml-[25%]">{errors.Content}</p>
 				{/if}
 				<div class="my-4 flex flex-col md:flex-row md:items-center">
-					<label class="mx-1 mb-2 block w-[30%] text-sm font-medium text-[var(--color-info)]" for="websiteUrl">Website Url</label>
+					<label
+						class="mx-1 mb-2 block w-[30%] text-sm font-medium text-[var(--color-info)]"
+						for="websiteUrl">Website Url</label
+					>
 					<input
 						type="text"
 						name="websiteurl"
@@ -113,13 +125,21 @@
 					/>
 				</div>
 				{#if errors.WebsiteURL}
-					<p class="text-error ml-[30%]">{errors.WebsiteURL}</p>
+					<p class="text-error ml-[25%]">{errors.WebsiteURL}</p>
 				{/if}
-				<div class="flex justify-end gap-3 mt-6">
-					<button class="health-system-btn variant-soft-secondary" type="button" onclick={() => onClose()}>Cancel</button>
-					<button class="health-system-btn variant-filled-secondary" type="button" onclick={handleSave}>{isEdit ? 'Update' : 'Save'}</button>
+				<div class="mt-6 flex justify-end gap-3">
+					<button
+						class="health-system-btn variant-soft-secondary"
+						type="button"
+						onclick={() => onClose()}>Cancel</button
+					>
+					<button
+						class="health-system-btn variant-filled-secondary"
+						type="button"
+						onclick={handleSave}>{isEdit ? 'Update' : 'Save'}</button
+					>
 				</div>
 			</div>
 		</div>
 	</div>
-{/if} 
+{/if}
