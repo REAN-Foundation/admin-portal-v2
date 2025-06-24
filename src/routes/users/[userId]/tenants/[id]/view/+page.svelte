@@ -4,6 +4,8 @@
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
 	import Button from '$lib/components/button/button.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
 
 	//////////////////////////////////////////////////////////////////////////
 	let { data }: { data: PageServerData } = $props();
@@ -37,57 +39,48 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<Heading text="View Tenant" />
+		<a href={tenantRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
+		</a>
+	</div>
 
-<div class="px-6 py-4">
-	<div class=" btn-container mb-2">
-		<Button href={settingsRoute} size="md" text="Setting" variant="primary"></Button>
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<Label text="Name" />
+				<td class="table-data">{name}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Description" />
+				<td class="table-data">{description}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Code" />
+				<td class="table-data">{code}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Contact Number" />
+				<td class="table-data">{phone}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Email" />
+				<td class="table-data">{email}</td>
+			</tr>
+		</tbody>
+	</table>
 
+	<div class="btn-container">
+		<Button href={settingsRoute} text="Setting" variant="primary" size="md" />
 		<Button
 			href={editRoute}
-			size="md"
 			text="Edit"
 			variant="primary"
 			iconBefore="mdi:edit"
 			iconSize="md"
-		></Button>
-	</div>
-
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<table class="health-system-table">
-				<thead>
-					<tr>
-						<th>View Tenant</th>
-						<th class="text-end">
-							<a href={tenantRoute} class="form-cancel-btn">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Name</td>
-						<td>{name}</td>
-					</tr>
-					<tr>
-						<td>Description</td>
-						<td>{description}</td>
-					</tr>
-					<tr>
-						<td>Code</td>
-						<td>{code}</td>
-					</tr>
-					<tr>
-						<td>Contact Number</td>
-						<td>{phone}</td>
-					</tr>
-					<tr>
-						<td>Email</td>
-						<td>{email}</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+			size="md"
+		/>
 	</div>
 </div>

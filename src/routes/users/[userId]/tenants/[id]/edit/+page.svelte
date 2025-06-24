@@ -8,6 +8,10 @@
 	import { goto } from '$app/navigation';
 	import type { TenantsUpdateModel } from '$lib/types/tenants.types';
 	import Button from '$lib/components/button/button.svelte';
+	import Input from '$lib/components/input/input.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
 
 	//////////////////////////////////////////////////////////////////////
 
@@ -99,111 +103,89 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th>Edit Tenant</th>
-							<th class="text-end">
-								<a href={viewRoute} class="form-cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Name <span class="text-red-600">*</span></td>
-							<td>
-								<input
-									type="text"
-									name="name"
-									placeholder="Enter name here..."
-									class="health-system-input"
-									bind:value={name}
-								/>
-								{#if errors?.Name}
-									<p class="text-error">{errors?.Name}</p>
-								{/if}
-							</td>
-						</tr>
-
-						<tr>
-							<td>Description</td>
-							<td>
-								<textarea
-									name="description"
-									placeholder="Enter description here..."
-									class="health-system-input resize-none"
-									bind:value={description}
-								></textarea>
-								{#if errors?.Description}
-									<p class="text-error">{errors?.Description}</p>
-								{/if}
-							</td>
-						</tr>
-
-						<tr>
-							<td>Code</td>
-							<td>
-								<input
-									type="text"
-									name="code"
-									placeholder="Enter code here..."
-									class="health-system-input"
-									bind:value={code}
-								/>
-								{#if errors?.Code}
-									<p class="text-error">{errors?.Code}</p>
-								{/if}
-							</td>
-						</tr>
-
-						<tr>
-							<td>Phone</td>
-							<td>
-								<input
-									type="text"
-									name="phone"
-									placeholder="Enter phone here..."
-									class="health-system-input"
-									bind:value={phone}
-								/>
-								{#if errors?.Phone}
-									<p class="text-error">{errors?.Phone}</p>
-								{/if}
-							</td>
-						</tr>
-
-						<tr>
-							<td>Email</td>
-							<td>
-								<input
-									type="email"
-									name="email"
-									placeholder="Enter email here..."
-									class="health-system-input"
-									bind:value={email}
-								/>
-								{#if errors?.Email}
-									<p class="text-error">{errors?.Email}</p>
-								{/if}
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="btn-container mr-5 mb-2">
-					<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
-					{#await promise}
-						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
-					{:then data}
-						<Button size="md" type="submit" text="Submit" variant="primary" />
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<Heading text="Edit Tenant" />
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<Label text="Name" required={true} />
+					<td class="table-data">
+						<Input
+							name="name"
+							type="text"
+							placeholder="Enter name here..."
+							bind:value={name}
+							error={errors?.Name}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Description" />
+					<td class="table-data">
+						<Textarea
+							name="description"
+							placeholder="Enter description here..."
+							bind:value={description}
+							error={errors?.Description}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Code" required={true} />
+					<td class="table-data">
+						<Input
+							name="code"
+							type="text"
+							placeholder="Enter code here..."
+							bind:value={code}
+							error={errors?.Code}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Contact Number" required={true} />
+					<td class="table-data">
+						<Input
+							name="phone"
+							type="text"
+							placeholder="Enter contact number here..."
+							bind:value={phone}
+							error={errors?.Phone}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Email" required={true} />
+					<td class="table-data">
+						<Input
+							name="email"
+							type="email"
+							placeholder="Enter email here..."
+							bind:value={email}
+							error={errors?.Email}
+						/>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="btn-container">
+			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button size="md" type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>
