@@ -6,7 +6,7 @@
 	import SidebarNavItems from './SidebarNavItems.svelte';
 	let { showSidebar = $bindable(), navParent, page_, userId, tenantSettings, userRole } = $props();
 
-	let activeTab = $state('');
+	let activeTab = $state('Home');
 	const navData = buildSidebarMenu(userId, tenantSettings, userRole);
 	console.log('Tenant Setting', navData);
 
