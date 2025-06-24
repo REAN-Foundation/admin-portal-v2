@@ -91,21 +91,20 @@
 		}
 	};
 
-	function extractPlaceholdersFromPrompt(promptText: string): string[] {
-		// Regex to match text inside curly braces
-		const placeholderRegex = /\{([^}]+)\}/g;
-		const matches = [];
-		let match;
-		
-		while ((match = placeholderRegex.exec(promptText)) !== null) {
-			const placeholder = match[1].trim();
-			if (placeholder && !matches.includes(placeholder)) {
-				matches.push(placeholder);
-			}
+function extractPlaceholdersFromPrompt(promptText: string): string[] {
+	const placeholderRegex = /(?<!\{)\{([^}]+)\}(?!\})/g;
+	const matches = [];
+	let match;
+	
+	while ((match = placeholderRegex.exec(promptText)) !== null) {
+		const placeholder = match[1].trim();
+		if (placeholder && !matches.includes(placeholder)) {
+			matches.push(placeholder);
 		}
-		
-		return matches;
 	}
+	return matches;
+}
+ 
 
 	function updateVariablesFromPrompt(event) {
 		const promptText = event.target.value;
