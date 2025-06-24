@@ -206,7 +206,7 @@
 		<div class="table-container mb-6 shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="relative pr-1.5">
+					<div class="pr-.5 relative">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
@@ -217,17 +217,10 @@
 							oninput={(event) => onSearchInput(event, 'carePlan')}
 							bind:value={carePlan}
 							placeholder="Search by care plan"
-							class="table-input-field !w-64 !pr-4 !pl-10"
+							class="table-input-field !w-[320px] !pr-10 !pl-10"
 						/>
-
 						{#if carePlan}
-							<button
-								type="button"
-								onclick={() => {
-									carePlan = '';
-								}}
-								class="close-btn"
-							>
+							<button type="button" onclick={() => (carePlan = '')} class="close-btn">
 								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
@@ -243,18 +236,11 @@
 							name="displayId"
 							placeholder="Search by Enrollment code"
 							bind:value={displayId}
-							class="table-input-field !w-64 !pr-4 !pl-10"
 							oninput={(event) => onSearchInput(event, 'displayId')}
+							class="table-input-field !w-[320px] !pr-4 !pl-10"
 						/>
-
 						{#if displayId}
-							<button
-								type="button"
-								onclick={() => {
-									displayId = '';
-								}}
-								class="close-btn"
-							>
+							<button type="button" onclick={() => (displayId = '')} class="close-btn">
 								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
@@ -262,46 +248,40 @@
 
 					<div class="relative flex flex-row items-center pr-1.5">
 						<label class="pr-2">Start date</label>
-
 						<div class="flex items-center space-x-2">
 							<input
 								type="date"
 								name="startDate"
 								placeholder="Search by start date"
 								bind:value={startDate}
-								class="table-input-field hide-calendar-icon w-52 pr-6 pl-4"
 								oninput={(event) => onSearchInput(event, 'startDate')}
+								class="table-input-field !w-[360px] pr-4 pl-10"
 							/>
-
-							{#if startDate}
+							<!-- {#if startDate}
 								<button type="button" onclick={() => (startDate = '')} class="close-btn">
 									<Icon icon="material-symbols:close" class="ml-6 text-gray-500" />
 								</button>
-							{/if}
+							{/if} -->
 						</div>
 					</div>
 
-					<div class="text-inline relative flex flex-row items-center pr-1.5">
+					<div class="relative flex flex-row items-center pr-1.5">
 						<label class="pr-2">End date</label>
-						<input
-							type="date"
-							name="endDate"
-							placeholder="Search by end date"
-							bind:value={endDate}
-							class="table-input-field hide-calendar-icon w-52 pr-6 pl-4"
-							oninput={(event) => onSearchInput(event, 'endDate')}
-						/>
-						{#if endDate}
-							<button
-								type="button"
-								onclick={() => {
-									endDate = '';
-								}}
-								class="close-btn"
-							>
-								<Icon icon="material-symbols:close" />
-							</button>
-						{/if}
+						<div class="flex items-center space-x-2">
+							<input
+								type="date"
+								name="endDate"
+								placeholder="Search by end date"
+								bind:value={endDate}
+								oninput={(event) => onSearchInput(event, 'endDate')}
+								class="table-input-field !w-[324px] pr-4 pl-10"
+							/>
+							<!-- {#if endDate}
+								<button type="button" onclick={() => (endDate = '')} class="close-btn">
+									<Icon icon="material-symbols:close" />
+								</button>
+							{/if} -->
+						</div>
 					</div>
 				</div>
 			</div>
@@ -315,11 +295,11 @@
 								<button onclick={() => sortTable('Participant')}>
 									Participant
 									{#if sortBy === 'Participant'}
-										{#if sortOrder === 'ascending'}
-											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
-										{:else}
-											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
-										{/if}
+										<Icon
+											icon={sortOrder === 'ascending' ? 'mdi:chevron-up' : 'mdi:chevron-down'}
+											class="ml-1 inline"
+											width="16"
+										/>
 									{/if}
 								</button>
 							</th>
@@ -327,11 +307,11 @@
 								<button onclick={() => sortTable('EnrollmentCode')}>
 									Enrollment Code
 									{#if sortBy === 'EnrollmentCode'}
-										{#if sortOrder === 'ascending'}
-											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
-										{:else}
-											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
-										{/if}
+										<Icon
+											icon={sortOrder === 'ascending' ? 'mdi:chevron-up' : 'mdi:chevron-down'}
+											class="ml-1 inline"
+											width="16"
+										/>
 									{/if}
 								</button>
 							</th>
@@ -339,11 +319,11 @@
 								<button onclick={() => sortTable('Careplan')}>
 									Careplan
 									{#if sortBy === 'Careplan'}
-										{#if sortOrder === 'ascending'}
-											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
-										{:else}
-											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
-										{/if}
+										<Icon
+											icon={sortOrder === 'ascending' ? 'mdi:chevron-up' : 'mdi:chevron-down'}
+											class="ml-1 inline"
+											width="16"
+										/>
 									{/if}
 								</button>
 							</th>
@@ -359,14 +339,12 @@
 						{:else}
 							{#each retrivedEnrollments as enrollment, index}
 								<tr>
-									<td>
-										{paginationSettings.page * paginationSettings.limit + index + 1}
-									</td>
+									<td>{paginationSettings.page * paginationSettings.limit + index + 1}</td>
 									<td>
 										<Tooltip text={enrollment.ParticipantId || 'Not specified'}>
 											<a href={viewRoute(enrollment.id)}>
-												Participant - {enrollment.Participant.DisplayId !== null &&
-												enrollment.Participant.DisplayId !== ''
+												Participant -
+												{enrollment.Participant.DisplayId
 													? Helper.truncateText(enrollment.Participant.DisplayId, 50)
 													: 'Not specified'}
 											</a>
@@ -374,19 +352,12 @@
 									</td>
 									<td>{enrollment.DisplayId}</td>
 									<td>{enrollment.Careplan.Name}</td>
-									<td
-										>{TimeHelper.formatDateToReadable(
-											enrollment.StartDate,
-											LocaleIdentifier.EN_US
-										)}</td
-									>
-									<td
-										>{TimeHelper.formatDateToReadable(
-											enrollment.EndDate,
-											LocaleIdentifier.EN_US
-										)}</td
-									>
-									<td> </td>
+									<td>
+										{TimeHelper.formatDateToReadable(enrollment.StartDate, LocaleIdentifier.EN_US)}
+									</td>
+									<td>
+										{TimeHelper.formatDateToReadable(enrollment.EndDate, LocaleIdentifier.EN_US)}
+									</td>
 								</tr>
 							{/each}
 						{/if}
