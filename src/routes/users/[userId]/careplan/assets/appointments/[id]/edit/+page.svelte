@@ -17,7 +17,7 @@
 	let id = data.appointment.id;
 	let assetCode = data.appointment.AssetCode;
 	let name = $state(data.appointment.Name);
-	let description = $state(data.appointment.Description);
+	let description = $state(data.appointment.Description || undefined);
 	let appointmentType = $state(data.appointment.AppointmentType);
 	let tags = $state(data.appointment.Tags);
 	let version = $state(data.appointment.Version);

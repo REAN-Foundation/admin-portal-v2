@@ -15,7 +15,7 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let name = $state(data.biometrics.Name);
-	let description = $state(data.biometrics.Description);
+	let description = $state(data.biometrics.Description || undefined);
 	let measurementUnit = $state(data.biometrics.MeasurementUnit);
 	let version = $state(data.biometrics.Version);
 	let biometricsType = $state(data.biometrics.BiometricsType);

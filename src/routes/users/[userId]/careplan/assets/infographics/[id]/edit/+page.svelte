@@ -15,7 +15,7 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let name = $state(data.infographics.Name);
-	let description = $state(data.infographics.Description);
+	let description = $state(data.infographics.Description || undefined);
 	let pathUrl = $state(data.infographics.Url);
 	let version = $state(data.infographics.Version);
 	let keywords: string[] = $state(data.infographics.Tags);
