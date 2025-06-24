@@ -17,8 +17,8 @@
 	let id = data.webNewsfeed.id;
 	let assetCode = data.webNewsfeed.AssetCode;
 	let name = $state(data.webNewsfeed.Name);
-	let description = $state(data.webNewsfeed.Description);
-	let pathUrl = $state(data.webNewsfeed.Url);
+	let description = $state(data.webNewsfeed.Description ?? undefined);
+	let pathUrl = $state(data.webNewsfeed.Url || undefined);
 	let tags = $state(data.webNewsfeed.Tags);
 	let version = $state(data.webNewsfeed.Version);
 	let errors: Record<string, string> = $state({});

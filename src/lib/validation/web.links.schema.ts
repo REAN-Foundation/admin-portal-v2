@@ -13,6 +13,8 @@ export const createOrUpdateSchema = z.object({
 		.string({
 			invalid_type_error: 'Description must be a string.'
 		})
+		.max(1024, { message: 'Description must be at most 1024 characters long.' })
+		.nullable()
 		.optional(),
 
 	PathUrl: z

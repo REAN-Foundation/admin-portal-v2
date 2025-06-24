@@ -15,7 +15,7 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let name = $state(data.reminder.Name);
-	let description = $state(data.reminder.Description);
+	let description = $state(data.reminder.Description || undefined);
 	let version = $state(data.reminder.Version);
 	let keywords: string[] = $state(data.reminder.Tags);
 	let keywordsStr = $state('');

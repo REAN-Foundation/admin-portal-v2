@@ -17,7 +17,7 @@
 	let id = data.priority.id;
 	let assetCode = data.priority.AssetCode;
 	let name = $state(data.priority.Name);
-	let description = $state(data.priority.Description);
+	let description = $state(data.priority.Description || undefined);
 	let tags = $state(data.priority.Tags);
 	let version = $state(data.priority.Version);
 	let errors: Record<string, string> = $state({});

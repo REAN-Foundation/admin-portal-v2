@@ -15,7 +15,7 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let name = $state(data.meditation.Name);
-	let description = $state(data.meditation.Description);
+	let description = $state(data.meditation.Description || undefined) ;
 	let meditationType = $state(data.meditation.MeditationType);
 	let recommendedDurationMin = $state<number>(data.meditation.RecommendedDurationMin);
 	let version = $state(data.meditation.Version);
