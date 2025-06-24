@@ -22,6 +22,9 @@
 	let keywords: string[] = $state(data.carePlan.Tags);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
+    let careplanCategory = $state(data.carePlan.Category.Type);
+    let categoryId = $state(data.carePlan.CategoryId);
+    let careplanCategories = $state(data.careplanCategories);
 
 	let keywordsStr: string = $state('');
 
@@ -55,6 +58,7 @@
 			const careplanUpdateModel: CarePlanUpdateModel = {
 				Name: carePlanName,
 				Code: code,
+                CategoryId: categoryId,
 				Description: description,
 				Version: version,
 				Tags: keywords,
@@ -101,6 +105,9 @@
 		keywords = e.detail;
 		keywordsStr = keywords?.join(', ');
 	};
+       $effect(() => {
+            keywordsStr = keywords?.join(', ');
+        });
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -127,7 +134,7 @@
                                 <input
                                     type="text"
                                     class="health-system-input {form?.errors?.carePlanName ? 'input-text-error' : ''}"
-                                    name="healthSystemName"
+                                    name="name"
                                     placeholder="Enter name here..."
                                     bind:value={carePlanName}
                                 />
@@ -142,7 +149,7 @@
                                 <input
                                     type="text"
                                     class="health-system-input {form?.errors?.code ? 'input-text-error' : ''}"
-                                    name="healthSystemName"
+                                    name="code"
                                     placeholder="Enter name here..."
                                     bind:value={code}
                                 />
@@ -151,14 +158,35 @@
                                 {/if}
                             </td>
                         </tr>
+                         <tr>
+                            <td>Category <span class="text-red-700">*</span></td>
+                            <td>
+                                <select
+                                    name="categoryId"
+                                    class="select select-primary w-full {errors?.categoryId
+                                        ? 'input-text-error'
+                                        : ''}"
+                                    bind:value={categoryId}
+                                    required
+                                >
+                                    <option disabled selected>Select category of plan here...</option>
+                                    {#each careplanCategories as category}
+                                        <option value={category.id}>{category.Type}</option>
+                                    {/each}
+                                </select>
+                                
+                                {#if errors?.CategoryId}
+                                    <p class="text-error">{errors?.CategoryId}</p>
+                                {/if}
+                            </td>
                         <tr>
                             <td>Description <span class=" text-red-600"></span></td>
                             <td>
                                 <input
                                     type="text"
                                     class="health-system-input {form?.errors?.description ? 'input-text-error' : ''}"
-                                    name="healthSystemName"
-                                    placeholder="Enter name here..."
+                                    name="description"
+                                    placeholder="Enter description here..."
                                     bind:value={description}
                                 />
                                 {#if errors?.Description}
@@ -169,6 +197,12 @@
                         <tr>
                             <td class="!py-3">Tags</td>
                             <td>
+                                <!-- <InputChips
+                                    bind:keywords
+                                    name="keywords"
+                                    id="keywords"
+                                />
+                                <input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} /> -->
                                 <InputChips
                                     bind:keywords
                                     name="keywords"
@@ -185,7 +219,7 @@
                                     type="text"
                                     class="health-system-input {form?.errors?.version ? 'input-text-error' : ''}"
                                     name="version"
-                                    placeholder="Enter name here..."
+                                    placeholder="Enter version here..."
                                     bind:value={version}
                                 />
                                 {#if errors?.Version}

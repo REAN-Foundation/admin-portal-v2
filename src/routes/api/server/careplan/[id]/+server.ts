@@ -101,6 +101,7 @@ export const PUT = async (event: RequestEvent) => {
 			carePlanId,
 			data.Code,
 			data.Name,
+			data.CategoryId,
 			data.Description,
 			data.Tags,
 			data.Version,

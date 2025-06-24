@@ -13,7 +13,7 @@ export interface CarePlanUpdateModel {
     Name?: string;
     Tags?: string[];
     Code?: string;
-    Category?: string;
+    CategoryId?: string;
     Description?: string;
     Version?: string;
     OwnerUserId: string;

@@ -23,26 +23,25 @@ export const createOrUpdateSchema = z.object({
 	Tags: z.array(z.string()).optional(),
 	Code: z
 		.string({
-			required_error: 'AssetId is required.',
-			invalid_type_error: 'AssetId must be a string.'
+			required_error: 'Code is required.',
+			invalid_type_error: 'Code must be a string.'
 		})
 		.optional(),
 	CategoryId: z
 		.string({
-			required_error: 'AssetId is required.',
-			invalid_type_error: 'AssetId must be a string.'
+			required_error: 'Category is required.',
 		})
 		.optional(),
 	Description: z
 		.string({
-			required_error: 'AssetId is required.',
-			invalid_type_error: 'AssetId must be a string.'
+			required_error: 'Description is required.',
+			invalid_type_error: 'Description must be a string.'
 		})
 		.optional(),
 	Version: z
 		.string({
-			required_error: 'AssetId is required.',
-			invalid_type_error: 'AssetId must be a string.'
+			required_error: 'Version is required.',
+			invalid_type_error: 'Version must be a string.'
 		})
 		.optional(),
 	

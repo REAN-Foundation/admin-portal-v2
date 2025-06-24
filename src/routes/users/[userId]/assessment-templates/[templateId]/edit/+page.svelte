@@ -169,7 +169,7 @@
 										: ''}"
 								>
 									<option selected>{assessmentType}</option>
-									<!-- <option>Daily Update</option> -->
+									<option>Daily Update</option>
 									<option>Symptoms</option>
 									<option>Survey</option>
 									<option>Protocol</option>
