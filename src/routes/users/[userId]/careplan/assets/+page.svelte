@@ -120,7 +120,6 @@
 				...item,
 				index: index + 1
 			}));
-			searchKeyword = model.nameAssetSearch;
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -139,8 +138,8 @@
 			if (field === 'code') codeAssetSearch = keyword;
 
 			searchAssets({
-				nameAssetSearch: searchKeyword,
-				codeAssetSearch,
+				nameAssetSearch: nameAssetSearch,
+				codeAssetSearch: codeAssetSearch,
 				itemsPerPage: paginationSettings.limit,
 				pageIndex: 0,
 				sortBy,
@@ -162,8 +161,8 @@
 		}
 		sortBy = columnName;
 		searchAssets({
-			nameAssetSearch: searchKeyword,
-			codeAssetSearch,
+			nameAssetSearch: nameAssetSearch,
+			codeAssetSearch: codeAssetSearch,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: 0,
 			sortBy,
@@ -179,8 +178,8 @@
 	function onItemsPerPageChange() {
 		paginationSettings.page = 0; // reset to first page
 		searchAssets({
-			nameAssetSearch: searchKeyword,
-			codeAssetSearch,
+			nameAssetSearch: nameAssetSearch,
+			codeAssetSearch: codeAssetSearch,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: 0,
 			sortBy,
@@ -190,8 +189,8 @@
 
 	function onPageChange() {
 		searchAssets({
-			nameAssetSearch: searchKeyword,
-			codeAssetSearch,
+			nameAssetSearch: nameAssetSearch,
+			codeAssetSearch: codeAssetSearch,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -227,8 +226,8 @@
 			toastMessage(res);
 		}
 		searchAssets({
-			nameAssetSearch: searchKeyword,
-			codeAssetSearch,
+			nameAssetSearch: nameAssetSearch,
+			codeAssetSearch: codeAssetSearch,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -238,6 +237,7 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
+
 
 <div class="px-6 py-2">
 	<div class="mx-auto">
@@ -249,7 +249,6 @@
 					</option>
 				{/each}
 			</select>
-
 			<div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
 				<Icon icon="mdi:chevron-down" class="text-info h-5 w-5" />
 			</div>
@@ -266,12 +265,9 @@
 							oninput={(event) => onSearchInput(event, 'name')}
 							class="input !pr-4 !pl-10"
 						/>
-						<Icon
-							icon="heroicons:magnifying-glass"
-							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
-						/>
+						<Icon icon="heroicons:magnifying-glass" 
+						class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400" />
 					</div>
-
 					<div class="relative flex-1 pr-1.5">
 						<input
 							type="text"
@@ -280,123 +276,81 @@
 							oninput={(event) => onSearchInput(event, 'code')}
 							class="input !pr-4 !pl-10"
 						/>
-						<Icon
-							icon="heroicons:magnifying-glass"
-							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
-						/>
+						<Icon icon="heroicons:magnifying-glass" class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400" />
 					</div>
-					<Button href={createRoute} text="Add New" variant="primary"></Button>
-					
+					<Button href={createRoute} text="Add New" variant="primary" />
 				</div>
 			</div>
+
 			<div class="overflow-x-auto">
 				<table class="table-c min-w-full">
-					<thead class="">
+					<thead>
 						<tr>
-							<th class="w-12"></th>
+							<th class="w-40"></th>
 							<th class="text-start">
 								<button onclick={() => sortTable('Name')}>
-									Name {#if isSortingName}
-										{#if sortOrder === 'ascending'}
-											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
-										{:else}
-											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
-										{/if}
+									Name 
+									{#if isSortingName}
+										<Icon icon={`mdi:chevron-${sortOrder === 'ascending' ? 'up' : 'down'}`} class="ml-1 inline" width="16" />
 									{/if}
 								</button>
 							</th>
 							<th class="text-start">
 								<button onclick={() => sortTable('Code')}>
-									Code {#if isSortingCode}
-										{#if sortOrder === 'ascending'}
-											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
-										{:else}
-											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
-										{/if}
+									Code 
+									{#if isSortingCode}
+										<Icon icon={`mdi:chevron-${sortOrder === 'ascending' ? 'up' : 'down'}`} class="ml-1 inline" width="16" />
 									{/if}
 								</button>
 							</th>
 							<th>Type</th>
 							<th>Created Date</th>
+							<!-- <th class="text-right whitespace-nowrap">Actions</th> -->
 						</tr>
 					</thead>
 					<tbody>
 						{#if retrivedAssets.length <= 0}
 							<tr>
-								<td class=" text-center" colspan="6"
-									>{isLoading ? 'Loading...' : 'No records found'}</td
-								>
+								<td class="text-center" colspan="6">
+									{isLoading ? 'Loading...' : 'No records found'}
+								</td>
 							</tr>
 						{:else}
 							{#each retrivedAssets as row, index}
 								<tr>
-									<td>
-										{paginationSettings.page * paginationSettings.limit + index + 1}
-									</td>
+									<td>{paginationSettings.page * paginationSettings.limit + index + 1}</td>
 									<td>
 										<Tooltip text={row.Code || 'Not specified'}>
-											<a href={viewRoute(row.id)}>{Helper.truncateText(row.Name, 20)}</a>
+											<a href={viewRoute(row.id)}>{Helper.truncateText(row.Name, 50)}</a>
 										</Tooltip>
 									</td>
-									<td role="gridcell" aria-colindex={4} tabindex="0"
-										>{row.AssetCode !== null ? row.AssetCode : 'Not specified'}</td
-									><td role="gridcell" aria-colindex={4} tabindex="0"
-										>{row.AssetCategory !== null ? row.AssetCategory : 'Not specified'}</td
-									>
-									<td role="gridcell" aria-colindex={5} tabindex="0">
-										{TimeHelper.formatDateToReadable(row.CreatedAt, LocaleIdentifier.EN_US)}
-									</td>
+									<td>{row.AssetCode || 'Not specified'}</td>
+									<td>{row.AssetCategory || 'Not specified'}</td>
+									<td>{TimeHelper.formatDateToReadable(row.CreatedAt, )}</td>
 									<td>
-										<div class="flex">
+										<div class="flex justify-end gap-2">
 											<Button
-                                                href={editRoute(row.id)}
-                                                variant="icon"
-                                                icon="material-symbols:edit-outline"
-                                                iconSize="sm"
-                                                tooltip="Edit"
-                                            />
-                                            <Button
-                                                href={viewRoute(row.id)}
-                                                variant="icon"
-                                                icon="icon-park-outline:preview-open"
-                                                iconSize="sm"
-                                                tooltip="View"
-                                            />
-                                            <Button
-                                                onclick={() => handleDeleteClick(row.id)}
-                                                variant="icon"
-                                                icon="material-symbols:delete-outline-rounded"
-                                                iconSize="sm"
-                                                color="red"
-                                                tooltip="Delete"
-                                            />
-											<!-- <Tooltip text="Edit" forceShow={true}>
-												<button>
-													<a href={editRoute(row.id)} class="table-btn group">
-														<Icon icon="material-symbols:edit-outline" class="health-system-icon" />
-													</a>
-												</button>
-											</Tooltip>
-
-											<Tooltip text="View" forceShow={true}>
-												<button>
-													<a href={viewRoute(row.id)} class="table-btn group">
-														<Icon
-															icon="icon-park-outline:preview-open"
-															class="health-system-icon"
-														/>
-													</a>
-												</button>
-											</Tooltip>
-
-											<Tooltip text="Delete" forceShow={true}>
-												<button
-													class="table-btn !text-red-600"
-													onclick={() => handleDeleteClick(row.id)}
-												>
-													<Icon icon="material-symbols:delete-outline-rounded" />
-												</button>
-											</Tooltip> -->
+												href={editRoute(row.id)}
+												variant="icon"
+												icon="material-symbols:edit-outline"
+												iconSize="sm"
+												tooltip="Edit"
+											/>
+											<Button
+												href={viewRoute(row.id)}
+												variant="icon"
+												icon="icon-park-outline:preview-open"
+												iconSize="sm"
+												tooltip="View"
+											/>
+											<Button
+												onclick={() => handleDeleteClick(row.id)}
+												variant="icon"
+												icon="material-symbols:delete-outline-rounded"
+												iconSize="sm"
+												color="red"
+												tooltip="Delete"
+											/>
 										</div>
 									</td>
 								</tr>

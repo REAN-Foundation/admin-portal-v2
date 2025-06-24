@@ -8,7 +8,7 @@ export interface ReflectionCreateModel {
 
 export interface ReflectionUpdateModel {
 	Name: string;
-	Description: string;
+	Description?: string;
 	Tags?: string[];
 	Version: string;
 	TenantId?: string;

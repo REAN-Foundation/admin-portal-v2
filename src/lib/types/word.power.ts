@@ -9,7 +9,7 @@ export interface WordPowerCreateModel {
 
 export interface WordPowerUpdateModel {
 	Name: string;
-	Description: string;
+	Description?: string;
 	AdditionalResources: string[];
 	Tags?: string[];
 	Version: string;

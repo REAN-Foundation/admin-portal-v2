@@ -8,7 +8,7 @@ export interface PriorityCreateModel {
 
 export interface PriorityUpdateModel {
 	Name: string;
-	Description: string;
+	Description?: string;
 	Tags?: string[];
 	Version: string;
 	TenantId?: string;

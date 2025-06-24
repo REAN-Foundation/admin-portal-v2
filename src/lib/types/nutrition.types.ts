@@ -8,7 +8,7 @@ export interface NutritionCreateModel {
 
 export interface NutritionUpdateModel {
 	Name: string;
-	Description: string;
+	Description?: string;
 	Tags?: string[];
 	Version: string;
 	TenantId?: string;

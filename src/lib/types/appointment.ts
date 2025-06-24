@@ -9,8 +9,8 @@ export interface AppointmentCreateModel {
 
 export interface AppointmentUpdateModel {
 	Name: string;
-	Description: string;
-	AppointmentType: string;
+	Description?: string;
+	AppointmentType?: string;
 	Tags?: string[];
 	Version: string;
 	TenantId?: string;

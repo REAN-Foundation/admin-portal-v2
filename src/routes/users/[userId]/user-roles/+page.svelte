@@ -190,7 +190,7 @@
 							type="text"
 							name="roleName"
 							bind:value={roleName}
-							placeholder="Search by role name"
+							placeholder="Search by name"
 							oninput={(event) => onSearchInput(event)}
 							class="table-input-field !pr-4 !pl-10"
 						/>
