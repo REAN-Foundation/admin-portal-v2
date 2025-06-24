@@ -13,7 +13,7 @@
 	let { data, form } = $props();
 
 	let errors: Record<string, string> = $state({});
-	let carePlanName = $state('');
+	let name = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
 	let code = $state('');
@@ -45,9 +45,9 @@
 		try {
 			event.preventDefault();
 			errors = {};
-
+            console.log('keywords', keywords);
 			const payload: CarePlanCreateModel = {
-				Name: carePlanName,
+				Name: name,
 				Description: description,
 				Code: code,
 				CategoryId: categoryId,
@@ -88,7 +88,9 @@
 			toastMessage();
 		}
 	};
-
+    $effect(() => {
+            keywordsStr = keywords?.join(', ');
+        });
 	const onUpdateKeywords = (e: any) => {
 		keywords = e.detail;
 		keywordsStr = keywords?.join(', ');
@@ -118,10 +120,11 @@
                             <td>
                                 <input
                                     type="text"
-                                    class="health-system-input {errors?.carePlanName ? 'input-text-error' : ''}"
-                                    name="carePlanName"
+                                    class="health-system-input {errors?.name ? 'input-text-error' : ''}"
+                                    name="name"
                                     placeholder="Enter name here..."
-                                    bind:value={carePlanName}
+                                    bind:value={name}
+                                    required
                                 />
                                 {#if errors?.Name}
                                     <p class="text-error">{errors?.Name}</p>
@@ -137,6 +140,7 @@
                                     name="healthSystemName"
                                     placeholder="Enter code here..."
                                     bind:value={code}
+                                    required
                                 />
                                 {#if errors?.Code}
                                     <p class="text-error">{errors?.Code}</p>
@@ -145,22 +149,42 @@
                         </tr>
                         <tr>
                             <td>Category <span class="text-red-700">*</span></td>
-                            <td>
+                            <td  class="relative flex">
+                                 <div class="relative w-full">
                                 <select
                                     name="categoryId"
-                                    class="select select-primary w-full {errors?.categoryId
-                                        ? 'input-text-error'
-                                        : ''}"
+                                    class="select select-primary w-full pr-10 {errors?.categoryId ? 'input-text-error' : ''}"
                                     bind:value={categoryId}
+                                    required
                                 >
                                     <option disabled selected>Select category of plan here...</option>
                                     {#each careplanCategories as category}
                                         <option value={category.id}>{category.Type}</option>
                                     {/each}
                                 </select>
-                                {#if errors?.Code}
-                                    <p class="text-error">{errors?.Code}</p>
-                                {/if}
+                                <div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+                                    <Icon icon="mdi:chevron-down" class="text-info h-5 w-5" />
+                                </div>
+                            </div>
+                                <!-- <select
+                                    name="categoryId"
+                                    class="select select-primary w-full {errors?.categoryId
+                                        ? 'input-text-error'
+                                        : ''}"
+                                    bind:value={categoryId}
+                                    required
+                                >
+                                    <option disabled selected>Select category of plan here...</option>
+                                    {#each careplanCategories as category}
+                                        <option value={category.id}>{category.Type}</option>
+                                    {/each}
+                                </select>
+                                	<div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+                                        <Icon icon="mdi:chevron-down" class="text-info h-5 w-5" />
+                                    </div>
+                                {#if errors?.CategoryId}
+                                    <p class="text-error">{errors?.CategoryId}</p>
+                                {/if} -->
                             </td>
                         </tr>
                         <tr>
@@ -181,6 +205,8 @@
                         <tr class="">
                             <td class="!py-3 align-top">Tags</td>
                             <td>
+                                <!-- <InputChips bind:keywords name="keywords" id="keywords" />
+		                        <input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} /> -->
                                 <InputChips
                                     bind:keywords
                                     name="keywords"
@@ -198,12 +224,12 @@
                                     class="health-system-input {errors?.healthSystemName
                                         ? 'input-text-error'
                                         : ''}"
-                                    name="healthSysdddddddtemName"
+                                    name="version"
                                     placeholder="Enter version here..."
                                     bind:value={version}
                                 />
-                                {#if errors?.Name}
-                                    <p class="text-error">{errors?.Name}</p>
+                                {#if errors?.Version}
+                                    <p class="text-error">{errors?.Version}</p>
                                 {/if}
                             </td>
                         </tr>
