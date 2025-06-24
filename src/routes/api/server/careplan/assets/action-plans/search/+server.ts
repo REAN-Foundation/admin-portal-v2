@@ -12,17 +12,18 @@ export const GET = async (event: RequestEvent) => {
 		}
 
 		const searchParams: URLSearchParams = event.url.searchParams;
-		const searchFilters = {
-			name: searchParams.get('name') ?? undefined,
-			code: searchParams.get('code') ?? undefined,
+		const searchFilters: Record<string, string> = {
+			name: searchParams.get('name') ?? '',
+			code: searchParams.get('code') ?? '',
 			orderBy: searchParams.get('sortBy') ?? 'CreatedAt',
 			order: searchParams.get('sortOrder') ?? 'ascending',
-			itemsPerPage: parseInt(searchParams.get('itemsPerPage') ?? '10'),
-			pageIndex: parseInt(searchParams.get('pageIndex') ?? '0')       
+			itemsPerPage: parseInt(searchParams.get('itemsPerPage') ?? '10').toString(),
+			pageIndex: parseInt(searchParams.get('pageIndex') ?? '0').toString()       
 		};
 
 		console.log('Search Parameters:', searchFilters);
-		const response = await searchAssets(sessionId, searchFilters);
+		const assetType = searchParams.get('assetType');
+		const response = await searchAssets(sessionId,assetType, searchFilters);
 		return ResponseHandler.success(response);
 	} catch (error) {
 		console.error('Error retrieving assets:', error);
