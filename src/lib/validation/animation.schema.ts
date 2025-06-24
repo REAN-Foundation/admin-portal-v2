@@ -10,9 +10,8 @@ export const createOrUpdateSchema = z.object({
 		.max(128, { message: 'Name must be at most 128 characters long.' }),
 
 	Transcript: z
-		.string({
-			invalid_type_error: 'Transcript must be a string.'
-		})
+		.string()
+		.max(1024, { message: 'Transcript must be at most 1024 characters long.' })
 		.optional(),
 
 	PathUrl: z

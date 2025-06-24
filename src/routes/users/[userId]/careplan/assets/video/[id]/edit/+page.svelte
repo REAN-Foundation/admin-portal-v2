@@ -17,7 +17,7 @@
 	let id = data.video.id;
 	let assetCode = data.video.AssetCode;
 	let name = $state(data.video.Name);
-	let transcript = $state(data.video.Transcript);
+	let transcript = $state(data.video.Transcript || undefined);
 	let pathUrl = $state(data.video.Url);
 	let tags = $state(data.video.Tags);
 	let version = $state(data.video.Version);

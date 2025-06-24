@@ -15,7 +15,7 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let name = $state(data.message.Name);
-	let description = $state(data.message.Description);
+	let description = $state(data.message.Description || undefined);
 	let messageType = $state(data.message.MessageType);
 	let templateName = $state(data.message.TemplateName);
 	let pathUrl = $state(data.message.PathUrl);
