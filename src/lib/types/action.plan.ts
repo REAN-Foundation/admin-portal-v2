@@ -8,7 +8,7 @@ export interface ActionPlanCreateModel {
 
 export interface ActionPlanUpdateModel {
 	Name: string;
-	Description: string;
+	Description?: string;
 	Tags?: string[];
 	Version: string;
 	TenantId?: string;

@@ -15,7 +15,7 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let name = $state(data.consultation.Name);
-	let description = $state(data.consultation.Description);
+	let description = $state(data.consultation.Description || undefined);
 	let consultationType = $state(data.consultation.ConsultationType);
 	let version = $state(data.consultation.Version);
 	let keywords: string[] = $state(data.consultation.Tags);

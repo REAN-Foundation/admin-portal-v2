@@ -13,7 +13,7 @@ FROM node:18.20-alpine3.20
 
 RUN apk add bash
 RUN apk add --no-cache \
-        python3 \
+        # python3 \
         aws-cli \
     && rm -rf /var/cache/apk/*
 RUN apk add --update alpine-sdk
@@ -41,4 +41,4 @@ ENV ENVIRONMENT=${ENVIRONMENT}
 
 RUN chmod +x /app/entrypoint.sh
 ENTRYPOINT ["/bin/bash", "-c", "/app/entrypoint.sh $ENVIRONMENT"]
-
+# CMD ["node", "build/index.js"]

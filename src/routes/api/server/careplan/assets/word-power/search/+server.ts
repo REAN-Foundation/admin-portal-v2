@@ -1,6 +1,6 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { ResponseHandler } from '$lib/utils/response.handler';
-import { searchAssets } from '../../../../../services/careplan/assets/action-plan';
+import { searchWordPower } from '$routes/api/services/careplan/assets/word-power';
 
 //////////////////////////////////////////////////////////////
 
@@ -12,17 +12,16 @@ export const GET = async (event: RequestEvent) => {
 		}
 
 		const searchParams: URLSearchParams = event.url.searchParams;
-		const searchFilters = {
-			name: searchParams.get('name') ?? undefined,
-			code: searchParams.get('code') ?? undefined,
-			orderBy: searchParams.get('sortBy') ?? 'CreatedAt',
-			order: searchParams.get('sortOrder') ?? 'ascending',
-			itemsPerPage: parseInt(searchParams.get('itemsPerPage') ?? '10'),
-			pageIndex: parseInt(searchParams.get('pageIndex') ?? '0')
-		};
-
-		console.log('Search Parameters:', searchFilters);
-		const response = await searchAssets(sessionId, searchFilters);
+		const searchFilters: Record<string, string> = {
+							name: searchParams.get('name') ?? '',
+							code: searchParams.get('code') ?? '',
+							orderBy: searchParams.get('sortBy') ?? 'CreatedAt',
+							order: searchParams.get('sortOrder') ?? 'ascending',
+							itemsPerPage: (searchParams.get('itemsPerPage') ?? '10').toString(),
+							pageIndex: (searchParams.get('pageIndex') ?? '0').toString()
+						};
+						console.log('Search Parameters:', searchFilters);
+						const response = await searchWordPower(sessionId, searchFilters);
 		return ResponseHandler.success(response);
 	} catch (error) {
 		console.error('Error retrieving assets:', error);

@@ -14,7 +14,7 @@
 	let { data, form } = $props();
 
 	let errors: Record<string, string> = $state({});
-	let name = $state(undefined);
+	let name = $state('');
 	let promise = $state();
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');

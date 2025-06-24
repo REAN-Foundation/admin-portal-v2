@@ -24,7 +24,9 @@
 	let version = carePlan.Version;
 	let tags_ = data.carePlan.Tags;
 	let tags = tags_.join(', ');
+	let careplanCategory = carePlan.Category.Type;
 
+	console.log("careplan",carePlan)
 	const breadCrumbs = [
 		{
 			name: 'Careplans',
@@ -104,6 +106,10 @@
 					<tr>
 						<td>Code</td>
 						<td>{code}</td>
+					</tr>
+					<tr>
+						<td>Category</td>
+						<td>{careplanCategory}</td>
 					</tr>
 					<tr>
 						<td>Description</td>
