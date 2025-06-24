@@ -1,4 +1,4 @@
-<!-- <script lang="ts">
+<script lang="ts">
 	export let keywords: string[] = [];
 	export let name: string = '';
 	export let id: string = '';
@@ -55,9 +55,9 @@
         </div>
     {/if}
 </div>
- -->
 
-<script lang="ts">
+
+<!-- <script lang="ts">
 
 	let {
 		keywords: _keywords = $bindable([]),
@@ -136,4 +136,4 @@
 			{/each}
 		</div>
 	{/if}
-</div>
+</div> -->

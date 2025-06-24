@@ -197,10 +197,17 @@
                         <tr>
                             <td class="!py-3">Tags</td>
                             <td>
+                                <!-- <InputChips
+                                    bind:keywords
+                                    name="keywords"
+                                    id="keywords"
+                                />
+                                <input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} /> -->
                                 <InputChips
                                     bind:keywords
                                     name="keywords"
                                     id="keywords"
+                                    keywordsChanged={onUpdateKeywords}
                                 />
                                 <input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
                             </td>

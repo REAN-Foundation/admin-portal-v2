@@ -205,15 +205,15 @@
                         <tr class="">
                             <td class="!py-3 align-top">Tags</td>
                             <td>
-                                <InputChips bind:keywords name="keywords" id="keywords" />
-		                        <input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-                                <!-- <InputChips
+                                <!-- <InputChips bind:keywords name="keywords" id="keywords" />
+		                        <input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} /> -->
+                                <InputChips
                                     bind:keywords
                                     name="keywords"
                                     id="keywords"
                                     keywordsChanged={onUpdateKeywords}
                                 />
-                                <input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} /> -->
+                                <input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
                             </td>
                         </tr>
                         <tr>
