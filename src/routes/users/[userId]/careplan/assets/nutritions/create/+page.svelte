@@ -110,7 +110,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+							class="input {errors?.Name ? 'input-text-error' : ''}"
 							name="name"
 							placeholder="Enter name here..."
 							bind:value={name}
@@ -153,7 +153,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {form?.errors?.Version ? 'input-text-error' : ''}"
+							class="input {errors?.Version ? 'input-text-error' : ''}"
 							name="version"
 							placeholder="V 1.0"
 							bind:value={version}
@@ -165,9 +165,14 @@
 				</tr>
 			</tbody>
 		</table>
-
 		<div class="btn-container">
-			<Button />
+            {#await promise}
+                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+            {:then data}
+                <Button type="submit" text="Submit" variant="primary" />
+            {/await}
 		</div>
+
+
 	</form>
 </div>

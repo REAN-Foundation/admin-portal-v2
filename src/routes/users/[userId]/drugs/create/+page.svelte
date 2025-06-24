@@ -6,6 +6,7 @@
 	import { goto } from '$app/navigation';
 	import type { DrugCreateModel } from '$lib/types/drug.types.js';
 	import { createOrUpdateSchema } from '$lib/validation/drugs.schema.js';
+	import Button from '$lib/components/button/button.svelte';
 
 	////////////////////////////////////////////////////////////////////////
 
@@ -66,7 +67,7 @@
 			});
 
 			const response = await res.json();
-			
+
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				goto(`${drugsRoute}/${response?.Data?.Drug?.id}/view`);
@@ -95,7 +96,7 @@
 						<tr>
 							<th>Create Drug</th>
 							<th class="text-end">
-								<a href={drugsRoute} class="health-system-btn variant-soft-secondary">
+								<a href={drugsRoute} class="form-cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -208,13 +209,11 @@
 						</tr>
 					</tbody>
 				</table>
-				<div class="button-container">
+				<div class="btn-container mr-5 mb-2">
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
+						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+						<Button size="md" type="submit" text="Submit" variant="primary" />
 					{/await}
 				</div>
 			</form>

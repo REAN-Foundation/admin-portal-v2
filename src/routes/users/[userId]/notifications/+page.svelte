@@ -3,6 +3,7 @@
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
+	import Button from '$lib/components/button/button.svelte';
 	import { NotificationTopics, NotificationTypes } from '$lib/types/notification.topics.js';
 	import { showMessage } from '$lib/utils/message.utils';
 	import Icon from '@iconify/svelte';
@@ -52,7 +53,7 @@
 						<tr>
 							<th>Send Notification</th>
 							<th class="text-end">
-								<a href={notificationRoute} class="health-system-btn variant-soft-secondary">
+								<a href={notificationRoute} class="form-cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -131,7 +132,7 @@
 					</tbody>
 				</table>
 				<div class="button-container">
-					<button type="submit" class="health-system-btn variant-soft-secondary">Submit</button>
+					<Button size="md" type="submit" text="Submit" variant="primary" />
 				</div>
 			</form>
 		</div>

@@ -10,8 +10,8 @@ export interface WebLinksCreateModel {
 
 export interface WebLinksUpdateModel {
 	Name: string;
-	Description: string;
-	PathUrl: string;
+	Description?: string;
+	PathUrl?: string;
 	Tags?: string[];
 	Version: string;
 	TenantId?: string;

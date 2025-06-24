@@ -8,6 +8,7 @@
 	import { createOrUpdateSchema } from '$lib/validation/health.system.schema';
 	import { goto } from '$app/navigation';
 	import InputChips from '$lib/components/input-chips.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -100,7 +101,7 @@
 						<tr>
 							<th>Edit Health System</th>
 							<th class="text-end">
-								<a href={viewRoute} class=" cancel-btn">
+								<a href={viewRoute} class="form-cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -139,18 +140,12 @@
 						</tr>
 					</tbody>
 				</table>
-				<div class="button-container">
-					<button
-						type="button"
-						onclick={handleReset}
-						class="health-system-btn variant-soft-secondary">Reset</button
-					>
+				<div class="btn-container mr-5 mb-2">
+					<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
+						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
 					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
+						<Button size="md" type="submit" text="Submit" variant="primary" />
 					{/await}
 				</div>
 			</form>

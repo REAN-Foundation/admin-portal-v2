@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
+	import Button from '$lib/components/button/button.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
 	import type { PersonRoleCreateModel } from '$lib/types/person.role.types.js';
 	import { createOrUpdateSchema } from '$lib/validation/person.role.schemas.js';
@@ -15,7 +16,7 @@
 	let roleName = $state(undefined);
 	let description = $state(undefined);
 	let errors: Record<string, string> = $state({});
-	
+
 	let promise = $state();
 
 	data.title = 'Administration-User Roles Create';
@@ -53,7 +54,6 @@
 						key,
 						val?.[0] || 'This field is required'
 					])
-					
 				);
 
 				return;
@@ -97,7 +97,7 @@
 						<tr>
 							<th>Create User Role</th>
 							<th class="text-end">
-								<a href={personRoleTypesRoute} class="cancel-btn">
+								<a href={personRoleTypesRoute} class="form-cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -112,7 +112,7 @@
 									name="roleName"
 									bind:value={roleName}
 									placeholder="Enter role name here..."
-									class="input "
+									class="input"
 								/>
 								{#if errors?.Name}
 									<p class="text-error">{errors?.Name}</p>
@@ -135,13 +135,11 @@
 						</tr>
 					</tbody>
 				</table>
-				<div class="button-container">
+				<div class="btn-container mr-5 mb-2">
 					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
+						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
 					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
+						<Button size="md" type="submit" text="Submit" variant="primary" />
 					{/await}
 				</div>
 			</form>

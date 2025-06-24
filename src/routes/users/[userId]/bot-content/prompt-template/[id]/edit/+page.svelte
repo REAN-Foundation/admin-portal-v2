@@ -7,6 +7,7 @@
 	import { goto } from '$app/navigation';
 	import type { PromptTemplateUpdateModel } from '$lib/types/prompt.template.types';
 	import { createOrUpdateSchema } from '$lib/validation/prompt.template.schema';
+	import InputPrompts from '../../prompt.variables.svelte';
 
 	////////////////////////////////////////////////////////////////////////////////
 
@@ -24,24 +25,66 @@
 	let topP = $state(data.prompts.TopP);
 	let frequencyPenalty = $state(data.prompts.FrequencyPenalty);
 	let presencePenalty = $state(data.prompts.PresencePenalty);
-	let variablesRaw = $state(data.prompts.Variables);
-	let variables: string[] = $derived(variablesRaw.split(',').map((v) => v.trim()));
+	let variables: string[] = $state([]);
+	let variableInput = $state('');
+    variables = initializeVariables(data.prompts.Prompt);
 
+    // let variables: string = $derived(variablesRaw.join(', '));
+    
 	let variableStr: string = $state('');
 	let version = $state(data.prompts.Version);
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 
+	// function updateVariables(event) {
+	// 	const inputValue = event.target.value;
+	// 	const matches = inputValue
+	// 		.split(',')
+	// 		.map((item) => item.trim())
+	// 		.filter((item) => item !== '');
+
+	// 	variables = matches;
+	// 	variableStr = variables?.join(', ');
+	// }
+	function extractPlaceholdersFromPrompt(promptText: string): string[] {
+		// Regex to match text inside curly braces
+		const placeholderRegex = /\{([^}]+)\}/g;
+		const matches = [];
+		let match;
+		
+		while ((match = placeholderRegex.exec(promptText)) !== null) {
+			const placeholder = match[1].trim();
+			if (placeholder && !matches.includes(placeholder)) {
+				matches.push(placeholder);
+			}
+		}
+		
+		return matches;
+	}
+
+	function updateVariablesFromPrompt(event) {
+		const promptText = event.target.value;
+		
+		// Extract placeholders from prompt
+		const extractedVariables = extractPlaceholdersFromPrompt(promptText);
+		
+		// Update variables array
+		variables = extractedVariables;
+		
+		console.log('Extracted variables from prompt:', variables);
+	}
+
 	function updateVariables(event) {
 		const inputValue = event.target.value;
+
 		const matches = inputValue
 			.split(',')
 			.map((item) => item.trim())
 			.filter((item) => item !== '');
 
 		variables = matches;
-		variableStr = variables?.join(', ');
+		console.log('Manual variables input:', variables);
 	}
 
 	function getColorClass(val: number): string {
@@ -126,6 +169,17 @@
 			toastMessage();
 		}
 	};
+
+    function initializeVariables(prompt: string) {
+        variables = extractPlaceholdersFromPrompt(prompt);
+        variableInput = variables.join(', ');
+        return variables;
+    }
+
+	function handleVariablesChanged(newVariables: string[]) {
+		variables = newVariables;
+		console.log('Variables updated via InputPrompts:', variables);
+	}
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -156,14 +210,16 @@
 									class="health-system-input"
 									bind:value={name}
 								/>
-							</td>
+                                {#if errors?.Name}
+									<p class="text-error">{errors?.Name}</p>
+								{/if}
+							</td>  
 						</tr>
 						<tr>
-							<td class="align-top">Description <span class=" text-red-600">*</span></td>
+							<td class="align-top">Description <span class=" text-red-600"></span></td>
 							<td>
 								<textarea
 									name="description"
-									required
 									placeholder="Enter description here..."
 									class="health-system-input"
 									bind:value={description}
@@ -189,7 +245,7 @@
 								</select>
 							</td>
 						</tr>
-						<tr>
+						<!-- <tr>
 							<td>Prompt</td>
 							<td>
 								<textarea
@@ -202,19 +258,55 @@
 								>
 								</textarea>
 							</td>
-						</tr>
-
-						<tr>
-							<td>Group <span class=" text-red-600">*</span></td>
+						</tr> -->
+                        <tr>
+							<td>Prompt <span class="text-red-700">*</span></td>
 							<td>
 								<textarea
-									name="subgroup"
-									bind:value={group}
-									placeholder="Enter Subgroup here..."
-									class="health-system-input"
-								></textarea>
+									name="prompt"
+									bind:value={prompt}
+									placeholder="Enter prompt here... Use for placeholders"
+									class="input"
+									oninput={updateVariablesFromPrompt}
+								>
+								</textarea>
+                                {#if errors?.Prompt}
+                                    <p class="text-error">{errors?.Prompt}</p>
+                                {/if}
 							</td>
 						</tr>
+                        <tr>
+							<td class="align-top">Variables</td>
+							<td class="">
+								<div class="">
+									<InputPrompts 
+										bind:keywords={variables}
+										keywordsChanged={handleVariablesChanged}
+										name="variables"
+										id="variables"
+									/>
+								</div>
+							</td>
+						</tr>
+                        <tr>
+                            <td>Group <span class=" text-red-600">*</span></td>
+                            <td>
+                                <select
+                                    class="select w-full"
+                                    required
+                                    name="group"
+                                    bind:value={group}
+                                    placeholder="Select Group here..."
+                                >
+                                    <option value="Chat Default" selected>Chat Default</option>
+                                    <option value="Content Generation">Content Generation</option>
+                                    <option value="Generic">Generic</option>
+                                    <option value="Miscellaneous">Miscellaneous</option>
+                                    <option value="Evaluation and Quality">Evaluation and Quality</option>
+                                    <option value="Chat Custom">Chat Custom</option>
+                                </select>
+                            </td>
+                        </tr>
 						<tr>
 							<td>Use Case Type </td>
 							<td>
@@ -234,19 +326,19 @@
 							</td>
 						</tr>
 
-						<tr>
+						<!-- <tr>
 							<td class="align-top">Variables</td>
 							<td class="">
 								<div class="variables-container">
 									<input
 										name="variables"
-										bind:value={variables}
+										bind:value={variableInput}
 										class="health-system-input"
 										oninput={updateVariables}
 									/>
 								</div>
 							</td>
-						</tr>
+						</tr> -->
 						<tr>
 							<td>Temperature</td>
 							<td>

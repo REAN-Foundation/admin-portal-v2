@@ -8,6 +8,7 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import { createOrUpdateSchema } from '$lib/validation/meditations.schema';
 	import type { MeditationUpdateModel } from '$lib/types/meditations.types';
+	import Button from '$lib/components/button/button.svelte';
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
@@ -206,19 +207,12 @@
     </table>
 
     <div class="btn-container">
-      <button type="button" onclick={handleReset} class="table-btn variant-soft-secondary">
-        Reset
-      </button>
-
-      {#await promise}
-        <button type="submit" class="table-btn variant-soft-secondary" disabled>
-          Submitting
-        </button>
-      {:then data}
-        <button type="submit" class="table-btn variant-soft-secondary">
-          Submit
-        </button>
-      {/await}
-    </div>
+            <Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+            {#await promise}
+                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+            {:then data}
+                <Button type="submit" text="Submit" variant="primary" />
+            {/await}
+  </div>
   </form>
 </div>

@@ -10,6 +10,7 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -196,9 +197,7 @@
 							{/if}
 						</div>
 					</div>
-					<button class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary">
-						<a href={createRoute} class="">Add New</a>
-					</button>
+					<Button href={createRoute} text="Add New" variant="primary"></Button>
 				</div>
 			</div>
 			<div class="overflow-x-auto">
@@ -249,33 +248,28 @@
 
 									<td>
 										<div class="flex">
-											<Tooltip text="Edit" forceShow={true}>
-												<button class="">
-													<a href={editRoute(row.id)} class="health-system-btn group">
-														<Icon icon="material-symbols:edit-outline" class="health-system-icon" />
-													</a>
-												</button>
-											</Tooltip>
-
-											<Tooltip text="View" forceShow={true}>
-												<button>
-													<a href={viewRoute(row.id)} class=" health-system-btn group"
-														><Icon
-															icon="icon-park-outline:preview-open"
-															class="health-system-icon"
-														/>
-													</a>
-												</button>
-											</Tooltip>
-
-											<Tooltip text="Delete" forceShow={true}>
-												<button
-													class="health-system-btn !text-red-600"
-													onclick={() => handleDeleteClick(row.id)}
-												>
-													<Icon icon="material-symbols:delete-outline-rounded" />
-												</button>
-											</Tooltip>
+											<Button
+												href={editRoute(row.id)}
+												variant="icon"
+												icon="material-symbols:edit-outline"
+												iconSize="sm"
+												tooltip="Edit"
+											/>
+											<Button
+												href={viewRoute(row.id)}
+												variant="icon"
+												icon="icon-park-outline:preview-open"
+												iconSize="sm"
+												tooltip="View"
+											/>
+											<Button
+												onclick={() => handleDeleteClick(row.id)}
+												variant="icon"
+												icon="material-symbols:delete-outline-rounded"
+												iconSize="sm"
+												color="red"
+												tooltip="Delete"
+											/>
 										</div>
 									</td>
 								</tr>

@@ -9,6 +9,7 @@
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	let { data }: { data: PageServerData } = $props();
@@ -52,38 +53,38 @@
 	$inspect('retrivedTenant, tenants');
 
 	async function searchTenants(model) {
-	try {
-		let url = `/api/server/tenants/search?`;
-		url += `sortOrder=${model.sortOrder ?? sortOrder}`;
-		url += `&sortBy=${model.sortBy ?? sortBy}`;
-		url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
-		url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-		if (model.name) url += `&name=${model.name}`;
-		if (model.code) url += `&code=${model.code}`;
+		try {
+			let url = `/api/server/tenants/search?`;
+			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+			url += `&sortBy=${model.sortBy ?? sortBy}`;
+			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+			if (model.name) url += `&name=${model.name}`;
+			if (model.code) url += `&code=${model.code}`;
 
-		const res = await fetch(url, {
-			method: 'GET',
-			headers: { 'content-type': 'application/json' }
-		});
+			const res = await fetch(url, {
+				method: 'GET',
+				headers: { 'content-type': 'application/json' }
+			});
 
-		const searchResult = await res.json();
-		console.log('searchResult', searchResult);
+			const searchResult = await res.json();
+			console.log('searchResult', searchResult);
 
-		totalTenantsCount = searchResult.Data.TenantRecords.TotalCount;
-		paginationSettings.size = totalTenantsCount;
+			totalTenantsCount = searchResult.Data.TenantRecords.TotalCount;
+			paginationSettings.size = totalTenantsCount;
 
-		tenants = searchResult.Data.TenantRecords.Items.map((item, index) => ({
-			...item,
-			index: index + 1
-		}));
+			tenants = searchResult.Data.TenantRecords.Items.map((item, index) => ({
+				...item,
+				index: index + 1
+			}));
 
-		searchKeyword = model.name;
-	} catch (err) {
-		console.error('Search failed:', err);
-	} finally {
-		isLoading = false;
+			searchKeyword = model.name;
+		} catch (err) {
+			console.error('Search failed:', err);
+		} finally {
+			isLoading = false;
+		}
 	}
-}
 
 	function onSearchInput(e, field: 'name' | 'code') {
 		clearTimeout(debounceTimeout);
@@ -117,13 +118,13 @@
 		}
 		sortBy = columnName;
 		searchTenants({
-				name: nameSearch,
-				code: codeSearch,
-				itemsPerPage: paginationSettings.limit,
-				pageIndex: 0,
-				sortBy,
-				sortOrder
-			});
+			name: nameSearch,
+			code: codeSearch,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
 	}
 
 	const handleDeleteClick = (id: string) => {
@@ -132,27 +133,27 @@
 	};
 
 	function onItemsPerPageChange() {
-		paginationSettings.page = 0; 
+		paginationSettings.page = 0;
 		searchTenants({
-				name: nameSearch,
-				code: codeSearch,
-				itemsPerPage: paginationSettings.limit,
-				pageIndex: 0,
-				sortBy,
-				sortOrder
-			});
+			name: nameSearch,
+			code: codeSearch,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
 	}
 
 	function onPageChange() {
 		searchTenants({
-				name: nameSearch,
-				code: codeSearch,
-				itemsPerPage: paginationSettings.limit,
-				pageIndex: 0,
-				sortBy,
-				sortOrder
-			});
-		}
+			name: nameSearch,
+			code: codeSearch,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
 
 	const handleTenantsDelete = async (id) => {
 		console.log('Inside handleTenantsDelete', id);
@@ -170,13 +171,13 @@
 			toastMessage(res);
 		}
 		searchTenants({
-				name: nameSearch,
-				code: codeSearch,
-				itemsPerPage: paginationSettings.limit,
-				pageIndex: 0,
-				sortBy,
-				sortOrder
-			});
+			name: nameSearch,
+			code: codeSearch,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
 	};
 </script>
 
@@ -215,9 +216,7 @@
 						/>
 					</div>
 
-					<button class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
-						<a href={createRoute}>Add New</a>
-					</button>
+					<Button href={createRoute} text="Add New" variant="primary"></Button>
 				</div>
 			</div>
 
@@ -226,19 +225,18 @@
 					<thead>
 						<tr>
 							<th class="w-12"></th>
-							<th class="w-70 text-start">
+							<th class=" text-start">
 								<button onclick={() => sortTable('Name')}>
 									Name {#if isSortingName}{sortOrder === 'ascending' ? '▲' : '▼'}{/if}
 								</button>
 							</th>
-							<th class="w-64 text-start">
+							<th class=" text-start">
 								<button onclick={() => sortTable('Code')}>
 									Code {#if isSortingCode}{sortOrder === 'ascending' ? '▲' : '▼'}{/if}
 								</button>
 							</th>
-							<th class="w-40">Contact Number</th>
-							<th class="w-64">Email</th>
-							<th class="w-20"></th>
+							<th class="w-50">Contact Number</th>
+							<th class="">Email</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -267,30 +265,28 @@
 
 									<td>
 										<div class="flex">
-											<Tooltip text="Edit" forceShow={true}>
-												<button>
-													<a href={editRoute(row.id)} class="table-btn group">
-														<Icon icon="material-symbols:edit-outline" class="health-system-icon" />
-													</a>
-												</button>
-											</Tooltip>
-
-											<Tooltip text="View" forceShow={true}>
-												<button>
-													<a href={viewRoute(row.id)} class="table-btn group">
-														<Icon icon="icon-park-outline:preview-open" class="health-system-icon" />
-													</a>
-												</button>
-											</Tooltip>
-
-											<Tooltip text="Delete" forceShow={true}>
-												<button
-													class="health-system-btn !text-red-600"
-													onclick={() => handleDeleteClick(row.id)}
-												>
-													<Icon icon="material-symbols:delete-outline-rounded" />
-												</button>
-											</Tooltip>
+											<Button
+												href={editRoute(row.id)}
+												variant="icon"
+												icon="material-symbols:edit-outline"
+												iconSize="sm"
+												tooltip="Edit"
+											/>
+											<Button
+												href={viewRoute(row.id)}
+												variant="icon"
+												icon="icon-park-outline:preview-open"
+												iconSize="sm"
+												tooltip="View"
+											/>
+											<Button
+												onclick={() => handleDeleteClick(row.id)}
+												variant="icon"
+												icon="material-symbols:delete-outline-rounded"
+												iconSize="sm"
+												color="red"
+												tooltip="Delete"
+											/>
 										</div>
 									</td>
 								</tr>

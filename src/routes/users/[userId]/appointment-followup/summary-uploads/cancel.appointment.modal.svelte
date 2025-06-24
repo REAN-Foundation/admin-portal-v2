@@ -3,6 +3,7 @@
 	import { addToast, toastMessage } from '../../../../../lib/components/toast/toast.store';
 	import type { AppointmentCancelModel } from '$lib/types/follow-up/followup.upload';
 	import { appointmentCancelSchema } from '$lib/validation/follow-up/reminder.schema';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -95,9 +96,15 @@
 		<div class="modal relative">
 			<form onsubmit={async (event) => (promise = handleCancel(event))}>
 				<h2 class="mb-4 text-lg font-semibold">Cancel Appointments</h2>
-				<button class="cancel-btn absolute top-2 right-2" onclick={handleModalClose}>
-					<Icon icon="material-symbols:close-rounded" />
-				</button>
+				<Button
+					onclick={handleModalClose}
+					variant="icon"
+					icon="material-symbols:close-rounded"
+					iconSize="sm"
+					color="red"
+					className="cancel-btn absolute top-2 right-2"
+				/>
+
 				<div class="space-y-4">
 					<div class="flex flex-col gap-2 sm:flex-row sm:items-center">
 						<label class="flex items-center gap-2 sm:w-1/2">
@@ -112,7 +119,7 @@
 					<div>
 						<label class="mb-1 flex items-center gap-2">
 							<input type="radio" bind:group={mode} value="range" />
-							<span >Date Range</span>
+							<span>Date Range</span>
 						</label>
 
 						{#if mode === 'range'}
@@ -141,13 +148,11 @@
 						></textarea>
 					</div>
 
-					<div class="text-right">
+					<div class="btn-container">
 						{#await promise}
-							<button type="submit" class="upload-btn variant-filled-secondary" disabled>
-								Submiting
-							</button>
+							<Button type="submit" text="Submitting" variant="primary" disabled={true} />
 						{:then data}
-							<button type="submit" class="upload-btn variant-filled-secondary"> Submit </button>
+							<Button type="submit" text="Submit" variant="primary" />
 						{/await}
 					</div>
 				</div>

@@ -7,6 +7,7 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
 	import type { TenantsUpdateModel } from '$lib/types/tenants.types';
+	import Button from '$lib/components/button/button.svelte';
 
 	//////////////////////////////////////////////////////////////////////
 
@@ -107,7 +108,7 @@
 						<tr>
 							<th>Edit Tenant</th>
 							<th class="text-end">
-								<a href={viewRoute} class="health-system-btn variant-soft-secondary">
+								<a href={viewRoute} class="form-cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
 								</a>
 							</th>
@@ -194,23 +195,12 @@
 						</tr>
 					</tbody>
 				</table>
-
-				<div class="button-container mt-4 flex gap-4">
-					<button
-						type="button"
-						onclick={handleReset}
-						class="health-system-btn variant-soft-secondary"
-					>
-						Reset
-					</button>
+				<div class="btn-container mr-5 mb-2">
+					<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
 					{#await promise}
-						<button type="submit" class="health-system-btn variant-filled-secondary" disabled>
-							Submitting...
-						</button>
-					{:then}
-						<button type="submit" class="health-system-btn variant-filled-secondary">
-							Submit
-						</button>
+						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+					{:then data}
+						<Button size="md" type="submit" text="Submit" variant="primary" />
 					{/await}
 				</div>
 			</form>
