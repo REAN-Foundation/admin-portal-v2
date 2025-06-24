@@ -16,11 +16,11 @@ export const createReflection = async (
 		Name: name,
 		Description: description,
 		Tags: tags,
+		Version: !version || version.length === 0 ? 'V 1.0' : version,
 		TenantId: tenantId,
-		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
 
-	const url = CAREPLAN_BACKEND_API_URL + '/assets/reflections';
+	const url = CAREPLAN_BACKEND_API_URL + '/assets/reflectionReflectionAuthns';
 	const result = await post_(url, body, true, sessionId);
 
 	// Clear asset search caches after creation
@@ -35,7 +35,7 @@ export const getReflectionById = async (sessionId: string, reflectionId: string)
 		return await DashboardManager.get(cacheKey);
 	}
 
-	const url = CAREPLAN_BACKEND_API_URL + `/assets/reflections/${reflectionId}`;
+	const url = CAREPLAN_BACKEND_API_URL + `/assets/reflectionReflectionAuthns/${reflectionId}`;
 	const result = await get_(url, true, sessionId);
 
 	await DashboardManager.set(cacheKey, result);
@@ -60,7 +60,7 @@ export const searchReflections = async (
 		return await DashboardManager.get(cacheKey);
 	}
 
-	const url = CAREPLAN_BACKEND_API_URL + `/assets/reflections/search${searchString}`;
+	const url = CAREPLAN_BACKEND_API_URL + `/assets/reflectionReflectionAuthns/search${searchString}`;
 	const result = await get_(url, true, sessionId);
 
 	await DashboardManager.set(cacheKey, result);
@@ -80,11 +80,11 @@ export const updateReflection = async (
 		Name: name,
 		Description: description,
 		Tags: tags,
+		Version: !version || version.length === 0 ? 'V 1.0' : version,
 		TenantId: tenantId,
-		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
 
-	const url = CAREPLAN_BACKEND_API_URL + `/assets/reflections/${reflectionId}`;
+	const url = CAREPLAN_BACKEND_API_URL + `/assets/reflectionReflectionAuthns/${reflectionId}`;
 	const result = await put_(url, body, true, sessionId);
 
 	// Clear cached get-by-id and search results
@@ -95,7 +95,7 @@ export const updateReflection = async (
 };
 
 export const deleteReflection = async (sessionId: string, reflectionId: string) => {
-	const url = CAREPLAN_BACKEND_API_URL + `/assets/reflections/${reflectionId}`;
+	const url = CAREPLAN_BACKEND_API_URL + `/assets/reflectionReflectionAuthns/${reflectionId}`;
 	const result = await delete_(url, true, sessionId);
 
 	// Clear cache for that asset and search results

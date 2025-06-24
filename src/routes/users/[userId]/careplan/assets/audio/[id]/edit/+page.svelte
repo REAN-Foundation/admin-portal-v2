@@ -15,8 +15,8 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let name = $state(data.audio.Name);
-	let transcript = $state(data.audio.Transcript);
-	let pathUrl = $state(data.audio.Url);
+	let transcript = $state(data.audio.Transcript || undefined);
+	let pathUrl = $state(data.audio.Url || undefined);
 	let version = $state(data.audio.Version);
 	let tags = $state(data.audio.Tags);
 	let keywordsStr: string = $state('');

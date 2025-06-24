@@ -17,8 +17,8 @@
 	let id = data.animation.id;
 	let assetCode = data.animation.AssetCode;
 	let name = $state(data.animation.Name);
-	let transcript = $state(data.animation.Transcript);
-	let pathUrl = $state(data.animation.Url);
+	let transcript = $state(data.animation.Transcript || undefined);
+	let pathUrl = $state(data.animation.Url || undefined);
 	let tags = $state(data.animation.Tags);
 	let version = $state(data.animation.Version);
 	let errors: Record<string, string> = $state({});
@@ -61,7 +61,7 @@
 
 			const animationsUpdateModel: AnimationsUpdateModel = {
 				Name: name,
-				Transcript: transcript,
+				Transcript: transcript ?? undefined,
 				PathUrl: pathUrl,
 				Tags: keywords,
 				Version: version,

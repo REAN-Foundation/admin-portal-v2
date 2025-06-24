@@ -17,7 +17,7 @@
 	let id = data.reflection.id;
 	let assetCode = data.reflection.AssetCode;
 	let name = $state(data.reflection.Name);
-	let description = $state(data.reflection.Description);
+	let description = $state(data.reflection.Description || undefined);
 	let tags = $state(data.reflection.Tags);
 	let version = $state(data.reflection.Version);
 	let errors: Record<string, string> = $state({});
