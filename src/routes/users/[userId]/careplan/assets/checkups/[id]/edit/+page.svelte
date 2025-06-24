@@ -16,7 +16,7 @@
 	let promise = $state();
 	let assetCode = data.checkups.AssetCode;
 	let name = $state(data.checkups.Name);
-	let description = $state(data.checkups.Description);
+	let description = $state(data.checkups.Description || undefined);
 	let version = $state(data.checkups.Version);
 	let keywords: string[] = $state(data.checkups.Tags);
 	let keywordsStr = $state('');

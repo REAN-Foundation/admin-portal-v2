@@ -15,7 +15,7 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let name = $state(data.exercise.Name);
-	let description = $state(data.exercise.Description);
+	let description = $state(data.exercise.Description || undefined);
 	let exerciseType = $state(data.exercise.ExerciseType);
 	let intensityLevel = $state(data.exercise.IntensityLevel);
 	let recommendedDurationMin = $state<number>(data.exercise.RecommendedDurationMin);

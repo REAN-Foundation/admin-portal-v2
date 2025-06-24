@@ -16,8 +16,8 @@
 	let id = data.article.id;
 	let assetCode = data.article.AssetCode;
 	let name = $state(data.article.Name);
-	let summary = $state(data.article.Summary);
-	let pathUrl = $state(data.article.PathUrl);
+	let summary = $state(data.article.Summary || undefined);
+	let pathUrl = $state(data.article.PathUrl || undefined);
 	let tags = $state(data.article.Tags);
 	let version = $state(data.article.Version);
 	let errors: Record<string, string> = $state({});
