@@ -7,8 +7,7 @@
 	import ReminderScheduleList from './reminder-schedule-list.svelte';
 	import ReminderScheduleForm from './reminder-schedule-form.svelte';
 	import FollowUpSettings from './follow-up-settings.svelte';
-	import { goto } from '$app/navigation';
-
+	
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data, form } = $props();
@@ -16,6 +15,7 @@
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
 	const tenantRoute = `/users/${userId}/tenants/${tenantId}/settings/followup-setting`;
+    
 	let promise = $state();
 	let errors: any = $state({});
 	let showReminderModal = $state(false);
@@ -28,54 +28,71 @@
 	let editingIndex: number | null = null;
 	let openTab: string | null = $state(null);
 	let jsonError = $state('');
-	let disabled = $state(data.commonSettings.UserInterfaces.Followup);
-	$inspect('disabled', disabled);
-	let edit = $state(false);
 
-	const toggleEdit = async () => {
-		if (disabled) {
-			if (edit) {
-				addToast({
-					message: 'Settings saved successfully',
-					type: 'success',
-					timeout: 3000
-				});
-				edit = false;
-			} else {
-				edit = true;
-				addToast({
-					message: 'Edit mode enabled',
-					type: 'info',
-					timeout: 3000
-				});
-			}
-		} else if (disabled === false) {
-			addToast({
-				message: 'This setting is disabled. Please update it from the main settings.',
-				type: 'warning',
-				timeout: 3000
-			});
-			return;
-		}
-	};
+	let isFollowupEnabled = $state(data.isFollowupEnabled);
+
+	$inspect('isFollowupEnabled', isFollowupEnabled);
+
+    let edit = $state(false);
+    $inspect('edit', edit);
+
+	const handleEditClick = async () => {
+        if (!isFollowupEnabled) {
+            addToast({
+                message: 'This setting is disabled. Please update it from the main settings.',
+                type: 'info',
+                timeout: 3000
+            });
+            return;
+        }
+
+        if (!edit) {
+            addToast({
+                message: 'Edit mode enabled.',
+                type: 'info',
+                timeout: 3000
+            });
+            edit = true;
+        } else {
+            addToast({
+                message: 'Edit mode disabled.',
+                type: 'info',
+                timeout: 3000
+            });
+            edit = false;
+        }
+    }
+
 
 	function toggleTab(tab: string) {
 		openTab = openTab === tab ? null : tab;
 	}
 
-	function validateJSON() {
-		try {
-			JSON.parse(followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat);
-			jsonError = '';
-		} catch (error) {
-			jsonError = 'Invalid JSON format';
-		}
-	}
+	// function validateJSON() {
+	// 	try {
+	// 		JSON.parse(followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat);
+	// 		jsonError = '';
+	// 	} catch (error) {
+	// 		jsonError = 'Invalid JSON format';
+	// 	}
+	// }
+
+    function validateJSON() {
+    try {
+        if (followUpSettingUpdateModel.FileUploadSettings?.FileColumnFormat) {
+            JSON.parse(followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat);
+        }
+        jsonError = '';
+    } catch (error) {
+        jsonError = 'Invalid JSON format';
+    }
+}
+
 
 	let followUpSettingUpdateModel = $state({
 		Source: data.settings.Source,
 		FileUploadSettings: {
-			FileColumnFormat: data.settings.FileUploadSettings?.FileColumnFormat,
+			FileColumnFormat: data.settings?.FileUploadSettings?.FileColumnFormat ? JSON.parse(data.settings?.FileUploadSettings?.FileColumnFormat) : null,
 			FileType: data.settings.FileUploadSettings?.FileType,
 			ReminderSchedule: data.settings.FileUploadSettings?.ReminderSchedule
 		},
@@ -83,30 +100,32 @@
 			Auth: {
 				Method: data.settings.ApiIntegrationSettings?.Auth?.Method,
 				Url: data.settings.ApiIntegrationSettings?.Auth?.Url,
-				Body: data.settings.ApiIntegrationSettings?.Auth?.Body,
+				Body: data.settings.ApiIntegrationSettings?.Auth?.Body || '',
 				QueryParams: data.settings.ApiIntegrationSettings?.Auth?.QueryParams || {},
 				Headers: data.settings.ApiIntegrationSettings?.Auth?.Headers || {},
 				TokenPath: data.settings.ApiIntegrationSettings?.Auth?.TokenPath,
 				ResponseType: data.settings.ApiIntegrationSettings?.Auth?.ResponseType,
 				TokenInjection: {
-					Location: data.settings.ApiIntegrationSettings?.Auth?.TokenInjection.Location,
-					Key: data.settings.ApiIntegrationSettings?.Auth?.TokenInjection.Key,
-					Prefix: data.settings.ApiIntegrationSettings?.Auth?.TokenInjection.Prefix
+					Location: data.settings.ApiIntegrationSettings?.Auth?.TokenInjection?.Location,
+					Key: data.settings.ApiIntegrationSettings?.Auth?.TokenInjection?.Key,
+					Prefix: data.settings.ApiIntegrationSettings?.Auth?.TokenInjection?.Prefix
 				}
 			},
 			Fetch: {
-				Method: data.settings.ApiIntegrationSettings?.Fetch.Method,
-				Url: data.settings.ApiIntegrationSettings?.Fetch.Url,
-				QueryParams: data.settings.ApiIntegrationSettings?.Fetch?.QueryParams || {},
-				Body: data.settings.ApiIntegrationSettings?.Fetch.Body,
+				Method: data.settings.ApiIntegrationSettings?.Fetch?.Method,
+				Url: data.settings.ApiIntegrationSettings?.Fetch?.Url,
+				QueryParams: data.settings?.ApiIntegrationSettings?.Fetch?.QueryParams || {},
+				Body: data.settings?.ApiIntegrationSettings?.Fetch?.Body || '',
 				Headers: data.settings.ApiIntegrationSettings?.Fetch?.Headers || {},
-				ResponseType: data.settings.ApiIntegrationSettings?.Fetch.ResponseType,
-				ResponseField: data.settings.ApiIntegrationSettings?.Fetch.ResponseField
+				ResponseType: data.settings?.ApiIntegrationSettings?.Fetch?.ResponseType,
+				ResponseField: data.settings?.ApiIntegrationSettings?.Fetch?.ResponseField
 			},
-			ReminderSchedule: data.settings.ApiIntegrationSettings?.ReminderSchedule,
-			ScheduleFrequency: data.settings.ApiIntegrationSettings?.ScheduleFrequency
+			ReminderSchedule: data.settings?.ApiIntegrationSettings?.ReminderSchedule,
+			ScheduleFrequency: data.settings?.ApiIntegrationSettings?.ScheduleFrequency
 		}
 	});
+
+    $inspect('followUpSettingUpdateModel', followUpSettingUpdateModel);
 
 	function setNestedError(obj: any, path: (string | number)[], value: string) {
 		let current = obj;
@@ -126,15 +145,26 @@
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
+            if (!edit) {
+                addToast({
+                    message: 'Nothing to edit !',
+                    type: 'info',
+                    timeout: 3000
+                });
+                return;
+            }
 			errors = {};
 
 			if (followUpSettingUpdateModel.Source === 'Api') {
 				followUpSettingUpdateModel.FileUploadSettings = undefined;
+   
 			} else if (followUpSettingUpdateModel.Source === 'File') {
 				followUpSettingUpdateModel.ApiIntegrationSettings = undefined;
+                
 			} else {
 				followUpSettingUpdateModel.FileUploadSettings = undefined;
 				followUpSettingUpdateModel.ApiIntegrationSettings = undefined;
+                
 			}
 
 			const validationResult = FollowupSettingsSchema.safeParse(followUpSettingUpdateModel);
@@ -157,7 +187,82 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				goto(`/users/${userId}/tenants/${tenantId}/settings`);
+				// goto(`/users/${userId}/tenants/${tenantId}/settings`);
+            if (followUpSettingUpdateModel.Source === 'None') {
+            followUpSettingUpdateModel.FileUploadSettings = {
+                FileColumnFormat: data?.settings?.FileUploadSettings?.FileColumnFormat ? JSON.parse(data.settings?.FileUploadSettings?.FileColumnFormat) : null,
+                FileType: data.settings?.FileUploadSettings?.FileType,
+                ReminderSchedule: data.settings?.FileUploadSettings?.ReminderSchedule
+            };
+            
+            followUpSettingUpdateModel.ApiIntegrationSettings = {
+                Auth: {
+                    Method: data.settings?.ApiIntegrationSettings?.Auth?.Method,
+                    Url: data.settings?.ApiIntegrationSettings?.Auth?.Url,
+                    Body: data.settings?.ApiIntegrationSettings?.Auth?.Body || '',
+                    QueryParams: data.settings?.ApiIntegrationSettings?.Auth?.QueryParams || {},
+                    Headers: data.settings?.ApiIntegrationSettings?.Auth?.Headers || {},
+                    TokenPath: data.settings?.ApiIntegrationSettings?.Auth?.TokenPath,
+                    ResponseType: data.settings?.ApiIntegrationSettings?.Auth?.ResponseType,
+                    TokenInjection: {
+                        Location: data.settings?.ApiIntegrationSettings?.Auth?.TokenInjection?.Location,
+                        Key: data.settings?.ApiIntegrationSettings?.Auth?.TokenInjection?.Key,
+                        Prefix: data.settings?.ApiIntegrationSettings?.Auth?.TokenInjection?.Prefix
+                    }
+                },
+                Fetch: {
+                    Method: data.settings?.ApiIntegrationSettings?.Fetch?.Method,
+                    Url: data.settings?.ApiIntegrationSettings?.Fetch?.Url,
+                    QueryParams: data.settings?.ApiIntegrationSettings?.Fetch?.QueryParams || {},
+                    Body: data.settings?.ApiIntegrationSettings?.Fetch?.Body || '',
+                    Headers: data.settings?.ApiIntegrationSettings?.Fetch?.Headers || {},
+                    ResponseType: data.settings?.ApiIntegrationSettings?.Fetch?.ResponseType,
+                    ResponseField: data.settings?.ApiIntegrationSettings?.Fetch?.ResponseField
+                },
+                ReminderSchedule: data.settings?.ApiIntegrationSettings?.ReminderSchedule,
+                ScheduleFrequency: data.settings?.ApiIntegrationSettings?.ScheduleFrequency
+            };
+        }
+
+        if (followUpSettingUpdateModel.Source === 'File') {
+            
+            followUpSettingUpdateModel.ApiIntegrationSettings = {
+                Auth: {
+                    Method: data.settings?.ApiIntegrationSettings?.Auth?.Method,
+                    Url: data.settings?.ApiIntegrationSettings?.Auth?.Url,
+                    Body: data.settings?.ApiIntegrationSettings?.Auth?.Body || '',
+                    QueryParams: data.settings?.ApiIntegrationSettings?.Auth?.QueryParams || {},
+                    Headers: data.settings?.ApiIntegrationSettings?.Auth?.Headers || {},
+                    TokenPath: data.settings?.ApiIntegrationSettings?.Auth?.TokenPath,
+                    ResponseType: data.settings?.ApiIntegrationSettings?.Auth?.ResponseType,
+                    TokenInjection: {
+                        Location: data.settings?.ApiIntegrationSettings?.Auth?.TokenInjection?.Location,
+                        Key: data.settings?.ApiIntegrationSettings?.Auth?.TokenInjection?.Key,
+                        Prefix: data.settings?.ApiIntegrationSettings?.Auth?.TokenInjection?.Prefix
+                    }
+                },
+                Fetch: {
+                    Method: data.settings?.ApiIntegrationSettings?.Fetch?.Method,
+                    Url: data.settings?.ApiIntegrationSettings?.Fetch?.Url,
+                    QueryParams: data.settings?.ApiIntegrationSettings?.Fetch?.QueryParams || {},
+                    Body: data.settings?.ApiIntegrationSettings?.Fetch?.Body || '',
+                    Headers: data.settings?.ApiIntegrationSettings?.Fetch?.Headers || {},
+                    ResponseType: data.settings?.ApiIntegrationSettings?.Fetch?.ResponseType,
+                    ResponseField: data.settings?.ApiIntegrationSettings?.Fetch?.ResponseField
+                },
+                ReminderSchedule: data.settings?.ApiIntegrationSettings?.ReminderSchedule,
+                ScheduleFrequency: data.settings?.ApiIntegrationSettings?.ScheduleFrequency
+            };
+        }
+
+        if (followUpSettingUpdateModel.Source === 'Api') {
+            followUpSettingUpdateModel.FileUploadSettings = {
+                FileColumnFormat: data?.settings?.FileUploadSettings?.FileColumnFormat ? JSON.parse(data.settings?.FileUploadSettings?.FileColumnFormat) : null,
+                FileType: data.settings?.FileUploadSettings?.FileType,
+                ReminderSchedule: data.settings?.FileUploadSettings?.ReminderSchedule
+            };
+        }
+                edit = false;
 				return;
 			}
 
@@ -167,6 +272,7 @@
 				toastMessage(response);
 			}
 		} catch (error) {
+            console.log('This is error', error);
 			toastMessage();
 		}
 	};
@@ -258,10 +364,10 @@
 						<button
 							type="button"
 							class="table-btn variant-filled-secondary gap-1"
-							onclick={toggleEdit}
+							onclick={handleEditClick}
 						>
 							<Icon icon="material-symbols:edit-outline" />
-							<span>{edit ? 'Edit' : 'Save'}</span>
+							<!-- <span>{edit ? 'Save' : 'Edit'}</span> -->
 						</button>
 						<a
 							href={tenantRoute}
@@ -290,7 +396,7 @@
 								</label></td
 							>
 
-							{#if disabled}
+							{#if isFollowupEnabled && edit}
 								<td>
 									<select
 										bind:value=  {followUpSettingUpdateModel.Source}
@@ -336,7 +442,7 @@
 											placeholder="File column format in JSON format"
 											class="w-full rounded border p-2 text-sm"
 											oninput={validateJSON}
-											disabled={edit}
+											disabled={!edit}
 										></textarea>
 
 										{#if jsonError}
@@ -358,7 +464,7 @@
 										<select
 											bind:value={followUpSettingUpdateModel.FileUploadSettings.FileType}
 											class="w-full rounded border p-2 text-sm"
-											disabled={edit}
+											disabled={!edit}
 										>
 											<option value="" disabled selected>Select file type</option>
 											<option value="csv">CSV</option>
@@ -386,8 +492,10 @@
 										<button
 											onclick={(event) => {
 												event.preventDefault();
-												showReminderModal = true;
+												showReminderModal = edit;
+                                                
 											}}
+                                            disabled={!edit}
 											class="table-btn variant-filled-secondary gap-1"
 										>
 											Add Schedule
@@ -405,6 +513,7 @@
 									}
 									{deleteSchedule}
 									{editSchedule}
+                                    {edit}
 								/>
 							{/if}
 
@@ -450,6 +559,7 @@
 											<select
 												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Method}
 												class="w-full rounded border p-2 text-sm"
+                                                disabled={!edit}
 											>
 												<option value="" disabled selected>Select Method</option>
 												<option value="GET">GET</option>
@@ -472,6 +582,7 @@
 												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Url}
 												placeholder="Base URL"
 												class="w-full rounded border p-2 text-sm"
+                                                disabled={!edit}
 											/>
 											{#if errors?.ApiIntegrationSettings?.Auth?.Url}
 												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.Url}</p>
@@ -489,6 +600,7 @@
 												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Body}
 												placeholder="Request Body"
 												class="w-full rounded border p-2 text-sm"
+                                                disabled={!edit}
 											/>
 											{#if errors?.ApiIntegrationSettings?.Auth?.Body}
 												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.Body}</p>
@@ -505,6 +617,7 @@
 												bind:model={
 													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams
 												}
+                                                disabled={!edit}
 											/>
 											{#if errors?.ApiIntegrationSettings?.Auth?.QueryParams}
 												<p class="text-error">
@@ -521,6 +634,7 @@
 										<td>
 											<FollowUpSettings
 												bind:model={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Headers}
+                                                disabled={!edit}
 											/>
 											{#if errors?.ApiIntegrationSettings?.Auth?.Headers}
 												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.Headers}</p>
@@ -539,6 +653,7 @@
 												}
 												placeholder="Token path (e.g. data.token)"
 												class="w-full rounded border p-2 text-sm"
+                                                disabled={!edit}
 											/>
 											{#if errors?.ApiIntegrationSettings?.Auth?.TokenPath}
 												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.TokenPath}</p>
@@ -558,6 +673,7 @@
 													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.ResponseType
 												}
 												class="w-full rounded border p-2 text-sm"
+                                                disabled={!edit}
 											>
 												<option value="" disabled selected>Select Response type</option>
 												<option value="json">JSON</option>
@@ -612,6 +728,7 @@
 											<select
 												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Method}
 												class="w-full rounded border p-2 text-sm"
+                                                disabled={!edit}
 											>
 												<option value="" disabled selected>Select Fecth Method</option>
 												<option value="GET">GET</option>
@@ -634,6 +751,7 @@
 												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Url}
 												placeholder="Base URL"
 												class="w-full rounded border p-2 text-sm"
+                                                disabled={!edit}
 											/>
 											{#if errors?.ApiIntegrationSettings?.Fetch?.Url}
 												<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.Url}</p>
@@ -649,6 +767,7 @@
 												bind:model={
 													followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.QueryParams
 												}
+                                                disabled={!edit}
 											/>
 											{#if errors?.ApiIntegrationSettings?.Fetch?.QueryParams}
 												<p class="text-error">
@@ -666,6 +785,7 @@
 												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Body}
 												placeholder="Request Body"
 												class="w-full rounded border p-2 text-sm"
+                                                disabled={!edit}
 											/>
 											{#if errors?.ApiIntegrationSettings?.Fetch?.Body}
 												<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.Body}</p>
@@ -679,6 +799,7 @@
 										<td>
 											<FollowUpSettings
 												bind:model={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Headers}
+                                                disabled={!edit}
 											/>
 											{#if errors?.ApiIntegrationSettings?.Fetch?.Headers}
 												<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.Headers}</p>
@@ -695,6 +816,7 @@
 													followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseType
 												}
 												class="w-full rounded border p-2 text-sm"
+                                                disabled={!edit}
 											>
 												<option value="" disabled selected>Select Response type</option>
 												<option value="json">JSON</option>
@@ -718,6 +840,7 @@
 												bind:value={
 													followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseField
 												}
+                                                disabled={!edit}
 												placeholder="response field"
 												class="w-full rounded border p-2 text-sm"
 											/>
@@ -757,7 +880,7 @@
 								{#if openTab === 'token'}
 									<tr>
 										<td>
-											<label for="tokenLocation">Location <span class="text-red-700">*</span></label
+											<label for="tokenLocation">Location <span class="text-red-700"></span></label
 											>
 										</td>
 										<td>
@@ -766,9 +889,10 @@
 													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection
 														.Location
 												}
+                                                disabled={!edit}
 												class="w-full rounded border p-2 text-sm"
 											>
-												<option value="" disabled selected>Select Location</option>
+												<option value="" disabled={!edit} selected>Select Location</option>
 												<option value="header">Header</option>
 												<option value="query">Query</option>
 												<option value="body">Body</option>
@@ -782,13 +906,14 @@
 									</tr>
 									<tr>
 										<td>
-											<label for="tokenKey"> Key <span class="text-red-700">*</span></label>
+											<label for="tokenKey"> Key <span class="text-red-700"></span></label>
 										</td>
 										<td>
 											<input
 												bind:value={
 													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Key
 												}
+                                                disabled={!edit}
 												placeholder="Token key"
 												class="w-full rounded border p-2 text-sm"
 											/>
@@ -809,6 +934,7 @@
 													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection
 														.Prefix
 												}
+                                                disabled={!edit}
 												placeholder="Token prefix "
 												class="w-full rounded border p-2 text-sm"
 											/>
@@ -833,6 +959,7 @@
 												bind:value={
 													followUpSettingUpdateModel.ApiIntegrationSettings.ScheduleFrequency
 												}
+                                                disabled={!edit}
 												class="w-full rounded border p-2 text-sm"
 											>
 												<option value="" disabled selected>Select Schedule Frequency</option>
@@ -841,7 +968,7 @@
 												<option value="monthly">Monthly</option>
 											</select>
 											{#if errors?.ApiIntegrationSettings?.ScheduleFrequency}
-												<p class="text-error">{errors.ApiIntegrationSettings.ScheduleFrequency}</p>
+												<p class="text-error">{errors.ApiIntegrationSettings?.ScheduleFrequency}</p>
 											{/if}
 										</div>
 									</td>
@@ -856,7 +983,7 @@
 										<button
 											onclick={(event) => {
 												event.preventDefault();
-												showReminderModal = true;
+												showReminderModal = edit;
 											}}
 											class="table-btn variant-filled-secondary gap-1"
 										>
@@ -874,6 +1001,7 @@
 									}
 									{deleteSchedule}
 									{editSchedule}
+									{edit}
 								/>
 							{/if}
 						{/if}

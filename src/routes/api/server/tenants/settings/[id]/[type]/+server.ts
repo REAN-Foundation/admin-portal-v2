@@ -46,6 +46,9 @@ export const PUT = async (event: RequestEvent) => {
         const request = event.request;
         const data = await request.json();
 
+        console.log('Wellness:', data.Wellness);
+        console.log('type:', type);
+
         const validationResult = validateRequestData(data, type);
         console.log('Validation result:', validationResult.error);
         console.log('Validation result:', JSON.stringify(validationResult, null, 2));
