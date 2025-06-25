@@ -200,7 +200,7 @@
 							placeholder="Search by type name"
 							bind:value={typeName}
 							oninput={(event) => onSearchInput(event)}
-							class="health-system-input !pr-4 !pl-10"
+							class="input !pr-4 !pl-10"
 						/>
 						{#if typeName}
 							<button
@@ -226,7 +226,7 @@
 							placeholder="Search by display name"
 							bind:value={displayName}
 							oninput={(event) => onSearchInput(event)}
-							class="health-system-input !pr-4 !pl-10"
+							class="input !pr-4 !pl-10"
 						/>
 						{#if displayName}
 							<button
