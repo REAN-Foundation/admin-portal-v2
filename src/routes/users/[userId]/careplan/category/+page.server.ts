@@ -6,17 +6,16 @@ import { searchCareplanCategories } from '$routes/api/services/careplan/careplan
 
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
-    const tenantId = event.locals.sessionUser.tenantId;
+	// const tenantId = event.locals.sessionUser.tenantId;
 	event.depends('app:healthSystem');
 	const response = await searchCareplanCategories(sessionId, {
 		orderBy: 'Type',
 		order: 'ascending',
 		itemsPerPage: 10
 	});
-	console.log('response==>', response);
+
 	const careplanCategories = response?.Data?.Items || [];
 	const totalCount = response?.Data?.TotalCount || 0;
-	console.log('careplanCategories==>', careplanCategories);
 
 	return {
 		careplanCategories,

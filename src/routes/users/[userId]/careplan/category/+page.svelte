@@ -4,18 +4,15 @@
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-	import Tooltip from '$lib/components/tooltip.svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
-	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
-	console.log("data==>",data.careplanCategories);
 
 	let debounceTimeout;
 	let isLoading = $state(false);
@@ -26,19 +23,14 @@
 	let isDeleting = $state(false);
 	let searchKeyword = $state(undefined);
 	let promise = $state();
-
 	const userId = page.params.userId;
-	const healthSystemRoute = `/users/${userId}/careplan/category`;
+	const categoryRoute = `/users/${userId}/careplan/category`;
 	const editRoute = (id) => `/users/${userId}/careplan/category/${id}/edit`;
 	const viewRoute = (id) => `/users/${userId}/careplan/category/${id}/view`;
 	const createRoute = `/users/${userId}/careplan/category/create`;
-
-	const breadCrumbs = [{ name: 'Careplan Categories', path: healthSystemRoute }];
-
+	const breadCrumbs = [{ name: 'Careplan Categories', path: categoryRoute }];
 	let categoryType = $state(undefined);
-	console.log("data",data.careplanCategories)
 	let totalCategoryCount = $state(data.totalCount);
-	$inspect('totalCategoryCount', totalCategoryCount);
 	let isSortingName = $state(false);
 	let sortBy = $state('Type');
 	let sortOrder = $state('ascending');
@@ -49,8 +41,6 @@
 		size: totalCategoryCount,
 		amounts: [10, 20, 30, 50]
 	});
-
-	$inspect('retrivedHealth', categories);
 
 	async function SearchCategory(model) {
 		try {
@@ -66,7 +56,7 @@
 				headers: { 'content-type': 'application/json' }
 			});
 			const searchResult = await res.json();
-			console.log('searchResult', searchResult);
+
 			totalCategoryCount = searchResult.Data.Items.TotalCount;
 			paginationSettings.size = totalCategoryCount;
 
@@ -85,7 +75,6 @@
 	async function onSearchInput(e) {
 		clearTimeout(debounceTimeout);
 		let searchKeyword = e.target.value;
-		console.log('categoryType**', categoryType);
 		debounceTimeout = setTimeout(() => {
 			paginationSettings.page = 0; // reset page when typing new search
 			SearchCategory({
@@ -141,14 +130,12 @@
 	}
 
 	const hanleCategoryDelete = async (id) => {
-		console.log('Inside hanleCategoryDelete', id);
 		const response = await fetch(`/api/server/careplan/category/${id}`, {
 			method: 'DELETE',
 			headers: { 'content-type': 'application/json' }
 		});
 
 		const res = await response.json();
-		console.log('deleted Response', res);
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
@@ -234,25 +221,11 @@
 									</td>
 
 									<td>
-										<!-- <Tooltip text={row.Type || 'Not specified'}>
-											<a href={viewRoute(row.id)}>
-												{row.Type !== null && row.Type !== ''
-													? Helper.truncateText(row.Type, 50)
-													: 'Not specified'}
-											</a>
-										</Tooltip> -->
 										{row.Type !== null && row.Type !== ''
 											? Helper.truncateText(row.Type, 40)
 											: 'Not specified'}
 									</td>
-									<td >
-										<!-- <Tooltip text={row.Description || 'Not specified'}>
-											<a href={viewRoute(row.id)}>
-												{row.Description !== null && row.Description !== ''
-													? Helper.truncateText(row.Description, 50)
-													: 'Not specified'}
-											</a>
-										</Tooltip> -->
+									<td>
 										{row.Description !== null && row.Description !== ''
 											? Helper.truncateText(row.Description, 20)
 											: 'Not specified'}

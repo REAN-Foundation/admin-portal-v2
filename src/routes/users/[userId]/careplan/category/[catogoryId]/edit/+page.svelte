@@ -17,14 +17,11 @@
 	let categoryDescription = $state(data.careplanCategory.Description);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-
 	const userId = page.params.userId;
 	var categoryId = page.params.catogoryId;
-
 	const editRoute = `/users/${userId}/careplan/category/${categoryId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/category/${categoryId}/view`;
 	const categoriesRoute = `/users/${userId}/careplan/category`;
-
 	const breadCrumbs = [
 		{ name: 'Careplan Categories', path: categoriesRoute },
 		{ name: 'Edit', path: editRoute }
@@ -65,7 +62,6 @@
 			});
 
 			const response = await res.json();
-            console.log("response in edit ==>",response);
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);

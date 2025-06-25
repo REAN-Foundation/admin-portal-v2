@@ -16,12 +16,10 @@
 	let categoryType = $state(undefined);
 	let categoryDescription = $state(undefined);
 	let promise = $state();
-
 	data.title = 'Careplan Categories-Category Create';
 	const userId = page.params.userId;
 	const createRoute = `/users/${userId}/careplan/category/create`;
 	const categoriesRoute = `/users/${userId}/careplan/category`;
-
 	const breadCrumbs = [
 		{ name: 'Careplan Categories', path: categoriesRoute },
 		{ name: 'Create', path: createRoute }

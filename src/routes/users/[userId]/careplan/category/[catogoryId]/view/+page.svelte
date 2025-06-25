@@ -12,15 +12,10 @@
 	const editRoute = `/users/${userId}/careplan/category/${categoryId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/category/${categoryId}/view`;
 	const categoryRoute = `/users/${userId}/careplan/category`;
-
-
 	let { data }: { data: PageServerData } = $props();
-
 	let careplanCategory = $state(data.careplanCategory);
-    console.log("careplanCategory==>",careplanCategory);
 	let categoryType = careplanCategory.Type ;
 	let categoryDescription = careplanCategory.Description;
-
 	const breadCrumbs = [
 		{
 			name: 'Careplan Categories',

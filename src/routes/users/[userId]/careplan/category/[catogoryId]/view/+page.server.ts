@@ -7,10 +7,8 @@ import { getCareplanCategoryById } from '../../../../../../api/services/careplan
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
     const categoryId = event.params.catogoryId;
-    const response = await getCareplanCategoryById(sessionId, categoryId);
-    console.log("response==>",response);    
+    const response = await getCareplanCategoryById(sessionId, categoryId);  
     const careplanCategory = response?.Data || [];
-    console.log("careplanCategory==>",careplanCategory);
     const id = response?.Data.id || '';
     return {
         location: `${id}/edit`,
