@@ -202,7 +202,7 @@
 	@apply flex-1 p-4 pt-20; /* Ensures content doesn't overlap AppBar */
 }
 .sidebar {
-	@apply fixed top-14 left-0 h-[calc(100vh-3.5rem)] w-50 overflow-y-auto border-r border-[var(--color-outline)] bg-[var(--color-secondary)] px-4 py-4 text-[var(--color-info)] sm:w-56;
+	@apply fixed top-14 left-0 h-[calc(100vh-3.5rem)] w-50 overflow-y-auto border-r border-[var(--color-outline)] bg-[var(--color-secondary)] px-2 py-4 text-[var(--color-info)] sm:w-56;
 }
 
 .sidebar-list {

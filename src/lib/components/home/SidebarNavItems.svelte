@@ -4,15 +4,16 @@
 	import SidebarNavItems from './SidebarNavItems.svelte';
 
 	let { navItem, page, activeTab = $bindable() } = $props();
-
 	let openTab = $state(null);
 
 	function toggleDropdown(tabName) {
 		openTab = openTab === tabName ? null : tabName;
 	}
 
-	// Automatically open parent tab if current path matches its link
 	onMount(() => {
+		if (page.url.pathname === navItem.link) {
+			activeTab = navItem.title;
+		}
 		if (navItem.link && page.url.pathname.startsWith(navItem.link)) {
 			openTab = navItem.title;
 		}
@@ -28,20 +29,20 @@
 			<a
 				href={navItem.link}
 				class="sidebar-item flex items-center"
-				class:variant-soft-secondary={navItem.link && page.url.pathname.startsWith(navItem.link)}
+				class:variant-soft-secondary={activeTab === navItem.title}
 				onclick={() => (activeTab = navItem.title)}
 			>
 				{#if navItem.icon?.endsWith('.png')}
 					<img src={navItem.icon} alt="" class="h-6 w-6 invert dark:filter-none" />
 				{:else}
 					<Icon
-						icon={page.url.pathname.startsWith(navItem.link)
-							? navItem.icon.replace('-outline', '')
-							: navItem.icon}
+						icon={activeTab === navItem.title ? navItem.icon.replace('-outline', '') : navItem.icon}
 						class="text-2xl"
 					/>
 				{/if}
+
 				<span class="sidebar-text">{navItem.title}</span>
+
 				<span
 					class="transition-transform duration-300"
 					class:rotate-180={openTab === navItem.title}
@@ -70,20 +71,19 @@
 {:else if navItem.link}
 	<a
 		href={navItem.link}
-		class="sidebar-item flex items-center gap-2"
-		class:variant-soft-secondary={navItem.link && page.url.pathname.startsWith(navItem.link)}
+		class="sidebar-item flex items-center gap-1"
+		class:variant-soft-secondary={activeTab === navItem.title}
 		onclick={() => (activeTab = navItem.title)}
 	>
 		{#if navItem.icon?.endsWith('.png')}
 			<img src={navItem.icon} alt="" class="h-6 w-6 invert dark:filter-none" />
 		{:else}
 			<Icon
-				icon={page.url.pathname.startsWith(navItem.link)
-					? navItem.icon.replace('-outline', '')
-					: navItem.icon}
+				icon={activeTab === navItem.title ? navItem.icon.replace('-outline', '') : navItem.icon}
 				class="text-2xl"
 			/>
 		{/if}
+
 		<span class="sidebar-text">{navItem.title}</span>
 	</a>
 {/if}
