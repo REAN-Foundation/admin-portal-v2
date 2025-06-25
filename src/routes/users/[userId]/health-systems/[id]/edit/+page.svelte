@@ -128,7 +128,8 @@
 							id="keywords"
 							keywordsChanged={onUpdateKeywords}
 						/>
-						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+
+						<Input name="keywordsStr" type="hidden" bind:value={keywordsStr} />
 					</td>
 				</tr>
 			</tbody>
