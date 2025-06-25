@@ -21,22 +21,22 @@
 	let nodeType = $state(data.assessmentNode.NodeType),
 		parentNodeId = $state(data.assessmentNode.ParentNodeId),
 		title = $state(data.assessmentNode.Title),
-		description = $state(data.assessmentNode.Description ?? undefined),
+		description = $state(data.assessmentNode.Description),
 		queryType = $state(data.assessmentNode.QueryResponseType),
 		options = $state(data.assessmentNode.Options ?? []),
-		message = $state(data.assessmentNode.Message ?? undefined),
+		message = $state(data.assessmentNode.Message ),
 		sequence = $state(data.assessmentNode.Sequence),
-		serveListNodeChildrenAtOnce = $state(data.assessmentNode.ServeListNodeChildrenAtOnce ?? false),
+		serveListNodeChildrenAtOnce = $state(data.assessmentNode.ServeListNodeChildrenAtOnce),
 		tags = $state(data.assessmentNode.Tags),
-		correctAnswer = $state(data.assessmentNode.CorrectAnswer ?? undefined),
+		correctAnswer = $state(data.assessmentNode.CorrectAnswer),
 		keywords: string[] = $state(data.assessmentNode.Tags),
 		resolutionScore = $state(data.assessmentNode.ResolutionScore),
 		providerAssessmentCode = $state(data.assessmentNode.ProviderAssessmentCode),
 		scoringApplicable = $state(data.assessmentNode.ScoringApplicable),
 		required = $state(data.assessmentNode.Required),
-		fieldIdentifier = $state(data.assessmentNode.FieldIdentifier ?? undefined),
-		fieldIdentifierUnit = $state(data.assessmentNode.FieldIdentifierUnit ?? undefined),
-		rawData = $state(data.assessmentNode.RawData ?? undefined);
+		fieldIdentifier = $state(data.assessmentNode.FieldIdentifier ),
+		fieldIdentifierUnit = $state(data.assessmentNode.FieldIdentifierUnit ),
+		rawData = $state(data.assessmentNode.RawData )
 
 	let optionArray = $derived(options);
 
@@ -407,7 +407,7 @@
 										required
 										placeholder="Enter message here..."
 										bind:value={message}
-										class="textarea w-full
+										class="health-system-input w-full
 											{form?.errors?.message ? 'border-error-300 text-error-500' : ''}"
 									></textarea>
 									{#if errors?.Message}
