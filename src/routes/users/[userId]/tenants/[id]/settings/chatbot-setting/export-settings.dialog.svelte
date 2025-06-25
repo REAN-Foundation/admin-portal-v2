@@ -11,14 +11,9 @@
 		jsonInput = '';
 		isValidJSON = true;
 		isPublishing = false;
-		isFetchingSecret = false;
+		isFetchingSecret = false;nup
 	}
 
-	function handleExport(type: string) {
-		// Placeholder for export logic
-		alert(`Export as ${type}`);
-		closeDialog();
-	}
 
 	let isGenerated = $state(false);
 	let jsonInput = $state('');
@@ -30,9 +25,6 @@
 	let hasSecrets = $state(false);
 	let isCheckingSecrets = $state(false);
 
-	function toggleConfig() {
-		isGenerated = true;
-	}
 
 	function handleJSONInput(event: Event) {
 		const value = (event.target as HTMLTextAreaElement).value;
@@ -59,7 +51,7 @@
 				body: jsonInput
 			});
 			const response = await res.json();
-
+			console.log('This is response', response);
 			if (res.ok) {
 				toastMessage(response);
 				closeDialog();
@@ -67,37 +59,10 @@
 				toastMessage(response);
 			}
 		} catch (err) {
+			console.log('This is error', err);
 			toastMessage('Error publishing configuration');
 		} finally {
 			isPublishing = false;
-		}
-	}
-
-	async function handleViewSecret() {
-		isFetchingSecret = true;
-		try {
-			const res = await fetch(`/api/server/tenants/${tenantId}/secret`, {
-				method: 'GET',
-				headers: { 'content-type': 'application/json' }
-			});
-			const response = await res.json();
-			if (response.HttpCode === 201 || response.HttpCode === 200) {
-				if (response.Data) {
-					jsonInput = JSON.stringify(response.Data, null, 2);
-				} else if (typeof response.secret === 'string') {
-					jsonInput = response.secret;
-				} else {
-					jsonInput = JSON.stringify(response.secret, null, 2);
-				}
-				viewEditMode = 'view';
-				toastMessage(response);
-			} else {
-				toastMessage(response);
-			}
-		} catch (err) {
-			alert('Error fetching secret');
-		} finally {
-			isFetchingSecret = false;
 		}
 	}
 
@@ -114,6 +79,7 @@
 				headers: { 'content-type': 'application/json' }
 			});
 			const response = await res.json();
+			console.log("This is check",response)
 			if (response.HttpCode === 200 && response.Data) {
 				hasSecrets = true;
 				jsonInput = JSON.stringify(response.Data, null, 2);
@@ -145,9 +111,10 @@
 				if (response.Data) {
 					jsonInput = JSON.stringify(response.Data, null, 2);
 				} else if (response.secret) {
-					jsonInput = typeof response.secret === 'string' 
-						? response.secret 
-						: JSON.stringify(response.secret, null, 2);
+					jsonInput =
+						typeof response.secret === 'string'
+							? response.secret
+							: JSON.stringify(response.secret, null, 2);
 				}
 				toastMessage(response);
 			} else {
@@ -192,13 +159,12 @@
 					}}
 				>
 					Tenant settings
-				</span
-				>
+				</span>
 				&gt; configurations
 			</p>
 
 			{#if isCheckingSecrets}
-				<div class="flex items-center justify-center h-full">
+				<div class="flex h-full items-center justify-center">
 					<p>Checking existing secrets...</p>
 				</div>
 			{:else if !hasSecrets}
@@ -217,7 +183,7 @@
 					<div class="mb-2 flex gap-2">
 						<button
 							class="rounded border border-blue-300 bg-blue-100 px-4 py-1 text-black hover:bg-blue-200 disabled:opacity-60"
-							onclick={handleViewSecret}
+							
 							disabled={isFetchingSecret || viewEditMode === 'view'}
 						>
 							{isFetchingSecret ? 'Loading...' : 'View'}
@@ -247,7 +213,7 @@
 					<button
 						class="mt-2 w-64 self-end rounded bg-blue-200 px-4 py-2 text-black shadow hover:bg-blue-300"
 						onclick={publish}
-						disabled={isPublishing || viewEditMode !== 'edit'}
+						disabled={isPublishing}
 					>
 						{isPublishing ? 'Publishing...' : 'Publish'}
 					</button>
