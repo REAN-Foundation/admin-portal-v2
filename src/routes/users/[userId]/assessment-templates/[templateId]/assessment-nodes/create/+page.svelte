@@ -501,6 +501,7 @@
 										required
 										placeholder="Enter message here..."
 										class="health-system-input {form?.errors?.message ? 'input-text-error' : ''}"
+										bind:value={message}
 									></textarea>
 									{#if errors?.Message}
 										<p class="text-error">{errors?.Message}</p>

@@ -26,7 +26,7 @@ console.log('This is data',data)
 		assessmentNodes.Description !== null && assessmentNodes.Description !== ''
 			? assessmentNodes.Description
 			: 'Not specified';
-	const message = assessmentNodes.Message !== null ? assessmentNodes.Message : 'Not specified';
+	const message = assessmentNodes.Message !== null && assessmentNodes.Message !== '' ? assessmentNodes.Message : 'Not specified';
 	const serveListNodeChildrenAtOnce = assessmentNodes.ServeListNodeChildrenAtOnce ?? null;
 	const queryType = assessmentNodes.QueryResponseType;
 	const options = assessmentNodes.Options ?? [];
@@ -41,10 +41,11 @@ console.log('This is data',data)
 			? assessmentNodes.RawData
 			: 'Not specified';
 
-	const fieldIdentifier = assessmentNodes.FieldIdentifier ?? null;
-	const fieldIdentifierUnit = assessmentNodes.FieldIdentifierUnit ?? null;
+	const fieldIdentifier = assessmentNodes.FieldIdentifier && assessmentNodes.FieldIdentifier !== '' ? assessmentNodes.FieldIdentifier : 'Not specified';
+	const fieldIdentifierUnit = assessmentNodes.FieldIdentifierUnit && assessmentNodes.FieldIdentifierUnit !== '' ? assessmentNodes.FieldIdentifierUnit : 'Not specified';;
 
 	let resolutionScore = $state();
+	console.log('message', message);
 
 	if (nodeType === 'Question') {
 		resolutionScore = assessmentNodes.ScoringCondition?.ResolutionScore ?? 'Not specified';
