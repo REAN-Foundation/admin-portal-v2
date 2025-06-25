@@ -248,7 +248,7 @@ const ReminderTriggerTypeEnum = z.enum([
 
 const HttpMethodEnum = z.enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH']);
 const ResponseTypeEnum = z.enum(['json', 'text', 'form', 'xml']);
-// const FileTypeEnum = z.enum(['csv', 'xlsx', 'json', 'xml', 'txt', 'pdf']);
+
 const FileTypeEnum = z.enum(['csv', 'xlsx', 'json', 'xml', 'txt', 'pdf'],
     {
         required_error: "FileType is required",
@@ -271,23 +271,20 @@ const FileUploadConfigSchema = z.object({
 });
 
 const ApiAuthConfigSchema = z.object({
-    Method: HttpMethodEnum,
-    Url: z.string({
-        required_error: "Url is required for ApiAuthConfig",
-    }),
+    Method: z.union([HttpMethodEnum, z.literal('')]).optional(),
+    Url: z.string().optional(),
     Body: z.any().optional(),
     QueryParams: z.record(z.string()).optional(),
     Headers: z.record(z.string()).optional(),
-    TokenPath: z.string({
-        required_error: "TokenPath is required for ApiAuthConfig",
-    }),
-    ResponseType: ResponseTypeEnum.optional(),
+    TokenPath: z.string().optional(),
+    ResponseType: z.union([ResponseTypeEnum, z.literal('')]).optional(),
     TokenInjection: z.object({
-        Location: z.enum(['header', 'query', 'body']),
-        Key: z.string(),
+        Location: z.union([z.enum(['header', 'query', 'body']), z.literal('')]).optional(),
+        Key: z.string().optional(),
         Prefix: z.string().optional(),
-    }),
+    }).optional(),
 });
+
 
 const ApiFetchConfigSchema = z.object({
     Method: HttpMethodEnum,
@@ -314,7 +311,6 @@ export const FollowupSettingsSchema = z.object({
     ApiIntegrationSettings: ApiIntegrationConfigSchema.optional(),
 });
 
-// FormsIntegrations Schema
 const FormsIntegrationsSchema = z.object({
     KoboToolbox: z.boolean({
         required_error: 'KoboToolbox integration status is required',

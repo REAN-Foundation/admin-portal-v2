@@ -35,38 +35,48 @@
 
 	let previousConsent = $derived(chatBotSetting.ChatBot.Consent);
 	let faviconUrl = $derived(chatBotSetting.ChatBot.Favicon);
-	let disabled = $state(data.commonSettings.UserInterfaces.ChatBot);
+	// let disabled = $state(data.commonSettings.UserInterfaces.ChatBot);
+	let disabled = $state(data.isChatBotEnabled);
 	let edit = $state(false);
 	let fileName = $state('')
 
 	const totalSteps = 3;
 	let currentSection = $state(0);
 
-	const toggleEdit = async () => {
-		if (disabled) {
-			if (!edit) {
-				edit = true;
-				addToast({
-					message: 'Edit mode enabled',
-					type: 'info',
-					timeout: 3000
-				});
-			} else {
-				addToast({
-					message: 'Settings saved successfully',
-					type: 'success',
-					timeout: 3000
-				});
-				edit = false;
-			}
-		} else if (disabled === false) {
-			addToast({
-				message: 'This setting is disabled. Please update it from the main settings.',
-				type: 'warning',
-				timeout: 3000
-			});
-			return;
-		}
+	const handleEditClick = async () => {
+        if (!disabled) {
+            addToast({
+                message: 'This setting is disabled. Please update it from the main settings.',
+                type: 'warning',
+                timeout: 3000
+            });
+            return;
+        }
+        edit = !edit;
+		// if (disabled) {
+		// 	if (!edit) {
+		// 		edit = true;
+		// 		addToast({
+		// 			message: 'Edit mode enabled',
+		// 			type: 'info',
+		// 			timeout: 3000
+		// 		});
+		// 	} else {
+		// 		addToast({
+		// 			message: 'Settings saved successfully',
+		// 			type: 'success',
+		// 			timeout: 3000
+		// 		});
+		// 		edit = false;
+		// 	}
+		// } else if (disabled === false) {
+		// 	addToast({
+		// 		message: 'This setting is disabled. Please update it from the main settings.',
+		// 		type: 'warning',
+		// 		timeout: 3000
+		// 	});
+		// 	return;
+		// }
 	};
 
 	const onFileSelected = async (e) => {
@@ -102,65 +112,73 @@
 		event.preventDefault();
 		errors = {};
 
-		let isConsentSaved = false;
+		// let isConsentSaved = false;
 		let isFaviconUploaded = false;
-		let isChatBotSaved = false;
+		// let isChatBotSaved = false;
 
 		try {
+            if (!edit) {
+                addToast({
+                    message: 'Nothing to edit !',
+                    type: 'warning',
+                    timeout: 3000
+                });
+                return;
+            }
 			// ----------------------------- CONSENT SETTINGS -----------------------------
-			const consentSettingModel: ConsentSettings = {
-				TenantId: tenantId,
-				TenantCode: tenantCode,
-				TenantName: tenantName,
-				DefaultLanguage: consentSetting.DefaultLanguage,
-				Messages: consentSetting.Messages
-			};
+			// const consentSettingModel: ConsentSettings = {
+			// 	TenantId: tenantId,
+			// 	TenantCode: tenantCode,
+			// 	TenantName: tenantName,
+			// 	DefaultLanguage: consentSetting.DefaultLanguage,
+			// 	Messages: consentSetting.Messages
+			// };
 
-			const consentValidation = ConsentSettingsSchema.safeParse(consentSettingModel);
-			if (!consentValidation.success) {
-				errors = Object.fromEntries(
-					Object.entries(consentValidation.error.flatten().fieldErrors).map(([key, val]) => [
-						key,
-						val?.[0] || 'This field is required'
-					])
-				);
-				return;
-			}
+			// const consentValidation = ConsentSettingsSchema.safeParse(consentSettingModel);
+			// if (!consentValidation.success) {
+			// 	errors = Object.fromEntries(
+			// 		Object.entries(consentValidation.error.flatten().fieldErrors).map(([key, val]) => [
+			// 			key,
+			// 			val?.[0] || 'This field is required'
+			// 		])
+			// 	);
+			// 	return;
+			// }
 
-			const consentRes = await fetch(`/api/server/tenants/settings/${tenantId}/Consent`, {
-				method: 'PUT',
-				body: JSON.stringify(consentSettingModel),
-				headers: { 'content-type': 'application/json' }
-			});
+			// const consentRes = await fetch(`/api/server/tenants/settings/${tenantId}/Consent`, {
+			// 	method: 'PUT',
+			// 	body: JSON.stringify(consentSettingModel),
+			// 	headers: { 'content-type': 'application/json' }
+			// });
 
-			const consentJson = await consentRes.json();
-			if (consentJson.HttpCode === 200 || consentJson.HttpCode === 201) {
-				isConsentSaved = true;
-			} else if (consentJson.Errors) {
-				errors = consentJson.Errors;
-				addToast({ message: 'Consent settings failed.', type: 'error', timeout: 3000 });
-				return;
-			}
+			// const consentJson = await consentRes.json();
+			// if (consentJson.HttpCode === 200 || consentJson.HttpCode === 201) {
+			// 	isConsentSaved = true;
+			// } else if (consentJson.Errors) {
+			// 	errors = consentJson.Errors;
+			// 	addToast({ message: 'Consent settings failed.', type: 'error', timeout: 3000 });
+			// 	return;
+			// }
 
 			// ----------------------------- FAVICON UPLOAD -----------------------------
-			if (formData.has('file')) {
-				const fileRes = await fetch(`/api/server/tenants/upload`, {
-					method: 'POST',
-					body: formData
-				});
+			// if (formData.has('file')) {
+			// 	const fileRes = await fetch(`/api/server/tenants/upload`, {
+			// 		method: 'POST',
+			// 		body: formData
+			// 	});
 
-				const fileJson = await fileRes.json();
+			// 	const fileJson = await fileRes.json();
 
-				if (fileJson.HttpCode === 200 || fileJson.HttpCode === 201) {
-					faviconUrl = fileJson.Data.FileResources[0].Url;
-					isFaviconUploaded = true;
-				} else {
-					addToast({ message: 'Favicon upload failed.', type: 'error', timeout: 3000 });
-					return;
-				}
-			} else {
-				isFaviconUploaded = true; // no file, but treat as passed
-			}
+			// 	if (fileJson.HttpCode === 200 || fileJson.HttpCode === 201) {
+			// 		faviconUrl = fileJson.Data.FileResources[0].Url;
+			// 		isFaviconUploaded = true;
+			// 	} else {
+			// 		addToast({ message: 'Favicon upload failed.', type: 'error', timeout: 3000 });
+			// 		return;
+			// 	}
+			// } else {
+			// 	isFaviconUploaded = true; // no file, but treat as passed
+			// }
 
 			// ----------------------------- CHATBOT SETTINGS -----------------------------
 			const chatbotCreateModel: ChatBotSettings = {
@@ -213,7 +231,8 @@
 
 			const chatBotJson = await chatBotRes.json();
 			if (chatBotJson.HttpCode === 200 || chatBotJson.HttpCode === 201) {
-				isChatBotSaved = true;
+                toastMessage(chatBotJson);
+				edit = false;
 			} else if (chatBotJson.Errors) {
 				errors = chatBotJson.Errors;
 				addToast({ message: 'ChatBot settings failed.', type: 'error', timeout: 3000 });
@@ -221,12 +240,12 @@
 			}
 
 			// ----------------------------- FINAL TOAST -----------------------------
-			if (isConsentSaved && isFaviconUploaded && isChatBotSaved) {
-				console.log('All settings saved successfully.');
-				//
-				toastMessage(chatBotJson);
-				edit = true;
-			}
+			// if (isFaviconUploaded && isChatBotSaved) {
+			// 	console.log('All settings saved successfully.');
+			// 	//
+			// 	toastMessage(chatBotJson);
+			// 	edit = true;
+			// }
 		} catch (err) {
 			console.error('Submit Error:', err);
 			addToast({ message: 'Unexpected error occurred.', type: 'error', timeout: 3000 });
@@ -238,33 +257,136 @@
 		SupportChannels: '/tenant-setting/chatbot/support_channel.svg#icon'
 	};
 
-	const chatBotSettings = {
+	// const chatBotSettings = {
+	// 	MessageChannels: {
+	// 		WhatsApp: {
+	// 			Name: 'WhatsApp',
+	// 			IconPath: 'ic:twotone-whatsapp',
+	// 			Description: 'Connect with WhatsApp for messaging and notifications.'
+	// 		},
+	// 		Telegram: {
+	// 			Name: 'Telegram',
+	// 			IconPath: 'iconoir:telegram',
+	// 			Description: 'Connect with Telegram for messaging and notifications.'
+	// 		}
+	// 	},
+	// 	SupportChannels: {
+	// 		ClickUp: {
+	// 			Name: 'ClickUp',
+	// 			IconPath: 'lineicons:clickup',
+	// 			Description: 'Connect with ClickUp for task management and collaboration.'
+	// 		},
+	// 		Slack: {
+	// 			Name: 'Slack',
+	// 			IconPath: 'basil:slack-outline',
+	// 			Description: 'Connect with Slack for team communication and collaboration.'
+	// 		},
+	// 		Email: {
+	// 			Name: 'Email',
+	// 			IconPath: 'line-md:email',
+	// 			Description: 'Connect with Email for email notifications and communication.'
+	// 		}
+	// 	}
+	// } as const;
+
+    const chatBotSettings = {
 		MessageChannels: {
+			Name: 'Message Channels',
+			IconPath: 'mdi:message-outline',
+			Description: 'Configure messaging platforms for chatbot communication.',
 			WhatsApp: {
-				Name: 'Whats App',
-				IconPath: 'ic:twotone-whatsapp'
+				Name: 'WhatsApp',
+				IconPath: 'ic:twotone-whatsapp',
+				Description: 'Connect with WhatsApp for messaging.'
 			},
 			Telegram: {
 				Name: 'Telegram',
-				IconPath: 'iconoir:telegram'
+				IconPath: 'iconoir:telegram',
+				Description: 'Connect with Telegram for messaging.'
 			}
 		},
 		SupportChannels: {
+			Name: 'Support Channels',
+			IconPath: 'mdi:help-circle-outline',
+			Description: 'Configure support platforms for customer assistance.',
 			ClickUp: {
-				Name: 'Click Up',
-				IconPath: 'lineicons:clickup'
+				Name: 'ClickUp',
+				IconPath: 'lineicons:clickup',
+				Description: 'Connect with ClickUp for task management.'
 			},
 			Slack: {
 				Name: 'Slack',
-				IconPath: 'basil:slack-outline'
+				IconPath: 'basil:slack-outline',
+				Description: 'Connect with Slack for team communication.'
 			},
 			Email: {
 				Name: 'Email',
-				IconPath: 'line-md:email'
+				IconPath: 'line-md:email',
+				Description: 'Connect with Email for notifications.'
 			}
-		}
-	} as const;
+		},
 
+			Personalization: {
+				Name: 'Personalization',
+				IconPath: 'mdi:account-circle-outline',
+				Description: 'Enable personalized chatbot responses.'
+			},
+			LocationContext: {
+				Name: 'Location Context',
+				IconPath: 'mdi:map-marker-outline',
+				Description: 'Use location data for contextual responses.'
+			},
+			Localization: {
+				Name: 'Localization',
+				IconPath: 'mdi:translate',
+				Description: 'Support multiple languages and regions.'
+			},
+			RemindersMedication: {
+				Name: 'Medication Reminders',
+				IconPath: 'mdi:pill',
+				Description: 'Send medication reminder notifications.'
+			},
+			QnA: {
+				Name: 'Q&A',
+				IconPath: 'mdi:help-circle-outline',
+				Description: 'Enable question and answer functionality.'
+			},
+			Consent: {
+				Name: 'Consent',
+				IconPath: 'mdi:shield-check-outline',
+				Description: 'Collect user consent and privacy agreements.'
+			},
+			WelcomeMessage: {
+				Name: 'Welcome Message',
+				IconPath: 'mdi:hand-wave-outline',
+				Description: 'Send greeting messages to new users.'
+			},
+			Feedback: {
+				Name: 'Feedback',
+				IconPath: 'mdi:comment-outline',
+				Description: 'Collect user feedback and ratings.'
+			},
+			ReminderAppointment: {
+				Name: 'Appointment Reminders',
+				IconPath: 'mdi:calendar-clock',
+				Description: 'Send appointment reminder notifications.'
+			},
+			AppointmentFollowup: {
+				Name: 'Appointment Followup',
+				IconPath: 'mdi:calendar-check',
+				Description: 'Follow up after appointments with users.'
+			},
+			ConversationHistory: {
+				Name: 'Conversation History',
+				IconPath: 'mdi:history',
+				Description: 'Store and access previous conversations.'
+			},
+			Emojis: {
+				Name: 'Emojis',
+				IconPath: 'mdi:emoticon-happy-outline',
+				Description: 'Use emojis in chatbot responses.'
+			}
+	} as const;
 	function getSettingMeta(group: keyof typeof chatBotSettings, key: string) {
 		const setting = chatBotSettings?.[group]?.[key];
 
@@ -344,10 +466,10 @@
 						<button
 							type="button"
 							class="table-btn variant-filled-secondary gap-1"
-							onclick={toggleEdit}
+							onclick={handleEditClick}
 						>
 							<Icon icon="material-symbols:edit-outline" />
-							<span>{edit ? 'Save' : 'Edit'}</span>
+							<!-- <span>{edit ? 'Save' : 'Edit'}</span> -->
 						</button>
 						<a
 							href={tenantRoute}
@@ -369,6 +491,7 @@
 						{onFileSelected}
 						bind:currentSection
 						{fileName}
+						chatBotUISettings = {chatBotSettings}
 					/>
 				</div>
 			</div>

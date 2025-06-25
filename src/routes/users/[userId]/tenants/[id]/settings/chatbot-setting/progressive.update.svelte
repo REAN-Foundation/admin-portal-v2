@@ -14,7 +14,8 @@
 		showCancelModel = $bindable(),
 		onFileSelected,
 		currentSection = $bindable(),
-		fileName
+		fileName,
+		chatBotUISettings
 	} = $props();
 	$inspect(edit, 'edit');
 
@@ -196,8 +197,8 @@
 										<p>Support Channels</p>
 									{/if}
 								</div>
-								<p class=" text-sm">Settings under {groupName}</p>
-							</div>
+								<p class=" text-sm">{chatBotUISettings[groupName].Description}</p>
+							</div> 
 						</div>
 
 						<!-- <span class:rotate-180={openTab === groupName} class="transition-transform duration-300"> -->
@@ -239,7 +240,8 @@
 											<div class="flex flex-grow flex-col">
 												<span class="text-sm font-medium">{meta?.Name ?? key}</span>
 												<p class="text-sm">
-													short description for {meta?.Name ?? key}.
+													<!-- short description for {meta?.Name ?? key}. -->
+													{meta?.Description}
 												</p>
 											</div>
 
@@ -276,19 +278,19 @@
 								class="flex items-center justify-between gap-3 rounded-xl border p-4 text-gray-700"
 							>
 								<!-- Left: App Icon -->
-								<Icon icon="mdi:account-cog" class="h-5 w-5" />
+								<Icon icon={chatBotUISettings[groupName].IconPath} class="h-5 w-5" />
 
 								<!-- Middle: Name & Description -->
 								<div class="flex flex-grow flex-col">
-									<span class="text-sm font-medium">{groupName}</span>
+									<span class="text-sm font-medium">{chatBotUISettings[groupName].Name}</span>
 									<p class="text-sm">
-										short description for {groupName}
+										{chatBotUISettings[groupName].Description}
 									</p>
 								</div>
 
 								<!-- Right: Toggle + Optional Edit -->
 								<div class="flex items-center">
-									{#if groupName === 'Consent' && groupItems === true && edit === true}
+									<!-- {#if groupName === 'Consent' && groupItems === true && edit === true}
 										<Tooltip text="Edit" forceShow={true}>
 											<Icon
 												icon="material-symbols:edit-outline"
@@ -296,7 +298,7 @@
 												onclick={() => (showCancelModel = true)}
 											/>
 										</Tooltip>
-									{/if}
+									{/if} -->
 									<input
 										type="checkbox"
 										class="checkbox checkbox-primary scale-125 cursor-pointer"
