@@ -230,6 +230,7 @@
 						<tr>
 							<td>Node Type <span class=" text-red-600">*</span></td>
 							<td>
+								
 								<input type="text" disabled bind:value={nodeType} class="input" />
 								<input type="hidden" name="nodeType" bind:value={nodeType} class="input" />
 							</td>

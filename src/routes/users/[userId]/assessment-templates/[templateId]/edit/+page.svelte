@@ -158,7 +158,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>Type *</td>
+							<td>Type <span class=" text-red-600">*</span></td>
 							<td>
 								<select
 									name="type"
