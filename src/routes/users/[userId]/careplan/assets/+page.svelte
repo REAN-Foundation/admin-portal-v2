@@ -257,26 +257,53 @@
 		<div class="table-container my-6 shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="relative flex-1 pr-1.5">
+					<div class="relative w-auto grow">
 						<input
 							type="text"
 							name="name"
 							placeholder="Search by name"
+							bind:value={nameAssetSearch}
 							oninput={(event) => onSearchInput(event, 'name')}
-							class="input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						<Icon icon="heroicons:magnifying-glass" 
 						class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400" />
+						{#if nameAssetSearch}
+							<button
+								type="button"
+								onclick={() => {
+									nameAssetSearch = '';
+									onSearchInput({ target: { name: 'name', value: '' } }, 'name');
+								}}
+								class="close-btn"
+							>
+								<Icon icon="material-symbols:close" />
+							</button>
+						{/if}
 					</div>
-					<div class="relative flex-1 pr-1.5">
+					<div class="relative w-auto grow">
 						<input
 							type="text"
 							name="code"
 							placeholder="Search by code"
+							bind:value={codeAssetSearch}
 							oninput={(event) => onSearchInput(event, 'code')}
 							class="input !pr-4 !pl-10"
 						/>
+						
 						<Icon icon="heroicons:magnifying-glass" class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400" />
+						{#if codeAssetSearch}
+							<button
+								type="button"
+								onclick={() => {
+									codeAssetSearch = '';
+									onSearchInput({ target: { name: 'code', value: '' } }, 'code');
+								}}
+								class="close-btn"
+							>
+								<Icon icon="material-symbols:close" />
+							</button>
+						{/if}
 					</div>
 					<Button href={createRoute} text="Add New" variant="primary" />
 				</div>
