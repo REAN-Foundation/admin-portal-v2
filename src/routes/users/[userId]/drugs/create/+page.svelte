@@ -7,7 +7,10 @@
 	import type { DrugCreateModel } from '$lib/types/drug.types.js';
 	import { createOrUpdateSchema } from '$lib/validation/drugs.schema.js';
 	import Button from '$lib/components/button/button.svelte';
-
+	import Heading from '$lib/components/heading/heading.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Input from '$lib/components/input/input.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
 	////////////////////////////////////////////////////////////////////////
 
 	let { data, form } = $props();
@@ -86,137 +89,118 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th>Create Drug</th>
-							<th class="text-end">
-								<a href={drugsRoute} class="form-cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Name <span class="text-red-600">*</span></td>
-							<td>
-								<input
-									type="text"
-									bind:value={drugName}
-									class="health-system-input"
-									name="drugName"
-									placeholder="Enter name here..."
-								/>
-								{#if errors?.DrugName}
-									<p class="text-error">{errors?.DrugName}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Generic Name</td>
-							<td>
-								<input
-									type="text"
-									bind:value={genericName}
-									name="genericName"
-									placeholder="Enter generic name here..."
-									class="health-system-input"
-								/>
-								{#if errors?.GenericName}
-									<p class="text-error">{errors?.GenericName}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Ingredients</td>
-							<td>
-								<input
-									type="text"
-									bind:value={ingredients}
-									name="ingredients"
-									placeholder="Enter ingredients here..."
-									class="health-system-input"
-								/>
-								{#if errors?.Ingredients}
-									<p class="text-error">{errors?.Ingredients}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Strength</td>
-							<td>
-								<select name="strength" class="health-system-input" bind:value={strength}>
-									<option value="High">High</option>
-									<option value="Auto">Auto</option>
-									<option>Medium</option>
-									<option>Low</option>
-								</select>
-								{#if errors?.strength}
-									<p class="text-error">{errors?.strength}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Commercial Name</td>
-							<td>
-								<input
-									type="text"
-									bind:value={otherCommercialNames}
-									name="otherCommercialNames"
-									placeholder="Enter commercial name here..."
-									class="health-system-input"
-								/>
-								{#if errors?.OtherCommercialNames}
-									<p class="text-error">{errors?.OtherCommercialNames}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Manufacture</td>
-							<td>
-								<input
-									type="text"
-									bind:value={manufacturer}
-									name="manufacturer"
-									placeholder="Enter manufacture here..."
-									class="health-system-input"
-								/>
-								{#if errors?.Manufacturer}
-									<p class="text-error">{errors?.Manufacturer}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Other Information</td>
-							<td>
-								<input
-									type="text"
-									bind:value={otherInformation}
-									name="otherInformation"
-									placeholder="Enter other information here..."
-									class="health-system-input"
-								/>
-								{#if errors?.OtherInformation}
-									<p class="text-error">{errors?.OtherInformation}</p>
-								{/if}
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="btn-container mr-5 mb-2">
-					{#await promise}
-						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
-					{:then data}
-						<Button size="md" type="submit" text="Submit" variant="primary" />
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<Heading text="Create Drug" />
+			<a href={drugsRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<Label text="Name" required={true} />
+					<td class="table-data">
+						<Input
+							name="drugName"
+							type="text"
+							placeholder="Enter name here..."
+							bind:value={drugName}
+							error={errors?.DrugName}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Generic Name" />
+					<td class="table-data">
+						<Input
+							name="genericName"
+							type="text"
+							placeholder="Enter generic name here..."
+							bind:value={genericName}
+							error={errors?.GenericName}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Ingredients" />
+					<td class="table-data">
+						<Input
+							name="ingredients"
+							type="text"
+							placeholder="Enter ingredients here..."
+							bind:value={ingredients}
+							error={errors?.Ingredients}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Strength" />
+					<td class="table-data">
+						<select name="strength" class="input" bind:value={strength}>
+							<option value="High">High</option>
+							<option value="Auto">Auto</option>
+							<option value="Medium">Medium</option>
+							<option value="Low">Low</option>
+						</select>
+						{#if errors?.strength}
+							<p class="text-error">{errors?.strength}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Commercial Name" />
+					<td class="table-data">
+						<Input
+							name="otherCommercialNames"
+							type="text"
+							placeholder="Enter commercial name here..."
+							bind:value={otherCommercialNames}
+							error={errors?.OtherCommercialNames}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Manufacturer" />
+					<td class="table-data">
+						<Input
+							name="manufacturer"
+							type="text"
+							placeholder="Enter manufacture here..."
+							bind:value={manufacturer}
+							error={errors?.Manufacturer}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Other Information" />
+					<td class="table-data">
+						<Input
+							name="otherInformation"
+							type="text"
+							placeholder="Enter other information here..."
+							bind:value={otherInformation}
+							error={errors?.OtherInformation}
+						/>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container">
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>
