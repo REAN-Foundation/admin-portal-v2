@@ -207,7 +207,7 @@
 							placeholder="Search by symptom"
 							oninput={(event) => onSearchInput(event)}
 							bind:value={symptom}
-							class="health-system-input !pr-4 !pl-10"
+							class="input !pr-4 !pl-10"
 						/>
 						{#if symptom}
 							<button
@@ -233,7 +233,7 @@
 							placeholder="Search by tags"
 							bind:value={tags}
 							oninput={(event) => onSearchInput(event)}
-							class="health-system-input !pr-4 !pl-10"
+							class="input !pr-4 !pl-10"
 						/>
 						{#if tags}
 							<button
