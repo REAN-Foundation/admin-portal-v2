@@ -45,7 +45,7 @@
 	let firstName = undefined;
 	let email = $state(undefined);
 	let phone = $state(undefined);
-	let sortBy = $state('FirstName');
+	let sortBy = $state('CreatedAt');
 	let sortOrder = $state('ascending');
 
 	let totalUsersCount = $state(data.users.TotalCount);

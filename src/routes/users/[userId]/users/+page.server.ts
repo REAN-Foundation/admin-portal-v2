@@ -33,7 +33,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	});
 
 	const response = await searchUsers(sessionId, {
-		orderBy: 'FirstName',
+		orderBy: 'CreatedAt',
 		order: 'ascending',
 		itemsPerPage: 10,
 
