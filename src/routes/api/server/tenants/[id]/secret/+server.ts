@@ -74,6 +74,10 @@ export const PUT = async (event: RequestEvent) => {
         if (!sessionId) {
             return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session'));
         }
+
+        const tenantId = event.params.id;
+        const request = event.request;
+
         const result = await uuidSchema.safeParseAsync(event.params);
         if (!result.success) {
             const data = Object.fromEntries(
@@ -85,9 +89,9 @@ export const PUT = async (event: RequestEvent) => {
             return ResponseHandler.handleError(400, data, new Error('Validation failed'));
         }
 
-        const id = event.params.id;
-        const body = await event.request.json();
-        const response = await updateBotSecret(sessionId, id, body);
+        const body = await request.json();
+        const response = await updateBotSecret(sessionId, tenantId, body);
+        console.log("Response from updateBotSecret", response)
         return ResponseHandler.success(response);
     } catch (error) {
         console.error('Error updating bot secret:', error);

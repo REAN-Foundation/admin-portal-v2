@@ -19,8 +19,8 @@
 		description = $state(data.assessmentTemplate.Description),
 		displayCode = $state(data.assessmentTemplate.DisplayCode),
 		assessmentType = $state(data.assessmentTemplate.Type),
-		provider = $state(data.assessmentTemplate.Provider),
-		providerAssessmentCode = $state(data.assessmentTemplate.ProviderAssessmentCode),
+		provider = $state(data.assessmentTemplate.Provider||undefined),
+		providerAssessmentCode = $state(data.assessmentTemplate.ProviderAssessmentCode||undefined),
 		serveListNodeChildrenAtOnce = $state(data.assessmentTemplate.ServeListNodeChildrenAtOnce),
 		scoringApplicable = $state(data.assessmentTemplate.ScoringApplicable),
 		keywords: string[] = $state(data.assessmentTemplate.Tags);
