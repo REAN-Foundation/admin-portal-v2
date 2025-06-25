@@ -180,11 +180,24 @@
 							<input
 								name="healthSystemName"
 								type="text"
+								bind:value={healthSystemName}
 								oninput={(event) => onSearchInput(event)}
 								placeholder="Search by name"
 								class="health-system-input !pr-4 !pl-10"
 							/>
 							{#if healthSystemName}
+							<button
+								type="button"
+								onclick={() => {
+									healthSystemName = '';
+									onSearchInput({ target: { name: 'name', value: '' } });
+								}}
+								class="close-btn"
+							>
+								<Icon icon="material-symbols:close" />
+							</button>
+						{/if}
+							<!-- {#if healthSystemName}
 								<button
 									type="button"
 									onclick={() => {
@@ -194,7 +207,7 @@
 								>
 									<Icon icon="material-symbols:close" />
 								</button>
-							{/if}
+							{/if} -->
 						</div>
 					</div>
 					<Button href={createRoute} text="Add New" variant="primary"></Button>
