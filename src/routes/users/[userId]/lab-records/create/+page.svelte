@@ -7,6 +7,10 @@
 	import type { LabRecordCreateModel } from '$lib/types/lab.records.types.js';
 	import { createOrUpdateSchema } from '$lib/validation/lab.records.schema.js';
 	import Button from '$lib/components/button/button.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Input from '$lib/components/input/input.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -84,138 +88,116 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th>Create Lab Record</th>
-							<th class="text-end">
-								<a href={labRecordTypesRoute} class="form-cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Type Name <span class="text-red-700">*</span></td>
-							<td>
-								<input
-									type="text"
-									bind:value={typeName}
-									name="typeName"
-									placeholder="Enter type name here..."
-									class="health-system-input {form?.errors?.typeName ? 'input-text-error' : ''}"
-								/>
-								{#if errors?.TypeName}
-									<p class="text-error">{errors?.TypeName}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Display Name</td>
-							<td>
-								<input
-									type="text"
-									name="displayName"
-									bind:value={displayName}
-									placeholder="Enter display name here..."
-									class="health-system-input {form?.errors?.displayName ? 'input-text-error' : ''}"
-								/>
-								{#if errors?.DisplayName}
-									<p class="text-error">{errors?.DisplayName}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>SNOMED CODE</td>
-							<td>
-								<input
-									type="text"
-									name="snowmedCode"
-									placeholder="Enter snomed code here..."
-									class="health-system-input"
-									bind:value={snowmedCode}
-								/>
-								{#if errors?.SnowmedCode}
-									<p class="text-error">{errors?.SnowmedCode}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>LOINC CODE</td>
-							<td>
-								<input
-									type="text"
-									name="loincCode"
-									placeholder="Enter loinc code here..."
-									class="health-system-input"
-									bind:value={loincCode}
-								/>
-								{#if errors?.LoincCode}
-									<p class="text-error">{errors?.LoincCode}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Minimum Normal Range</td>
-							<td>
-								<input
-									type="number"
-									name="normalRangeMin"
-									placeholder="Enter minimum normal range here..."
-									class="health-system-input"
-									bind:value={normalRangeMin}
-								/>
-								{#if errors?.NormalRangeMin}
-									<p class="text-error">{errors?.NormalRangeMin}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Maximum Normal Range</td>
-							<td>
-								<input
-									type="number"
-									name="normalRangeMax"
-									placeholder="Enter maximum normal range here..."
-									class="health-system-input"
-									bind:value={normalRangeMax}
-								/>
-								{#if errors?.NormalRangeMax}
-									<p class="text-error">{errors?.NormalRangeMax}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Unit</td>
-							<td>
-								<input
-									type="text"
-									name="unit"
-									placeholder="Enter unit here..."
-									class="health-system-input"
-									bind:value={unit}
-								/>
-								{#if errors?.Unit}
-									<p class="text-error">{errors?.Unit}</p>
-								{/if}
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="btn-container mr-5 mb-2">
-					{#await promise}
-						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
-					{:then data}
-						<Button size="md" type="submit" text="Submit" variant="primary" />
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<Heading text="Create Lab Record" />
+			<a href={labRecordTypesRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<Label text="Type Name" required={true} />
+					<td class="table-data">
+						<Input
+							type="text"
+							name="typeName"
+							placeholder="Enter type name here..."
+							bind:value={typeName}
+							error={errors?.TypeName}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Display Name" />
+					<td class="table-data">
+						<Input
+							type="text"
+							name="displayName"
+							placeholder="Enter display name here..."
+							bind:value={displayName}
+							error={errors?.DisplayName}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="SNOMED Code" />
+					<td class="table-data">
+						<Input
+							type="text"
+							name="snowmedCode"
+							placeholder="Enter SNOMED code here..."
+							bind:value={snowmedCode}
+							error={errors?.SnowmedCode}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="LOINC Code" />
+					<td class="table-data">
+						<Input
+							type="text"
+							name="loincCode"
+							placeholder="Enter LOINC code here..."
+							bind:value={loincCode}
+							error={errors?.LoincCode}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Minimum Normal Range" />
+					<td class="table-data">
+						<Input
+							type="number"
+							name="normalRangeMin"
+							placeholder="Enter minimum normal range..."
+							bind:value={normalRangeMin}
+							error={errors?.NormalRangeMin}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Maximum Normal Range" />
+					<td class="table-data">
+						<Input
+							type="number"
+							name="normalRangeMax"
+							placeholder="Enter maximum normal range..."
+							bind:value={normalRangeMax}
+							error={errors?.NormalRangeMax}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Unit" />
+					<td class="table-data">
+						<Input
+							type="text"
+							name="unit"
+							placeholder="Enter unit here..."
+							bind:value={unit}
+							error={errors?.Unit}
+						/>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container">
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>

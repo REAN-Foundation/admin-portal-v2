@@ -3,6 +3,9 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
+	import Button from '$lib/components/button/button.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
 
 	///////////////////////////////////////////////////////////////////////
 
@@ -49,52 +52,55 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<Heading text="View Lab Record" />
+		<a href={labRecordTypesRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
+		</a>
+	</div>
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<table class="health-system-table">
-				<thead>
-					<tr>
-						<th>View Lab Record</th>
-						<th class="text-end">
-							<a href={labRecordTypesRoute} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Type Name</td>
-						<td>{typeName}</td>
-					</tr>
-					<tr>
-						<td>Display Name</td>
-						<td>{displayName}</td>
-					</tr>
-					<tr>
-						<td>SNOMED CODE</td>
-						<td>{snowmedCode}</td>
-					</tr>
-					<tr>
-						<td>LOINC CODE</td>
-						<td>{loincCode}</td>
-					</tr>
-					<tr>
-						<td>Minimum Normal Range</td>
-						<td>{normalRangeMin}</td>
-					</tr>
-					<tr>
-						<td>Maximum Normal Range</td>
-						<td>{normalRangeMax}</td>
-					</tr>
-					<tr>
-						<td>Unit</td>
-						<td>{unit}</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<Label text="Type Name" />
+				<td class="table-data">{typeName}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Display Name" />
+				<td class="table-data">{displayName}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="SNOMED Code" />
+				<td class="table-data">{snowmedCode}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="LOINC Code" />
+				<td class="table-data">{loincCode}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Minimum Normal Range" />
+				<td class="table-data">{normalRangeMin}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Maximum Normal Range" />
+				<td class="table-data">{normalRangeMax}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Unit" />
+				<td class="table-data">{unit}</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div class="btn-container">
+		<Button
+			href={editRoute}
+			text="Edit"
+			variant="primary"
+			iconBefore="mdi:edit"
+			iconSize="md"
+			size="md"
+		/>
 	</div>
 </div>
