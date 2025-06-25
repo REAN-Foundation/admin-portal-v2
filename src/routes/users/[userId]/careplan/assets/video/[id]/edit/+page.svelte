@@ -18,7 +18,7 @@
 	let assetCode = data.video.AssetCode;
 	let name = $state(data.video.Name);
 	let transcript = $state(data.video.Transcript || undefined);
-	let pathUrl = $state(data.video.Url);
+	let pathUrl = $state(data.video.Url || undefined);
 	let tags = $state(data.video.Tags);
 	let version = $state(data.video.Version);
 	let errors: Record<string, string> = $state({});

@@ -18,7 +18,7 @@
 	let assetCode = data.wordPower.AssetCode;
 	let name = $state(data.wordPower.Name);
 	let description = $state(data.wordPower.Description || undefined);
-	let additionalResources = $state(data.wordPower.AdditionalResources);
+	let additionalResources = $state(data.wordPower.AdditionalResources || undefined);
 	let tags = $state(data.wordPower.Tags);
 	let version = $state(data.wordPower.Version);
 	let errors: Record<string, string> = $state({});
