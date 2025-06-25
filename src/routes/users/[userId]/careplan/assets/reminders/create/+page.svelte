@@ -78,10 +78,9 @@
 		}
 	};
 
-	const onUpdateKeywords = (e: any) => {
-		keywords = e.detail;
-		keywordsStr = keywords?.join(', ');
-	};
+	$effect(() => {
+            keywordsStr = keywords?.join(', ');
+        });
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -132,7 +131,6 @@
 							bind:keywords
 							name="keywords"
 							id="keywords"
-							keywordsChanged={onUpdateKeywords}
 						/>
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
@@ -147,7 +145,7 @@
 							name="version"
 							placeholder="V 1.0"
 							bind:value={version}
-						/>
+							/>
 						{#if errors?.Version}
 							<p class="error-text">{errors?.Version}</p>
 						{/if}

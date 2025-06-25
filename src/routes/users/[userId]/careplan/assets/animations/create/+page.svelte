@@ -90,10 +90,10 @@
 		}
 	};
 
-	const onUpdateKeywords = (e: any) => {
-		keywords = e.detail;
-		keywordsStr = keywords?.join(', ');
-	};
+	$effect(() => {
+            keywordsStr = keywords?.join(', ');
+        });
+
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -113,7 +113,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {form?.errors?.Mame ? 'input-text-error' : ''}"
+							class="input {errors?.Mame ? 'input-text-error' : ''}"
 							name="name"
 							placeholder="Enter name here..."
 							bind:value={name}
@@ -141,7 +141,7 @@
 					<td class="table-data">
 						<input
 							type="url"
-							class="input {form?.errors?.Url ? 'input-text-error' : ''}"
+							class="input {errors?.Url ? 'input-text-error' : ''}"
 							name="url"
 							placeholder="Enter url here"
 							bind:value={pathUrl}
@@ -158,8 +158,7 @@
 							bind:keywords
 							name="keywords"
 							id="keywords"
-							keywordsChanged={onUpdateKeywords}
-						/>
+							/>
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>
@@ -168,7 +167,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {form?.errors?.Version ? 'input-text-error' : ''}"
+							class="input {errors?.Version ? 'input-text-error' : ''}"
 							name="version"
 							placeholder="V 1.0"
 							bind:value={version}

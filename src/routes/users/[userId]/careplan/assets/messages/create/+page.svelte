@@ -15,13 +15,13 @@
 	let promise = $state();
 	let name = $state('');
 	let description = $state('');
-	let messageType = 'Unknown';
+	let messageType =  $state('Unknown');
 	let templateName = $state('');
 	let pathUrl = $state(undefined);
 	let version = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
-	let templateVariablesText = '{}';
+	let templateVariablesText =  $state('{}');
 
 	data.title = 'Create Message';
 	const userId = page.params.userId;
@@ -110,10 +110,10 @@
 	}
 }
 
-const onUpdateKeywords = (e: any) => {
-		keywords = e.detail;
-		keywordsStr = keywords?.join(', ');
-	};
+$effect(() => {
+            keywordsStr = keywords?.join(', ');
+		});
+
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -231,8 +231,7 @@ const onUpdateKeywords = (e: any) => {
 							bind:keywords
 							name="keywords"
 							id="keywords"
-							keywordsChanged={onUpdateKeywords}
-						/>
+							/>
 						<input
 							type="hidden"
 							name="keywordsStr"
