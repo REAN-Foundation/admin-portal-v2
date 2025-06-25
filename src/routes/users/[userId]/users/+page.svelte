@@ -232,7 +232,7 @@
 							placeholder="Search by contact number"
 							bind:value={phone}
 							oninput={(event) => onSearchInput(event)}
-							class="table-input-field !pr-4 !pl-10"
+							class="input !pr-4 !pl-10"
 						/>
 						{#if phone}
 							<button
@@ -258,7 +258,7 @@
 							oninput={(event) => onSearchInput(event)}
 							placeholder="Search by email"
 							bind:value={email}
-							class="table-input-field !pr-4 !pl-10"
+							class="input !pr-4 !pl-10"
 						/>
 						{#if email}
 							<button
