@@ -319,7 +319,7 @@
 										? 'input-text-error'
 										: ''}"
 								>
-									<option value="" disabled selected>Select fieldIdentifier here...</option>
+									<option value="" disabled selected>Select field identifier here...</option>
 									{#each sortedIdentifiers as identifier}
 										<option value={identifier}>{toLabel(identifier)}</option>
 									{/each}
@@ -337,7 +337,7 @@
 									type="text"
 									name="fieldIdentifierUnit"
 									bind:value={fieldIdentifierUnit}
-									placeholder="Enter fieldIdentifierUnit here...."
+									placeholder="Enter field identifier unit here...."
 									class="health-system-input {form?.errors?.fieldIdentifierUnit
 										? 'input-text-error'
 										: ''}"
