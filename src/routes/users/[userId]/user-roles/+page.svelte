@@ -192,7 +192,7 @@
 							bind:value={roleName}
 							placeholder="Search by name"
 							oninput={(event) => onSearchInput(event)}
-							class="table-input-field !pr-4 !pl-10"
+							class="input !pr-4 !pl-10"
 						/>
 						{#if roleName}
 							<button
