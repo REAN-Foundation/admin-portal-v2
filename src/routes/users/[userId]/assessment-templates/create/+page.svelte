@@ -92,10 +92,9 @@
 		}
 	};
 
-	const onUpdateKeywords = (e: any) => {
-		keywords = e.detail;
+	$effect(() => {
 		keywordsStr = keywords?.join(', ');
-	};
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -218,12 +217,7 @@
 				<tr class="tables-row">
 					<Label text="Tags" />
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							keywordsChanged={onUpdateKeywords}
-						/>
+						<InputChips bind:keywords name="keywords" id="keywords" />
 						<Input name="keywordsStr" type="hidden" bind:value={keywordsStr} />
 					</td>
 				</tr>

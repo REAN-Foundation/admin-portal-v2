@@ -104,10 +104,9 @@
 		}
 	};
 
-	const onUpdateKeywords = (e: any) => {
-		keywords = e.detail;
-		keywordsStr = keywords?.join(', ');
-	};
+	$effect(() => {
+            keywordsStr = keywords?.join(', ');
+		});
 
 	function addResource() {
 		additionalResources = newResource
@@ -206,8 +205,7 @@
 									bind:keywords
 									name="keywords"
 									id="keywords"
-									keywordsChanged={onUpdateKeywords}
-								/>
+									/>
 								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 								{#if form?.errors?.tags}
 									<p class="text-error">{form?.errors?.tags[0]}</p>

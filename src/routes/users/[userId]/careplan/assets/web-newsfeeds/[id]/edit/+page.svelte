@@ -103,10 +103,11 @@
 			toastMessage();
 		}
 	};
-	const onUpdateKeywords = (e: any) => {
-		keywords = e.detail;
-		keywordsStr = keywords?.join(', ');
-	};
+
+	$effect(() => {
+            keywordsStr = keywords?.join(', ');
+		});
+
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -175,9 +176,7 @@
 						<InputChips
 							bind:keywords
 							name="keywords"
-							id="keywords"
-							keywordsChanged={onUpdateKeywords}
-						/>
+							id="keywords"						/>
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>

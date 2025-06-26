@@ -15,8 +15,8 @@
 	let promise = $state();
 	let name = $state('');
 	let description = $state('');
-	let exerciseType = 'Aerobic';
-	let intensityLevel = "Moderate";
+	let exerciseType = $state('Aerobic');
+	let intensityLevel = $state('Moderate');
 	let recommendedDurationMin = $state<number>();
 	let version = $state('');
 	let keywords: string[] = $state([]);
@@ -85,10 +85,10 @@
 		}
 	};
 
-	const onUpdateKeywords = (e: any) => {
-		keywords = e.detail;
-		keywordsStr = keywords?.join(', ');
-	};
+	$effect(() => {
+            keywordsStr = keywords?.join(', ');
+        });
+
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -189,8 +189,7 @@
 							bind:keywords
 							name="keywords"
 							id="keywords"
-							keywordsChanged={onUpdateKeywords}
-						/>
+							/>
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>

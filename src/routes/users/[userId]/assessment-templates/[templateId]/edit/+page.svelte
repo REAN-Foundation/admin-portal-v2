@@ -107,10 +107,9 @@
 			toastMessage();
 		}
 	};
-	const onUpdateKeywords = (e: any) => {
-		keywords = e.detail;
+	$effect(() => {
 		keywordsStr = keywords?.join(', ');
-	};
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -243,7 +242,6 @@
 							bind:keywords
 							name="keywords"
 							id="keywords"
-							keywordsChanged={onUpdateKeywords}
 						/>
 						<Input name="keywordsStr" type="hidden" bind:value={keywordsStr} />
 					</td>
