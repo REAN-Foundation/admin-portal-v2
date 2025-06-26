@@ -15,11 +15,7 @@
 	let { data }: { data: PageServerData } = $props();
 	let errors: Record<string, string> = $state({});
 	let templateTitle = data.templateDetails.Title;
-
-console.log('This is data',data)
 	const assessmentNodes = $state(data.assessmentNode);
-	console.log('assessmentNodes', assessmentNodes);
-
 	const nodeType = assessmentNodes.NodeType;
 	const title = assessmentNodes.Title;
 	const description =
@@ -41,11 +37,9 @@ console.log('This is data',data)
 			? assessmentNodes.RawData
 			: 'Not specified';
 
-	const fieldIdentifier = assessmentNodes.FieldIdentifier && assessmentNodes.FieldIdentifier !== '' ? assessmentNodes.FieldIdentifier : 'Not specified';
-	const fieldIdentifierUnit = assessmentNodes.FieldIdentifierUnit && assessmentNodes.FieldIdentifierUnit !== '' ? assessmentNodes.FieldIdentifierUnit : 'Not specified';;
-
+	const fieldIdentifier = assessmentNodes.FieldIdentifier ?? null;
+	const fieldIdentifierUnit = assessmentNodes.FieldIdentifierUnit ?? null;
 	let resolutionScore = $state();
-	console.log('message', message);
 
 	if (nodeType === 'Question') {
 		resolutionScore = assessmentNodes.ScoringCondition?.ResolutionScore ?? 'Not specified';
@@ -53,7 +47,7 @@ console.log('This is data',data)
 
 	scoringApplicableCondition.set(data.templateDetails.ScoringApplicable);
 
-	// console.log('assessmentNode', assessmentNodes);
+	console.log('assessmentNode', assessmentNodes);
 
 	const userId = page.params.userId;
 	const templateId = page.params.templateId;

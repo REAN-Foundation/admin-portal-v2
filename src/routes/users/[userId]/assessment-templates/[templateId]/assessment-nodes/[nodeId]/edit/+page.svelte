@@ -21,22 +21,22 @@
 	let nodeType = $state(data.assessmentNode.NodeType),
 		parentNodeId = $state(data.assessmentNode.ParentNodeId),
 		title = $state(data.assessmentNode.Title),
-		description = $state(data.assessmentNode.Description),
+		description = $state(data.assessmentNode.Description??''),
 		queryType = $state(data.assessmentNode.QueryResponseType),
 		options = $state(data.assessmentNode.Options ?? []),
-		message = $state(data.assessmentNode.Message ),
-		sequence = $state(data.assessmentNode.Sequence),
-		serveListNodeChildrenAtOnce = $state(data.assessmentNode.ServeListNodeChildrenAtOnce),
-		tags = $state(data.assessmentNode.Tags),
-		correctAnswer = $state(data.assessmentNode.CorrectAnswer),
-		keywords: string[] = $state(data.assessmentNode.Tags),
-		resolutionScore = $state(data.assessmentNode.ResolutionScore),
-		providerAssessmentCode = $state(data.assessmentNode.ProviderAssessmentCode),
-		scoringApplicable = $state(data.assessmentNode.ScoringApplicable),
-		required = $state(data.assessmentNode.Required),
-		fieldIdentifier = $state(data.assessmentNode.FieldIdentifier ),
-		fieldIdentifierUnit = $state(data.assessmentNode.FieldIdentifierUnit ),
-		rawData = $state(data.assessmentNode.RawData )
+		message = $state(data.assessmentNode.Message ?? ''),
+		sequence = $state(data.assessmentNode.Sequence??''),
+		serveListNodeChildrenAtOnce = $state(data.assessmentNode.ServeListNodeChildrenAtOnce??false),
+		tags = $state(data.assessmentNode.Tags||[]),
+		correctAnswer = $state(data.assessmentNode.CorrectAnswer??null),
+		keywords: string[] = $state(data.assessmentNode.Tags||[]),
+		resolutionScore = $state(data.assessmentNode.ResolutionScore??''),
+		providerAssessmentCode = $state(data.assessmentNode.ProviderAssessmentCode??''),
+		scoringApplicable = $state(data.assessmentNode.ScoringApplicable??false),
+		required = $state(data.assessmentNode.Required??false),
+		fieldIdentifier = $state(data.assessmentNode.FieldIdentifier ??''),
+		fieldIdentifierUnit = $state(data.assessmentNode.FieldIdentifierUnit ??''),
+		rawData = $state(data.assessmentNode.RawData ??'');
 
 	let optionArray = $derived(options);
 
@@ -230,7 +230,6 @@
 						<tr>
 							<td>Node Type <span class=" text-red-600">*</span></td>
 							<td>
-								
 								<input type="text" disabled bind:value={nodeType} class="input" />
 								<input type="hidden" name="nodeType" bind:value={nodeType} class="input" />
 							</td>

@@ -155,6 +155,7 @@
 			console.log('assessmentNodeCreateModel', assessmentNodeCreateModel);
 			const validationResult = createOrUpdateSchema.safeParse(assessmentNodeCreateModel);
 
+			console.log('validationResult', validationResult);
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
