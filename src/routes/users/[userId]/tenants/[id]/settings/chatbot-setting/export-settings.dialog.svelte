@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { toastMessage } from '$lib/components/toast/toast.store';
 
-	let { open = true, onclose, tenantId } = $props();
+	let { open = true, onclose, tenantId, tenantCode } = $props();
 
 	function closeDialog() {
 		onclose();
@@ -11,9 +11,8 @@
 		jsonInput = '';
 		isValidJSON = true;
 		isPublishing = false;
-		isFetchingSecret = false;nup
+		isFetchingSecret = false;
 	}
-
 
 	let isGenerated = $state(false);
 	let jsonInput = $state('');
@@ -24,7 +23,6 @@
 	let showEditor = $state(false);
 	let hasSecrets = $state(false);
 	let isCheckingSecrets = $state(false);
-
 
 	function handleJSONInput(event: Event) {
 		const value = (event.target as HTMLTextAreaElement).value;
@@ -72,6 +70,14 @@
 
 	// Check for existing secrets when dialog opens
 	async function checkExistingSecrets() {
+		const schemaRes = await fetch(`/api/server/tenants/${tenantId}/schema`, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ tenantCode })
+		});
+		const schemaResponse = await schemaRes.json();
+		console.log('This is schemaResponse', schemaResponse);
+
 		isCheckingSecrets = true;
 		try {
 			const res = await fetch(`/api/server/tenants/${tenantId}/secret`, {
@@ -79,7 +85,7 @@
 				headers: { 'content-type': 'application/json' }
 			});
 			const response = await res.json();
-			console.log("This is check",response)
+			console.log('This is check', response);
 			if (response.HttpCode === 200 && response.Data) {
 				hasSecrets = true;
 				jsonInput = JSON.stringify(response.Data, null, 2);
@@ -98,6 +104,20 @@
 	async function createSecrets() {
 		isPublishing = true;
 		try {
+			// First, create schema
+			const schemaRes = await fetch(`/api/server/tenants/${tenantId}/schema`, {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({ tenantCode })
+			});
+			const schemaResponse = await schemaRes.json();
+			if (!schemaRes.ok) {
+				toastMessage(schemaResponse);
+				isPublishing = false;
+				return;
+			}
+
+			// Then, create secrets
 			const res = await fetch(`/api/server/tenants/${tenantId}/secret`, {
 				method: 'POST',
 				headers: { 'content-type': 'application/json' },
@@ -183,7 +203,6 @@
 					<div class="mb-2 flex gap-2">
 						<button
 							class="rounded border border-blue-300 bg-blue-100 px-4 py-1 text-black hover:bg-blue-200 disabled:opacity-60"
-							
 							disabled={isFetchingSecret || viewEditMode === 'view'}
 						>
 							{isFetchingSecret ? 'Loading...' : 'View'}

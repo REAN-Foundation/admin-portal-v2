@@ -19,11 +19,12 @@
 	///////////////////////////////////////////////////////////////////////
 
 	let { data, form } = $props();
+	console.log('This is data from page server ==================>', data);
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
-	const tenantCode = $state(data.tenantCode);
-	const tenantName = $state(data.tenantName);
+	const tenantCode = $state(data.tenantData.Data.Tenant.Code);
+	const tenantName = $state(data.tenantData.Data.Tenant.Name);
 	const tenantRoute = `/users/${userId}/tenants`;
 	const formData = new FormData();
 	let errors: Record<string, string> = $state({});
@@ -421,4 +422,5 @@
 	open={showExportDialog}
 	onclose={() => (showExportDialog = false)}
 	{tenantId}
+	{tenantCode}
 />

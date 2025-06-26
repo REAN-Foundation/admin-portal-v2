@@ -2,14 +2,15 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getTenantSettingsByType } from '$routes/api/services/reancare/tenant-settings';
+import { getTenantById } from '$routes/api/services/reancare/tenants';
 
 ////////////////////////////////////////////////////////////////////////////
 
 export const load: PageServerLoad = async (event: RequestEvent) => {
     const sessionId = event.cookies.get('sessionId') as string;
-    const tenantId = event.locals?.sessionUser?.tenantId;
-    const tenantCode = event.locals?.sessionUser?.tenantCode;
-    const tenantName = event.locals?.sessionUser?.tenantName;
+    const tenantId = event.params.id;
+    // const tenantCode = event.locals?.sessionUser?.tenantCode;
+    // const tenantName = event.locals?.sessionUser?.tenantName;
     let chatbotSettings = undefined;
     let consentSettings = undefined;
     let commonSettings = undefined;
@@ -40,10 +41,17 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
             commonSettings = commonSettingResponse.Data.TenantSettings;
         }
 
+        const tenantData = await getTenantById(sessionId, tenantId);
+        if (tenantData.Status === 'failure' || tenantData.HttpCode !== 200) {
+            throw error(tenantData.HttpCode, tenantData.Message);
+        }
+
+
         return {
-            tenantCode,
-            tenantName,
+            // tenantCode,
+            // tenantName,
             sessionId,
+            tenantData,
             tenantId,
             chatbotSettings,
             consentSettings,

@@ -1,4 +1,4 @@
-import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY } from '$env/static/private';
+import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY, NODE_ENV, } from '$env/static/private';
 import { Helper } from '$lib/utils/helper';
 import { del, get, post, put } from './common.reancare';
 
@@ -94,4 +94,20 @@ export const getBotSecret = async (sessionId: string, tenantId: string) => {
 export const updateBotSecret = async (sessionId: string, tenantId: string, body: any) => {
 	const url = BACKEND_API_URL + `/tenants/${tenantId}/settings/secret/`;
 	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+};
+
+export const createTenantSchema = async (
+	sessionId: string,
+	tenantId: string,
+	tenantCode: string,
+) => {
+	const code = tenantCode.toLowerCase();
+	const SchemaName = `${code}_${NODE_ENV}`;
+	const body = {
+		SchemaName,
+		Environment: NODE_ENV
+	};
+	const url = BACKEND_API_URL + `/tenants/${tenantId}/settings/database/create-bot-schema`;
+
+	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 };
