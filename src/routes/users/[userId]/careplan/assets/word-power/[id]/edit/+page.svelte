@@ -18,7 +18,7 @@
 	let assetCode = data.wordPower.AssetCode;
 	let name = $state(data.wordPower.Name);
 	let description = $state(data.wordPower.Description || undefined);
-	let additionalResources = $state(data.wordPower.AdditionalResources);
+	let additionalResources = $state(data.wordPower.AdditionalResources || undefined);
 	let tags = $state(data.wordPower.Tags);
 	let version = $state(data.wordPower.Version);
 	let errors: Record<string, string> = $state({});
@@ -102,10 +102,10 @@
 			toastMessage();
 		}
 	};
-	const onUpdateKeywords = (e: any) => {
-		keywords = e.detail;
-		keywordsStr = keywords?.join(', ');
-	};
+	$effect(() => {
+            keywordsStr = keywords?.join(', ');
+        });
+
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -171,8 +171,7 @@
 							bind:keywords
 							name="keywords"
 							id="keywords"
-							keywordsChanged={onUpdateKeywords}
-						/>
+							/>
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>

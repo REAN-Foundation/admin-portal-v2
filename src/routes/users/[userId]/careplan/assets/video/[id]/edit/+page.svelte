@@ -18,7 +18,7 @@
 	let assetCode = data.video.AssetCode;
 	let name = $state(data.video.Name);
 	let transcript = $state(data.video.Transcript || undefined);
-	let pathUrl = $state(data.video.Url);
+	let pathUrl = $state(data.video.Url || undefined);
 	let tags = $state(data.video.Tags);
 	let version = $state(data.video.Version);
 	let errors: Record<string, string> = $state({});
@@ -104,10 +104,10 @@
 			toastMessage();
 		}
 	};
-	const onUpdateKeywords = (e: any) => {
-		keywords = e.detail;
-		keywordsStr = keywords?.join(', ');
-	};
+	$effect(() => {
+            keywordsStr = keywords?.join(', ');
+        });
+
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -175,8 +175,7 @@
 							bind:keywords
 							name="keywords"
 							id="keywords"
-							keywordsChanged={onUpdateKeywords}
-						/>
+							/>
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>
