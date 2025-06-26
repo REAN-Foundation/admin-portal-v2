@@ -197,9 +197,22 @@
 							type="text"
 							name="name"
 							placeholder="Search by name"
+							bind:value={nameSearch}
 							oninput={(event) => onSearchInput(event, 'name')}
 							class="input !pr-4 !pl-10"
 						/>
+						{#if nameSearch}
+							<button
+								type="button"
+								onclick={() => {
+									nameSearch = '';
+									onSearchInput({ target: { name: 'name', value: '' } }, 'name');
+								}}
+								class="close-btn"
+							>
+								<Icon icon="material-symbols:close" />
+							</button>
+						{/if}
 					</div>
 
 					<div class="relative w-auto grow">
@@ -211,9 +224,22 @@
 							type="text"
 							name="code"
 							placeholder="Search by code"
+							bind:value={codeSearch}
 							oninput={(event) => onSearchInput(event, 'code')}
 							class="input !pr-4 !pl-10"
 						/>
+						{#if codeSearch}
+							<button
+								type="button"
+								onclick={() => {
+									codeSearch = '';
+									onSearchInput({ target: { name: 'code', value: '' } }, 'code');
+								}}
+								class="close-btn"
+							>
+								<Icon icon="material-symbols:close" />
+							</button>
+						{/if}
 					</div>
 
 					<Button href={createRoute} text="Add New" variant="primary"></Button>

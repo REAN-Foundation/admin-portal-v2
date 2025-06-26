@@ -227,7 +227,7 @@
 					</div>
 					<div class="relative w-auto grow">
 						<Icon
-							icon="heroicons:tag"
+							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
 						/>
 						<input
