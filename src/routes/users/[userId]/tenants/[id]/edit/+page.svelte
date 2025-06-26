@@ -102,11 +102,18 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
+<<<<<<< Updated upstream
 
 <div class="p-6">
 	<form onsubmit={(event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
 			<Heading text="Edit Tenant" />
+=======
+<div class="mx-auto w-full px-6 py-4">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit Tenant</h2>
+>>>>>>> Stashed changes
 			<a href={viewRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
@@ -115,6 +122,7 @@
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
+<<<<<<< Updated upstream
 					<Label text="Name" required={true} />
 					<td class="table-data">
 						<Input
@@ -124,10 +132,25 @@
 							bind:value={name}
 							error={errors?.Name}
 						/>
+=======
+					<td class="table-label">Name <span class="important-field">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="name"
+							placeholder="Enter name here..."
+							class="input {errors?.Name ? 'input-text-error' : ''}"
+							bind:value={name}
+						/>
+						{#if errors?.Name}
+							<p class="error-text">{errors?.Name}</p>
+						{/if}
+>>>>>>> Stashed changes
 					</td>
 				</tr>
 
 				<tr class="tables-row">
+<<<<<<< Updated upstream
 					<Label text="Description" />
 					<td class="table-data">
 						<Textarea
@@ -136,10 +159,24 @@
 							bind:value={description}
 							error={errors?.Description}
 						/>
+=======
+					<td class="table-label">Description</td>
+					<td class="table-data">
+						<textarea
+							name="description"
+							class="input resize-none {errors?.Description ? 'input-text-error' : ''}"
+							bind:value={description}
+							placeholder="Enter description here..."
+						></textarea>
+						{#if errors?.Description}
+							<p class="error-text">{errors?.Description}</p>
+						{/if}
+>>>>>>> Stashed changes
 					</td>
 				</tr>
 
 				<tr class="tables-row">
+<<<<<<< Updated upstream
 					<Label text="Code" required={true} />
 					<td class="table-data">
 						<Input
@@ -149,10 +186,25 @@
 							bind:value={code}
 							error={errors?.Code}
 						/>
+=======
+					<td class="table-label">Code</td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="code"
+							placeholder="Enter code here..."
+							class="input {errors?.Code ? 'input-text-error' : ''}"
+							bind:value={code}
+						/>
+						{#if errors?.Code}
+							<p class="error-text">{errors?.Code}</p>
+						{/if}
+>>>>>>> Stashed changes
 					</td>
 				</tr>
 
 				<tr class="tables-row">
+<<<<<<< Updated upstream
 					<Label text="Contact Number" required={true} />
 					<td class="table-data">
 						<Input
@@ -162,10 +214,25 @@
 							bind:value={phone}
 							error={errors?.Phone}
 						/>
+=======
+					<td class="table-label">Phone</td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="phone"
+							placeholder="Enter phone here..."
+							class="input {errors?.Phone ? 'input-text-error' : ''}"
+							bind:value={phone}
+						/>
+						{#if errors?.Phone}
+							<p class="error-text">{errors?.Phone}</p>
+						{/if}
+>>>>>>> Stashed changes
 					</td>
 				</tr>
 
 				<tr class="tables-row">
+<<<<<<< Updated upstream
 					<Label text="Email" required={true} />
 					<td class="table-data">
 						<Input
@@ -175,10 +242,28 @@
 							bind:value={email}
 							error={errors?.Email}
 						/>
+=======
+					<td class="table-label">Email</td>
+					<td class="table-data">
+						<input
+							type="email"
+							name="email"
+							placeholder="Enter email here..."
+							class="input {errors?.Email ? 'input-text-error' : ''}"
+							bind:value={email}
+						/>
+						{#if errors?.Email}
+							<p class="error-text">{errors?.Email}</p>
+						{/if}
+>>>>>>> Stashed changes
 					</td>
 				</tr>
 			</tbody>
 		</table>
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 		<div class="btn-container">
 			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
 			{#await promise}

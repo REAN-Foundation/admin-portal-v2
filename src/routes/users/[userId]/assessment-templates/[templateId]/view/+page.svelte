@@ -6,6 +6,9 @@
 	import { onMount } from 'svelte';
 	import type { PageServerData } from './$types';
 	import TreeView from '$lib/components/tree-view.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -60,92 +63,79 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
-<div class="px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-2">
-		<a
-			href={nodeRoute}
-			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
-		>
-			Add Node</a
-		>
-		<a
-			href={editRoute}
-			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
-		>
-			<Icon icon="material-symbols:edit-outline" />
-			<span class="ml-1">Edit</span>
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<Heading text="View Template" />
+		<a href={assessmentsRoutes} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
 		</a>
 	</div>
 
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<table class="health-system-table">
-				<thead>
-					<tr>
-						<th>View Template</th>
-						<th class="text-end">
-							<a href={assessmentsRoutes} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Title</td>
-						<td>{title}</td>
-					</tr>
-					<tr>
-						<td>Description</td>
-						<td>{description}</td>
-					</tr>
-					<tr>
-						<td>Display code</td>
-						<td>{displayCode}</td>
-					</tr>
-					<tr>
-						<td>Type</td>
-						<td>{type}</td>
-					</tr>
-					<tr>
-						<td>Provider</td>
-						<td>{provider}</td>
-					</tr>
-					<tr>
-						<td>Provider Assessment Code</td>
-						<td>{providerAssessmentCode}</td>
-					</tr>
-					<tr>
-						<td>Serve List Node Children At Once</td>
-						<td>{serveListNodeChildrenAtOnce}</td>
-					</tr>
-					<tr>
-						<td>Scoring Applicable</td>
-						<td>{scoringApplicable}</td>
-					</tr>
-					<tr>
-						<td>Tags</td>
-						<td>
-							{#if tags.length <= 0}
-								<span class="span">Tags not specified</span>
-							{:else}
-								<span class="span">{tags}</span>
-							{/if}
-						</td>
-					</tr>
-					<tr>
-						<td class="align-top">Nodes</td>
-						<td>
-							{#if assessmentNodes.length <= 1}
-								<div>Nodes are not available</div>
-							{:else}
-								<TreeView {assessmentNodes} {assessmentNodeView} />
-							{/if}
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<Label text="Title" />
+				<td class="table-data">{title}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Description" />
+				<td class="table-data">{description}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Display Code" />
+				<td class="table-data">{displayCode}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Type" />
+				<td class="table-data">{type}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Provider" />
+				<td class="table-data">{provider}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Provider Assessment Code" />
+				<td class="table-data">{providerAssessmentCode}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Serve List Node Children At Once" />
+				<td class="table-data">{serveListNodeChildrenAtOnce}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Scoring Applicable" />
+				<td class="table-data">{scoringApplicable}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Tags" />
+				<td class="table-data">
+					{#if tags.length <= 0}
+						<span class="span">Tags not specified</span>
+					{:else}
+						<span class="span">{tags}</span>
+					{/if}
+				</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Nodes" />
+				<td class="table-data align-top">
+					{#if assessmentNodes.length <= 1}
+						<div>Nodes are not available</div>
+					{:else}
+						<TreeView {assessmentNodes} {assessmentNodeView} />
+					{/if}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div class="btn-container mt-4 flex flex-wrap justify-end gap-2">
+		<Button href={nodeRoute} text="Add Node" variant="primary" />
+		<Button
+			href={editRoute}
+			text="Edit"
+			variant="primary"
+			iconBefore="material-symbols:edit-outline"
+			iconSize="md"
+		/>
 	</div>
 </div>

@@ -88,6 +88,97 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 <div class="p-6">
+<<<<<<< Updated upstream
+=======
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<Heading text="Create Tenant" />
+			<a href={tenantRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>
+
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<Label text="Name" required={true} />
+					<td class="table-data">
+						<Input
+							name="name"
+							type="text"
+							placeholder="Enter name here..."
+							bind:value={name}
+							error={errors?.Name}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Description" />
+					<td class="table-data">
+						<Textarea
+							name="description"
+							placeholder="Enter description here..."
+							bind:value={description}
+							error={errors?.Description}
+							resize={false}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Code" required={true} />
+					<td class="table-data">
+						<Input
+							name="code"
+							type="text"
+							placeholder="Enter code here..."
+							bind:value={code}
+							error={errors?.Code}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Contact Number" required={true} />
+					<td class="table-data">
+						<Input
+							name="phone"
+							type="text"
+							placeholder="Enter contact number here..."
+							bind:value={phone}
+							error={errors?.Phone}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Email" required={true} />
+					<td class="table-data">
+						<Input
+							name="email"
+							type="email"
+							placeholder="Enter email here..."
+							bind:value={email}
+							error={errors?.Email}
+						/>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container">
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
+</div>
+
+<!-- <div class="p-6">
+>>>>>>> Stashed changes
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
 			<Heading text="Create Tenant" />
