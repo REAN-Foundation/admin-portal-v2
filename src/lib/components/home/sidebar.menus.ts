@@ -423,7 +423,7 @@ function addBotContentMenu(
 	const botContent: SidebarMenu = {
 		name: 'Bot-Content',
 		title: 'Bot Content',
-		icon: 'pixel:robot-solid',
+		icon: 'mdi:robot-outline',
 		link: `/users/${userId}/bot-content`,
 		children: []
 	};

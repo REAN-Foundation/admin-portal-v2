@@ -6,7 +6,7 @@
 	import SidebarNavItems from './SidebarNavItems.svelte';
 	let { showSidebar = $bindable(), navParent, page_, userId, tenantSettings, userRole } = $props();
 
-	let activeTab = $state('');
+	let activeTab = $state('Home');
 	const navData = buildSidebarMenu(userId, tenantSettings, userRole);
 	console.log('Tenant Setting', navData);
 
@@ -28,49 +28,50 @@
 				{#if navParent.title === 'Analytics'}
 					<a
 						href={`/users/${userId}/analytics/basic`}
-						class="sidebar-item items-center {activeTab === 'Analytics'
-							? 'variant-soft-secondary'
-							: ''}"
+						class="sidebar-item {activeTab === 'Analytics' ? 'variant-soft-secondary' : ''}"
 						onclick={() => (activeTab = 'Analytics')}
 					>
-						<Icon icon={navParent.icon} class="mx-1 text-2xl" />
-						<span class="sidebar-text">{navParent.title}</span>
+						<div class="flex items-center gap-1">
+							<Icon icon={navParent.icon} class="text-2xl" />
+							<span class="sidebar-text">{navParent.title}</span>
+						</div>
 					</a>
 				{:else if navParent.title === 'Appointment Follow-Up'}
 					<a
 						href={`/users/${userId}/appointment-followup/summary-uploads`}
-						class="sidebar-item items-center {activeTab === 'Appointment'
-							? 'variant-soft-secondary'
-							: ''}"
+						class="sidebar-item {activeTab === 'Appointment' ? 'variant-soft-secondary' : ''}"
 						onclick={() => (activeTab = 'Appointment')}
 					>
-						<Icon icon={navParent.icon} class="mx-1 text-2xl" />
-						<span class="sidebar-text">{navParent.title}</span>
+						<div class="flex items-center gap-1">
+							<Icon icon={navParent.icon} class="text-2xl" />
+							<span class="sidebar-text">{navParent.title}</span>
+						</div>
 					</a>
 				{:else if navParent.title === 'Home'}
 					<a
 						href={navParent.link}
-						class="sidebar-item items-center {activeTab === 'Home' ? 'variant-soft-secondary' : ''}"
+						class="sidebar-item {activeTab === 'Home' ? 'variant-soft-secondary' : ''}"
 						onclick={() => (activeTab = 'Home')}
 					>
-						<Icon icon={navParent.icon} class="mx-1 text-2xl" />
-						<span class="sidebar-text">{navParent.title}</span>
+						<div class="flex items-center gap-1">
+							<Icon icon={navParent.icon} class="text-2xl" />
+							<span class="sidebar-text">{navParent.title}</span>
+						</div>
 					</a>
 				{:else}
 					<button
 						class="sidebar-item flex w-full items-center justify-between"
 						onclick={() => toggleDropdown(navParent.title)}
 					>
-						<div class="flex items-center gap-2">
+						<div class="flex items-center gap-1">
 							<Icon icon={navParent.icon} class="text-2xl" />
 							<span class="sidebar-text">{navParent.title}</span>
 						</div>
-
 						<span
 							class="transition-transform duration-300"
 							class:rotate-180={openTab === navParent.title}
 						>
-							<Icon icon="icon-park-outline:down" width="16" height="16" class="h-5 w-5" />
+							<Icon icon="icon-park-outline:down" class="h-4 w-4" />
 						</span>
 					</button>
 				{/if}
