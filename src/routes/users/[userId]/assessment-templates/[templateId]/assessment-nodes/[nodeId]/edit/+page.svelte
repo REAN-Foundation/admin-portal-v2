@@ -21,22 +21,22 @@
 	let nodeType = $state(data.assessmentNode.NodeType),
 		parentNodeId = $state(data.assessmentNode.ParentNodeId),
 		title = $state(data.assessmentNode.Title),
-		description = $state(data.assessmentNode.Description??''),
+		description = $state(data.assessmentNode.Description??undefined),
 		queryType = $state(data.assessmentNode.QueryResponseType),
 		options = $state(data.assessmentNode.Options ?? []),
-		message = $state(data.assessmentNode.Message ?? ''),
-		sequence = $state(data.assessmentNode.Sequence??''),
+		message = $state(data.assessmentNode.Message ?? undefined),
+		sequence = $state(data.assessmentNode.Sequence??undefined),
 		serveListNodeChildrenAtOnce = $state(data.assessmentNode.ServeListNodeChildrenAtOnce??false),
 		tags = $state(data.assessmentNode.Tags||[]),
-		correctAnswer = $state(data.assessmentNode.CorrectAnswer??null),
+		correctAnswer = $state(data.assessmentNode.CorrectAnswer??undefined),
 		keywords: string[] = $state(data.assessmentNode.Tags||[]),
-		resolutionScore = $state(data.assessmentNode.ResolutionScore??''),
-		providerAssessmentCode = $state(data.assessmentNode.ProviderAssessmentCode??''),
+		resolutionScore = $state(data.assessmentNode.ResolutionScore??undefined),
+		providerAssessmentCode = $state(data.assessmentNode.ProviderAssessmentCode??undefined),
 		scoringApplicable = $state(data.assessmentNode.ScoringApplicable??false),
 		required = $state(data.assessmentNode.Required??false),
-		fieldIdentifier = $state(data.assessmentNode.FieldIdentifier ??''),
-		fieldIdentifierUnit = $state(data.assessmentNode.FieldIdentifierUnit ??''),
-		rawData = $state(data.assessmentNode.RawData ??'');
+		fieldIdentifier = $state(data.assessmentNode.FieldIdentifier ??undefined),
+		fieldIdentifierUnit = $state(data.assessmentNode.FieldIdentifierUnit ??undefined),
+		rawData = $state(data.assessmentNode.RawData ??undefined);
 
 	let optionArray = $derived(options);
 
