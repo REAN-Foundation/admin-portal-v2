@@ -31,7 +31,7 @@
 		resolutionScore = $state(undefined),
 		serveListNodeChildrenAtOnce = $state(undefined),
 		message = $state(undefined),
-		keywords = $state(undefined),
+		keywords :string[] = $state([]),
 		required = $state(undefined),
 		fieldIdentifier = $state(undefined),
 		fieldIdentifierUnit = $state(undefined),
