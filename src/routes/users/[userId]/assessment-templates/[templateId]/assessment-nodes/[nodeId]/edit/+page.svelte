@@ -21,22 +21,22 @@
 	let nodeType = $state(data.assessmentNode.NodeType),
 		parentNodeId = $state(data.assessmentNode.ParentNodeId),
 		title = $state(data.assessmentNode.Title),
-		description = $state(data.assessmentNode.Description??undefined),
-		queryType = $state(data.assessmentNode.QueryResponseType),
+		description = $state(data.assessmentNode.Description ?? undefined),
+		queryType = $state(data.assessmentNode.QueryResponseType ?? undefined),
 		options = $state(data.assessmentNode.Options ?? []),
 		message = $state(data.assessmentNode.Message ?? undefined),
-		sequence = $state(data.assessmentNode.Sequence??undefined),
-		serveListNodeChildrenAtOnce = $state(data.assessmentNode.ServeListNodeChildrenAtOnce??false),
-		tags = $state(data.assessmentNode.Tags||[]),
-		correctAnswer = $state(data.assessmentNode.CorrectAnswer??undefined),
-		keywords: string[] = $state(data.assessmentNode.Tags||[]),
-		resolutionScore = $state(data.assessmentNode.ResolutionScore??undefined),
-		providerAssessmentCode = $state(data.assessmentNode.ProviderAssessmentCode??undefined),
-		scoringApplicable = $state(data.assessmentNode.ScoringApplicable??false),
-		required = $state(data.assessmentNode.Required??false),
-		fieldIdentifier = $state(data.assessmentNode.FieldIdentifier ??undefined),
-		fieldIdentifierUnit = $state(data.assessmentNode.FieldIdentifierUnit ??undefined),
-		rawData = $state(data.assessmentNode.RawData ??undefined);
+		sequence = $state(data.assessmentNode.Sequence ?? undefined),
+		serveListNodeChildrenAtOnce = $state(data.assessmentNode.ServeListNodeChildrenAtOnce ?? false),
+		tags = $state(data.assessmentNode.Tags || []),
+		correctAnswer = $state(data.assessmentNode.CorrectAnswer ?? undefined),
+		keywords: string[] = $state(data.assessmentNode.Tags || []),
+		resolutionScore = $state(data.assessmentNode.ResolutionScore ?? undefined),
+		providerAssessmentCode = $state(data.assessmentNode.ProviderAssessmentCode ?? undefined),
+		scoringApplicable = $state(data.assessmentNode.ScoringApplicable ?? false),
+		required = $state(data.assessmentNode.Required ?? false),
+		fieldIdentifier = $state(data.assessmentNode.FieldIdentifier ?? undefined),
+		fieldIdentifierUnit = $state(data.assessmentNode.FieldIdentifierUnit ?? undefined),
+		rawData = $state(data.assessmentNode.RawData ?? undefined);
 
 	let optionArray = $derived(options);
 
@@ -139,13 +139,19 @@
 				processedCorrectAnswer = isNaN(parsed) ? null : parsed;
 			}
 
+			// Custom validation: message required if node type is Message
+			if (selectedNodeType === 'Message' && (!message || message.trim() === '')) {
+				errors = { ...errors, Message: 'Message is required.' };
+				return;
+			}
+
 			const assessmentNodeUpdateModel: AssessmentNodeUpdateModel = {
 				ParentNodeId: parentNodeId,
 				NodeType: selectedNodeType,
 				Title: title,
 				Description: description,
 				Sequence: sequence,
-				QueryType: selectedQueryType,
+				QueryType: selectedNodeType === 'Question' ? selectedQueryType : undefined,
 				ResolutionScore: resolutionScore,
 				ProviderAssessmentCode: providerAssessmentCode,
 				ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce,
@@ -163,9 +169,9 @@
 			const validationResult = createOrUpdateSchema.safeParse(assessmentNodeUpdateModel);
 
 			console.log(
-				'validationResult',
+				'validationResult ==============>',
 				validationResult,
-				'assessmentNodeUpdateModel',
+				'assessmentNodeUpdateModel ==============>',
 				assessmentNodeUpdateModel
 			);
 			if (!validationResult.success) {
@@ -244,7 +250,7 @@
 									bind:value={title}
 									placeholder="Enter title here..."
 									class="health-system-input
-										{form?.errors?.title ? 'input-text-error' : ''}"
+										{errors?.title ? 'input-text-error' : ''}"
 								/>
 								{#if errors?.Title}
 									<p class="text-error">{errors?.Title}</p>
@@ -258,7 +264,7 @@
 									name="description"
 									bind:value={description}
 									placeholder="Enter description here..."
-									class="health-system-input {form?.errors?.description ? 'input-text-error' : ''}"
+									class="health-system-input {errors?.description ? 'input-text-error' : ''}"
 								></textarea>
 								{#if errors?.Description}
 									<p class="text-error">{errors?.Description}</p>
@@ -272,7 +278,7 @@
 									name="rawData"
 									bind:value={rawData}
 									placeholder="Enter raw data here..."
-									class="health-system-input {form?.errors?.rawData ? 'input-text-error' : ''}"
+									class="health-system-input {errors?.rawData ? 'input-text-error' : ''}"
 								></textarea>
 								{#if errors?.RawData}
 									<p class="text-error">{errors?.RawData}</p>
@@ -314,9 +320,7 @@
 								<select
 									name="fieldIdentifier"
 									bind:value={fieldIdentifier}
-									class="health-system-input {form?.errors?.fieldIdentifier
-										? 'input-text-error'
-										: ''}"
+									class="health-system-input {errors?.fieldIdentifier ? 'input-text-error' : ''}"
 								>
 									<option value="" disabled selected>Select field identifier here...</option>
 									{#each sortedIdentifiers as identifier}
@@ -337,7 +341,7 @@
 									name="fieldIdentifierUnit"
 									bind:value={fieldIdentifierUnit}
 									placeholder="Enter field identifier unit here...."
-									class="health-system-input {form?.errors?.fieldIdentifierUnit
+									class="health-system-input {errors?.fieldIdentifierUnit
 										? 'input-text-error'
 										: ''}"
 								/>
@@ -355,7 +359,7 @@
 										id="mySelect"
 										name="queryType"
 										disabled
-										class="health-system-input {form?.errors?.queryType ? 'input-text-error' : ''}"
+										class="health-system-input {errors?.queryType ? 'input-text-error' : ''}"
 										placeholder="Select query type here..."
 										bind:value={queryType}
 									>
@@ -377,7 +381,7 @@
 										<td>
 											<select
 												name="correctAnswer"
-												class="health-system-input {form?.errors?.correctAnswer
+												class="health-system-input {errors?.correctAnswer
 													? 'input-text-error'
 													: ''}"
 												bind:value={correctAnswer}
@@ -408,7 +412,7 @@
 										placeholder="Enter message here..."
 										bind:value={message}
 										class="health-system-input w-full
-											{form?.errors?.message ? 'border-error-300 text-error-500' : ''}"
+											{errors?.message ? 'border-error-300 text-error-500' : ''}"
 									></textarea>
 									{#if errors?.Message}
 										<p class="text-error">{errors?.Message}</p>
@@ -422,9 +426,8 @@
 									<input
 										type="checkbox"
 										name="serveListNodeChildrenAtOnce"
-										bind:value={serveListNodeChildrenAtOnce}
 										bind:checked={serveListNodeChildrenAtOnce}
-										class="health-system-input {form?.errors?.serveListNodeChildrenAtOnce
+										class="health-system-input {errors?.serveListNodeChildrenAtOnce
 											? 'input-text-error'
 											: ''}"
 									/>
