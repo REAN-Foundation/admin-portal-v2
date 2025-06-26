@@ -14,7 +14,7 @@
 	let promise = $state();
 	let name = $state('');
 	let description = $state('');
-	let meditationType ="Mindfulness";
+	let meditationType = $state('Mindfulness');
 	let recommendedDurationMin = $state<number>();
 	let version = $state('');
 	let keywords: string[] = $state([]);
@@ -175,8 +175,7 @@
               bind:keywords
               name="keywords"
               id="keywords"
-              keywordsChanged={onUpdateKeywords}
-            />
+              />
             <input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
           </td>
         </tr>
