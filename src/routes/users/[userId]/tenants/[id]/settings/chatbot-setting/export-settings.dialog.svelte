@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { toastMessage } from '$lib/components/toast/toast.store';
+	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 
 	let { open = true, onclose, tenantId, tenantCode } = $props();
 
@@ -36,8 +36,20 @@
 	}
 
 	async function publish() {
+		if (viewEditMode !== 'edit') {
+			addToast({
+				message: 'Nothing to publish. Enable edit mode first.',
+				type: 'info',
+				timeout: 3000
+			});
+			return;
+		}
 		if (!isValidJSON) {
-			alert('Invalid JSON!');
+			addToast({
+				message: 'Invalid JSON!',
+				type: 'error',
+				timeout: 3000
+			});
 			return;
 		}
 
@@ -70,13 +82,13 @@
 
 	// Check for existing secrets when dialog opens
 	async function checkExistingSecrets() {
-		const schemaRes = await fetch(`/api/server/tenants/${tenantId}/schema`, {
-			method: 'POST',
-			headers: { 'content-type': 'application/json' },
-			body: JSON.stringify({ tenantCode })
-		});
-		const schemaResponse = await schemaRes.json();
-		console.log('This is schemaResponse', schemaResponse);
+		// const schemaRes = await fetch(`/api/server/tenants/${tenantId}/schema`, {
+		// 	method: 'POST',
+		// 	headers: { 'content-type': 'application/json' },
+		// 	body: JSON.stringify({ tenantCode })
+		// });
+		// const schemaResponse = await schemaRes.json();
+		// console.log('This is schemaResponse', schemaResponse);
 
 		isCheckingSecrets = true;
 		try {
@@ -101,21 +113,38 @@
 		}
 	}
 
-	async function createSecrets() {
-		isPublishing = true;
+	async function createBotSchema() {
 		try {
-			// First, create schema
 			const schemaRes = await fetch(`/api/server/tenants/${tenantId}/schema`, {
 				method: 'POST',
 				headers: { 'content-type': 'application/json' },
 				body: JSON.stringify({ tenantCode })
 			});
 			const schemaResponse = await schemaRes.json();
-			if (!schemaRes.ok) {
-				toastMessage(schemaResponse);
-				isPublishing = false;
-				return;
-			}
+			console.log('This is schemaResponse', schemaResponse);
+		} catch (err) {
+			console.log('Error creating bot schema', err);
+			// toastMessage('Error creating bot schema');
+		}finally{
+			isPublishing = true;
+		}
+	}
+	async function createSecrets() {
+		isPublishing = true;
+		try {
+			await createBotSchema();
+			// First, create schema
+			// const schemaRes = await fetch(`/api/server/tenants/${tenantId}/schema`, {
+			// 	method: 'POST',
+			// 	headers: { 'content-type': 'application/json' },
+			// 	body: JSON.stringify({ tenantCode })
+			// });
+			// const schemaResponse = await schemaRes.json();
+			// if (!schemaRes.ok) {
+			// 	toastMessage(schemaResponse);
+			// 	isPublishing = false;
+			// 	return;
+			// }
 
 			// Then, create secrets
 			const res = await fetch(`/api/server/tenants/${tenantId}/secret`, {
