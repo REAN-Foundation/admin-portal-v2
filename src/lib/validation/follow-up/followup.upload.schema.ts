@@ -7,11 +7,19 @@ export const createOrUpdateSchema = z.object({
 });
 
 export const ScheduleAppointmentSchema = z.object({
-	date: z.coerce.date({
-		required_error: 'Date is required',
-		invalid_type_error: 'Invalid date format',
-	}).refine((d) => d >= new Date(new Date().setHours(0, 0, 0, 0)), {
-		message: 'Date cannot be in the past',
-	})
+	Date: z
+		.string()
+		// .trim()
+		// .refine((val) => /^\d{4}-\d{2}-\d{2}$/.test(val), {
+		// 	message: 'Invalid date format',
+		// })
+		// .transform((val) => new Date(val))
+		// .refine((date) => !isNaN(date.getTime()), {
+		// 	message: 'Invalid date value',
+		// })
+		// .refine(
+		// 	(date) => date >= new Date(new Date().setHours(0, 0, 0, 0)),
+		// 	{ message: 'Date cannot be in the past' }
+		// ),
 });
 

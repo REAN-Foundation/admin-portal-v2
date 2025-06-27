@@ -44,7 +44,8 @@ export const createOrUpdateSchema = z.object({
         .string({
             required_error: "QueryType is required.",
             invalid_type_error: "QueryType must be a string."
-        }),
+        })
+        .optional(),
 
     ResolutionScore: z
         .number({

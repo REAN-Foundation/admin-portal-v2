@@ -15,18 +15,14 @@
 	let { data }: { data: PageServerData } = $props();
 	let errors: Record<string, string> = $state({});
 	let templateTitle = data.templateDetails.Title;
-
-console.log('This is data',data)
 	const assessmentNodes = $state(data.assessmentNode);
-	console.log('assessmentNodes', assessmentNodes);
-
 	const nodeType = assessmentNodes.NodeType;
 	const title = assessmentNodes.Title;
 	const description =
 		assessmentNodes.Description !== null && assessmentNodes.Description !== ''
 			? assessmentNodes.Description
 			: 'Not specified';
-	const message = assessmentNodes.Message !== null ? assessmentNodes.Message : 'Not specified';
+	const message = assessmentNodes.Message !== null && assessmentNodes.Message !== '' ? assessmentNodes.Message : 'Not specified';
 	const serveListNodeChildrenAtOnce = assessmentNodes.ServeListNodeChildrenAtOnce ?? null;
 	const queryType = assessmentNodes.QueryResponseType;
 	const options = assessmentNodes.Options ?? [];
@@ -43,7 +39,6 @@ console.log('This is data',data)
 
 	const fieldIdentifier = assessmentNodes.FieldIdentifier ?? null;
 	const fieldIdentifierUnit = assessmentNodes.FieldIdentifierUnit ?? null;
-
 	let resolutionScore = $state();
 
 	if (nodeType === 'Question') {
@@ -52,7 +47,7 @@ console.log('This is data',data)
 
 	scoringApplicableCondition.set(data.templateDetails.ScoringApplicable);
 
-	// console.log('assessmentNode', assessmentNodes);
+	console.log('assessmentNode', assessmentNodes);
 
 	const userId = page.params.userId;
 	const templateId = page.params.templateId;
