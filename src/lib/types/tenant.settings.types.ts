@@ -222,10 +222,8 @@ interface ApiFetchConfig {
     Method: HttpMethod;
     Url: string;
     QueryParams?: Record<string, string>;
-    // QueryParams?: string;
     Body?: any;
     Headers?: Record<string, string>;
-    // Headers?: string;
     ResponseType?: ResponseType;
     ResponseField?: string;
 }
@@ -252,7 +250,7 @@ export interface FormsIntegrations {
 export interface FormsUIIntegrations {
     KoboToolbox: Setting;
     ODK: Setting;
-    GoogleForms: Setting;
+    GoogleForm: Setting;
 }
 
 export interface FormsSettings {

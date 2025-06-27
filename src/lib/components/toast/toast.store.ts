@@ -23,10 +23,10 @@ export const dismissToast = (id) => {
 
 export const toastMessage = (response = null) => {
     if (!response) {
-        addToast({
-          message: 'Something went wrong',
-          type: 'error',
-          timeout: 3000
+        toastMessage({
+            message: 'Something went wrong',
+            type: 'info',
+            timeout: 3000
         });
         return;
       }

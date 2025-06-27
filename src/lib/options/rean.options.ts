@@ -26,7 +26,7 @@ export const Options: FeatureOptions[] = [
 		Name: 'Tenants',
 		Enabled: true
 	},
-	
+
 	{
 		Name: 'FollowUp-Setting',
 		Enabled: true
@@ -93,6 +93,10 @@ export const Options: FeatureOptions[] = [
 	},
 	{
 		Name: 'Careplan-Assets',
+		Enabled: true
+	},
+	{
+		Name: 'Careplan-Category',
 		Enabled: true
 	},
 	{

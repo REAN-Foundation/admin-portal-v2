@@ -226,7 +226,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>Image <span class="text-red-700">*</span></td>
+							<td>Image</td>
 							<td>
 								<input
 									name="fileinput"

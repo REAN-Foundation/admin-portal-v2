@@ -254,7 +254,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>Image <span class=" text-red-600">*</span></td>
+							<td>Image</td>
 							<td>
 								{#if imageUrl === 'undefined'}
 									<input
