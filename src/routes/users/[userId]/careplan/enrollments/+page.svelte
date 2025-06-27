@@ -217,7 +217,7 @@
 							oninput={(event) => onSearchInput(event, 'carePlan')}
 							bind:value={carePlan}
 							placeholder="Search by care plan"
-							class="table-input-field !w-[320px] !pr-10 !pl-10"
+							class="table-input-field !pr-10 !pl-10"
 						/>
 						{#if carePlan}
 							<button type="button" onclick={() => (carePlan = '')} class="close-btn">
@@ -237,7 +237,7 @@
 							placeholder="Search by Enrollment code"
 							bind:value={displayId}
 							oninput={(event) => onSearchInput(event, 'displayId')}
-							class="table-input-field !w-[320px] !pr-4 !pl-10"
+							class="table-input-field  !pr-4 !pl-10"
 						/>
 						{#if displayId}
 							<button type="button" onclick={() => (displayId = '')} class="close-btn">
@@ -255,7 +255,7 @@
 								placeholder="Search by start date"
 								bind:value={startDate}
 								oninput={(event) => onSearchInput(event, 'startDate')}
-								class="table-input-field !w-[360px] pr-4 pl-10"
+								class="table-input-field pr-4 pl-10"
 							/>
 							<!-- {#if startDate}
 								<button type="button" onclick={() => (startDate = '')} class="close-btn">
@@ -274,7 +274,7 @@
 								placeholder="Search by end date"
 								bind:value={endDate}
 								oninput={(event) => onSearchInput(event, 'endDate')}
-								class="table-input-field !w-[324px] pr-4 pl-10"
+								class="table-input-field pr-4 pl-10"
 							/>
 							<!-- {#if endDate}
 								<button type="button" onclick={() => (endDate = '')} class="close-btn">
