@@ -4,13 +4,14 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import { LocalStorageUtils } from '$lib/utils/local.storage.utils';
-	import type { PageServerData } from '../$types.ts';
 	import PasswordInput from '$lib/components/input/password.input.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
 	import { goto } from '$app/navigation';
 	import type { UserCreateModel } from '$lib/types/user.types.js';
 	import { createSchema } from '$lib/validation/user.schemas.js';
 	import Button from '$lib/components/button/button.svelte';
+	import type { PageServerData } from './$types';
+	import { onMount } from 'svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -19,6 +20,7 @@
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let userRoles = data.UserRoles;
+	console.log('userRoles', userRoles);
 
 	let firstName = $state(undefined);
 	let lastName = $state(undefined);
@@ -48,8 +50,9 @@
 		console.log('personRoles', personRoles);
 		const selectedRole = personRoles?.find((x) => x.RoleName === selectedUserRole);
 		if (selectedRole) {
-			selectedUserRoleId = selectedRole.id;
+			selectedUserRoleId = selectedRole.id;			
 		}
+
 	}
 
 	const handleSubmit = async (event: Event) => {
@@ -67,6 +70,8 @@
 				CountryCode: countryCode,
 				SelectedUserRoleId: selectedUserRoleId
 			};
+
+			console.log("password", password)
 
 			const validationResult = createSchema.safeParse(usersCreateModel);
 			console.log(validationResult);
@@ -104,6 +109,19 @@
 			toastMessage();
 		}
 	};
+
+	onMount(() => {
+	const defaultRole = userRoles?.find((r) => r.Title === 'System User');
+	if (defaultRole) {
+		role = defaultRole.Value;
+		const tmp = LocalStorageUtils.getItem('personRoles');
+		const personRoles = JSON.parse(tmp || '[]');
+		const match = personRoles.find((x) => x.RoleName === defaultRole.Value);
+		if (match) {
+			selectedUserRoleId = match.id;
+		}
+	}
+});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -200,7 +218,7 @@
 									placeholder="Select role here..."
 								>
 									{#each userRoles as role}
-										<option value={`${role.Value}`}>{role.Title}</option>
+										<option value={role.Value}>{role.Title}</option>
 									{/each}
 								</select>
 								<input type="hidden" name="selectedUserRoleId" bind:value={selectedUserRoleId} />
