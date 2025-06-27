@@ -16,7 +16,7 @@
 	let name = $state('');
 	let description = $state('');
 	let version = $state('');
-	let consultationType = 'Tele-consultation';
+	let consultationType = $state('Tele-consultation');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
 
@@ -82,10 +82,10 @@
 		}
 	};
 
-	const onUpdateKeywords = (e: any) => {
-		keywords = e.detail;
-		keywordsStr = keywords?.join(', ');
-	};
+	$effect(() => {
+            keywordsStr = keywords?.join(', ');
+        });
+
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -148,8 +148,7 @@
 							bind:keywords
 							name="keywords"
 							id="keywords"
-							keywordsChanged={onUpdateKeywords}
-						/>
+							/>
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>

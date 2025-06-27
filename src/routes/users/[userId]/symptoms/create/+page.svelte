@@ -148,10 +148,9 @@
 		}
 	};
 
-	const onUpdateKeywords = (e: any) => {
-		keywords = e.detail;
-		keywordsStr = keywords?.join(', ');
-	};
+	$effect(() => {
+            keywordsStr = keywords?.join(', ');
+        });
 
 	$inspect(errors);
 </script>
@@ -207,8 +206,7 @@
 									bind:keywords
 									name="keywords"
 									id="keywords"
-									keywordsChanged={onUpdateKeywords}
-								/>
+									/>
 								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 							</td>
 						</tr>
@@ -228,7 +226,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>Image <span class="text-red-700">*</span></td>
+							<td>Image</td>
 							<td>
 								<input
 									name="fileinput"

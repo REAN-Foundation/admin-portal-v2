@@ -31,7 +31,7 @@
 		resolutionScore = $state(undefined),
 		serveListNodeChildrenAtOnce = $state(undefined),
 		message = $state(undefined),
-		keywords = $state(undefined),
+		keywords :string[] = $state([]),
 		required = $state(undefined),
 		fieldIdentifier = $state(undefined),
 		fieldIdentifierUnit = $state(undefined),
@@ -41,13 +41,14 @@
 	let promise = $state();
 	let keywordsStr: string = $state('');
 
-	let selectedNodeType = $state('Question');
-	let selectedQueryType = $state('Text');
+	let selectedNodeType = $state('');
+	let selectedQueryType = $state('');
 
 	let optionArray = $state([]);
 
 	const onSelectNodeType = (val) => {
 		selectedNodeType = val.target.value;
+		console.log('val', val.target.value);
 	};
 
 	const onSelectQueryResponseType = (val) => {
@@ -155,6 +156,7 @@
 			console.log('assessmentNodeCreateModel', assessmentNodeCreateModel);
 			const validationResult = createOrUpdateSchema.safeParse(assessmentNodeCreateModel);
 
+			console.log('validationResult', validationResult);
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -162,6 +164,11 @@
 						val?.[0] || 'This field is required'
 					])
 				);
+				return;
+			}
+
+			if (selectedNodeType === 'Message' && (!message || message.trim() === '')) {
+				errors = { ...errors, Message: 'Message is required.' };
 				return;
 			}
 
@@ -189,10 +196,9 @@
 		}
 	};
 
-	const onUpdateKeywords = (e: any) => {
-		keywords = e.detail;
-		keywordsStr = keywords?.join(', ');
-	};
+	$effect(() => {
+            keywordsStr = keywords?.join(', ');
+		});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -200,7 +206,14 @@
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+			<form
+				onsubmit={async (event) => {
+					const result = handleSubmit(event);
+					if (result && typeof result.then === 'function') {
+						promise = result;
+					}
+				}}
+			>
 				<table class="health-system-table">
 					<thead>
 						<tr>
@@ -219,7 +232,7 @@
 								<select
 									name="nodeType"
 									placeholder="Select node type here..."
-									class="health-system-input {form?.errors?.nodeType ? 'input-text-error' : ''}"
+									class="health-system-input {errors?.nodeType ? 'input-text-error' : ''}"
 									onchange={(val) => onSelectNodeType(val)}
 								>
 									<option>Question</option>
@@ -233,7 +246,7 @@
 							<td>
 								<select
 									name="parentNodeId"
-									class="health-system-input {form?.errors?.parentNodeId ? 'input-text-error' : ''}"
+									class="health-system-input {errors?.parentNodeId ? 'input-text-error' : ''}"
 									placeholder="Select node type here..."
 									onchange={(val) => (parentNodeId = val.target.value)}
 									bind:value={parentNodeId}
@@ -256,7 +269,7 @@
 									name="title"
 									bind:value={title}
 									placeholder="Enter title here...."
-									class="health-system-input {form?.errors?.title ? 'input-text-error' : ''}"
+									class="health-system-input {errors?.title ? 'input-text-error' : ''}"
 								/>
 								{#if errors?.Title}
 									<p class="text-error">{errors?.Title}</p>
@@ -271,7 +284,7 @@
 									name="required"
 									bind:checked={required}
 									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2
-									{form?.errors?.required ? 'input-text-error' : ''}"
+									{errors?.required ? 'input-text-error' : ''}"
 								/>
 								{#if errors?.Required}
 									<p class="text-error">{errors?.Required}</p>
@@ -285,7 +298,7 @@
 									name="description"
 									bind:value={description}
 									placeholder="Enter description here..."
-									class="health-system-input {form?.errors?.description ? 'input-text-error' : ''}"
+									class="health-system-input {errors?.description ? 'input-text-error' : ''}"
 								></textarea>
 								{#if errors?.Description}
 									<p class="text-error">{errors?.Description}</p>
@@ -299,7 +312,7 @@
 									name="rawData"
 									bind:value={rawData}
 									placeholder="Enter raw data here..."
-									class="health-system-input {form?.errors?.rawData ? 'input-text-error' : ''}"
+									class="health-system-input {errors?.rawData ? 'input-text-error' : ''}"
 								></textarea>
 								{#if errors?.RawData}
 									<p class="text-error">{errors?.RawData}</p>
@@ -316,7 +329,7 @@
 									min="1"
 									step="1"
 									bind:value={sequence}
-									class="health-system-input {form?.errors?.sequence ? 'input-text-error' : ''}"
+									class="health-system-input {errors?.sequence ? 'input-text-error' : ''}"
 								/>
 								{#if errors?.Sequence}
 									<p class="text-error">{errors?.Sequence}</p>
@@ -330,7 +343,6 @@
 									bind:keywords
 									name="keywords"
 									id="keywords"
-									keywordsChanged={onUpdateKeywords}
 								/>
 								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 							</td>
@@ -341,12 +353,10 @@
 								<select
 									name="fieldIdentifier"
 									bind:value={fieldIdentifier}
-									class="health-system-input {form?.errors?.fieldIdentifier
-										? 'input-text-error'
-										: ''}"
+									class="health-system-input {errors?.fieldIdentifier ? 'input-text-error' : ''}"
 								>
 									<option value="" disabled selected={fieldIdentifier === undefined}>
-										Select fieldIdentifier here...
+										Select field identifier here...
 									</option>
 
 									{#each sortedIdentifiers as identifier}
@@ -367,8 +377,8 @@
 									type="text"
 									name="fieldIdentifierUnit"
 									bind:value={fieldIdentifierUnit}
-									placeholder="Enter fieldIdentifierUnit here...."
-									class="health-system-input {form?.errors?.fieldIdentifierUnit
+									placeholder="Enter field identifier unit here...."
+									class="health-system-input {errors?.fieldIdentifierUnit
 										? 'input-text-error'
 										: ''}"
 								/>
@@ -384,7 +394,7 @@
 									<select
 										id="mySelect"
 										name="queryType"
-										class="health-system-input {form?.errors?.queryType ? 'input-text-error' : ''}"
+										class="health-system-input {errors?.queryType ? 'input-text-error' : ''}"
 										placeholder="Select query type here..."
 										onchange={(val) => onSelectQueryResponseType(val)}
 									>
@@ -456,7 +466,7 @@
 												placeholder="Enter resolution score here..."
 												min="1"
 												class="input w-full
-													{form?.errors?.resolutionScore ? 'border-error-300 text-error-500' : ''}"
+													{errors?.resolutionScore ? 'border-error-300 text-error-500' : ''}"
 												bind:value={resolutionScore}
 											/>
 											{#if errors?.ResolutionScore}
@@ -478,7 +488,7 @@
 										<td>
 											<select
 												name="correctAnswer"
-												class="health-system-input {form?.errors?.correctAnswer
+												class="health-system-input {errors?.correctAnswer
 													? 'input-text-error'
 													: ''}"
 												bind:value={correctAnswer}
@@ -498,9 +508,9 @@
 								<td>
 									<textarea
 										name="message"
-										required
 										placeholder="Enter message here..."
-										class="health-system-input {form?.errors?.message ? 'input-text-error' : ''}"
+										class="health-system-input {errors?.message ? 'input-text-error' : ''}"
+										bind:value={message}
 									></textarea>
 									{#if errors?.Message}
 										<p class="text-error">{errors?.Message}</p>
@@ -516,7 +526,7 @@
 										name="serveListNodeChildrenAtOnce"
 										bind:checked={serveListNodeChildrenAtOnce}
 										class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2
-									{form?.errors?.serveListNodeChildrenAtOnce ? 'input-text-error' : ''}"
+									{errors?.serveListNodeChildrenAtOnce ? 'input-text-error' : ''}"
 									/>
 									{#if errors?.ServeListNodeChildrenAtOnce}
 										<p class="text-error">{errors?.ServeListNodeChildrenAtOnce}</p>
