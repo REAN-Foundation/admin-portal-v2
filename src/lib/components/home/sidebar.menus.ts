@@ -63,6 +63,7 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 		menuName === 'Careplan' ||
 		menuName === 'Careplan-Dashboard' ||
 		menuName === 'Careplan-Assets' ||
+		menuName === 'Careplan-Categories' ||
 		menuName === 'Careplan-Plans' ||
 		menuName === 'Careplan-Enrollments'
 	) {
@@ -858,6 +859,15 @@ function addCareplanMenus(
 	};
 	menuList.push(careplanAssets);
 
+	const careplanCategory: SidebarMenu = {
+		name: 'Careplan-Category',
+		title: 'Categories',
+		icon: 'material-symbols:category-outline-rounded',
+		link: `/users/${userId}/careplan/category`,
+		children: []
+	};
+	menuList.push(careplanCategory);
+
 	const careplanPlans: SidebarMenu = {
 		name: 'Careplan-Plans',
 		title: 'Careplans',
@@ -879,10 +889,12 @@ function addCareplanMenus(
 	const careplan_: SidebarMenu = getMenu(menuList, 'Careplan');
 	const careplanDashboards: SidebarMenu = getMenu(menuList, 'Careplan-Dashboard');
 	const careplanAssets_: SidebarMenu = getMenu(menuList, 'Careplan-Assets');
+	const careplanCategory_: SidebarMenu = getMenu(menuList, 'Careplan-Category');
 	const careplanPlans_: SidebarMenu = getMenu(menuList, 'Careplan-Plans');
 	const careplanEnrollments_: SidebarMenu = getMenu(menuList, 'Careplan-Enrollments');
 	careplan_?.children.push(careplanDashboards);
 	careplan_?.children.push(careplanAssets_);
+	careplan_?.children.push(careplanCategory_);
 	careplan_?.children.push(careplanPlans_);
 	careplan_?.children.push(careplanEnrollments_);
 
