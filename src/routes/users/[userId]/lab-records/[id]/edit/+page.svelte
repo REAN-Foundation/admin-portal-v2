@@ -15,12 +15,12 @@
 
 	let id = $state(data.labRecordType.id),
 		typeName = $state(data.labRecordType.TypeName),
-		displayName = $state(data.labRecordType.DisplayName),
-		snowmedCode = $state(data.labRecordType.SnowmedCode),
-		loincCode = $state(data.labRecordType.LoincCode),
-		normalRangeMin = $state(data.labRecordType.NormalRangeMin),
-		normalRangeMax = $state(data.labRecordType.NormalRangeMax),
-		unit = $state(data.labRecordType.Unit);
+		displayName = $state(data.labRecordType.DisplayName || undefined),
+		snowmedCode = $state(data.labRecordType.SnowmedCode || undefined),
+		loincCode = $state(data.labRecordType.LoincCode || undefined),
+		normalRangeMin = $state(data.labRecordType.NormalRangeMin || undefined),
+		normalRangeMax = $state(data.labRecordType.NormalRangeMax || undefined),
+		unit = $state(data.labRecordType.Unit || undefined);
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
