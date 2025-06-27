@@ -27,6 +27,8 @@
 
 	function handleModalClose() {
 		onClose();
+		showAddMessageForm = false;
+		editingIndex = null;
 	}
 
 	function addMessage() {
@@ -59,6 +61,8 @@
 			type: 'success',
 			timeout: 3000
 		});
+        showAddMessageForm = false;
+		editingIndex = null;
 	}
 
 	function onDefaultLangChange(event: Event) {
@@ -98,6 +102,8 @@
 				type: 'success',
 				timeout: 3000
 			});
+            // showAddMessageForm = false;
+		    // editingIndex = null;
 		} catch (error) {
 			toastMessage();
 		}

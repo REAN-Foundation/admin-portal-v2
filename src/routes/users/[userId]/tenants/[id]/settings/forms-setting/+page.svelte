@@ -2,9 +2,7 @@
 	import { page } from '$app/state';
 	import Icon from '@iconify/svelte';
 	import Icons from '$lib/components/icons.svelte';
-	import InfoIcon from '$lib/components/infoIcon.svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
-	import { goto } from '$app/navigation';
 	import type { FormsSettings } from '$lib/types/tenant.settings.types';
 	import { FormsSettingsSchema } from '$lib/validation/tenant.settings.schema';
 	import { formsUISettings } from './forms-setting.types';
@@ -16,38 +14,63 @@
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
 	const tenantRoute = `/users/${userId}/tenants/${tenantId}/settings/forms-setting`;
+
 	let formSetting = $state({ Forms: data.settings });
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let openTab: string | null = $state(null);
-	let disabled = $state(data.commonSettings.UserInterfaces.Forms);
+
+	let disabled = $state(data.isFormsEnabled);
 	let edit = $state(false);
 
-	const toggleEdit = async () => {
-		if (disabled) {
-			if (edit) {
-				addToast({
-					message: 'Settings saved successfully',
-					type: 'success',
-					timeout: 3000
-				});
-				edit = false;
-			} else {
-				edit = true;
-				addToast({
-					message: 'Edit mode enabled',
-					type: 'info',
-					timeout: 3000
-				});
-			}
-		} else if (disabled === false) {
+	const handleEditClick = async () => {
+		if (!disabled) {
 			addToast({
 				message: 'This setting is disabled. Please update it from the main settings.',
-				type: 'warning',
+				type: 'info',
 				timeout: 3000
 			});
 			return;
 		}
+		if (!edit) {
+			addToast({
+				message: 'Edit mode enabled.',
+				type: 'info',
+				timeout: 3000
+			});
+			edit = true;
+		} else {
+			addToast({
+				message: 'Edit mode disabled.',
+				type: 'info',
+				timeout: 3000
+			});
+			edit = false;
+		}
+		// if (disabled) {
+		// 	if (edit) {
+		// 		addToast({
+		// 			message: 'Settings saved successfully',
+		// 			type: 'success',
+		// 			timeout: 3000
+		// 		});
+		// 		edit = false;
+		// 	} else {
+		// 		edit = true;
+		// 		addToast({
+		// 			message: 'Edit mode enabled',
+		// 			type: 'info',
+		// 			timeout: 3000
+		// 		});
+		// 	}
+		// } else if (disabled === false) {
+		// 	addToast({
+		// 		message: 'This setting is disabled. Please update it from the main settings.',
+		// 		type: 'warning',
+		// 		timeout: 3000
+		// 	});
+		// 	return;
+		// }
 	};
 
 	function toggleTab(tab: string) {
@@ -73,7 +96,15 @@
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
-
+			console.log('edit', edit);
+			if (!edit) {
+				addToast({
+					message: 'Nothing to edit !',
+					type: 'info',
+					timeout: 3000
+				});
+				return;
+			}
 			const formSettingUpdateModel: FormsSettings = {
 				Integrations: formSetting.Forms.Integrations,
 				OfflineSupport: formSetting.Forms.OfflineSupport,
@@ -102,8 +133,6 @@
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				edit = false;
-
-				goto(`${tenantRoute}`);
 				return;
 			}
 			if (response.Errors) {
@@ -142,10 +171,10 @@
 						<button
 							type="button"
 							class="table-btn variant-filled-secondary gap-1"
-							onclick={toggleEdit}
+							onclick={handleEditClick}
 						>
 							<Icon icon="material-symbols:edit-outline" />
-							<span>{edit ? 'Save' : 'Edit'}</span>
+							<!-- <span>{edit ? 'Save' : 'Edit'}</span> -->
 						</button>
 						<a
 							href={tenantRoute}
@@ -169,12 +198,12 @@
 									onclick={() => toggleTab(groupName)}
 									class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-gray-700
 											transition-all duration-100 ease-in-out  ${
-											openTab === groupName
-											? 'rounded-b-none bg-[#F2F2F2] text-black'
-											: `border-hover rounded bg-white`
+												openTab === groupName
+													? 'rounded-b-none bg-[#F2F2F2] text-black'
+													: `border-hover rounded bg-white`
 											} 
 										`}
-									>
+								>
 									<div class="flex flex-1 items-center gap-2">
 										<Icons
 											cls="stroke-slate-800 my-2 stroke-2 fill-none"
@@ -185,7 +214,7 @@
 										<div class=" text-start">
 											<p class="text-md font-medium">Integrations</p>
 
-											<p class=" text-sm">Settings under {groupName}</p>
+											<p class=" text-sm">Connect with external form platforms and data collection services.</p>
 										</div>
 									</div>
 
@@ -196,7 +225,7 @@
 									>
 										<Icon
 											icon="icon-park-outline:down"
-											rotate="35"
+											rotate={35}
 											width="16"
 											height="16"
 											class="h-5 w-5"
@@ -205,12 +234,15 @@
 								</button>
 
 								{#if openTab === groupName}
-									<div class=" grid gap-3 px-4 py-4 md:grid-cols-2">
-										{#each Object.entries(groupItems) as [key, value]}
-											{@const meta = getSettingMeta(groupName, key)}
+									<div class="flex w-full justify-center px-4 py-5 sm:px-6 md:px-10 lg:px-20">
+										<div
+											class="grid w-full grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-6 md:gap-x-10"
+										>
+											{#each Object.entries(groupItems) as [key, value]}
+												{@const meta = getSettingMeta(groupName, key)}
 
-											<!-- <div class="flex items-center gap-3"> -->
-											<!-- {#if edit === true && formSetting.Forms[groupName][key] === true}
+												<!-- <div class="flex items-center gap-3"> -->
+												<!-- {#if edit === true && formSetting.Forms[groupName][key] === true}
 														<span class="text-green-500">✅</span>
 													{:else if edit === true && formSetting.Forms[groupName][key] !== true}
 														<span class="text-sm">❌</span>
@@ -224,40 +256,43 @@
 															/>
 														</label>
 													{/if} -->
-											<!-- <Icons
+												<!-- <Icons
 														cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 fill-none my-2"
 														h="70%"
 														w="70%"
 														iconPath={meta?.IconPath}
 													/> -->
-											<!-- <span>{meta?.Name ?? key}</span>
+												<!-- <span>{meta?.Name ?? key}</span>
 												</div> -->
 
-											<div class=" border-hover rounded-xl border p-4 text-gray-700">
-												<div class="flex items-center justify-between gap-3">
-													<!-- Left: App Icon -->
-													<Icon icon="mdi:vector-link" class="hidden h-5 w-5 md:block" />
+												<div class=" border-hover rounded-xl border p-4 text-gray-700">
+													<div class="flex items-center justify-between gap-3">
+														<!-- Left: App Icon -->
+														<!-- <Icon icon="mdi:vector-link" class="hidden h-5 w-5 md:block" /> -->
+														<Icon icon={meta.Path} class="hidden h-5 w-5 md:block" />
 
-													<!-- Middle: Name & Description -->
-													<div class="flex flex-grow flex-col">
-														<span class="text-sm font-medium">{meta?.Name ?? key}</span>
-														<p class="text-sm">
-															short description for {meta?.Name ?? key}.
-														</p>
-													</div>
+														<!-- Middle: Name & Description -->
+														<div class="flex flex-grow flex-col">
+															<span class="text-sm font-medium">{meta?.Name ?? key}</span>
+															<p class="text-sm">
+																<!-- short description for {meta?.Name ?? key}. -->
+                                                                 {meta.Description}
+															</p>
+														</div>
 
-													<!-- Right: Toggle + Optional Edit -->
-													<div class="flex items-center">
-														<input
-															type="checkbox"
-															class="checkbox checkbox-primary scale-125 cursor-pointer"
-															bind:checked={formSetting.Forms[groupName][key]}
-															disabled={!edit}
-														/>
+														<!-- Right: Toggle + Optional Edit -->
+														<div class="flex items-center">
+															<input
+																type="checkbox"
+																class="checkbox checkbox-primary scale-125 cursor-pointer"
+																bind:checked={formSetting.Forms[groupName][key]}
+																disabled={!edit}
+															/>
+														</div>
 													</div>
 												</div>
-											</div>
-										{/each}
+											{/each}
+										</div>
 									</div>
 								{/if}
 							</div>
@@ -306,13 +341,13 @@
 								<div class=" border-hover rounded-xl border p-4 text-gray-700">
 									<div class="flex items-center justify-between gap-3">
 										<!-- Left: App Icon -->
-										<Icon icon="mdi:vector-link" class="h-5 w-5" />
+										<Icon icon={formsUISettings[groupName].Path} class="h-5 w-5" />
 
 										<!-- Middle: Name & Description -->
 										<div class="flex flex-grow flex-col">
-											<span class="text-sm font-medium">{groupName}</span>
+											<span class="text-sm font-medium">{formsUISettings[groupName].Name}</span>
 											<p class="text-sm">
-												short description for {groupName}.
+												{formsUISettings[groupName].Description}
 											</p>
 										</div>
 
