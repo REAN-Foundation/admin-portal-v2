@@ -20,7 +20,7 @@ export const createOrUpdateSchema = z.object({
 		.string({
 			required_error: 'Language is required.'
 		})
-		.min(8, { message: 'Language must be at least 3 characters long.' })
+		.min(3, { message: 'Language must be at least 3 characters long.' })
 		.max(64, { message: 'Language must be at most 64 characters long.' }),
 	ImageResourceId: z
 		.string()
