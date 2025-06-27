@@ -4,7 +4,8 @@
 	import Image from '$lib/components/image.svelte';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-
+	import Label from '$lib/components/label/label.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
 	///////////////////////////////////////////////////////////////////////
 
 	// export let data: PageServerData;
@@ -40,56 +41,48 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<table class="health-system-table">
-				<thead>
-					<tr>
-						<th>View Symptom</th>
-						<th class="text-end">
-							<a href={symptomRoute} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Symptom</td>
-						<td>{symptom}</td>
-					</tr>
-					<tr>
-						<td>Description</td>
-						<td>{description}</td>
-					</tr>
-					<tr>
-						<td>Language</td>
-						<td>{language}</td>
-					</tr>
-					<tr>
-						<td>Tags</td>
-						<td>
-							{#if tags.length <= 0}
-								<span class="span">Tags not specified</span>
-							{:else}
-								<span class="span">{tags}</span>
-							{/if}
-						</td>
-					</tr>
-					<tr>
-						<td class="align-top">Image</td>
-						<td>
-							{#if imageUrl == 'undefined' || imageUrl == null}
-								Not specified
-							{:else}
-								<Image cls="flex h-24 w-24 rounded-lg" source={imageUrl} w="24" h="24" />
-							{/if}
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<Heading text="View Symptom" />
+		<a href={symptomRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
+		</a>
 	</div>
+
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<Label text="Symptom" />
+				<td class="table-data">{symptom}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Description" />
+				<td class="table-data">{description}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Language" />
+				<td class="table-data">{language}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Tags" />
+				<td class="table-data">
+					{#if tags.length <= 0}
+						<span class="span">Tags not specified</span>
+					{:else}
+						<span class="span">{tags}</span>
+					{/if}
+				</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Image" />
+				<td class="table-data">
+					{#if imageUrl == 'undefined' || imageUrl == null}
+						Not specified
+					{:else}
+						<Image cls="flex h-24 w-24 rounded-lg" source={imageUrl} w="24" h="24" />
+					{/if}
+				</td>
+			</tr>
+		</tbody>
+	</table>
 </div>

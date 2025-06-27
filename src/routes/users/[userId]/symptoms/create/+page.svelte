@@ -8,6 +8,10 @@
 	import type { SymptomCreateModel } from '$lib/types/symptoms.types.js';
 	import InputChips from '$lib/components/input-chips.svelte';
 	import Button from '$lib/components/button/button.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Input from '$lib/components/input/input.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
 
 	////////////////////////////////////////////////////////////////////////
 
@@ -149,109 +153,94 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
+		keywordsStr = keywords?.join(', ');
+	});
 
 	$inspect(errors);
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th>Create Symptom</th>
-							<th class="text-end">
-								<a href={symptomRoute} class="form-cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Symptom <span class="text-red-700">*</span></td>
-							<td>
-								<input
-									bind:value={symptom}
-									type="text"
-									name="symptom"
-									placeholder="Enter symptom here..."
-									class="health-system-input"
-								/>
-								{#if errors?.Symptom}
-									<p class="text-error">{errors?.Symptom}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Description</td>
-							<td>
-								<textarea
-									bind:value={description}
-									name="description"
-									placeholder="Enter description here..."
-									class="health-system-input"
-								></textarea>
-							</td>
-						</tr>
-						<tr>
-							<td>Tags</td>
-							<td>
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-									/>
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-							</td>
-						</tr>
-						<tr>
-							<td>Language <span class="text-red-700">*</span></td>
-							<td>
-								<input
-									type="text"
-									name="language"
-									placeholder="Enter language here..."
-									bind:value={language}
-									class="health-system-input"
-								/>
-								{#if errors?.Language}
-									<p class="text-error">{errors?.Language}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Image <span class="text-red-700">*</span></td>
-							<td>
-								<input
-									name="fileinput"
-									type="file"
-									class="true health-system-input"
-									placeholder="Image"
-									bind:this={symptomImage}
-									onchange={async (e) => await onFileSelected(e)}
-								/>
-								{#if errorMessage}
-									<p class={`${errorMessage.Colour}`}>{errorMessage.Text}</p>
-								{/if}
-								<input type="hidden" name="imageResourceId" value={imageResourceId} />
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="btn-container mr-5 mb-2">
-					{#await promise}
-						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
-					{:then data}
-						<Button size="md" type="submit" text="Submit" variant="primary" />
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<Heading text="Create Symptom" />
+			<a href={symptomRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<Label text="Symptom" required={true} />
+					<td class="table-data">
+						<Input
+							name="symptom"
+							type="text"
+							placeholder="Enter symptom here..."
+							bind:value={symptom}
+							error={errors?.Symptom}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Description" />
+					<td class="table-data">
+						<Textarea
+							name="description"
+							placeholder="Enter description here..."
+							bind:value={description}
+							error={errors?.Description}
+							resize={false}
+						/>
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<Label text="Tags" />
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<Input type="hidden" name="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<Label text="Language" required={true} />
+					<td class="table-data">
+						<Input
+							name="language"
+							type="text"
+							placeholder="Enter language here..."
+							bind:value={language}
+							error={errors?.Language}
+						/>
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<Label text="Image" required={true} />
+					<td class="table-data">
+						<input
+							name="fileinput"
+							type="file"
+							class="true health-system-input"
+							placeholder="Image"
+							bind:this={symptomImage}
+							onchange={async (e) => await onFileSelected(e)}
+						/>
+						{#if errorMessage}
+							<p class={`${errorMessage.Colour}`}>{errorMessage.Text}</p>
+						{/if}
+						<input type="hidden" name="imageResourceId" value={imageResourceId} />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container">
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>

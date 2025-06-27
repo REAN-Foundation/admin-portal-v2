@@ -41,7 +41,7 @@
 			{type}
 			{placeholder}
 			bind:value
-			class={`input  placeholder-gray-400 ${error ? 'input-text-error' : ''} ${className}`}
+			class={`input  placeholder-gray-400 ${error ? '' : ''} ${className}`}
 		/>
 	{/if}
 
