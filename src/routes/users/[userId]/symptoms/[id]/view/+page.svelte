@@ -10,6 +10,7 @@
 	// export let data: PageServerData;
 	let { data }: { data: PageServerData } = $props();
 
+	console.log("data=====================>", data);
 	let symptom = data.symptom.Symptom;
 	let description = data.symptom.Description !== null ? data.symptom.Description : 'Not specified';
 	let tags = data.symptom.Tags;
@@ -79,12 +80,14 @@
 						</td>
 					</tr>
 					<tr>
-						<td class="align-top">Image</td>
+						<td class="align-top">Image={imageUrl}</td>
 						<td>
-							{#if imageUrl == 'undefined' || imageUrl == null}
+							{#if imageUrl == undefined || imageUrl == null}
 								Not specified
 							{:else}
+
 								<Image cls="flex h-24 w-24 rounded-lg" source={imageUrl} w="24" h="24" />
+								<!-- <img src={imageUrl} alt="Symptom Image" class="flex h-24 w-24 rounded-lg" /> -->
 							{/if}
 						</td>
 					</tr>

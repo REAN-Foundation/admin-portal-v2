@@ -1,4 +1,4 @@
-import { API_CLIENT_INTERNAL_KEY, BACKEND_API_URL, BOT_CONTENT_API_URL } from '$env/static/private';
+import { API_CLIENT_INTERNAL_KEY, BACKEND_API_URL } from '$env/static/private';
 import { error } from '@sveltejs/kit';
 import { ServerHelper } from '$lib/server/server.helper';
 import axios from 'axios';
@@ -14,7 +14,8 @@ export const uploadBinary = async (
 	filename: string,
 	isPublic = true
 ) => {
-	const url = BOT_CONTENT_API_URL + `/file-resources/upload`;
+	// const url = BACKEND_API_URL + `/file-resources/upload`;
+	const url = BACKEND_API_URL + `/file-resources/upload-binary`;
 	const session = await SessionManager.getSession(sessionId);
 	const accessToken = session.accessToken;
 
@@ -37,11 +38,11 @@ export const uploadBinary = async (
 		data: buffer
 	};
 
-	// console.log(JSON.stringify(config, null, 2));
+	// console.log(JSON.stringify(config));
 
 	const res = await axios(config);
 
-	// console.log("res", res);
+	// console.log("response=====================>", res);
 
 	const response = res.data;
 
@@ -56,66 +57,21 @@ export const uploadBinary = async (
 	return response;
 };
 
-// export const upload = async (sessionId: string, filePath: string, filename: string, isPublic = true) => {
-
-//     const url = BACKEND_API_URL + `/file-resources/upload`;
-//     const session = await SessionManager.getSession(sessionId);
-//     const accessToken = session.accessToken;
-
-// 	const mimeType = ServerHelper.getMimeTypeFromFileName(filename);
-// 	console.log(`mimeType = ${mimeType}`);
-
-//     const p = path.join(process.cwd(), filePath);
-//     const form = new FormData();
-//     form.append("name", fs.readFileSync(p));
-//     //form.append("IsPublicResource", isPublic ? "true" : "false");
-//     console.log(filePath);
-
-//     const headers = {
-//         ...form.getHeaders()
-//     };
-//     //headers['enc'] = 'multipart/form-data';
-//     // headers['Content-Type'] = "application/x-www-form-urlencoded";
-//     headers['x-api-key'] = API_CLIENT_INTERNAL_KEY;
-//     headers['Authorization'] = `Bearer ${accessToken}`;
-
-//     // const config = {
-//     //     method: 'post',
-//     //     url: url,
-//     //     headers: headers,
-//     // };
-
-//     console.log(JSON.stringify(headers, null, 2));
-//     console.log(form);
-
-//     const response = await axios.post(url, form, headers);
-
-//     if (response['Status'] === 'failure') {
-//         if(response['HttpCode'] !== 201 && response['HttpCode'] !== 200) {
-//             console.log(`get_ response message: ${response['Message']}`);
-//             throw error(response['HttpCode'], response['Message']);
-//         }
-//     }
-
-//     console.log(`get_ response message: ${response['Message']}`);
-//     return response['Data'];
-// };
-
 export const getFileResourceById = async (sessionId, fileResourceId) => {
-	const url = BOT_CONTENT_API_URL + `/file-resources/${fileResourceId}`;
+	const url = BACKEND_API_URL + `/file-resources/${fileResourceId}`;
 	console.log('uri--', url);
 
 	return await get(sessionId, url, false, API_CLIENT_INTERNAL_KEY);
 };
 
 export const deleteFileResource = async (sessionId: string, resourceId: string) => {
-	const url = BOT_CONTENT_API_URL + `/file-resources/${resourceId}`;
+	const url = BACKEND_API_URL + `/file-resources/${resourceId}`;
 	console.log('uri--', url);
 	return await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
 };
 
 export const download = async (sessionId, fileResourceId, attachment = false) => {
-	let url = BOT_CONTENT_API_URL + `/file-resources/download/${fileResourceId}`;
+	let url = BACKEND_API_URL + `/file-resources/download/${fileResourceId}`;
 	if (attachment) {
 		url = url + `?disposition=attachment`;
 	}
