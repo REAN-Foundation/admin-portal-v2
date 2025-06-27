@@ -45,7 +45,7 @@
 	let firstName = undefined;
 	let email = $state(undefined);
 	let phone = $state(undefined);
-	let sortBy = $state('FirstName');
+	let sortBy = $state('CreatedAt');
 	let sortOrder = $state('ascending');
 
 	let totalUsersCount = $state(data.users.TotalCount);
@@ -80,6 +80,7 @@
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+			url += `&roleIds=${model.roleIds ?? selectedRoles}`;
 
 			if (phone) url += `&phone=${phone}`;
 			if (email) url += `&email=${email}`;

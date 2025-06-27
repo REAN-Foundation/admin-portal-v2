@@ -18,7 +18,7 @@
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let roleName = $state(data.personRoleType.RoleName);
-	let description = $state(data.personRoleType.Description);
+	let description = $state(data.personRoleType.Description ?? undefined);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 

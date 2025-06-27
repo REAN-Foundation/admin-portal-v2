@@ -9,12 +9,11 @@
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
-	import UploadModal from '$routes/users/[userId]/appointment-followup/summary-uploads/upload.appointments.modal.svelte';
+	import UploadModal from './upload.appointments.modal.svelte';
 	import { goto } from '$app/navigation';
-	import { createOrUpdateSchema } from '$lib/validation/follow-up/followup.upload.schema';
-	import type { FollowUpUploadModel } from '$lib/types/follow-up/followup.upload';
-	import CancelModel from '$routes/users/[userId]/appointment-followup/summary-uploads/cancel.appointment.modal.svelte';
+	import CancelModel from './cancel.appointment.modal.svelte';
 	import Button from '$lib/components/button/button.svelte';
+	import ScheduleExtractModal from './schedule.extract.modal.svelte';
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -32,6 +31,8 @@
 	let repiedNoCount = $derived(repiedNoCount_);
 	let notRepiedCount = $derived(notRepiedCount_);
 	let retrivedAppointmentRecords = $derived(appointmentRecords);
+	let followupSettings = data.settings;
+	console.log('followupSettings', followupSettings);
 
 	let searchKeyword = $state(undefined);
 	let reply = $state(undefined);
@@ -48,9 +49,11 @@
 	let isSortingName = $state(false);
 	let sortBy = $state('appointment_date');
 	let sortOrder = $state('ascending');
-	let extraction = $state('FileBased');
+	// let source = $state(followupSettings?.Source);
+	let source = $state("Api")
 	let showUploadModal = $state(false);
 	let showCancelModel = $state(false);
+	let showScheduleExtractModel = $state(false);
 	let errors = $state(undefined);
 	let file = $state(undefined);
 
@@ -187,11 +190,15 @@
 	// 	return statistics
 	//  }
 </script>
+<!-- 
+{#if source == "None"}
+	<h3>Follow up tenant settings are not enabled </h3>
+{:else} -->
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
 <div class="mx-6 grid gap-4 md:grid-cols-3">
-	{#if extraction === 'FileBased'}
+	{#if source === 'FileBased'}
 		<Button
 			text="Upload Appointment Schedules"
 			size="md"
@@ -199,14 +206,16 @@
 			className="w-full"
 			onclick={() => (showUploadModal = true)}
 		/>
-	{:else}
+	{:else} 
 		<Button
 			type="submit"
 			text="Extract Appointment Schedules"
 			size="md"
 			variant="primary"
 			className="w-full"
+			onclick={() => (showScheduleExtractModel = true)}
 		/>
+
 	{/if}
 
 	<Button
@@ -227,6 +236,7 @@
 </div>
 
 <UploadModal showUploadModel={showUploadModal} onClose={() => (showUploadModal = false)} />
+<ScheduleExtractModal showScheduleExtractModel={showScheduleExtractModel} onClose={() => (showScheduleExtractModel = false)} />
 <CancelModel {showCancelModel} onClose={() => (showCancelModel = false)} />
 
 <!-- <div class="mt-4 mx-6 overflow-x-auto rounded-lg border border-[var(--color-outline)]">
@@ -395,3 +405,5 @@
 </div>
 
 <Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />
+
+<!-- {/if} -->
