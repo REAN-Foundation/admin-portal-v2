@@ -80,7 +80,7 @@
 		{:else}
 			<Icon
 				icon={activeTab === navItem.title ? navItem.icon.replace('-outline', '') : navItem.icon}
-				class="text-2xl"
+				class="h-5 w-5"
 			/>
 		{/if}
 
