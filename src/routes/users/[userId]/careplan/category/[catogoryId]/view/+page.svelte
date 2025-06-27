@@ -4,6 +4,8 @@
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
 	import Button from '$lib/components/button/button.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
 
 	////////////////////////////////////////////////////////
 
@@ -14,7 +16,7 @@
 	const categoryRoute = `/users/${userId}/careplan/category`;
 	let { data }: { data: PageServerData } = $props();
 	let careplanCategory = $state(data.careplanCategory);
-	let categoryType = careplanCategory.Type ;
+	let categoryType = careplanCategory.Type;
 	let categoryDescription = careplanCategory.Description;
 	const breadCrumbs = [
 		{
@@ -29,10 +31,9 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
 <div class="mx-auto w-full px-6 py-4">
 	<div class="form-headers">
-		<h2 class="form-titles">View Careplan Category</h2>
+		<Heading text="View Careplan Category" />
 		<a href={categoryRoute} class="cancel-btn">
 			<Icon icon="material-symbols:close-rounded" />
 		</a>
@@ -41,14 +42,15 @@
 	<table class="w-full">
 		<tbody>
 			<tr class="tables-row">
-				<td class="table-label">Type</td>
+				<Label text="Type" />
 				<td class="table-data">{categoryType}</td>
 			</tr>
+
 			<tr class="tables-row">
-				<td class="table-label">Description</td>
+				<Label text="Description" />
 				<td class="table-data">
-					{#if !categoryDescription || categoryDescription.length <= 0}
-						<span>Description not specified</span>
+					{#if !categoryDescription || categoryDescription.length === 0}
+						<span class="text-gray-400 italic">Description not specified</span>
 					{:else}
 						<span>{categoryDescription}</span>
 					{/if}
@@ -56,7 +58,15 @@
 			</tr>
 		</tbody>
 	</table>
+
 	<div class="btn-container">
-		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"></Button>
+		<Button
+			href={editRoute}
+			text="Edit"
+			variant="primary"
+			iconBefore="mdi:edit"
+			iconSize="md"
+			size="md"
+		/>
 	</div>
 </div>

@@ -7,6 +7,10 @@
 	import type { CareplanCategoryCreateModel } from '$lib/types/careplan.category.types.js';
 	import { goto } from '$app/navigation';
 	import Button from '$lib/components/button/button.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Input from '$lib/components/input/input.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -77,7 +81,7 @@
 <div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Create Careplan Category</h2>
+			<Heading text="Create Careplan Category" />
 			<a href={categoriesRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
@@ -86,33 +90,29 @@
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
-					<td class="table-label">Type <span class="important-field">*</span></td>
+					<Label text="Type" required={true} />
 					<td class="table-data">
-						<input
-							type="text"
-							class="input {errors?.Type ? 'input-text-error' : ''}"
+						<Input
 							name="categoryType"
+							type="text"
 							placeholder="Enter category type here..."
 							bind:value={categoryType}
+							error={errors?.Type}
 						/>
-						{#if errors?.Type}
-							<p class="error-text">{errors?.Type}</p>
-						{/if}
 					</td>
 				</tr>
+
 				<tr class="tables-row">
-					<td class="table-label">Description</td>
+					<Label text="Description" />
 					<td class="table-data">
-						<textarea
-							class="input resize-none {errors?.Description ? 'border-error-300' : 'border-primary-200'}"
+						<Textarea
 							name="categoryDescription"
 							placeholder="Enter description here..."
 							bind:value={categoryDescription}
-							rows="4"
-						></textarea>
-						{#if errors?.Description}
-							<p class="error-text">{errors?.Description}</p>
-						{/if}
+							error={errors?.Description}
+							resize={false}
+							rows={4}
+						/>
 					</td>
 				</tr>
 			</tbody>
