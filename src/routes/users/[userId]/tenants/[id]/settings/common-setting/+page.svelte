@@ -14,15 +14,27 @@
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
 	const tenantRoute = `/users/${userId}/tenants`;
-	let commonSetting = $state(data.settings);
+
+	let commonSetting = $state(data.commonSettings);
 	let promise = $state();
 	let errors: Record<string, string> = $state({});
+    let disabled = $state(true);
+    let edit = $derived(disabled);
 
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
 		errors = {};
 
 		try {
+            console.log('disabled', disabled);
+            if (disabled) {
+                addToast({
+                    message: 'Nothing to edit !',
+                    type: 'info',
+                    timeout: 3000
+                });
+                return;
+            }
 			const validationResult = CommonSettingsSchema.safeParse(commonSetting);
 
 			if (!validationResult.success) {
@@ -42,10 +54,10 @@
 			});
 
 			const response = await res.json();
-
+            console.log('response@@', response);
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				edit = true;
+				disabled = true;
 				return;
 			}
 			if (response.Errors) {
@@ -54,38 +66,31 @@
 				toastMessage(response);
 			}
 		} catch (error) {
+            console.log('error', error);
 			toastMessage();
 		}
 	};
 
-	let disabled = $state(true);
-	let edit = $derived(disabled);
+	
+	// let edit = $derived(disabled);
 
-	const toggleEdit = async () => {
-		if (edit) {
-			disabled = false;
-			addToast({
-				message: 'Edit mode enabled',
-				type: 'info',
-				timeout: 3000
-			});
-		} else {
-			try {
-				disabled = true;
-				addToast({
-					message: 'Settings saved successfully',
-					type: 'success',
-					timeout: 3000
-				});
-			} catch (err) {
-				console.error('Save failed:', err);
-				addToast({
-					message: 'Failed to save settings',
-					type: 'error',
-					timeout: 3000
-				});
-			}
-		}
+	const handleEditClick = async () => {
+        if (disabled) {
+            addToast({
+                message: 'Edit mode enabled.',
+                type: 'info',
+                timeout: 3000
+            });
+            disabled = false;
+        } else {
+            addToast({  
+                message: 'Edit mode disabled.',
+                type: 'info',
+                timeout: 3000
+            });
+            disabled = true;
+        }
+        // disabled = !disabled;
 	};
 </script>
 
@@ -98,10 +103,10 @@
 					<button
 						type="button"
 						class="table-btn variant-filled-secondary gap-1"
-						onclick={toggleEdit}
+						onclick={handleEditClick}
 					>
 						<Icon icon="material-symbols:edit-outline" />
-						<span>{edit ? 'Edit' : 'Save'}</span>
+						<!-- <span>{edit ? 'Edit' : 'Save'}</span> -->
 					</button>
 					<a
 						href={tenantRoute}
@@ -112,7 +117,7 @@
 				</div>
 			</div>
 			<div class="flex flex-col space-y-4 px-4 py-4">
-				<ExpandableSettings groupedSettings={commonUISettings} bind:commonSetting {edit} />
+				<ExpandableSettings groupedSettings={commonUISettings} bind:commonSetting edit={disabled} />
 			</div>
 			<hr class="border-t border-[#F2F3F5]" />
 

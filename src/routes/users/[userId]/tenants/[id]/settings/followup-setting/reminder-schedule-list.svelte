@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
 
-	let { reminderSchedule = $bindable(), editSchedule, deleteSchedule } = $props();
+	let { reminderSchedule = $bindable(), editSchedule, deleteSchedule, edit } = $props();
 </script>
 
 {#each reminderSchedule as schedule, i}
@@ -29,6 +29,7 @@
 						event.preventDefault();
 						editSchedule(i);
 					}}
+					disabled={!edit}
 				>
 					<Icon icon="material-symbols:edit-outline" height="15" width="15" />
 				</button>
@@ -38,6 +39,7 @@
 						event.preventDefault();
 						deleteSchedule(i);
 					}}
+					disabled={!edit}
 				>
 					<Icon icon="material-symbols:delete-outline-rounded" height="15" width="15" />
 				</button>
