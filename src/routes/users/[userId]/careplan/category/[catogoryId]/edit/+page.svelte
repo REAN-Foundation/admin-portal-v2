@@ -81,63 +81,57 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th>Edit Careplan Category</th>
-							<th class="text-end">
-								<a href={viewRoute} class="form-cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Type <span class=" text-red-600">*</span></td>
-							<td>
-								<input
-									type="text"
-									class="health-system-input {errors?.Type ? 'input-text-error' : ''}"
-									name="categoryType"
-									placeholder="Enter category type here..."
-									bind:value={categoryType}
-								/>
-								{#if errors?.Type}
-									<p class="text-error-500 text-xs">{errors?.Type}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Description</td>
-							<td>
-								<textarea
-									class="health-system-input {errors?.Description ? 'input-text-error' : ''}"
-									name="categoryDescription"
-									placeholder="Enter description here..."
-									bind:value={categoryDescription}
-									rows="4"
-								></textarea>
-								{#if errors?.Description}
-									<p class="text-error-500 text-xs">{errors?.Description}</p>
-								{/if}
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="btn-container mr-5 mb-2">
-					<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
-					{#await promise}
-						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
-					{:then data}
-						<Button size="md" type="submit" text="Submit" variant="primary" />
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit Careplan Category</h2>
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Type <span class="important-field">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {errors?.Type ? 'input-text-error' : ''}"
+							name="categoryType"
+							placeholder="Enter category type here..."
+							bind:value={categoryType}
+						/>
+						{#if errors?.Type}
+							<p class="error-text">{errors?.Type}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Description</td>
+					<td class="table-data">
+						<textarea
+							class="input resize-none {errors?.Description ? 'border-error-300' : 'border-primary-200'}"
+							name="categoryDescription"
+							placeholder="Enter description here..."
+							bind:value={categoryDescription}
+							rows="4"
+						></textarea>
+						{#if errors?.Description}
+							<p class="error-text">{errors?.Description}</p>
+						{/if}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container">
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>

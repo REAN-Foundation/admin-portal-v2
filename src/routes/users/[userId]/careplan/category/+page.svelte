@@ -154,85 +154,74 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
+<div class="px-6 py-2">
 	<div class="mx-auto">
-		<div class="health-system-table-container mb-6 shadow">
-			<div class="health-system-search-border">
+		<div class="table-container my-6 shadow">
+			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="flex-1">
-						<div class="relative pr-1.5">
-							<Icon
-								icon="heroicons:magnifying-glass"
-								class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
-							/>
-							<input
-								name="categoryType"
-								type="text"
-								oninput={(event) => onSearchInput(event)}
-								placeholder="Search by name"
-								class="health-system-input !pr-4 !pl-10"
-							/>
-							{#if categoryType}
-								<button
-									type="button"
-									onclick={() => {
-										categoryType = '';
-									}}
-									class="close-btn"
-								>
-									<Icon icon="material-symbols:close" />
-								</button>
-							{/if}
-						</div>
+					<div class="relative w-auto grow">
+						<input
+							type="text"
+							name="categoryType"
+							placeholder="Search by name"
+							bind:value={categoryType}
+							oninput={(event) => onSearchInput(event)}
+							class="table-input-field !pr-4 !pl-10"
+						/>
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
+						{#if categoryType}
+							<button
+								type="button"
+								onclick={() => {
+									categoryType = '';
+									onSearchInput({ target: { value: '' } });
+								}}
+								class="close-btn"
+							>
+								<Icon icon="material-symbols:close" />
+							</button>
+						{/if}
 					</div>
-					<Button href={createRoute} text="Add New" variant="primary"></Button>
+					<Button href={createRoute} text="Add New" variant="primary" />
 				</div>
 			</div>
+
 			<div class="overflow-x-auto">
-				<table class="health-system-table min-w-full">
+				<table class="table-c min-w-full">
 					<thead>
 						<tr>
-							<th class="w-12"></th>
-							<th class=" text-start">
+							<th class="w-2"></th>
+							<th class="text-start">
 								<button onclick={() => sortTable('Type')}>
 									Type {#if isSortingName}
-										{#if sortOrder === 'ascending'}
-											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
-										{:else}
-											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
-										{/if}
+										<Icon icon={`mdi:chevron-${sortOrder === 'ascending' ? 'up' : 'down'}`} class="ml-1 inline" width="16" />
 									{/if}
 								</button>
 							</th>
-							<th class=" w-40">Description </th>
-							<th class="w-20 text-center"></th>
+							<th>Description</th>
+							<th class=""></th>
 						</tr>
 					</thead>
-					<tbody class="">
+					<tbody>
 						{#if retrievedCategories.length <= 0}
 							<tr>
-								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
+								<td class="text-center" colspan="4">
+									{isLoading ? 'Loading...' : 'No records found'}
+								</td>
 							</tr>
 						{:else}
 							{#each retrievedCategories as row, index}
 								<tr>
+									<td>{paginationSettings.page * paginationSettings.limit + index + 1}</td>
 									<td>
-										{paginationSettings.page * paginationSettings.limit + index + 1}
+										<a href={viewRoute(row.id)}>{Helper.truncateText(row.Type, 50)}</a>
 									</td>
-
+									<td>{row.Description || 'Not specified'}</td>
 									<td>
-										{row.Type !== null && row.Type !== ''
-											? Helper.truncateText(row.Type, 40)
-											: 'Not specified'}
-									</td>
-									<td>
-										{row.Description !== null && row.Description !== ''
-											? Helper.truncateText(row.Description, 20)
-											: 'Not specified'}
-									</td>
-
-									<td>
-										<div class="flex">
+										<div class="flex justify-end gap-2">
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"
