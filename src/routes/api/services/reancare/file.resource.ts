@@ -24,9 +24,9 @@ export const uploadBinary = async (
 
 	const headers = {};
 	headers['Content-Type'] = 'application/octet-stream';
-	headers['x-file-name'] = filename;
+	headers['filename'] = filename;
 	headers['public'] = isPublic ? 'true' : 'false';
-	headers['TenantId'] = tenantId;
+	// headers['TenantId'] = tenantId;
 	headers['x-api-key'] = API_CLIENT_INTERNAL_KEY;
 	headers['Authorization'] = `Bearer ${accessToken}`;
 	headers['size'] = buffer.length.toString();

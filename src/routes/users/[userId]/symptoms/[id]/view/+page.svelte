@@ -16,7 +16,9 @@
 	let tags = data.symptom.Tags;
 
 	let language = data.symptom.Language;
-	let imageUrl = data.symptom.ImageUrl;
+	let imageUrl = data.symptom.ImageResourceUrl;
+	console.log("Imageurl", imageUrl)
+	console.log("data=====================>", symptom);
 
 	if (tags.length < 1) {
 		tags = tags.join(', ');
@@ -80,7 +82,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td class="align-top">Image={imageUrl}</td>
+						<td class="align-top">Image</td>
 						<td>
 							{#if imageUrl == undefined || imageUrl == null}
 								Not specified
