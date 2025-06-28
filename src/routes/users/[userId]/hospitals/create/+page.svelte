@@ -20,7 +20,7 @@
 	let promise = $state();
 	let keywordsStr = $state('');
 	let healthSystemId = $state('');
-	let selectedHealthSystemId = $state('');
+	let selectedHealthSystemId = $state(undefined);
 	const userId = page.params.userId;
 	const createRoute = `/users/${userId}/hospitals/create`;
 	const hospitalsRoute = `/users/${userId}/hospitals`;
