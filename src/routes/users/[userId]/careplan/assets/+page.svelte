@@ -19,7 +19,7 @@
 	let debounceTimeout;
 	let isLoading = $state(false);
 	let assets = $state(data.assets.Items);
-	let retrivedAssets = $derived(assets);
+	// let retrivedAssets = $derived(assets);
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
 	let isDeleting = $state(false);
@@ -48,6 +48,13 @@
 		size: totalAssetsCount,
 		amounts: [10, 20, 30, 50]
 	});
+
+	let retrivedAssets = $derived(
+	assets.slice(
+		paginationSettings.page * paginationSettings.limit,
+		(paginationSettings.page + 1) * paginationSettings.limit
+	)
+);
 
 	const assetRouteMap = {
 		'Action plan': 'action-plans',
@@ -164,7 +171,7 @@
 			nameAssetSearch: nameAssetSearch,
 			codeAssetSearch: codeAssetSearch,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});

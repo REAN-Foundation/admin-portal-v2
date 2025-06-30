@@ -1,8 +1,6 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	import InfoIcon from './infoIcon.svelte';
-	import Icons from './icons.svelte';
-
+	
 	let { groupedSettings, commonSetting = $bindable(), edit } = $props();
 
 	let openTab: string | null = $state(null);
@@ -12,11 +10,6 @@
 	function toggleTab(tab: string) {
 		openTab = openTab === tab ? null : tab;
 	}
-
-	// function handleFormSubmit(event) {
-	// 	event.preventDefault();
-	// 	onSubmit(commonSetting);
-	// }
 
 	function getSettingMeta(group: string, key: string) {
 		return (
@@ -64,17 +57,19 @@
 	`}
 			>
 				<div class="flex flex-1 items-center gap-2">
-					<Icons
+                    <!-- iconPaths[groupName] -->
+                    <Icon icon={groupedSettings[groupName].Path} class="h-5 w-5 hidden md:block" />
+					<!-- <Icons
 						cls="stroke-slate-800 my-2 stroke-2 fill-none"
 						h="80%"
 						w="80%"
 						iconPath={iconPaths[groupName] ?? ''}
-					/>
+					/> -->
 
 					<div class=" text-start">
-						<p class="text-md font-medium">{groupName}</p>
+						<p class="text-md font-medium">{groupedSettings[groupName].Name}</p>
 
-						<p class=" text-sm">Settings under {groupName}</p>
+						<p class=" text-sm">{groupedSettings[groupName].Description}</p>
 					</div>
 				</div>
 
@@ -117,7 +112,7 @@
 									<div class="flex flex-grow flex-col">
 										<span class="text-sm font-medium">{meta?.Name ?? key}</span>
 										<p class="text-sm">
-											short description for {meta?.Name ?? key}.
+											{meta?.Description}
 										</p>
 									</div>
 

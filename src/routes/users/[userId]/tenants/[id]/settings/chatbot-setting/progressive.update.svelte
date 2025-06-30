@@ -14,7 +14,8 @@
 		showCancelModel = $bindable(),
 		onFileSelected,
 		currentSection = $bindable(),
-		fileName
+		fileName,
+		chatBotUISettings
 	} = $props();
 	$inspect(edit, 'edit');
 
@@ -64,6 +65,7 @@
 				class="input-field w-[70%]"
 				name="organizationName"
 				placeholder="Enter organization name here..."
+				disabled={!edit}
 				bind:value={chatBotSetting.ChatBot.OrganizationName}
 			/>
 			{#if errors?.OrganiztionName}
@@ -81,6 +83,7 @@
 				class="input-field w-[70%]"
 				name="organizationLogo"
 				placeholder="Enter organization logo here..."
+				disabled={!edit}
 				bind:value={chatBotSetting.ChatBot.OrganizationLogo}
 			/>
 			{#if errors?.OrganizationLogo}
@@ -99,6 +102,7 @@
 				class="input-field w-[70%]"
 				name="organizationWebsite"
 				placeholder="Enter organization website here..."
+				disabled={!edit}
 				bind:value={chatBotSetting.ChatBot.OrganizationWebsite}
 			/>
 			{#if errors?.OrganizationWebsite}
@@ -113,7 +117,7 @@
 			<div class="w-[100%] flex gap-3">
 				<label class="table-btn variant-filled-secondary">
 					Select File
-					<input type="file" class="hidden" onchange={onFileSelected} />
+					<input type="file" class="hidden" onchange={onFileSelected} disabled={!edit} />
 				</label>
 				<!-- <input
 					type="file"
@@ -129,6 +133,7 @@
 					value={fileName}
 					readonly
 					placeholder="No file selected"
+					disabled={!edit}
 				/>
 			</div>
 			{#if errors?.UploadFile}
@@ -141,6 +146,7 @@
 				>Description</label
 			>
 			<textarea
+				disabled={!edit}
 				bind:value={chatBotSetting.ChatBot.Description}
 				name="description"
 				placeholder="Enter description here..."
@@ -152,7 +158,7 @@
 			<label for="defaultLanguage" class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
 				>Default Language</label
 			>
-			<select bind:value={chatBotSetting.ChatBot.DefaultLanguage} class=" input-field w-[100%]">
+			<select bind:value={chatBotSetting.ChatBot.DefaultLanguage} class=" input-field w-[100%]" disabled={!edit}>
 				<option value="" disabled selected>Select language</option>
 				{#each languages as lang}
 					<option value={lang.name}>{lang.name}</option>
@@ -196,8 +202,8 @@
 										<p>Support Channels</p>
 									{/if}
 								</div>
-								<p class=" text-sm">Settings under {groupName}</p>
-							</div>
+								<p class=" text-sm">{chatBotUISettings[groupName].Description}</p>
+							</div> 
 						</div>
 
 						<!-- <span class:rotate-180={openTab === groupName} class="transition-transform duration-300"> -->
@@ -239,7 +245,8 @@
 											<div class="flex flex-grow flex-col">
 												<span class="text-sm font-medium">{meta?.Name ?? key}</span>
 												<p class="text-sm">
-													short description for {meta?.Name ?? key}.
+													<!-- short description for {meta?.Name ?? key}. -->
+													{meta?.Description}
 												</p>
 											</div>
 
@@ -276,19 +283,19 @@
 								class="flex items-center justify-between gap-3 rounded-xl border p-4 text-gray-700"
 							>
 								<!-- Left: App Icon -->
-								<Icon icon="mdi:account-cog" class="h-5 w-5" />
+								<Icon icon={chatBotUISettings[groupName].IconPath} class="h-5 w-5" />
 
 								<!-- Middle: Name & Description -->
 								<div class="flex flex-grow flex-col">
-									<span class="text-sm font-medium">{groupName}</span>
+									<span class="text-sm font-medium">{chatBotUISettings[groupName].Name}</span>
 									<p class="text-sm">
-										short description for {groupName}
+										{chatBotUISettings[groupName].Description}
 									</p>
 								</div>
 
 								<!-- Right: Toggle + Optional Edit -->
 								<div class="flex items-center">
-									{#if groupName === 'Consent' && groupItems === true && edit === true}
+									<!-- {#if groupName === 'Consent' && groupItems === true && edit === true}
 										<Tooltip text="Edit" forceShow={true}>
 											<Icon
 												icon="material-symbols:edit-outline"
@@ -296,7 +303,7 @@
 												onclick={() => (showCancelModel = true)}
 											/>
 										</Tooltip>
-									{/if}
+									{/if} -->
 									<input
 										type="checkbox"
 										class="checkbox checkbox-primary scale-125 cursor-pointer"

@@ -18,13 +18,13 @@
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let id = $state(data.drug.id),
-		drugName = $state(data.drug.DrugName),
-		genericName = $state(data.drug.GenericName),
-		ingredients = $state(data.drug.Ingredients),
-		strength = $state(data.drug.Strength),
-		otherCommercialNames = $state(data.drug.OtherCommercialNames),
-		manufacturer = $state(data.drug.Manufacturer),
-		otherInformation = $state(data.drug.OtherInformation);
+		drugName = $state(data.drug.DrugName ?? undefined),
+		genericName = $state(data.drug.GenericName ?? undefined),
+		ingredients = $state(data.drug.Ingredients ?? undefined),
+		strength = $state(data.drug.Strength ?? undefined),
+		otherCommercialNames = $state(data.drug.OtherCommercialNames ?? undefined),
+		manufacturer = $state(data.drug.Manufacturer ?? undefined),
+		otherInformation = $state(data.drug.OtherInformation ?? undefined);
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
