@@ -287,7 +287,7 @@
 					<tbody>
 						{#if retrivedSymptoms.length <= 0}
 							<tr class="text-center">
-								<td colspan="7">{isLoading ? 'Loading...' : 'No records found'}</td>
+								<td class="text-center" colspan="7">{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}
 							{#each retrivedSymptoms as row, index}
