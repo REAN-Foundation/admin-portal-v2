@@ -8,6 +8,10 @@
 	import { createOrUpdateSchema } from '$lib/validation/animation.schema.js';
 	import InputChips from '$lib/components/input-chips.svelte';
 	import Button from '$lib/components/button/button.svelte';
+	import Input from '$lib/components/input/input.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
 
 	//////////////////////////////////////////////////////////////////////
 
@@ -91,16 +95,15 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
 <div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Create Animation</h2>
+			<Heading text="Create Animation" />
 			<a href={assetRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
@@ -109,82 +112,73 @@
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
-					<td class=" table-label">Name <span class="important-field">*</span></td>
+					<Label text="Name" required={true} />
 					<td class="table-data">
-						<input
-							type="text"
-							class="input {errors?.Mame ? 'input-text-error' : ''}"
+						<Input
 							name="name"
+							type="text"
 							placeholder="Enter name here..."
 							bind:value={name}
+							error={errors?.Name}
 						/>
-						{#if errors?.Name}
-							<p class="error-text">{errors?.Name}</p>
-						{/if}
 					</td>
 				</tr>
+
 				<tr class="tables-row">
-					<td class=" table-label">Transcript</td>
+					<Label text="Transcript" />
 					<td class="table-data">
-						<textarea
+						<Textarea
 							name="transcript"
-							class="input resize-none {errors?.Transcript
-								? 'border-error-300'
-								: 'border-primary-200'}"
-							bind:value={transcript}
 							placeholder="Enter transcript here..."
-						></textarea>
-					</td>
-				</tr>
-				<tr class="tables-row">
-					<td class="table-label">URL</td>
-					<td class="table-data">
-						<input
-							type="url"
-							class="input {errors?.Url ? 'input-text-error' : ''}"
-							name="url"
-							placeholder="Enter url here"
-							bind:value={pathUrl}
+							bind:value={transcript}
+							error={errors?.Transcript}
+							resize={false}
 						/>
-						{#if errors?.Url}
-							<p class="error-text">{errors?.Url}</p>
-						{/if}
 					</td>
 				</tr>
+
 				<tr class="tables-row">
-					<td class="table-label">Tags</td>
+					<Label text="URL" />
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
+						<Input
+							name="url"
+							type="url"
+							placeholder="Enter URL here"
+							bind:value={pathUrl}
+							error={errors?.Url}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Tags" />
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>
+
 				<tr class="tables-row">
-					<td class="table-label">Version</td>
+					<Label text="Version" />
 					<td class="table-data">
-						<input
-							type="text"
-							class="input {errors?.Version ? 'input-text-error' : ''}"
+						<Input
 							name="version"
+							type="text"
 							placeholder="V 1.0"
 							bind:value={version}
+							error={errors?.Version}
 						/>
-						{#if errors?.Version}
-							<p class="error-text">{errors?.Version}</p>
-						{/if}
 					</td>
 				</tr>
 			</tbody>
 		</table>
+
 		<div class="btn-container">
-            {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
-            {/await}
-        </div>
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
 	</form>
 </div>

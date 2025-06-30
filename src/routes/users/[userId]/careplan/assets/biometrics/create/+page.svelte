@@ -8,7 +8,11 @@
 	import { createOrUpdateSchema } from '$lib/validation/biometrics.schema';
 	import type { BiometricsCreateModel } from '$lib/types/biometrics.type';
 	import Button from '$lib/components/button/button.svelte';
-
+	import Input from '$lib/components/input/input.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
+	/////////////////////////////////////////////////////////////////////////////////////////////
 	let { data, form } = $props();
 
 	let errors: Record<string, string> = $state({});
@@ -85,17 +89,15 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
 <div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<div class="form-headers">
-			<h2 class="form-titles">Create Biometric</h2>
+		<div class="form-headers">
+			<Heading text="Create Biometric" />
 			<a href={assetRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
@@ -104,90 +106,84 @@
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
-				<td class="table-label">Name<span class="text-red-700">*</span></td>
-				<td class="table-data">
-					<input
-						required
-						type="text"
-						class="input {errors?.Name ? 'input-text-error' : ''}"
-						name="biometricsName"
-						placeholder="Enter name here..."
-						bind:value={biometricsName}
-					/>
-					{#if errors?.Name}
-						<p class="text-error">{errors?.Name}</p>
-					{/if}
-				</td>
-			</tr>
-			<tr class="tables-row">
-			<td class="table-label">Description</td>
-			<td class="table-data">
-				<textarea
-					name="description"
-					class="input w-full {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
-					bind:value={description}
-					placeholder="Enter description here..."
-					>
-				</textarea>
-			</td>
-			</tr>
-			<tr class="tables-row">
-			<td class="table-label">Biometrics Type<span class="text-red-700">*</span></td>
-			<td class="table-data">
-				<select required class="input" bind:value={biometricsType}>
-					<option disabled value>Select biometrics type</option>
-					<option>Blood pressure</option>
-					<option>Blood glucose</option>
-					<option>Blood oxygen saturation</option>
-					<option>Body height</option>
-					<option>Body weight</option>
-					<option>Body temperature</option>
-					<option>Pulse</option>
-					<option>Other</option>
-				</select>
-			</td>
-			</tr>
-			<tr class="tables-row">
-			<td class="table-label">Measurement Unit<span class="text-red-700">*</span></td>
-			<td class="table-data">
-				<input
-					required
-					type="text"
-					bind:value={measurementUnit}
-					placeholder="Enter unit..."
-					class="input {errors?.MeasurementUnit ? 'input-text-error' : ''}"
-				/>
-				{#if errors?.MeasurementUnit}<p class="text-error">
-					{errors?.MeasurementUnit}</p>
-				{/if}
-			</td>
-			</tr>
-			<tr class="tables-row">
-			<td class="table-label">Tags</td>
-			<td class="table-data">
-				<InputChips
-					bind:keywords
-					name="keywords"
-					id="keywords"
+					<Label text="Name" required={true} />
+					<td class="table-data">
+						<Input
+							name="biometricsName"
+							type="text"
+							placeholder="Enter name here..."
+							bind:value={biometricsName}
+							error={errors?.Name}
 						/>
-					<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-			</td>
-			</tr>
-			<tr class="tables-row">
-			<td class="table-label">Version</td>
-			<td class="table-data">
-				<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
-			</td>
-			</tr>
-		</tbody>
-	</table>
+					</td>
+				</tr>
 
-	<div class="btn-container">
-            {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
-            {/await}
-    </div>
+				<tr class="tables-row">
+					<Label text="Description" />
+					<td class="table-data">
+						<Textarea
+							name="description"
+							placeholder="Enter description here..."
+							bind:value={description}
+							error={errors?.Description}
+							resize={false}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Biometrics Type" required={true} />
+					<td class="table-data">
+						<select name="biometricsType" bind:value={biometricsType} required class="input">
+							<option disabled value>Select biometrics type</option>
+							<option>Blood pressure</option>
+							<option>Blood glucose</option>
+							<option>Blood oxygen saturation</option>
+							<option>Body height</option>
+							<option>Body weight</option>
+							<option>Body temperature</option>
+							<option>Pulse</option>
+							<option>Other</option>
+						</select>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Measurement Unit" required={true} />
+					<td class="table-data">
+						<Input
+							name="measurementUnit"
+							type="text"
+							placeholder="Enter unit..."
+							bind:value={measurementUnit}
+							error={errors?.MeasurementUnit}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Tags" />
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Version" />
+					<td class="table-data">
+						<Input name="version" type="text" placeholder="V 1.0" bind:value={version} />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container">
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
 	</form>
 </div>

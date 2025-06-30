@@ -8,20 +8,24 @@
 	import type { MessageCreateModel } from '$lib/types/message.type.js';
 	import { createOrUpdateSchema } from '$lib/validation/message.schema.js';
 	import Button from '$lib/components/button/button.svelte';
-
+	import Input from '$lib/components/input/input.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
+	///////////////////////////////////////////////////////////////////////////////////////////
 	let { data, form } = $props();
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let name = $state('');
 	let description = $state('');
-	let messageType =  $state('Unknown');
+	let messageType = $state('Unknown');
 	let templateName = $state('');
 	let pathUrl = $state(undefined);
 	let version = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
-	let templateVariablesText =  $state('{}');
+	let templateVariablesText = $state('{}');
 
 	data.title = 'Create Message';
 	const userId = page.params.userId;
@@ -43,9 +47,9 @@
 
 			const parsedTemplateVars = parseTemplateVariables(templateVariablesText);
 			if (!parsedTemplateVars) {
-			// If parse failed, do not continue
-			return;
-		}
+				// If parse failed, do not continue
+				return;
+			}
 
 			const messageCreateModel: MessageCreateModel = {
 				Name: name,
@@ -57,7 +61,6 @@
 				Tags: keywords,
 				TenantId: tenantId,
 				TemplateVariables: parsedTemplateVars
-
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(messageCreateModel);
@@ -95,33 +98,31 @@
 	};
 
 	function parseTemplateVariables(text: string): Record<string, any> | null {
-	try {
-		const parsed = JSON.parse(text);
-		if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
-			throw new Error('Invalid object');
+		try {
+			const parsed = JSON.parse(text);
+			if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+				throw new Error('Invalid object');
+			}
+			return parsed;
+		} catch (e) {
+			errors = {
+				...errors,
+				TemplateVariables: 'TemplateVariables must be a valid JSON object with key-value pairs'
+			};
+			return null;
 		}
-		return parsed;
-	} catch (e) {
-		errors = {
-			...errors,
-			TemplateVariables: 'TemplateVariables must be a valid JSON object with key-value pairs'
-		};
-		return null;
 	}
-}
 
-$effect(() => {
-            keywordsStr = keywords?.join(', ');
-		});
-
+	$effect(() => {
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
 <div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Create Message</h2>
+			<Heading text="Create Message" />
 			<a href={assetRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
@@ -130,141 +131,118 @@ $effect(() => {
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
-					<td class="table-label">
-						Name <span class="important-field">*</span>
-					</td>
+					<Label text="Name" required={true} />
 					<td class="table-data">
-						<input
-							type="text"
-							class="input {errors?.Name ? 'input-text-error' : ''}"
+						<Input
 							name="name"
+							type="text"
 							placeholder="Enter name here..."
 							bind:value={name}
+							error={errors?.Name}
 						/>
-						{#if errors?.Name}
-							<p class="error-text">{errors?.Name}</p>
-						{/if}
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Description</td>
+					<Label text="Description" />
 					<td class="table-data">
-						<textarea
+						<Textarea
 							name="description"
-							class="input resize-none {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
-							bind:value={description}
 							placeholder="Enter description here..."
-						></textarea>
+							bind:value={description}
+							error={errors?.Description}
+							resize={false}
+						/>
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">
-						Message Type <span class="important-field">*</span>
-					</td>
+					<Label text="Message Type" required={true} />
 					<td class="table-data">
 						<select
-							class="input"
+							class="input {errors?.MessageType ? 'input-text-error' : ''}"
 							bind:value={messageType}
+							name="messageType"
 						>
 							<option disabled value>Select message type</option>
 							<option>Educational</option>
 							<option>Status</option>
 							<option>Unknown</option>
 						</select>
+						{#if errors?.MessageType}
+							<p class="error-text">{errors?.MessageType}</p>
+						{/if}
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">
-						Template Name <span class="important-field">*</span>
-					</td>
+					<Label text="Template Name" required={true} />
 					<td class="table-data">
-						<input
+						<Input
+							name="templateName"
 							type="text"
-							class="input {errors?.TemplateName ? 'input-text-error' : ''}"
 							placeholder="Enter template name..."
 							bind:value={templateName}
+							error={errors?.TemplateName}
 						/>
-						{#if errors?.TemplateName}
-							<p class="error-text">{errors?.TemplateName}</p>
-						{/if}
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Template Variables</td>
+					<Label text="Template Variables" />
 					<td class="table-data">
-						<textarea
+						<Textarea
 							name="templateVariablesText"
-							class="input resize-none {errors?.TemplateVariables ? 'border-error-300' : 'border-primary-200'}"
-							bind:value={templateVariablesText}
 							placeholder="Enter template variables here..."
-						></textarea>
-							{#if errors?.TemplateVariables}
-							<p class="error-text">{errors.TemplateVariables}</p>
-							{/if}
+							bind:value={templateVariablesText}
+							error={errors?.TemplateVariables}
+							resize={false}
+						/>
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">URL</td>
+					<Label text="URL" />
 					<td class="table-data">
-						<input
-							type="url"
+						<Input
 							name="url"
-							class="input {errors?.Url ? 'input-text-error' : ''}"
+							type="url"
 							placeholder="Enter url here"
 							bind:value={pathUrl}
-						/>
-						{#if errors?.Url}
-							<p class="error-text">{errors?.Url}</p>
-						{/if}
-					</td>
-				</tr>
-
-				<tr class="tables-row">
-					<td class="table-label align-top">Tags</td>
-					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
-						<input
-							type="hidden"
-							name="keywordsStr"
-							id="keywordsStr"
-							bind:value={keywordsStr}
+							error={errors?.Url}
 						/>
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Version</td>
+					<Label text="Tags" />
 					<td class="table-data">
-						<input
-							type="text"
-							class="input {errors?.Version ? 'input-text-error' : ''}"
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Version" />
+					<td class="table-data">
+						<Input
 							name="version"
+							type="text"
 							placeholder="V 1.0"
 							bind:value={version}
+							error={errors?.Version}
 						/>
-						{#if errors?.Version}
-							<p class="error-text">{errors?.Version}</p>
-						{/if}
 					</td>
 				</tr>
 			</tbody>
 		</table>
 
 		<div class="btn-container">
-            {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
-            {/await}
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
 		</div>
 	</form>
 </div>

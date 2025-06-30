@@ -8,6 +8,11 @@
 	import type { MeditationCreateModel } from '$lib/types/meditations.types.js';
 	import { createOrUpdateSchema } from '$lib/validation/meditations.schema.js';
 	import Button from '$lib/components/button/button.svelte';
+	import Input from '$lib/components/input/input.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
+	///////////////////////////////////////////////////////////////////////////////////////////////
 	let { data, form } = $props();
 
 	let errors: Record<string, string> = $state({});
@@ -22,7 +27,7 @@
 
 	data.title = 'Create Meditation';
 	const userId = page.params.userId;
-  const tenantId = data.sessionUser.tenantId;
+	const tenantId = data.sessionUser.tenantId;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const createRoute = `/users/${userId}/careplan/assets/meditations/create`;
@@ -45,7 +50,7 @@
 				RecommendedDurationMin: recommendedDurationMin,
 				Version: version,
 				Tags: keywords,
-        TenantId: tenantId
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(meditationCreateModel);
@@ -59,7 +64,7 @@
 				);
 				return;
 			}
-			console.log(meditationCreateModel)
+			console.log(meditationCreateModel);
 			const res = await fetch(`/api/server/careplan/assets/meditations`, {
 				method: 'POST',
 				body: JSON.stringify(meditationCreateModel),
@@ -70,8 +75,8 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				console.log("Full response:", response);
-				await goto(`${meditationRoute}/${response?.Data?.id}/view`); 
+				console.log('Full response:', response);
+				await goto(`${meditationRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -89,122 +94,108 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
 <div class="p-6">
-  <form onsubmit={async (event) => (promise = handleSubmit(event))}>
-    <div class="form-headers">
-      <h2 class="form-titles">Create Meditation</h2>
-      <a href={assetRoute} class="form-cancel-btn">
-        <Icon icon="material-symbols:close-rounded" />
-      </a>
-    </div>
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<Heading text="Create Meditation" />
+			<a href={assetRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>
 
-    <table class="w-full">
-      <tbody>
-        <tr class="tables-row">
-          <td class="table-label">
-            Name <span class="important-field">*</span>
-          </td>
-          <td class="table-data">
-            <input
-              type="text"
-              class="input {errors?.Name ? 'input-text-error' : ''}"
-              name="name"
-              placeholder="Enter name here..."
-              bind:value={name}
-            />
-            {#if errors?.Name}
-              <p class="error-text">{errors?.Name}</p>
-            {/if}
-          </td>
-        </tr>
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<Label text="Name" required={true} />
+					<td class="table-data">
+						<Input
+							name="name"
+							type="text"
+							placeholder="Enter name here..."
+							bind:value={name}
+							error={errors?.Name}
+						/>
+					</td>
+				</tr>
 
-        <tr class="tables-row">
-          <td class="table-label">Description</td>
-          <td class="table-data">
-            <textarea
-              name="description"
-              class="input resize-none {errors?.Description ? 'border-error-300' : 'border-primary-200'}"
-              bind:value={description}
-              placeholder="Enter description here..."
-            ></textarea>
-            {#if errors?.Description}
-              <p class="error-text">{errors?.Description}</p>
-            {/if}
-          </td>
-        </tr>
+				<tr class="tables-row">
+					<Label text="Description" />
+					<td class="table-data">
+						<Textarea
+							name="description"
+							placeholder="Enter description here..."
+							bind:value={description}
+							error={errors?.Description}
+							resize={false}
+						/>
+					</td>
+				</tr>
 
-        <tr class="tables-row">
-          <td class="table-label">Meditation Type</td>
-          <td class="table-data">
-            <select class="input" bind:value={meditationType}>
-              <option disabled value>Select meditation type</option>
-              <option>Mindfulness</option>
-              <option>Spiritual</option>
-              <option>Focused</option>
-              <option>Mantra</option>
-              <option>Progressive relaxation</option>
-              <option>Transcendental</option>
-              <option>Visualization</option>
-            </select>
-            {#if errors?.MeditationType}
-              <p class="error-text">{errors?.MeditationType}</p>
-            {/if}
-          </td>
-        </tr>
+				<tr class="tables-row">
+					<Label text="Meditation Type" />
+					<td class="table-data">
+						<select
+							class="input {errors?.MeditationType ? 'input-text-error' : ''}"
+							bind:value={meditationType}
+							name="meditationType"
+						>
+							<option disabled value>Select meditation type</option>
+							<option>Mindfulness</option>
+							<option>Spiritual</option>
+							<option>Focused</option>
+							<option>Mantra</option>
+							<option>Progressive relaxation</option>
+							<option>Transcendental</option>
+							<option>Visualization</option>
+						</select>
+						{#if errors?.MeditationType}
+							<p class="error-text">{errors?.MeditationType}</p>
+						{/if}
+					</td>
+				</tr>
 
-        <tr class="tables-row">
-          <td class="table-label">Recommended Duration Min</td>
-          <td class="table-data">
-            <input
-              type="text"
-              bind:value={recommendedDurationMin}
-              placeholder="Enter recommended duration min..."
-              class="input {errors?.RecommendedDurationMin ? 'input-text-error' : ''}"
-            />
-            {#if errors?.RecommendedDurationMin}
-              <p class="error-text">{errors?.RecommendedDurationMin}</p>
-            {/if}
-          </td>
-        </tr>
+				<tr class="tables-row">
+					<Label text="Recommended Duration (min)" />
+					<td class="table-data">
+						<Input
+							name="recommendedDurationMin"
+							type="text"
+							placeholder="Enter recommended duration min..."
+							bind:value={recommendedDurationMin}
+							error={errors?.RecommendedDurationMin}
+						/>
+					</td>
+				</tr>
 
-        <tr class="tables-row">
-          <td class="table-label !py-3 align-top">Tags</td>
-          <td class="table-data">
-            <InputChips
-              bind:keywords
-              name="keywords"
-              id="keywords"
-              />
-            <input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-          </td>
-        </tr>
+				<tr class="tables-row">
+					<Label text="Tags" />
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
 
-        <tr class="tables-row">
-          <td class="table-label">Version</td>
-          <td class="table-data">
-            <input
-              type="text"
-              class="input {errors?.Version ? 'input-text-error' : ''}"
-              name="version"
-              placeholder="V 1.0"
-              bind:value={version}
-            />
-            {#if errors?.Version}
-              <p class="error-text">{errors?.Version}</p>
-            {/if}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+				<tr class="tables-row">
+					<Label text="Version" />
+					<td class="table-data">
+						<Input
+							name="version"
+							type="text"
+							placeholder="V 1.0"
+							bind:value={version}
+							error={errors?.Version}
+						/>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 
-    <div class="btn-container">
-            {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
-            {/await}
-    </div>
-
-  </form>
+		<div class="btn-container">
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>

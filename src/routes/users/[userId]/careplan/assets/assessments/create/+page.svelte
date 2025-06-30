@@ -8,6 +8,10 @@
 	import type { AssessmentCreateModel } from '$lib/types/assessments.type.js';
 	import { createOrUpdateSchema } from '$lib/validation/assessments.schema.js';
 	import Button from '$lib/components/button/button.svelte';
+	import Input from '$lib/components/input/input.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
@@ -22,8 +26,8 @@
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
 	// let assessmentTemplates = $state([]);
-	
-	 let assessmentTemplates = data.assessmentTemplates ?? [];
+
+	let assessmentTemplates = data.assessmentTemplates ?? [];
 	console.log('assessmentTemplates', assessmentTemplates);
 
 	data.title = 'Create Assessment';
@@ -56,7 +60,7 @@
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentCreateModel);
-			console.log("Validation result", validationResult)
+			console.log('Validation result', validationResult);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -67,7 +71,7 @@
 				);
 				return;
 			}
-			// console.log(assessmentCreateModel); 
+			// console.log(assessmentCreateModel);
 			const res = await fetch(`/api/server/careplan/assets/assessments`, {
 				method: 'POST',
 				body: JSON.stringify(assessmentCreateModel),
@@ -79,8 +83,8 @@
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				// console.log('Full response:', response);
-			    goto(`${assessmentRoute}/${response?.Data?.id}/view`);
-			} 
+				goto(`${assessmentRoute}/${response?.Data?.id}/view`);
+			}
 			if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -92,17 +96,15 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
 <div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Create Assessment</h2>
+			<Heading text="Create Assessment" />
 			<a href={assetRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
@@ -111,102 +113,92 @@
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
-					<td class="table-label">Name <span class="important-field">*</span></td>
+					<Label text="Name" required={true} />
 					<td class="table-data">
-						<input
-							type="text"
-							class="input {errors?.Name ? 'input-text-error' : ''}"
+						<Input
 							name="assessmentName"
+							type="text"
 							placeholder="Enter name here..."
 							bind:value={name}
+							error={errors?.Name}
 						/>
-						{#if errors?.Name}
-							<p class="error-text">{errors?.Name}</p>
-						{/if}
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Description</td>
+					<Label text="Description" />
 					<td class="table-data">
-						<textarea
+						<Textarea
 							name="description"
-							class="input resize-none {errors?.Description ? 'border-error-300' : 'border-primary-200'}"
-							bind:value={description}
 							placeholder="Enter description here..."
-						></textarea>
+							bind:value={description}
+							error={errors?.Description}
+							resize={false}
+						/>
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Template</td>
+					<Label text="Template" />
 					<td class="table-data">
-						<input
+						<Input
+							name="template"
 							type="text"
-							bind:value={template}
 							placeholder="Enter template..."
-							class="input {errors?.Template ? 'input-text-error' : ''}"
+							bind:value={template}
+							error={errors?.Template}
 						/>
-						{#if errors?.Template}
-							<p class="error-text">{errors?.Template}</p>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Reference Template Code" required={true} />
+					<td class="table-data">
+						<select
+							name="referenceTemplateCode"
+							bind:value={referenceTemplateCode}
+							class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
+						>
+							<option disabled selected value="">Select reference template here...</option>
+							{#each assessmentTemplates as template}
+								<option value={template.DisplayCode}>{template.Title}</option>
+							{/each}
+						</select>
+						{#if errors?.ReferenceTemplateCode}
+							<p class="error-text">{errors?.ReferenceTemplateCode}</p>
 						{/if}
 					</td>
 				</tr>
-				<tr class="tables-row">
-	<td class="table-label">Reference Template Code <span class="important-field">*</span></td>
-	<td class="table-data">
-		<select
-			bind:value={referenceTemplateCode}
-			class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
-		>
-			<option disabled selected value="">Select reference template here...</option>
-			{#each assessmentTemplates as template}
-				<option value={template.DisplayCode}>{template.Title}</option>
-			{/each}
-		</select>
-		{#if errors?.ReferenceTemplateCode}
-			<p class="error-text">{errors?.ReferenceTemplateCode}</p>
-		{/if}
-	</td>
-</tr>
 
-<tr class="tables-row">
-					<td class="table-label">Tags</td>
+				<tr class="tables-row">
+					<Label text="Tags" />
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
+						<InputChips bind:keywords name="keywords" id="keywords" />
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Version</td>
+					<Label text="Version" />
 					<td class="table-data">
-						<input
-							type="text"
-							bind:value={version}
-							class="input {errors?.Version ? 'input-text-error' : ''}"
-							placeholder="V 1.0"
+						<Input
 							name="version"
+							type="text"
+							placeholder="V 1.0"
+							bind:value={version}
+							error={errors?.Version}
 						/>
-						{#if errors?.Version}
-							<p class="error-text">{errors?.Version}</p>
-						{/if}
 					</td>
 				</tr>
 			</tbody>
 		</table>
 
 		<div class="btn-container">
-            {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
-            {/await}
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
 		</div>
 	</form>
 </div>
-

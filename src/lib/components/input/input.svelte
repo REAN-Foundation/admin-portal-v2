@@ -21,7 +21,7 @@
 			| 'time'
 			| 'checkbox';
 		placeholder?: string;
-		value?: string | boolean;
+		value?: string | boolean | number;
 		error?: string;
 		className?: string;
 	}>();

@@ -8,7 +8,10 @@
 	import { createOrUpdateSchema } from '$lib/validation/video.schema.js';
 	import InputChips from '$lib/components/input-chips.svelte';
 	import Button from '$lib/components/button/button.svelte';
-
+	import Input from '$lib/components/input/input.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
 	//////////////////////////////////////////////////////////////////////
 
 	let { data, form } = $props();
@@ -91,95 +94,90 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
 <div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-
-	<div class="form-headers">
-			<h2 class="form-titles">Create Video</h2>
+		<div class="form-headers">
+			<Heading text="Create Video" />
 			<a href={assetRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
 		</div>
-				<table class="w-full">
-					<tbody>
-						<tr class="tables-row">
-							<td class="table-label">Name <span class="text-red-700">*</span></td>
-							<td class="table-data">
-								<input
-									type="text"
-									class="input {errors?.Name ? 'input-text-error' : ''}"
-									name="name"
-									placeholder="Enter name here..."
-									bind:value={name}
-								/>
-								{#if errors?.Name}
-									<p class="text-error">{errors?.Name}</p>
-								{/if}
-							</td>
-						</tr>
 
-						<tr class="tables-row">
-							<td class="table-label">Transcript</td>
-							<td class="table-data">
-								<textarea
-									name="transcript"
-									class="input w-full {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
-									bind:value={transcript}
-									placeholder="Enter transcript here..."
-								></textarea>
-							</td>
-						</tr>
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<Label text="Name" required={true} />
+					<td class="table-data">
+						<Input
+							name="name"
+							type="text"
+							placeholder="Enter name here..."
+							bind:value={name}
+							error={errors?.Name}
+						/>
+					</td>
+				</tr>
 
-						<tr class="tables-row">
-							<td class="table-label">URL</td>
-							<td class="table-data">
-								<input
-									type="url"
-									name="url"
-									bind:value={pathUrl}
-									placeholder="Enter url here"
-                                    class="input {errors?.Url ? 'input-text-error' : ''}"
-                                />
-                                {#if errors?.Url}
-                                    <p class="text-error">{errors?.Url}</p>
-                                {/if}
-                            </td>
-                        </tr>
-						<tr class="tables-row">
-                            <td class="table-label">Tags</td>
-                            <td class="table-data">
-                                <InputChips
-                                    bind:keywords
-                                    name="keywords"
-                                    id="keywords"
-                                	/>
-                                <input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-                                <!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
-                            </td>
-                        </tr>
-						<tr class="tables-row">
-							<td class="table-label">Version</td>
-							<td class="table-data">
-								<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
-							</td>
-						</tr>
-					</tbody>
-				</table>
+				<tr class="tables-row">
+					<Label text="Transcript" />
+					<td class="table-data">
+						<Textarea
+							name="transcript"
+							placeholder="Enter transcript here..."
+							bind:value={transcript}
+							error={errors?.Transcript}
+							resize={false}
+						/>
+					</td>
+				</tr>
 
-				<div class="btn-container">
-            		{#await promise}
-                		<Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            		{:then data}
-                		<Button type="submit" text="Submit" variant="primary" />
-            		{/await}
-				</div>
-			</form>
+				<tr class="tables-row">
+					<Label text="URL" />
+					<td class="table-data">
+						<Input
+							type="url"
+							name="url"
+							placeholder="Enter url here"
+							bind:value={pathUrl}
+							error={errors?.Url}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Tags" />
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Version" />
+					<td class="table-data">
+						<Input
+							name="version"
+							type="text"
+							placeholder="V 1.0"
+							bind:value={version}
+							error={errors?.Version}
+						/>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container">
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
 		</div>
-	
+	</form>
+</div>
