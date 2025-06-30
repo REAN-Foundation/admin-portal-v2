@@ -29,11 +29,14 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
             commonSettings = commonSettingResponse.Data.TenantSettings;
         }
 
+        const isFormsEnabled = commonSettings?.UserInterfaces?.Forms;
+
         return {
             sessionId,
             tenantId,
             settings,
-            commonSettings
+            commonSettings,
+            isFormsEnabled
         };
 
     } catch (error) {
