@@ -4,7 +4,8 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import Button from '$lib/components/button/button.svelte';
-
+	import Heading from '$lib/components/heading/heading.svelte';
+	import Label from '$lib/components/label/label.svelte';
 	/////////////////////////////////////////////////////////////////////////////////////
 
 	const userId = page.params.userId;
@@ -19,7 +20,8 @@
 	let physiotherapy = $state(data.physiotherapy);
 	let assetCode = physiotherapy.AssetCode;
 	let name = physiotherapy.Name;
-	let description = physiotherapy.Description !== null ? physiotherapy.Description : 'Not specified';
+	let description =
+		physiotherapy.Description !== null ? physiotherapy.Description : 'Not specified';
 	let recommendedDurationMin = physiotherapy.RecommendedDurationMin;
 	let tags_ = physiotherapy.Tags;
 	let tags = tags_.join(', ');
@@ -38,10 +40,9 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
 <div class="mx-auto w-full px-6 py-4">
 	<div class="form-headers">
-		<h2 class="form-titles">View Physiotherapy</h2>
+		<Heading text="View Physiotherapy" />
 		<a href={assetRoute} class="cancel-btn">
 			<Icon icon="material-symbols:close-rounded" />
 		</a>
@@ -50,23 +51,23 @@
 	<table class="w-full">
 		<tbody>
 			<tr class="tables-row">
-				<td class="table-label">Asset Code</td>
+				<Label text="Asset Code" />
 				<td class="table-data">{assetCode}</td>
 			</tr>
 			<tr class="tables-row">
-				<td class="table-label">Name</td>
+				<Label text="Name" />
 				<td class="table-data">{name}</td>
 			</tr>
 			<tr class="tables-row">
-				<td class="table-label">Description</td>
+				<Label text="Description" />
 				<td class="table-data">{description}</td>
 			</tr>
 			<tr class="tables-row">
-				<td class="table-label">Recommended Duration Min</td>
+				<Label text="Recommended Duration Min" />
 				<td class="table-data">{recommendedDurationMin}</td>
 			</tr>
 			<tr class="tables-row">
-				<td class="table-label">Tags</td>
+				<Label text="Tags" />
 				<td class="table-data">
 					{#if tags.length <= 0}
 						<span>Tags not specified</span>
@@ -76,15 +77,20 @@
 				</td>
 			</tr>
 			<tr class="tables-row">
-				<td class="table-label">Version</td>
+				<Label text="Version" />
 				<td class="table-data">{version}</td>
 			</tr>
 		</tbody>
 	</table>
 
-	<div class=" btn-container">
-        <Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
-        ></Button>
+	<div class="btn-container">
+		<Button
+			href={editRoute}
+			text="Edit"
+			variant="primary"
+			iconBefore="mdi:edit"
+			iconSize="md"
+			size="md"
+		/>
 	</div>
 </div>
-
