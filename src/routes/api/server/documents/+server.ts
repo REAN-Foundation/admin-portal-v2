@@ -51,7 +51,7 @@ export const POST = async (event: RequestEvent) => {
 			data.FileName,
 			data.Source,
 			data.ParentDocument,
-			data.Version,
+			// data.Version,
 			data.ChunkingStratergy,
 			data.ChunkingLength,
 			data.ChunkingOverlap,

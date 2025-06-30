@@ -13,7 +13,8 @@ export const createOrUpdateSchema = z.object({
 			required_error: 'Description is required.',
 			invalid_type_error: 'Description must be a string.'
 		})
-		.min(1, { message: 'Description cannot be empty.' }),
+		.nullable().optional(),
+        
 	FileName: z.string().optional(),
 	Source: z.string().optional(),
 	ParentDocument: z.string().optional(),
@@ -48,8 +49,10 @@ export const createOrUpdateSchema = z.object({
 		.min(1, { message: 'Splitter cannot be empty.' }),
 	ResourceId: z.string(),
 	Keywords: z
-		.array(z.string().min(1, { message: 'Keyword cannot be empty.' }))
-		.nonempty({ message: 'At least one keyword is required.' }),
+		.array(z.string())
+		.nullable()
+		.optional()
+		.default([]),
 	DocumentType: z
 		.string({
 			required_error: 'Document type is required.',
