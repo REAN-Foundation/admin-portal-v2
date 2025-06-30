@@ -49,8 +49,7 @@
 	let isSortingName = $state(false);
 	let sortBy = $state('appointment_date');
 	let sortOrder = $state('ascending');
-	// let source = $state(followupSettings?.Source);
-	let source = $state("Api")
+	let source = $state(followupSettings?.Source);
 	let showUploadModal = $state(false);
 	let showCancelModel = $state(false);
 	let showScheduleExtractModel = $state(false);
@@ -190,15 +189,15 @@
 	// 	return statistics
 	//  }
 </script>
-<!-- 
+
 {#if source == "None"}
-	<h3>Follow up tenant settings are not enabled </h3>
-{:else} -->
+	<h3 class="text-center">Currently this feature is not enabled! To enable this feature please update settings</h3>
+{:else}
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
 <div class="mx-6 grid gap-4 md:grid-cols-3">
-	{#if source === 'FileBased'}
+	{#if source === 'File'}
 		<Button
 			text="Upload Appointment Schedules"
 			size="md"
@@ -206,7 +205,7 @@
 			className="w-full"
 			onclick={() => (showUploadModal = true)}
 		/>
-	{:else} 
+	{:else if source === 'Api'} 
 		<Button
 			type="submit"
 			text="Extract Appointment Schedules"
@@ -406,4 +405,4 @@
 
 <Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />
 
-<!-- {/if} -->
+{/if}
