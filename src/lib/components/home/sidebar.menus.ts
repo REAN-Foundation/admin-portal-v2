@@ -112,7 +112,7 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 		return false;
 	}
 	if (menuName === 'Types' || menuName === 'Priorities' || menuName === 'Goals') {
-		if (tenantSettings.PatientApp) {
+		if (tenantSettings.Common.UserInterfaces.PatientApp) {
 			return true;
 		}
 		return false;
