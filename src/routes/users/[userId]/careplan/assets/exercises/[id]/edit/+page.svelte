@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import type { PageServerData } from './$types'
+	import type { PageServerData } from './$types';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
@@ -9,7 +9,11 @@
 	import type { ExerciseUpdateModel } from '$lib/types/exercises.types';
 	import { createOrUpdateSchema } from '$lib/validation/exercises.schema';
 	import Button from '$lib/components/button/button.svelte';
-
+	import Input from '$lib/components/input/input.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
+	///////////////////////////////////////////////////////////////////////////////////////////
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let errors: Record<string, string> = $state({});
@@ -26,7 +30,6 @@
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
 	var exerciseId = page.params.id;
-	
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/exercises/${exerciseId}/edit`;
@@ -38,19 +41,19 @@
 		{ name: 'Edit', path: editRoute }
 	];
 
-	const handleReset =  () => {
-		 name = data?.exercise?.Name;
-		 exerciseId = page.params.id;
-		 description = data?.exercise?.Description;
-		 exerciseType = data?.exercise?.ExerciseType,
-		 intensityLevel = data?.exercise?.IntensityLevel,
-		 recommendedDurationMin = data?.exercise.RecommendedDurationMin,
-		 version = data?.exercise?.Version;
-		 keywords = data?.exercise?.Tags;
-		 errors = {};
-		}
+	const handleReset = () => {
+		name = data?.exercise?.Name;
+		exerciseId = page.params.id;
+		description = data?.exercise?.Description;
+		(exerciseType = data?.exercise?.ExerciseType),
+			(intensityLevel = data?.exercise?.IntensityLevel),
+			(recommendedDurationMin = data?.exercise.RecommendedDurationMin),
+			(version = data?.exercise?.Version);
+		keywords = data?.exercise?.Tags;
+		errors = {};
+	};
 
-		const handleSubmit = async (event: Event) => {
+	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
 			errors = {};
@@ -88,8 +91,8 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				console.log("Full response:", response);
-				await goto(`${exerciseRoute}/${response?.Data?.id}/view`); 
+				console.log('Full response:', response);
+				await goto(`${exerciseRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -101,17 +104,15 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
 <div class="p-6">
 	<form onsubmit={(event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Edit Exercise</h2>
+			<Heading text="Edit Exercise" />
 			<a href={viewRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
@@ -120,35 +121,33 @@
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
-					<td class="table-label">Name <span class="important-field">*</span></td>
+					<Label text="Name" required={true} />
 					<td class="table-data">
-						<input
-							type="text"
-							class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+						<Input
 							name="biometricsName"
+							type="text"
 							placeholder="Enter name here..."
 							bind:value={name}
+							error={errors?.Name}
 						/>
-						{#if errors?.Name}
-							<p class="error-text">{errors?.Name}</p>
-						{/if}
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Description</td>
+					<Label text="Description" />
 					<td class="table-data">
-						<textarea
+						<Textarea
 							name="description"
-							class="input resize-none {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
-							bind:value={description}
 							placeholder="Enter description here..."
-						></textarea>
+							bind:value={description}
+							error={errors?.Code}
+							resize={false}
+						/>
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Exercise Type</td>
+					<Label text="Exercise Type" />
 					<td class="table-data">
 						<select class="input" bind:value={exerciseType}>
 							<option disabled value>Select exercise type</option>
@@ -165,7 +164,7 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Intensity Level</td>
+					<Label text="Intensity Level" />
 					<td class="table-data">
 						<select class="input" bind:value={intensityLevel}>
 							<option disabled value>Select Intensity Level</option>
@@ -183,58 +182,48 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Recommended Duration Min</td>
+					<Label text="Recommended Duration Min" />
 					<td class="table-data">
-						<input
+						<Input
+							name="recommendedDurationMin"
 							type="text"
 							bind:value={recommendedDurationMin}
 							placeholder="Enter recommended duration min..."
-							class="input {errors?.RecommendedDurationMin ? 'input-text-error' : ''}"
+							error={errors?.RecommendedDurationMin}
 						/>
-						{#if errors?.RecommendedDurationMin}
-							<p class="error-text">{errors?.RecommendedDurationMin}</p>
-						{/if}
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label align-top">Tags</td>
+					<Label text="Tags" />
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
+						<InputChips bind:keywords name="keywords" id="keywords" />
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Version</td>
+					<Label text="Version" />
 					<td class="table-data">
-						<input
+						<Input
 							type="text"
-							class="input {form?.errors?.Version ? 'input-text-error' : ''}"
 							name="version"
 							placeholder="V 1.0"
 							bind:value={version}
+							error={errors?.Version}
 						/>
-						{#if errors?.Version}
-							<p class="error-text">{errors?.Version}</p>
-						{/if}
 					</td>
 				</tr>
 			</tbody>
 		</table>
 
 		<div class="btn-container">
-            <Button type="button" onclick={handleReset} text="Reset" variant="primary" />
-            {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
-            {/await}
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
 		</div>
 	</form>
 </div>
-

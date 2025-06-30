@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import type { PageServerData } from './$types'
+	import type { PageServerData } from './$types';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
@@ -9,7 +9,11 @@
 	import { createOrUpdateSchema } from '$lib/validation/biometrics.schema';
 	import type { BiometricsUpdateModel } from '$lib/types/biometrics.type';
 	import Button from '$lib/components/button/button.svelte';
-
+	import Input from '$lib/components/input/input.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
+	///////////////////////////////////////////////////////////////////////////////////////
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let errors: Record<string, string> = $state({});
@@ -37,18 +41,18 @@
 		{ name: 'Edit', path: editRoute }
 	];
 
-	const handleReset =  () => {
-		 name = data?.biometrics?.Name;
-		 biometricsId = page.params.id;
-		 description = data?.biometrics?.Description;
-		 measurementUnit = data?.biometrics?.MeasurementUnit
-		 version = data?.biometrics?.Version;
-		 biometricsType = data?.biometrics.BiometricsType;
-		 tags = data?.biometrics.Tags;
-		 errors = {};
-		}
+	const handleReset = () => {
+		name = data?.biometrics?.Name;
+		biometricsId = page.params.id;
+		description = data?.biometrics?.Description;
+		measurementUnit = data?.biometrics?.MeasurementUnit;
+		version = data?.biometrics?.Version;
+		biometricsType = data?.biometrics.BiometricsType;
+		tags = data?.biometrics.Tags;
+		errors = {};
+	};
 
-		const handleSubmit = async (event: Event) => {
+	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
 			errors = {};
@@ -84,9 +88,9 @@
 			const response = await res.json();
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
-				toastMessage(response); 
-				console.log("Full response:", response);
-				await goto(`${biometricsRoute}/${response?.Data?.id}/view`); 
+				toastMessage(response);
+				console.log('Full response:', response);
+				await goto(`${biometricsRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -98,17 +102,15 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
 <div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Edit Biometric</h2>
+			<Heading text="Edit Biometric" />
 			<a href={viewRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
@@ -117,37 +119,35 @@
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
-					<td class="table-label">Name <span class="important-field">*</span></td>
+					<Label text="Name" required={true} />
 					<td class="table-data">
-						<input
-							type="text"
-							class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+						<Input
 							name="biometricsName"
+							type="text"
 							placeholder="Enter name here..."
 							bind:value={name}
+							error={errors?.Name}
 						/>
-						{#if errors?.Name}
-							<p class="error-text">{errors?.Name}</p>
-						{/if}
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Description</td>
+					<Label text="Description" />
 					<td class="table-data">
-						<textarea
+						<Textarea
 							name="description"
-							class="input resize-none {errors?.Description ? 'border-error-300' : 'border-primary-200'}"
-							bind:value={description}
 							placeholder="Enter description here..."
-						></textarea>
+							bind:value={description}
+							error={errors?.Description}
+							resize={false}
+						/>
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Biometrics Type</td>
+					<Label text="Biometrics Type" />
 					<td class="table-data">
-						<select class="input" bind:value={biometricsType}>
+						<select class="input" bind:value={biometricsType} name="biometricsType">
 							<option disabled value>Select biometrics type</option>
 							<option>Blood pressure</option>
 							<option>Blood glucose</option>
@@ -162,57 +162,48 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Measurement Unit</td>
+					<Label text="Measurement Unit" />
 					<td class="table-data">
-						<input
+						<Input
+							name="measurementUnit"
 							type="text"
-							bind:value={measurementUnit}
 							placeholder="Enter unit..."
-							class="input {errors?.MeasurementUnit ? 'input-text-error' : ''}"
+							bind:value={measurementUnit}
+							error={errors?.MeasurementUnit}
 						/>
-						{#if errors?.MeasurementUnit}
-							<p class="error-text">{errors?.MeasurementUnit}</p>
-						{/if}
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label align-top">Tags</td>
+					<Label text="Tags" />
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
+						<InputChips bind:keywords name="keywords" id="keywords" />
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Version</td>
+					<Label text="Version" />
 					<td class="table-data">
-						<input
+						<Input
+							name="version"
 							type="text"
-							bind:value={version}
-							class="input {errors?.Version ? 'input-text-error' : ''}"
 							placeholder="V 1.0"
+							bind:value={version}
+							error={errors?.Version}
 						/>
-						{#if errors?.Version}
-							<p class="error-text">{errors?.Version}</p>
-						{/if}
 					</td>
 				</tr>
 			</tbody>
 		</table>
 
 		<div class="btn-container">
-            <Button type="button" onclick={handleReset} text="Reset" variant="primary" />
-            {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
-            {/await}
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
 		</div>
-
 	</form>
 </div>

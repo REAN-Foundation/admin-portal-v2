@@ -9,7 +9,11 @@
 	import type { InfographicsUpdateModel } from '$lib/types/infographics.types';
 	import { createOrUpdateSchema } from '$lib/validation/infographics.schema';
 	import Button from '$lib/components/button/button.svelte';
-
+	import Input from '$lib/components/input/input.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
+	///////////////////////////////////////////////////////////////////////////////////////////
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let errors: Record<string, string> = $state({});
@@ -94,17 +98,15 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-		
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
 <div class="p-6">
 	<form onsubmit={(event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Edit Infographic</h2>
+			<Heading text="Edit Infographic" />
 			<a href={viewRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
@@ -113,90 +115,74 @@
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
-					<td class="table-label">Name <span class="important-field">*</span></td>
+					<Label text="Name" required={true} />
 					<td class="table-data">
-						<input
-							type="text"
-							class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+						<Input
 							name="name"
+							type="text"
 							placeholder="Enter name here..."
 							bind:value={name}
+							error={errors?.Name}
 						/>
-						{#if errors?.Name}
-							<p class="error-text">{errors?.Name}</p>
-						{/if}
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Description</td>
+					<Label text="Description" />
 					<td class="table-data">
-						<textarea
+						<Textarea
 							name="description"
-							class="input resize-none {errors?.Description ? 'input-text-error' : ''}"
-							bind:value={description}
 							placeholder="Enter description here..."
-						></textarea>
-						{#if errors?.Description}
-							<p class="error-text">{errors?.Description}</p>
-						{/if}
-					</td>
-				</tr>
-
-				<tr class="tables-row">
-					<td class="table-label">URL</td>
-					<td class="table-data">
-						<input
-							type="url"
-							name="url"
-							bind:value={pathUrl}
-							placeholder="Enter url here"
-							class="input {errors?.Url ? 'input-text-error' : ''}"
+							bind:value={description}
+							error={errors?.Description}
+							resize={false}
 						/>
-						{#if errors?.Url}
-							<p class="error-text">{errors?.Url}</p>
-						{/if}
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Tags</td>
+					<Label text="URL" />
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
+						<Input
+							name="url"
+							type="url"
+							placeholder="Enter url here"
+							bind:value={pathUrl}
+							error={errors?.Url}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Tags" />
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Version</td>
+					<Label text="Version" />
 					<td class="table-data">
-						<input
-							type="text"
-							class="input {form?.errors?.Version ? 'input-text-error' : ''}"
+						<Input
 							name="version"
+							type="text"
 							placeholder="V 1.0"
 							bind:value={version}
+							error={errors?.Version}
 						/>
-						{#if errors?.Version}
-							<p class="error-text">{errors?.Version}</p>
-						{/if}
 					</td>
 				</tr>
 			</tbody>
 		</table>
 
 		<div class="btn-container">
-            <Button type="button" onclick={handleReset} text="Reset" variant="primary" />
-            {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
-            {/await}
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
 		</div>
-
 	</form>
 </div>

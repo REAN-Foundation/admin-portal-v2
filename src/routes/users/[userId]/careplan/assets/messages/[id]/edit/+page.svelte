@@ -9,7 +9,11 @@
 	import type { MessageUpdateModel } from '$lib/types/message.type';
 	import { createOrUpdateSchema } from '$lib/validation/message.schema';
 	import Button from '$lib/components/button/button.svelte';
-
+	import Input from '$lib/components/input/input.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
+	///////////////////////////////////////////////////////////////////////////////////////////
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let errors: Record<string, string> = $state({});
@@ -107,33 +111,31 @@
 	};
 
 	function parseTemplateVariables(text: string): Record<string, any> | null {
-	try {
-		const parsed = JSON.parse(text);
-		if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
-			throw new Error('Invalid object');
+		try {
+			const parsed = JSON.parse(text);
+			if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+				throw new Error('Invalid object');
+			}
+			return parsed;
+		} catch (e) {
+			errors = {
+				...errors,
+				TemplateVariables: 'TemplateVariables must be a valid JSON object with key-value pairs'
+			};
+			return null;
 		}
-		return parsed;
-	} catch (e) {
-		errors = {
-			...errors,
-			TemplateVariables: 'TemplateVariables must be a valid JSON object with key-value pairs'
-		};
-		return null;
 	}
-};
 
-$effect(() => {
-            keywordsStr = keywords?.join(', ');
-		});
-
+	$effect(() => {
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
 <div class="p-6">
 	<form onsubmit={(event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Edit Message</h2>
+			<Heading text="Edit Message" />
 			<a href={viewRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
@@ -142,38 +144,33 @@ $effect(() => {
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
-					<td class="table-label">Name <span class="important-field">*</span></td>
+					<Label text="Name" required />
 					<td class="table-data">
-						<input
-							type="text"
-							class="input {errors?.Name ? 'input-text-error' : ''}"
+						<Input
 							name="name"
+							type="text"
 							placeholder="Enter name here..."
 							bind:value={name}
+							error={errors?.Name}
 						/>
-						{#if errors?.Name}
-							<p class="error-text">{errors?.Name}</p>
-						{/if}
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Description</td>
+					<Label text="Description" />
 					<td class="table-data">
-						<textarea
+						<Textarea
 							name="description"
-							class="input resize-none {errors?.Description ? 'input-text-error' : ''}"
-							bind:value={description}
 							placeholder="Enter description here..."
-						></textarea>
-						{#if errors?.Description}
-							<p class="error-text">{errors?.Description}</p>
-						{/if}
+							bind:value={description}
+							error={errors?.Description}
+							resize={false}
+						/>
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Message Type</td>
+					<Label text="Message Type" />
 					<td class="table-data">
 						<select class="input" bind:value={messageType}>
 							<option disabled value>Select message type</option>
@@ -185,88 +182,74 @@ $effect(() => {
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Template Name</td>
+					<Label text="Template Name" />
 					<td class="table-data">
-						<input
-							type="text"
-							bind:value={templateName}
+						<Input
 							name="templateName"
+							type="text"
 							placeholder="Enter template name..."
-							class="input {errors?.TemplateName ? 'input-text-error' : ''}"
+							bind:value={templateName}
+							error={errors?.TemplateName}
 						/>
-						{#if errors?.TemplateName}
-							<p class="error-text">{errors?.TemplateName}</p>
-						{/if}
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Template Variables</td>
+					<Label text="Template Variables" />
 					<td class="table-data">
-					<textarea
-						name="templateVariablesText"
-						class="input resize-none {errors?.TemplateVariables ? 'border-error-300' : 'border-primary-200'}"
-						bind:value={templateVariablesText}
-						placeholder="Enter template variables here..."
-						></textarea>
-							{#if errors?.TemplateVariables}
-							<p class="error-text">{errors.TemplateVariables}</p>
-							{/if}
+						<Textarea
+							name="templateVariablesText"
+							placeholder="Enter template variables here..."
+							bind:value={templateVariablesText}
+							error={errors?.TemplateVariables}
+							resize={false}
+						/>
 					</td>
 				</tr>
+
 				<tr class="tables-row">
-					<td class="table-label">URL</td>
+					<Label text="URL" />
 					<td class="table-data">
-						<input
-							type="url"
+						<Input
 							name="url"
-							bind:value={pathUrl}
+							type="url"
 							placeholder="Enter url here..."
-							class="input {errors?.Url ? 'input-text-error' : ''}"
+							bind:value={pathUrl}
+							error={errors?.Url}
 						/>
-						{#if errors?.Url}
-							<p class="error-text">{errors?.Url}</p>
-						{/if}
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label align-top">Tags</td>
+					<Label text="Tags" />
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
+						<InputChips bind:keywords name="keywords" id="keywords" />
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Version</td>
+					<Label text="Version" />
 					<td class="table-data">
-						<input
-							type="text"
+						<Input
 							name="version"
-							bind:value={version}
-							class="input {errors?.Version ? 'input-text-error' : ''}"
+							type="text"
 							placeholder="V 1.0"
+							bind:value={version}
+							error={errors?.Version}
 						/>
-						{#if errors?.Version}
-							<p class="error-text">{errors?.Version}</p>
-						{/if}
 					</td>
 				</tr>
 			</tbody>
 		</table>
 
 		<div class="btn-container">
-            <Button type="button" onclick={handleReset} text="Reset" variant="primary" />
-            {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
-            {/await}
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
 		</div>
 	</form>
 </div>

@@ -10,7 +10,10 @@
 	import type { AppointmentUpdateModel } from '$lib/types/appointment';
 	import { createOrUpdateSchema } from '$lib/validation/appointment.schema';
 	import Button from '$lib/components/button/button.svelte';
-
+	import Input from '$lib/components/input/input.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
 	//////////////////////////////////////////////////////////////////////
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
@@ -105,16 +108,15 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
 <div class="p-6">
 	<form onsubmit={(event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Edit Appointment</h2>
+			<Heading text="Edit Appointment" />
 			<a href={viewRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
@@ -123,40 +125,38 @@
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
-					<td class="table-label">Asset Code</td>
+					<Label text="Asset Code" />
 					<td class="table-data">{assetCode}</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Name <span class="important-field">*</span></td>
+					<Label text="Name" required={true} />
 					<td class="table-data">
-						<input
-							type="text"
-							class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+						<Input
 							name="name"
+							type="text"
 							placeholder="Enter name here..."
 							bind:value={name}
+							error={errors?.Name}
 						/>
-						{#if errors?.Name}
-							<p class="error-text">{errors?.Name}</p>
-						{/if}
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Description</td>
+					<Label text="Description" />
 					<td class="table-data">
-						<textarea
+						<Textarea
 							name="description"
-							class="input resize-none {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
-							bind:value={description}
 							placeholder="Enter description here..."
-						></textarea>
+							bind:value={description}
+							error={errors?.Description}
+							resize={false}
+						/>
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Appointment Type</td>
+					<Label text="Appointment Type" />
 					<td class="table-data">
 						<select name="appointmentType" bind:value={appointmentType} class="input">
 							<option>Doctor</option>
@@ -166,45 +166,37 @@
 						</select>
 					</td>
 				</tr>
+
 				<tr class="tables-row">
-					<td class="table-label">Tags</td>
+					<Label text="Tags" />
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
+						<InputChips bind:keywords name="keywords" id="keywords" />
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Version</td>
+					<Label text="Version" />
 					<td class="table-data">
-						<input
-							type="text"
-							class="input {form?.errors?.Version ? 'input-text-error' : ''}"
+						<Input
 							name="version"
+							type="text"
 							placeholder="V 1.0"
 							bind:value={version}
+							error={errors?.Version}
 						/>
-						{#if errors?.Version}
-							<p class="error-text">{errors?.Version}</p>
-						{/if}
 					</td>
 				</tr>
 			</tbody>
 		</table>
 
 		<div class="btn-container">
-			<div class="btn-container">
-            <Button type="button" onclick={handleReset} text="Reset" variant="primary" />
-            {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
-            {/await}
-		</div>
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
 		</div>
 	</form>
 </div>

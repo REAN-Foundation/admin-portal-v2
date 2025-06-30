@@ -9,7 +9,11 @@
 	import type { AudioUpdateModel } from '$lib/types/audio.type';
 	import { createOrUpdateSchema } from '$lib/validation/audio.schema';
 	import Button from '$lib/components/button/button.svelte';
-
+	import Input from '$lib/components/input/input.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
+	/////////////////////////////////////////////////////////////////////////////////////////
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let errors: Record<string, string> = $state({});
@@ -22,7 +26,6 @@
 	let keywordsStr: string = $state('');
 	let keywords: string[] = $state(data.audio.Tags);
 
-
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
 	var audioId = page.params.id;
@@ -33,7 +36,7 @@
 	const audioRoute = `/users/${userId}/careplan/assets/audio`;
 
 	const breadCrumbs = [
-		{ name: 'Assets',path: assetRoute },
+		{ name: 'Assets', path: assetRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
@@ -95,99 +98,91 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
 <div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
-			<h2 class="form-titles">Edit Audio</h2>
+			<Heading text="Edit Audio" />
 			<a href={viewRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
 		</div>
+
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
-					<td class="table-label">Name</td>
+					<Label text="Name" />
 					<td class="table-data">
-						<input
-							type="text"
-							class="input {form?.errors?.Name ? 'input-text-error' : ''}"
+						<Input
 							name="name"
+							type="text"
 							placeholder="Enter name here..."
 							bind:value={name}
+							error={errors?.Name}
 						/>
-						{#if errors?.Name}
-							<p class="text-error">{errors?.Name}</p>
-						{/if}
 					</td>
-					</tr>
-					<tr class="tables-row">
-						<td class="table-label">Transcript</td>
-						<td class="table-data">
-							<input
-									type="textarea"
-									class="input {form?.errors?.Name
-											? 'input-text-error'
-											: ''}"
-									name="transcript"
-									placeholder="Enter transcript here..."
-									bind:value={transcript}
-								/>
-								{#if errors?.Name}
-								<p class="text-error">{errors?.Name}</p>
-								{/if}
-							</td>
-						</tr>
+				</tr>
 
-						<tr class="tables-row">
-                            <td class="table-label">URL</td>
-                            <td class="table-data">
-                                <input
-                                    type="url"
-									name="url"
-									bind:value={pathUrl}
-									placeholder="Enter url here"
-                                    class="health-system-input {errors?.Url ? 'input-text-error' : ''}"
-                                />
-                                {#if errors?.Url}
-                                    <p class="text-error">{errors?.Url}</p>
-                                {/if}
-                            </td>
-                        </tr>
+				<tr class="tables-row">
+					<Label text="Transcript" />
+					<td class="table-data">
+						<Textarea
+							name="transcript"
+							placeholder="Enter transcript here..."
+							bind:value={transcript}
+							error={errors?.Transcript}
+							resize={false}
+						/>
+					</td>
+				</tr>
 
-						<tr class="tables-row">
-							<td class="table-label">Tags</td>
-							<td class="table-data">
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-									/>
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
-							</td>
-						</tr>
-						<tr class="tables-row">
-							<td class="table-label">Version</td>
-							<td class="table-data">
-								<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="btn-container">
-            		<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
-            			{#await promise}
-                    <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-           			 {:then data}
-                	<Button type="submit" text="Submit" variant="primary" />
-            			{/await}
-				</div>
-			</form>
+				<tr class="tables-row">
+					<Label text="URL" />
+					<td class="table-data">
+						<Input
+							name="url"
+							type="url"
+							placeholder="Enter url here"
+							bind:value={pathUrl}
+							error={errors?.Url}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Tags" />
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Version" />
+					<td class="table-data">
+						<Input
+							name="version"
+							type="text"
+							placeholder="V 1.0"
+							bind:value={version}
+							error={errors?.Version}
+						/>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container">
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
 		</div>
+	</form>
+</div>

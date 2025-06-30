@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import type { PageServerData } from './$types'
+	import type { PageServerData } from './$types';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
@@ -9,13 +9,17 @@
 	import { createOrUpdateSchema } from '$lib/validation/meditations.schema';
 	import type { MeditationUpdateModel } from '$lib/types/meditations.types';
 	import Button from '$lib/components/button/button.svelte';
-
+	import Input from '$lib/components/input/input.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
+	///////////////////////////////////////////////////////////////////////////////////////////////
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let name = $state(data.meditation.Name);
-	let description = $state(data.meditation.Description || undefined) ;
+	let description = $state(data.meditation.Description || undefined);
 	let meditationType = $state(data.meditation.MeditationType);
 	let recommendedDurationMin = $state<number>(data.meditation.RecommendedDurationMin);
 	let version = $state(data.meditation.Version);
@@ -24,7 +28,7 @@
 
 	const userId = page.params.userId;
 	var meditationId = page.params.id;
-  const tenantId = data.tenantId;
+	const tenantId = data.tenantId;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
 	const editRoute = `/users/${userId}/careplan/assets/meditations/${meditationId}/edit`;
@@ -36,18 +40,18 @@
 		{ name: 'Edit', path: editRoute }
 	];
 
-	const handleReset =  () => {
-		 name = data?.meditation?.Name;
-		 meditationId = page.params.id;
-		 description = data?.meditation?.Description;
-		 meditationType = data?.meditation?.MeditationType,
-		 recommendedDurationMin = data?.meditation.RecommendedDurationMin,
-		 version = data?.meditation?.Version;
-		 keywords = data?.meditation?.Tags;
-		 errors = {};
-		}
+	const handleReset = () => {
+		name = data?.meditation?.Name;
+		meditationId = page.params.id;
+		description = data?.meditation?.Description;
+		(meditationType = data?.meditation?.MeditationType),
+			(recommendedDurationMin = data?.meditation.RecommendedDurationMin),
+			(version = data?.meditation?.Version);
+		keywords = data?.meditation?.Tags;
+		errors = {};
+	};
 
-		const handleSubmit = async (event: Event) => {
+	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
 			errors = {};
@@ -59,7 +63,7 @@
 				RecommendedDurationMin: recommendedDurationMin,
 				Version: version,
 				Tags: keywords,
-        TenantId: tenantId
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(meditationUpdateModel);
@@ -84,8 +88,8 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				console.log("Full response:", response);
-				await goto(`${meditationRoute}/${response?.Data?.id}/view`); 
+				console.log('Full response:', response);
+				await goto(`${meditationRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -96,121 +100,108 @@
 		}
 	};
 
-  $effect(() => {
-            keywordsStr = keywords?.join(', ');
-		});
-
+	$effect(() => {
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
 <div class="p-6">
-  <form onsubmit={async (event) => (promise = handleSubmit(event))}>
-    <div class="form-headers">
-      <h2 class="form-titles">Edit Meditation</h2>
-      <a href={viewRoute} class="form-cancel-btn">
-        <Icon icon="material-symbols:close-rounded" />
-      </a>
-    </div>
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<Heading text="Edit Meditation" />
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>
 
-    <table class="w-full">
-      <tbody>
-        <tr class="tables-row">
-          <td class="table-label">Name <span class="important-field">*</span></td>
-          <td class="table-data">
-            <input
-              type="text"
-              class="input {form?.errors?.Name ? 'input-text-error' : ''}"
-              name="biometricsName"
-              placeholder="Enter name here..."
-              bind:value={name}
-            />
-            {#if errors?.Name}
-              <p class="error-text">{errors?.Name}</p>
-            {/if}
-          </td>
-        </tr>
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<Label text="Name" required={true} />
+					<td class="table-data">
+						<Input
+							name="biometricsName"
+							type="text"
+							placeholder="Enter name here..."
+							bind:value={name}
+							error={errors?.Name}
+						/>
+					</td>
+				</tr>
 
-        <tr class="tables-row">
-          <td class="table-label align-top">Description</td>
-          <td class="table-data">
-            <textarea
-              name="description"
-              class="input resize-none {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
-              bind:value={description}
-              placeholder="Enter description here..."
-            ></textarea>
-          </td>
-        </tr>
+				<tr class="tables-row">
+					<Label text="Description" className="align-top" />
+					<td class="table-data">
+						<Textarea
+							name="description"
+							placeholder="Enter description here..."
+							bind:value={description}
+							error={errors?.Description}
+							resize={false}
+						/>
+					</td>
+				</tr>
 
-        <tr class="tables-row">
-          <td class="table-label">Meditation Type</td>
-          <td class="table-data">
-            <select class="input" bind:value={meditationType}>
-              <option disabled value>Select meditation type</option>
-              <option>Mindfulness</option>
-              <option>Spiritual</option>
-              <option>Focused</option>
-              <option>Mantra</option>
-              <option>Progressive relaxation</option>
-              <option>Transcendental</option>
-              <option>Visualization</option>
-            </select>
-          </td>
-        </tr>
+				<tr class="tables-row">
+					<Label text="Meditation Type" />
+					<td class="table-data">
+						<select class="input" bind:value={meditationType}>
+							<option disabled value>Select meditation type</option>
+							<option>Mindfulness</option>
+							<option>Spiritual</option>
+							<option>Focused</option>
+							<option>Mantra</option>
+							<option>Progressive relaxation</option>
+							<option>Transcendental</option>
+							<option>Visualization</option>
+						</select>
+					</td>
+				</tr>
 
-        <tr class="tables-row">
-          <td class="table-label">Recommended Duration Min</td>
-          <td class="table-data">
-            <input
-              type="text"
-              bind:value={recommendedDurationMin}
-              placeholder="Enter recommended duration min..."
-              class="input {errors?.RecommendedDurationMin ? 'input-text-error' : ''}"
-            />
-            {#if errors?.RecommendedDurationMin}
-              <p class="error-text">{errors?.RecommendedDurationMin}</p>
-            {/if}
-          </td>
-        </tr>
+				<tr class="tables-row">
+					<Label text="Recommended Duration Min" />
+					<td class="table-data">
+						<Input
+							name="recommendedDurationMin"
+							type="text"
+							placeholder="Enter recommended duration min..."
+							bind:value={recommendedDurationMin}
+							error={errors?.RecommendedDurationMin}
+						/>
+					</td>
+				</tr>
 
-        <tr class="tables-row">
-          <td class="table-label align-top">Tags</td>
-          <td class="table-data">
-            <InputChips
-              bind:keywords
-              name="keywords"
-              id="keywords"
-              />
-            <input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-          </td>
-        </tr>
+				<tr class="tables-row">
+					<Label text="Tags" />
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
 
-        <tr class="tables-row">
-          <td class="table-label">Version</td>
-          <td class="table-data">
-            <input
-              type="text"
-              class="input {form?.errors?.Version ? 'input-text-error' : ''}"
-              name="version"
-              placeholder="V 1.0"
-              bind:value={version}
-            />
-            {#if errors?.Version}
-              <p class="error-text">{errors?.Version}</p>
-            {/if}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+				<tr class="tables-row">
+					<Label text="Version" />
+					<td class="table-data">
+						<Input
+							name="version"
+							type="text"
+							placeholder="V 1.0"
+							bind:value={version}
+							error={errors?.Version}
+						/>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 
-    <div class="btn-container">
-            <Button type="button" onclick={handleReset} text="Reset" variant="primary" />
-            {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
-            {/await}
-  </div>
-  </form>
+		<div class="btn-container">
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>
