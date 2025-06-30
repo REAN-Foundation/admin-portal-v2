@@ -230,7 +230,7 @@
 						<input
 							type="text"
 							name="phone"
-							placeholder="Search by contact number"
+							placeholder="Search by contact"
 							bind:value={phone}
 							oninput={(event) => onSearchInput(event)}
 							class="table-input-field !pr-4 !pl-10"
