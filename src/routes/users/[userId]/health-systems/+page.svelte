@@ -233,10 +233,11 @@
 							<th class="w-20 text-center"></th>
 						</tr>
 					</thead>
-					<tbody class="">
+					<tbody>
 						{#if retrivedHealthSystems.length <= 0}
 							<tr>
-								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
+								<td class="text-center" colspan="6">
+									{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}
 							{#each retrivedHealthSystems as row, index}
