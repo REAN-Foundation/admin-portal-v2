@@ -39,7 +39,7 @@
 
 		const response = await res.json();
 
-		if (response.Status === 'success' && response.HttpCode === 201) {
+		if (response.Status === 'success' && response.HttpCode === 200) {
 			return { success: true, resourceId: response.Data?.id, response };
 		}
 		if (response.Errors) {
@@ -53,6 +53,20 @@
 
 	const onFileSelected = async (e) => {
 		let f = e.target.files[0];
+		if (!f) return;
+		if (f.size === 0) {
+			errors = { UploadFile: 'Selected file is empty. Please choose a valid file.' };
+
+			return;
+		}
+
+		const isJson =
+			f.name.toLowerCase().endsWith('.json') &&
+			(f.type === 'application/json' || f.type === '' || f.type === 'text/json');
+		if (!isJson) {
+			errors = { UploadFile: 'Only JSON files are allowed. Please select a valid .json file.' };
+			return;
+		}
 		fileName = f.name;
 		selectFile = f;
 		let reader = new FileReader();
@@ -66,6 +80,11 @@
 		try {
 			event.preventDefault();
 			errors = {};
+
+			if (!selectFile || selectFile.size === 0) {
+				errors = { UploadFile: 'Selected file is empty. Please choose a valid file.' };
+				return;
+			}
 
 			const uploadResult = await upload(fileinput, selectFile);
 
