@@ -16,7 +16,16 @@
 		tooltip = null,
 		className: customClass = '',
 		children,
-		onclick = () => {}
+		// DOM Events
+		onclick = () => {},
+		onfocus,
+		onblur,
+		onkeydown,
+		onkeyup,
+		onmouseenter,
+		onmouseleave,
+		ondblclick,
+		oncontextmenu
 	} = $props<{
 		type?: 'button' | 'submit' | 'reset';
 		variant?: 'primary' | 'secondary' | 'ghost' | 'outline' | 'rounded' | 'icon';
@@ -31,7 +40,16 @@
 		color?: string | null;
 		tooltip?: string | null;
 		className?: string;
+		// Event Handlers
 		onclick?: (event: MouseEvent) => void;
+		onfocus?: (event: FocusEvent) => void;
+		onblur?: (event: FocusEvent) => void;
+		onkeydown?: (event: KeyboardEvent) => void;
+		onkeyup?: (event: KeyboardEvent) => void;
+		onmouseenter?: (event: MouseEvent) => void;
+		onmouseleave?: (event: MouseEvent) => void;
+		ondblclick?: (event: MouseEvent) => void;
+		oncontextmenu?: (event: MouseEvent) => void;
 	}>();
 
 	const baseClasses = 'inline-flex items-center justify-center cursor-pointer';
@@ -66,7 +84,16 @@
 	class={`${baseClasses} ${variantClasses[variant]} ${variant === 'icon' ? '' : sizeClasses[size]} ${disabled ? 'pointer-events-none opacity-50' : ''} ${customClass}`}
 	{disabled}
 	aria-disabled={disabled}
-	{...href ? { href } : { type, onclick }}
+	{...href ? { href } : { type }}
+	{onclick}
+	{onfocus}
+	{onblur}
+	{onkeydown}
+	{onkeyup}
+	{onmouseenter}
+	{onmouseleave}
+	{ondblclick}
+	{oncontextmenu}
 >
 	{#if variant === 'icon' && icon}
 		<div class="group relative">
