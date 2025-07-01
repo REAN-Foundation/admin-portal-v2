@@ -67,7 +67,7 @@
 		const formData = new FormData();
 		formData.append('file', file);
 
-		const res = await fetch(`/api/server/file-resources/upload`, {
+		const res = await fetch(`/api/server/file-resources/upload/bot-content`, {
 			method: 'POST',
 			body: formData
 		});

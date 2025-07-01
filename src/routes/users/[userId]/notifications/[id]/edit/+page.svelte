@@ -20,7 +20,7 @@
 	let type = data.notification.Type;
 	let sentOn = new Date(data.notification.SentOn);
 	let broadcastToAll = data.notification.BroadcastToAll;
-	let imageUrl = data.notification.ImageUrl;
+	let imageUrl = $state(data.notification.ImageUrl);
 	let avatarSource = $state(imageUrl);
 
 	//Original data
@@ -62,7 +62,7 @@
 		const imgData = imgBase64.split(',');
 		data['image'] = imgData[1];
 		console.log(JSON.stringify(data));
-		const res = await fetch(`/api/server/file-resources/upload`, {
+		const res = await fetch(`/api/server/file-resources/upload/reancare`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

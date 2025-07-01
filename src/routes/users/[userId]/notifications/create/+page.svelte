@@ -28,7 +28,7 @@
 		const imgData = imgBase64.split(',');
 		data['image'] = imgData[1];
 		console.log(JSON.stringify(data));
-		const res = await fetch(`/api/server/file-resources/upload`, {
+		const res = await fetch(`/api/server/file-resources/upload/reancare`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

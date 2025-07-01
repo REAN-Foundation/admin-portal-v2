@@ -18,7 +18,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     console.log("response =====>", response);
     if (imageResourceId) {
         symptom['ImageResourceUrl'] =
-            BACKEND_API_URL + `/file-resources/${imageResourceId}/download?disposition=inline`;
+            BACKEND_API_URL + `/file-resources/${imageResourceId}?disposition=inline`;
     } else {
         symptom['ImageResourceUrl'] = null;
     }
