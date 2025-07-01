@@ -8,7 +8,10 @@
 	import { goto } from '$app/navigation';
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { GoalTypeUpdateModel } from '$lib/types/goal.types';
-
+	import Heading from '$lib/components/heading/heading.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Input from '$lib/components/input/input.svelte';
+	import Button from '$lib/components/button/button.svelte';
 	////////////////////////////////////////////////////////////////////////
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
@@ -90,71 +93,52 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th>Edit Goal</th>
-							<th class="text-end">
-								<a href={viewRoute} class="cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Type *</td>
-							<td>
-								<input
-									type="text"
-									class="input {form?.errors?.type ? 'input-text-error' : ''}"
-									name="type"
-									placeholder="Enter name here..."
-									bind:value={type}
-								/>
-								{#if errors?.Type}
-									<p class="text-error-500 text-xs">{errors?.Type}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td class="!py-3">Tags</td>
-							<td>
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-									/>
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" bind:value={tags} /> -->
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="button-container">
-					<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary"
-						>Reset</button
-					>
-					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<Heading text="Edit Goal" />
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<Label text="Type" required={true} />
+					<td class="table-data">
+						<Input
+							name="type"
+							type="text"
+							placeholder="Enter name here..."
+							bind:value={type}
+							error={errors?.Type}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Tags" />
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container">
+			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button size="md" type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>
