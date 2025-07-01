@@ -3,6 +3,9 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
+	import Heading from '$lib/components/heading/heading.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -39,38 +42,42 @@
 		<span>Edit</span>
 	</a>
 </div> -->
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<Heading text="View Priority" />
+		<a href={priorityRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
+		</a>
+	</div>
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<table class="table-c">
-				<thead>
-					<tr>
-						<th>View Priority</th>
-						<th class="text-end">
-							<a href={priorityRoute} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded" class="" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Type</td>
-						<td>{type}</td>
-					</tr>
-					<tr>
-						<td>Tags</td>
-						<td>
-							{#if tags.length <= 0}
-								<span class="span">Tags not specified</span>
-							{:else}
-								<span class="span">{tags}</span>
-							{/if}
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<Label text="Type" />
+				<td class="table-data">{type}</td>
+			</tr>
+
+			<tr class="tables-row">
+				<Label text="Tags" />
+				<td class="table-data">
+					{#if tags.length <= 0}
+						<span>Tags not specified</span>
+					{:else}
+						<span>{tags}</span>
+					{/if}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div class="btn-container">
+		<Button
+			href={editRoute}
+			text="Edit"
+			variant="primary"
+			iconBefore="mdi:edit"
+			iconSize="md"
+			size="md"
+		/>
 	</div>
 </div>
