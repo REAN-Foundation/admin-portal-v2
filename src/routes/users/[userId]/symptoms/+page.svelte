@@ -287,7 +287,9 @@
 					<tbody>
 						{#if retrivedSymptoms.length <= 0}
 							<tr class="text-center">
-								<td class="text-center" colspan="7">{isLoading ? 'Loading...' : 'No records found'}</td>
+								<td class="text-center" colspan="7"
+									>{isLoading ? 'Loading...' : 'No records found'}</td
+								>
 							</tr>
 						{:else}
 							{#each retrivedSymptoms as row, index}
@@ -321,7 +323,7 @@
 									</td>
 
 									<td>
-										<div class="flex">
+										<div class="flex justify-end">
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"

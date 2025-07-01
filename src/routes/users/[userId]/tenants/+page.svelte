@@ -290,7 +290,7 @@
 									<td>{row.Email !== null ? row.Email : 'Not specified'}</td>
 
 									<td>
-										<div class="flex">
+										<div class="flex justify-end">
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"

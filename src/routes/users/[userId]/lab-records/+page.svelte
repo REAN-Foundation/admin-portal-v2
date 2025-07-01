@@ -315,7 +315,7 @@
 										>{row.Unit !== null && row.Unit !== '' ? row.Unit : 'Not specified'}</td
 									>
 									<td>
-										<div class="flex">
+										<div class="flex justify-end">
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"

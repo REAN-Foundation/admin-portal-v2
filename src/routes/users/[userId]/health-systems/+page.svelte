@@ -186,17 +186,17 @@
 								class="input !pr-4 !pl-10"
 							/>
 							{#if healthSystemName}
-							<button
-								type="button"
-								onclick={() => {
-									healthSystemName = '';
-									onSearchInput({ target: { name: 'name', value: '' } });
-								}}
-								class="close-btn"
-							>
-								<Icon icon="material-symbols:close" />
-							</button>
-						{/if}
+								<button
+									type="button"
+									onclick={() => {
+										healthSystemName = '';
+										onSearchInput({ target: { name: 'name', value: '' } });
+									}}
+									class="close-btn"
+								>
+									<Icon icon="material-symbols:close" />
+								</button>
+							{/if}
 							<!-- {#if healthSystemName}
 								<button
 									type="button"
@@ -260,7 +260,7 @@
 									</td>
 
 									<td>
-										<div class="flex">
+										<div class="flex justify-end">
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"

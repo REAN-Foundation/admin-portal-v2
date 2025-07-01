@@ -235,7 +235,7 @@
 									</td>
 
 									<td>
-										<div class="flex justify-end gap-2">
+										<div class="flex justify-end">
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"
