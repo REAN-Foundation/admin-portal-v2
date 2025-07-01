@@ -1,4 +1,3 @@
-<!-- TextArea.svelte -->
 <script lang="ts">
 	let {
 		name,
@@ -8,6 +7,8 @@
 		className = '',
 		resize = false,
 		rows = 3,
+		minlength,
+		maxlength,
 		// Events
 		oninput,
 		onchange,
@@ -25,6 +26,8 @@
 		className?: string;
 		resize?: boolean;
 		rows?: number;
+		minlength?: number;
+		maxlength?: number;
 		oninput?: (e: Event) => void;
 		onchange?: (e: Event) => void;
 		onfocus?: (e: FocusEvent) => void;
@@ -42,6 +45,8 @@
 		{name}
 		{rows}
 		{placeholder}
+		{minlength}
+		{maxlength}
 		class={`input placeholder-gray-400 ${resize ? 'resize-y' : 'resize-none'} ${error ? 'border-error-300' : 'border-primary-200'} ${className}`}
 		{oninput}
 		{onchange}
@@ -52,4 +57,8 @@
 		{onpaste}
 		{onselect}
 	></textarea>
+
+	{#if error}
+		<p class="text-error mt-1">{error}</p>
+	{/if}
 </div>

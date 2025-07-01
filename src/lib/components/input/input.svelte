@@ -5,7 +5,9 @@
 		placeholder = '',
 		value = $bindable(),
 		error = '',
-		className = ''
+		className = '',
+		minlength,
+		maxlength
 	} = $props<{
 		name: string;
 		type?:
@@ -24,6 +26,8 @@
 		value?: string | boolean | number;
 		error?: string;
 		className?: string;
+		minlength?: number;
+		maxlength?: number;
 	}>();
 </script>
 
@@ -33,15 +37,17 @@
 			type="checkbox"
 			{name}
 			bind:checked={value}
-			class={`checkbox  checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md  ${error ? 'input-text-error' : ''} ${className}`}
+			class={`checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ${error ? 'input-text-error' : ''} ${className}`}
 		/>
 	{:else}
 		<input
 			{name}
 			{type}
 			{placeholder}
+			{minlength}
+			{maxlength}
 			bind:value
-			class={`input  placeholder-gray-400 ${error ? '' : ''} ${className}`}
+			class={`input placeholder-gray-400 ${error ? 'input-text-error' : ''} ${className}`}
 		/>
 	{/if}
 

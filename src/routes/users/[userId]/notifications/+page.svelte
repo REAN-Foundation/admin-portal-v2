@@ -4,6 +4,10 @@
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Button from '$lib/components/button/button.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
+	import Input from '$lib/components/input/input.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
 	import { NotificationTopics, NotificationTypes } from '$lib/types/notification.topics.js';
 	import { showMessage } from '$lib/utils/message.utils';
 	import Icon from '@iconify/svelte';
@@ -12,6 +16,7 @@
 
 	// export let form;
 	let { form }: { form: any } = $props();
+	let promise = $state();
 
 	const userId = page.params.userId;
 
@@ -43,98 +48,87 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<form method="post" action="?/createNotificationAction" use:enhance>
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th>Send Notification</th>
-							<th class="text-end">
-								<a href={notificationRoute} class="form-cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Topic <span class=" text-red-600">*</span></td>
-							<td>
-								<select
-									class="select w-full"
-									name="topic"
-									placeholder="Select topic here..."
-									bind:value={topic}
-								>
-									{#each Object.entries(NotificationTopics) as [key, value]}
-										<option value={key} selected={key === 'All_Users'}>{value}</option>
-									{/each}
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td>Title <span class=" text-red-600">*</span></td>
-							<td>
-								<input
-									type="text"
-									name="title"
-									required
-									bind:value={title}
-									placeholder="Enter title here..."
-									class="health-system-input {form?.errors?.title ? 'input-text-error' : ''}"
-									minlength="2"
-									maxlength="50"
-								/>
-								{#if form?.errors?.title}
-									<p class="text-error">{form?.errors?.title[0]}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Body <span class=" text-red-600">*</span></td>
-							<td>
-								<textarea
-									name="body"
-									placeholder="Enter body here..."
-									class="health-system-input"
-									required
-									bind:value={body}
-									minlength="2"
-									maxlength="150"
-								/>
-							</td>
-						</tr>
-						<!-- <tr>
-				<td>Type <span class=" text-red-600">*</span></td>
-				<td>
-					<select class="select w-full" name="type" placeholder="Select type here...">
-						{#each Object.entries(NotificationTypes) as [key, value]}
-							<option value={key} selected={key === 'General'}>{value}</option>
-						{/each}
-					</select>
-				</td>
-			</tr> -->
-						<tr>
-							<td>URL</td>
-							<td>
-								<input
-									type="url"
-									name="url"
-									class="health-system-input"
-									placeholder="Enter url here..."
-									bind:value={url}
-								/>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="button-container">
-					<Button size="md" type="submit" text="Submit" variant="primary" />
-				</div>
-			</form>
+<div class="p-6">
+	<form method="post" action="?/createNotificationAction" use:enhance>
+		<div class="form-headers">
+			<Heading text="Send Notification" />
+			<a href={notificationRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<Label text="Topic" required={true} />
+					<td class="table-data">
+						<select class="input w-full" name="topic" bind:value={topic}>
+							{#each Object.entries(NotificationTopics) as [key, value]}
+								<option value={key} selected={key === 'All_Users'}>{value}</option>
+							{/each}
+						</select>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Title" required={true} />
+					<td class="table-data">
+						<Input
+							name="title"
+							type="text"
+							placeholder="Enter title here..."
+							bind:value={title}
+							minlength={2}
+							maxlength={50}
+							error={form?.errors?.title?.[0]}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Body" required={true} />
+					<td class="table-data">
+						<Textarea
+							name="body"
+							placeholder="Enter body here..."
+							bind:value={body}
+							minlength={2}
+							maxlength={150}
+							resize={false}
+							error={form?.errors?.body?.[0]}
+						/>
+					</td>
+				</tr>
+
+				<!-- Optional future field -->
+				<!--
+				<tr class="tables-row">
+					<Label text="Type" required={true} />
+					<td class="table-data">
+						<select class="select w-full" name="type" bind:value={type}>
+							{#each Object.entries(NotificationTypes) as [key, value]}
+								<option value={key} selected={key === 'General'}>{value}</option>
+							{/each}
+						</select>
+					</td>
+				</tr>
+				-->
+
+				<tr class="tables-row">
+					<Label text="URL" />
+					<td class="table-data">
+						<Input name="url" type="url" placeholder="Enter url here..." bind:value={url} />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container">
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>
