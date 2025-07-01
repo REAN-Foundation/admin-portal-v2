@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const createOrUpdateSchema = z.object({
 	Name: z
 		.string({
-			required_error: 'Animation Name is required.',
+			required_error: 'Name is required.',
 			invalid_type_error: 'Name must be a string.'
 		})
 		.min(1, { message: 'Name cannot be empty.' })
