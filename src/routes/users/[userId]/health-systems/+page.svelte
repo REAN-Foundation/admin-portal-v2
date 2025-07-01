@@ -235,7 +235,7 @@
 					</thead>
 					<tbody class="">
 						{#if retrivedHealthSystems.length <= 0}
-							<tr>
+							<tr class="text-center">
 								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}
