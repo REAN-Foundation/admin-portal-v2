@@ -268,7 +268,7 @@
 					<tbody>
 						{#if retrivedDrugs <= 0}
 							<tr class="text-center">
-								<td aria-colindex={1} colspan="8"
+								<td aria-colindex={1} class="text-center" colspan="8"
 									>{isLoading ? 'Loading...' : 'No records found'}</td
 								>
 							</tr>

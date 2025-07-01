@@ -1,6 +1,7 @@
 import { CAREPLAN_BACKEND_API_URL } from '$env/static/private';
 import { delete_, get_, post_, put_ } from '../../common';
 import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
+import { get } from '../common.careplan';
 
 ////////////////////////////////////////////////////////////////
 
@@ -63,6 +64,31 @@ export const searchAssets = async (
 
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/${selectAsset}/search${searchString}/`;
 	const result = await get_(url, true, sessionId);
+
+	await DashboardManager.set(cacheKey, result);
+	return result;
+};
+
+export const searchActionplans = async (
+	sessionId: string,
+	searchParams: Record<string, string> = {}
+) => {
+	let searchString = '';
+	const keys = Object.keys(searchParams);
+	if (keys.length > 0) {
+		const params = keys
+			.filter((key) => searchParams[key])
+			.map((key) => `${key}=${searchParams[key]}`);
+		searchString = '?' + params.join('&');
+	}
+
+	const cacheKey = `session-${sessionId}:req-searchAssets:action-plans:${searchString}`;
+	if (await DashboardManager.has(cacheKey)) {
+		return await DashboardManager.get(cacheKey);
+	}
+
+	const url = CAREPLAN_BACKEND_API_URL + `/assets/action-plans/search${searchString}`;
+	const result = await get(sessionId, url, true);
 
 	await DashboardManager.set(cacheKey, result);
 	return result;
