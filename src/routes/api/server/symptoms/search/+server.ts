@@ -16,7 +16,7 @@ export const GET = async (event: RequestEvent) => {
 		const searchParams: URLSearchParams = event.url.searchParams;
 		const searchFilters = {
 			symptom: searchParams.get('symptom') ?? undefined,
-			// tags: searchParams.get('tags') ?? undefined,
+			tag: searchParams.get('tags') ?? undefined,
 			orderBy: searchParams.get("sortBy") ?? "CreatedAt",
 			order: searchParams.get("sortOrder") ?? "ascending",
 			itemsPerPage: parseInt(searchParams.get("itemsPerPage") ?? "10"),
