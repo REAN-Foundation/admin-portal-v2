@@ -7,7 +7,15 @@
 		error = '',
 		className = '',
 		minlength,
-		maxlength
+		maxlength,
+		// Event handlers
+		oninput,
+		onchange,
+		onfocus,
+		onblur,
+		onkeydown,
+		onkeyup,
+		onpaste
 	} = $props<{
 		name: string;
 		type?:
@@ -28,6 +36,14 @@
 		className?: string;
 		minlength?: number;
 		maxlength?: number;
+		// Event types
+		oninput?: (e: Event) => void;
+		onchange?: (e: Event) => void;
+		onfocus?: (e: FocusEvent) => void;
+		onblur?: (e: FocusEvent) => void;
+		onkeydown?: (e: KeyboardEvent) => void;
+		onkeyup?: (e: KeyboardEvent) => void;
+		onpaste?: (e: ClipboardEvent) => void;
 	}>();
 </script>
 
@@ -38,6 +54,9 @@
 			{name}
 			bind:checked={value}
 			class={`checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ${error ? 'input-text-error' : ''} ${className}`}
+			{onchange}
+			{onfocus}
+			{onblur}
 		/>
 	{:else}
 		<input
@@ -48,6 +67,13 @@
 			{maxlength}
 			bind:value
 			class={`input placeholder-gray-400 ${error ? 'input-text-error' : ''} ${className}`}
+			{oninput}
+			{onchange}
+			{onfocus}
+			{onblur}
+			{onkeydown}
+			{onkeyup}
+			{onpaste}
 		/>
 	{/if}
 
