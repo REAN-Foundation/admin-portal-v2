@@ -285,12 +285,12 @@
 										{/each}
 									</select>
 									{#if errors?.AssetType}
-										<p class="text-error-500 text-xs">{errors?.AssetType}</p>
+										<p class="text-error">{errors?.AssetType}</p>
 									{/if}
 								</td>
 							</tr>
 							<tr>
-								<td class="align-top">Asset</td>
+								<td class="align-top">Asset<span class=" text-red-600">*</span></td>
 								<td>
 									<select
 										name="assetId"
@@ -302,12 +302,12 @@
 										{/each}
 									</select>
 									{#if errors?.AssetId}
-										<p class="text-error-500 text-xs">{errors?.AssetId}</p>
+										<p class="text-error">{errors?.AssetId}</p>
 									{/if}
 								</td>
 							</tr>
 							<tr>
-								<td class="!py-3 align-top">Scheduled Day</td>
+								<td class="!py-3 align-top">Schedule Day<span class=" text-red-600">*</span></td>
 								<td>
 									<input
 										type="number"
@@ -322,7 +322,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td>Slot Of The Day</td>
+								<td>Slot Of The Day<span class=" text-red-600">*</span></td>
 								<td>
 									<select name="timeSlot" class="input w-full" bind:value={timeSlot}>
 										{#each timeSlotValues as val}
@@ -330,7 +330,7 @@
 										{/each}
 									</select>
 									{#if errors?.TimeSlot}
-										<p class="text-error-500 text-xs">{errors?.TimeSlot}</p>
+										<p class="text-error">{errors?.TimeSlot}</p>
 									{/if}
 								</td>
 							</tr>
