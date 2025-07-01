@@ -23,7 +23,7 @@
 
 	const breadCrumbs = [
 		{
-			name: 'careplans',
+			name: 'Careplans',
 			path: careplansRoute
 		},
 		{
@@ -54,7 +54,7 @@
 			<table class="health-system-table">
 				<thead>
 					<tr>
-						<th>View Health System</th>
+						<th>View Careplan Activity</th>
 						<th class="text-end">
 							<a href={schedulingRoute} class=" cancel-btn">
 								<Icon icon="material-symbols:close-rounded" class="" />
@@ -72,11 +72,11 @@
 						<td>{name}</td>
 					</tr>
 					<tr>
-						<td>ScheduleDay</td>
+						<td>Schedule Day</td>
 						<td>{day}</td>
 					</tr>
 					<tr>
-						<td>TimeSlot</td>
+						<td>Time Slot</td>
 						<td>{timeslot}</td>
 					</tr>
 				</tbody>

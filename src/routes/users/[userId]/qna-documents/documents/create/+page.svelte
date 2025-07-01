@@ -131,7 +131,7 @@
 				ChunkingOverlap: chunkOverlap,
 				Splitter: splitter,
 				ResourceId: '',
-				Keywords: keywords,
+				Keywords: keywords.length > 0 ? keywords :null,
 				DocumentType: documentType
 			};
 			const documentValidation = createOrUpdateSchema.safeParse(documentsCreateModel);
@@ -178,7 +178,7 @@
 
 			documentsCreateModel.ResourceId = uploadResult.resourceId;
 
-			console.log(documentsCreateModel);
+			console.log('documentsCreateModel!!!', documentsCreateModel);
 
 			const res = await fetch(`/api/server/documents`, {
 				method: 'POST',
@@ -259,7 +259,7 @@
 
 						<!-- Description -->
 						<tr>
-							<td class="align-top">Description <span class="text-red-700">*</span></td>
+							<td class="align-top">Description </td>
 							<td>
 								<textarea
 									name="description"
@@ -280,6 +280,7 @@
 									type="text"
 									name="fileName"
 									bind:value={fileName}
+                                    disabled
 									placeholder="Enter name here..."
 									class="input"
 								/>
@@ -320,7 +321,7 @@
 						</tr>
 
 						<tr>
-							<td>Keywords <span class="text-red-700">*</span></td>
+							<td>Keywords </td>
 							<td>
 								<InputChips
 									bind:keywords
@@ -335,13 +336,14 @@
 							</td>
 						</tr>
 
-						<!-- <tr>
+						<tr>
 							<td>Document Type <span class="text-red-700">*</span></td>
 							<td>
 								<input
 									type="text"
 									name="documentType"
 									bind:value={documentType}
+                                    disabled
 									placeholder="Enter document type here..."
 									class="input"
 								/>
@@ -349,7 +351,7 @@
 									<p class="text-error">{errors?.DocumentType}</p>
 								{/if}
 							</td>
-						</tr> -->
+						</tr>
 						<!-- Source -->
 						<!-- <tr>
 							<td>Source</td>
@@ -420,6 +422,7 @@
 								<input
 									type="number"
 									name="chunkingLenght"
+									min="0"
 									bind:value={chunkingLength}
 									placeholder="Enter chunking length here..."
 									class="input"
@@ -436,6 +439,7 @@
 								<input
 									type="number"
 									name="chunkOverlap"
+                                    min="0"
 									bind:value={chunkOverlap}
 									placeholder="Enter chunking overlap here..."
 									class="input"
