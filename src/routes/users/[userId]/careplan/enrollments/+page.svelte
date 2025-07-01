@@ -334,7 +334,7 @@
 					<tbody>
 						{#if retrivedEnrollments.length <= 0}
 							<tr>
-								<td colspan="7">{isLoading ? 'Loading...' : 'No records found'}</td>
+								<td class="text-center" colspan="7">{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}
 							{#each retrivedEnrollments as enrollment, index}
