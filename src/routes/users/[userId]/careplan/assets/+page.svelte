@@ -200,9 +200,11 @@
 
 	const onSelectAssetType = async (e) => {
 		selectedAssetType = e.currentTarget.value;
+		paginationSettings.page = 0;
 		await searchAssets({
 			sessionId: data.sessionId,
-			selectedAssetType
+			selectedAssetType,
+			pageIndex: 0
 		});
 	};
 
