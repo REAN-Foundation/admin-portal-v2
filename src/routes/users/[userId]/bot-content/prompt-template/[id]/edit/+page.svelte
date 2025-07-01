@@ -14,7 +14,7 @@
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let name = $state(data.prompts.Name);
-	let description = $state(data.prompts.Description);
+	let description = $state(data.prompts.Description || undefined);
 	let prompt = $state(data.prompts.Prompt);
 	let model = $state(data.prompts.Model);
 	let content = $state(data.prompts.Content);
@@ -89,7 +89,7 @@
 	const promptRoutes = `/users/${userId}/bot-content/prompt-template`;
 
 	const breadCrumbs = [
-		{ name: 'Prompt-template', path: promptRoutes },
+		{ name: 'Prompt Templates', path: promptRoutes },
 		{ name: 'Edit', path: createRoute }
 	];
 
@@ -205,7 +205,7 @@
 							</td>  
 						</tr>
 						<tr>
-							<td class="align-top">Description <span class=" text-red-600"></span></td>
+							<td class="align-top">Description</td>
 							<td>
 								<textarea
 									name="description"
@@ -277,11 +277,30 @@
 								</div>
 							</td>
 						</tr>
+
+						<tr>
+							<td>Use Case Type </td>
+							<td>
+								<select
+									class="input"
+									required
+									name="useCaseType"
+									bind:value={useCaseType}
+									placeholder="Select type here..."
+								>
+									<option value="Chat">Chat</option>
+									<option value="Classification">Classification</option>
+									<option value="Extraction">Extraction</option>
+									<option value="Summarization">Summarization</option>
+									<option value="Generation">Generation</option>
+								</select>
+							</td>
+						</tr>
                         <tr>
-                            <td>Group <span class=" text-red-600">*</span></td>
+                            <td>Group</td>
                             <td>
                                 <select
-                                    class="select w-full"
+                                    class="input"
                                     required
                                     name="group"
                                     bind:value={group}
@@ -296,24 +315,7 @@
                                 </select>
                             </td>
                         </tr>
-						<tr>
-							<td>Use Case Type </td>
-							<td>
-								<select
-									class="select w-full"
-									required
-									name="useCaseType"
-									bind:value={useCaseType}
-									placeholder="Select type here..."
-								>
-									<option value="Chat">Chat</option>
-									<option value="Classification">Classification</option>
-									<option value="Extraction">Extraction</option>
-									<option value="Summarization">Summarization</option>
-									<option value="Generation">Generation</option>
-								</select>
-							</td>
-						</tr>
+						
 
 						<!-- <tr>
 							<td class="align-top">Variables</td>
