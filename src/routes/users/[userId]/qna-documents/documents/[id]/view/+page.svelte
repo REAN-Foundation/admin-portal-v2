@@ -179,11 +179,6 @@
 						</tr>
 
 						<tr>
-							<td>Version</td>
-							<td>{parentDocumentVersion}</td>
-						</tr>
-
-						<tr>
 							<td>File Name</td>
 							<td class="flex items-center"
 								>{fileName}
@@ -209,9 +204,14 @@
 						<td>Source</td>
 						<td>{source}</td>
 					</tr> -->
-						<tr>
+						<!-- <tr>
 							<td>Parent Document</td>
 							<td>{parentDocument}</td>
+						</tr> -->
+
+                        <tr>
+							<td>Version</td>
+							<td>{parentDocumentVersion}</td>
 						</tr>
 
 						<tr>

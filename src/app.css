@@ -932,3 +932,7 @@ tr {
 .input-field {
 	@apply w-full rounded border border-[var(--color-outline)] p-2 text-[var(--color-info)] outline-[var(--color-active)] focus:outline-[0.5px];
 }
+
+.drag-input {
+	@apply  border-dashed p-6 rounded text-center mb-4 mt-4 w-full border border-[var(--color-outline)] bg-[var(--color-accent)] text-[var(--color-info)] focus:outline-none
+}

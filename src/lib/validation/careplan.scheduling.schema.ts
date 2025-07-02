@@ -12,11 +12,10 @@ export const createOrUpdatSchedulingeSchema = z.object({
 		.string({
 			required_error: 'AssetId is required.',
 			invalid_type_error: 'AssetId must be a string.'
-		})
-		.optional(),
+		}),
 	ScheduleDay: z.number({
-		required_error: 'ScheduleDay is required.',
-		invalid_type_error: 'ScheduleDay must be a number.'
+		required_error: 'Schedule day is required.',
+		invalid_type_error: 'Schedule day must be a number.'
 	}),
 	TimeSlot: z.string(
 		{

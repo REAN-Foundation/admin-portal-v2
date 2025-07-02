@@ -18,7 +18,7 @@
 	const groupsRoute = `/users/${userId}/bot-content/prompt-template`;
 
 	const breadCrumbs = [
-		{ name: 'Prompt-Templates', path: groupsRoute },
+		{ name: 'Prompt Templates', path: groupsRoute },
 		{ name: 'Create', path: createRoute }
 	];
 
@@ -229,10 +229,10 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 							</td>
 						</tr>
 						<tr>
-							<td>Use Case Type <span class="text-red-700">*</span></td>
+							<td>Use Case Type</td>
 							<td>
 								<select
-									class="select w-full"
+									class="input"
 									required
 									name="useCaseType"
 									bind:value={useCaseType}
@@ -248,10 +248,10 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 						</tr>
 
 						<tr>
-							<td>Group <span class="text-red-700">*</span></td>
+							<td>Group</td>
 							<td>
 								<select
-									class="select w-full"
+									class="input"
 									required
 									name="group"
 									bind:value={group}

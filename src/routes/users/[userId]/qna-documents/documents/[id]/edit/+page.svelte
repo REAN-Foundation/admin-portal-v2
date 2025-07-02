@@ -34,7 +34,9 @@
 	let active = $state(data.documents.IsActive);
 	let createdBy = $state(data.documents.CreatedBy);
 	let keywordsRaw = $state(data.documents.Keyword);
-	let documentType = $state(data.documents.DocumentType);
+	let documentType = $derived(
+	fileName ? fileName.split('.').pop() : data.documents.DocumentType
+);
 	let version: string = $state(data.documents.DocumentVersion.map((row) => row.Version).join(', '));
 
 	let imageUrl = $state('');
@@ -45,7 +47,7 @@
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let keywords: string[] = $derived(keywordsRaw.split(',').map((v) => v.trim()));
+	let keywords: string[] = $derived(keywordsRaw ? keywordsRaw.split(',').map((v) => v.trim()) : []);
 	$inspect('data', data);
 
 	let keywordsStr: string = $state('');
@@ -176,11 +178,9 @@
 				ChunkingOverlap: chunkOverlap,
 				Splitter: splitter,
 				ResourceId: resourceId,
-				Keywords: keywords,
+                Keywords: keywords.length > 0 ? keywords :null,
 				DocumentType: documentType
 			};
-
-			console.log(documentsUpdateModel);
 
 			const validationResult = createOrUpdateSchema.safeParse(documentsUpdateModel);
 			console.log('validation result', validationResult);
@@ -281,7 +281,7 @@
 
 						<!-- Description -->
 						<tr>
-							<td class="align-top">Description <span class="text-red-700">*</span></td>
+							<td class="align-top">Description </td>
 							<td>
 								<textarea
 									name="description"
@@ -302,6 +302,7 @@
 									type="text"
 									name="fileName"
 									bind:value={fileName}
+                                    disabled
 									placeholder="Enter name here..."
 									class="input"
 								/>
@@ -353,13 +354,14 @@
 							</td>
 						</tr>
 
-						<!-- <tr>
+						<tr>
 							<td>Document Type <span class="text-red-700">*</span></td>
 							<td>
 								<input
 									type="text"
 									name="documentType"
 									bind:value={documentType}
+                                    disabled
 									placeholder="Enter document type here..."
 									class="input"
 								/>
@@ -367,7 +369,7 @@
 									<p class="text-error">{errors?.DocumentType}</p>
 								{/if}
 							</td>
-						</tr> -->
+						</tr>
 						<!-- Source -->
 						<!-- <tr>
 							<td>Source</td>
@@ -458,6 +460,7 @@
 								<input
 									type="number"
 									name="chunkingLenght"
+									min="0"
 									bind:value={chunkingLength}
 									placeholder="Enter chunking length here..."
 									class="input"
@@ -474,6 +477,7 @@
 								<input
 									type="number"
 									name="chunkOverlap"
+									min="0"
 									bind:value={chunkOverlap}
 									placeholder="Enter chunking overlap here..."
 									class="input"

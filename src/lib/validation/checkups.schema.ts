@@ -3,11 +3,11 @@ import { z } from "zod";
 export const createOrUpdateSchema = z.object({
     Name: z
         .string({
-            required_error: 'Checkup name is required.',
-            invalid_type_error: 'Checkup name must be a string.',
+            required_error: 'Name is required.',
+            invalid_type_error: 'Name must be a string.',
         })
-        .min(1, { message: 'Checkup name cannot be empty.' })
-        .max(128, { message: 'Checkup name must be at most 128 characters long.' }),
+        .min(1, { message: 'Name cannot be empty.' })
+        .max(128, { message: 'Name must be at most 128 characters long.' }),
 
     Description: z
             .string()

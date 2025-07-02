@@ -178,7 +178,7 @@
 							type="text"
 							name="title"
 							oninput={(event) => onSearchInput(event)}
-							placeholder="Search by careplan name"
+							placeholder="Search by name"
 							bind:value={carePlanName}
 							class="health-system-input !pr-4 !pl-10"
 						/>
