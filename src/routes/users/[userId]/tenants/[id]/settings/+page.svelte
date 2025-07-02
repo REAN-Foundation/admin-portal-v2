@@ -94,8 +94,8 @@
 	<div class="mx-auto">
 		<div class="border border-zinc-200">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<div class="flex items-center justify-between rounded-t-lg bg-[#F2F3F5] px-5 py-6">
-					<h2 class=" text-gray-800l text-lg font-semibold">Integrations</h2>
+				<div class="flex items-center justify-between rounded-t-lg bg-[var(--color-primary)] px-5 py-6">
+					<h2 class=" text-gray-800l text-lg font-semibold text-[var(--color-info)]">Integrations</h2>
 					<div class="flex items-center gap-2 text-end">
 						<button
 							type="button"

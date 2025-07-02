@@ -8,7 +8,6 @@
 		ConsentSettings,
 		FaviconUploadModel
 	} from '$lib/types/tenant.settings.types.js';
-	import ConsentModel from '$routes/users/[userId]/tenants/[id]/settings/chatbot-setting/consent.modal.svelte';
 	import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema.js';
 	import Progressive from './progressive.update.svelte';
 	import ExportSettingsDialog from './export-settings.dialog.svelte';
@@ -403,15 +402,6 @@
 	}
 </script>
 
-<ConsentModel
-	{showCancelModel}
-	onClose={() => (showCancelModel = false)}
-	{form}
-	bind:consentSetting
-	{tenantName}
-	{tenantCode}
-/>
-
 <div class="px-5 py-4">
 	<div class="mx-auto">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
@@ -464,7 +454,7 @@
 
 			<!-- Heading -->
 
-			<div class="flex items-center justify-between !rounded-b-none border  px-5 py-6">
+			<div class="flex items-center justify-between !rounded-b-none border  px-5 py-6 bg-[var(--color-primary)]">
 				<h1 class=" mx-1 text-xl text-[var(--color-info)]">Chatbot Settings</h1>
 				<div class="flex items-center gap-2 text-end">
 					<button

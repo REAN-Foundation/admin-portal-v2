@@ -41,18 +41,18 @@
 {#each Object.entries(commonSetting) as [groupName, groupItems]}
 	{#if groupName !== 'UserInterfaces' && groupName !== 'General'}
 		<div
-			class={`my-2 flex w-full flex-col rounded-md border !border-zinc-100 bg-white !p-0 py-2 transition-colors duration-200 ${
+			class={`my-2 flex w-full flex-col rounded-md border !border-zinc-100 bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${
 				openTab === groupName ? 'border-hover ' : ''
 			} `}
 		>
 			<button
 				type="button"
 				onclick={() => toggleTab(groupName)}
-				class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-gray-700
+				class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
 	transition-all duration-100 ease-in-out  ${
 		openTab === groupName
-			? 'rounded-b-none bg-[var(--color-primary)] text-black'
-			: `border-hover rounded bg-white`
+			? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+			: `border-hover rounded bg-[var(--color-primary)]`
 	} 
 	`}
 			>
@@ -103,7 +103,7 @@
 								{/if}
 								<span>{meta?.Name ?? key}</span>
 							</div> -->
-							<div class=" border-hover rounded-xl border p-4 text-gray-700">
+							<div class=" border-hover rounded-xl border p-4 text-[var(--color-info)]">
 								<div class="flex items-center justify-between gap-3">
 									<!-- Left: App Icon -->
 									<Icon icon={meta?.Path} class="h-5 w-5 hidden md:block" />

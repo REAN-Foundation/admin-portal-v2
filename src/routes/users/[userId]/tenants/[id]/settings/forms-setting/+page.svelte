@@ -164,9 +164,9 @@
 		<div class=" mx-auto my-6 border !border-zinc-200">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 				<div
-					class="flex items-center justify-between !rounded-b-none border bg-[#F2F3F5] px-5 py-6"
+					class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6"
 				>
-					<h1 class=" text-xl form-title">Forms Settings</h1>
+					<h1 class=" text-xl text-[var(--color-info)]">Forms Settings</h1>
 					<div class="flex items-center gap-2 text-end">
 						<button
 							type="button"
@@ -196,11 +196,11 @@
 								<button
 									type="button"
 									onclick={() => toggleTab(groupName)}
-									class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-gray-700
+									class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
 											transition-all duration-100 ease-in-out  ${
 												openTab === groupName
-													? 'rounded-b-none bg-[#F2F2F2] text-black'
-													: `border-hover rounded bg-white`
+													? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+													: `border-hover rounded bg-[var(--color-primary)]`
 											} 
 										`}
 								>
@@ -212,9 +212,9 @@
 											iconPath={iconPaths[groupName] ?? ''}
 										/>
 										<div class=" text-start">
-											<p class="text-md font-medium">Integrations</p>
+											<p class="text-md font-medium text-[var(--color-info)]">Integrations</p>
 
-											<p class=" text-sm">Connect with external form platforms and data collection services.</p>
+											<p class=" text-sm text-[var(--color-info)]">Connect with external form platforms and data collection services.</p>
 										</div>
 									</div>
 
@@ -234,7 +234,7 @@
 								</button>
 
 								{#if openTab === groupName}
-									<div class="flex w-full justify-center px-4 py-5 sm:px-6 md:px-10 lg:px-20 ">
+									<div class="flex w-full justify-center px-4 py-5 sm:px-6 md:px-10 lg:px-20 bg-[var(--color-primary)]">
 										<div
 											class="grid w-full grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-6 md:gap-x-10"
 										>
@@ -265,16 +265,16 @@
 												<!-- <span>{meta?.Name ?? key}</span>
 												</div> -->
 
-												<div class=" border-hover rounded-xl border p-4 text-gray-700">
+												<div class=" border-hover rounded-xl border p-4 text-[var(--color-info)] bg-[var(--color-primary)]">
 													<div class="flex items-center justify-between gap-3">
 														<!-- Left: App Icon -->
 														<!-- <Icon icon="mdi:vector-link" class="hidden h-5 w-5 md:block" /> -->
-														<Icon icon={meta.Path} class="hidden h-5 w-5 md:block" />
+														<Icon icon={meta.Path} class="hidden h-5 w-5 md:block text-[var(--color-info)]" />
 
 														<!-- Middle: Name & Description -->
-														<div class="flex flex-grow flex-col">
-															<span class="text-sm font-medium">{meta?.Name ?? key}</span>
-															<p class="text-sm">
+														<div class="flex flex-grow flex-col ">
+															<span class="text-sm font-medium text-[var(--color-info)]">{meta?.Name ?? key}</span>
+															<p class="text-sm text-[var(--color-info)]">
 																<!-- short description for {meta?.Name ?? key}. -->
                                                                  {meta.Description}
 															</p>
@@ -338,7 +338,7 @@
 								/>
 							</div> -->
 
-								<div class=" my-2 border-hover rounded-xl border p-6 text-gray-700 ">
+								<div class=" my-2 border-hover rounded-xl border p-6 text-[var(--color-info)]">
 									<div class="flex items-center justify-between gap-3">
 										<!-- Left: App Icon -->
 										<Icon icon={formsUISettings[groupName].Path} class="h-5 w-5" />

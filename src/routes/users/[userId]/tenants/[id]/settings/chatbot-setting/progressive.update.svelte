@@ -122,7 +122,7 @@
 
 				<input
 					type="text"
-					class="input bg-gray-100 text-[var(--color-info)] focus:outline-none"
+					class="input bg-[var(--color-primary)] text-[var(--color-info)] focus:outline-none"
 					onchange={async (e) => await onFileSelected(e)}
 					value={fileName}
 					readonly
@@ -170,7 +170,7 @@
 		{#each Object.entries(chatBotSetting.ChatBot) as [groupName, groupItems]}
 			{#if groupName === 'MessageChannels' || groupName === 'SupportChannels'}
 				<div
-					class={`my-2 flex w-full flex-col rounded-md border !border-zinc-100 bg-white !p-0 py-2 transition-colors duration-200 ${
+					class={`my-2 flex w-full flex-col rounded-md border !border-zinc-100 bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${
 						openTab === groupName ? 'border-hover ' : ''
 					} `}
 				>
@@ -180,8 +180,8 @@
 						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
 	transition-all duration-200 ease-in-out  ${
 																openTab === groupName
-																	? 'rounded-b-none bg-[#F2F2F2] text-[var(--color-info)]'
-																	: `border-hover rounded bg-white`
+																	? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+																	: `border-hover rounded bg-[var(--color-primary)]`
 															} 
 	`}
 					>
@@ -329,7 +329,7 @@
 <div class="button-container my-4">
 	<button
 		type="button"
-		class="cursor-pointer rounded-md bg-gray-300 px-3 py-2 text-[var(--color-info)] disabled:opacity-50"
+		class="cursor-pointer rounded-md bg-[var(--color-primary)] px-3 py-2 text-[var(--color-info)] disabled:opacity-50"
 		onclick={prevSection}
 		disabled={currentSection === 0}
 	>

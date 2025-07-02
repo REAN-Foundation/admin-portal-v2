@@ -358,8 +358,8 @@
 	</div> -->
 	<div class=" mx-auto my-6 border !border-zinc-200">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<div class="flex items-center justify-between !rounded-b-none border bg-[#F2F3F5] px-5 py-6">
-					<h1 class=" text-xl">Follow-up Settings</h1>
+				<div class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6">
+					<h1 class=" text-xl text-[var(--color-info)]">Follow-up Settings</h1>
 					<div class="flex items-center gap-2 text-end">
 						<button
 							type="button"
@@ -722,7 +722,7 @@
 								{#if openTab === 'fetch'}
 									<tr>
 										<td>
-											<label for="method"
+											<label for="method text-[var(--color-info)]"
 												>API Config Method <span class="text-red-700">*</span></label
 											>
 										</td>

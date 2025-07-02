@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ExpandableSettings from '$lib/components/tenant-setting.svelte';
+	import ExpandableSettings from './tenant-setting.svelte';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from '../$types';
 	import { page } from '$app/state';
@@ -97,7 +97,7 @@
 <div class="px-5 py-4">
 	<div class=" mx-auto my-6 border border-[var(--color-outline)]">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<div class="flex items-center justify-between !rounded-b-none border  px-5 py-6">
+			<div class="flex items-center justify-between !rounded-b-none border  px-5 py-6 bg-[var(--color-primary)]">
 				<h1 class=" text-xl text-[var(--color-info)]">Common Settings</h1>
 				<div class="flex items-center gap-2 text-end">
 					<button

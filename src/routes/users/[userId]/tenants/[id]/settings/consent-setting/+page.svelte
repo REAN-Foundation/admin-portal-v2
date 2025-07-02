@@ -163,9 +163,9 @@
 
 				<!-- Heading -->
 				<div
-					class="flex items-center justify-between !rounded-b-none border bg-[#F2F3F5] px-5 py-6"
+					class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6"
 				>
-					<h1 class="mx-1 text-xl">Consent Settings</h1>
+					<h1 class="mx-1 text-xl text-[var(--color-info)]">Consent Settings</h1>
 					<div class="flex items-center gap-2 text-end">
 						<button
 							type="button"
@@ -189,7 +189,7 @@
 					<div class="space-y-4">
 						<div class="my-4 flex flex-col md:flex-row md:items-center">
 							<label
-								class="mx-1 mb-2 w-[30%] font-medium text text-gray-700"
+								class="mx-1 mb-2 w-[30%] font-medium text text-[var(--color-info)]"
 								for="tenantName">Tenant Name <span class="text-red-700">*</span></label
 							>
 							<input
@@ -206,7 +206,7 @@
 						</div>
 						<div class="my-4 flex flex-col md:flex-row md:items-center">
 							<label
-								class="mx-1 mb-2 w-[30%] font-medium text text-gray-700"
+								class="mx-1 mb-2 w-[30%] font-medium text text-[var(--color-info)]"
 								for="tenantCode">Tenant Code <span class="text-red-700">*</span></label
 							>
 							<input
@@ -223,7 +223,7 @@
 						</div>
 						<div class="my-4 flex flex-col md:flex-row md:items-center">
 							<label
-								class="mx-1 mb-2 w-[30%] font-medium text text-gray-700"
+								class="mx-1 mb-2 w-[30%] font-medium text text-[var(--color-info)]"
 								for="defaultLanguage">Default Language <span class="text-red-700">*</span></label
 							>
 							<select
