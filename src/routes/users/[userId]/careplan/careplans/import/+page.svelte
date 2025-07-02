@@ -32,7 +32,7 @@
 		const formData = new FormData();
 		formData.append('file', file);
 
-		const res = await fetch(`/api/server/careplan/upload`, {
+		const res = await fetch(`/api/server/file-resources/upload/careplan`, {
 			method: 'POST',
 			body: formData
 		});
