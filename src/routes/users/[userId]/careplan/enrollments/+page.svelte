@@ -216,7 +216,7 @@
 							type="text"
 							oninput={(event) => onSearchInput(event, 'carePlan')}
 							bind:value={carePlan}
-							placeholder="Search by care plan"
+							placeholder="Search by careplan"
 							class="table-input-field !pr-10 !pl-10"
 						/>
 						{#if carePlan}
@@ -234,7 +234,7 @@
 						<input
 							type="text"
 							name="displayId"
-							placeholder="Search by Enrollment code"
+							placeholder="Search by enrollment code"
 							bind:value={displayId}
 							oninput={(event) => onSearchInput(event, 'displayId')}
 							class="table-input-field  !pr-4 !pl-10"
