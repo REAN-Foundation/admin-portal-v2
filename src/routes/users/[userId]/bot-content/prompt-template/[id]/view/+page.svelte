@@ -3,6 +3,9 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
+	import Button from '$lib/components/button/button.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
 
 	////////////////////////////////////////////////////////////////////////////////////
 
@@ -20,8 +23,6 @@
 	let topP = data.promptTemplate.TopP;
 	let frequencyPenalty = data.promptTemplate.FrequencyPenalty;
 	let presencePenalty = data.promptTemplate.PresencePenalty;
-
-
 
 	const userId = page.params.userId;
 	const editRoute = `/users/${userId}/bot-content/prompt-template/${id}/edit`;
@@ -42,82 +43,81 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-2">
-		<a
-			href={editRoute}
-			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
-		>
-			<Icon icon="material-symbols:edit-outline" />
-			<span>Edit</span>
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<Heading text="View Prompt Template" />
+		<a href={promptsRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
 		</a>
 	</div>
 
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<table class="health-system-table">
-				<thead>
-					<tr>
-						<th>View </th>
-						<th class="text-end">
-							<a href={promptsRoute} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Name</td>
-						<td>{name}</td>
-					</tr>
-					<tr>
-						<td>Description</td>
-						<td>{description}</td>
-					</tr>
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<Label text="Name" />
+				<td class="table-data">{name}</td>
+			</tr>
 
-					<tr>
-						<td>Model</td>
-						<td>{model}</td>
-					</tr>
+			<tr class="tables-row">
+				<Label text="Description" />
+				<td class="table-data">{description}</td>
+			</tr>
 
-					<tr>
-						<td>Prompt</td>
-						<td>{prompt}</td>
-					</tr>
+			<tr class="tables-row">
+				<Label text="Model" />
+				<td class="table-data">{model}</td>
+			</tr>
 
-					<tr>
-						<td>Variables</td>
-						<td>{variable}</td>
-					</tr>
+			<tr class="tables-row">
+				<Label text="Prompt" />
+				<td class="table-data whitespace-pre-wrap">{prompt}</td>
+			</tr>
 
-					<tr>
-						<td>Use Case Type</td>
-						<td>{useCaseType}</td>
-					</tr>
-					<tr>
-						<td>Group</td>
-						<td>{group}</td>
-					</tr>
-					<tr>
-						<td>Temperature</td>
-						<td>{temperature}</td>
-					</tr>
-					<tr>
-						<td>Top P</td>
-						<td>{topP}</td>
-					</tr>
+			<tr class="tables-row">
+				<Label text="Variables" />
+				<td class="table-data">{variable}</td>
+			</tr>
 
-					<tr>
-						<td>Frequency Penalty</td>
-						<td>{frequencyPenalty}</td>
-					</tr>
-					<tr>
-						<td>Presence Penalty</td>
-						<td>{presencePenalty}</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+			<tr class="tables-row">
+				<Label text="Use Case Type" />
+				<td class="table-data">{useCaseType}</td>
+			</tr>
+
+			<tr class="tables-row">
+				<Label text="Group" />
+				<td class="table-data">{group}</td>
+			</tr>
+
+			<tr class="tables-row">
+				<Label text="Temperature" />
+				<td class="table-data">{temperature}</td>
+			</tr>
+
+			<tr class="tables-row">
+				<Label text="Top P" />
+				<td class="table-data">{topP}</td>
+			</tr>
+
+			<tr class="tables-row">
+				<Label text="Frequency Penalty" />
+				<td class="table-data">{frequencyPenalty}</td>
+			</tr>
+
+			<tr class="tables-row">
+				<Label text="Presence Penalty" />
+				<td class="table-data">{presencePenalty}</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div class="btn-container mt-4">
+		<Button
+			href={editRoute}
+			text="Edit"
+			variant="primary"
+			iconBefore="material-symbols:edit-outline"
+			iconSize="md"
+			size="md"
+		/>
 	</div>
 </div>

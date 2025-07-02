@@ -7,7 +7,11 @@
 	import type { PromptTemplateCreateModel } from '$lib/types/prompt.template.types.js';
 	import { createOrUpdateSchema } from '$lib/validation/prompt.template.schema.js';
 	import InputPrompts from '../prompt.variables.svelte';
-
+	import Button from '$lib/components/button/button.svelte';
+	import Input from '$lib/components/input/input.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Textarea from '$lib/components/textarea/textarea.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
 	////////////////////////////////////////////////////////////////////////////////
 
 	let errors: Record<string, string> = $state({});
@@ -91,30 +95,29 @@
 		}
 	};
 
-function extractPlaceholdersFromPrompt(promptText: string): string[] {
-	const placeholderRegex = /(?<!\{)\{([^}]+)\}(?!\})/g;
-	const matches = [];
-	let match;
-	
-	while ((match = placeholderRegex.exec(promptText)) !== null) {
-		const placeholder = match[1].trim();
-		if (placeholder && !matches.includes(placeholder)) {
-			matches.push(placeholder);
+	function extractPlaceholdersFromPrompt(promptText: string): string[] {
+		const placeholderRegex = /(?<!\{)\{([^}]+)\}(?!\})/g;
+		const matches = [];
+		let match;
+
+		while ((match = placeholderRegex.exec(promptText)) !== null) {
+			const placeholder = match[1].trim();
+			if (placeholder && !matches.includes(placeholder)) {
+				matches.push(placeholder);
+			}
 		}
+		return matches;
 	}
-	return matches;
-}
- 
 
 	function updateVariablesFromPrompt(event) {
 		const promptText = event.target.value;
-		
+
 		// Extract placeholders from prompt
 		const extractedVariables = extractPlaceholdersFromPrompt(promptText);
-		
+
 		// Update variables array
 		variables = extractedVariables;
-		
+
 		console.log('Extracted variables from prompt:', variables);
 	}
 
@@ -125,18 +128,15 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 	}
 
 	function getColorClass(val: number): string {
-		if (val < 0.25)
-			return '#ef4444';
-		else if (val < 0.5)
-			return '#facc15'; 
-		else if (val < 0.75)
-			return '#22c55e'; 
-		else return '#3b82f6'; 
+		if (val < 0.25) return '#ef4444';
+		else if (val < 0.5) return '#facc15';
+		else if (val < 0.75) return '#22c55e';
+		else return '#3b82f6';
 	}
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
+<!-- 
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="health-system-table-container">
@@ -210,16 +210,16 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 									oninput={updateVariablesFromPrompt}
 								>
 								</textarea>
-                                {#if errors?.Prompt}
+								{#if errors?.Prompt}
 									<p class="text-error">{errors?.Prompt}</p>
 								{/if}
 							</td>
 						</tr>
-                        <tr>
+						<tr>
 							<td class="align-top">Variables</td>
 							<td class="">
 								<div class="">
-									<InputPrompts 
+									<InputPrompts
 										bind:keywords={variables}
 										keywordsChanged={handleVariablesChanged}
 										name="variables"
@@ -266,7 +266,6 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 								</select>
 							</td>
 						</tr>
-						
 
 						<tr>
 							<td>Temperature</td>
@@ -367,4 +366,222 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 			</form>
 		</div>
 	</div>
+</div> -->
+<div class="p-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<Heading text="Create Prompt Template" />
+			<a href={groupsRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>
+
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<Label text="Name" required={true} />
+					<td class="table-data">
+						<Input
+							name="name"
+							type="text"
+							bind:value={name}
+							placeholder="Enter name here..."
+							error={errors?.Name}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Description" />
+					<td class="table-data">
+						<Textarea
+							name="description"
+							placeholder="Enter description here..."
+							bind:value={description}
+							resize={false}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Model" />
+					<td class="table-data">
+						<select
+							class="select w-full"
+							required
+							name="model"
+							bind:value={model}
+							placeholder="Select type here..."
+						>
+							<option value="OpenAi GPT 3.5 Turbo" selected>OpenAi GPT 3.5 Turbo</option>
+							<option value="OpenAi GPT 3.5">OpenAi GPT 3.5</option>
+							<option value="OpenAi GPT 4 Turbo">OpenAi GPT 4 Turbo</option>
+							<option value="OpenAi GPT 4">OpenAi GPT 4</option>
+							<option value="OpenAi GPT 4o">OpenAi GPT 4o</option>
+							<option value="OpenAi GPT 3.5 Turbo">OpenAi GPT 3.5 Turbo</option>
+						</select>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Prompt" required={true} />
+					<td class="table-data">
+						<Textarea
+							name="prompt"
+							placeholder="Enter prompt here... Use for placeholders"
+							bind:value={prompt}
+							error={errors?.Prompt}
+							resize={false}
+							oninput={updateVariablesFromPrompt}
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Variables" />
+					<td class="table-data">
+						<InputPrompts
+							bind:keywords={variables}
+							keywordsChanged={handleVariablesChanged}
+							name="variables"
+							id="variables"
+						/>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Use Case Type" />
+					<td class="table-data">
+						<select
+							class="input"
+							required
+							name="useCaseType"
+							bind:value={useCaseType}
+							placeholder="Select type here..."
+						>
+							<option value="Chat" selected>Chat</option>
+							<option value="Classification">Classification</option>
+							<option value="Extraction">Extraction</option>
+							<option value="Summarization">Summarization</option>
+							<option value="Generation">Generation</option>
+						</select>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Group" />
+					<td class="table-data">
+						<select
+							class="input"
+							required
+							name="group"
+							bind:value={group}
+							placeholder="Select Group here..."
+						>
+							<option value="Chat Default" selected>Chat Default</option>
+							<option value="Content Generation">Content Generation</option>
+							<option value="Generic">Generic</option>
+							<option value="Miscellaneous">Miscellaneous</option>
+							<option value="Evaluation and Quality">Evaluation and Quality</option>
+							<option value="Chat Custom">Chat Custom</option>
+						</select>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<Label text="Temperature" />
+					<td class="table-data">
+						<input
+							name="temperature"
+							type="range"
+							min="0"
+							max="1"
+							step="0.01"
+							bind:value={temperature}
+							class="h-2 w-full cursor-pointer appearance-none rounded-lg"
+							style="background: linear-gradient(to right, {getColorClass(
+								temperature
+							)} 0%, {getColorClass(temperature)} {temperature * 100}%, #e5e7eb {temperature *
+								100}%, #e5e7eb 100%);"
+						/>
+
+						<span class="">
+							{temperature}
+						</span></td
+					>
+				</tr>
+				<tr class="tables-row">
+					<Label text="Top P" />
+					<td class="table-data">
+						<input
+							name="topp"
+							type="range"
+							min="0"
+							max="1"
+							step="0.01"
+							bind:value={topP}
+							class="relative z-10 h-2 w-full cursor-pointer appearance-none rounded-full"
+							style="background: linear-gradient(to right, {getColorClass(topP)} 0%, {getColorClass(
+								topP
+							)} {topP * 100}%, #d1d5db {topP * 100}%, #d1d5db 100%);"
+						/>
+						<span class="">
+							{topP}
+						</span>
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<Label text="Frequency Penalty" />
+					<td class="table-data">
+						<input
+							name="frequencyPenalty"
+							type="range"
+							min="0"
+							max="1"
+							step="0.01"
+							bind:value={frequency}
+							class="relative z-10 h-2 w-full cursor-pointer appearance-none rounded-full"
+							style="background: linear-gradient(to right, {getColorClass(
+								frequency
+							)} 0%, {getColorClass(frequency)} {frequency * 100}%, #d1d5db {frequency *
+								100}%, #d1d5db 100%);"
+						/>
+
+						<span class="">
+							{frequency}
+						</span>
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<Label text="Presence Penalty" />
+					<td class="table-data">
+						<input
+							name="presencePenalty"
+							type="range"
+							min="0"
+							max="1"
+							step="0.01"
+							bind:value={presence}
+							class="relative z-10 h-2 w-full cursor-pointer appearance-none rounded-full"
+							style="background: linear-gradient(to right, {getColorClass(
+								presence
+							)} 0%, {getColorClass(presence)} {presence * 100}%, #d1d5db {presence *
+								100}%, #d1d5db 100%);"
+						/>
+						<span class="">
+							{presence}
+						</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container mt-6">
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>
