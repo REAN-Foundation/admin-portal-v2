@@ -28,7 +28,7 @@
 	let id = data.symptom.id;
 
 	let symptom = $state(data.symptom.Symptom);
-	let description = $state(data.symptom.Description);
+	let description = $state(data.symptom.Description||undefined);
 
 	let language = $state(data.symptom.Language);
 	let imageUrl = data.symptom.ImageUrl ?? undefined;
@@ -84,7 +84,7 @@
 		formData.append('filename', file.name);
 
 		try {
-			const res = await fetch(`/api/server/file-resources/upload`, {
+			const res = await fetch(`/api/server/file-resources/upload/reancare`, {
 				// 	headers: {
 				// 	'Content-Type': 'application/json',
 				// 	Accept: 'application/json',
