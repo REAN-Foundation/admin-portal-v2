@@ -6,7 +6,7 @@ export const createOrUpdateSchema = z.object({
 			required_error: 'Symptom is required.',
 			invalid_type_error: 'Symptom must be a string.'
 		})
-		.min(8, { message: 'Symptom must be at least 3 characters long.' })
+		.min(3, { message: 'Symptom must be at least 3 characters long.' })
 		.max(256, { message: 'Symptom must be at most 256 characters long.' }),
 
 	Description: z
