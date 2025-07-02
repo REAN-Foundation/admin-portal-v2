@@ -12,6 +12,7 @@
 
 	let barChart: Chart;
 	let canvas: HTMLCanvasElement;
+	let observer: MutationObserver | null = null;
 
 	let xLabel = 'Month';
 	let yLabel = 'User Count';
@@ -23,7 +24,7 @@
 	}
 
 	function createChart() {
-		const ctx = canvas.getContext('2d');
+		const ctx = canvas?.getContext('2d');
 		if (!ctx) return;
 
 		if (barChart) barChart.destroy();
@@ -134,11 +135,16 @@
 		});
 	}
 
-	onMount(() => {
-		createChart();
+	// Reactive statement to update chart when data changes
+	$effect(() => {
+		if (labels && labels.length > 0 && firstDataSource && secondDataSource && canvas) {
+			createChart();
+		}
+	});
 
+	onMount(() => {
 		// Theme change observer
-		const observer = new MutationObserver(() => {
+		observer = new MutationObserver(() => {
 			createChart(); // Re-create chart on theme change
 		});
 
@@ -147,14 +153,15 @@
 			attributeFilter: ['data-theme']
 		});
 
-		return () => {
-			if (barChart) barChart.destroy();
-			observer.disconnect();
-		};
+		// Initial chart creation
+		if (labels && labels.length > 0 && firstDataSource && secondDataSource) {
+			createChart();
+		}
 	});
 
 	onDestroy(() => {
 		if (barChart) barChart.destroy();
+		if (observer) observer.disconnect();
 	});
 </script>
 
