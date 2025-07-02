@@ -29,7 +29,7 @@
 	const viewRoute = (id) => `/users/${userId}/bot-content/prompt-template/${id}/view`;
 	const createRoute = `/users/${userId}/bot-content/prompt-template/create`;
 
-	const breadCrumbs = [{ name: 'Prompt-Templates', path: promptsRoute }];
+	const breadCrumbs = [{ name: 'Prompt Templates', path: promptsRoute }];
 
 	let promptName = $state(undefined);
 	let isSortingName = $state(false);
@@ -194,8 +194,9 @@
 								type="text"
 								name="promptName"
 								oninput={(event) => onSearchInput(event)}
+								bind:value={promptName}
 								placeholder="Search by name"
-								class="health-system-input !pr-4 !pl-10"
+								class="table-input-field !pr-4 !pl-10"
 							/>
 							{#if promptName}
 								<button
@@ -222,7 +223,14 @@
 					<thead>
 						<tr>
 							<th></th>
-							<th>Prompt Template</th>
+							 <th class="text-start">
+								<button onclick={() => sortTable('Name')}>
+									Name 
+									{#if isSortingName}
+										<Icon icon={`mdi:chevron-${sortOrder === 'ascending' ? 'up' : 'down'}`} class="ml-1 inline" width="16" />
+									{/if}
+								</button>
+							</th>
 
 							<th>Model</th>
 							<th>Group</th>

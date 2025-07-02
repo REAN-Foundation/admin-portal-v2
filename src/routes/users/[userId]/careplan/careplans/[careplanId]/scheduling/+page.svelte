@@ -9,6 +9,7 @@
 	import { goto } from '$app/navigation';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { onMount } from 'svelte';
+	import { createOrUpdatSchedulingeSchema } from '$lib/validation/careplan.scheduling.schema';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -60,9 +61,9 @@
 	};
 
 	const classifyActivitiesByDay = (activities) => {
-		const days = Array.from(
-			new Set(activities.map((x) => x.Day))
-		).sort((a: number, b: number) => a - b); // Sort days ascending
+		const days = Array.from(new Set(activities.map((x) => x.Day))).sort(
+			(a: number, b: number) => a - b
+		); // Sort days ascending
 
 		return days.map((d) => ({
 			Day: d,
@@ -144,7 +145,6 @@
 		return items;
 	}
 
-
 	const handleCareplanScheduleDelete = (id: string) => {
 		openDeleteModal = true;
 		idToBeDeleted = id;
@@ -188,7 +188,17 @@
 				ScheduleDay: day,
 				TimeSlot: timeSlot
 			};
+			const validationResult = createOrUpdatSchedulingeSchema.safeParse(careplanSchedulCreateModel);
 
+			if (!validationResult.success) {
+				errors = Object.fromEntries(
+					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				);
+				return;
+			}
 			console.log('careplanSchedulCreateModel', careplanSchedulCreateModel);
 			const res = await fetch(`/api/server/careplan/scheduling?careplanId=${careplanId}`, {
 				method: 'POST',
@@ -216,11 +226,11 @@
 	};
 
 	onMount(() => {
-	searchAssets({
-		sessionId: data.sessionId,
-		selectedAssetType
+		searchAssets({
+			sessionId: data.sessionId,
+			selectedAssetType
+		});
 	});
-});
 </script>
 
 <!-- Breadcrumbs -->
@@ -274,13 +284,13 @@
 											<option value={val}>{val}</option>
 										{/each}
 									</select>
-									{#if errors?.Name}
-										<p class="text-error-500 text-xs">{errors?.Name}</p>
+									{#if errors?.AssetType}
+										<p class="text-error">{errors?.AssetType}</p>
 									{/if}
 								</td>
 							</tr>
 							<tr>
-								<td class="align-top">Asset</td>
+								<td class="align-top">Asset<span class=" text-red-600">*</span></td>
 								<td>
 									<select
 										name="assetId"
@@ -291,25 +301,29 @@
 											<option value={val.value}>{val.label}</option>
 										{/each}
 									</select>
-								</td>
-							</tr>
-							<tr>
-								<td class="!py-3 align-top">Scheduled Day</td>
-								<td>
-									<input
-										type="number"
-										name="day"
-										bind:value={day}
-										placeholder="Enter day here...."
-										class="health-system-input {errors?.day ? 'input-text-error' : ''}"
-									/>
-									{#if errors?.Day}
-										<p class="text-error">{errors?.Day}</p>
+									{#if errors?.AssetId}
+										<p class="text-error">{errors?.AssetId}</p>
 									{/if}
 								</td>
 							</tr>
 							<tr>
-								<td>Slot Of The Day</td>
+								<td class="!py-3 align-top">Schedule Day<span class=" text-red-600">*</span></td>
+								<td>
+									<input
+										type="number"
+										name="day"
+										min="1"
+										bind:value={day}
+										placeholder="Enter day here...."
+										class="health-system-input {errors?.day ? 'input-text-error' : ''}"
+									/>
+									{#if errors?.ScheduleDay}
+										<p class="text-error">{errors?.ScheduleDay}</p>
+									{/if}
+								</td>
+							</tr>
+							<tr>
+								<td>Slot Of The Day<span class=" text-red-600">*</span></td>
 								<td>
 									<select name="timeSlot" class="input w-full" bind:value={timeSlot}>
 										{#each timeSlotValues as val}
@@ -317,7 +331,7 @@
 										{/each}
 									</select>
 									{#if errors?.TimeSlot}
-										<p class="text-error-500 text-xs">{errors?.TimeSlot}</p>
+										<p class="text-error">{errors?.TimeSlot}</p>
 									{/if}
 								</td>
 							</tr>

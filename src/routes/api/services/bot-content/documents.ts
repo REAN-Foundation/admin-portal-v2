@@ -13,7 +13,7 @@ export const createDocuments = async (
 	fileName: string,
 	source: string,
 	parentDocument: string,
-	parentDocumentVersion: string,
+	// parentDocumentVersion: string,
 	chunkingStrategy: string,
 	chunkingLength: number,
 	chunkOverlap: number,

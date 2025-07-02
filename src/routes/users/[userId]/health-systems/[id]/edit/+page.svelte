@@ -110,11 +110,11 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td>Name <span class=" text-red-600">*</span></td>
+							<td>Name <span class=" text-red-700">*</span></td>
 							<td>
 								<input
 									type="text"
-									class="health-system-input {form?.errors?.healthSystemName
+									class="health-system-input {errors?.healthSystemName
 										? 'input-text-error'
 										: ''}"
 									name="healthSystemName"
@@ -122,7 +122,7 @@
 									bind:value={healthSystemName}
 								/>
 								{#if errors?.Name}
-									<p class="text-error-500 text-xs">{errors?.Name}</p>
+									<p class="text-error">{errors?.Name}</p>
 								{/if}
 							</td>
 						</tr>

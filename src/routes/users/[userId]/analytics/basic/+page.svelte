@@ -13,7 +13,7 @@
 
 	let { data }: { data: PageServerData } = $props();
 
-	console.log('analytics data ==>', data);
+	console.log('analytics  data==>', data);
 
 	let patientRegistrationHistoryData: any = $state(),
 		patientRegistrationHistoryLabels: any = $state();
@@ -85,11 +85,11 @@
 	let addictionDistribution = $state(data.addictionDistribution);
 	let deviceDetailWiseUsers = data.deviceDetailWiseUsers;
 	let years = data.years;
+	let showLegendData = true;
 
 	let selectedYear: any;
 
 	const selectAgeWiseUsersDividionYearly = (e: any) => {
-		console.log('event', e.detail);
 
 		selectedYear = e.currentTarget.value;
 		const yearWiseAgeDetails = data.yearWiseAgeDetails;
@@ -100,7 +100,6 @@
 	};
 
 	const selectGenderWiseUsersDividionYearly = (e: { currentTarget: { value: any } }) => {
-		console.log('e', e);
 
 		selectedYear = e.currentTarget.value;
 		const yearWiseGenderDetails = data.yearWiseGenderDetails;
@@ -112,7 +111,6 @@
 
 	const selectMaritalSatusDistributionYearly = (e: { currentTarget: { value: any } }) => {
 		selectedYear = e.currentTarget.value;
-		console.log('selected year', selectedYear);
 		const yearWiseMaritalDetails = data.yearWiseMaritalDetails;
 		const maritalDetail = yearWiseMaritalDetails.filter(
 			(e: { Year: any }) => e.Year == selectedYear
@@ -124,7 +122,6 @@
 
 	const selectMajorAilmentDistributionYearly = (e: { currentTarget: { value: any } }) => {
 		selectedYear = e.currentTarget.value;
-		console.log('selected year', selectedYear);
 		const yearWiseMajorAilmentDistributionDetails = data.yearWiseMajorAilmentDistributionDetails;
 		const majorAilmentDistributionDetail = yearWiseMajorAilmentDistributionDetails.filter(
 			(e: { Year: any }) => e.Year == selectedYear
@@ -136,7 +133,6 @@
 
 	const selectAddictionDistributionYearly = (e: { currentTarget: { value: any } }) => {
 		selectedYear = e.currentTarget.value;
-		console.log('selected year', selectedYear);
 		const yearWiseAddictionDistributionDetails = data.yearWiseAddictionDistributionDetails;
 		const addictionDistributionDetail = yearWiseAddictionDistributionDetails.filter(
 			(e: { Year: any }) => e.Year == selectedYear
@@ -154,7 +150,6 @@
 		data.userCountStats.NotDeletedUsers.Count,
 		data.userCountStats.UsersWithActiveSession.Count
 	]);
-
 	$inspect(funnelChartData);
 </script>
 
@@ -286,7 +281,7 @@
 <div class=" patient-history-container">
 	<div class="grid-layout gap-8">
 		<div class="centered-flex gap-10">
-			<div class=" centered-flex overflow-x-auto shadow-xl sm:px-4">
+			<div class=" centered-flex overflow-x-auto border shadow-lg border-[var(--color-outline)] sm:px-4">
 				<div class="w-full">
 					<div class="centered-flex">
 						<h4 class=" users-head">Patient Registration / Deregistration History</h4>
@@ -315,12 +310,12 @@
 		<div class="xl:w-1/2">
 			<h4 class="basic-stat mt-6 mb-3">User Distribution By Roles</h4>
 			{#if usersDistributionByRoleData}
-				<div>
+				<div class="border shadow-lg border-[var(--color-outline)]">
 					<PieChart
 						data={usersDistributionByRoleData}
 						labels={usersDistributionByRoleLabels}
 						title=""
-						showLegendData={true}
+						showLegendData={showLegendData}
 					/>
 				</div>
 			{:else}
@@ -333,7 +328,7 @@
 		<!-- Active Users For Month Card -->
 		<div class="xl:w-1/2">
 			<h4 class="basic-stat mt-6 mb-3">Active Users For Month</h4>
-			{#if patientDeRegistrationHistoryData}
+			{#if activeUsersCountAtEndOfMonthData}
 				<div>
 					<Line
 						data={activeUsersCountAtEndOfMonthData}

@@ -23,6 +23,7 @@
 	const editRoute = `/users/${userId}/careplan/careplans/${careplanId}/scheduling/${activityId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/careplans/${careplanId}/scheduling/${activityId}/view`;
 	const schedulingRoute = `/users/${userId}/careplan/careplans/${careplanId}/scheduling`;
+	const careplansRoute = `/users/${userId}/careplan/careplans`;
 
 	let items = $state([]);
 	let assetTypes = data.assetTypes.Data.AssetTypes;
@@ -43,6 +44,10 @@
 	}
 
 	const breadCrumbs = [
+		{
+			name: 'Careplans',
+			path: careplansRoute
+		},
 		{
 			name: 'Scheduling',
 			path: schedulingRoute
@@ -178,7 +183,7 @@
 				<table class="health-system-table">
 					<thead>
 						<tr>
-							<th>Edit Health System</th>
+							<th>Edit Careplan Activity </th>
 							<th class="text-end">
 								<a href={viewRoute} class=" cancel-btn">
 									<Icon icon="material-symbols:close-rounded" />
@@ -188,7 +193,7 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td class="!py-3">Asset Type</td>
+							<td class="!py-3">Asset Type<span class=" text-red-600">*</span></td>
 							<td>
 								<select
 									name="assetType"
@@ -216,7 +221,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td class="!py-3">Time Slot</td>
+							<td class="!py-3">Time Slot<span class=" text-red-600">*</span></td>
 							<td>
 								<select
 									name="timeSlot"
@@ -231,12 +236,13 @@
 							</td>
 						</tr>
 						<tr>
-							<td>Scheduled Day <span class=" text-red-600">*</span></td>
+							<td>Schedule Day<span class=" text-red-600">*</span></td>
 							<td>
 								<input
 									type="number"
 									class="health-system-input {form?.errors?.day ? 'input-text-error' : ''}"
 									name="day"
+									min="1"
 									placeholder="Enter day here..."
 									bind:value={day}
 								/>

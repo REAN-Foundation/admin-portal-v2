@@ -30,7 +30,7 @@
 
 	const breadCrumbs = [
 		{
-			name: 'Prompt-Template',
+			name: 'Prompt Templates',
 			path: promptsRoute
 		},
 		{
@@ -77,24 +77,27 @@
 					</tr>
 
 					<tr>
-						<td>Prompt</td>
-						<td>{prompt}</td>
-					</tr>
-					<tr>
 						<td>Model</td>
 						<td>{model}</td>
-					</tr><tr>
-						<td>SubGroup</td>
-						<td>{group}</td>
-					</tr>
-					<tr>
-						<td>Type</td>
-						<td>{useCaseType}</td>
 					</tr>
 
 					<tr>
-						<td>Variable</td>
+						<td>Prompt</td>
+						<td>{prompt}</td>
+					</tr>
+
+					<tr>
+						<td>Variables</td>
 						<td>{variable}</td>
+					</tr>
+
+					<tr>
+						<td>Use Case Type</td>
+						<td>{useCaseType}</td>
+					</tr>
+					<tr>
+						<td>Group</td>
+						<td>{group}</td>
 					</tr>
 					<tr>
 						<td>Temperature</td>
