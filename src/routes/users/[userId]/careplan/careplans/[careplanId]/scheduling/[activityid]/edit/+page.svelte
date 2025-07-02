@@ -242,6 +242,7 @@
 									type="number"
 									class="health-system-input {form?.errors?.day ? 'input-text-error' : ''}"
 									name="day"
+									min="1"
 									placeholder="Enter day here..."
 									bind:value={day}
 								/>
