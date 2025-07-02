@@ -21,14 +21,12 @@
 	let version = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
-	// let assessmentTemplates = $state([]);
-	
-	 let assessmentTemplates = data.assessmentTemplates ?? [];
+
+	let assessmentTemplates = data.assessmentTemplates ?? [];
 	console.log('assessmentTemplates', assessmentTemplates);
 
 	data.title = 'Create Assessment';
 	const userId = page.params.userId;
-	// const tenantId = data?.sessionUser?.tenantId;
 	const tenantId = data?.tenantId;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
@@ -56,7 +54,7 @@
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentCreateModel);
-			console.log("Validation result", validationResult)
+			console.log('Validation result', validationResult);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -67,7 +65,7 @@
 				);
 				return;
 			}
-			// console.log(assessmentCreateModel); 
+			// console.log(assessmentCreateModel);
 			const res = await fetch(`/api/server/careplan/assets/assessments`, {
 				method: 'POST',
 				body: JSON.stringify(assessmentCreateModel),
@@ -79,8 +77,8 @@
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				// console.log('Full response:', response);
-			    goto(`${assessmentRoute}/${response?.Data?.id}/view`);
-			} 
+				goto(`${assessmentRoute}/${response?.Data?.id}/view`);
+			}
 			if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -92,9 +90,8 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -131,7 +128,9 @@
 					<td class="table-data">
 						<textarea
 							name="description"
-							class="input resize-none {errors?.Description ? 'border-error-300' : 'border-primary-200'}"
+							class="input resize-none {errors?.Description
+								? 'border-error-300'
+								: 'border-primary-200'}"
 							bind:value={description}
 							placeholder="Enter description here..."
 						></textarea>
@@ -153,31 +152,27 @@
 					</td>
 				</tr>
 				<tr class="tables-row">
-	<td class="table-label">Reference Template Code <span class="important-field">*</span></td>
-	<td class="table-data">
-		<select
-			bind:value={referenceTemplateCode}
-			class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
-		>
-			<option disabled selected value="">Select reference template here...</option>
-			{#each assessmentTemplates as template}
-				<option value={template.DisplayCode}>{template.Title}</option>
-			{/each}
-		</select>
-		{#if errors?.ReferenceTemplateCode}
-			<p class="error-text">{errors?.ReferenceTemplateCode}</p>
-		{/if}
-	</td>
-</tr>
+					<td class="table-label">Reference Template<span class="important-field">*</span></td>
+					<td class="table-data">
+						<select
+							bind:value={referenceTemplateCode}
+							class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
+						>
+							<option disabled selected value="">Select reference template here...</option>
+							{#each assessmentTemplates as template}
+								<option value={template.DisplayCode}>{template.Title}</option>
+							{/each}
+						</select>
+						{#if errors?.ReferenceTemplateCode}
+							<p class="error-text">{errors?.ReferenceTemplateCode}</p>
+						{/if}
+					</td>
+				</tr>
 
-<tr class="tables-row">
+				<tr class="tables-row">
 					<td class="table-label">Tags</td>
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
+						<InputChips bind:keywords name="keywords" id="keywords" />
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>
@@ -201,12 +196,11 @@
 		</table>
 
 		<div class="btn-container">
-            {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
-            {/await}
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
 		</div>
 	</form>
 </div>
-

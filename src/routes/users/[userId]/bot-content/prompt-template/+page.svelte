@@ -234,9 +234,9 @@
 
 							<th>Model</th>
 							<th>Group</th>
-							<th>UseCaseType</th>
+							<th>Use Case Type</th>
 							<th>Active</th>
-							<th>Action</th>
+							<!-- <th>Action</th> -->
 						</tr>
 					</thead>
 					<tbody>
