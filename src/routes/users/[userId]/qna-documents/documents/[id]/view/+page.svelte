@@ -8,6 +8,9 @@
 	import { createSchema } from '$lib/validation/vector.store.schema';
 	import type { VectorStoreCreateModel } from '$lib/types/vector.store.types';
 	import FilePreviewModal from '$lib/components/modal/file.preview.modal.svelte';
+	import Button from '$lib/components/button/button.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
 	///////////////////////////////////////////////////////////////////////////////
 	let { data }: { data: PageServerData } = $props();
 
@@ -143,116 +146,97 @@
 
 <!-- Rendering breadcrumbs component -->
 <BreadCrumbs crumbs={breadCrumbs} />
-
-<div class="px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-2">
-		<a href={editRoute} class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
-			<Icon icon="material-symbols:edit-outline" class="mr-1" />
-			<span>Edit</span>
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<Heading text="View Document" />
+		<a href={documentRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
 		</a>
 	</div>
 
-	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th>View Document</th>
-							<th class="text-end">
-								<a href={documentRoute} class=" cancel-btn">
-									<Icon icon="material-symbols:close-rounded" class="text-lg" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<!-- Rows displaying document details -->
-						<tr>
-							<td>Name</td>
-							<td>{name}</td>
-						</tr>
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<Label text="Name" />
+				<td class="table-data">{name}</td>
+			</tr>
 
-						<tr>
-							<td>Description</td>
-							<td>{description}</td>
-						</tr>
+			<tr class="tables-row">
+				<Label text="Description" />
+				<td class="table-data">{description}</td>
+			</tr>
 
-						<tr>
-							<td>File Name</td>
-							<td class="flex items-center"
-								>{fileName}
-								<button
-									type="button"
-									class="table-btn variant-filled-secondary mx-5"
-									onclick={viewDocument}>Open with Document Viewer</button
-								>
-							</td>
-						</tr>
+			<tr class="tables-row">
+				<Label text="File Name" />
+				<td class="table-data flex items-center gap-4">
+					{fileName}
+					<Button
+						type="button"
+						text="Open with Document Viewer"
+						variant="primary"
+						onclick={viewDocument}
+					/>
+				</td>
+			</tr>
 
-						<tr>
-							<td>Keywords </td>
-							<td>{keywords}</td>
-						</tr>
+			<tr class="tables-row">
+				<Label text="Keywords" />
+				<td class="table-data">{keywords}</td>
+			</tr>
 
-						<tr>
-							<td>Document Type</td>
-							<td>{documentType}</td>
-						</tr>
+			<tr class="tables-row">
+				<Label text="Document Type" />
+				<td class="table-data">{documentType}</td>
+			</tr>
 
-						<!-- <tr>
-						<td>Source</td>
-						<td>{source}</td>
-					</tr> -->
-						<!-- <tr>
-							<td>Parent Document</td>
-							<td>{parentDocument}</td>
-						</tr> -->
+			<tr class="tables-row">
+				<Label text="Version" />
+				<td class="table-data">{parentDocumentVersion}</td>
+			</tr>
 
-                        <tr>
-							<td>Version</td>
-							<td>{parentDocumentVersion}</td>
-						</tr>
+			<tr class="tables-row">
+				<Label text="Active" />
+				<td class="table-data">{isActive}</td>
+			</tr>
 
-						<tr>
-							<td>Active</td>
-							<td>{isActive}</td>
-						</tr>
+			<tr class="tables-row">
+				<Label text="Chunking Strategy" />
+				<td class="table-data">{chunkingStrategy}</td>
+			</tr>
 
-						<tr>
-							<td>Chunking Strategy</td>
-							<td>{chunkingStrategy}</td>
-						</tr>
-						<tr>
-							<td>Chunking Length</td>
-							<td>{chunkingLength}</td>
-						</tr>
-						<tr>
-							<td>Chunking Overlap</td>
-							<td>{chunkOverlap}</td>
-						</tr>
-						<tr>
-							<td>Splitter</td>
-							<td>{splitter}</td>
-						</tr>
-						<!-- <tr>
-						<td>Last Updated</td>
-						<td>{createdBy}</td>
-					</tr> -->
-					</tbody>
-				</table>
+			<tr class="tables-row">
+				<Label text="Chunking Length" />
+				<td class="table-data">{chunkingLength}</td>
+			</tr>
 
-				<div class="button-container">
-					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Publishing
-						</button>
-					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Publish </button>
-					{/await}
-				</div>
-			</form>
-		</div>
-		<FilePreviewModal {showModal} {fileUrl} {fileType} {closeModal} />
+			<tr class="tables-row">
+				<Label text="Chunk Overlap" />
+				<td class="table-data">{chunkOverlap}</td>
+			</tr>
+
+			<tr class="tables-row">
+				<Label text="Splitter" />
+				<td class="table-data">{splitter}</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div class="btn-container mt-6 flex flex-wrap items-center justify-between gap-4">
+		<Button
+			href={editRoute}
+			text="Edit"
+			variant="primary"
+			iconBefore="material-symbols:edit-outline"
+			iconSize="md"
+			size="md"
+		/>
+
+		{#await promise}
+			<Button type="submit" text="Publishing" variant="primary" disabled={true} />
+		{:then data}
+			<Button type="submit" text="Publish" variant="primary" />
+		{/await}
 	</div>
+
+	<FilePreviewModal {showModal} {fileUrl} {fileType} {closeModal} />
 </div>

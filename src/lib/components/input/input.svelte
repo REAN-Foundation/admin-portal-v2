@@ -8,6 +8,9 @@
 		className = '',
 		minlength,
 		maxlength,
+		disabled,
+		min,
+		max,
 		// Event handlers
 		oninput,
 		onchange,
@@ -36,6 +39,9 @@
 		className?: string;
 		minlength?: number;
 		maxlength?: number;
+		disabled?: boolean;
+		min?: number | string;
+		max?: number | string;
 		// Event types
 		oninput?: (e: Event) => void;
 		onchange?: (e: Event) => void;
@@ -63,8 +69,11 @@
 			{name}
 			{type}
 			{placeholder}
+			{disabled}
 			{minlength}
 			{maxlength}
+			{min}
+			{max}
 			bind:value
 			class={`input placeholder-gray-400 ${error ? 'input-text-error' : ''} ${className}`}
 			{oninput}
