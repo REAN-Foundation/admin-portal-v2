@@ -6,6 +6,7 @@
 	import { languages } from '$lib/utils/language';
 	import MessageModal from './message.modal.svelte';
 	import { page } from '$app/state';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -38,8 +39,7 @@
 					type: 'info',
 					timeout: 3000
 				});
-			} 
-            else {
+			} else {
 				addToast({
 					message: 'Edit mode disabled.',
 					type: 'info',
@@ -160,7 +160,7 @@
 <div class="px-5 py-4">
 	<div class="mx-auto">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<div class="table-container">
+
 				<!-- Heading -->
 				<div
 					class="flex items-center justify-between !rounded-b-none border bg-[#F2F3F5] px-5 py-6"
@@ -189,7 +189,7 @@
 					<div class="space-y-4">
 						<div class="my-4 flex flex-col md:flex-row md:items-center">
 							<label
-								class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
+								class="mx-1 mb-2 w-[30%] font-medium text text-gray-700"
 								for="tenantName">Tenant Name <span class="text-red-700">*</span></label
 							>
 							<input
@@ -206,7 +206,7 @@
 						</div>
 						<div class="my-4 flex flex-col md:flex-row md:items-center">
 							<label
-								class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
+								class="mx-1 mb-2 w-[30%] font-medium text text-gray-700"
 								for="tenantCode">Tenant Code <span class="text-red-700">*</span></label
 							>
 							<input
@@ -223,11 +223,11 @@
 						</div>
 						<div class="my-4 flex flex-col md:flex-row md:items-center">
 							<label
-								class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
+								class="mx-1 mb-2 w-[30%] font-medium text text-gray-700"
 								for="defaultLanguage">Default Language <span class="text-red-700">*</span></label
 							>
 							<select
-								class="input-field w-[70%]"
+								class=" w-[70%] select"
 								name="defaultLanguage"
 								bind:value={defualtLang}
 								onchange={onDefaultLangChange}
@@ -320,7 +320,7 @@
 						{/await}
 					</div>
 				</div>
-			</div>
+
 		</form>
 		<MessageModal
 			isOpen={showMessageModal}

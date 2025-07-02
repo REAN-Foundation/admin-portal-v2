@@ -74,7 +74,7 @@
 					{isEdit ? 'Edit Message' : 'Add Message'}
 				</h2>
 				<button
-					class="inline-flex items-center justify-center rounded-md border-[0.5px] !border-red-200 px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+					class="cancel-btn"
 					onclick={() => onClose()}
 				>
 					<Icon icon="material-symbols:close-rounded" class="h-5" />
@@ -83,10 +83,10 @@
 			<div class="space-y-4">
 				<div class="my-4 flex flex-col md:flex-row md:items-center">
 					<label
-						class="mx-1 mb-2 block w-[30%] text-sm font-medium text-[var(--color-info)]"
-						for="languageCode">Language<span class="text-red-700">*</span></label
+						class="mx-1 mb-2 w-[30%] font-medium text"
+						for="languageCode">Language <span class="text-red-700">*</span></label
 					>
-					<select class="input-field w-[70%]" bind:value={localMessage.LanguageCode}>
+					<select class="input-field w-[70%] select" bind:value={localMessage.LanguageCode}>
 						<option value="" disabled selected>Select language</option>
 						{#each languages as lang}
 							<option value={lang.code}>{lang.name}</option>
@@ -98,8 +98,8 @@
 				{/if}
 				<div class="my-4 flex flex-col md:flex-row md:items-center">
 					<label
-						class="mx-1 mb-2 block w-[30%] text-sm font-medium text-[var(--color-info)]"
-						for="content">Content</label
+						class="mx-1 mb-2 w-[30%] font-medium text"
+						for="content">Content <span class="text-red-700">*</span></label
 					>
 					<textarea
 						name="content"
@@ -113,8 +113,8 @@
 				{/if}
 				<div class="my-4 flex flex-col md:flex-row md:items-center">
 					<label
-						class="mx-1 mb-2 block w-[30%] text-sm font-medium text-[var(--color-info)]"
-						for="websiteUrl">Website Url</label
+						class="mx-1 mb-2 w-[30%] font-medium text"
+						for="websiteUrl">Website Url <span class="text-red-700">*</span></label
 					>
 					<input
 						type="text"
@@ -129,7 +129,7 @@
 				{/if}
 				<div class="mt-6 flex justify-end gap-3">
 					<button
-						class="health-system-btn variant-soft-secondary"
+						class="cancel-btn rounded px-4 py-2 text-sm"
 						type="button"
 						onclick={() => onClose()}>Cancel</button
 					>

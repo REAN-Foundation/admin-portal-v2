@@ -14,7 +14,7 @@
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
-	const tenantRoute = `/users/${userId}/tenants/${tenantId}/settings/followup-setting`;
+	const tenantRoute = `/users/${userId}/tenants`;
     
 	let promise = $state();
 	let errors: any = $state({});

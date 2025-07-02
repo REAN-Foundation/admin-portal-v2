@@ -51,7 +51,7 @@
 				class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-gray-700
 	transition-all duration-100 ease-in-out  ${
 		openTab === groupName
-			? 'rounded-b-none bg-[#F2F2F2] text-black'
+			? 'rounded-b-none bg-[var(--color-primary)] text-black'
 			: `border-hover rounded bg-white`
 	} 
 	`}

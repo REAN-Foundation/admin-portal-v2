@@ -2,8 +2,7 @@
 	import { page } from '$app/state';
 	import Icon from '@iconify/svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
-	import {
-		ChatBotSettingsSchema	} from '$lib/validation/tenant.settings.schema.js';
+	import { ChatBotSettingsSchema } from '$lib/validation/tenant.settings.schema.js';
 	import type {
 		ChatBotSettings,
 		ConsentSettings,
@@ -39,41 +38,41 @@
 	// let disabled = $state(data.commonSettings.UserInterfaces.ChatBot);
 	let disabled = $state(data.isChatBotEnabled);
 	let edit = $state(false);
-	let fileName = $state('')
+	let fileName = $state('');
 
 	const totalSteps = 3;
 	let currentSection = $state(0);
 
 	const handleEditClick = async () => {
-        if (!disabled) {
-            addToast({
-                message: 'This setting is disabled. Please update it from the main settings.',
-                type: 'info',
-                timeout: 3000
-            });
-            return;
-        }
-        if (!edit) {
-            addToast({
-                message: 'Edit mode enabled.',
-                type: 'info',
-                timeout: 3000
-            });
-            edit = true;
-        } else {
-            addToast({
-                message: 'Edit mode disabled.',
-                type: 'info',
-                timeout: 3000
-            });
-            edit = false;
-        }
+		if (!disabled) {
+			addToast({
+				message: 'This setting is disabled. Please update it from the main settings.',
+				type: 'info',
+				timeout: 3000
+			});
+			return;
+		}
+		if (!edit) {
+			addToast({
+				message: 'Edit mode enabled.',
+				type: 'info',
+				timeout: 3000
+			});
+			edit = true;
+		} else {
+			addToast({
+				message: 'Edit mode disabled.',
+				type: 'info',
+				timeout: 3000
+			});
+			edit = false;
+		}
 	};
 
 	const onFileSelected = async (e) => {
 		const input = e.target as HTMLInputElement;
 		const file = input.files?.[0];
-		fileName = file.name
+		fileName = file.name;
 
 		const fileCreateModel: FaviconUploadModel = {
 			UploadFile: file,
@@ -83,8 +82,8 @@
 
 		const fileValidationResult = imageUploadSchema.safeParse(fileCreateModel);
 
-		console.log("validation result", fileValidationResult);
-		
+		console.log('validation result', fileValidationResult);
+
 		if (!fileValidationResult.success) {
 			errors = Object.fromEntries(
 				Object.entries(fileValidationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -104,18 +103,18 @@
 		errors = {};
 
 		// let isConsentSaved = false;
-		let isFaviconUploaded = false;
+		// let isFaviconUploaded = false;
 		// let isChatBotSaved = false;
 
 		try {
-            if (!edit) {
-                addToast({
-                    message: 'Nothing to edit !',
-                    type: 'info',
-                    timeout: 3000
-                });
-                return;
-            }
+			if (!edit) {
+				addToast({
+					message: 'Nothing to edit !',
+					type: 'info',
+					timeout: 3000
+				});
+				return;
+			}
 			// ----------------------------- CONSENT SETTINGS -----------------------------
 			// const consentSettingModel: ConsentSettings = {
 			// 	TenantId: tenantId,
@@ -222,7 +221,7 @@
 
 			const chatBotJson = await chatBotRes.json();
 			if (chatBotJson.HttpCode === 200 || chatBotJson.HttpCode === 201) {
-                toastMessage(chatBotJson);
+				toastMessage(chatBotJson);
 				edit = false;
 			} else if (chatBotJson.Errors) {
 				errors = chatBotJson.Errors;
@@ -280,7 +279,7 @@
 	// 	}
 	// } as const;
 
-    const chatBotSettings = {
+	const chatBotSettings = {
 		MessageChannels: {
 			Name: 'Message Channels',
 			IconPath: 'mdi:message-outline',
@@ -317,68 +316,68 @@
 			}
 		},
 
-			Personalization: {
-				Name: 'Personalization',
-				IconPath: 'mdi:account-circle-outline',
-				Description: 'Enable personalized chatbot responses.'
-			},
-			LocationContext: {
-				Name: 'Location Context',
-				IconPath: 'mdi:map-marker-outline',
-				Description: 'Use location data for contextual responses.'
-			},
-			Localization: {
-				Name: 'Localization',
-				IconPath: 'mdi:translate',
-				Description: 'Support multiple languages and regions.'
-			},
-			RemindersMedication: {
-				Name: 'Medication Reminders',
-				IconPath: 'mdi:pill',
-				Description: 'Send medication reminder notifications.'
-			},
-			QnA: {
-				Name: 'Q&A',
-				IconPath: 'mdi:help-circle-outline',
-				Description: 'Enable question and answer functionality.'
-			},
-			Consent: {
-				Name: 'Consent',
-				IconPath: 'mdi:shield-check-outline',
-				Description: 'Collect user consent and privacy agreements.'
-			},
-			WelcomeMessage: {
-				Name: 'Welcome Message',
-				IconPath: 'mdi:hand-wave-outline',
-				Description: 'Send greeting messages to new users.'
-			},
-			Feedback: {
-				Name: 'Feedback',
-				IconPath: 'mdi:comment-outline',
-				Description: 'Collect user feedback and ratings.'
-			},
-			ReminderAppointment: {
-				Name: 'Appointment Reminders',
-				IconPath: 'mdi:calendar-clock',
-				Description: 'Send appointment reminder notifications.'
-			},
-			AppointmentFollowup: {
-				Name: 'Appointment Followup',
-				IconPath: 'mdi:calendar-check',
-				Description: 'Follow up after appointments with users.'
-			},
-			ConversationHistory: {
-				Name: 'Conversation History',
-				IconPath: 'mdi:history',
-				Description: 'Store and access previous conversations.'
-			},
-			Emojis: {
-				Name: 'Emojis',
-				IconPath: 'mdi:emoticon-happy-outline',
-				Description: 'Use emojis in chatbot responses.'
-			}
+		Personalization: {
+			Name: 'Personalization',
+			IconPath: 'mdi:account-circle-outline',
+			Description: 'Enable personalized chatbot responses.'
+		},
+		LocationContext: {
+			Name: 'Location Context',
+			IconPath: 'mdi:map-marker-outline',
+			Description: 'Use location data for contextual responses.'
+		},
+		Localization: {
+			Name: 'Localization',
+			IconPath: 'mdi:translate',
+			Description: 'Support multiple languages and regions.'
+		},
+		RemindersMedication: {
+			Name: 'Medication Reminders',
+			IconPath: 'mdi:pill',
+			Description: 'Send medication reminder notifications.'
+		},
+		QnA: {
+			Name: 'Q&A',
+			IconPath: 'mdi:help-circle-outline',
+			Description: 'Enable question and answer functionality.'
+		},
+		Consent: {
+			Name: 'Consent',
+			IconPath: 'mdi:shield-check-outline',
+			Description: 'Collect user consent and privacy agreements.'
+		},
+		WelcomeMessage: {
+			Name: 'Welcome Message',
+			IconPath: 'mdi:hand-wave-outline',
+			Description: 'Send greeting messages to new users.'
+		},
+		Feedback: {
+			Name: 'Feedback',
+			IconPath: 'mdi:comment-outline',
+			Description: 'Collect user feedback and ratings.'
+		},
+		ReminderAppointment: {
+			Name: 'Appointment Reminders',
+			IconPath: 'mdi:calendar-clock',
+			Description: 'Send appointment reminder notifications.'
+		},
+		AppointmentFollowup: {
+			Name: 'Appointment Followup',
+			IconPath: 'mdi:calendar-check',
+			Description: 'Follow up after appointments with users.'
+		},
+		ConversationHistory: {
+			Name: 'Conversation History',
+			IconPath: 'mdi:history',
+			Description: 'Store and access previous conversations.'
+		},
+		Emojis: {
+			Name: 'Emojis',
+			IconPath: 'mdi:emoticon-happy-outline',
+			Description: 'Use emojis in chatbot responses.'
+		}
 	} as const;
-	
+
 	function getSettingMeta(group: keyof typeof chatBotSettings, key: string) {
 		const setting = chatBotSettings?.[group]?.[key];
 
@@ -399,10 +398,8 @@
 		previousConsent = chatBotSetting.ChatBot.Consent;
 	});
 
-		async function getBotSecret() {
-
+	async function getBotSecret() {
 		showExportDialog = true;
-
 	}
 </script>
 
@@ -422,7 +419,7 @@
 
 			<div class="w-full py-4">
 				<div class="flex w-full items-start justify-between">
-					<div class="flex flex-col items-center flex-1">
+					<div class="flex flex-1 flex-col items-center">
 						<div class="flex w-full items-center">
 							{#each Array(totalSteps) as _, index}
 								<!-- Step circle -->
@@ -448,7 +445,7 @@
 							{/each}
 						</div>
 						<!-- Step label -->
-						<div class="mt-2 text-center text-sm text-gray-600">
+						<div class="mt-2 text-center text-sm text-[var(--color-info)]">
 							Step {currentSection + 1} of {totalSteps}
 						</div>
 					</div>
@@ -465,45 +462,41 @@
 				</div>
 			</div>
 
-			<div class="table-container">
-				<!-- Heading -->
+			<!-- Heading -->
 
-				<div
-					class="flex items-center justify-between !rounded-b-none border bg-[#F2F3F5] px-5 py-6"
-				>
-					<h1 class=" mx-1 text-xl">Chatbot Settings</h1>
-					<div class="flex items-center gap-2 text-end">
-						<button
-							type="button"
-							class="table-btn variant-filled-secondary gap-1"
-							onclick={handleEditClick}
-						>
-							<Icon icon="material-symbols:edit-outline" />
-							<!-- <span>{edit ? 'Save' : 'Edit'}</span> -->
-						</button>
-						<a
-							href={tenantRoute}
-							class="inline-flex items-center justify-center rounded-md border-[0.5px] !border-red-200 px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
-						>
-							<Icon icon="material-symbols:close-rounded" class=" h-5" />
-						</a>
-					</div>
+			<div class="flex items-center justify-between !rounded-b-none border  px-5 py-6">
+				<h1 class=" mx-1 text-xl text-[var(--color-info)]">Chatbot Settings</h1>
+				<div class="flex items-center gap-2 text-end">
+					<button
+						type="button"
+						class="table-btn variant-filled-secondary gap-1"
+						onclick={handleEditClick}
+					>
+						<Icon icon="material-symbols:edit-outline" />
+						<!-- <span>{edit ? 'Save' : 'Edit'}</span> -->
+					</button>
+					<a
+						href={tenantRoute}
+						class="inline-flex items-center justify-center rounded-md border-[0.5px] !border-red-200 px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+					>
+						<Icon icon="material-symbols:close-rounded" class=" h-5" />
+					</a>
 				</div>
+			</div>
 
-				<!-- content -->
-				<div>
-					<Progressive
-						bind:chatBotSetting
-						{edit}
-						{iconPaths}
-						{getSettingMeta}
-						bind:showCancelModel
-						{onFileSelected}
-						bind:currentSection
-						{fileName}
-						chatBotUISettings = {chatBotSettings}
-					/>
-				</div>
+			<!-- content -->
+			<div>
+				<Progressive
+					bind:chatBotSetting
+					{edit}
+					{iconPaths}
+					{getSettingMeta}
+					bind:showCancelModel
+					{onFileSelected}
+					bind:currentSection
+					{fileName}
+					chatBotUISettings={chatBotSettings}
+				/>
 			</div>
 		</form>
 	</div>

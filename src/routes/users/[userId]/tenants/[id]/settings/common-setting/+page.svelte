@@ -95,10 +95,10 @@
 </script>
 
 <div class="px-5 py-4">
-	<div class=" mx-auto my-6 border !border-zinc-200">
+	<div class=" mx-auto my-6 border border-[var(--color-outline)]">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<div class="flex items-center justify-between !rounded-b-none border bg-[#F2F3F5] px-5 py-6">
-				<h1 class=" text-xl">Common Settings</h1>
+			<div class="flex items-center justify-between !rounded-b-none border  px-5 py-6">
+				<h1 class=" text-xl text-[var(--color-info)]">Common Settings</h1>
 				<div class="flex items-center gap-2 text-end">
 					<button
 						type="button"
@@ -119,7 +119,7 @@
 			<div class="flex flex-col space-y-4 px-4 py-4">
 				<ExpandableSettings groupedSettings={commonUISettings} bind:commonSetting edit={disabled} />
 			</div>
-			<hr class="border-t border-[#F2F3F5]" />
+			<hr class="border-t " />
 
 			<div class="button-container my-4">
 				{#await promise}

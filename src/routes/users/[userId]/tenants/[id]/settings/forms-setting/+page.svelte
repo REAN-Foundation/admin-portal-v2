@@ -13,7 +13,7 @@
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
-	const tenantRoute = `/users/${userId}/tenants/${tenantId}/settings/forms-setting`;
+	const tenantRoute = `/users/${userId}/tenants`;
 
 	let formSetting = $state({ Forms: data.settings });
 	let errors: Record<string, string> = $state({});
@@ -166,7 +166,7 @@
 				<div
 					class="flex items-center justify-between !rounded-b-none border bg-[#F2F3F5] px-5 py-6"
 				>
-					<h1 class=" text-xl">Forms Settings</h1>
+					<h1 class=" text-xl form-title">Forms Settings</h1>
 					<div class="flex items-center gap-2 text-end">
 						<button
 							type="button"
@@ -234,7 +234,7 @@
 								</button>
 
 								{#if openTab === groupName}
-									<div class="flex w-full justify-center px-4 py-5 sm:px-6 md:px-10 lg:px-20">
+									<div class="flex w-full justify-center px-4 py-5 sm:px-6 md:px-10 lg:px-20 ">
 										<div
 											class="grid w-full grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-6 md:gap-x-10"
 										>
@@ -338,7 +338,7 @@
 								/>
 							</div> -->
 
-								<div class=" border-hover rounded-xl border p-4 text-gray-700">
+								<div class=" my-2 border-hover rounded-xl border p-6 text-gray-700 ">
 									<div class="flex items-center justify-between gap-3">
 										<!-- Left: App Icon -->
 										<Icon icon={formsUISettings[groupName].Path} class="h-5 w-5" />

@@ -17,7 +17,6 @@
 		fileName,
 		chatBotUISettings
 	} = $props();
-	$inspect(edit, 'edit');
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
@@ -40,7 +39,7 @@
 <div class="w-full rounded-lg p-6">
 	{#if currentSection === 0}
 		<div class="my-2 flex flex-col md:flex-row md:items-center">
-			<label for="chatbotName" class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
+			<label for="chatbotName" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 				>Name <span class="text-red-700">*</span></label
 			>
 			<input
@@ -48,6 +47,7 @@
 				class="input-field w-[70%]"
 				name="chatbotName"
 				placeholder="Enter name here..."
+				disabled={!edit}
 				bind:value={chatBotSetting.ChatBot.Name}
 			/>
 			{#if errors?.Name}
@@ -56,9 +56,8 @@
 		</div>
 
 		<div class="my-4 flex flex-col md:flex-row md:items-center">
-			<label
-				for="organizationName"
-				class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700">Organization Name</label
+			<label for="organizationName" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+				>Organization Name</label
 			>
 			<input
 				type="text"
@@ -74,9 +73,8 @@
 		</div>
 
 		<div class="my-4 flex flex-col md:flex-row md:items-center">
-			<label
-				for="organizationLogo"
-				class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700">Organization Logo</label
+			<label for="organizationLogo" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+				>Organization Logo</label
 			>
 			<input
 				type="text"
@@ -92,9 +90,7 @@
 		</div>
 
 		<div class="my-4 flex flex-col md:flex-row md:items-center">
-			<label
-				for="organizationWebsite"
-				class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
+			<label for="organizationWebsite" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 				>Organization Website</label
 			>
 			<input
@@ -111,10 +107,8 @@
 		</div>
 
 		<div class="my-4 flex flex-col md:flex-row md:items-center">
-			<label for="favicon" class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
-				>Favicon</label
-			>
-			<div class="w-[100%] flex gap-3">
+			<label for="favicon" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]">Favicon</label>
+			<div class="flex w-[100%] gap-3">
 				<label class="table-btn variant-filled-secondary">
 					Select File
 					<input type="file" class="hidden" onchange={onFileSelected} disabled={!edit} />
@@ -128,7 +122,7 @@
 
 				<input
 					type="text"
-					class="input bg-gray-100 text-gray-700 focus:outline-none"
+					class="input bg-gray-100 text-[var(--color-info)] focus:outline-none"
 					onchange={async (e) => await onFileSelected(e)}
 					value={fileName}
 					readonly
@@ -142,7 +136,7 @@
 		</div>
 
 		<div class="my-4 flex flex-col md:flex-row md:items-center">
-			<label for="description" class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
+			<label for="description" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 				>Description</label
 			>
 			<textarea
@@ -155,13 +149,17 @@
 		</div>
 
 		<div class="my-4 flex flex-col md:flex-row md:items-center">
-			<label for="defaultLanguage" class="mx-1 mb-2 block w-[30%] text-sm font-medium text-gray-700"
+			<label for="defaultLanguage" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 				>Default Language</label
 			>
-			<select bind:value={chatBotSetting.ChatBot.DefaultLanguage} class=" input-field w-[100%]" disabled={!edit}>
+			<select
+				bind:value={chatBotSetting.ChatBot.DefaultLanguage}
+				class="select input-field w-[100%]"
+				disabled={!edit}
+			>
 				<option value="" disabled selected>Select language</option>
 				{#each languages as lang}
-					<option value={lang.name}>{lang.name}</option>
+					<option value={lang.code}>{lang.name}</option>
 				{/each}
 			</select>
 			{#if errors?.DefaultLanguage}
@@ -179,12 +177,12 @@
 					<button
 						type="button"
 						onclick={() => toggleTab(groupName)}
-						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-gray-700
-	 transition-all duration-200 ease-in-out  ${
-			openTab === groupName
-				? 'rounded-b-none bg-[#F2F2F2] text-black'
-				: `border-hover rounded bg-white`
-		} 
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+	transition-all duration-200 ease-in-out  ${
+																openTab === groupName
+																	? 'rounded-b-none bg-[#F2F2F2] text-[var(--color-info)]'
+																	: `border-hover rounded bg-white`
+															} 
 	`}
 					>
 						<div class="flex items-center gap-2">
@@ -203,7 +201,7 @@
 									{/if}
 								</div>
 								<p class=" text-sm">{chatBotUISettings[groupName].Description}</p>
-							</div> 
+							</div>
 						</div>
 
 						<!-- <span class:rotate-180={openTab === groupName} class="transition-transform duration-300"> -->
@@ -236,7 +234,7 @@
 										<span>{meta?.Name ?? key}</span>
 									</div> -->
 
-									<div class=" border-hover rounded-xl border p-4 text-gray-700">
+									<div class=" border-hover rounded-xl border p-4 text-[var(--color-info)]">
 										<div class="flex items-center justify-between gap-3">
 											<!-- Left: App Icon -->
 											<Icon icon={meta?.IconPath} class="h-5 w-5" />
@@ -280,7 +278,7 @@
 					{#each row as [groupName, groupItems]}
 						<div class=" w-1/2">
 							<div
-								class="flex items-center justify-between gap-3 rounded-xl border p-4 text-gray-700"
+								class="flex items-center justify-between gap-3 rounded-xl border p-4 text-[var(--color-info)]"
 							>
 								<!-- Left: App Icon -->
 								<Icon icon={chatBotUISettings[groupName].IconPath} class="h-5 w-5" />
@@ -331,7 +329,7 @@
 <div class="button-container my-4">
 	<button
 		type="button"
-		class="cursor-pointer rounded-md bg-gray-300 px-3 py-2 text-gray-800 disabled:opacity-50"
+		class="cursor-pointer rounded-md bg-gray-300 px-3 py-2 text-[var(--color-info)] disabled:opacity-50"
 		onclick={prevSection}
 		disabled={currentSection === 0}
 	>
@@ -341,7 +339,7 @@
 	{#if currentSection < 3 - 1}
 		<button
 			type="button"
-			class="table-btn variant-filled-secondary !px-4 py-2 !text-black"
+			class="table-btn variant-filled-secondary !px-4 py-2 text-[var(--color-info)]"
 			onclick={nextSection}
 		>
 			Next

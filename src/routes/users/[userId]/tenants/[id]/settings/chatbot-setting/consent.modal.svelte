@@ -119,7 +119,7 @@
 				<table class="health-system-table">
 					<thead>
 						<tr>
-							<th class="text">Chat Bot Setting</th>
+							<th class="text text-[var(--color-info)]">Chat Bot Setting</th>
 							<th class="text-end">
 								<button class="cancel-btn absolute top-2 right-2" onclick={handleModalClose}>
 									<Icon icon="material-symbols:close-rounded" />
