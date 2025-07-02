@@ -206,7 +206,7 @@
 								>
 									<div class="flex flex-1 items-center gap-2">
 										<Icons
-											cls="stroke-slate-800 my-2 stroke-2 fill-none"
+											cls="my-2 stroke-2 "
 											h="80%"
 											w="80%"
 											iconPath={iconPaths[groupName] ?? ''}

@@ -310,7 +310,7 @@
 			},
 			Email: {
 				Name: 'Email',
-				IconPath: 'line-md:email',
+				IconPath: 'mdi:email-outline',
 				Description: 'Connect with Email for notifications.'
 			}
 		},
@@ -357,12 +357,12 @@
 		},
 		ReminderAppointment: {
 			Name: 'Appointment Reminders',
-			IconPath: 'mdi:calendar-clock',
+			IconPath: 'mdi:calendar-clock-outline',
 			Description: 'Send appointment reminder notifications.'
 		},
 		AppointmentFollowup: {
 			Name: 'Appointment Followup',
-			IconPath: 'mdi:calendar-check',
+			IconPath: 'mdi:calendar-check-outline',
 			Description: 'Follow up after appointments with users.'
 		},
 		ConversationHistory: {
