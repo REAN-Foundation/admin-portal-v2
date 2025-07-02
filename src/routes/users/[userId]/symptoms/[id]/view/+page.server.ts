@@ -14,11 +14,12 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     const imageResourceId = symptom?.ImageResourceId;
     const id = response?.Data?.SymptomType?.id;
 
+    console.log("response =====>", response);
     if (imageResourceId) {
-        symptom['ImageUrl'] =
+        symptom['ImageResourceUrl'] =
             BACKEND_API_URL + `/file-resources/${imageResourceId}/download?disposition=inline`;
     } else {
-        symptom['ImageUrl'] = null;
+        symptom['ImageResourceUrl'] = null;
     }
     return {
         location: `${id}/edit`,
