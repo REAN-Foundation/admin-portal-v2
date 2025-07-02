@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import Chart from 'chart.js/auto';
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -16,12 +16,35 @@
 
 	let barChart: any;
 	let ctx;
+	let chartInstance: any;
+
+	function updateChartColors() {
+		const { textColor, gridColor } = getThemeColor();
+		const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+
+		if (chartInstance) {
+			chartInstance.options.scales.x.ticks.color = textColor;
+			chartInstance.options.scales.y.ticks.color = textColor;
+			chartInstance.options.plugins.legend.labels.color = textColor;
+
+			// Optionally update axis line color for dark mode
+			if (!chartInstance.options.scales.x.border) chartInstance.options.scales.x.border = {};
+			if (!chartInstance.options.scales.y.border) chartInstance.options.scales.y.border = {};
+			chartInstance.options.scales.x.border.display = true;
+			chartInstance.options.scales.y.border.display = true;
+			chartInstance.options.scales.x.border.color = isDarkMode ? '#d9dee9' : '#1c252a';
+			chartInstance.options.scales.y.border.color = isDarkMode ? '#d9dee9' : '#1c252a';
+
+			chartInstance.update();
+		}
+	}
 
 	onMount(() => {
 		const { textColor, gridColor } = getThemeColor();
+		const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
 
 		ctx = barChart.getContext('2d');
-		barChart = new Chart(ctx, {
+		chartInstance = new Chart(ctx, {
 			type: 'line',
 			data: {
 				labels: lables,
@@ -55,8 +78,12 @@
 							display: false,
 							color: gridColor
 						},
+						border: {
+							display: true,
+							color: isDarkMode ? '#d9dee9' : '#1c252a'
+						},
 						ticks: {
-							color: textColor // set x-axis label color here
+							color: textColor
 						}
 					},
 					y: {
@@ -64,8 +91,12 @@
 							display: false,
 							color: gridColor
 						},
+						border: {
+							display: true,
+							color: isDarkMode ? '#d9dee9' : '#1c252a'
+						},
 						ticks: {
-							color: textColor // set y-axis label color here
+							color: textColor
 						}
 					}
 				},
@@ -86,6 +117,19 @@
 						}
 					}
 				}
+			}
+		});
+		
+		// Listen for theme changes
+		const observer = new MutationObserver(() => {
+			updateChartColors();
+		});
+		observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+		onDestroy(() => {
+			observer.disconnect();
+			if (chartInstance) {
+				chartInstance.destroy();
 			}
 		});
 	});

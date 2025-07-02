@@ -20,10 +20,12 @@
 	const deviceDetails = $derived(data.deviceDetailsByYears);
 </script>
 
-<dl class=" dashboard-cards">
+<dl class="dashboard-cards">
 	<NumberCard
 		cardTitle="Onboarded Users"
 		cardContent={data.userCountStats.TotalUsers.Count.toFixed()}
+		additional=""
+		prefix=""
 	/>
 	<NumberCard
 		cardTitle="Not Deleted Users"
@@ -54,7 +56,7 @@
     {/each} -->
 </dl>
 
-<div class=" dashboard-subcards">
+<div class="dashboard-subcards">
 	<!-- <FunnelCard {labels} dataSource={funnelChartData} /> -->
 	<PlatformStatsCard {deviceDetails} />
 </div>
