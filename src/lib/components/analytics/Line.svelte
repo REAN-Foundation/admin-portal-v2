@@ -3,21 +3,26 @@
     import Chart from 'chart.js/auto';
     import { getChartColors, getTickColorLight, getTickColorDark } from '$lib/themes/theme.selector';
 
-    const tickColorLight = getTickColorLight();
-    const tickColorDark = getTickColorDark();
     const color = getChartColors();
 
     let { lables, data, title } = $props();
 
-    let canvas: HTMLCanvasElement;
+    let canvas = $state<HTMLCanvasElement>();
     let lineChart: Chart | null = null;
     let observer: MutationObserver | null = null;
     let isCanvasReady = $state(false);
 
     $inspect("Line Chart Props:", { lables, data, title });
 
-    function getThemeColor(): string {
-        return document.documentElement.classList.contains('dark') ? tickColorDark : tickColorLight;
+    const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+
+    function getThemeColor(): { textColor: string; gridColor: string; fillColor: string } {
+    const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+        return {
+            textColor: isDarkMode ? '#d9dee9' : '#1c252a',
+            gridColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+            fillColor: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'
+        };
     }
 
     function initChart() {
@@ -30,11 +35,9 @@
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        // Ensure data is properly formatted
         const chartData = data.map(d => typeof d === 'number' ? d : Number(d) || 0);
         const chartLabels = lables.map(l => String(l));
 
-        // Validate data
         if (chartData.length === 0 || chartLabels.length === 0) {
             console.log('No valid data for line chart');
             return;
@@ -44,6 +47,7 @@
         console.log('Chart constructor available:', typeof Chart);
 
         try {
+            const { textColor, gridColor, fillColor } = getThemeColor();
             lineChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -52,10 +56,11 @@
                         {
                             label: 'Active Users',
                             data: chartData,
-                            borderColor: color[0],
+                            backgroundColor: fillColor,
+                            borderColor: '#000000',
                             fill: true,
                             pointRadius: 0, // Remove intersection points
-                            pointHoverRadius: 0 // Remove hover effect on points
+                            pointHoverRadius: 0 
                         }
                     ]
                 },
@@ -65,29 +70,39 @@
                     scales: {
                         x: {
                             grid: {
-                                display: false
+                                display: false,
+                                color: gridColor
                             },
                             ticks: {
-                                color: getThemeColor()
+                                color: textColor
                             },
                             title: {
                                 display: true,
                                 text: 'Till Month',
-                                color: getThemeColor()
-                            }
+                                color: textColor
+                            },
+                            border: {
+							display: true,
+							color: isDarkMode ? '#d9dee9' : '#1c252a'
+						},
                         },
                         y: {
                             grid: {
-                                display: true
+                                display: true,
+                                color: gridColor
                             },
                             ticks: {
-                                color: getThemeColor()
+                                color: textColor
                             },
                             title: {
                                 display: true,
                                 text: 'User Count',
-                                color: getThemeColor()
-                            }
+                                color: textColor
+                            },
+                            border: {
+							display: true,
+							color: isDarkMode ? '#d9dee9' : '#1c252a'
+						},
                         }
                     },
                     layout: {
@@ -99,7 +114,7 @@
                         legend: {
                             display: false,
                             labels: {
-                                color: getThemeColor(),
+                                color: textColor,
                                 boxWidth: 10,
                                 boxHeight: 10
                             }
@@ -107,7 +122,7 @@
                         title: {
                             display: false,
                             text: title,
-                            color: getThemeColor(),
+                            color: textColor,
                             font: {
                                 size: 22,
                                 weight: 'normal',
@@ -125,20 +140,22 @@
 
     function updateChartOnThemeChange() {
         if (lineChart) {
-            // Update colors for theme change
-            lineChart.options.scales.x.ticks.color = getThemeColor();
-            lineChart.options.scales.x.title.color = getThemeColor();
-            lineChart.options.scales.y.ticks.color = getThemeColor();
-            lineChart.options.scales.y.title.color = getThemeColor();
-            lineChart.options.plugins.legend.labels.color = getThemeColor();
-            lineChart.options.plugins.title.color = getThemeColor();
+            const { textColor, gridColor, fillColor } = getThemeColor();
+            lineChart.data.datasets[0].backgroundColor = fillColor;
+            lineChart.options.scales.x.ticks.color = textColor;
+            lineChart.options.scales.x.grid.color = gridColor;
+            lineChart.options.scales.x.title.color = textColor;
+            lineChart.options.scales.y.ticks.color = textColor;
+            lineChart.options.scales.y.grid.color = gridColor;
+            lineChart.options.scales.y.title.color = textColor;
+            lineChart.options.plugins.legend.labels.color = textColor;
+            lineChart.options.plugins.title.color = textColor;
             lineChart.update();
         }
     }
 
     $effect(() => {
         if (data && data.length > 0 && lables && lables.length > 0 && isCanvasReady) {
-            console.log('Effect triggered - updating line chart');
             initChart();
         }
     });
@@ -147,7 +164,7 @@
         observer = new MutationObserver(updateChartOnThemeChange);
         observer.observe(document.documentElement, {
             attributes: true,
-            attributeFilter: ['class']
+            attributeFilter: ['data-theme']
         });
 
         setTimeout(() => {
