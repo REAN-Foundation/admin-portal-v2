@@ -74,7 +74,7 @@
 					{isEdit ? 'Edit Message' : 'Add Message'}
 				</h2>
 				<button
-					class="cancel-btn"
+					class="cancel-btn border-[0.5px] border-[var(--color-outline)]"
 					onclick={() => onClose()}
 				>
 					<Icon icon="material-symbols:close-rounded" class="h-5" />
@@ -129,7 +129,7 @@
 				{/if}
 				<div class="mt-6 flex justify-end gap-3">
 					<button
-						class="cancel-btn rounded px-4 py-2 text-sm"
+						class="cancel-btn rounded px-4 py-2 text-sm border-[0.5px] border-[var(--color-outline)]"
 						type="button"
 						onclick={() => onClose()}>Cancel</button
 					>
