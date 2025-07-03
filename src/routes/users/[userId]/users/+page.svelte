@@ -282,8 +282,8 @@
 				<table class="table-c min-w-full">
 					<thead>
 						<tr>
-							<th class=" w-12"></th>
-							<th class=" w-36">
+							<th class=" w-[5%]"></th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('FirstName')}>
 									First Name {#if isSortingName}
 										{#if sortOrder === 'ascending'}
@@ -294,7 +294,7 @@
 									{/if}
 								</button>
 							</th>
-							<th class="w-36">
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('LastName')}>
 									Last Name
 									{#if isSortingCode}
@@ -306,8 +306,8 @@
 									{/if}
 								</button>
 							</th>
-							<th data-sort="Phone" class=" w-32">Contact</th>
-							<th class=" w-32">
+							<th data-sort="Phone" class=" w-[20%]">Contact</th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Email')}>
 									Email {#if isSortingEmail}
 										{#if sortOrder === 'ascending'}
@@ -318,8 +318,8 @@
 									{/if}
 								</button></th
 							>
-							<th class=" w-28">Role</th>
-							<th class="w-20"></th>
+							<th class=" w-[20%]">Role</th>
+							<th class="w-[20%]"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -348,7 +348,7 @@
 									<td tabindex="0">{row.RoleName || 'Not specified'}</td>
 
 									<td>
-										<div class="flex">
+										<div class="flex justify-end">
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"

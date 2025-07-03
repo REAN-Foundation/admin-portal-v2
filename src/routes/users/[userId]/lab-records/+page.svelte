@@ -186,8 +186,8 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container mb-6 shadow">
-			<div class="health-system-search-border p-4">
+		<div class="table-container mb-6 shadow">
+			<div class="search-border p-4">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow">
 						<Icon
@@ -200,7 +200,7 @@
 							placeholder="Search by type name"
 							bind:value={typeName}
 							oninput={(event) => onSearchInput(event)}
-							class="health-system-input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if typeName}
 							<button
@@ -226,7 +226,7 @@
 							placeholder="Search by display name"
 							bind:value={displayName}
 							oninput={(event) => onSearchInput(event)}
-							class="health-system-input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if displayName}
 							<button
@@ -246,11 +246,11 @@
 			</div>
 
 			<div class="overflow-x-auto">
-				<table class="health-system-table min-w-full">
+				<table class="table-c min-w-full">
 					<thead>
 						<tr>
-							<th class="w-12"></th>
-							<th class="w-52">
+							<th class="w-[5%]"></th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('TypeName')}>
 									Type Name {#if isSortingTypeName}
 										{#if sortOrder === 'ascending'}
@@ -261,7 +261,7 @@
 									{/if}
 								</button>
 							</th>
-							<th class="w-44">
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('DisplayName')}>
 									Display Name
 									{#if isSortingDisplayName}
@@ -273,10 +273,10 @@
 									{/if}
 								</button>
 							</th>
-							<th class="w-32">Minimum</th>
-							<th class="w-32">Maximum</th>
-							<th class="w-32">Unit</th>
-							<th class="w-20"></th>
+							<th class="w-[20%]">Minimum</th>
+							<th class="w-[20%]">Maximum</th>
+							<th class="w-[20%]">Unit</th>
+							<th class="w-[20%]"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -315,7 +315,7 @@
 										>{row.Unit !== null && row.Unit !== '' ? row.Unit : 'Not specified'}</td
 									>
 									<td>
-										<div class="flex">
+										<div class="flex justify-end">
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"

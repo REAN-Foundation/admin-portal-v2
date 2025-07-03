@@ -193,16 +193,20 @@
 				<table class="table-c min-w-full">
 					<thead>
 						<tr>
-							<th class="w-2"></th>
-							<th class="text-start">
+							<th class="w-[5%]"></th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Type')}>
 									Type {#if isSortingName}
-										<Icon icon={`mdi:chevron-${sortOrder === 'ascending' ? 'up' : 'down'}`} class="ml-1 inline" width="16" />
+										<Icon
+											icon={`mdi:chevron-${sortOrder === 'ascending' ? 'up' : 'down'}`}
+											class="ml-1 inline"
+											width="16"
+										/>
 									{/if}
 								</button>
 							</th>
-							<th>Description</th>
-							<th class=""></th>
+							<th class="w-[40%]">Description</th>
+							<th class="w-[20%]"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -221,7 +225,7 @@
 									</td>
 									<td>{row.Description || 'Not specified'}</td>
 									<td>
-										<div class="flex justify-end gap-2">
+										<div class="flex justify-end">
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"
