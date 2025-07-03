@@ -39,7 +39,7 @@
 		// 	disabled = true;
 		// }
 	};
-    
+
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
 		console.log('I am in settings page', commonSettings.Wellness);
@@ -92,10 +92,14 @@
 
 <div class="my-8 px-5 py-2">
 	<div class="mx-auto">
-		<div class="border border-zinc-200">
+		<div class="border border-[var(--color-outline)]">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<div class="flex items-center justify-between rounded-t-lg bg-[var(--color-primary)] px-5 py-6">
-					<h2 class=" text-gray-800l text-lg font-semibold text-[var(--color-info)]">Integrations</h2>
+				<div
+					class="flex items-center justify-between rounded-t-lg bg-[var(--color-secondary)] px-5 py-6"
+				>
+					<h2 class=" text-gray-800l text-lg font-semibold text-[var(--color-info)]">
+						Integrations
+					</h2>
 					<div class="flex items-center gap-2 text-end">
 						<button
 							type="button"
@@ -107,20 +111,22 @@
 						</button>
 						<a
 							href={tenantRoute}
-							class="inline-flex items-center justify-center rounded-md border-[0.5px] !border-red-200 px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+							class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
 						>
 							<Icon icon="material-symbols:close-rounded" class=" h-5" />
 						</a>
 					</div>
 				</div>
 
-				<div class="flex w-full justify-center px-4 py-5 sm:px-6 md:px-10 lg:px-20">
+				<div
+					class="flex w-full justify-center bg-[var(--color-secondary)] px-4 py-5 sm:px-6 md:px-10 lg:px-20"
+				>
 					<div
 						class="grid w-full grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-6 md:gap-x-10"
 					>
 						{#each Object.entries(commonSettings.UserInterfaces) as [key, value]}
 							{#if key === 'ChatBot'}
-								<div class=" border-hover rounded-xl border p-4 text-gray-700">
+								<div class=" border-hover rounded-xl border p-4 text-[var(--color-info)]">
 									<div class="flex items-center justify-between gap-3">
 										<!-- Left: App Icon -->
 										<Icon icon="tabler:message-chatbot" class="hidden h-5 w-5 md:block" />
@@ -143,7 +149,7 @@
 									</div>
 								</div>
 							{:else if key === 'Followup'}
-								<div class=" border-hover rounded-xl border p-4 text-gray-700">
+								<div class=" border-hover rounded-xl border p-4 text-[var(--color-info)]">
 									<div class="flex items-center justify-between gap-3">
 										<!-- Left: App Icon -->
 										<Icon icon="carbon:task-tools" class="hidden h-5 w-5 md:block" />
@@ -166,7 +172,7 @@
 									</div>
 								</div>
 							{:else if key === 'Forms'}
-								<div class=" border-hover rounded-xl border p-4 text-gray-700">
+								<div class=" border-hover rounded-xl border p-4 text-[var(--color-info)]">
 									<div class="flex items-center justify-between gap-3">
 										<!-- Left: App Icon -->
 										<Icon icon="mdi:form-select" class="hidden h-5 w-5 md:block" />
@@ -189,7 +195,7 @@
 									</div>
 								</div>
 							{:else if key === 'PatientApp'}
-								<div class=" border-hover rounded-xl border p-4 text-gray-700">
+								<div class=" border-hover rounded-xl border p-4 text-[var(--color-info)]">
 									<div class="flex items-center justify-between gap-3">
 										<!-- Left: App Icon -->
 										<Icon icon="fluent:phone-tablet-20-regular" class="hidden h-5 w-5 md:block" />
@@ -197,7 +203,9 @@
 										<!-- Middle: Name & Description -->
 										<div class="flex flex-grow flex-col">
 											<span class="text-sm font-medium">Patient App</span>
-											<p class="text-sm">Mobile application for patient self-service and health management.                                          </p>
+											<p class="text-sm">
+												Mobile application for patient self-service and health management.
+											</p>
 										</div>
 										<!-- Right: Toggle + Optional Edit -->
 										<div class="flex items-center">
@@ -212,7 +220,7 @@
 									</div>
 								</div>
 							{:else if key === 'PatientPortal'}
-								<div class=" border-hover rounded-xl border p-4 text-gray-700">
+								<div class=" border-hover rounded-xl border p-4 text-[var(--color-info)]">
 									<div class="flex items-center justify-between gap-3">
 										<!-- Left: App Icon -->
 										<Icon icon="mdi:account-circle-outline" class="hidden h-5 w-5 md:block" />
@@ -239,7 +247,7 @@
 					</div>
 				</div>
 
-				<hr class="border-t border-[#F2F3F5]" />
+				<hr class="border-[0.5px] border-t border-[var(--color-outline)]" />
 
 				<div class="button-container my-4">
 					{#await promise}

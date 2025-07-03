@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	
+
 	let { groupedSettings, commonSetting = $bindable(), edit } = $props();
 
 	let openTab: string | null = $state(null);
@@ -41,7 +41,7 @@
 {#each Object.entries(commonSetting) as [groupName, groupItems]}
 	{#if groupName !== 'UserInterfaces' && groupName !== 'General'}
 		<div
-			class={`my-2 flex w-full flex-col rounded-md border !border-zinc-100 bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${
+			class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${
 				openTab === groupName ? 'border-hover ' : ''
 			} `}
 		>
@@ -52,13 +52,13 @@
 	transition-all duration-100 ease-in-out  ${
 		openTab === groupName
 			? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
-			: `border-hover rounded bg-[var(--color-primary)]`
+			: `border-hover rounded bg-[var(--color-secondary)]`
 	} 
 	`}
 			>
 				<div class="flex flex-1 items-center gap-2">
-                    <!-- iconPaths[groupName] -->
-                    <Icon icon={groupedSettings[groupName].Path} class="h-5 w-5 hidden md:block" />
+					<!-- iconPaths[groupName] -->
+					<Icon icon={groupedSettings[groupName].Path} class="hidden h-5 w-5 md:block" />
 					<!-- <Icons
 						cls="stroke-slate-800 my-2 stroke-2 fill-none"
 						h="80%"
@@ -75,12 +75,14 @@
 
 				<!-- <span class:rotate-180={openTab === groupName} class="transition-transform duration-300"> -->
 				<span class="transition-transform duration-300" class:rotate-90={openTab === groupName}>
-					<Icon icon="icon-park-outline:down" rotate="35" width="16" height="16" class="h-5 w-5" />
+					<Icon icon="icon-park-outline:down" rotate={35} width={16} height={16} class="h-5 w-5" />
 				</span>
 			</button>
 
 			{#if openTab === groupName}
-				<div class="flex w-full justify-center px-4 py-5 sm:px-6 md:px-10 lg:px-20">
+				<div
+					class="flex w-full justify-center bg-[var(--color-secondary)] px-4 py-5 sm:px-6 md:px-10 lg:px-20"
+				>
 					<div
 						class="grid w-full grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-6 md:gap-x-10"
 					>
@@ -106,7 +108,7 @@
 							<div class=" border-hover rounded-xl border p-4 text-[var(--color-info)]">
 								<div class="flex items-center justify-between gap-3">
 									<!-- Left: App Icon -->
-									<Icon icon={meta?.Path} class="h-5 w-5 hidden md:block" />
+									<Icon icon={meta?.Path} class="hidden h-5 w-5 md:block" />
 
 									<!-- Middle: Name & Description -->
 									<div class="flex flex-grow flex-col">

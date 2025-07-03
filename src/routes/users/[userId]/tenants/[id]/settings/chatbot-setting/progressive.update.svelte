@@ -38,7 +38,7 @@
 	}
 </script>
 
-<div class="w-full rounded-lg p-6">
+<div class="w-full rounded-lg p-6 ">
 	{#if currentSection === 0}
 		<div class="my-2 flex flex-col md:flex-row md:items-center">
 			<label for="chatbotName" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
@@ -158,10 +158,9 @@
 			></textarea>
 		</div>
 
-		<div class="my-4 flex flex-col md:flex-row md:items-center">
-			<label
-				for="defaultLanguage"
-				class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]">Default Language</label
+		<div class="my- flex flex-col md:flex-row md:items-center">
+			<label for="defaultLanguage" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+				>Default Language</label
 			>
 			<select
 				bind:value={chatBotSetting.ChatBot.DefaultLanguage}
@@ -181,7 +180,7 @@
 		{#each Object.entries(chatBotSetting.ChatBot) as [groupName, groupItems]}
 			{#if groupName === 'MessageChannels' || groupName === 'SupportChannels'}
 				<div
-					class={`my-2 flex w-full flex-col rounded-md border !border-zinc-100 bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${
+					class={`my-2 flex w-full flex-col rounded-md  border-[0.5px] border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${
 						openTab === groupName ? 'border-hover ' : ''
 					} `}
 				>
@@ -190,10 +189,10 @@
 						onclick={() => toggleTab(groupName)}
 						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
 	transition-all duration-200 ease-in-out  ${
-		openTab === groupName
-			? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
-			: `border-hover rounded bg-[var(--color-primary)]`
-	} 
+																openTab === groupName
+																	? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+																	: `border-hover rounded bg-[var(--color-secondary)]`
+															} 
 	`}
 					>
 						<div class="flex items-center gap-2">
@@ -220,7 +219,7 @@
 					</button>
 
 					{#if openTab === groupName}
-						<div class="flex w-full justify-center py-5">
+						<div class="flex w-full justify-center py-5 bg-[var(--color-secondary)]">
 							<div class="mx-20 grid w-full grid-cols-2 gap-x-10 gap-y-6 lg:grid-cols-2">
 								{#each Object.entries(groupItems) as [key, value]}
 									{@const meta = getSettingMeta(groupName, key)}
@@ -330,9 +329,9 @@
 </div>
 
 <!-- Navigation Buttons -->
-<hr class="border-t border-[#F2F3F5]" />
+<hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
 
-<div class="button-container my-4">
+<div class="button-container my-4 ">
 	<button
 		type="button"
 		class="cursor-pointer rounded-md bg-[var(--color-primary)] px-3 py-2 text-[var(--color-info)] disabled:opacity-50"

@@ -390,61 +390,59 @@
 </script>
 
 <div class="px-5 py-4">
-	<div class="mx-auto">
-		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<!-- Stepper -->
-
-			<div class="w-full py-4">
-				<div class="flex w-full items-start justify-between">
-					<div class="flex flex-1 flex-col items-center">
-						<div class="flex w-full items-center">
-							{#each Array(totalSteps) as _, index}
-								<!-- Step circle -->
-								<div
-									class={`step-number 
-									${
-										index < currentSection
-											? 'step-completed'
-											: index === currentSection
-												? 'stepper-active'
-												: 'stepper-inactive'
-									}`}
-								>
-									{index < currentSection ? index + 1 : index + 1}
-								</div>
-								<!-- Line between steps -->
-								{#if index < totalSteps - 1}
-									<div
-										class="mx-1 h-0.5 flex-1 bg-gray-300"
-										class:bg-blue-600={index < currentSection - 1}
-									></div>
-								{/if}
-							{/each}
+	<!-- Stepper above border -->
+	<div class="w-full py-4">
+		<div class="flex w-full items-start justify-between">
+			<div class="flex flex-1 flex-col items-center">
+				<div class="flex w-full items-center">
+					{#each Array(totalSteps) as _, index}
+						<!-- Step circle -->
+						<div
+							class={`step-number 
+							${
+								index < currentSection
+									? 'step-completed'
+									: index === currentSection
+										? 'stepper-active'
+										: 'stepper-inactive'
+							}`}
+						>
+							{index < currentSection ? index + 1 : index + 1}
 						</div>
-						<!-- Step label -->
-						<div class="mt-2 text-center text-sm text-[var(--color-info)]">
-							Step {currentSection + 1} of {totalSteps}
-						</div>
-					</div>
-					<!-- Create Secret Button -->
-					<button
-						type="button"
-						class="table-btn variant-filled-secondary ml-4"
-						onclick={getBotSecret}
-						disabled={isCreatingSecret}
-					>
-						<Icon icon="material-symbols:upload" class="mr-1" />
-						{isCreatingSecret ? 'Creating...' : 'Create Secret'}
-					</button>
+						<!-- Line between steps -->
+						{#if index < totalSteps - 1}
+							<div
+								class="mx-1 h-0.5 flex-1 bg-gray-300"
+								class:bg-blue-600={index < currentSection - 1}
+							></div>
+						{/if}
+					{/each}
+				</div>
+				<!-- Step label -->
+				<div class="mt-2 text-center text-sm text-[var(--color-info)]">
+					Step {currentSection + 1} of {totalSteps}
 				</div>
 			</div>
-
+			<!-- Create Secret Button -->
+			<button
+				type="button"
+				class="table-btn variant-filled-secondary ml-4"
+				onclick={getBotSecret}
+				disabled={isCreatingSecret}
+			>
+				<Icon icon="material-symbols:upload" class="mr-1" />
+				{isCreatingSecret ? 'Creating...' : 'Create Secret'}
+			</button>
+		</div>
+	</div>
+	<div class="mx-auto my-6 border border-[var(--color-outline)]">
+		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 			<!-- Heading -->
 
 			<div
 				class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6"
 			>
-				<h1 class=" mx-1 text-xl text-[var(--color-info)]">Chatbot Settings</h1>
+				<h1 class="text-xl text-[var(--color-info)]">Chatbot Settings</h1>
 				<div class="flex items-center gap-2 text-end">
 					<button
 						type="button"
@@ -456,7 +454,7 @@
 					</button>
 					<a
 						href={tenantRoute}
-						class="inline-flex items-center justify-center rounded-md border-[0.5px] !border-red-200 px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
 					>
 						<Icon icon="material-symbols:close-rounded" class=" h-5" />
 					</a>
@@ -464,7 +462,7 @@
 			</div>
 
 			<!-- content -->
-			<div>
+			<div class="flex flex-col space-y-4">
 				<Progressive
 					bind:chatBotSetting
 					{edit}
@@ -479,6 +477,7 @@
 					{logoName}
 				/>
 			</div>
+			<!-- <hr class="border-[0.5px] border-t border-[var(--color-outline)]" /> -->
 		</form>
 	</div>
 </div>

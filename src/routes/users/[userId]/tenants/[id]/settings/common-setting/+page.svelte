@@ -110,7 +110,7 @@
 					</button>
 					<a
 						href={tenantRoute}
-						class="inline-flex items-center justify-center rounded-md border-[0.5px] !border-red-200 px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
 					>
 						<Icon icon="material-symbols:close-rounded" class=" h-5" />
 					</a>
@@ -119,9 +119,10 @@
 			<div class="flex flex-col space-y-4 px-4 py-4">
 				<ExpandableSettings groupedSettings={commonUISettings} bind:commonSetting edit={disabled} />
 			</div>
-			<hr class="border-t " />
+			
+			<hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
 
-			<div class="button-container my-4">
+			<div class="button-container my-4 ">
 				{#await promise}
 					<button type="submit" class="table-btn variant-soft-secondary" disabled>
 						Submiting
