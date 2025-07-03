@@ -25,32 +25,32 @@ export const commonUISettings= {
 		},
 		Medications: {
 			Name: 'Medications',
-			Path: 'mdi:medication',
+			Path: 'mdi:medication-outline',
 			Description: 'Track patient medication schedules.'
 		},
 		Careplans: {
 			Name: 'Careplans',
-			Path: 'mdi:clipboard-list',
+			Path: 'mdi:clipboard-list-outline',
 			Description: 'Create and manage patient care plans.'
 		},
 		Assessments: {
 			Name: 'Assessments',
-			Path: 'mdi:clipboard-check',
+			Path: 'mdi:clipboard-check-outline',
 			Description: 'Conduct patient health assessments.'
 		},
 		SymptomAssessments: {
 			Name: 'Symptom Assessments',
-			Path: 'mdi:clipboard-pulse',
+			Path: 'mdi:clipboard-pulse-outline',
 			Description: 'Specialized symptom evaluation assessments.'
 		},
 		DailyAssessments: {
 			Name: 'Daily Assessments',
-			Path: 'mdi:calendar-check',
+			Path: 'mdi:calendar-check-outline',
 			Description: 'Daily patient health monitoring.'
 		},
 		Appointments: {
 			Name: 'Appointments',
-			Path: 'mdi:calendar-clock',
+			Path: 'mdi:calendar-clock-outline',
 			Description: 'Schedule and manage patient appointments.'
 		},
 		Visits: {
@@ -65,7 +65,7 @@ export const commonUISettings= {
 		},
 		Documents: {
 			Name: 'Documents',
-			Path: 'mdi:file-document',
+			Path: 'mdi:file-document-outline',
 			Description: 'Store and manage medical documents.'
 		},
 		PatientHealthReports: {
@@ -85,7 +85,7 @@ export const commonUISettings= {
 		},
 		Nutrition: {
 			Name: 'Nutrition',
-			Path: 'mdi:food-apple',
+			Path: 'mdi:food-apple-outline',
 			Description: 'Monitor dietary intake and nutrition.'
 		},
 		Meditation: {
@@ -115,7 +115,7 @@ export const commonUISettings= {
 		Description: 'Electronic Health Record management and integration.',
 		FHIRStorage: {
 			Name: 'FHIR Storage',
-			Path: 'mdi:database',
+			Path: 'mdi:database-outline',
 			Description: 'FHIR-compliant health data storage.'
 		},
 		EHRIntegration: {
@@ -125,13 +125,13 @@ export const commonUISettings= {
 		},
 		ABDM: {
 			Name: 'ABDM',
-			Path: 'mdi:shield-account',
+			Path: 'mdi:shield-account-outline',
 			Description: 'Ayushman Bharat Digital Mission integration.'
 		}
 	},
 	Affiliations: {
 		Name: 'Affiliations',
-		Path: 'mdi:handshake',
+		Path: 'mdi:handshake-outline',
 		Description: 'Manage healthcare partnerships and affiliations.',
 		HealthCenters: {
 			Name: 'Health Centers',
@@ -150,7 +150,7 @@ export const commonUISettings= {
 		Description: 'Additional features and miscellaneous settings.',
 		Gamification: {
 			Name: 'Gamification',
-			Path: 'mdi:trophy',
+			Path: 'mdi:trophy-outline',
 			Description: 'Enable gamification features and rewards.'
 		},
 		Notifications: {
@@ -160,7 +160,7 @@ export const commonUISettings= {
 		},
 		Newsfeeds: {
 			Name: 'Newsfeeds',
-			Path: 'mdi:newspaper',
+			Path: 'mdi:newspaper-variant-outline',
 			Description: 'Manage news feeds and updates.'
 		},
 		Notices: {
@@ -175,12 +175,12 @@ export const commonUISettings= {
 		Description: 'Foster community engagement and communication.',
 		UserGroups: {
 			Name: 'Community',
-			Path: 'mdi:account-group',
+			Path: 'mdi:account-group-outline',
 			Description: 'Manage community user groups.'
 		},
 		Chat: {
 			Name: 'Chat',
-			Path: 'mdi:chat',
+			Path: 'mdi:chat-outline',
 			Description: 'Enable chat and messaging features.'
 		}
 	},
@@ -190,7 +190,7 @@ export const commonUISettings= {
 		Description: 'Support research activities and studies.',
 		Cohorts: {
 			Name: 'Cohorts',
-			Path: 'mdi:account-multiple',
+			Path: 'mdi:account-multiple-outline',
 			Description: 'Manage research cohorts and studies.'
 		}
 	},
@@ -200,7 +200,7 @@ export const commonUISettings= {
 		Description: 'Provide educational content and learning resources.',
 		Courses: {
 			Name: 'Courses',
-			Path: 'mdi:school',
+			Path: 'mdi:school-outline',
 			Description: 'Manage educational courses and content.'
 		},
 		LearningJourney: {
@@ -210,7 +210,7 @@ export const commonUISettings= {
 		},
 		KnowledgeNuggets: {
 			Name: 'Knowledge Nuggets',
-			Path: 'mdi:lightbulb-on',
+			Path: 'mdi:lightbulb-on-outline',
 			Description: 'Share knowledge snippets and tips.'
 		}
 	},
@@ -220,7 +220,7 @@ export const commonUISettings= {
 		Description: 'Advanced analytics and data visualization.',
 		CustomQueries: {
 			Name: 'Custom Queries',
-			Path: 'mdi:database-search',
+			Path: 'mdi:database-search-outline',
 			Description: 'Create custom data queries and reports.'
 		},
 		Quicksight: {

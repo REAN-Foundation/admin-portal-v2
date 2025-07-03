@@ -14,8 +14,8 @@
 					<tr>
 						<th class="">Add Reminder Schedule </th>
 						<th class=" text-end">
-							<button class="cancel-btn" onclick={() => (showReminderModal = false)}>
-								<Icon icon="material-symbols:close-rounded" class=" text-md" />
+							<button class="cancel-btn border-[0.5px] border-[var(--color-outline)]" onclick={() => (showReminderModal = false)}>
+								<Icon icon="material-symbols:close-rounded" class=" text-md " />
 							</button>
 						</th>
 					</tr>
@@ -86,7 +86,7 @@
 
 			<div class=" flex justify-end gap-3 p-3">
 				<button
-					class="cancel-btn rounded px-4 py-2 text-sm hover:bg-gray-300"
+					class="cancel-btn rounded px-4 py-2 text-sm  border-[0.5px] border-[var(--color-outline)]"
 					onclick={() => (showReminderModal = false)}
 				>
 					Cancel
