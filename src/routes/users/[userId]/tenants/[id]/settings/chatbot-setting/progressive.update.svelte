@@ -50,6 +50,7 @@
 				name="chatbotName"
 				placeholder="Enter name here..."
 				disabled={!edit}
+				required
 				bind:value={chatBotSetting.ChatBot.Name}
 			/>
 			{#if errors?.Name}
@@ -169,7 +170,7 @@
 			>
 				<option value="" disabled selected>Select language</option>
 				{#each languages as lang}
-					<option value={lang.code}>{lang.name}</option>
+					<option value={lang.name}>{lang.name}</option>
 				{/each}
 			</select>
 			{#if errors?.DefaultLanguage}
