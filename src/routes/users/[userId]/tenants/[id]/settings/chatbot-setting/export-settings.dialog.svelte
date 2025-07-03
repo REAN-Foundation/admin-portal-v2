@@ -188,16 +188,16 @@
 	<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
 		<!-- Dialog Box -->
 		<div
-			class="relative flex h-[80%] w-[80%] flex-col justify-start rounded-lg bg-white p-6 shadow-lg"
+			class="relative flex h-[80%] w-[80%] flex-col justify-start rounded-lg bg-[var(--color-primary)] p-6 shadow-lg"
 		>
 			<button
-				class="absolute top-4 right-4 text-2xl font-bold text-gray-400 hover:text-gray-600"
+				class="absolute top-4 right-4 text-2xl font-bold text-[var(--color-info)] hover:text-gray-600"
 				onclick={closeDialog}
 				aria-label="Close dialog"
 			>
 				&times;
 			</button>
-			<p class="mb-4 text-sm text-blue-600">
+			<p class="mb-4 text-sm text-[var(--color-info)]">
 				<span> Tenant settings </span>
 				&gt; configurations
 			</p>
@@ -209,7 +209,7 @@
 			{:else if !hasSecrets}
 				<div>
 					<button
-						class="w-64 self-start rounded bg-blue-200 px-4 py-2 text-black shadow hover:bg-blue-300"
+						class="variant-filled-secondary w-fit self-start rounded px-4 py-2 text-[var(--color-info)] shadow"
 						onclick={createSecrets}
 						disabled={isPublishing}
 					>
@@ -221,13 +221,13 @@
 				<div class="flex flex-1 flex-col gap-4">
 					<div class="mb-2 flex gap-2">
 						<button
-							class="rounded border border-blue-300 bg-blue-100 px-4 py-1 text-black hover:bg-blue-200 disabled:opacity-60"
+							class="rounded border variant-filled-secondary px-4 py-1 text-[var(--color-info)] 0 disabled:opacity-60"
 							disabled={isFetchingSecret || viewEditMode === 'view'}
 						>
 							{isFetchingSecret ? 'Loading...' : 'View'}
 						</button>
 						<button
-							class="rounded border border-blue-300 bg-blue-100 px-4 py-1 text-black hover:bg-blue-200 disabled:opacity-60"
+							class="rounded border variant-filled-secondary px-4 py-1 text-[var(--color-info)]  disabled:opacity-60"
 							onclick={handleEditMode}
 							disabled={viewEditMode === 'edit'}
 						>
@@ -236,7 +236,7 @@
 					</div>
 					<!-- JSON Box -->
 					<div class="relative flex-1 rounded border border-blue-300">
-						<div class="absolute top-1 right-3 text-xs text-blue-500">JSON</div>
+						<div class="absolute top-1 right-3 text-xs text-[var(--color-info)]">JSON</div>
 						<textarea
 							class="h-full w-full resize-none border-0 p-4 font-mono text-sm focus:outline-none"
 							placeholder="JSON Validator"
@@ -249,7 +249,7 @@
 						{/if}
 					</div>
 					<button
-						class="mt-2 w-64 self-end rounded bg-blue-200 px-4 py-2 text-black shadow hover:bg-blue-300"
+						class="mt-2 w-64 self-end rounded variant-filled-secondary px-4 py-2 text-[var(--color-info)] shadow "
 						onclick={publish}
 						disabled={isPublishing}
 					>
