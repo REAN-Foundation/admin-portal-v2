@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { z } from 'zod';
 	import Password from '$lib/components/input/password.input.svelte';
-	import { getPublicFooterLink, getPublicFooterText, getPublicLogoImageSource } from '$lib/themes/theme.selector';
+	import {
+		getPublicFooterLink,
+		getPublicFooterText,
+		getPublicLogoImageSource
+	} from '$lib/themes/theme.selector';
 	import { toasts } from '$lib/components/toast/toast.store';
 	import { showMessage } from '$lib/components/toast/message.utils';
 	let showResetPassword = false;
@@ -21,12 +25,16 @@
 	const footerText = `© ${new Date().getFullYear()} ${getPublicFooterText()}`;
 	const footerLink = getPublicFooterLink();
 
-
 	const resetPasswordSchema = z
 		.object({
 			email: z.string().email({ message: 'Invalid email address' }).optional(),
 			phone: z.string().optional(),
-			resetCode: z.string().min(6, { message: 'Reset code must be 6 characters' }),
+			resetCode: z
+				.string({
+					required_error: 'Reset code is required.',
+					invalid_type_error: 'Name must be a string.'
+				})
+				.min(6, { message: 'Reset code must be 6 characters' }),
 			newPassword: z
 				.string()
 				.regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/, {
@@ -37,7 +45,10 @@
 					message: 'Password must be 8 characters'
 				}),
 			confirmPassword: z
-				.string()
+				.string({
+			required_error: 'Password  is required.',
+			invalid_type_error: 'Name must be a string.'
+		})
 				.regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/, {
 					message:
 						'Password should contain at least 1 capital letter, 1 small letter, 1 digit, and 1 special character.'
@@ -121,7 +132,7 @@
 	<img class="ct-image mt-7 mb-7 w-36" alt="logo" src={logoImageSource} />
 
 	{#if showForgotPassword}
-		<div class="card p-8 mb-10">
+		<div class="card mb-10 p-8">
 			<form onsubmit={handleForgotPassword} class="">
 				<h2 class="mb-4 text-center text-xl">Forgot Password</h2>
 
@@ -130,7 +141,7 @@
 						<label class="text-md flex items-center">
 							<input
 								type="radio"
-								class="radio-input w-4 h-4"
+								class="radio-input h-4 w-4"
 								name="loginType"
 								value="email"
 								bind:group={forgotPasswordActiveTab}
@@ -139,7 +150,7 @@
 						<label class="text-md flex items-center">
 							<input
 								type="radio"
-								class="radio-input w-4 h-4"
+								class="radio-input h-4 w-4"
 								name="loginType"
 								value="phone"
 								bind:group={forgotPasswordActiveTab}
@@ -150,12 +161,18 @@
 						<label class="label" for="email">
 							<span class="label-text-alt"></span>
 						</label>
-						<input type="email" name="email" placeholder="Enter your email" bind:value={email} required class="input mb-4" />
+						<input
+							type="email"
+							name="email"
+							placeholder="Enter your email"
+							bind:value={email}
+							class="input mb-4"
+						/>
 					{/if}
 					{#if forgotPasswordActiveTab === 'phone'}
 						<div class="mb-4 flex gap-2">
 							<div class="w-1/3">
-								<select name="countryCode" class="input" bind:value={countryCode} required>
+								<select name="countryCode" class="input" bind:value={countryCode}>
 									<option value="+1">+1</option>
 									<option value="+91">+91</option>
 								</select>
@@ -168,14 +185,12 @@
 									bind:value={phone}
 									class="input"
 									placeholder="Enter your mobile number"
-									required
 								/>
 							</div>
 						</div>
 					{/if}
 				</div>
-				<button type="submit" class="btn mb-6 w-full cursor-pointer">Send Reset Code</button
-				>
+				<button type="submit" class="btn mb-6 w-full cursor-pointer">Send Reset Code</button>
 				<a href="/">
 					<button
 						type="button"
@@ -190,7 +205,7 @@
 			</form>
 		</div>
 	{:else if showResetPassword}
-		<div class="card px-8 py-4 mb-10">
+		<div class="card mb-10 px-8 py-4">
 			<form onsubmit={handleResetPassword} class="">
 				<h2 class="mb-4 text-center text-xl">Reset Password</h2>
 				<input type="email" name="email" bind:value={email} class="input mb-4 hidden" />
@@ -198,9 +213,10 @@
 				<input type="text" name="phone" bind:value={phone} class="input mb-4 hidden" />
 				<label>
 					<span class="label">Reset Code/OTP</span>
-					<input type="text" bind:value={resetCode} required class="input" placeholder="Enter code/OTP" />
+					<input type="text" bind:value={resetCode} class="input" placeholder="Enter code/OTP" />
 					{#if errors.resetCode}
-						<p class="text-error-500 mb-2 text-xs">{errors.resetCode}</p>
+						<!-- <p class="text-error-500 mb-2 text-xs">{errors.resetCode}</p> -->
+						<p class="error-text">{errors.resetCode}</p>
 					{/if}
 				</label>
 				<!-- svelte-ignore a11y-label-has-associated-control -->
@@ -212,7 +228,7 @@
 
 					<!-- <input type="password" bind:value={newPassword} required class="input mb-4 mt-2" /> -->
 					{#if errors.newPassword}
-						<p class="text-error-500 mb-2 text-xs">{errors.newPassword}</p>
+						<p class="error-text">{errors.newPassword}</p>
 					{/if}
 				</label>
 				<!-- svelte-ignore a11y-label-has-associated-control -->
@@ -224,12 +240,10 @@
 
 					<!-- <input type="password" bind:value={confirmPassword} required class="input mb-4" /> -->
 					{#if errors.confirmPassword}
-						<p class="text-error-500 mb-2 text-xs">{errors.confirmPassword}</p>
+						<p class="error-text">{errors.confirmPassword}</p>
 					{/if}
 				</label>
-				<button type="submit" class="btn mb-6 w-full cursor-pointer"
-					>Reset Password</button
-				>
+				<button type="submit" class="btn mb-6 w-full cursor-pointer">Reset Password</button>
 				<button
 					type="button"
 					class="btn mb-6 w-full cursor-pointer"
