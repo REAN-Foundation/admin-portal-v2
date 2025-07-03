@@ -95,9 +95,9 @@
 		<div class="border border-[var(--color-outline)]">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 				<div
-					class="flex items-center justify-between rounded-t-lg bg-[var(--color-secondary)] px-5 py-6"
+					class="flex items-center justify-between rounded-t-lg bg-[var(--color-primary)] px-5 py-6"
 				>
-					<h2 class=" text-gray-800l text-lg font-semibold text-[var(--color-info)]">
+					<h2 class=" text-gray-800l text-lg font-semibold text-[var(--color-info)] ">
 						Integrations
 					</h2>
 					<div class="flex items-center gap-2 text-end">
