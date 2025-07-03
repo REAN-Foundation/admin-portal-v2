@@ -15,7 +15,9 @@
 		onFileSelected,
 		currentSection = $bindable(),
 		fileName,
-		chatBotUISettings
+		chatBotUISettings,
+		onLogoSelected,
+		logoName
 	} = $props();
 
 	let errors: Record<string, string> = $state({});
@@ -56,8 +58,9 @@
 		</div>
 
 		<div class="my-4 flex flex-col md:flex-row md:items-center">
-			<label for="organizationName" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
-				>Organization Name</label
+			<label
+				for="organizationName"
+				class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]">Organization Name</label
 			>
 			<input
 				type="text"
@@ -73,26 +76,38 @@
 		</div>
 
 		<div class="my-4 flex flex-col md:flex-row md:items-center">
-			<label for="organizationLogo" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
-				>Organization Logo</label
+			<label
+				for="organizationLogo"
+				class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]">Organization Logo</label
 			>
-			<input
-				type="text"
-				class="input-field w-[70%]"
-				name="organizationLogo"
-				placeholder="Enter organization logo here..."
-				disabled={!edit}
-				bind:value={chatBotSetting.ChatBot.OrganizationLogo}
-			/>
+			<div class="flex w-[100%] gap-3">
+				<label class="table-btn variant-filled-secondary">
+					Select File
+					<input type="file" class="hidden" onchange={onLogoSelected} disabled={!edit} />
+				</label>
+
+				<input
+					type="text"
+					class="input-field w-[70%]"
+					name="organizationLogo"
+					onchange={async (e) => await onLogoSelected(e)}
+					placeholder="No File Selected..."
+					readonly
+					disabled={!edit}
+					value={logoName}
+				/>
+			</div>
 			{#if errors?.OrganizationLogo}
 				<p class="text-error">{errors?.OrganizationLogo}</p>
 			{/if}
 		</div>
 
 		<div class="my-4 flex flex-col md:flex-row md:items-center">
-			<label for="organizationWebsite" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
-				>Organization Website</label
-			>
+			<label
+				for="organizationWebsite"
+				class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+				>Organization Website
+			</label>
 			<input
 				type="text"
 				class="input-field w-[70%]"
@@ -107,19 +122,14 @@
 		</div>
 
 		<div class="my-4 flex flex-col md:flex-row md:items-center">
-			<label for="favicon" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]">Favicon</label>
+			<label for="favicon" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+				>Favicon</label
+			>
 			<div class="flex w-[100%] gap-3">
 				<label class="table-btn variant-filled-secondary">
 					Select File
 					<input type="file" class="hidden" onchange={onFileSelected} disabled={!edit} />
 				</label>
-				<!-- <input
-					type="file"
-					class=""
-					placeholder="select Image"
-					onchange={async (e) => await onFileSelected(e)}
-				/> -->
-
 				<input
 					type="text"
 					class="input bg-[var(--color-primary)] text-[var(--color-info)] focus:outline-none"
@@ -149,8 +159,9 @@
 		</div>
 
 		<div class="my-4 flex flex-col md:flex-row md:items-center">
-			<label for="defaultLanguage" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
-				>Default Language</label
+			<label
+				for="defaultLanguage"
+				class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]">Default Language</label
 			>
 			<select
 				bind:value={chatBotSetting.ChatBot.DefaultLanguage}
@@ -179,19 +190,14 @@
 						onclick={() => toggleTab(groupName)}
 						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
 	transition-all duration-200 ease-in-out  ${
-																openTab === groupName
-																	? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
-																	: `border-hover rounded bg-[var(--color-primary)]`
-															} 
+		openTab === groupName
+			? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+			: `border-hover rounded bg-[var(--color-primary)]`
+	} 
 	`}
 					>
 						<div class="flex items-center gap-2">
-							<Icons
-								cls="my-2 stroke-2"
-								h="80%"
-								w="80%"
-								iconPath={iconPaths[groupName] ?? ''}
-							/>
+							<Icons cls="my-2 stroke-2" h="80%" w="80%" iconPath={iconPaths[groupName] ?? ''} />
 							<div class=" text-start">
 								<div class="text-base font-medium">
 									{#if groupName === 'MessageChannels'}

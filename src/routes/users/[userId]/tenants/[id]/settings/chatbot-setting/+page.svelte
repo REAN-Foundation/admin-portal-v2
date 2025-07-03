@@ -6,7 +6,8 @@
 	import type {
 		ChatBotSettings,
 		ConsentSettings,
-		FaviconUploadModel
+		FaviconUploadModel,
+		LogoUploadModel
 	} from '$lib/types/tenant.settings.types.js';
 	import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema.js';
 	import Progressive from './progressive.update.svelte';
@@ -32,12 +33,16 @@
 	let showExportDialog = $state(false);
 	let isCreatingSecret = $state(false);
 
-	let previousConsent = $derived(chatBotSetting.ChatBot.Consent);
-	let faviconUrl = $derived(chatBotSetting.ChatBot.Favicon);
+	let faviconUrl = chatBotSetting.ChatBot.Favicon;
+	let logoUrl = chatBotSetting.ChatBot.OrganizationLogo;
+	let logoUrlResult = $state('');
+	let faviconUrlResult = $state('');
+
 	// let disabled = $state(data.commonSettings.UserInterfaces.ChatBot);
 	let disabled = $state(data.isChatBotEnabled);
 	let edit = $state(false);
 	let fileName = $state('');
+	let logoName = $state('');
 
 	const totalSteps = 3;
 	let currentSection = $state(0);
@@ -81,8 +86,6 @@
 
 		const fileValidationResult = imageUploadSchema.safeParse(fileCreateModel);
 
-		console.log('validation result', fileValidationResult);
-
 		if (!fileValidationResult.success) {
 			errors = Object.fromEntries(
 				Object.entries(fileValidationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -97,12 +100,40 @@
 		formData.append('filename', file.name);
 	};
 
+	const onLogoSelected = async (e) => {
+		const input = e.target as HTMLInputElement;
+		const file = input.files?.[0];
+		logoName = file.name;
+
+		const fileCreateModel: LogoUploadModel = {
+			UploadFile: file,
+			FileName: file.name,
+			FileType: file.type
+		};
+
+		const fileValidationResult = imageUploadSchema.safeParse(fileCreateModel);
+
+		if (!fileValidationResult.success) {
+			errors = Object.fromEntries(
+				Object.entries(fileValidationResult.error.flatten().fieldErrors).map(([key, val]) => [
+					key,
+					val?.[0] || 'This field is required'
+				])
+			);
+			return;
+		}
+
+		formData.append('logofile', file);
+		formData.append('filename', file.name);
+	};
+
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
 		errors = {};
 
 		// let isConsentSaved = false;
-		// let isFaviconUploaded = false;
+		let isFaviconUploaded = false;
+		let isLogoUploaded = false;
 		// let isChatBotSaved = false;
 
 		try {
@@ -114,60 +145,49 @@
 				});
 				return;
 			}
-			// ----------------------------- CONSENT SETTINGS -----------------------------
-			// const consentSettingModel: ConsentSettings = {
-			// 	TenantId: tenantId,
-			// 	TenantCode: tenantCode,
-			// 	TenantName: tenantName,
-			// 	DefaultLanguage: consentSetting.DefaultLanguage,
-			// 	Messages: consentSetting.Messages
-			// };
 
-			// const consentValidation = ConsentSettingsSchema.safeParse(consentSettingModel);
-			// if (!consentValidation.success) {
-			// 	errors = Object.fromEntries(
-			// 		Object.entries(consentValidation.error.flatten().fieldErrors).map(([key, val]) => [
-			// 			key,
-			// 			val?.[0] || 'This field is required'
-			// 		])
-			// 	);
-			// 	return;
-			// }
+			//------------------------------LOGO UPLOAD---------------------------------
 
-			// const consentRes = await fetch(`/api/server/tenants/settings/${tenantId}/Consent`, {
-			// 	method: 'PUT',
-			// 	body: JSON.stringify(consentSettingModel),
-			// 	headers: { 'content-type': 'application/json' }
-			// });
+			if (formData.has('logofile')) {
+				const fileRes = await fetch(`/api/server/tenants/settings/upload`, {
+					method: 'POST',
+					body: formData
+				});
 
-			// const consentJson = await consentRes.json();
-			// if (consentJson.HttpCode === 200 || consentJson.HttpCode === 201) {
-			// 	isConsentSaved = true;
-			// } else if (consentJson.Errors) {
-			// 	errors = consentJson.Errors;
-			// 	addToast({ message: 'Consent settings failed.', type: 'error', timeout: 3000 });
-			// 	return;
-			// }
+				const fileJson = await fileRes.json();
+
+				if (fileJson.HttpCode === 200 || fileJson.HttpCode === 201) {
+					logoUrl = fileJson.Data.FileResources[0].Url;
+
+					isLogoUploaded = true;
+				} else {
+					addToast({ message: 'Logo upload failed.', type: 'error', timeout: 3000 });
+					return;
+				}
+			} else {
+				isLogoUploaded = true;
+			}
 
 			// ----------------------------- FAVICON UPLOAD -----------------------------
-			// if (formData.has('file')) {
-			// 	const fileRes = await fetch(`/api/server/tenants/upload`, {
-			// 		method: 'POST',
-			// 		body: formData
-			// 	});
+			if (formData.has('file')) {
+				const fileRes = await fetch(`/api/server/tenants/upload`, {
+					method: 'POST',
+					body: formData
+				});
 
-			// 	const fileJson = await fileRes.json();
+				const fileJson = await fileRes.json();
 
-			// 	if (fileJson.HttpCode === 200 || fileJson.HttpCode === 201) {
-			// 		faviconUrl = fileJson.Data.FileResources[0].Url;
-			// 		isFaviconUploaded = true;
-			// 	} else {
-			// 		addToast({ message: 'Favicon upload failed.', type: 'error', timeout: 3000 });
-			// 		return;
-			// 	}
-			// } else {
-			// 	isFaviconUploaded = true; // no file, but treat as passed
-			// }
+				if (fileJson.HttpCode === 200 || fileJson.HttpCode === 201) {
+					faviconUrl = fileJson.Data.FileResources[0].Url;
+
+					isFaviconUploaded = true;
+				} else {
+					addToast({ message: 'Favicon upload failed.', type: 'error', timeout: 3000 });
+					return;
+				}
+			} else {
+				isFaviconUploaded = true; // no file, but treat as passed
+			}
 
 			// ----------------------------- CHATBOT SETTINGS -----------------------------
 			const chatbotCreateModel: ChatBotSettings = {
@@ -175,7 +195,7 @@
 				Description: chatBotSetting.ChatBot.Description,
 				DefaultLanguage: chatBotSetting.ChatBot.DefaultLanguage,
 				OrganizationName: chatBotSetting.ChatBot.OrganizationName,
-				OrganizationLogo: chatBotSetting.ChatBot.OrganizationLogo,
+				OrganizationLogo: logoUrl,
 				OrganizationWebsite: chatBotSetting.ChatBot.OrganizationWebsite,
 				Favicon: faviconUrl,
 				MessageChannels: {
@@ -245,38 +265,6 @@
 		MessageChannels: '/tenant-setting/chatbot/message_channel.svg#icon',
 		SupportChannels: '/tenant-setting/chatbot/support_channel.svg#icon'
 	};
-
-	// const chatBotSettings = {
-	// 	MessageChannels: {
-	// 		WhatsApp: {
-	// 			Name: 'WhatsApp',
-	// 			IconPath: 'ic:twotone-whatsapp',
-	// 			Description: 'Connect with WhatsApp for messaging and notifications.'
-	// 		},
-	// 		Telegram: {
-	// 			Name: 'Telegram',
-	// 			IconPath: 'iconoir:telegram',
-	// 			Description: 'Connect with Telegram for messaging and notifications.'
-	// 		}
-	// 	},
-	// 	SupportChannels: {
-	// 		ClickUp: {
-	// 			Name: 'ClickUp',
-	// 			IconPath: 'lineicons:clickup',
-	// 			Description: 'Connect with ClickUp for task management and collaboration.'
-	// 		},
-	// 		Slack: {
-	// 			Name: 'Slack',
-	// 			IconPath: 'basil:slack-outline',
-	// 			Description: 'Connect with Slack for team communication and collaboration.'
-	// 		},
-	// 		Email: {
-	// 			Name: 'Email',
-	// 			IconPath: 'line-md:email',
-	// 			Description: 'Connect with Email for email notifications and communication.'
-	// 		}
-	// 	}
-	// } as const;
 
 	const chatBotSettings = {
 		MessageChannels: {
@@ -390,11 +378,10 @@
 	}
 
 	$effect(() => {
-		if (edit === false && chatBotSetting.ChatBot.Consent === true && previousConsent === false) {
-			showCancelModel = true;
-		}
-
-		previousConsent = chatBotSetting.ChatBot.Consent;
+		// if (edit === false && chatBotSetting.ChatBot.Consent === true && previousConsent === false) {
+		// 	showCancelModel = true;
+		// }
+		// previousConsent = chatBotSetting.ChatBot.Consent;
 	});
 
 	async function getBotSecret() {
@@ -454,7 +441,9 @@
 
 			<!-- Heading -->
 
-			<div class="flex items-center justify-between !rounded-b-none border  px-5 py-6 bg-[var(--color-primary)]">
+			<div
+				class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6"
+			>
 				<h1 class=" mx-1 text-xl text-[var(--color-info)]">Chatbot Settings</h1>
 				<div class="flex items-center gap-2 text-end">
 					<button
@@ -486,6 +475,8 @@
 					bind:currentSection
 					{fileName}
 					chatBotUISettings={chatBotSettings}
+					{onLogoSelected}
+					{logoName}
 				/>
 			</div>
 		</form>
