@@ -18,7 +18,7 @@
 	const groupsRoute = `/users/${userId}/bot-content/prompt-template`;
 
 	const breadCrumbs = [
-		{ name: 'Prompt Templates', path: groupsRoute },
+		{ name: 'Prompt Template', path: groupsRoute },
 		{ name: 'Create', path: createRoute }
 	];
 

@@ -89,7 +89,7 @@
 	const promptRoutes = `/users/${userId}/bot-content/prompt-template`;
 
 	const breadCrumbs = [
-		{ name: 'Prompt Templates', path: promptRoutes },
+		{ name: 'Prompt Template', path: promptRoutes },
 		{ name: 'Edit', path: createRoute }
 	];
 
