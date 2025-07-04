@@ -16,11 +16,11 @@
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let title = $state(data.assessmentTemplate.Title),
-		description = $state(data.assessmentTemplate.Description||''),
+		description = $state(data.assessmentTemplate.Description || ''),
 		displayCode = $state(data.assessmentTemplate.DisplayCode),
 		assessmentType = $state(data.assessmentTemplate.Type),
-		provider = $state(data.assessmentTemplate.Provider||undefined),
-		providerAssessmentCode = $state(data.assessmentTemplate.ProviderAssessmentCode||undefined),
+		provider = $state(data.assessmentTemplate.Provider || undefined),
+		providerAssessmentCode = $state(data.assessmentTemplate.ProviderAssessmentCode || undefined),
 		serveListNodeChildrenAtOnce = $state(data.assessmentTemplate.ServeListNodeChildrenAtOnce),
 		scoringApplicable = $state(data.assessmentTemplate.ScoringApplicable),
 		keywords: string[] = $state(data.assessmentTemplate.Tags || []);
@@ -104,8 +104,8 @@
 		}
 	};
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-		});
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -168,11 +168,18 @@
 										: ''}"
 								>
 									<option selected>{assessmentType}</option>
-									<option>Daily Update</option>
-									<option>Symptoms</option>
-									<option>Survey</option>
-									<option>Protocol</option>
-									<option>Custom</option>
+									{#if assessmentType !== 'Daily Update'}
+										<option>Daily Update</option>
+									{/if}
+									{#if assessmentType !== 'Survey'}
+										<option>Survey</option>
+									{/if}
+									{#if assessmentType !== 'Protocol'}
+										<option>Protocol</option>
+									{/if}
+									{#if assessmentType !== 'Custom'}
+										<option>Custom</option>
+									{/if}
 								</select>
 								{#if errors?.Type}
 									<p class="text-error">{errors?.Type}</p>
@@ -248,11 +255,7 @@
 						<tr>
 							<td class="align-top">Tags</td>
 							<td>
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-								/>
+								<InputChips bind:keywords name="keywords" id="keywords" />
 								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 							</td>
 						</tr>

@@ -2,7 +2,7 @@
 	import { enhance } from '$app/forms';
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
-	import { toastMessage } from '$lib/components/toast/toast.store';
+	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import { showMessage } from '$lib/utils/message.utils';
 
 	///////////////////////////////////////////////////////////////////////////////////////
@@ -24,7 +24,7 @@
 
 	const upload = async (imgBase64, file) => {
 		const data = {};
-		console.log(imgBase64);
+		// console.log(imgBase64);
 
 		const imgData = imgBase64.split(',');
 		data['image'] = imgData[1];
@@ -43,15 +43,11 @@
 		console.log('response from api endpoint', response);
 
 		if (response.Status === 'success' && response.HttpCode === 201) {
-			return { success: true, resourceId: response.Data?.id, response };
+			toastMessage(response);
 		}
-		if (response.Errors) {
+		if (response.HttpCode === 400 && response.Message) {
 			errors = response?.Errors || {};
-			// showMessage(response.Message, 'error');
-			return response;
-		} else {
-			// showMessage(response.Message, 'error');
-			return { success: false, error: response.Message };
+			toastMessage(response);
 		}
 	};
 
@@ -67,25 +63,8 @@
 	};
 
 	const handleSubmit = async (event: Event) => {
-		try {
-			event.preventDefault();
-			errors = {};
-
-			const uploadResult = await upload(fileinput, selectFile);
-
-			if (uploadResult.response.HttpCode === 201 || uploadResult.response.HttpCode === 200) {
-				toastMessage(uploadResult.response);
-				return;
-			}
-
-			if (uploadResult.response.Errors) {
-				errors = uploadResult?.response.Errors || {};
-			} else {
-				toastMessage(uploadResult.response);
-			}
-		} catch (error) {
-			toastMessage();
-		}
+		event.preventDefault();
+		const uploadResult = await upload(fileinput, selectFile);
 	};
 </script>
 
