@@ -30,7 +30,7 @@
 
 	const breadCrumbs = [
 		{
-			name: 'Prompt Templates',
+			name: 'Prompt Template',
 			path: promptsRoute
 		},
 		{

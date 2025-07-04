@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import type { PageServerData } from './$types'
+	import type { PageServerData } from './$types';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
@@ -16,7 +16,7 @@
 	let promise = $state();
 	let name = $state(data.biometrics.Name);
 	let description = $state(data.biometrics.Description || undefined);
-	let measurementUnit = $state(data.biometrics.MeasurementUnit);
+	let measurementUnit = $state(data.biometrics.MeasurementUnit || undefined);
 	let version = $state(data.biometrics.Version);
 	let biometricsType = $state(data.biometrics.BiometricsType);
 	let tags = $state(data.biometrics.Tags);
@@ -37,18 +37,18 @@
 		{ name: 'Edit', path: editRoute }
 	];
 
-	const handleReset =  () => {
-		 name = data?.biometrics?.Name;
-		 biometricsId = page.params.id;
-		 description = data?.biometrics?.Description;
-		 measurementUnit = data?.biometrics?.MeasurementUnit
-		 version = data?.biometrics?.Version;
-		 biometricsType = data?.biometrics.BiometricsType;
-		 tags = data?.biometrics.Tags;
-		 errors = {};
-		}
+	const handleReset = () => {
+		name = data?.biometrics?.Name;
+		biometricsId = page.params.id;
+		description = data?.biometrics?.Description;
+		measurementUnit = data?.biometrics?.MeasurementUnit;
+		version = data?.biometrics?.Version;
+		biometricsType = data?.biometrics.BiometricsType;
+		tags = data?.biometrics.Tags;
+		errors = {};
+	};
 
-		const handleSubmit = async (event: Event) => {
+	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
 			errors = {};
@@ -84,9 +84,9 @@
 			const response = await res.json();
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
-				toastMessage(response); 
-				console.log("Full response:", response);
-				await goto(`${biometricsRoute}/${response?.Data?.id}/view`); 
+				toastMessage(response);
+				console.log('Full response:', response);
+				await goto(`${biometricsRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -98,9 +98,8 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -137,7 +136,9 @@
 					<td class="table-data">
 						<textarea
 							name="description"
-							class="input resize-none {errors?.Description ? 'border-error-300' : 'border-primary-200'}"
+							class="input resize-none {errors?.Description
+								? 'border-error-300'
+								: 'border-primary-200'}"
 							bind:value={description}
 							placeholder="Enter description here..."
 						></textarea>
@@ -145,7 +146,7 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Biometrics Type</td>
+					<td class="table-label">Biometrics Type<span class="text-red-700">*</span></td>
 					<td class="table-data">
 						<select class="input" bind:value={biometricsType}>
 							<option disabled value>Select biometrics type</option>
@@ -166,9 +167,10 @@
 					<td class="table-data">
 						<input
 							type="text"
+							class="input {errors?.measurementUnit ? 'input-text-error' : ''}"
+							name="measurementUnit"
+							placeholder="Enter unit here..."
 							bind:value={measurementUnit}
-							placeholder="Enter unit..."
-							class="input {errors?.MeasurementUnit ? 'input-text-error' : ''}"
 						/>
 						{#if errors?.MeasurementUnit}
 							<p class="error-text">{errors?.MeasurementUnit}</p>
@@ -179,11 +181,7 @@
 				<tr class="tables-row">
 					<td class="table-label align-top">Tags</td>
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
+						<InputChips bind:keywords name="keywords" id="keywords" />
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>
@@ -206,13 +204,12 @@
 		</table>
 
 		<div class="btn-container">
-            <Button type="button" onclick={handleReset} text="Reset" variant="primary" />
-            {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
-            {/await}
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
 		</div>
-
 	</form>
 </div>

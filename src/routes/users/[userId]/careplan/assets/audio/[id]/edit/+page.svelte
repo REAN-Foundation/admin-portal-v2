@@ -132,15 +132,15 @@
 						<td class="table-data">
 							<input
 									type="textarea"
-									class="input {form?.errors?.Name
+									class="input {errors?.Transcript
 											? 'input-text-error'
 											: ''}"
 									name="transcript"
 									placeholder="Enter transcript here..."
 									bind:value={transcript}
 								/>
-								{#if errors?.Name}
-								<p class="text-error">{errors?.Name}</p>
+								{#if errors?.Transcript}
+								<p class="text-error">{errors?.Transcript}</p>
 								{/if}
 							</td>
 						</tr>
