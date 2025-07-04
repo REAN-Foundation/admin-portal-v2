@@ -14,7 +14,6 @@
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
-	console.log(data, 'data from server');
 	let nodeTitle = data.assessmentNode.Title;
 	let templateTitle = data.templateData.Title;
 
@@ -168,12 +167,6 @@
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentNodeUpdateModel);
 
-			console.log(
-				'validationResult ==============>',
-				validationResult,
-				'assessmentNodeUpdateModel ==============>',
-				assessmentNodeUpdateModel
-			);
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -210,8 +203,8 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-		});
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -233,10 +226,15 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td>Node Type <span class=" text-red-600">*</span></td>
+							<td class="text-gray-500">Node Type <span class=" text-red-600">*</span></td>
 							<td>
-								<input type="text" disabled bind:value={nodeType} class="input" />
-								<input type="hidden" name="nodeType" bind:value={nodeType} class="input" />
+								<input type="text" disabled bind:value={nodeType} class="input text-gray-500" />
+								<input
+									type="hidden"
+									name="nodeType"
+									bind:value={nodeType}
+									class="input text-gray-500"
+								/>
 							</td>
 						</tr>
 						<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
@@ -304,11 +302,7 @@
 						<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
 							<td class="align-top">Tags</td>
 							<td>
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-								/>
+								<InputChips bind:keywords name="keywords" id="keywords" />
 								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 							</td>
 						</tr>
@@ -350,14 +344,18 @@
 						</tr>
 						{#if selectedNodeType === 'Question'}
 							<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
-								<td class="align-top">Query Response Type <span class=" text-red-600">*</span></td>
+								<td class="align-top text-gray-500"
+									>Query Response Type <span class=" text-red-600">*</span></td
+								>
 								<td>
 									<input type="hidden" name="queryType" bind:value={queryType} />
 									<select
 										id="mySelect"
 										name="queryType"
 										disabled
-										class="health-system-input {errors?.queryType ? 'input-text-error' : ''}"
+										class="health-system-input {errors?.queryType
+											? 'input-text-error'
+											: ''} text-gray-500"
 										placeholder="Select query type here..."
 										bind:value={queryType}
 									>

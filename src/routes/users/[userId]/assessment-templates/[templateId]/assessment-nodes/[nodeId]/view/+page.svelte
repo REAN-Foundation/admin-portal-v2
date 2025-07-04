@@ -22,7 +22,10 @@
 		assessmentNodes.Description !== null && assessmentNodes.Description !== ''
 			? assessmentNodes.Description
 			: 'Not specified';
-	const message = assessmentNodes.Message !== null && assessmentNodes.Message !== '' ? assessmentNodes.Message : 'Not specified';
+	const message =
+		assessmentNodes.Message !== null && assessmentNodes.Message !== ''
+			? assessmentNodes.Message
+			: 'Not specified';
 	const serveListNodeChildrenAtOnce = assessmentNodes.ServeListNodeChildrenAtOnce ?? null;
 	const queryType = assessmentNodes.QueryResponseType;
 	const options = assessmentNodes.Options ?? [];
@@ -46,8 +49,6 @@
 	}
 
 	scoringApplicableCondition.set(data.templateDetails.ScoringApplicable);
-
-	console.log('assessmentNode', assessmentNodes);
 
 	const userId = page.params.userId;
 	const templateId = page.params.templateId;
@@ -79,6 +80,7 @@
 			path: viewRoute
 		}
 	];
+
 	const handleAssessmentNodeDelete = async (id) => {
 		const assessmentNodeId = id;
 		console.log('assessmentNodeId', assessmentNodeId);
@@ -106,8 +108,6 @@
 		model = false;
 	};
 	const onUpdateScoringCondition = async (score: number) => {
-		// const scoringId = data.assessmentNode.ScoringCondition.id;
-		// console.log(scoringId);
 		resolutionScore = score;
 		console.log('resolutionScore', resolutionScore);
 		handleSubmit(event);
@@ -146,15 +146,12 @@
 				}
 			);
 
-			// console.log(scoringId);
 			const response = await res.json();
-			// const scoringCondition = JSON.parse(resp);
 
 			console.log('response', response);
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				// goto(`${assessmentsRoutes}/${response?.Data?.AssessmentTemplate?.id}/view`);
-				// resolutionScore = scoringCondition.ResolutionScore;
+
 				return;
 			}
 			if (response.Errors) {
@@ -166,19 +163,8 @@
 			toastMessage();
 		}
 	};
-
-	// async function updateScoringCondition(model) {
-	// 	const response = await fetch(`/api/server/assessment-nodes/update-scoring-condition`, {
-	// 		method: 'POST',
-	// 		body: JSON.stringify(model),
-	// 		headers: { 'content-type': 'application/json' }
-	// 	});
-	// }
 </script>
 
-<!-- <UpdateScoringCondition
-	on:updateScoringCondition={async (e) => await onUpdateScoringCondition(e.detail.resolutionScore)}
-/> -->
 {#if model}
 	<UpdateScoringCondition {onUpdateScoringCondition} {closeModal} />
 {/if}

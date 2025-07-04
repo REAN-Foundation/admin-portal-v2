@@ -31,7 +31,7 @@
 		resolutionScore = $state(undefined),
 		serveListNodeChildrenAtOnce = $state(undefined),
 		message = $state(undefined),
-		keywords :string[] = $state([]),
+		keywords: string[] = $state([]),
 		required = $state(undefined),
 		fieldIdentifier = $state(undefined),
 		fieldIdentifierUnit = $state(undefined),
@@ -153,10 +153,8 @@
 				FieldIdentifierUnit: fieldIdentifierUnit
 			};
 
-			console.log('assessmentNodeCreateModel', assessmentNodeCreateModel);
 			const validationResult = createOrUpdateSchema.safeParse(assessmentNodeCreateModel);
 
-			console.log('validationResult', validationResult);
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -197,8 +195,8 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-		});
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -339,11 +337,7 @@
 						<tr>
 							<td class="align-top">Tags</td>
 							<td>
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-								/>
+								<InputChips bind:keywords name="keywords" id="keywords" />
 								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 							</td>
 						</tr>

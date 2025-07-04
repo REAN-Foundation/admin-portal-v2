@@ -152,7 +152,6 @@
 									class="health-system-input {form?.errors?.type ? 'input-text-error' : ''}"
 								>
 									<option>Daily Update</option>
-									<option>Symptoms</option>
 									<option>Survey</option>
 									<option>Protocol</option>
 									<option>Custom</option>
