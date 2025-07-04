@@ -1,11 +1,7 @@
 <script lang="ts">
 	import { z } from 'zod';
 	import Password from '$lib/components/input/password.input.svelte';
-	import {
-		getPublicFooterLink,
-		getPublicFooterText,
-		getPublicLogoImageSource
-	} from '$lib/themes/theme.selector';
+	import { getPublicFooterLink, getPublicFooterText, getPublicLogoImageSource } from '$lib/themes/theme.selector';
 	import { toasts } from '$lib/components/toast/toast.store';
 	import { showMessage } from '$lib/components/toast/message.utils';
 	let showResetPassword = false;
@@ -15,7 +11,6 @@
 	let resetCode: any;
 	let newPassword: any;
 	let confirmPassword: any;
-	let forgotErrors: Record<string, string[]> = {};
 	let errors: any = {};
 	let loginActiveTab = 'email';
 	let forgotPasswordActiveTab = 'email';
@@ -26,19 +21,12 @@
 	const footerText = `© ${new Date().getFullYear()} ${getPublicFooterText()}`;
 	const footerLink = getPublicFooterLink();
 
+
 	const resetPasswordSchema = z
 		.object({
-			email: z.string().email({ message: 'Email is not valid' }).optional(),
-			phone: z
-				.string()
-				.regex(/^[0-9]{10}$/, { message: 'Phone number must be 10 digits' })
-				.optional(),
-			resetCode: z
-				.string({
-					required_error: 'Reset code is required.',
-					invalid_type_error: 'Name must be a string.'
-				})
-				.min(6, { message: 'Reset code must be 6 characters' }),
+			email: z.string().email({ message: 'Invalid email address' }).optional(),
+			phone: z.string().optional(),
+			resetCode: z.string().min(6, { message: 'Reset code must be 6 characters' }),
 			newPassword: z
 				.string()
 				.regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/, {
@@ -49,10 +37,7 @@
 					message: 'Password must be 8 characters'
 				}),
 			confirmPassword: z
-				.string({
-					required_error: 'Password  is required.',
-					invalid_type_error: 'Name must be a string.'
-				})
+				.string()
 				.regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/, {
 					message:
 						'Password should contain at least 1 capital letter, 1 small letter, 1 digit, and 1 special character.'
@@ -68,80 +53,27 @@
 			path: ['confirmPassword']
 		});
 
-	// async function handleForgotPassword() {
-	// 	let requestBody = {
-	// 		Email: email,
-	// 		CountryCode: countryCode,
-	// 		Phone: phone
-	// 	};
-	// 	const response = await fetch(`/api/server/users/send-reset-code`, {
-	// 		method: 'POST',
-	// 		body: JSON.stringify(requestBody),
-	// 		headers: { 'content-type': 'application/json' }
-	// 	});
-	// 	const res = await response.json();
-
-	// 	if (res.Status === 'success') {
-	// 		// toast.success(res.Message);
-	// 		console.log('password reset successfully');
-	// 		showResetPassword = true;
-	// 		showForgotPassword = false;
-	// 	} else {
-	// 		// toast.error(res.Message);
-	// 		console.log('error');
-	// 	}
-	// }
-
 	async function handleForgotPassword() {
-		forgotErrors = {};
-		errors = {};
-
-		const dataToValidate = {
-			email: forgotPasswordActiveTab === 'email' ? email : '',
-			phone: forgotPasswordActiveTab === 'phone' ? phone : '',
-			countryCode
+		let requestBody = {
+			Email: email,
+			CountryCode: countryCode,
+			Phone: phone
 		};
+		const response = await fetch(`/api/server/users/send-reset-code`, {
+			method: 'POST',
+			body: JSON.stringify(requestBody),
+			headers: { 'content-type': 'application/json' }
+		});
+		const res = await response.json();
 
-		try {
-			resetPasswordSchema.parse(dataToValidate);
-
-			const requestBody = {
-				Email: email,
-				CountryCode: countryCode,
-				Phone: phone
-			};
-
-			const response = await fetch(`/api/server/users/send-reset-code`, {
-				method: 'POST',
-				body: JSON.stringify(requestBody),
-				headers: { 'content-type': 'application/json' }
-			});
-
-			const res = await response.json();
-
-			if (res.Status === 'success') {
-				// showMessage(res.Message || 'Reset code sent successfully', 'success', false, 3000);
-				toasts.update((messages) => [
-					...messages,
-					{
-						message: 'Reset code sent successfully',
-						type: 'success',
-						duration: 3000 // optional
-					}
-				]);
-				console.log('password reset successfully');
-				showResetPassword = true;
-				showForgotPassword = false;
-			} else {
-				showMessage(res.Message || 'Failed to send reset code', 'error', false, 3000);
-				console.log('error');
-			}
-		} catch (err) {
-			if (err instanceof z.ZodError) {
-				forgotErrors = err.flatten().fieldErrors;
-			} else {
-				showMessage('Unexpected error occurred', 'error', false, 3000);
-			}
+		if (res.Status === 'success') {
+			// toast.success(res.Message);
+			console.log('password reset successfully');
+			showResetPassword = true;
+			showForgotPassword = false;
+		} else {
+			// toast.error(res.Message);
+			console.log('error');
 		}
 	}
 
@@ -189,7 +121,7 @@
 	<img class="ct-image mt-7 mb-7 w-36" alt="logo" src={logoImageSource} />
 
 	{#if showForgotPassword}
-		<div class="card mb-10 p-8">
+		<div class="card p-8 mb-10">
 			<form onsubmit={handleForgotPassword} class="">
 				<h2 class="mb-4 text-center text-xl">Forgot Password</h2>
 
@@ -198,7 +130,7 @@
 						<label class="text-md flex items-center">
 							<input
 								type="radio"
-								class="radio-input h-4 w-4"
+								class="radio-input w-4 h-4"
 								name="loginType"
 								value="email"
 								bind:group={forgotPasswordActiveTab}
@@ -207,7 +139,7 @@
 						<label class="text-md flex items-center">
 							<input
 								type="radio"
-								class="radio-input h-4 w-4"
+								class="radio-input w-4 h-4"
 								name="loginType"
 								value="phone"
 								bind:group={forgotPasswordActiveTab}
@@ -218,21 +150,12 @@
 						<label class="label" for="email">
 							<span class="label-text-alt"></span>
 						</label>
-						<input
-							type="text"
-							name="email"
-							placeholder="Enter your email"
-							bind:value={email}
-							class="input mb-4"
-						/>
-						{#if forgotErrors.email}
-							<p class="error-text mb-3">{forgotErrors.email[0]}</p>
-						{/if}
+						<input type="email" name="email" placeholder="Enter your email" bind:value={email} class="input mb-4" />
 					{/if}
 					{#if forgotPasswordActiveTab === 'phone'}
 						<div class="mb-4 flex gap-2">
 							<div class="w-1/3">
-								<select name="countryCode" class="input" bind:value={countryCode}>
+								<select name="countryCode" class="input" bind:value={countryCode} >
 									<option value="+1">+1</option>
 									<option value="+91">+91</option>
 								</select>
@@ -245,15 +168,14 @@
 									bind:value={phone}
 									class="input"
 									placeholder="Enter your mobile number"
+									
 								/>
 							</div>
 						</div>
-						{#if forgotErrors.phone}
-							<p class="error-text mb-3">{forgotErrors.phone[0]}</p>
-						{/if}
 					{/if}
 				</div>
-				<button type="submit" class="btn mb-6 w-full cursor-pointer">Send Reset Code</button>
+				<button type="submit" class="btn mb-6 w-full cursor-pointer">Send Reset Code</button
+				>
 				<a href="/">
 					<button
 						type="button"
@@ -268,7 +190,7 @@
 			</form>
 		</div>
 	{:else if showResetPassword}
-		<div class="card mb-10 px-8 py-4">
+		<div class="card px-8 py-4 mb-10">
 			<form onsubmit={handleResetPassword} class="">
 				<h2 class="mb-4 text-center text-xl">Reset Password</h2>
 				<input type="email" name="email" bind:value={email} class="input mb-4 hidden" />
@@ -281,16 +203,19 @@
 						<p class="error-text">{errors.resetCode}</p>
 					{/if}
 				</label>
+				<!-- svelte-ignore a11y-label-has-associated-control -->
 				<label>
 					<span class="label">New Password</span>
 					<div class="mt-2 mb-4">
 						<Password bind:password={newPassword} name="newPassword" />
 					</div>
 
+					<!-- <input type="password" bind:value={newPassword} required class="input mb-4 mt-2" /> -->
 					{#if errors.newPassword}
 						<p class="error-text">{errors.newPassword}</p>
 					{/if}
 				</label>
+				<!-- svelte-ignore a11y-label-has-associated-control -->
 				<label>
 					<span class="label">Confirm New Password</span>
 					<div class="mt-2 mb-4">
@@ -302,7 +227,9 @@
 						<p class="error-text">{errors.confirmPassword}</p>
 					{/if}
 				</label>
-				<button type="submit" class="btn mb-6 w-full cursor-pointer">Reset Password</button>
+				<button type="submit" class="btn mb-6 w-full cursor-pointer"
+					>Reset Password</button
+				>
 				<button
 					type="button"
 					class="btn mb-6 w-full cursor-pointer"
