@@ -15,6 +15,7 @@
 	let resetCode: any;
 	let newPassword: any;
 	let confirmPassword: any;
+	let forgotErrors: Record<string, string[]> = {};
 	let errors: any = {};
 	let loginActiveTab = 'email';
 	let forgotPasswordActiveTab = 'email';
@@ -27,8 +28,11 @@
 
 	const resetPasswordSchema = z
 		.object({
-			email: z.string().email({ message: 'Invalid email address' }).optional(),
-			phone: z.string().optional(),
+			email: z.string().email({ message: 'Email is not valid' }).optional(),
+			phone: z
+				.string()
+				.regex(/^[0-9]{10}$/, { message: 'Phone number must be 10 digits' })
+				.optional(),
 			resetCode: z
 				.string({
 					required_error: 'Reset code is required.',
@@ -46,9 +50,9 @@
 				}),
 			confirmPassword: z
 				.string({
-			required_error: 'Password  is required.',
-			invalid_type_error: 'Name must be a string.'
-		})
+					required_error: 'Password  is required.',
+					invalid_type_error: 'Name must be a string.'
+				})
 				.regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/, {
 					message:
 						'Password should contain at least 1 capital letter, 1 small letter, 1 digit, and 1 special character.'
@@ -64,27 +68,80 @@
 			path: ['confirmPassword']
 		});
 
-	async function handleForgotPassword() {
-		let requestBody = {
-			Email: email,
-			CountryCode: countryCode,
-			Phone: phone
-		};
-		const response = await fetch(`/api/server/users/send-reset-code`, {
-			method: 'POST',
-			body: JSON.stringify(requestBody),
-			headers: { 'content-type': 'application/json' }
-		});
-		const res = await response.json();
+	// async function handleForgotPassword() {
+	// 	let requestBody = {
+	// 		Email: email,
+	// 		CountryCode: countryCode,
+	// 		Phone: phone
+	// 	};
+	// 	const response = await fetch(`/api/server/users/send-reset-code`, {
+	// 		method: 'POST',
+	// 		body: JSON.stringify(requestBody),
+	// 		headers: { 'content-type': 'application/json' }
+	// 	});
+	// 	const res = await response.json();
 
-		if (res.Status === 'success') {
-			// toast.success(res.Message);
-			console.log('password reset successfully');
-			showResetPassword = true;
-			showForgotPassword = false;
-		} else {
-			// toast.error(res.Message);
-			console.log('error');
+	// 	if (res.Status === 'success') {
+	// 		// toast.success(res.Message);
+	// 		console.log('password reset successfully');
+	// 		showResetPassword = true;
+	// 		showForgotPassword = false;
+	// 	} else {
+	// 		// toast.error(res.Message);
+	// 		console.log('error');
+	// 	}
+	// }
+
+	async function handleForgotPassword() {
+		forgotErrors = {};
+		errors = {};
+
+		const dataToValidate = {
+			email: forgotPasswordActiveTab === 'email' ? email : '',
+			phone: forgotPasswordActiveTab === 'phone' ? phone : '',
+			countryCode
+		};
+
+		try {
+			resetPasswordSchema.parse(dataToValidate);
+
+			const requestBody = {
+				Email: email,
+				CountryCode: countryCode,
+				Phone: phone
+			};
+
+			const response = await fetch(`/api/server/users/send-reset-code`, {
+				method: 'POST',
+				body: JSON.stringify(requestBody),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			const res = await response.json();
+
+			if (res.Status === 'success') {
+				// showMessage(res.Message || 'Reset code sent successfully', 'success', false, 3000);
+				toasts.update((messages) => [
+					...messages,
+					{
+						message: 'Reset code sent successfully',
+						type: 'success',
+						duration: 3000 // optional
+					}
+				]);
+				console.log('password reset successfully');
+				showResetPassword = true;
+				showForgotPassword = false;
+			} else {
+				showMessage(res.Message || 'Failed to send reset code', 'error', false, 3000);
+				console.log('error');
+			}
+		} catch (err) {
+			if (err instanceof z.ZodError) {
+				forgotErrors = err.flatten().fieldErrors;
+			} else {
+				showMessage('Unexpected error occurred', 'error', false, 3000);
+			}
 		}
 	}
 
@@ -162,12 +219,15 @@
 							<span class="label-text-alt"></span>
 						</label>
 						<input
-							type="email"
+							type="text"
 							name="email"
 							placeholder="Enter your email"
 							bind:value={email}
 							class="input mb-4"
 						/>
+						{#if forgotErrors.email}
+							<p class="error-text mb-3">{forgotErrors.email[0]}</p>
+						{/if}
 					{/if}
 					{#if forgotPasswordActiveTab === 'phone'}
 						<div class="mb-4 flex gap-2">
@@ -188,6 +248,9 @@
 								/>
 							</div>
 						</div>
+						{#if forgotErrors.phone}
+							<p class="error-text mb-3">{forgotErrors.phone[0]}</p>
+						{/if}
 					{/if}
 				</div>
 				<button type="submit" class="btn mb-6 w-full cursor-pointer">Send Reset Code</button>
@@ -215,23 +278,19 @@
 					<span class="label">Reset Code/OTP</span>
 					<input type="text" bind:value={resetCode} class="input" placeholder="Enter code/OTP" />
 					{#if errors.resetCode}
-						<!-- <p class="text-error-500 mb-2 text-xs">{errors.resetCode}</p> -->
 						<p class="error-text">{errors.resetCode}</p>
 					{/if}
 				</label>
-				<!-- svelte-ignore a11y-label-has-associated-control -->
 				<label>
 					<span class="label">New Password</span>
 					<div class="mt-2 mb-4">
 						<Password bind:password={newPassword} name="newPassword" />
 					</div>
 
-					<!-- <input type="password" bind:value={newPassword} required class="input mb-4 mt-2" /> -->
 					{#if errors.newPassword}
 						<p class="error-text">{errors.newPassword}</p>
 					{/if}
 				</label>
-				<!-- svelte-ignore a11y-label-has-associated-control -->
 				<label>
 					<span class="label">Confirm New Password</span>
 					<div class="mt-2 mb-4">
