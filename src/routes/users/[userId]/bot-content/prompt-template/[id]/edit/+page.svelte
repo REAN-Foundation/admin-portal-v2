@@ -216,10 +216,10 @@
 							</td>
 						</tr>
 						<tr>
-							<td>Model *</td>
+							<td>Model<span class=" text-red-600">*</td>
 							<td>
 								<select
-									class="select w-full"
+									class="input"
 									required
 									name="model"
 									bind:value={model}

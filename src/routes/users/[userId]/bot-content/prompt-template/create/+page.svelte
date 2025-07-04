@@ -184,7 +184,7 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 							<td>Model <span class="text-red-700">*</span></td>
 							<td>
 								<select
-									class="select w-full"
+									class="input"
 									required
 									name="model"
 									bind:value={model}
