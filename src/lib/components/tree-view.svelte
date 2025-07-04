@@ -2,25 +2,25 @@
 	let { assessmentNodes, assessmentNodeView } = $props();
 </script>
 
-<div class="space-y-2 pl-4">
+<div class="space-y-2 pl-4 hover:text-black">
 	{#each assessmentNodes as node}
 		{#if node.ParentNodeId === null}
-			<details open class="group">
-				<summary class="flex cursor-pointer items-center gap-2 font-semibold text-black">
-					<span class="text-purple-700">🗂️</span>
-					<span>{node.Title}</span>
+			<details open class="group hover:text-black">
+				<summary class="flex cursor-pointer items-center gap-2 font-semibold text-[var(--color-info)] ">
+					<span class="text-[var(--color-info)]">🗂️</span>
+					<span class="hover:text-black">{node.Title}</span>
 				</summary>
 
-				<div class="relative mt-2 ml-4 space-y-2 border-l-2 border-black pl-4">
+				<div class="relative mt-2 ml-4 space-y-2 border-l-2 border-[var(--color-active)] pl-4">
 					{#each node.Children as child}
 						<div class="tree-connector pl-4">
 							{#if child.NodeType === 'Node list'}
 								<details class="group">
 									<summary
-										class="flex cursor-pointer items-center gap-2 text-black hover:text-blue-600 "
+										class="flex cursor-pointer items-center gap-2 text-[var(--color-info)] hover:text-blue-600 "
 									>
 										<span
-											class="flex h-6 w-6 items-center justify-center rounded-full bg-black text-sm text-white"
+											class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-secondary)] text-sm text-[var(--color-info)]"
 											>→</span
 										>
 										<a class="hover:underline" href={assessmentNodeView(child.id)}>
@@ -28,16 +28,16 @@
 										</a>
 									</summary>
 
-									<div class="relative mt-2 ml-4 space-y-2 border-l-2 border-black pl-4">
+									<div class="relative mt-2 ml-4 space-y-2 border-l-2 border-[var(--color-active)] pl-4">
 										{#each child.Children as kid}
 											<div class="tree-connector pl-4">
 												{#if kid.NodeType === 'Node list'}
 													<details class="group">
 														<summary
-															class="flex cursor-pointer items-center gap-2 text-black hover:text-blue-600 "
+															class="flex cursor-pointer items-center gap-2 text-[var(--color-info)] hover:text-blue-600 "
 														>
 															<span
-																class="flex h-6 w-6 items-center justify-center rounded-full bg-black text-sm text-white"
+																class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-secondary)] text-sm text-white"
 																>→</span
 															>
 															<a class="hover:underline" href={assessmentNodeView(kid.id)}>
@@ -47,10 +47,10 @@
 													</details>
 												{:else if kid.NodeType === 'Question'}
 													<div
-														class="flex items-center gap-2 text-black hover:text-blue-600 "
+														class="flex items-center gap-2 text-[var(--color-info)] hover:text-blue-600 "
 													>
 														<span
-															class="flex h-6 w-6 items-center justify-center rounded-full bg-black text-sm text-white"
+															class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-secondary)] text-sm text-white"
 															>?</span
 														>
 														<a class="hover:underline" href={assessmentNodeView(kid.id)}>
@@ -59,10 +59,10 @@
 													</div>
 												{:else if kid.NodeType === 'Message'}
 													<div
-														class="flex items-center gap-2 text-black hover:text-blue-600 "
+														class="flex items-center gap-2 text-[var(--color-info)] hover:text-blue-600 "
 													>
 														<span
-															class="flex h-6 w-6 items-center justify-center rounded-full bg-black text-sm text-white"
+															class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-secondary)] text-sm text-white"
 															>💬</span
 														>
 														<a class="hover:underline" href={assessmentNodeView(kid.id)}>
@@ -75,9 +75,9 @@
 									</div>
 								</details>
 							{:else if child.NodeType === 'Question'}
-								<div class="flex items-center gap-2 text-black hover:text-blue-600 ">
+								<div class="flex items-center gap-2 text-[var(--color-info)] hover:text-blue-600 ">
 									<span
-										class="flex h-6 w-6 items-center justify-center rounded-full bg-black text-sm text-white"
+										class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-secondary)] text-sm text-white"
 										>?</span
 									>
 									<a class="hover:underline" href={assessmentNodeView(child.id)}>
@@ -85,9 +85,9 @@
 									</a>
 								</div>
 							{:else if child.NodeType === 'Message'}
-								<div class="flex items-center gap-2 text-black hover:text-blue-600 ">
+								<div class="flex items-center gap-2 text-[var(--color-info)] hover:text-blue-600 ">
 									<span
-										class="flex h-6 w-6 items-center justify-center rounded-full bg-black text-sm text-white"
+										class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-secondary)] text-sm text-white"
 										>💬</span
 									>
 									<a class="hover:underline" href={assessmentNodeView(child.id)}>
