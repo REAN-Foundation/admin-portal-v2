@@ -153,8 +153,9 @@
 									type="text"
 									name="code"
 									placeholder="Enter code here..."
-									class="health-system-input"
+									class="health-system-input text-gray-500"
 									bind:value={code}
+									disabled
 								/>
 								{#if errors?.Code}
 									<p class="text-error">{errors?.Code}</p>
