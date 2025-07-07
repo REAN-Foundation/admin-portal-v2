@@ -4,6 +4,8 @@
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
 	import Button from '$lib/components/button/button.svelte';
+	import Label from '$lib/components/label/label.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -35,54 +37,47 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<Heading text="View User" />
+		<a href={userRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
+		</a>
+	</div>
 
-<div class="px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-2">
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<Label text="First Name" />
+				<td class="table-data">{firstName}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Last Name" />
+				<td class="table-data">{lastName}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Contact Number" />
+				<td class="table-data">{phone}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Email" />
+				<td class="table-data">{email}</td>
+			</tr>
+			<tr class="tables-row">
+				<Label text="Role" />
+				<td class="table-data">{role}</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div class="btn-container">
 		<Button
-			size="md"
 			href={editRoute}
 			text="Edit"
 			variant="primary"
 			iconBefore="mdi:edit"
 			iconSize="md"
-		></Button>
-	</div>
-	<div class="mx-auto">
-		<div class="table-container">
-			<table class="table-c">
-				<thead>
-					<tr>
-						<th>View User</th>
-						<th class="text-end">
-							<a href={userRoute} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>First Name</td>
-						<td>{firstName}</td>
-					</tr>
-					<tr>
-						<td>Last Name</td>
-						<td>{lastName}</td>
-					</tr>
-					<tr>
-						<td>Contact Number</td>
-						<td>{phone}</td>
-					</tr>
-					<tr>
-						<td>Email</td>
-						<td>{email}</td>
-					</tr>
-					<tr>
-						<td>Role</td>
-						<td>{role}</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+			size="md"
+		/>
 	</div>
 </div>
