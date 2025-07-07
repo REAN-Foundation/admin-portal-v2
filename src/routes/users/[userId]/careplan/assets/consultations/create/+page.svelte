@@ -13,7 +13,7 @@
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let name = $state('');
+	let name = $state(undefined);
 	let description = $state('');
 	let version = $state('');
 	let consultationType = $state('Tele-consultation');
@@ -106,7 +106,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {errors?.Name ? 'input-text-error' : ''}"
+							class="input {errors?.name ? 'input-text-error' : ''}"
 							name="name"
 							placeholder="Enter name here..."
 							bind:value={name}
@@ -133,7 +133,7 @@
 					<td class="table-label">Consultation Type</td>
 					<td class="table-data">
 						<select class="input" bind:value={consultationType}>
-							<option disabled value>Select Consultation type</option>
+							<!-- <option disabled value>Select Consultation type</option> -->
 							<option>Tele-consultation</option>
 							<option>Visit-consultation</option>
 							<option>Other</option>
