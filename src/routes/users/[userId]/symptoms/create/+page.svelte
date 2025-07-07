@@ -46,61 +46,6 @@
 	const formData = new FormData();
 
 	const onFileSelected = async (e) => {
-		// let file = e.target.files[0];
-		// const fileSize = file.size;
-		// if (fileSize > MAX_FILE_SIZE) {
-		// 	errorMessage.Text = 'File should be less than 150 KB';
-		// 	errorMessage.Colour = 'text-error-500';
-		// 	symptomImage.value = null;
-		// 	return;
-		// }
-
-		// errorMessage.Text = 'Please wait, file upload is in progress';
-		// errorMessage.Colour = 'text-error-500';
-
-		// const formData = new FormData();
-		// formData.append('file', file);
-		// formData.append('filename', file.name);
-
-		// try {
-		// 	const res = await fetch(`/api/server/file-resources/upload/reancare`, {
-		// 		// 	headers: {
-		// 		// 	'Content-Type': 'application/json',
-		// 		// 	Accept: 'application/json',
-		// 		// },
-		// 		method: 'POST',
-		// 		body: formData
-		// 	});
-
-		// 	if (!res.ok) {
-		// 		const errorText = await res.text();
-		// 		throw new Error(errorText);
-		// 	}
-
-		// 	const response = await res.json();
-
-		// 	if (response.Status === 'success' && response.HttpCode === 201) {
-		// 		const imageUrl = response.Data.FileResources[0].url;
-		// 		console.log('imageResourceId', imageUrl);
-		// 		const imageResourceId_ = response.Data.FileResources[0].id;
-		// 		console.log('ImageResource', imageResourceId_);
-		// 		if (imageResourceId_) {
-		// 			imageResourceId = imageResourceId_;
-		// 			errorMessage.Text = 'File uploaded successfully';
-		// 			errorMessage.Colour = 'text-success-500';
-		// 			return true;
-		// 		}
-		// 		console.log(imageResourceId);
-		// 	} else {
-		// 		errorMessage.Text = response.Message;
-		// 		errorMessage.Colour = 'text-error-500';
-		// 	}
-		// } catch (error) {
-		// 	console.error('Error uploading file:', error);
-		// 	errorMessage.Text = 'Error uploading file: ' + error.message;
-		// 	errorMessage.Colour = 'text-error-500';
-		// }
-
 		const input = e.target as HTMLInputElement;
 		const file = input.files?.[0];
 		fileName = file.name;
@@ -141,11 +86,7 @@
 				const fileJson = await fileRes.json();
 
 				if (fileJson.Status === 'success' && fileJson.HttpCode === 201) {
-					// 	// const imageUrl = fileJson.Data.FileResources[0].url;
-					// 	// console.log('imageResourceId', imageUrl);
 					const imageResourceId_ = fileJson.Data.FileResources[0].id;
-					console.log('ImageResource', imageResourceId_);
-					console.log('ImageResource fileJson ====>', fileJson);
 					if (imageResourceId_) {
 						imageResourceId = imageResourceId_;
 						errorMessage.Text = 'File uploaded successfully';
@@ -169,7 +110,6 @@
 
 			const validationResult = createOrUpdateSchema.safeParse(symptomCreateModel);
 
-			console.log('validationResult=====================>', validationResult);
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
