@@ -2,6 +2,7 @@
     import { onMount, onDestroy } from 'svelte';
     import Chart from 'chart.js/auto';
     import { getChartColors, getTickColorLight, getTickColorDark } from '$lib/themes/theme.selector';
+	import { TextColorDark } from '$lib/themes/rean.theme';
 
     const tickColorLight = getTickColorLight();
     const tickColorDark = getTickColorDark();
@@ -17,8 +18,14 @@
     $inspect("Line Chart Props:", { lables, data, title });
 
     function getThemeColor(): string {
-        return document.documentElement.classList.contains('dark') ? tickColorDark : tickColorLight;
+        return document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000';
     }
+
+    function getTickColor(): string {
+	return document.documentElement.getAttribute('data-theme') === 'dark'
+		? TextColorDark
+		: '#00000';
+}
 
     function initChart() {
         if (!canvas || !isCanvasReady) return;
@@ -52,7 +59,7 @@
                         {
                             label: 'Active Users',
                             data: chartData,
-                            borderColor: color[0],
+                            borderColor: color[2],
                             fill: true,
                             pointRadius: 0, // Remove intersection points
                             pointHoverRadius: 0 // Remove hover effect on points
@@ -65,28 +72,36 @@
                     scales: {
                         x: {
                             grid: {
-                                display: false
+                                display: false,
+                                color: getTickColor() // Set grid line color based on theme
                             },
                             ticks: {
-                                color: getThemeColor()
+                                color: getTickColor() // Set tick color based on theme
                             },
                             title: {
                                 display: true,
                                 text: 'Till Month',
-                                color: getThemeColor()
+                                color: getTickColor() // Set axis title color based on theme
+                            },
+                            border: {
+                                color: getTickColor() // Set axis line color based on theme
                             }
                         },
                         y: {
                             grid: {
-                                display: true
+                                display: true,
+                             
                             },
                             ticks: {
-                                color: getThemeColor()
+                                color: getTickColor()
                             },
                             title: {
                                 display: true,
                                 text: 'User Count',
-                                color: getThemeColor()
+                                color: getTickColor()
+                            },
+                            border: {
+                                color: getTickColor() // Set axis line color based on theme
                             }
                         }
                     },
@@ -99,7 +114,7 @@
                         legend: {
                             display: false,
                             labels: {
-                                color: getThemeColor(),
+                                color: getTickColor(),
                                 boxWidth: 10,
                                 boxHeight: 10
                             }
@@ -107,7 +122,7 @@
                         title: {
                             display: false,
                             text: title,
-                            color: getThemeColor(),
+                            color: getTickColor(),
                             font: {
                                 size: 22,
                                 weight: 'normal',
@@ -123,18 +138,18 @@
         }
     }
 
-    function updateChartOnThemeChange() {
-        if (lineChart) {
-            // Update colors for theme change
-            lineChart.options.scales.x.ticks.color = getThemeColor();
-            lineChart.options.scales.x.title.color = getThemeColor();
-            lineChart.options.scales.y.ticks.color = getThemeColor();
-            lineChart.options.scales.y.title.color = getThemeColor();
-            lineChart.options.plugins.legend.labels.color = getThemeColor();
-            lineChart.options.plugins.title.color = getThemeColor();
-            lineChart.update();
-        }
-    }
+    // function updateChartOnThemeChange() {
+    //     if (lineChart) {
+    //         // Update colors for theme change
+    //         lineChart.options.scales.x.ticks.color = getThemeColor();
+    //         lineChart.options.scales.x.title.color = getThemeColor();
+    //         lineChart.options.scales.y.ticks.color = getTickColor();
+    //         lineChart.options.scales.y.title.color = getThemeColor();
+    //         lineChart.options.plugins.legend.labels.color = getThemeColor();
+    //         lineChart.options.plugins.title.color = getThemeColor();
+    //         lineChart.update();
+    //     }
+    // }
 
     $effect(() => {
         if (data && data.length > 0 && lables && lables.length > 0 && isCanvasReady) {
@@ -144,10 +159,12 @@
     });
 
     onMount(() => {
-        observer = new MutationObserver(updateChartOnThemeChange);
+        observer = new MutationObserver(()=>{
+            initChart();
+        });
         observer.observe(document.documentElement, {
             attributes: true,
-            attributeFilter: ['class']
+            attributeFilter: ['data-theme']
         });
 
         setTimeout(() => {

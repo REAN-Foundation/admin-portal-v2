@@ -91,7 +91,8 @@ export const DoughnutColors = [`#0b5394`, `#6fa8dc`, `#6aa84f`, `#38761d`, `#ffd
 export const HoverChartColors = ['#422679', '#8a70bd', '#9c93eb', '#f2ecfd'];
 export const TickColorLight   = '#5832A1';
 export const TickColorDark    = '#DED6EC';
-
+export const TextColorDark    = '#FFFFFF';
+export const TextColorLight   = '#000000';
 export const PUBLIC_LOGO_IMAGE_SOURCE='https://www.reanfoundation.org/wp-content/uploads/2021/10/REAN-Foundation-brand-Logo.png';
 export const PUBLIC_FOOTER_TEXT='REAN Foundation';
 export const PUBLIC_FOOTER_LINK='https://www.reanfoundation.org';

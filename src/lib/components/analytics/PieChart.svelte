@@ -2,6 +2,7 @@
 import { onMount, onDestroy } from 'svelte';
 import Chart from 'chart.js/auto';
 import { getDoughnutColors, getTickColorLight, getTickColorDark } from '$lib/themes/theme.selector';
+	import { TextColorDark, TextColorLight } from '$lib/themes/rean.theme';
 
 let {
 	labels = [],
@@ -21,9 +22,21 @@ const tickColorDark = getTickColorDark();
 
 $inspect("PieChart Props:", { labels, data, title, showLegendData });
 
+function getTickColor(): string {
+	return document.documentElement.getAttribute('data-theme') === 'dark'
+		? getTickColorDark()
+		: '#00000';
+}
+
 function getThemeColor(): string {
 	return document.documentElement.classList.contains('dark') ? tickColorDark : tickColorLight;
 }
+
+function getTextColor(): string {
+		return getTickColor() === tickColorDark
+			? TextColorDark
+			: TextColorLight;
+	}
 
 function initChart() {
 	if (!canvas || !isCanvasReady) return;
@@ -38,6 +51,7 @@ function initChart() {
 	// Ensure data is properly formatted
 	const chartData = data.map(d => typeof d === 'number' ? d : Number(d) || 0);
 	const chartLabels = labels.map(l => String(l));
+	console.log('Chart labels:', chartLabels);
 
 	// Validate data
 	if (chartData.length === 0 || chartLabels.length === 0) {
@@ -85,10 +99,16 @@ function initChart() {
 								const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
 								const fillStyle = dataset.backgroundColor[i];
 								const strokeStyle = dataset.borderColor?.[i] || '#fff';
+								// Set legend text color: white/offwhite if dark theme, black otherwise
+							
+								const legendTextColor = getTextColor();
+								console.log('legendTextColor', legendTextColor);
 								return {
 									text: showLegendData
 										? `${label}: ${value} (${percentage}%)`
 										: `${label}`,
+									color: legendTextColor,
+									fontColor: legendTextColor, // Some Chart.js versions use 'fontColor'
 									fillStyle,
 									strokeStyle,
 									hidden: false,
@@ -105,7 +125,7 @@ function initChart() {
 					align: 'start',
 					padding: 20,
 					font: {
-						size: 22,
+						size: 40,
 						weight: 'normal',
 						lineHeight: 1.2
 					}
@@ -149,10 +169,12 @@ $effect(() => {
 
 onMount(() => {
 	// Set up theme change observer
-	observer = new MutationObserver(updateChartOnThemeChange);
+		observer = new MutationObserver(()=>{
+		initChart();
+	});
 	observer.observe(document.documentElement, {
 		attributes: true,
-		attributeFilter: ['class']
+		attributeFilter: ['data-theme']
 	});
 
 	// Mark canvas as ready after a short delay to ensure DOM is ready
