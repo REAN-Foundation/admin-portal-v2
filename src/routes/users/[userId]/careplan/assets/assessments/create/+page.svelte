@@ -90,6 +90,7 @@
 				toastMessage(response);
 				// console.log('Full response:', response);
 				goto(`${assessmentRoute}/${response?.Data?.id}/view`);
+				return;
 			}
 			if (response.Errors) {
 				errors = response?.Errors || {};
