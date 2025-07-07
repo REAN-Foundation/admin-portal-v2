@@ -9,6 +9,7 @@
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -197,8 +198,8 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container mb-6 shadow">
-			<div class="health-system-search-border">
+		<div class="table-container shadow">
+			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<!-- <div class="flex gap-4 flex-row"> -->
 					<div class="relative w-auto grow">
@@ -212,7 +213,7 @@
 							oninput={(event) => onSearchInput(event)}
 							placeholder="Search by title"
 							bind:value={title}
-							class="health-system-input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if title}
 							<button
@@ -239,7 +240,7 @@
 							placeholder="Search by type"
 							oninput={(event) => onSearchInput(event)}
 							bind:value={type}
-							class="health-system-input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if type}
 							<button
@@ -265,7 +266,7 @@
 							oninput={(event) => onSearchInput(event)}
 							placeholder="Search by tags"
 							bind:value={tags}
-							class="health-system-input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if tags}
 							<button
@@ -281,22 +282,18 @@
 						{/if}
 					</div>
 					<!-- </div> -->
-					<button class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary">
-						<a href={importRoute}>Import</a>
-						<!-- <a href={createRoute} class="btn variant-filled-secondary">Add New</a> -->
-					</button>
-					<button class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary">
-						<a href={createRoute}>Add New</a>
-					</button>
+					<Button href={importRoute} text="Import" variant="primary"></Button>
+
+					<Button href={createRoute} text="Add New" variant="primary"></Button>
 				</div>
 			</div>
 
 			<div class="overflow-x-auto">
-				<table class="health-system-table min-w-full">
+				<table class="table-c min-w-full">
 					<thead>
 						<tr>
-							<th data-sort="index" class="w-12">Id</th>
-							<th>
+							<th data-sort="index" class="w-[5%]"></th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Title')}>
 									Title
 									{#if isSortingTitle}
@@ -308,7 +305,7 @@
 									{/if}
 								</button>
 							</th>
-							<th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Type')}>
 									Type
 									{#if isSortingType}
@@ -320,10 +317,8 @@
 									{/if}
 								</button>
 							</th>
-							<th>Tags</th>
-							<th>Provider</th>
-							<th />
-							<th />
+							<th class="w-[20%]">Tags</th>
+							<th class="w-[20%]">Provider</th>
 						</tr>
 					</thead>
 					<tbody class="">
@@ -362,34 +357,29 @@
 									</td>
 
 									<td role="gridcell" aria-colindex={2} tabindex="0">
-										<div class="flex">
-											<Tooltip text="Edit" forceShow={true}>
-												<button class="">
-													<a href={editRoute(row.id)} class="health-system-btn group">
-														<Icon icon="material-symbols:edit-outline" class="health-system-icon" />
-													</a>
-												</button>
-											</Tooltip>
-
-											<Tooltip text="View" forceShow={true}>
-												<button>
-													<a href={viewRoute(row.id)} class=" health-system-btn group"
-														><Icon
-															icon="icon-park-outline:preview-open"
-															class="health-system-icon"
-														/>
-													</a>
-												</button>
-											</Tooltip>
-
-											<Tooltip text="Delete" forceShow={true}>
-												<button
-													class="health-system-btn !text-red-600"
-													onclick={() => handleDeleteClick(row.id)}
-												>
-													<Icon icon="material-symbols:delete-outline-rounded" />
-												</button>
-											</Tooltip>
+										<div class="flex justify-end">
+											<Button
+												href={editRoute(row.id)}
+												variant="icon"
+												icon="material-symbols:edit-outline"
+												iconSize="sm"
+												tooltip="Edit"
+											/>
+											<Button
+												href={viewRoute(row.id)}
+												variant="icon"
+												icon="icon-park-outline:preview-open"
+												iconSize="sm"
+												tooltip="View"
+											/>
+											<Button
+												onclick={() => handleDeleteClick(row.id)}
+												variant="icon"
+												icon="material-symbols:delete-outline-rounded"
+												iconSize="sm"
+												color="red"
+												tooltip="Delete"
+											/>
 										</div>
 									</td>
 								</tr>

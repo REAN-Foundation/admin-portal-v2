@@ -11,6 +11,7 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
+	import Button from '$lib/components/button/button.svelte';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -138,7 +139,7 @@
 <BreadCrumbs crumbs={breadCrumbs} />
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="table-container mb-6 shadow">
+		<div class="table-container shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative flex-1 pr-1.5">
@@ -179,9 +180,7 @@
 						{/if}
 					</div>
 
-					<button class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
-						<a href={createRoute} class="">Add New</a>
-					</button>
+					<Button href={createRoute} text="Add New" variant="primary" />
 				</div>
 			</div>
 
@@ -189,19 +188,19 @@
 				<table class="table-c min-w-full">
 					<thead class="">
 						<tr>
-							<th class="w-12"></th>
-							<th class="text-start">
+							<th class="w-[5%]"></th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Type')}>
 									Type {isSortingType ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
 								</button>
 							</th>
-							<th class="text-start">
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Tags')}>
 									Tags {isSortingTags ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
 								</button>
 							</th>
-							<th class="w-40">Created</th>
-							<th class="w-20 text-center"></th>
+							<th class="w-[20%]">Created</th>
+							<th class="w-[20%]"></th>
 						</tr>
 					</thead>
 
@@ -236,34 +235,29 @@
 									</td>
 
 									<td>
-										<div class="flex">
-											<Tooltip text="Edit" forceShow={true}>
-												<button>
-													<a href={editRoute(row.id)} class="table-btn group">
-														<Icon icon="material-symbols:edit-outline" class="health-system-icon" />
-													</a>
-												</button>
-											</Tooltip>
-
-											<Tooltip text="View" forceShow={true}>
-												<button>
-													<a href={viewRoute(row.id)} class="table-btn group">
-														<Icon
-															icon="icon-park-outline:preview-open"
-															class="health-system-icon"
-														/>
-													</a>
-												</button>
-											</Tooltip>
-
-											<Tooltip text="Delete" forceShow={true}>
-												<button
-													class="table-btn !text-red-600"
-													onclick={() => handleDeleteClick(row.id)}
-												>
-													<Icon icon="material-symbols:delete-outline-rounded" />
-												</button>
-											</Tooltip>
+										<div class="flex justify-end">
+											<Button
+												href={editRoute(row.id)}
+												variant="icon"
+												icon="material-symbols:edit-outline"
+												iconSize="sm"
+												tooltip="Edit"
+											/>
+											<Button
+												href={viewRoute(row.id)}
+												variant="icon"
+												icon="icon-park-outline:preview-open"
+												iconSize="sm"
+												tooltip="View"
+											/>
+											<Button
+												onclick={() => handleDeleteClick(row.id)}
+												variant="icon"
+												icon="material-symbols:delete-outline-rounded"
+												iconSize="sm"
+												color="red"
+												tooltip="Delete"
+											/>
 										</div>
 									</td>
 								</tr>

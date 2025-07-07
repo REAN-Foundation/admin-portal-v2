@@ -64,16 +64,31 @@ const getLoginModel = (
 	return loginModel;
 };
 
-export const SendPasswordResetCode = async (email?: string, phone?: string) => {
+// export const SendPasswordResetCode = async (email?: string, phone?: string) => {
+// 	const model = {
+// 		Email: email,
+// 		Phone: phone
+// 	};
+
+// 	const body = model;
+// 	console.log('model', model);
+// 	const url = BACKEND_API_URL + `/users/send-password-reset-code`;
+
+// 	return await post_(url, body, false);
+// };
+
+export const SendPasswordResetCode = async (loginRoleId: number, email?: string, phone?: string) => {
 	const model = {
 		Email: email,
+		LoginRoleId: loginRoleId,
 		Phone: phone
 	};
-
+	const headers = {};
+	headers['Content-Type'] = 'application/json';
+	headers['x-api-key'] = API_CLIENT_INTERNAL_KEY;
 	const body = model;
 	console.log('model', model);
 	const url = BACKEND_API_URL + `/users/send-password-reset-code`;
-
 	return await post_(url, body, false);
 };
 

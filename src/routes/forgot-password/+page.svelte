@@ -6,7 +6,6 @@
 		getPublicFooterText,
 		getPublicLogoImageSource
 	} from '$lib/themes/theme.selector';
-	import { toasts } from '$lib/components/toast/toast.store';
 	import { showMessage } from '$lib/components/toast/message.utils';
 
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -129,6 +128,7 @@
 		message: 'Please enter a valid email address',
 		path: ['email']
 	});
+
 
 	async function handleForgotPassword() {
         try {
@@ -368,10 +368,10 @@
 						<p class="error-text">{errors.resetCode}</p>
 					{/if}
 				</label>
-				<!-- svelte-ignore a11y-label-has-associated-control -->
+
 				<label>
 					<span class="label">New Password</span>
-					<div class="mt-2 mb-4">
+					<div class="mt-2 mb-1">
 						<Password bind:password={newPassword} name="newPassword" />
 					</div>
 
@@ -380,10 +380,10 @@
 						<p class="error-text">{errors.newPassword}</p>
 					{/if}
 				</label>
-				<!-- svelte-ignore a11y-label-has-associated-control -->
+
 				<label>
 					<span class="label">Confirm New Password</span>
-					<div class="mt-2 mb-4">
+					<div class="mt-2 mb-1">
 						<Password bind:password={confirmPassword} name="confirmPassword" />
 					</div>
 
@@ -392,7 +392,7 @@
 						<p class="error-text">{errors.confirmPassword}</p>
 					{/if}
 				</label>
-				<button type="submit" class="btn mb-6 w-full cursor-pointer">Reset Password</button>
+				<button type="submit" class="btn mt-4 mb-6 w-full cursor-pointer">Reset Password</button>
 				<button
 					type="button"
 					class="btn mb-6 w-full cursor-pointer"

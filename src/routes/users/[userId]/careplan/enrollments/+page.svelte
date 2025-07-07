@@ -203,7 +203,7 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="table-container mb-6 shadow">
+		<div class="table-container shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative pr-1.5">
@@ -245,7 +245,7 @@
 							placeholder="Search by enrollment code"
 							bind:value={displayId}
 							oninput={(event) => onSearchInput(event, 'displayId')}
-							class="table-input-field  !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if displayId}
 							<button
@@ -363,7 +363,9 @@
 					<tbody>
 						{#if retrivedEnrollments.length <= 0}
 							<tr>
-								<td class="text-center" colspan="7">{isLoading ? 'Loading...' : 'No records found'}</td>
+								<td class="text-center" colspan="7"
+									>{isLoading ? 'Loading...' : 'No records found'}</td
+								>
 							</tr>
 						{:else}
 							{#each retrivedEnrollments as enrollment, index}
