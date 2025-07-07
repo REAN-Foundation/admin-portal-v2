@@ -258,8 +258,8 @@
 				<table class="table-c min-w-full">
 					<thead>
 						<tr>
-							<th data-sort="index" class="w-10"></th>
-							<th class=" w-64 text-start">
+							<th data-sort="index" class="w-[5%]"></th>
+							<th class=" w-[20%]">
 								<button onclick={() => sortTable('Name')}>
 									Name
 									{#if isSortingName}
@@ -271,10 +271,10 @@
 									{/if}
 								</button>
 							</th>
-							<th class=" w-64">
+							<th class=" w-[20%]">
 								<button> Health System </button>
 							</th>
-							<th class=" w-36">
+							<th class=" w-[20%]">
 								<button onclick={() => sortTable('Tags')}>
 									Tags
 									{#if isSortingTags}
@@ -286,8 +286,8 @@
 									{/if}
 								</button>
 							</th>
-							<th class="w-40">Created </th>
-							<th class="w-16"></th>
+							<th class="w-[20%]">Created </th>
+							<th class="w-[20%]"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -325,7 +325,7 @@
 									</td>
 
 									<td>
-										<div class="flex">
+										<div class="flex justify-end">
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"

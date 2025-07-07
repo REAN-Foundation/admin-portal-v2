@@ -9,6 +9,7 @@
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
+	import Button from '$lib/components/button/button.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -254,9 +255,7 @@
 							</button>
 						{/if}
 					</div>
-					<button class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
-						<a href={createRoute} class="">Add New</a>
-					</button>
+					<Button href={createRoute} text="Add New" variant="primary" />
 				</div>
 			</div>
 
@@ -264,8 +263,8 @@
 				<table class="table-c">
 					<thead>
 						<tr>
-							<th class="w-10" data-sort="index"></th>
-							<th class="w-52">
+							<th class="w-[5%]" data-sort="index"></th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Name')}>
 									Documents {#if isSortingName}
 										{#if sortOrder === 'ascending'}
@@ -276,13 +275,13 @@
 									{/if}
 								</button>
 							</th>
-							<th class="w-24">Type</th>
-							<th class="w-24">Version</th>
-							<th class="w-52">Parent Document</th>
-							<th class="w-20">Active</th>
+							<th class="w-[20%]">Type</th>
+							<th class="w-[20%]">Version</th>
+							<th class="w-[20%]">Parent Document</th>
+							<th class="w-[20%]">Active</th>
 							<!-- <th class="w-20">Last Updated</th> -->
-							<th class="w-20">Source</th>
-							<th class="w-16"></th>
+							<th class="w-[20%]">Source</th>
+							<th class="w-[20%]"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -351,34 +350,29 @@
 									</td>
 
 									<td>
-										<div class="flex">
-											<Tooltip text="Edit" forceShow={true}>
-												<button class="">
-													<a href={editRoute(row.id)} class="table-btn group">
-														<Icon icon="material-symbols:edit-outline" class="health-system-icon" />
-													</a>
-												</button>
-											</Tooltip>
-
-											<Tooltip text="View" forceShow={true}>
-												<button>
-													<a href={viewRoute(row.id)} class=" table-btn group"
-														><Icon
-															icon="icon-park-outline:preview-open"
-															class="health-system-icon"
-														/>
-													</a>
-												</button>
-											</Tooltip>
-
-											<Tooltip text="Delete" forceShow={true}>
-												<button
-													class="table-btn !text-red-600"
-													onclick={() => handleDeleteClick(row.id)}
-												>
-													<Icon icon="material-symbols:delete-outline-rounded" />
-												</button>
-											</Tooltip>
+										<div class="flex justify-end">
+											<Button
+												href={editRoute(row.id)}
+												variant="icon"
+												icon="material-symbols:edit-outline"
+												iconSize="sm"
+												tooltip="Edit"
+											/>
+											<Button
+												href={viewRoute(row.id)}
+												variant="icon"
+												icon="icon-park-outline:preview-open"
+												iconSize="sm"
+												tooltip="View"
+											/>
+											<Button
+												onclick={() => handleDeleteClick(row.id)}
+												variant="icon"
+												icon="material-symbols:delete-outline-rounded"
+												iconSize="sm"
+												color="red"
+												tooltip="Delete"
+											/>
 										</div>
 									</td>
 								</tr>

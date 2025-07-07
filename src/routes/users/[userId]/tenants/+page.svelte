@@ -185,7 +185,7 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="table-container mb-6 shadow">
+		<div class="table-container shadow">
 			<div class="search-border p-4">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow">
@@ -199,7 +199,7 @@
 							placeholder="Search by name"
 							bind:value={nameSearch}
 							oninput={(event) => onSearchInput(event, 'name')}
-							class="input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if nameSearch}
 							<button
@@ -226,7 +226,7 @@
 							placeholder="Search by code"
 							bind:value={codeSearch}
 							oninput={(event) => onSearchInput(event, 'code')}
-							class="input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if codeSearch}
 							<button
@@ -250,19 +250,32 @@
 				<table class="table-c min-w-full">
 					<thead>
 						<tr>
-							<th class="w-12"></th>
-							<th class=" text-start">
+							<th class="w-[5%]"></th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Name')}>
-									Name {#if isSortingName}{sortOrder === 'ascending' ? '▲' : '▼'}{/if}
+									Name {#if isSortingName}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class=" inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="inline" width="16" />
+										{/if}
+									{/if}
 								</button>
 							</th>
-							<th class=" text-start">
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Code')}>
-									Code {#if isSortingCode}{sortOrder === 'ascending' ? '▲' : '▼'}{/if}
+									Code
+									{#if isSortingCode}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
+									{/if}
 								</button>
 							</th>
-							<th class="w-50">Contact Number</th>
-							<th class="">Email</th>
+							<th class="w-[20%]">Contact</th>
+							<th class="w-[20%]">Email</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -290,7 +303,7 @@
 									<td>{row.Email !== null ? row.Email : 'Not specified'}</td>
 
 									<td>
-										<div class="flex">
+										<div class="flex justify-end">
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"
