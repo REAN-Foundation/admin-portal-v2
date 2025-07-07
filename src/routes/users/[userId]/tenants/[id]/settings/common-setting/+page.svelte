@@ -6,6 +6,7 @@
 	import { commonUISettings } from './common-setting.types';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import { CommonSettingsSchema } from '$lib/validation/tenant.settings.schema';
+	import Button from '$lib/components/button/button.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 
@@ -18,23 +19,23 @@
 	let commonSetting = $state(data.commonSettings);
 	let promise = $state();
 	let errors: Record<string, string> = $state({});
-    let disabled = $state(true);
-    let edit = $derived(disabled);
+	let disabled = $state(true);
+	let edit = $derived(disabled);
 
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
 		errors = {};
 
 		try {
-            console.log('disabled', disabled);
-            if (disabled) {
-                addToast({
-                    message: 'Nothing to edit !',
-                    type: 'info',
-                    timeout: 3000
-                });
-                return;
-            }
+			console.log('disabled', disabled);
+			if (disabled) {
+				addToast({
+					message: 'Nothing to edit !',
+					type: 'info',
+					timeout: 3000
+				});
+				return;
+			}
 			const validationResult = CommonSettingsSchema.safeParse(commonSetting);
 
 			if (!validationResult.success) {
@@ -54,7 +55,7 @@
 			});
 
 			const response = await res.json();
-            console.log('response@@', response);
+			console.log('response@@', response);
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				disabled = true;
@@ -66,69 +67,64 @@
 				toastMessage(response);
 			}
 		} catch (error) {
-            console.log('error', error);
+			console.log('error', error);
 			toastMessage();
 		}
 	};
 
-	
 	// let edit = $derived(disabled);
 
 	const handleEditClick = async () => {
-        if (disabled) {
-            addToast({
-                message: 'Edit mode enabled.',
-                type: 'info',
-                timeout: 3000
-            });
-            disabled = false;
-        } else {
-            addToast({  
-                message: 'Edit mode disabled.',
-                type: 'info',
-                timeout: 3000
-            });
-            disabled = true;
-        }
-        // disabled = !disabled;
+		if (disabled) {
+			addToast({
+				message: 'Edit mode enabled.',
+				type: 'info',
+				timeout: 3000
+			});
+			disabled = false;
+		} else {
+			addToast({
+				message: 'Edit mode disabled.',
+				type: 'info',
+				timeout: 3000
+			});
+			disabled = true;
+		}
+		// disabled = !disabled;
 	};
 </script>
 
 <div class="px-5 py-4">
 	<div class=" mx-auto my-6 border border-[var(--color-outline)]">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<div class="flex items-center justify-between !rounded-b-none border  px-5 py-6 bg-[var(--color-primary)]">
+			<div
+				class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6"
+			>
 				<h1 class=" text-xl text-[var(--color-info)]">Common Settings</h1>
 				<div class="flex items-center gap-2 text-end">
-					<button
-						type="button"
-						class="table-btn variant-filled-secondary gap-1"
+					<Button
+						variant="icon"
+						icon="material-symbols:edit-outline"
+						iconSize="sm"
 						onclick={handleEditClick}
-					>
-						<Icon icon="material-symbols:edit-outline" />
-						<!-- <span>{edit ? 'Edit' : 'Save'}</span> -->
-					</button>
-					<a
-						href={tenantRoute}
-						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
-					>
-						<Icon icon="material-symbols:close-rounded" class=" h-5" />
+						className="table-btn variant-filled-secondary gap-1"
+					/>
+					<a href={tenantRoute} class="cancel-btn">
+						<Icon icon="material-symbols:close-rounded" />
 					</a>
 				</div>
 			</div>
 			<div class="flex flex-col space-y-4 px-4 py-4">
 				<ExpandableSettings groupedSettings={commonUISettings} bind:commonSetting edit={disabled} />
 			</div>
-			
-			<hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
 
-			<div class="button-container my-4 ">
+			<hr class="border-[0.5px] border-t border-[var(--color-outline)]" />
+
+			<div class="btn-container mr-4 mb-4">
 				{#await promise}
-					<button type="submit" class="table-btn variant-soft-secondary" disabled>
-						Submiting
-					</button>
+					<Button type="submit" text="Submitting" variant="primary" disabled={true} />
 				{:then data}
-					<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
+					<Button type="submit" text="Submit" variant="primary" />
 				{/await}
 			</div>
 		</form>

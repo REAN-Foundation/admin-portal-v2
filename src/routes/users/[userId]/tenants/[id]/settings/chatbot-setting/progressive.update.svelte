@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '$lib/components/button/button.svelte';
 	import Icons from '$lib/components/icons.svelte';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import { languages } from '$lib/utils/language';
@@ -38,7 +39,7 @@
 	}
 </script>
 
-<div class="w-full rounded-lg p-6 ">
+<div class="w-full rounded-lg p-6">
 	{#if currentSection === 0}
 		<div class="my-2 flex flex-col md:flex-row md:items-center">
 			<label for="chatbotName" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
@@ -160,8 +161,9 @@
 		</div>
 
 		<div class="my- flex flex-col md:flex-row md:items-center">
-			<label for="defaultLanguage" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
-				>Default Language</label
+			<label
+				for="defaultLanguage"
+				class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]">Default Language</label
 			>
 			<select
 				bind:value={chatBotSetting.ChatBot.DefaultLanguage}
@@ -190,10 +192,10 @@
 						onclick={() => toggleTab(groupName)}
 						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
 	transition-all duration-200 ease-in-out  ${
-																openTab === groupName
-																	? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
-																	: `border-hover rounded bg-[var(--color-secondary)]`
-															} 
+		openTab === groupName
+			? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+			: `border-hover rounded bg-[var(--color-secondary)]`
+	} 
 	`}
 					>
 						<div class="flex items-center gap-2">
@@ -220,7 +222,7 @@
 					</button>
 
 					{#if openTab === groupName}
-						<div class="flex w-full justify-center py-5 bg-[var(--color-secondary)]">
+						<div class="flex w-full justify-center bg-[var(--color-secondary)] py-5">
 							<div class="mx-20 grid w-full grid-cols-2 gap-x-10 gap-y-6 lg:grid-cols-2">
 								{#each Object.entries(groupItems) as [key, value]}
 									{@const meta = getSettingMeta(groupName, key)}
@@ -330,31 +332,24 @@
 </div>
 
 <!-- Navigation Buttons -->
-<hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
 
-<div class="button-container my-4 ">
-	<button
-		type="button"
-		class="cursor-pointer rounded-md bg-[var(--color-primary)] px-3 py-2 text-[var(--color-info)] disabled:opacity-50"
+<div class="btn-container mr-6 mb-6">
+	<!-- Previous Button -->
+	<Button
+		text="Previous"
+		variant="secondary"
 		onclick={prevSection}
 		disabled={currentSection === 0}
-	>
-		Previous
-	</button>
+	/>
 
+	<!-- Next or Submit Button -->
 	{#if currentSection < 3 - 1}
-		<button
-			type="button"
-			class="table-btn variant-filled-secondary !px-4 py-2 text-[var(--color-info)]"
-			onclick={nextSection}
-		>
-			Next
-		</button>
+		<Button text="Next" variant="primary" onclick={nextSection} />
 	{:else}
 		{#await promise}
-			<button type="submit" class="table-btn variant-filled-secondary" disabled> Submiting </button>
+			<Button type="submit" text="Submitting" variant="primary" disabled={true} />
 		{:then data}
-			<button type="submit" class="table-btn variant-filled-secondary"> Submit </button>
+			<Button type="submit" text="Submit" variant="primary" />
 		{/await}
 	{/if}
 </div>

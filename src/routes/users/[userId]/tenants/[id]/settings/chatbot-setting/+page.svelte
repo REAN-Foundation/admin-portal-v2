@@ -12,6 +12,7 @@
 	import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema.js';
 	import Progressive from './progressive.update.svelte';
 	import ExportSettingsDialog from './export-settings.dialog.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////
 
@@ -423,19 +424,21 @@
 					Step {currentSection + 1} of {totalSteps}
 				</div>
 			</div>
-			<!-- Create Secret Button -->
-			<button
+		</div>
+		<div class="flex justify-center sm:justify-end">
+			<Button
 				type="button"
-				class="table-btn variant-filled-secondary ml-4"
-				onclick={getBotSecret}
+				variant="primary"
+				size="md"
+				iconBefore="material-symbols:upload"
+				text={isCreatingSecret ? 'Creating...' : 'Create Secret'}
 				disabled={isCreatingSecret}
-			>
-				<Icon icon="material-symbols:upload" class="mr-1" />
-				{isCreatingSecret ? 'Creating...' : 'Create Secret'}
-			</button>
+				onclick={getBotSecret}
+				className="mt-4"
+			/>
 		</div>
 	</div>
-	<div class="mx-auto my-6 border border-[var(--color-outline)]">
+	<div class="mx-auto my-4 border border-[var(--color-outline)]">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 			<!-- Heading -->
 
@@ -444,19 +447,15 @@
 			>
 				<h1 class="text-xl text-[var(--color-info)]">Chatbot Settings</h1>
 				<div class="flex items-center gap-2 text-end">
-					<button
-						type="button"
-						class="table-btn variant-filled-secondary gap-1"
+					<Button
+						variant="icon"
+						icon="material-symbols:edit-outline"
+						iconSize="sm"
 						onclick={handleEditClick}
-					>
-						<Icon icon="material-symbols:edit-outline" />
-						<!-- <span>{edit ? 'Save' : 'Edit'}</span> -->
-					</button>
-					<a
-						href={tenantRoute}
-						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
-					>
-						<Icon icon="material-symbols:close-rounded" class=" h-5" />
+						className="table-btn variant-filled-secondary gap-1"
+					/>
+					<a href={tenantRoute} class="cancel-btn">
+						<Icon icon="material-symbols:close-rounded" />
 					</a>
 				</div>
 			</div>

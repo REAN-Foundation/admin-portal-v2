@@ -160,21 +160,20 @@
 <div class="px-5 py-4">
 	<div class="mx-auto my-6 border border-[var(--color-outline)]">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<div class="flex items-center justify-between !rounded-b-none border px-5 py-6 bg-[var(--color-primary)]">
+			<div
+				class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6"
+			>
 				<h1 class="text-xl text-[var(--color-info)]">Consent Settings</h1>
 				<div class="flex items-center gap-2 text-end">
-					<button
-						type="button"
-						class="table-btn variant-filled-secondary gap-1"
+					<Button
+						variant="icon"
+						icon="material-symbols:edit-outline"
+						iconSize="sm"
 						onclick={toggleEdit}
-					>
-						<Icon icon="material-symbols:edit-outline" />
-					</button>
-					<a
-						href={tenantRoute}
-						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
-					>
-						<Icon icon="material-symbols:close-rounded" class="h-5" />
+						className="table-btn variant-filled-secondary gap-1"
+					/>
+					<a href={tenantRoute} class="cancel-btn">
+						<Icon icon="material-symbols:close-rounded" />
 					</a>
 				</div>
 			</div>
@@ -237,14 +236,15 @@
 				<div class="mt-4 flex flex-col md:flex-row md:items-center">
 					<div class="w-[30%]"></div>
 					<div class="flex w-[70%] justify-end">
-						<button
+						<Button
 							type="button"
-							class="health-system-btn variant-filled-secondary"
+							variant="primary"
+							text="Add Message"
+							iconAfter="mdi:plus"
 							onclick={openAddMessageModal}
-							disabled={!edit}
-						>
-							Add Message +
-						</button>
+							className="health-system-btn"
+							size="md"
+						/>
 					</div>
 				</div>
 			</div>
@@ -294,16 +294,12 @@
 					</table>
 				</div>
 			{/if}
-			<hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
-			<div class="button-container my-4">
+			<hr class="border-[0.5px] border-t border-[var(--color-outline)]" />
+			<div class="btn-container mr-4 mb-4">
 				{#await promise}
-					<button type="submit" class="table-btn variant-soft-secondary" disabled>
-						Submiting
-					</button>
+					<Button type="submit" text="Submitting" variant="primary" disabled={true} />
 				{:then data}
-					<button type="submit" class="table-btn variant-soft-secondary" disabled={!edit}>
-						Submit
-					</button>
+					<Button type="submit" text="Submit" variant="primary" />
 				{/await}
 			</div>
 		</form>
