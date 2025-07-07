@@ -222,12 +222,15 @@
 				<table class="health-system-table min-w-full">
 					<thead>
 						<tr>
-							<th></th>
+							<th class="w-12"></th>
 							 <th class="text-start">
 								<button onclick={() => sortTable('Name')}>
-									Name 
-									{#if isSortingName}
-										<Icon icon={`mdi:chevron-${sortOrder === 'ascending' ? 'up' : 'down'}`} class="ml-1 inline" width="16" />
+									Name {#if isSortingName}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
 									{/if}
 								</button>
 							</th>
@@ -242,7 +245,7 @@
 					<tbody>
 						{#if retrivedPrompts.length <= 0}
 							<tr class="text-center">
-								<td colspan="6">No records found</td>
+								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}
 							{#each retrivedPrompts as row, index}
