@@ -11,12 +11,15 @@
 	// export let data: PageServerData;
 	let { data }: { data: PageServerData } = $props();
 
+	console.log("data=====================>", data);
 	let symptom = data.symptom.Symptom;
 	let description = data.symptom.Description !== null ? data.symptom.Description : 'Not specified';
 	let tags = data.symptom.Tags;
 
 	let language = data.symptom.Language;
-	let imageUrl = data.symptom.ImageUrl;
+	let imageUrl = data.symptom.ImageResourceUrl;
+	console.log("Imageurl", imageUrl)
+	console.log("data=====================>", symptom);
 
 	if (tags.length < 1) {
 		tags = tags.join(', ');

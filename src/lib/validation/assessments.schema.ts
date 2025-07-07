@@ -6,7 +6,7 @@ export const createOrUpdateSchema = z.object({
             required_error: 'Name is required.',
             invalid_type_error: 'Name must be a string.'
         })
-        .min(8, { message: 'Name must be at least 3 characters long.' })
+        .min(1, { message: 'Name cannot be empty' })
         .max(256, { message: 'Name must be at most 256 characters long.' }),
     Description: z
         .string()

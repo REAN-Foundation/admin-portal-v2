@@ -21,14 +21,14 @@
 	let name = $state(data.assessment.Name);
 	let description = $state(data.assessment.Description || undefined);
 	let template = $state(data.assessment.Template);
-	let templateCode = $state(data.assessment.ReferenceTemplateCode);
+	let referenceTemplateCode = $state(data.assessment.ReferenceTemplateCode);
 	let version = $state(data.assessment.Version);
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
 
 	const assessmentTemplates = data.assessmentTemplates || [];
 	const assessmentTemplate = assessmentTemplates.find(
-		(template) => template.DisplayCode === templateCode
+		(template) => template.DisplayCode === referenceTemplateCode
 	);
 
 	const userId = page.params.userId;
@@ -50,7 +50,7 @@
 		assessmentId = page.params.id;
 		description = data?.assessment?.Description;
 		template = data?.assessment?.Template;
-		templateCode = data?.assessment?.TemplateCode;
+		referenceTemplateCode = data?.assessment?.TemplateCode;
 		version = data?.assessment?.Version;
 		keywords = data?.assessment?.Tags;
 		errors = {};
@@ -65,7 +65,7 @@
 				Name: name,
 				Description: description,
 				Template: template,
-				ReferenceTemplateCode: templateCode,
+				ReferenceTemplateCode: referenceTemplateCode,
 				Version: version,
 				Tags: keywords,
 				TenantId: tenantId
@@ -162,12 +162,26 @@
 					</td>
 				</tr>
 
-				<tr class="tables-row">
-					<Label text="Template Code" required={true} />
+				<!-- <tr class="tables-row">
+					<td class="table-label">Template Code</td>
+					<td class="table-data">
+						<input
+							type="text"
+							bind:value={templateCode}
+							placeholder="Enter template code..."
+							class="input {errors?.TemplateCode ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.TemplateCode}
+							<p class="error-text">{errors?.TemplateCode}</p>
+						{/if}
+					</td>
+				</tr> -->
+
+				<!-- <tr class="tables-row">
+					<td class="table-label">Reference Template<span class="important-field">*</span></td>
 					<td class="table-data">
 						<select
-							name="templateCode"
-							bind:value={templateCode}
+							bind:value={referenceTemplateCode}
 							class="input {errors?.TemplateCode ? 'input-text-error' : ''}"
 						>
 							<option value="" disabled selected>
@@ -181,6 +195,24 @@
 						</select>
 						{#if errors?.TemplateCode}
 							<p class="error-text">{errors?.TemplateCode}</p>
+						{/if}
+					</td>
+				</tr> -->
+
+				<tr class="tables-row">
+					<td class="table-label">Reference Template<span class="important-field">*</span></td>
+					<td class="table-data">
+						<select
+							bind:value={referenceTemplateCode}
+							class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
+						>
+							<option disabled selected value="">Select reference template here...</option>
+							{#each assessmentTemplates as template}
+								<option value={template.DisplayCode}>{template.Title}</option>
+							{/each}
+						</select>
+						{#if errors?.ReferenceTemplateCode}
+							<p class="error-text">{errors?.ReferenceTemplateCode}</p>
 						{/if}
 					</td>
 				</tr>

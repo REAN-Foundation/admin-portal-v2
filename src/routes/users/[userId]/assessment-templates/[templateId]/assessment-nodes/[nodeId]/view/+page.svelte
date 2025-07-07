@@ -22,7 +22,10 @@
 		assessmentNodes.Description !== null && assessmentNodes.Description !== ''
 			? assessmentNodes.Description
 			: 'Not specified';
-	const message = assessmentNodes.Message !== null && assessmentNodes.Message !== '' ? assessmentNodes.Message : 'Not specified';
+	const message =
+		assessmentNodes.Message !== null && assessmentNodes.Message !== ''
+			? assessmentNodes.Message
+			: 'Not specified';
 	const serveListNodeChildrenAtOnce = assessmentNodes.ServeListNodeChildrenAtOnce ?? null;
 	const queryType = assessmentNodes.QueryResponseType;
 	const options = assessmentNodes.Options ?? [];
@@ -32,13 +35,76 @@
 	const tags_ = Array.isArray(assessmentNodes?.Tags) ? assessmentNodes.Tags : [];
 	const tags = tags_.join(', ');
 	const correctAnswer = assessmentNodes.CorrectAnswer ?? null;
-	const rawData =
-		assessmentNodes.RawData !== null && assessmentNodes.RawData !== ''
-			? assessmentNodes.RawData
-			: 'Not specified';
+
+	const formatRawData = (data: any) => {
+		if (!data || data === '{}' || data === '' || data === null || data === undefined) {
+			return 'Not specified';
+		}
+
+		try {
+			if (typeof data === 'object') {
+				if (Object.keys(data).length === 0) {
+					return 'Not specified';
+				}
+				return JSON.stringify(data, null, 2);
+			}
+
+			if (typeof data === 'string') {
+				const parsed = JSON.parse(data);
+				if (Object.keys(parsed).length === 0) {
+					return 'Not specified';
+				}
+				return JSON.stringify(parsed, null, 2);
+			}
+
+			return 'Not specified';
+		} catch (error) {
+			return data || 'Not specified';
+		}
+	};
+
+	const rawData = formatRawData(assessmentNodes.RawData);
+	const isJsonData = rawData !== 'Not specified' && rawData !== assessmentNodes.RawData;
 
 	const fieldIdentifier = assessmentNodes.FieldIdentifier ?? null;
 	const fieldIdentifierUnit = assessmentNodes.FieldIdentifierUnit ?? null;
+
+	// Field identifier options for editing
+	const AssessmentFieldIdentifiers = [
+		'General:PersonalProfile:FirstName',
+		'General:PersonalProfile:LastName',
+		'General:PersonalProfile:Name',
+		'General:PersonalProfile:Age',
+		'General:PersonalProfile:DateOfBirth',
+		'General:PersonalProfile:Gender',
+		'Clinical:HealthProfile:BloodGroup',
+		'Clinical:HealthProfile:Ethnicity',
+		'Clinical:HealthProfile:Race',
+		'Clinical:HealthProfile:MaritalStatus',
+		'Clinical:HealthProfile:Occupation',
+		'Clinical:HealthProfile:Smoking',
+		'Clinical:Vitals:BloodPressure:Systolic',
+		'Clinical:Vitals:BloodPressure:Diastolic',
+		'Clinical:Vitals:Pulse',
+		'Clinical:Vitals:Temperature',
+		'Clinical:Vitals:Weight',
+		'Clinical:Vitals:Height',
+		'Clinical:Vitals:OxygenSaturation',
+		'Clinical:Vitals:BloodGlucose',
+		'Clinical:LabRecords:Cholesterol',
+		'Clinical:LabRecords:Triglycerides',
+		'Clinical:LabRecords:LDL',
+		'Clinical:LabRecords:HDL',
+		'Clinical:LabRecords:A1C'
+	];
+
+	const sortedIdentifiers = AssessmentFieldIdentifiers;
+
+	function toLabel(identifier: string) {
+		const parts = identifier.split(':');
+		const lastPart = parts[parts.length - 1];
+		return lastPart.replace(/([a-z])([A-Z])/g, '$1 $2'); // adds space before capital letters
+	}
 	let resolutionScore = $state();
 
 	if (nodeType === 'Question') {
@@ -46,8 +112,6 @@
 	}
 
 	scoringApplicableCondition.set(data.templateDetails.ScoringApplicable);
-
-	console.log('assessmentNode', assessmentNodes);
 
 	const userId = page.params.userId;
 	const templateId = page.params.templateId;
@@ -79,6 +143,7 @@
 			path: viewRoute
 		}
 	];
+
 	const handleAssessmentNodeDelete = async (id) => {
 		const assessmentNodeId = id;
 		console.log('assessmentNodeId', assessmentNodeId);
@@ -106,8 +171,6 @@
 		model = false;
 	};
 	const onUpdateScoringCondition = async (score: number) => {
-		// const scoringId = data.assessmentNode.ScoringCondition.id;
-		// console.log(scoringId);
 		resolutionScore = score;
 		console.log('resolutionScore', resolutionScore);
 		handleSubmit(event);
@@ -146,15 +209,12 @@
 				}
 			);
 
-			// console.log(scoringId);
 			const response = await res.json();
-			// const scoringCondition = JSON.parse(resp);
 
 			console.log('response', response);
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				// goto(`${assessmentsRoutes}/${response?.Data?.AssessmentTemplate?.id}/view`);
-				// resolutionScore = scoringCondition.ResolutionScore;
+
 				return;
 			}
 			if (response.Errors) {
@@ -166,19 +226,8 @@
 			toastMessage();
 		}
 	};
-
-	// async function updateScoringCondition(model) {
-	// 	const response = await fetch(`/api/server/assessment-nodes/update-scoring-condition`, {
-	// 		method: 'POST',
-	// 		body: JSON.stringify(model),
-	// 		headers: { 'content-type': 'application/json' }
-	// 	});
-	// }
 </script>
 
-<!-- <UpdateScoringCondition
-	on:updateScoringCondition={async (e) => await onUpdateScoringCondition(e.detail.resolutionScore)}
-/> -->
 {#if model}
 	<UpdateScoringCondition {onUpdateScoringCondition} {closeModal} />
 {/if}
@@ -235,20 +284,29 @@
 					</tr>
 					<tr>
 						<td>Raw Data</td>
-						<td>{rawData}</td>
+						<td>
+							{#if isJsonData}
+								{rawData}
+							{:else}
+								{rawData}
+							{/if}
+						</td>
 					</tr>
 					<tr>
 						<td>Sequence</td>
 						<td>{sequence}</td>
 					</tr>
+					{#if nodeType === 'Question'}
+						<tr>
+							<td>Field Identifier</td>
+							<td>{fieldIdentifier ? toLabel(fieldIdentifier) : 'Not specified'}</td>
+						</tr>
+						<tr>
+							<td>Field Identifier Unit</td>
+							<td>{fieldIdentifierUnit}</td>
+						</tr>
+					{/if}
 					<tr>
-						<td>Field Identifier</td>
-						<td>{fieldIdentifier}</td>
-					</tr>
-					<tr>
-						<td>Field Identifier Unit</td>
-						<td>{fieldIdentifierUnit}</td>
-					</tr><tr>
 						<td>Tags</td>
 						<td>
 							{#if tags.length <= 0}

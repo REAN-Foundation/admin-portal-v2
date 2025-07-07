@@ -63,7 +63,7 @@
 		formData.append('filename', file.name);
 
 		try {
-			const res = await fetch(`/api/server/file-resources/upload`, {
+			const res = await fetch(`/api/server/file-resources/upload/reancare`, {
 				// 	headers: {
 				// 	'Content-Type': 'application/json',
 				// 	Accept: 'application/json',
@@ -117,6 +117,7 @@
 
 			const validationResult = createOrUpdateSchema.safeParse(symptomCreateModel);
 
+			console.log("validationResult=====================>", validationResult);
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [

@@ -30,7 +30,7 @@
 	const viewRoute = (id) => `/users/${userId}/bot-content/prompt-template/${id}/view`;
 	const createRoute = `/users/${userId}/bot-content/prompt-template/create`;
 
-	const breadCrumbs = [{ name: 'Prompt Templates', path: promptsRoute }];
+	const breadCrumbs = [{ name: 'Prompt Template', path: promptsRoute }];
 
 	let promptName = $state(undefined);
 	let isSortingName = $state(false);
@@ -182,8 +182,8 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container mb-6 shadow">
-			<div class="health-system-search-border">
+		<div class="table-container shadow">
+			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="flex-1">
 						<div class="relative pr-1.5">
@@ -218,11 +218,11 @@
 			</div>
 
 			<div class="overflow-x-auto">
-				<table class="health-system-table min-w-full">
+				<table class="table-c min-w-full">
 					<thead>
 						<tr>
-							<th></th>
-							<th class="text-start">
+							<th class="w-[5%]"></th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Name')}>
 									Name
 									{#if isSortingName}
@@ -235,11 +235,11 @@
 								</button>
 							</th>
 
-							<th>Model</th>
-							<th>Group</th>
-							<th>UseCaseType</th>
-							<th>Active</th>
-							<th>Action</th>
+							<th class="w-[20%]">Model</th>
+							<th class="w-[20%]">Group</th>
+							<th class="w-[20%]">Use Case Type</th>
+							<th class="w-[20%]">Active</th>
+							<!-- <th class="w-[20%]"></th> -->
 						</tr>
 					</thead>
 					<tbody>

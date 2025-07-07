@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
-	import { toastMessage } from '$lib/components/toast/toast.store';
+	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import { showMessage } from '$lib/utils/message.utils';
 
 	///////////////////////////////////////////////////////////////////////////////////////
@@ -24,7 +25,7 @@
 
 	const upload = async (imgBase64, file) => {
 		const data = {};
-		console.log(imgBase64);
+		// console.log(imgBase64);
 
 		const imgData = imgBase64.split(',');
 		data['image'] = imgData[1];
@@ -40,23 +41,35 @@
 		});
 
 		const response = await res.json();
-		console.log('response from api endpoint', response);
 
-		if (response.Status === 'success' && response.HttpCode === 201) {
+		if (response.Status === 'success' || response.HttpCode === 200) {
 			return { success: true, resourceId: response.Data?.id, response };
 		}
 		if (response.Errors) {
 			errors = response?.Errors || {};
-			// showMessage(response.Message, 'error');
+
 			return response;
 		} else {
-			// showMessage(response.Message, 'error');
 			return { success: false, error: response.Message };
 		}
 	};
 
 	const onFileSelected = async (e) => {
 		let f = e.target.files[0];
+		if (!f) return;
+		if (f.size === 0) {
+			errors = { UploadFile: 'Selected file is empty. Please choose a valid file.' };
+
+			return;
+		}
+
+		const isJson =
+			f.name.toLowerCase().endsWith('.json') &&
+			(f.type === 'application/json' || f.type === '' || f.type === 'text/json');
+		if (!isJson) {
+			errors = { UploadFile: 'Only JSON files are allowed. Please select a valid .json file.' };
+			return;
+		}
 		fileName = f.name;
 		selectFile = f;
 		let reader = new FileReader();
@@ -71,10 +84,16 @@
 			event.preventDefault();
 			errors = {};
 
+			if (!selectFile || selectFile.size === 0) {
+				errors = { UploadFile: 'Selected file is empty. Please choose a valid file.' };
+				return;
+			}
+
 			const uploadResult = await upload(fileinput, selectFile);
 
 			if (uploadResult.response.HttpCode === 201 || uploadResult.response.HttpCode === 200) {
 				toastMessage(uploadResult.response);
+				goto(`${assessmentsRoutes}/`);
 				return;
 			}
 

@@ -2,7 +2,7 @@ import type { FileUploadModel } from '$lib/types/file.upload.types';
 import { ResponseHandler } from '$lib/utils/response.handler';
 import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema';
 import { uploadBinary } from '$routes/api/services/reancare/profile.file.resource';
-import type { RequestEvent, RequestHandler } from './$types';
+import type { RequestEvent, RequestHandler } from '../$types';
 import * as fs from 'fs';
 
 //////////////////////////////////////////////////////////////
@@ -12,7 +12,7 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
 		console.log(`Upload in progress---`);
 
 		const formData = await event.request.formData();
-		const file = formData.get('file') as File;
+		const file = formData.get('logofile') as File;
 		const filename = file.name;
 
 		const fileCreateModel: FileUploadModel = {

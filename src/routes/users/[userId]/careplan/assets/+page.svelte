@@ -255,7 +255,7 @@
 			</div>
 		</div>
 
-		<div class="table-container my-6 shadow">
+		<div class="table-container mt-4 shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow">
@@ -291,7 +291,7 @@
 							placeholder="Search by code"
 							bind:value={codeAssetSearch}
 							oninput={(event) => onSearchInput(event, 'code')}
-							class="input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 
 						<Icon
@@ -319,8 +319,8 @@
 				<table class="table-c min-w-full">
 					<thead>
 						<tr>
-							<th class="w-40"></th>
-							<th class="text-start">
+							<th class="w-[5%]"></th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Name')}>
 									Name
 									{#if isSortingName}
@@ -332,7 +332,7 @@
 									{/if}
 								</button>
 							</th>
-							<th class="text-start">
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Code')}>
 									Code
 									{#if isSortingCode}
@@ -344,8 +344,8 @@
 									{/if}
 								</button>
 							</th>
-							<th>Type</th>
-							<th>Created Date</th>
+							<th class="w-[20%]">Type</th>
+							<th class="w-[20%]">Created Date</th>
 							<!-- <th class="text-right whitespace-nowrap">Actions</th> -->
 						</tr>
 					</thead>

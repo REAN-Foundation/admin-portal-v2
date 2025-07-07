@@ -1,6 +1,7 @@
 import type { FileUploadModel } from '$lib/types/file.upload.types';
 import { ResponseHandler } from '$lib/utils/response.handler';
 import { fileUploadSchema } from '$lib/validation/file.upload.schema';
+import { profileFileUploadSchema } from '$lib/validation/profile.schema';
 import { uploadBinary } from '$routes/api/services/reancare/profile.file.resource';
 import type { RequestEvent, RequestHandler } from './$types';
 import * as fs from 'fs';
@@ -24,7 +25,7 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
 			FileType: file.type
 		};
 
-		const validationResult = fileUploadSchema.safeParse(fileCreateModel);
+		const validationResult = profileFileUploadSchema.safeParse(fileCreateModel);
 		console.log('validation result from server', validationResult);
 		if (!validationResult.success) {
 			return ResponseHandler.success({

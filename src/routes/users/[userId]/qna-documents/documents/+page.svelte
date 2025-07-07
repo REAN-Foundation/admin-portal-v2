@@ -263,8 +263,8 @@
 				<table class="table-c">
 					<thead>
 						<tr>
-							<th class="w-10" data-sort="index"></th>
-							<th class="w-52">
+							<th class="w-[5%]" data-sort="index"></th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Name')}>
 									Documents {#if isSortingName}
 										{#if sortOrder === 'ascending'}
@@ -275,13 +275,13 @@
 									{/if}
 								</button>
 							</th>
-							<th class="w-24">Type</th>
-							<th class="w-24">Version</th>
-							<th class="w-52">Parent Document</th>
-							<th class="w-20">Active</th>
+							<th class="w-[20%]">Type</th>
+							<th class="w-[20%]">Version</th>
+							<th class="w-[20%]">Parent Document</th>
+							<th class="w-[20%]">Active</th>
 							<!-- <th class="w-20">Last Updated</th> -->
-							<th class="w-20">Source</th>
-							<th class="w-16"></th>
+							<th class="w-[20%]">Source</th>
+							<th class="w-[20%]"></th>
 						</tr>
 					</thead>
 					<tbody>

@@ -20,11 +20,11 @@
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let title = $state(data.assessmentTemplate.Title),
-		description = $state(data.assessmentTemplate.Description||''),
+		description = $state(data.assessmentTemplate.Description || ''),
 		displayCode = $state(data.assessmentTemplate.DisplayCode),
 		assessmentType = $state(data.assessmentTemplate.Type),
-		provider = $state(data.assessmentTemplate.Provider||undefined),
-		providerAssessmentCode = $state(data.assessmentTemplate.ProviderAssessmentCode||undefined),
+		provider = $state(data.assessmentTemplate.Provider || undefined),
+		providerAssessmentCode = $state(data.assessmentTemplate.ProviderAssessmentCode || undefined),
 		serveListNodeChildrenAtOnce = $state(data.assessmentTemplate.ServeListNodeChildrenAtOnce),
 		scoringApplicable = $state(data.assessmentTemplate.ScoringApplicable),
 		keywords: string[] = $state(data.assessmentTemplate.Tags || []);

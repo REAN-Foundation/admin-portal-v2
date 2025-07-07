@@ -178,7 +178,7 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="table-container mb-6 shadow">
+		<div class="table-container shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow">
@@ -217,8 +217,8 @@
 				<table class="table-c min-w-full">
 					<thead>
 						<tr>
-							<th data-sort="index" class="w-12"></th>
-							<th class="w-60">
+							<th data-sort="index" class="w-[5%]"></th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('RoleName')}>
 									Name {#if isSortingRoleName}
 										{#if sortOrder === 'ascending'}
@@ -229,10 +229,10 @@
 									{/if}
 								</button>
 							</th>
-							<th class="w-72">Description</th>
-							<th data-sort="isActive" class="w-32">Active</th>
-							<th data-sort="CreatedAt" class="w-32">Created </th>
-							<th class="w-20"></th>
+							<th class="w-[40%]">Description</th>
+							<th data-sort="isActive" class="w-[20%]">Active</th>
+							<th data-sort="CreatedAt" class="w-[20%]">Created </th>
+							<th class="w-[20%]"></th>
 						</tr>
 					</thead>
 					<tbody>

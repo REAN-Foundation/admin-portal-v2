@@ -17,11 +17,11 @@
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let biometricsName = $state('');
+	let name = $state('');
 	let description = $state('');
 	let measurementUnit = $state('');
 	let version = $state('');
-	let biometricsType = $state('');
+	let biometricsType = $state('Blood pressure');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
 
@@ -44,7 +44,7 @@
 			errors = {};
 
 			const biometricsCreateModel: BiometricsCreateModel = {
-				Name: biometricsName,
+				Name: name,
 				Description: description,
 				MeasurementUnit: measurementUnit,
 				Version: version,
@@ -109,10 +109,10 @@
 					<Label text="Name" required={true} />
 					<td class="table-data">
 						<Input
-							name="biometricsName"
+							name="name"
 							type="text"
 							placeholder="Enter name here..."
-							bind:value={biometricsName}
+							bind:value={name}
 							error={errors?.Name}
 						/>
 					</td>

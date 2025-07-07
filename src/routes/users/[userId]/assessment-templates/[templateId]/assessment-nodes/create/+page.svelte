@@ -31,7 +31,7 @@
 		resolutionScore = $state(undefined),
 		serveListNodeChildrenAtOnce = $state(undefined),
 		message = $state(undefined),
-		keywords :string[] = $state([]),
+		keywords: string[] = $state([]),
 		required = $state(undefined),
 		fieldIdentifier = $state(undefined),
 		fieldIdentifierUnit = $state(undefined),
@@ -41,8 +41,8 @@
 	let promise = $state();
 	let keywordsStr: string = $state('');
 
-	let selectedNodeType = $state('');
-	let selectedQueryType = $state('');
+	let selectedNodeType = $state('Question');
+	let selectedQueryType = $state('Text');
 
 	let optionArray = $state([]);
 
@@ -153,10 +153,8 @@
 				FieldIdentifierUnit: fieldIdentifierUnit
 			};
 
-			console.log('assessmentNodeCreateModel', assessmentNodeCreateModel);
 			const validationResult = createOrUpdateSchema.safeParse(assessmentNodeCreateModel);
 
-			console.log('validationResult', validationResult);
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -197,8 +195,8 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-		});
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -339,52 +337,8 @@
 						<tr>
 							<td class="align-top">Tags</td>
 							<td>
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-								/>
+								<InputChips bind:keywords name="keywords" id="keywords" />
 								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-							</td>
-						</tr>
-						<tr>
-							<td>Field Identifier</td>
-							<td>
-								<select
-									name="fieldIdentifier"
-									bind:value={fieldIdentifier}
-									class="health-system-input {errors?.fieldIdentifier ? 'input-text-error' : ''}"
-								>
-									<option value="" disabled selected={fieldIdentifier === undefined}>
-										Select field identifier here...
-									</option>
-
-									{#each sortedIdentifiers as identifier}
-										<option value={identifier}>{toLabel(identifier)}</option>
-									{/each}
-								</select>
-
-								{#if errors?.FieldIdentifier}
-									<p class="text-error">{errors?.FieldIdentifier}</p>
-								{/if}
-							</td>
-						</tr>
-
-						<tr>
-							<td class="align-top">Field Identifier Unit</td>
-							<td>
-								<input
-									type="text"
-									name="fieldIdentifierUnit"
-									bind:value={fieldIdentifierUnit}
-									placeholder="Enter field identifier unit here...."
-									class="health-system-input {errors?.fieldIdentifierUnit
-										? 'input-text-error'
-										: ''}"
-								/>
-								{#if errors?.FieldIdentifierUnit}
-									<p class="text-error">{errors?.FieldIdentifierUnit}</p>
-								{/if}
 							</td>
 						</tr>
 						{#if selectedNodeType === 'Question'}
@@ -402,6 +356,46 @@
 											<option value={responseType}>{responseType}</option>
 										{/each}
 									</select>
+								</td>
+							</tr>
+							<tr>
+								<td>Field Identifier</td>
+								<td>
+									<select
+										name="fieldIdentifier"
+										bind:value={fieldIdentifier}
+										class="health-system-input {errors?.fieldIdentifier ? 'input-text-error' : ''}"
+									>
+										<option value="" disabled selected={fieldIdentifier === undefined}>
+											Select field identifier here...
+										</option>
+
+										{#each sortedIdentifiers as identifier}
+											<option value={identifier}>{toLabel(identifier)}</option>
+										{/each}
+									</select>
+
+									{#if errors?.FieldIdentifier}
+										<p class="text-error">{errors?.FieldIdentifier}</p>
+									{/if}
+								</td>
+							</tr>
+
+							<tr>
+								<td class="align-top">Field Identifier Unit</td>
+								<td>
+									<input
+										type="text"
+										name="fieldIdentifierUnit"
+										bind:value={fieldIdentifierUnit}
+										placeholder="Enter field identifier unit here...."
+										class="health-system-input {errors?.fieldIdentifierUnit
+											? 'input-text-error'
+											: ''}"
+									/>
+									{#if errors?.FieldIdentifierUnit}
+										<p class="text-error">{errors?.FieldIdentifierUnit}</p>
+									{/if}
 								</td>
 							</tr>
 							{#if $scoringApplicableCondition === true}

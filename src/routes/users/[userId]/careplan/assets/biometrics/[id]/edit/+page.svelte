@@ -20,7 +20,7 @@
 	let promise = $state();
 	let name = $state(data.biometrics.Name);
 	let description = $state(data.biometrics.Description || undefined);
-	let measurementUnit = $state(data.biometrics.MeasurementUnit);
+	let measurementUnit = $state(data.biometrics.MeasurementUnit || undefined);
 	let version = $state(data.biometrics.Version);
 	let biometricsType = $state(data.biometrics.BiometricsType);
 	let tags = $state(data.biometrics.Tags);

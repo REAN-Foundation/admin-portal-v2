@@ -193,8 +193,8 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container mb-6 shadow">
-			<div class="health-system-search-border p-4">
+		<div class="table-container shadow">
+			<div class="search-border p-4">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow">
 						<Icon
@@ -207,7 +207,7 @@
 							placeholder="Search by symptom"
 							oninput={(event) => onSearchInput(event)}
 							bind:value={symptom}
-							class="input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if symptom}
 							<button
@@ -233,7 +233,7 @@
 							placeholder="Search by tags"
 							bind:value={tags}
 							oninput={(event) => onSearchInput(event)}
-							class="input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if tags}
 							<button
@@ -253,11 +253,11 @@
 			</div>
 
 			<div class="overflow-x-auto">
-				<table class="health-system-table min-w-full">
+				<table class="table-c min-w-full">
 					<thead>
 						<tr>
-							<th class="w-10"></th>
-							<th class=" w-70">
+							<th class="w-[5%]"></th>
+							<th class=" w-[30%]">
 								<button onclick={() => sortTable('Symptom')}>
 									Symptom {#if isSortingSymptom}
 										{#if sortOrder === 'ascending'}
@@ -268,7 +268,7 @@
 									{/if}
 								</button>
 							</th>
-							<th class="w-64">
+							<th class="w-[30%]">
 								<button onclick={() => sortTable('Tags')}>
 									Tags {#if isSortingTags}
 										{#if sortOrder === 'ascending'}
@@ -279,9 +279,9 @@
 									{/if}
 								</button>
 							</th>
-							<th class="w-24">Image</th>
-							<th class="w-32">Created</th>
-							<th class="w-20"></th>
+							<th class="w-[20%]">Image</th>
+							<th class="w-[20%]">Created</th>
+							<th class="w-[20%]"></th>
 						</tr>
 					</thead>
 					<tbody>

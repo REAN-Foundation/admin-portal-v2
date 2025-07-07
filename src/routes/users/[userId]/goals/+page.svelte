@@ -141,7 +141,7 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="table-container mb-6 shadow">
+		<div class="table-container shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative flex-1 pr-1.5">
@@ -181,7 +181,6 @@
 							</button>
 						{/if}
 					</div>
-
 					<Button href={createRoute} text="Add New" variant="primary" />
 				</div>
 			</div>
@@ -190,19 +189,19 @@
 				<table class="table-c min-w-full">
 					<thead class="">
 						<tr>
-							<th class="w-12"></th>
-							<th class="text-start">
+							<th class="w-[5%]"></th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Type')}>
 									Type {isSortingType ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
 								</button>
 							</th>
-							<th class="text-start">
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Tags')}>
 									Tags {isSortingTags ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
 								</button>
 							</th>
-							<th class="w-40">Created</th>
-							<th class="w-20 text-center"></th>
+							<th class="w-[20%]">Created</th>
+							<th class="w-[20%]"></th>
 						</tr>
 					</thead>
 

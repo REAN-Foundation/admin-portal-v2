@@ -15,10 +15,11 @@
 
 	let id = labRecordType.id;
 	let typeName = labRecordType.TypeName;
-	let displayName =
-		labRecordType.DisplayName !== null && labRecordType.DisplayName !== ''
-			? labRecordType.DisplayName
-			: 'Not specified';
+	// let displayName =
+	// 	labRecordType.DisplayName !== null && labRecordType.DisplayName !== ''
+	// 		? labRecordType.DisplayName
+	// 		: 'Not specified';
+	let displayName = labRecordType.DisplayName;
 	let snowmedCode =
 		labRecordType.SnowmedCode !== null && labRecordType.SnowmedCode !== ''
 			? labRecordType.SnowmedCode

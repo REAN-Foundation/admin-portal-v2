@@ -88,7 +88,7 @@
 		formData.append('filename', file.name);
 
 		try {
-			const res = await fetch(`/api/server/file-resources/upload`, {
+			const res = await fetch(`/api/server/file-resources/upload/reancare`, {
 				// 	headers: {
 				// 	'Content-Type': 'application/json',
 				// 	Accept: 'application/json',

@@ -23,7 +23,7 @@
 	let description = message.Description !== null ? message.Description : 'Not specified';
 	let messageType = message.MessageType !== null ? message.MessageType : 'Not specified';
 	let templateName = message.TemplateName !== null ? message.TemplateName : 'Not specified';
-	let pathUrl = message.Url !== null && message.PathUrl !== '' ? message.PathUrl : 'Not specified';
+	let pathUrl = message.Url !== null && message.Url !== '' ? message.Url : 'Not specified';
 	let tags_ = message.Tags;
 	let tags = tags_.join(', ');
 	let version = message.Version;

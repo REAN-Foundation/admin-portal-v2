@@ -19,7 +19,7 @@
 
 	let id = data.tenant.id;
 	let name = $state(data.tenant.Name);
-	let description = $state(data.tenant.Description);
+	let description = $state(data.tenant.Description || '');
 	let code = $state(data.tenant.Code);
 	let phone = $state(data.tenant.Phone);
 	let email = $state(data.tenant.Email);

@@ -25,14 +25,12 @@
 	let version = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
-	// let assessmentTemplates = $state([]);
 
 	let assessmentTemplates = data.assessmentTemplates ?? [];
 	console.log('assessmentTemplates', assessmentTemplates);
 
 	data.title = 'Create Assessment';
 	const userId = page.params.userId;
-	// const tenantId = data?.sessionUser?.tenantId;
 	const tenantId = data?.tenantId;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
@@ -169,9 +167,26 @@
 						{/if}
 					</td>
 				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Reference Template<span class="important-field">*</span></td>
+					<td class="table-data">
+						<select
+							bind:value={referenceTemplateCode}
+							class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
+						>
+							<option disabled selected value="">Select reference template here...</option>
+							{#each assessmentTemplates as template}
+								<option value={template.DisplayCode}>{template.Title}</option>
+							{/each}
+						</select>
+						{#if errors?.ReferenceTemplateCode}
+							<p class="error-text">{errors?.ReferenceTemplateCode}</p>
+						{/if}
+					</td>
+				</tr>
 
 				<tr class="tables-row">
-					<Label text="Tags" />
+					<td class="table-label">Tags</td>
 					<td class="table-data">
 						<InputChips bind:keywords name="keywords" id="keywords" />
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />

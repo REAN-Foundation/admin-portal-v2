@@ -168,8 +168,8 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container mb-6 shadow">
-			<div class="health-system-search-border">
+		<div class="table-container shadow">
+			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="flex-1">
 						<div class="relative pr-1.5">
@@ -183,7 +183,7 @@
 								bind:value={healthSystemName}
 								oninput={(event) => onSearchInput(event)}
 								placeholder="Search by name"
-								class="input !pr-4 !pl-10"
+								class="table-input-field !pr-4 !pl-10"
 							/>
 							{#if healthSystemName}
 								<button
@@ -214,11 +214,11 @@
 				</div>
 			</div>
 			<div class="overflow-x-auto">
-				<table class="health-system-table min-w-full">
+				<table class="table-c min-w-full">
 					<thead>
 						<tr>
-							<th class="w-12"></th>
-							<th class=" text-start">
+							<th class="w-[2%]"></th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Name')}>
 									Name {#if isSortingName}
 										{#if sortOrder === 'ascending'}
@@ -229,8 +229,8 @@
 									{/if}
 								</button>
 							</th>
-							<th class=" w-40">Created </th>
-							<th class="w-20 text-center"></th>
+							<th class="w-[20%]">Created </th>
+							<th class="w-[20%]"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -255,7 +255,6 @@
 										</Tooltip>
 									</td>
 									<td role="gridcell" aria-colindex={5} tabindex="0">
-										<!-- {date.format(new Date(row.CreatedAt), 'DD-MMM-YYYY')} -->
 										{TimeHelper.formatDateToReadable(row.CreatedAt, LocaleIdentifier.EN_US)}
 									</td>
 

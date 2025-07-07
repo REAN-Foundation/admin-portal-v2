@@ -198,8 +198,8 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container mb-6 shadow">
-			<div class="health-system-search-border">
+		<div class="table-container shadow">
+			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<!-- <div class="flex gap-4 flex-row"> -->
 					<div class="relative w-auto grow">
@@ -213,7 +213,7 @@
 							oninput={(event) => onSearchInput(event)}
 							placeholder="Search by title"
 							bind:value={title}
-							class="input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if title}
 							<button
@@ -240,7 +240,7 @@
 							placeholder="Search by type"
 							oninput={(event) => onSearchInput(event)}
 							bind:value={type}
-							class="input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if type}
 							<button
@@ -266,7 +266,7 @@
 							oninput={(event) => onSearchInput(event)}
 							placeholder="Search by tags"
 							bind:value={tags}
-							class="input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if tags}
 							<button
@@ -281,19 +281,19 @@
 							</button>
 						{/if}
 					</div>
+					<!-- </div> -->
+					<Button href={importRoute} text="Import" variant="primary"></Button>
 
-					<Button href={importRoute} text="Import" variant="primary" />
-
-					<Button href={createRoute} text="Add New" variant="primary" />
+					<Button href={createRoute} text="Add New" variant="primary"></Button>
 				</div>
 			</div>
 
 			<div class="overflow-x-auto">
-				<table class="health-system-table min-w-full">
+				<table class="table-c min-w-full">
 					<thead>
 						<tr>
-							<th data-sort="index" class="w-12"></th>
-							<th>
+							<th data-sort="index" class="w-[5%]"></th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Title')}>
 									Title
 									{#if isSortingTitle}
@@ -305,7 +305,7 @@
 									{/if}
 								</button>
 							</th>
-							<th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Type')}>
 									Type
 									{#if isSortingType}
@@ -317,10 +317,8 @@
 									{/if}
 								</button>
 							</th>
-							<th>Tags</th>
-							<th>Provider</th>
-							<th />
-							<th />
+							<th class="w-[20%]">Tags</th>
+							<th class="w-[20%]">Provider</th>
 						</tr>
 					</thead>
 					<tbody class="">
@@ -358,8 +356,7 @@
 											: 'Not specified'}
 									</td>
 
-									<td role="gridcell" aria-colindex={2} tabindex="0"> </td>
-									<td>
+									<td role="gridcell" aria-colindex={2} tabindex="0">
 										<div class="flex justify-end">
 											<Button
 												href={editRoute(row.id)}
