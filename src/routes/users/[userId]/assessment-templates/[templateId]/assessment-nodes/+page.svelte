@@ -19,7 +19,9 @@
 	let debounceTimeout;
 	let isLoading = $state(false);
 	let assessmentNodes = $state(data.assessmentNodes.Items);
-	let retrivedAssessmentNodes = $derived(assessmentNodes);
+	let retrivedAssessmentNodes = $derived(
+		assessmentNodes.filter(node => node.Title !== "Assessment root node")
+	);
 
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
