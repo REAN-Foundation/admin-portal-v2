@@ -32,6 +32,7 @@
 		? assessmentTemplates.filter((template) => template.DisplayCode === templateCode)
 		: [];
 
+		console.log('assessmentTemplate', assessmentTemplate);
 	const breadCrumbs = [
 		{
 			name: 'Assets',
@@ -77,9 +78,9 @@
 				<td class="table-data">{templateCode}</td>
 			</tr> -->
 			<tr class="tables-row">
-   			<td class="table-label">Template Code</td>
+   			<td class="table-label">Reference Assessment</td>
     		<td class="table-data">
-        		{assessmentTemplate.length > 0 ? assessmentTemplate[0].DisplayCode : templateCode || "Not specified"}
+        		{assessmentTemplate.length > 0 ? assessmentTemplate[0].Title : templateCode || "Not specified"}
     		</td>
 			</tr>
 			<tr class="tables-row">
