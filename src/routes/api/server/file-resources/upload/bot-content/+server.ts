@@ -1,20 +1,22 @@
 import type { FileUploadModel } from '$lib/types/file.upload.types';
 import { fileUploadSchema } from '$lib/validation/file.upload.schema';
-import { uploadBinary } from '$routes/api/services/reancare/file.resource';
+
 import type { RequestEvent } from './$types';
 import * as fs from 'fs';
 import { json } from '@sveltejs/kit';
+import { uploadBinary } from '$routes/api/services/bot-content/file.resource';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const config = {
-    maxBodySize: 0
+    maxBodySize: 10 * 1024 * 1024, // 2MB in bytes
+    parseBody: false // Disable automatic body parsing to handle it manually
 };
 
 export const POST = async (event: RequestEvent) => {
     console.log("File upload request received");
 
-    const maxFileSize = 50 * 1024 * 1024; // 50MB
+    const maxFileSize = 10 * 1024 * 1024; // 2MB
     let filePath: string | null = null;
 
     try {
