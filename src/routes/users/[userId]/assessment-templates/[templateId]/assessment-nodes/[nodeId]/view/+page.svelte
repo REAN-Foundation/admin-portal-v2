@@ -35,13 +35,76 @@
 	const tags_ = Array.isArray(assessmentNodes?.Tags) ? assessmentNodes.Tags : [];
 	const tags = tags_.join(', ');
 	const correctAnswer = assessmentNodes.CorrectAnswer ?? null;
-	const rawData =
-		assessmentNodes.RawData !== null && assessmentNodes.RawData !== ''
-			? assessmentNodes.RawData
-			: 'Not specified';
+
+	const formatRawData = (data: any) => {
+		if (!data || data === '{}' || data === '' || data === null || data === undefined) {
+			return 'Not specified';
+		}
+
+		try {
+			if (typeof data === 'object') {
+				if (Object.keys(data).length === 0) {
+					return 'Not specified';
+				}
+				return JSON.stringify(data, null, 2);
+			}
+
+			if (typeof data === 'string') {
+				const parsed = JSON.parse(data);
+				if (Object.keys(parsed).length === 0) {
+					return 'Not specified';
+				}
+				return JSON.stringify(parsed, null, 2);
+			}
+
+			return 'Not specified';
+		} catch (error) {
+			return data || 'Not specified';
+		}
+	};
+
+	const rawData = formatRawData(assessmentNodes.RawData);
+	const isJsonData = rawData !== 'Not specified' && rawData !== assessmentNodes.RawData;
 
 	const fieldIdentifier = assessmentNodes.FieldIdentifier ?? null;
 	const fieldIdentifierUnit = assessmentNodes.FieldIdentifierUnit ?? null;
+
+	// Field identifier options for editing
+	const AssessmentFieldIdentifiers = [
+		'General:PersonalProfile:FirstName',
+		'General:PersonalProfile:LastName',
+		'General:PersonalProfile:Name',
+		'General:PersonalProfile:Age',
+		'General:PersonalProfile:DateOfBirth',
+		'General:PersonalProfile:Gender',
+		'Clinical:HealthProfile:BloodGroup',
+		'Clinical:HealthProfile:Ethnicity',
+		'Clinical:HealthProfile:Race',
+		'Clinical:HealthProfile:MaritalStatus',
+		'Clinical:HealthProfile:Occupation',
+		'Clinical:HealthProfile:Smoking',
+		'Clinical:Vitals:BloodPressure:Systolic',
+		'Clinical:Vitals:BloodPressure:Diastolic',
+		'Clinical:Vitals:Pulse',
+		'Clinical:Vitals:Temperature',
+		'Clinical:Vitals:Weight',
+		'Clinical:Vitals:Height',
+		'Clinical:Vitals:OxygenSaturation',
+		'Clinical:Vitals:BloodGlucose',
+		'Clinical:LabRecords:Cholesterol',
+		'Clinical:LabRecords:Triglycerides',
+		'Clinical:LabRecords:LDL',
+		'Clinical:LabRecords:HDL',
+		'Clinical:LabRecords:A1C'
+	];
+
+	const sortedIdentifiers = AssessmentFieldIdentifiers;
+
+	function toLabel(identifier: string) {
+		const parts = identifier.split(':');
+		const lastPart = parts[parts.length - 1];
+		return lastPart.replace(/([a-z])([A-Z])/g, '$1 $2'); // adds space before capital letters
+	}
 	let resolutionScore = $state();
 
 	if (nodeType === 'Question') {
@@ -221,20 +284,29 @@
 					</tr>
 					<tr>
 						<td>Raw Data</td>
-						<td>{rawData}</td>
+						<td>
+							{#if isJsonData}
+								{rawData}
+							{:else}
+								{rawData}
+							{/if}
+						</td>
 					</tr>
 					<tr>
 						<td>Sequence</td>
 						<td>{sequence}</td>
 					</tr>
+					{#if nodeType === 'Question'}
+						<tr>
+							<td>Field Identifier</td>
+							<td>{fieldIdentifier ? toLabel(fieldIdentifier) : 'Not specified'}</td>
+						</tr>
+						<tr>
+							<td>Field Identifier Unit</td>
+							<td>{fieldIdentifierUnit}</td>
+						</tr>
+					{/if}
 					<tr>
-						<td>Field Identifier</td>
-						<td>{fieldIdentifier}</td>
-					</tr>
-					<tr>
-						<td>Field Identifier Unit</td>
-						<td>{fieldIdentifierUnit}</td>
-					</tr><tr>
 						<td>Tags</td>
 						<td>
 							{#if tags.length <= 0}
