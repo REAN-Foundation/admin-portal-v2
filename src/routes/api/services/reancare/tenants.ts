@@ -63,7 +63,7 @@ export const updateTenant = async (
 ) => {
 	const body = {
 		Name: name,
-		Description: description ? description : null,
+		Description: description ?? null,
 		Code: code,
 		Phone: phone ? phone : null,
 		Email: email ? email : null
