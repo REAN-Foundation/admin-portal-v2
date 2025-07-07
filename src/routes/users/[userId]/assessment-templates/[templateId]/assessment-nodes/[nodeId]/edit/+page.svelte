@@ -35,9 +35,34 @@
 		required = $state(data.assessmentNode.Required ?? false),
 		fieldIdentifier = $state(data.assessmentNode.FieldIdentifier ?? undefined),
 		fieldIdentifierUnit = $state(data.assessmentNode.FieldIdentifierUnit ?? undefined),
-		rawData = $state(data.assessmentNode.RawData ?? undefined);
+		rawData = $state(formatRawDataEdit(data.assessmentNode.RawData));
 
 	let optionArray = $derived(options);
+
+	// Format rawData for editing, similar to view page
+	function formatRawDataEdit(data: any) {
+		if (!data || data === '{}' || data === '' || data === null || data === undefined) {
+			return 'Not specified';
+		}
+		try {
+			if (typeof data === 'object') {
+				if (Object.keys(data).length === 0) {
+					return 'Not specified';
+				}
+				return JSON.stringify(data, null, 2);
+			}
+			if (typeof data === 'string') {
+				const parsed = JSON.parse(data);
+				if (Object.keys(parsed).length === 0) {
+					return 'Not specified';
+				}
+				return JSON.stringify(parsed, null, 2);
+			}
+			return 'Not specified';
+		} catch (error) {
+			return data || 'Not specified';
+		}
+	}
 
 	let selectedOption = $derived(
 		correctAnswer !== null
