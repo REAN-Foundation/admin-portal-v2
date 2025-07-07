@@ -8,6 +8,9 @@
 	} from '$lib/themes/theme.selector';
 	import { toasts } from '$lib/components/toast/toast.store';
 	import { showMessage } from '$lib/components/toast/message.utils';
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	
 	let showResetPassword  = $state(false);
 	let showForgotPassword  = $state(true);
 	let isLoading = $state(false);
@@ -21,7 +24,7 @@
 	let loginActiveTab = 'email';
 	let forgotPasswordActiveTab = $state('email');
 	let phone = $state('');
-	let countryCode = $state('');
+	let countryCode = $state('+1');
 
 	// Enhanced email validation function
 	function validateEmail(email: string): { isValid: boolean; message: string } {
@@ -332,9 +335,6 @@
 						{/if}
 						{#if phone && !emailError && forgotPasswordActiveTab === 'phone'}
 							{@const isValidPhone = /^\d{10}$/.test(phone.trim())}
-							{#if isValidPhone}
-								<p class="text-green-600 text-sm mt-1">✓ Valid phone number</p>
-							{/if}
 						{/if}
 					{/if}
 				</div>
