@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import Chart from 'chart.js/auto';
-	import {
-		getTickColorLight,
-		getTickColorDark
-	} from '$lib/themes/theme.selector';
+	import { getTickColorLight, getTickColorDark } from '$lib/themes/theme.selector';
 
 	/////////////////////////////////////////////////////////////////////////////
 
@@ -74,6 +71,9 @@
 							display: true,
 							text: xLabel,
 							color: getTickColor()
+						},
+						border: {
+							color: getTickColor() // Set axis line color based on theme
 						}
 					},
 					y: {
@@ -88,6 +88,9 @@
 							display: true,
 							text: yLabel,
 							color: getTickColor()
+						},
+						border: {
+							color: getTickColor() // Set axis line color based on theme
 						}
 					}
 				},
@@ -165,4 +168,4 @@
 	});
 </script>
 
-<canvas bind:this={canvas} class="w-full h-auto"></canvas>
+<canvas bind:this={canvas} class="h-auto w-full"></canvas>

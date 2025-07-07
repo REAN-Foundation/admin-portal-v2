@@ -9,15 +9,19 @@
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import { Helper } from '$lib/utils/helper';
+	import Button from '$lib/components/button/button.svelte';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 
+	$inspect("This is data",data)
 	let debounceTimeout;
 	let isLoading = $state(false);
 	let assessmentNodes = $state(data.assessmentNodes.Items);
-	let retrivedAssessmentNodes = $derived(assessmentNodes);
+	let retrivedAssessmentNodes = $derived(
+		assessmentNodes.filter(node => node.Title !== "Assessment root node")
+	);
 
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
@@ -203,8 +207,8 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container mb-6 shadow">
-			<div class="health-system-search-border">
+		<div class="table-container shadow">
+			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow">
 						<Icon
@@ -291,7 +295,7 @@
 			</div>
 
 			<div class="overflow-x-auto">
-				<table class="health-system-table min-w-full">
+				<table class="table-c min-w-full">
 					<thead>
 						<tr>
 							<th data-sort="index" class="w-12">Id</th>
@@ -319,13 +323,11 @@
 									{/if}
 								</button>
 							</th>
-							<th>Query Response Type</th>
-							<th>Tags</th>
-							<th />
-							<th />
+							<th class="w-[20%]">Query Response Type</th>
+							<th class="w-[20%]">Tags</th>
 						</tr>
 					</thead>
-					<tbody class="!bg-white dark:!bg-inherit">
+					<tbody class="">
 						{#if retrivedAssessmentNodes.length <= 0}
 							<tr class="text-center">
 								<td aria-colindex={1} colspan="8">
@@ -361,34 +363,29 @@
 							</a>
 						</td> -->
 									<td role="gridcell" aria-colindex={2} tabindex="0">
-										<div class="flex">
-											<Tooltip text="Edit" forceShow={true}>
-												<button class="">
-													<a href={editRoute(row.id)} class="health-system-btn group">
-														<Icon icon="material-symbols:edit-outline" class="health-system-icon" />
-													</a>
-												</button>
-											</Tooltip>
-
-											<Tooltip text="View" forceShow={true}>
-												<button>
-													<a href={viewRoute(row.id)} class=" health-system-btn group"
-														><Icon
-															icon="icon-park-outline:preview-open"
-															class="health-system-icon"
-														/>
-													</a>
-												</button>
-											</Tooltip>
-
-											<Tooltip text="Delete" forceShow={true}>
-												<button
-													class="health-system-btn !text-red-600"
-													onclick={() => handleDeleteClick(row.id)}
-												>
-													<Icon icon="material-symbols:delete-outline-rounded" />
-												</button>
-											</Tooltip>
+										<div class="flex justify-end">
+											<Button
+												href={editRoute(row.id)}
+												variant="icon"
+												icon="material-symbols:edit-outline"
+												iconSize="sm"
+												tooltip="Edit"
+											/>
+											<Button
+												href={viewRoute(row.id)}
+												variant="icon"
+												icon="icon-park-outline:preview-open"
+												iconSize="sm"
+												tooltip="View"
+											/>
+											<Button
+												onclick={() => handleDeleteClick(row.id)}
+												variant="icon"
+												icon="material-symbols:delete-outline-rounded"
+												iconSize="sm"
+												color="red"
+												tooltip="Delete"
+											/>
 										</div>
 									</td>
 								</tr>

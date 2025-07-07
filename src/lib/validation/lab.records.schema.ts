@@ -7,7 +7,7 @@ export const createOrUpdateSchema = zfd.formData({
             required_error: "Type Name is required.",
             invalid_type_error: "Type Name must be a string.",
         })
-        .min(5, { message: "Type Name cannot be empty." })
+        .min(8, { message: "Type Name must be at least 8 characters." })
         .max(128, { message: "Type Name must be at most 128 characters long." }),
 
     DisplayName: z

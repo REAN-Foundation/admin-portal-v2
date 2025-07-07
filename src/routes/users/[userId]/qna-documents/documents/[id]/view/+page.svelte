@@ -111,14 +111,16 @@
 	const viewDocument = async () => {
 		try {
 			const res = await fetch(
-				`/api/server/file-resources/download/${resourceId}?asAttachment=false`
+				`/api/server/documents/file-resources/download/${resourceId}?asAttachment=false`
 			);
 
-			console.log('res', res);
-
 			if (!res.ok) {
-				console.error('Failed to fetch file');
-				toastMessage();
+				const errorText = await res.text();
+				console.error('Failed to fetch file:', errorText);
+				toastMessage({
+					Status: 'error',
+					Message: 'Failed to fetch document'
+				});
 				return;
 			}
 
@@ -126,10 +128,23 @@
 			fileType = mimeType;
 
 			const blob = await res.blob();
+						
+			if (blob.size === 0) {
+				toastMessage({
+					Status: 'error',
+					Message: 'Document is empty'
+				});
+				return;
+			}
+
 			fileUrl = URL.createObjectURL(blob);
 			showModal = true;
 		} catch (error) {
-			toastMessage();
+			console.error('Error viewing document:', error);
+			toastMessage({
+				Status: 'error',
+				Message: 'Error viewing document'
+			});
 		}
 	};
 

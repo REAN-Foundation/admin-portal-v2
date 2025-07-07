@@ -8,20 +8,22 @@
 
 	let { data }: { data: PageServerData } = $props();
 
-	let id = data.promptTemplate.id;
-	let name = data.promptTemplate.Name;
-	let description = data.promptTemplate.Description;
-	let prompt = data.promptTemplate.Prompt;
-	let model = data.promptTemplate.Model;
-	let group = data.promptTemplate.Group;
-	let useCaseType = data.promptTemplate.UseCaseType;
-	let variable = data.promptTemplate.Variables;
-	let temperature = data.promptTemplate.Temperature;
-	let topP = data.promptTemplate.TopP;
-	let frequencyPenalty = data.promptTemplate.FrequencyPenalty;
-	let presencePenalty = data.promptTemplate.PresencePenalty;
-
-
+	let promptTemplate = data.promptTemplate;
+	let id = promptTemplate.id;
+	let name = promptTemplate.Name;
+	let description =
+		promptTemplate.Description !== null && promptTemplate.Description !== ''
+			? promptTemplate.Description
+			: 'Not specified';
+	let prompt = promptTemplate.Prompt;
+	let model = promptTemplate.Model;
+	let group = promptTemplate.Group;
+	let useCaseType = promptTemplate.UseCaseType;
+	let variable = promptTemplate.Variables;
+	let temperature = promptTemplate.Temperature;
+	let topP = promptTemplate.TopP;
+	let frequencyPenalty = promptTemplate.FrequencyPenalty;
+	let presencePenalty = promptTemplate.PresencePenalty;
 
 	const userId = page.params.userId;
 	const editRoute = `/users/${userId}/bot-content/prompt-template/${id}/edit`;

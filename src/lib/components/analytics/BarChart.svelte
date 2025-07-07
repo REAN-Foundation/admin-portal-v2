@@ -74,13 +74,19 @@
 					x: {
 						grid: { display: false },
 						ticks: { color: textColor },
-						title: { display: true, text: xLabel, color: textColor }
+						title: { display: true, text: xLabel, color: textColor },
+						border: {
+							color: getTickColorDark() // Set axis line color based on theme
+						}
 					},
 					y: {
 						beginAtZero: true,
 						grid: { display: true, color: gridColor },
 						ticks: { color: textColor },
-						title: { display: true, text: yLabel, color: textColor }
+						title: { display: true, text: yLabel, color: textColor },
+                            border: {
+                                color: getTickColorDark() // Set axis line color based on theme
+                            }
 					}
 				},
 				layout: { padding: { bottom: 20 } },
@@ -128,4 +134,4 @@
 	});
 </script>
 
-<canvas class="w-full h-auto" bind:this={canvas}></canvas>
+<canvas class="h-auto w-full" bind:this={canvas}></canvas>
