@@ -99,6 +99,29 @@
 			event.preventDefault();
 			errors = {};
 
+				if (formData.has('file')) {
+				const fileRes = await fetch(`/api/server/file-resources/upload/reancare`, {
+					method: 'POST',
+					body: formData
+				});
+
+				const fileJson = await fileRes.json();
+
+				if (fileJson.Status === 'success' && fileJson.HttpCode === 201) {
+					const imageResourceId_ = fileJson.Data.FileResources[0].id;
+					if (imageResourceId_) {
+						imageResourceId = imageResourceId_;
+						errorMessage.Text = 'File uploaded successfully';
+						errorMessage.Colour = 'text-success-500';
+						// return true;
+					}
+					console.log(imageResourceId);
+				} else {
+					errorMessage.Text = fileJson.Message;
+					errorMessage.Colour = 'text-error-500';
+				}
+			}
+
 			const symptomUpdateModel: SymptomUpdateModel = {
 				Symptom: symptom,
 				Description: description,
