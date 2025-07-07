@@ -10,6 +10,7 @@
 	import { showMessage } from '$lib/components/toast/message.utils';
 	let showResetPassword  = $state(false);
 	let showForgotPassword  = $state(true);
+	let isLoading = $state(false);
 
 	let email = $state('');
 	let resetCode = $state('');
@@ -126,145 +127,17 @@
 		path: ['email']
 	});
 
-
-	// async function handleForgotPassword() {
-	// 	let requestBody = {
-	// 		Email: email,
-	// 		CountryCode: countryCode,
-	// 		Phone: phone
-	// 	};
-	// 	const response = await fetch(`/api/server/users/send-reset-code`, {
-	// 		method: 'POST',
-	// 		body: JSON.stringify(requestBody),
-	// 		headers: { 'content-type': 'application/json' }
-	// 	});
-	// 	const res = await response.json();
-
-	// 	if (res.Status === 'success') {
-	// 		// toast.success(res.Message);
-	// 		console.log('password reset successfully');
-	// 		showResetPassword = true;
-	// 		showForgotPassword = false;
-	// 	} else {
-	// 		// toast.error(res.Message);
-	// 		console.log('error');
-	// 	}
-	// }
-
-// 	async function handleForgotPassword() {
-// 		try{
-// errors = {};
-// 		emailError = null; 
-// 		const forgotPasswordModel = {
-// 			Email: email,
-// 			CountryCode: countryCode,
-// 			Phone: phone
-// 		};
-// 		const validationResult = resetPasswordSchema.safeParse(forgotPasswordModel)
-	
-// 		if (!validationResult.success) {
-// 				errors = Object.fromEntries(
-// 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-// 						key,
-// 						val?.[0] || 'This field is required'
-// 					])
-// 				);
-// 				return;
-// 			}
-// 			const response = await fetch(`/api/server/users/send-reset-code`, {
-// 				method: 'POST',
-// 				body: JSON.stringify(forgotPasswordModel),
-// 				headers: { 'content-type': 'application/json' }
-// 			});
-// 			const res = await response.json();
-	
-// 	}
-		
-
-
-// 	// 	if (forgotPasswordActiveTab === 'email') {
-// 	// 	if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-// 	// 		emailError = 'Please enter a valid email';
-// 	// 		return;
-// 	// 	}
-// 	// }
-
-// 	try {
-// 		console.log("EMAIL", email);
-// 		resetPasswordSchema.parse({ email, phone, countryCode });
-	
-// 	} catch (err) {
-// 		if (err instanceof z.ZodError) {
-// 			const fieldErrors = err.flatten().fieldErrors;
-// 			emailError = fieldErrors.email?.[0] || fieldErrors.phone?.[0] || err.errors[0]?.message;
-// 			return;
-// 		}
-// 	}
-
-// 		let requestBody = {
-// 			Email: email,
-// 			CountryCode: countryCode,
-// 			Phone: phone
-// 		};
-// 		console.log("Request body",requestBody);
-
-// 		try {
-// 			const response = await fetch(`/api/server/users/send-reset-code`, {
-// 				method: 'POST',
-// 				body: JSON.stringify(requestBody),
-// 				headers: { 'content-type': 'application/json' }
-// 			});
-// 			const res = await response.json();
-
-// 			if (res.Status === 'success') {
-// 				showMessage(res.Message || 'Reset code sent successfully', 'success', false, 3000);
-// 				showResetPassword = true;
-// 				showForgotPassword = false;
-// 			} else {
-// 				emailError = res.Message || 'Failed to send reset code';
-// 			}
-// 		} catch (err) {
-// 			emailError = 'Something went wrong. Please try again.';
-// 		}
-// 	}
-
-	// async function handleForgotPassword() {
-	// 	errors = {};
-	// 	emailError = null;
-	// 	let requestBody = {
-	// 		Email: email,
-	// 		CountryCode: countryCode,
-	// 		Phone: phone
-	// 	};
-
-	// 	try {
-	// 		const response = await fetch(`/api/server/users/send-reset-code`, {
-	// 			method: 'POST',
-	// 			body: JSON.stringify(requestBody),
-	// 			headers: { 'content-type': 'application/json' }
-	// 		});
-	// 		const res = await response.json();
-
-	// 		if (res.Status === 'success') {
-	// 			showMessage(res.Message || 'Reset code sent successfully', 'success', false, 3000);
-	// 			showResetPassword = true;
-	// 			showForgotPassword = false;
-	// 		} else {
-	// 			showMessage(res.Message || 'Failed to send reset code', 'error', false, 3000);
-	// 		}
-	// 	} catch (err) {
-	// 		showMessage('Something went wrong. Please try again.', 'error', false, 3000);
-	// 	}
-	// }
-
 	async function handleForgotPassword() {
         try {
-            event.preventDefault();
+            isLoading = true;
             errors = {};
 			emailError = null;
-            
-            // Enhanced validation for email tab
+
             if (forgotPasswordActiveTab === 'email') {
+                if (!email || email.trim().length === 0) {
+                    emailError = 'Email is required';
+                    return;
+                }
                 const emailValidation = validateEmail(email);
                 if (!emailValidation.isValid) {
                     emailError = emailValidation.message;
@@ -290,17 +163,6 @@
                 Phone: phone
             };
             
-            const validationResult = forgotPasswordSchema.safeParse(requestBody);
-            console.log('validationResult=====================>', validationResult);
-            if (!validationResult.success) {
-                errors = Object.fromEntries(
-                    Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-                        key,
-                        val?.[0] || 'This field is required'
-                    ])
-                );
-                return;
-            }
             const response = await fetch(`/api/server/users/send-reset-code`, {
                 method: 'POST',
                 body: JSON.stringify(requestBody),
@@ -312,12 +174,12 @@
                 showResetPassword = true;
                 showForgotPassword = false;
             } else {
-                // showMessage(res.Message || 'Failed to send reset code', 'error', false, 3000);
-				emailError = res.Message || 'Failed to send reset code';
+                emailError = res.Message || 'Failed to send reset code';
             }
         } catch (err) {
-            // showMessage('Something went wrong. Please try again.', 'error', false, 3000);
-			emailError = 'Something went wrong. Please try again.';
+            emailError = 'Something went wrong. Please try again.';
+        } finally {
+            isLoading = false;
         }
     }
 
@@ -401,11 +263,8 @@
 						</label>
 					</div>
 					{#if forgotPasswordActiveTab === 'email'}
-						<label class="label" for="email">
-							<span class="label-text-alt">Email Address</span>
-						</label>
 						<input
-							type="email"
+							type="text"
 							name="email"
 							placeholder="Enter your email address"
 							bind:value={email}
@@ -422,7 +281,7 @@
 							}}
 							oninput={() => {
 								// Clear error when user starts typing
-								if (emailError && email) {
+								if (emailError) {
 									emailError = '';
 								}
 							}}
@@ -432,15 +291,9 @@
 						{/if}
 						{#if email && !emailError && forgotPasswordActiveTab === 'email'}
 							{@const validation = validateEmail(email)}
-							{#if validation.isValid}
-								<p class="text-green-600 text-sm mt-1">✓ Valid email address</p>
-							{/if}
 						{/if}
 					{/if}
 					{#if forgotPasswordActiveTab === 'phone'}
-						<label class="label" for="phone">
-							<span class="label-text-alt">Phone Number</span>
-						</label>
 						<div class="mb-4 flex gap-2">
 							<div class="w-1/3">
 								<select name="countryCode" class="input" bind:value={countryCode}>
@@ -467,7 +320,7 @@
 									}}
 									oninput={() => {
 										// Clear error when user starts typing
-										if (emailError && phone) {
+										if (emailError) {
 											emailError = '';
 										}
 									}}
@@ -485,7 +338,9 @@
 						{/if}
 					{/if}
 				</div>
-				<button type="submit" class="btn my-4 w-full cursor-pointer">Send Reset Code</button>
+				<button type="submit" class="btn my-4 w-full cursor-pointer" disabled={isLoading}>
+					{isLoading ? 'Sending...' : 'Send Reset Code'}
+				</button>
 				<a href="/">
 					<button
 						type="button"
