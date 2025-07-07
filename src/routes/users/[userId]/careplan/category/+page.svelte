@@ -156,7 +156,7 @@
 
 <div class="px-6 py-2">
 	<div class="mx-auto">
-		<div class="table-container my-6 shadow">
+		<div class="table-container shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow">
