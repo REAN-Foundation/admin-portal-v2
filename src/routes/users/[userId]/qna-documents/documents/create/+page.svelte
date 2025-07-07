@@ -95,9 +95,9 @@
 			if (!file) return;
 
 			// Check file size (50MB limit)
-			const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB in bytes
+			const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
 			if (file.size > MAX_FILE_SIZE) {
-				showMessage(`File size exceeds 50MB limit. Please select a smaller file.`, 'error');
+				showMessage(`File size exceeds 10MB limit. Please select a smaller file.`, 'error');
 				e.target.value = ''; // Clear the file input
 				return;
 			}
