@@ -2,7 +2,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { PersonRole } from '$lib/types/domain.models';
 import { getPersonRolesForEmail, getPersonRolesForPhone } from '../../../services/person';
 import { resetPassword } from '../../../services/reancare/user';
-import { redirect } from 'sveltekit-flash-message/server';
+// import { redirect } from 'sveltekit-flash-message/server';
 
 //////////////////////////////////////////////////////////////
 
@@ -21,32 +21,31 @@ export const POST = async (event: RequestEvent) => {
 		let phone = '';
 
 		// const res_ = await getPersonRolesForEmail(email);
-
 		if (data.Phone && data.CountryCode) {
 			phone = data.CountryCode + '-' + data.Phone;
-
-			var res_ = (availableRoles = await getPersonRolesForPhone(phone));
+			const res_ = availableRoles = await getPersonRolesForPhone(phone);
 			availableRoles = res_.Data?.Roles ?? [];
-		} else if (data.Email) {
-			var res_ = await getPersonRolesForEmail(email);
+		}
+		else if (data.Email) {
+			const res_ = await getPersonRolesForEmail(email);
 			availableRoles = res_.Data?.Roles ?? [];
 		}
 
-		availableRoles = res_.Data?.Roles ?? [];
+		// availableRoles = res_.Data?.Roles ?? [];
 
 		console.log('availableRoles==>', availableRoles);
 
 
 		if (availableRoles.length > 0) {
 			filteredRoles = availableRoles.filter(
-				(x) => x.RoleName !== 'Doctor' 
-                // && x.RoleName !== 'Patient'
+				(x) => x.RoleName !== 'Doctor'
+					&& x.RoleName !== 'Patient'
 			);
 
 			if (filteredRoles.length > 0) {
 				loginRoleId = filteredRoles[0].id;
 
-                
+
 			}
 		}
 		if (filteredRoles.length > 1) {
@@ -81,8 +80,7 @@ export const POST = async (event: RequestEvent) => {
 			})
 		);
 
-	} catch (err) {
-		console.log(`Error reseting the password:`);
-		// return new Response(err.message);
+	} catch (error) {
+		console.log(`Error reseting the password: ${error}`);
 	}
 };
