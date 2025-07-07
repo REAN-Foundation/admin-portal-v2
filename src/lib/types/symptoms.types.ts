@@ -13,3 +13,9 @@ export interface SymptomUpdateModel {
     Language?: string;
     ImageResourceId?: string;
 }
+
+export interface SymptomUploadModel {
+    UploadFile: File;
+    FileName: string;
+    FileType: string;
+}
