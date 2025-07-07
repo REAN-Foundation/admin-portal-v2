@@ -41,9 +41,8 @@
 		});
 
 		const response = await res.json();
-		console.log('response from api endpoint', response);
-		
-		if (response.Status === 'success' && response.HttpCode === 200) {
+
+		if (response.Status === 'success' || response.HttpCode === 200) {
 			return { success: true, resourceId: response.Data?.id, response };
 		}
 		if (response.Errors) {
@@ -81,7 +80,7 @@
 	};
 
 	const handleSubmit = async (event: Event) => {
-	try {
+		try {
 			event.preventDefault();
 			errors = {};
 
