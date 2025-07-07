@@ -30,7 +30,7 @@
 	const viewRoute = (id) => `/users/${userId}/bot-content/prompt-template/${id}/view`;
 	const createRoute = `/users/${userId}/bot-content/prompt-template/create`;
 
-	const breadCrumbs = [{ name: 'Prompt Templates', path: promptsRoute }];
+	const breadCrumbs = [{ name: 'Prompt Template', path: promptsRoute }];
 
 	let promptName = $state(undefined);
 	let isSortingName = $state(false);

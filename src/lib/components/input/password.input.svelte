@@ -21,9 +21,9 @@
 
 <div class="relative flex items-center">
 	{#if showPassword}
-		<input type="text" {name} bind:value={password} required class="input" {onFocus} {onBlur} />
+		<input type="text" {name} bind:value={password}  class="input" {onFocus} {onBlur} />
 	{:else}
-		<input type="password" {name} bind:value={password} required class="input" placeholder="enter password" {onFocus} {onBlur} />
+		<input type="password" {name} bind:value={password}  class="input" placeholder="enter password" {onFocus} {onBlur} />
 	{/if}
 	{#if password !== ''}
 		<button

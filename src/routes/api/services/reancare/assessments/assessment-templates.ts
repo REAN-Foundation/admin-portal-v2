@@ -68,6 +68,12 @@ export const importAssessmentTemplate = async (
 		const res = await axios.post(url, form, { headers });
 
 		const response = res.data;
+
+		const findAndClearKeys = [
+			`session-${sessionId}:req-searchAssessmentTemplates`,
+		];
+		await DashboardManager.findAndClear(findAndClearKeys);
+
 		return response;
 	} catch (error) {
 		//other than 201 status code

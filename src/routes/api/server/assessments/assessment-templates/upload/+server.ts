@@ -11,7 +11,6 @@ import { writeFile } from 'node:fs/promises';
 
 export const POST: RequestHandler = async (event: RequestEvent) => {
     try {
-
         const formData = await event.request.formData();
 
         const file = formData.get('file') as File;
@@ -27,17 +26,20 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
         const validationResult = fileUploadSchema.safeParse(fileCreateModel);
 
         if (!validationResult.success) {
-            return ResponseHandler.success({
-                Status: 'failure',
-                HttpCode: 400,
-                Message: 'Validation failed',
-                Errors: Object.fromEntries(
-                    Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-                        key,
-                        val?.[0] || ''
-                    ])
-                )
-            });
+            return new Response(
+                JSON.stringify({
+                    Status: 'failure',
+                    HttpCode: 400,
+                    Message: 'File size or type in not valid',
+                    Errors: Object.fromEntries(
+                        Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+                            key,
+                            val?.[0] || ''
+                        ])
+                    )
+                }),
+                { status: 400 }
+            );
         }
 
         const filePath = `${fileUploadFolder}/${filename}`;
@@ -45,7 +47,6 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
         if (!fs.existsSync(`${fileUploadFolder}`)) {
             fs.mkdirSync(`${fileUploadFolder}`, { recursive: true });
         }
-
 
         if (fs.existsSync(filePath)) {
             console.log(`Copied file ${filename} to server /tmp.`);
@@ -61,12 +62,7 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
                 Status: 'failure',
                 HttpCode: 400,
                 Message: 'File not created',
-                Errors: Object.fromEntries(
-                    Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-                        key,
-                        val?.[0] || ''
-                    ])
-                )
+                Errors: { file: 'File was not created on the server.' }
             });
         }
 

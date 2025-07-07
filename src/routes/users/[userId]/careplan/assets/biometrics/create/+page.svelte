@@ -13,11 +13,11 @@
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let biometricsName = $state('');
+	let name = $state('');
 	let description = $state('');
 	let measurementUnit = $state('');
 	let version = $state('');
-	let biometricsType = $state('');
+	let biometricsType = $state('Blood pressure');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
 
@@ -40,7 +40,7 @@
 			errors = {};
 
 			const biometricsCreateModel: BiometricsCreateModel = {
-				Name: biometricsName,
+				Name: name,
 				Description: description,
 				MeasurementUnit: measurementUnit,
 				Version: version,
@@ -104,20 +104,19 @@
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
-				<td class="table-label">Name<span class="text-red-700">*</span></td>
-				<td class="table-data">
-					<input
-						required
-						type="text"
-						class="input {errors?.Name ? 'input-text-error' : ''}"
-						name="biometricsName"
-						placeholder="Enter name here..."
-						bind:value={biometricsName}
-					/>
-					{#if errors?.Name}
-						<p class="text-error">{errors?.Name}</p>
-					{/if}
-				</td>
+				<td class="table-label">Name <span class="important-field">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {errors?.Name ? 'input-text-error' : ''}"
+							name="name"
+							placeholder="Enter name here..."
+							bind:value={name}
+						/>
+						{#if errors?.Name}
+							<p class="error-text">{errors?.Name}</p>
+						{/if}
+					</td>
 			</tr>
 			<tr class="tables-row">
 			<td class="table-label">Description</td>
@@ -135,7 +134,6 @@
 			<td class="table-label">Biometrics Type<span class="text-red-700">*</span></td>
 			<td class="table-data">
 				<select required class="input" bind:value={biometricsType}>
-					<option disabled value>Select biometrics type</option>
 					<option>Blood pressure</option>
 					<option>Blood glucose</option>
 					<option>Blood oxygen saturation</option>
@@ -148,19 +146,19 @@
 			</td>
 			</tr>
 			<tr class="tables-row">
-			<td class="table-label">Measurement Unit<span class="text-red-700">*</span></td>
+			<td class="table-label">Measurement Unit</td>
 			<td class="table-data">
-				<input
-					required
-					type="text"
-					bind:value={measurementUnit}
-					placeholder="Enter unit..."
-					class="input {errors?.MeasurementUnit ? 'input-text-error' : ''}"
-				/>
-				{#if errors?.MeasurementUnit}<p class="text-error">
-					{errors?.MeasurementUnit}</p>
-				{/if}
-			</td>
+						<input
+							type="text"
+							class="input {errors?.measurementUnit ? 'input-text-error' : ''}"
+							name="measurementUnit"
+							placeholder="Enter unit here..."
+							bind:value={measurementUnit}
+						/>
+						{#if errors?.MeasurementUnit}
+							<p class="error-text">{errors?.MeasurementUnit}</p>
+						{/if}
+					</td>
 			</tr>
 			<tr class="tables-row">
 			<td class="table-label">Tags</td>
