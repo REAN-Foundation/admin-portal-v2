@@ -72,7 +72,7 @@ export const actions: Actions = {
 		if (availableRoles.length > 0) {
 			filteredRoles = availableRoles.filter(
 				(x: any) => x.RoleName !== 'Doctor'
-				//  && x.RoleName !== 'Patient'
+				&& x.RoleName !== 'Patient'
 			);
 			if (filteredRoles.length > 0) {
 				loginRoleId = filteredRoles[0].id;

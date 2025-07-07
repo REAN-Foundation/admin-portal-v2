@@ -6,21 +6,21 @@
 		getPublicFooterText,
 		getPublicLogoImageSource
 	} from '$lib/themes/theme.selector';
-	import { toasts } from '$lib/components/toast/toast.store';
 	import { showMessage } from '$lib/components/toast/message.utils';
-	let showResetPassword = false;
-	let showForgotPassword = true;
 
-	let email: any;
-	let resetCode: any;
-	let newPassword: any;
-	let confirmPassword: any;
-	let errors: any = {};
+	//////////////////////////////////////////////////////////////////////////////////
+
+	let showResetPassword = $state(false);
+	let showForgotPassword = $state(true);
+	let email: any = $state(undefined);
+	let resetCode: any= $state(undefined);
+	let newPassword: any= $state(undefined);
+	let confirmPassword: any= $state(undefined);
 	let loginActiveTab = 'email';
-	let forgotPasswordActiveTab = 'email';
-	let phone: any;
-	let countryCode: any;
-
+	let forgotPasswordActiveTab = $state('email');
+	let phone: any= $state(undefined);
+	let countryCode: any= $state(undefined);
+	let errors: any = $state({});
 	const logoImageSource = getPublicLogoImageSource();
 	const footerText = `© ${new Date().getFullYear()} ${getPublicFooterText()}`;
 	const footerLink = getPublicFooterLink();
@@ -83,6 +83,7 @@
 	// 		console.log('error');
 	// 	}
 	// }
+
 
 	async function handleForgotPassword() {
 		errors = {};
@@ -192,6 +193,7 @@
 							bind:value={email}
 							class="input mb-4"
 						/>
+					
 					{/if}
 					{#if forgotPasswordActiveTab === 'phone'}
 						<div class="mb-4 flex gap-2">
@@ -242,10 +244,10 @@
 						<p class="error-text">{errors.resetCode}</p>
 					{/if}
 				</label>
-				<!-- svelte-ignore a11y-label-has-associated-control -->
+
 				<label>
 					<span class="label">New Password</span>
-					<div class="mt-2 mb-4">
+					<div class="mt-2 mb-1">
 						<Password bind:password={newPassword} name="newPassword" />
 					</div>
 
@@ -254,10 +256,10 @@
 						<p class="error-text">{errors.newPassword}</p>
 					{/if}
 				</label>
-				<!-- svelte-ignore a11y-label-has-associated-control -->
+
 				<label>
 					<span class="label">Confirm New Password</span>
-					<div class="mt-2 mb-4">
+					<div class="mt-2 mb-1">
 						<Password bind:password={confirmPassword} name="confirmPassword" />
 					</div>
 
@@ -266,7 +268,7 @@
 						<p class="error-text">{errors.confirmPassword}</p>
 					{/if}
 				</label>
-				<button type="submit" class="btn mb-6 w-full cursor-pointer">Reset Password</button>
+				<button type="submit" class="btn mt-4 mb-6 w-full cursor-pointer">Reset Password</button>
 				<button
 					type="button"
 					class="btn mb-6 w-full cursor-pointer"

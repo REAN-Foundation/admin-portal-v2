@@ -13,8 +13,8 @@
 	import type { PageServerData } from './$types';
 
 	let loginType = $state('username');
-	 
-	let showPassword = $state(false); 
+
+	let showPassword = $state(false);
 
 	function togglePasswordVisibility() {
 		showPassword = !showPassword;
@@ -80,7 +80,7 @@
 					name="loginType"
 					value="username"
 					bind:group={loginType}
-					class="radio-input "
+					class="radio-input"
 				/>
 				<span class="">Username</span>
 			</label>
@@ -91,7 +91,7 @@
 					name="loginType"
 					value="email"
 					bind:group={loginType}
-					class="radio-input "
+					class="radio-input"
 				/>
 				<span>Email</span>
 			</label>
@@ -102,7 +102,7 @@
 					name="loginType"
 					value="phone"
 					bind:group={loginType}
-					class="radio-input "
+					class="radio-input"
 				/>
 				<span>Phone</span>
 			</label>
@@ -145,34 +145,36 @@
 					name="phone"
 					class="input"
 					placeholder="Enter your mobile number"
-					required
+					
 				/>
 			</div>
 		{/if}
 
-			<label for="password" class="label">Password</label>
-        <div class="relative">
-            <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                name="password"
-                class="input pr-10"
-                placeholder="Enter your password"
-                required
-            />
-            <button
-                type="button"
-                class="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 hover:text-gray-800"
-                onclick={() => (showPassword = !showPassword)}
-                tabindex="-1"
-            >
-                <!-- <Icon icon={showPassword ? 'mdi:eye-off' : 'mdi:eye'} class="h-4 w-4" /> -->
-				 <Icon
-				icon={showPassword ? 'material-symbols:visibility-outline' : 'material-symbols:visibility-off-outline'}
-				class="h-5 w-5 text-black"
+		<label for="password" class="label">Password</label>
+		<div class="relative">
+			<input
+				type={showPassword ? 'text' : 'password'}
+				id="password"
+				name="password"
+				class="input pr-10"
+				placeholder="Enter your password"
+				required
 			/>
-            </button>
-        </div>
+			<button
+				type="button"
+				class="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 hover:text-gray-800"
+				onclick={() => (showPassword = !showPassword)}
+				tabindex="-1"
+			>
+				<!-- <Icon icon={showPassword ? 'mdi:eye-off' : 'mdi:eye'} class="h-4 w-4" /> -->
+				<Icon
+					icon={showPassword
+						? 'material-symbols:visibility-outline'
+						: 'material-symbols:visibility-off-outline'}
+					class="h-5 w-5 text-black"
+				/>
+			</button>
+		</div>
 
 		<div class="mt-4 flex justify-between">
 			<a href="/forgot-password" class="link">Forgot Password?</a>
@@ -181,4 +183,3 @@
 		<button type="submit" class="btn mt-4">Login</button>
 	</form>
 </div>
-
