@@ -76,51 +76,65 @@
 		createdBy = data?.documents?.CreatedBy;
 	}
 
-	const upload = async (imgBase64, file) => {
-		const data = {};
-		console.log(imgBase64);
-		const imgData = imgBase64.split(',');
-		data['image'] = imgData[1];
-		console.log(JSON.stringify(data));
+    const upload = async (imgBase64, file) => {
+		try {
+			if (!file) {
+				showMessage('No file selected', 'error');
+				return { success: false, error: 'No file selected' };
+			}
 
-		if (!file) return;
+			// Create form data with both file and metadata
+			const formData = new FormData();
+			formData.append('file', file);
 
-		const formData = new FormData();
-		formData.append('file', file);
+			const res = await fetch(`/api/server/file-resources/upload/bot-content`, {
+				method: 'POST',
+				body: formData
+			});
 
-		const res = await fetch(`/api/server/file-resources/upload`, {
-			method: 'POST',
-			body: formData
-		});
-		console.log(Date.now().toString());
-		const response = await res.json();
-		console.log('response', response);
+			const response = await res.json();
+			console.log('Upload response:', response);
 
-		if (response.Status === 'success' && response.HttpCode === 201) {
-			// const imageResourceId = response.Data.FileResources[0].id;
-			// console.log('imageResourceId', imageResourceId);
-			// const imageUrl_ = response.Data.FileResources[0].Url;
-			// console.log('imageUrl_', imageUrl_);
-			// if (imageUrl_) {
-			// 	imageUrl = imageUrl_;
-			// }
-			// console.log(imageUrl);
-			return { success: true, resourceId: response.Data?.id, response };
-		} else {
-			// showMessage(response.Message, 'error');
-			return { success: false, error: response.Message };
+			if (response.Status === 'success' && response.HttpCode === 201) {
+				return { success: true, resourceId: response.Data?.id, response };
+			} else {
+				const errorMsg = response.Message || 'File upload failed';
+				showMessage(errorMsg, 'error');
+				return { success: false, error: errorMsg };
+			}
+		} catch (error) {
+			console.error('Upload error:', error);
+			const errorMsg = error.message || 'File upload failed';
+			showMessage(errorMsg, 'error');
+			return { success: false, error: errorMsg };
 		}
 	};
 
+	// Function triggered when file is selected
 	const onFileSelected = async (e) => {
-		let f = e.target.files[0];
-		const filename = f.name;
-		selectFile = f;
-		let reader = new FileReader();
-		reader.readAsDataURL(f);
-		reader.onload = async (e) => {
-			fileinput = e.target.result;
-		};
+		try {
+			const file = e.target.files[0];
+			if (!file) return;
+
+			const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+			if (file.size > MAX_FILE_SIZE) {
+				showMessage(`File size exceeds 10MB limit. Please select a smaller file.`, 'error');
+				e.target.value = ''; // Clear the file input
+				return;
+			}
+
+			fileName = file.name;
+			selectFile = file;
+			
+			let reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = async (e) => {
+				fileinput = e.target.result;
+			};
+		} catch (error) {
+			console.error('File selection error:', error);
+			showMessage('Error selecting file', 'error');
+		}
 	};
 
 	const handleSubmit = async (event: Event) => {
