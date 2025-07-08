@@ -3,6 +3,7 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
+	import Button from '$lib/components/button/button.svelte';
 
 	//////////////////////////////////////////////////////////////////////
 
@@ -37,66 +38,56 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-
-<div class="px-6 py-4">
-	<div class="flex flex-wrap gap-2 py-2">
-		<a href={editRoute} class="table-btn variant-filled-secondary ml-auto">
-			<Icon icon="material-symbols:edit-outline" />
-			<span>Edit</span>
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<h2 class="form-titles">View Knowledge Nugget</h2>
+		<a href={knowledgeNuggetsRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
 		</a>
 	</div>
-	<div class="mx-auto">
-		<div class="table-container">
-			<table class="table-c">
-				<thead>
-					<tr>
-						<th class=" w-60">View Knowledge Nugget</th>
-						<th class="text-end">
-							<a href={knowledgeNuggetsRoute} class="cancel-btn ">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Name</td>
-						<td>{topicName}</td>
-					</tr>
-					<tr>
-						<td>Brief Information</td>
-						<td>{briefInformation ? briefInformation : 'Not specified'}</td>
-					</tr>
-					<tr>
-						<td>Detailed Information</td>
-						<td>{detailedInformation ? detailedInformation : 'Not specified'}</td>
-					</tr>
-					<tr>
-						<td>Additional Resource</td>
-						<td>
-							{#if additionalResources.length <= 0}
-								Not specified
-							{:else}
-								<ul>
-									{#each additionalResources.split(',') as a}
-										<li>{a}</li>
-									{/each}
-								</ul>
-							{/if}
-						</td>
-					</tr>
-					<tr>
-						<td>Tags</td>
-						<td>
-							{#if tags.length <= 0}
-								Tags not specified
-							{:else}
-								{tags}
-							{/if}
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<td class="table-label">Name</td>
+				<td class="table-data">{topicName}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Brief Information</td>
+				<td class="table-data">{briefInformation ? briefInformation : 'Not specified'}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Detailed Information</td>
+				<td class="table-data">{detailedInformation ? detailedInformation : 'Not specified'}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Additional Resource</td>
+				<td class="table-data">
+					{#if additionalResources.length <= 0}
+						Not specified
+					{:else}
+						<ul>
+							{#each additionalResources.split(',') as a}
+								<li>{a}</li>
+							{/each}
+						</ul>
+					{/if}
+				</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Tags</td>
+				<td class="table-data">
+					{#if tags.length <= 0}
+						Tags not specified
+					{:else}
+						{tags}
+					{/if}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div class="btn-container">
+		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md" />
 	</div>
 </div>

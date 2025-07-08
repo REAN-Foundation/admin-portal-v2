@@ -644,7 +644,7 @@ tr {
 
 /* home/overall */
 .dashboard-cards {
-	@apply mx-auto grid grid-cols-1 gap-4 md:w-full md:grid-cols-2 lg:grid-cols-3;
+	@apply mx-auto grid grid-cols-1 gap-6 px-4 py-5 md:w-full md:grid-cols-2 lg:grid-cols-3;
 }
 .dashboard-subcards {
 	@apply mx-auto my-6 flex h-96 flex-col md:w-full lg:flex-row;
