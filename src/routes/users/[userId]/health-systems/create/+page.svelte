@@ -84,25 +84,19 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
+<div class="px-6">
 			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th>Create Health System</th>
-							<th class="text-end">
-								<a href={healthSystemsRoute} class="form-cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
+				<div class="form-headers">
+					<h2 class="form-titles">Create Health System</h2>
+					<a href={healthSystemsRoute} class="form-cancel-btn">
+						<Icon icon="material-symbols:close-rounded" />
+					</a>
+				</div>
+				<table class="w-full">
 					<tbody>
-						<tr>
-							<td>Name <span class="text-red-700">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Name <span class="text-red-700">*</span></td>
+							<td class="table-data">
 								<input
 									type="text"
 									class="health-system-input {errors?.healthSystemName
@@ -117,28 +111,25 @@
 								{/if}
 							</td>
 						</tr>
-						<tr class="">
-							<td class="!py-3 align-top">Tags</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Tags</td>
+							<td class="table-data">
 								<InputChips
 									bind:keywords
 									name="keywords"
 									id="keywords"
-									/>
+								/>
 								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
 							</td>
 						</tr>
 					</tbody>
 				</table>
-				<div class="btn-container mr-5 mb-2">
-					{#await promise}
-						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
-					{:then data}
-						<Button size="md" type="submit" text="Submit" variant="primary" />
-					{/await}
-				</div>
+				<div class="btn-container">
+            {#await promise}
+                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+            {:then data}
+                <Button type="submit" text="Submit" variant="primary" />
+            {/await}
+        </div>
 			</form>
 		</div>
-	</div>
-</div>

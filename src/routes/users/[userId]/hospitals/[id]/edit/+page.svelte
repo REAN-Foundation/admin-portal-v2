@@ -110,81 +110,69 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th>Edit Hospital</th>
-							<th class="text-end">
-								<a href={viewRoute} class="form-cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Name <span class=" text-red-600">*</span></td>
-
-							<td>
-								<input
-									type="text"
-									class="input"
-									name="hospitalName"
-									placeholder="Enter name here..."
-									bind:value={hospitalName}
-								/>
-								{#if errors?.Name}
-									<p class="text-error">{errors?.Name}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Health System <span class=" text-red-600">*</span></td>
-							<td>
-								<select name="healthSystemId" class=" input">
-									<option value={healthSystemId}>{healthSystemName}</option>
-									{#each healthSystems as healthSystem}
-										{#if healthSystemId !== healthSystem.id}
-											<option value={healthSystem.id}>{healthSystem.Name}</option>
-										{/if}
-									{/each}
-								</select>
-								<input type="text" hidden bind:value={healthSystemId} />
-							</td>
-						</tr>
-						<tr>
-							<td class="!py-3">Tags</td>
-
-							<td>
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-									/>
-								<input
-									type="hidden"
-									name="keywordsStr"
-									id="keywordsStr"
-									class="input"
-									bind:value={keywordsStr}
-								/>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="btn-container mr-5 mb-2">
-					<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
-					{#await promise}
-						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
-					{:then data}
-						<Button size="md" type="submit" text="Submit" variant="primary" />
-					{/await}
-				</div>
-			</form>
+<div class="px-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit Hospital</h2>
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+		<table class="table-c">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Name <span class=" text-red-600">*</span></td>
+
+					<td class="table-data">
+						<input
+							type="text"
+							class="input"
+							name="hospitalName"
+							placeholder="Enter name here..."
+							bind:value={hospitalName}
+						/>
+						{#if errors?.Name}
+							<p class="text-error">{errors?.Name}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Health System <span class=" text-red-600">*</span></td>
+					<td class="table-data">
+						<select name="healthSystemId" class=" input">
+							<option value={healthSystemId}>{healthSystemName}</option>
+							{#each healthSystems as healthSystem}
+								{#if healthSystemId !== healthSystem.id}
+									<option value={healthSystem.id}>{healthSystem.Name}</option>
+								{/if}
+							{/each}
+						</select>
+						<input type="text" hidden bind:value={healthSystemId} />
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Tags</td>
+
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input
+							type="hidden"
+							name="keywordsStr"
+							id="keywordsStr"
+							class="input"
+							bind:value={keywordsStr}
+						/>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="btn-container">
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>

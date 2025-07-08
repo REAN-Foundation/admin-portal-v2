@@ -8,6 +8,7 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
 	import InputChips from '$lib/components/input-chips.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	////////////////////////////////////////////////////////////////////
 
@@ -104,40 +105,34 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th>Edit Priority</th>
-							<th class="text-end">
-								<a href={viewRoute} class="cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
+<div class="px-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit Priority</h2>
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>			
+				<table class="w-full">
 					<tbody>
-						<tr>
-							<td>Type *</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Type <span class="important-field">*</span></td>
+							<td class="table-data">
 								<input
 									type="text"
-									class="input {form?.errors?.type ? 'input-text-error' : ''}"
+									class="input {errors?.type ? 'input-text-error' : ''}"
 									name="type"
 									placeholder="Enter name here..."
 									bind:value={type}
 								/>
 								{#if errors?.Type}
-									<p class="text-error-500 text-xs">{errors?.Type}</p>
+									<p class="error-text">{errors?.Type}</p>
 								{/if}
 							</td>
 						</tr>
-						<tr>
-							<td class="!py-3">Tags</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Tags</td>
+							<td class="table-data">
 								<InputChips
 									bind:keywords
 									name="keywords"
@@ -149,19 +144,13 @@
 						</tr>
 					</tbody>
 				</table>
-				<div class="button-container">
-					<button type="button" onclick={handleReset} class="table-btn variant-soft-secondary"
-						>Reset</button
-					>
-					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
-					{/await}
+				<div class="btn-container">
+            		<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+            		{#await promise}
+                		<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+            		{:then data}
+                		<Button type="submit" text="Submit" variant="primary" />
+            		{/await}
 				</div>
 			</form>
 		</div>
-	</div>
-</div>
