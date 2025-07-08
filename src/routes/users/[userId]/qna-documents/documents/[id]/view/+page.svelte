@@ -129,7 +129,7 @@
 			fileType = mimeType;
 
 			const blob = await res.blob();
-						
+
 			if (blob.size === 0) {
 				toastMessage({
 					Status: 'error',
@@ -166,7 +166,7 @@
 		<a href={documentRoute} class="cancel-btn">
 			<Icon icon="material-symbols:close-rounded" />
 		</a>
-	</div>	
+	</div>
 	<!-- <div class="flex flex-wrap justify-end gap-2 py-2">
 		<a href={editRoute} class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
 			<Icon icon="material-symbols:edit-outline" class="mr-1" />
@@ -174,87 +174,88 @@
 		</a>
 	</div> -->
 	<table class="w-full">
-					<tbody>
-						<!-- Rows displaying document details -->
-						<tr class="tables-row">
-							<td class="table-label">Name</td>
-							<td class="table-data">{name}</td>
-						</tr>
+		<tbody>
+			<!-- Rows displaying document details -->
+			<tr class="tables-row">
+				<td class="table-label">Name</td>
+				<td class="table-data">{name}</td>
+			</tr>
 
-						<tr class="tables-row">
-							<td class="table-label">Description</td>
-							<td class="table-data">{description}</td>
-						</tr>
+			<tr class="tables-row">
+				<td class="table-label">Description</td>
+				<td class="table-data">{description}</td>
+			</tr>
 
-						<tr class="tables-row">
-							<td class="table-label">File Name</td>
-							<td class="table-data"
-								>{fileName}
-								<button
-									type="button"
-									class="table-btn variant-filled-secondary mx-5"
-									onclick={viewDocument}>Open with Document Viewer</button
-								>
-							</td>
-						</tr>
+			<tr class="tables-row">
+				<td class="table-label">File Name</td>
+				<td class="table-data"
+					>{fileName}
+					<Button
+						text="Open with Document Viewer"
+						type="button"
+						variant="primary"
+						onclick={viewDocument}
+						className="ml-2"
+						size="sm"
+					/>
+				</td>
+			</tr>
 
-						<tr class="tables-row">
-							<td class="table-label">Keywords </td>
-							<td class="table-data">{keywords}</td>
-						</tr>
+			<tr class="tables-row">
+				<td class="table-label">Keywords </td>
+				<td class="table-data">{keywords}</td>
+			</tr>
 
-						<tr class="tables-row">
-							<td class="table-label">Document Type</td>
-							<td class="table-data">{documentType}</td>
-						</tr>
+			<tr class="tables-row">
+				<td class="table-label">Document Type</td>
+				<td class="table-data">{documentType}</td>
+			</tr>
 
-						<!-- <tr class="tables-row">
+			<!-- <tr class="tables-row">
 						<td>Source</td>
 						<td>{source}</td>
 					</tr> -->
-						<!-- <tr class="tables-row">
+			<!-- <tr class="tables-row">
 							<td>Parent Document</td>
 							<td>{parentDocument}</td>
 						</tr> -->
 
-                        <tr class="tables-row">
-							<td class="table-label">Version</td>
-							<td class="table-data">{parentDocumentVersion}</td>
-						</tr>
+			<tr class="tables-row">
+				<td class="table-label">Version</td>
+				<td class="table-data">{parentDocumentVersion}</td>
+			</tr>
 
-						<tr class="tables-row">
-							<td class="table-label">Active</td>
-							<td class="table-data">{isActive}</td>
-						</tr>
+			<tr class="tables-row">
+				<td class="table-label">Active</td>
+				<td class="table-data">{isActive}</td>
+			</tr>
 
-						<tr class="tables-row">
-							<td class="table-label">Chunking Strategy</td>
-							<td class="table-data">{chunkingStrategy}</td>
-						</tr>
-						<tr class="tables-row">
-							<td class="table-label">Chunking Length</td>
-							<td class="table-data">{chunkingLength}</td>
-						</tr>
-						<tr class="tables-row">
-							<td class="table-label">Chunking Overlap</td>
-							<td class="table-data">{chunkOverlap}</td>
-						</tr>
-						<tr class="tables-row">
-							<td class="table-label">Splitter</td>
-							<td class="table-data">{splitter}</td>
-						</tr>
-						<!-- <tr class="tables-row">
+			<tr class="tables-row">
+				<td class="table-label">Chunking Strategy</td>
+				<td class="table-data">{chunkingStrategy}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Chunking Length</td>
+				<td class="table-data">{chunkingLength}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Chunking Overlap</td>
+				<td class="table-data">{chunkOverlap}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Splitter</td>
+				<td class="table-data">{splitter}</td>
+			</tr>
+			<!-- <tr class="tables-row">
 						<td>Last Updated</td>
 						<td>{createdBy}</td>
 					</tr> -->
-					</tbody>
-				</table>
+		</tbody>
+	</table>
 
-				<div class=" btn-container">
-        			<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
-        			></Button>
-    			</div>
-			
-		</div>
-		<FilePreviewModal {showModal} {fileUrl} {fileType} {closeModal} />
-	
+	<div class=" btn-container">
+		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
+		></Button>
+	</div>
+</div>
+<FilePreviewModal {showModal} {fileUrl} {fileType} {closeModal} />

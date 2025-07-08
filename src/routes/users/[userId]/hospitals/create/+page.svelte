@@ -85,80 +85,71 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-	
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<div class="form-headers">
-					<h2 class="form-titles">Add Hospital</h2>
-					<a href={hospitalsRoute} class="form-cancel-btn">
-						<Icon icon="material-symbols:close-rounded" />
-					</a>
-				</div>
-				<table class="w-full">
-					<tbody>
-						<tr class="tables-row">
-							<td class="table-label">Name <span class="text-red-600">*</span></td>
-							<td class="table-data">
-								<input
-									type="text"
-									class="input"
-									name="hospitalName"
-									placeholder="Enter name here..."
-									bind:value={hospitalName}
-								/>
-								{#if errors?.Name}
-									<p class="text-error ml-1">{errors?.Name}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr class="tables-row">
-							<td class="table-label">Health System <span class="text-red-600">*</span></td>
-							<td class="table-data">
-								<select
-									name="healthSystemId"
-									class="input !pr-4"
-									bind:value={selectedHealthSystemId}
-								>
-									{#each healthSystems as healthSystem}
-										{#if healthSystemId !== healthSystem.id}
-											<option value={healthSystem.id}>{healthSystem.Name}</option>
-										{/if}
-									{/each}
-								</select>
-							</td>
-						</tr>
-						<tr class="tables-row">
-							<td class="table-label">Tags</td>
-							<td class="table-data">
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-									/>
-								<input
-									type="hidden"
-									name="keywordsStr"
-									id="keywordsStr"
-									class="input"
-									bind:value={keywordsStr}
-								/>
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" /> -->
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="btn-container">
-            		{#await promise}
-                		<Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            		{:then data}
-                		<Button type="submit" text="Submit" variant="primary" />
-            		{/await}
-        		</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Add Hospital</h2>
+			<a href={hospitalsRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Name <span class="text-red-600">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input"
+							name="hospitalName"
+							placeholder="Enter name here..."
+							bind:value={hospitalName}
+						/>
+						{#if errors?.Name}
+							<p class="text-error ml-1">{errors?.Name}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Health System <span class="text-red-600">*</span></td>
+					<td class="table-data">
+						<select name="healthSystemId" class="input !pr-4" bind:value={selectedHealthSystemId}>
+							{#each healthSystems as healthSystem}
+								{#if healthSystemId !== healthSystem.id}
+									<option value={healthSystem.id}>{healthSystem.Name}</option>
+								{/if}
+							{/each}
+						</select>
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Tags</td>
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input
+							type="hidden"
+							name="keywordsStr"
+							id="keywordsStr"
+							class="input"
+							bind:value={keywordsStr}
+						/>
+						<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" /> -->
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="btn-container">
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
+</div>

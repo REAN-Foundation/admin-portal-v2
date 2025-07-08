@@ -35,9 +35,7 @@
 	let active = $state(data.documents.IsActive);
 	let createdBy = $state(data.documents.CreatedBy);
 	let keywordsRaw = $state(data.documents.Keyword);
-	let documentType = $derived(
-	fileName ? fileName.split('.').pop() : data.documents.DocumentType
-);
+	let documentType = $derived(fileName ? fileName.split('.').pop() : data.documents.DocumentType);
 	let version: string = $state(data.documents.DocumentVersion.map((row) => row.Version).join(', '));
 
 	let imageUrl = $state('');
@@ -77,7 +75,7 @@
 		createdBy = data?.documents?.CreatedBy;
 	}
 
-    const upload = async (imgBase64, file) => {
+	const upload = async (imgBase64, file) => {
 		try {
 			if (!file) {
 				showMessage('No file selected', 'error');
@@ -126,7 +124,7 @@
 
 			fileName = file.name;
 			selectFile = file;
-			
+
 			let reader = new FileReader();
 			reader.readAsDataURL(file);
 			reader.onload = async (e) => {
@@ -193,7 +191,7 @@
 				ChunkingOverlap: chunkOverlap,
 				Splitter: splitter,
 				ResourceId: resourceId,
-                Keywords: keywords.length > 0 ? keywords :null,
+				Keywords: keywords.length > 0 ? keywords : null,
 				DocumentType: documentType
 			};
 
@@ -233,11 +231,10 @@
 			toastMessage();
 		}
 	};
-	
-	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
 
+	$effect(() => {
+		keywordsStr = keywords?.join(', ');
+	});
 
 	function handleDrop(event) {
 		event.preventDefault();
@@ -260,127 +257,123 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6">
+<div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
 			<h2 class="form-titles">Edit Document</h2>
 			<a href={documentRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
-		</div>				
+		</div>
 		<table class="w-full">
-					<!-- Table Body -->
-					<tbody>
-						<!-- Name -->
-						<tr class="tables-row">
-							<td class="table-label">Name <span class="text-red-700">*</span></td>
-							<td class="table-data">
-								<input
-									type="text"
-									name="name"
-									bind:value={name}
-									placeholder="Enter name here..."
-									class="input"
-								/>
-								{#if errors?.Name}
-									<p class="text-error">{errors?.Name}</p>
-								{/if}
-							</td>
-						</tr>
+			<!-- Table Body -->
+			<tbody>
+				<!-- Name -->
+				<tr class="tables-row">
+					<td class="table-label">Name <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="name"
+							bind:value={name}
+							placeholder="Enter name here..."
+							class="input"
+						/>
+						{#if errors?.Name}
+							<p class="text-error">{errors?.Name}</p>
+						{/if}
+					</td>
+				</tr>
 
-						<!-- Description -->
-						<tr class="tables-row">
-							<td class="table-label">Description </td>
-							<td class="table-data">
-								<textarea
-									name="description"
-									placeholder="Enter description here..."
-									class="input"
-									bind:value={description}
-								></textarea>
-								{#if errors?.Description}
-									<p class="text-error">{errors?.Description}</p>
-								{/if}
-							</td>
-						</tr>
+				<!-- Description -->
+				<tr class="tables-row">
+					<td class="table-label">Description </td>
+					<td class="table-data">
+						<textarea
+							name="description"
+							placeholder="Enter description here..."
+							class="input"
+							bind:value={description}
+						></textarea>
+						{#if errors?.Description}
+							<p class="text-error">{errors?.Description}</p>
+						{/if}
+					</td>
+				</tr>
 
-						<tr class="tables-row">
-							<td class="table-label">File Name </td>
-							<td class="table-data">
-								<input
-									type="text"
-									name="fileName"
-									bind:value={fileName}
-                                    disabled
-									placeholder="Enter name here..."
-									class="input"
-								/>
-								{#if errors?.FileName}
-									<p class="text-error">{errors?.FileName}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr class="tables-row">
-							<!-- Label Cell -->
-							<td class="table-label">
-								Upload File <span class="text-red-700">*</span>
-							</td>
+				<tr class="tables-row">
+					<td class="table-label">File Name </td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="fileName"
+							bind:value={fileName}
+							disabled
+							placeholder="Enter name here..."
+							class="input"
+						/>
+						{#if errors?.FileName}
+							<p class="text-error">{errors?.FileName}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<!-- Label Cell -->
+					<td class="table-label">
+						Upload File <span class="text-red-700">*</span>
+					</td>
 
-							<!-- Input Cell -->
-							<td class="table-data">
-								<div class="flex items-center space-x-4">
-									<!-- Select File Button -->
-									<label class="table-btn variant-filled-secondary">
-										Select File
-										<input type="file" class="hidden" onchange={handleFileChange} />
-									</label>
+					<!-- Input Cell -->
+					<td class="table-data">
+						<div class="flex items-center space-x-4">
+							<!-- Select File Button -->
+							<label class="table-btn variant-filled-secondary">
+								Select File
+								<input type="file" class="hidden" onchange={handleFileChange} />
+							</label>
 
-									<input
-										type="text"
-										class="input bg-gray-100 text-gray-700 focus:outline-none"
-										value={fileName}
-										readonly
-										placeholder="No file selected"
-									/>
-								</div>
+							<input
+								type="text"
+								class="input bg-gray-100 text-gray-700 focus:outline-none"
+								value={fileName}
+								readonly
+								placeholder="No file selected"
+							/>
+						</div>
 
-								<!-- Validation Error -->
-								{#if errors?.UploadFile}
-									<p class="mt-1 text-sm text-red-600">{errors?.UploadFile}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr class="tables-row">
-							<td class="table-label">Keywords <span class="text-red-700">*</span></td>
-							<td class="table-data">
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-								/>
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
-							</td>
-						</tr>
+						<!-- Validation Error -->
+						{#if errors?.UploadFile}
+							<p class="mt-1 text-sm text-red-600">{errors?.UploadFile}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Keywords <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
+					</td>
+				</tr>
 
-						<tr class="tables-row">
-							<td class="table-label">Document Type <span class="text-red-700">*</span></td>
-							<td class="table-data">
-								<input
-									type="text"
-									name="documentType"
-									bind:value={documentType}
-                                    disabled
-									placeholder="Enter document type here..."
-									class="input"
-								/>
-								{#if errors?.DocumentType}
-									<p class="text-error">{errors?.DocumentType}</p>
-								{/if}
-							</td>
-						</tr>
-						<!-- Source -->
-						<!-- <tr class="tables-row">
+				<tr class="tables-row">
+					<td class="table-label">Document Type <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="documentType"
+							bind:value={documentType}
+							disabled
+							placeholder="Enter document type here..."
+							class="input"
+						/>
+						{#if errors?.DocumentType}
+							<p class="text-error">{errors?.DocumentType}</p>
+						{/if}
+					</td>
+				</tr>
+				<!-- Source -->
+				<!-- <tr class="tables-row">
 							<td>Source</td>
 							<td>
 								<input
@@ -392,8 +385,8 @@
 								/>
 							</td>
 						</tr> -->
-						<!-- Parent Document -->
-						<!-- <tr class="tables-row">
+				<!-- Parent Document -->
+				<!-- <tr class="tables-row">
 							<td>Parent Document</td>
 							<td>
 								<input
@@ -408,29 +401,35 @@
 								{/if}
 							</td>
 						</tr> -->
-						<!-- parent document Version -->
-						<tr class="tables-row">
-							<td class="table-label">Version</td>
-							<td class="table-data">
-								<input
-									type="text"
-									name="version"
-									bind:value={version}
-									placeholder="Enter version here..."
-									class="input bg-gray-100 text-gray-700"
-									disabled
-								/>
-							</td>
-						</tr>
+				<!-- parent document Version -->
+				<tr class="tables-row">
+					<td class="table-label">Version</td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="version"
+							bind:value={version}
+							placeholder="Enter version here..."
+							class="input bg-gray-100 text-gray-700"
+							disabled
+						/>
+					</td>
+				</tr>
 
-						<tr class="tables-row">
-							<td class="table-label">Active</td>
-							<td class="table-data">
-								<input class="input bg-gray-100 text-gray-700" disabled type="text" name="active" bind:value={active} />
-							</td>
-						</tr>
+				<tr class="tables-row">
+					<td class="table-label">Active</td>
+					<td class="table-data">
+						<input
+							class="input bg-gray-100 text-gray-700"
+							disabled
+							type="text"
+							name="active"
+							bind:value={active}
+						/>
+					</td>
+				</tr>
 
-						<!-- <tr class="tables-row">
+				<!-- <tr class="tables-row">
 							<td>Created By</td>
 							<td>
 								<input
@@ -445,84 +444,84 @@
 								{/if}
 							</td>
 						</tr> -->
-						<!-- Chunking Strategy -->
-						<tr class="tables-row">
-							<td class="table-label">Chunking Strategy <span class="text-red-700">*</span></td>
-							<td class="table-data">
-								<select
-									class="input"
-									name="chunkingStrategy"
-									bind:value={chunkingStrategy}
-									placeholder="Select type here..."
-								>
-									<option>Recursive Structure Aaware Splitting</option>
-									<option>Structure Aware Splitting</option>
-									<option>Content Aware Splitting</option>
-									<option>NPL chunking</option>
-								</select>
-							</td>
-						</tr>
-						<!-- Chunking Length -->
-						<tr class="tables-row">
-							<td class="table-label">Chunking length <span class="text-red-700">*</span></td>
-							<td>
-								<input
-									type="number"
-									name="chunkingLenght"
-									min="0"
-									bind:value={chunkingLength}
-									placeholder="Enter chunking length here..."
-									class="input"
-								/>
-								{#if errors?.ChunkingLength}
-									<p class="text-error">{errors?.ChunkingLength}</p>
-								{/if}
-							</td>
-						</tr>
-						<!-- Chunking Overlap -->
-						<tr class="tables-row">
-							<td class="table-label">Chunking Overlap <span class="text-red-700">*</span></td>
-							<td class="table-data">
-								<input
-									type="number"
-									name="chunkOverlap"
-									min="0"
-									bind:value={chunkOverlap}
-									placeholder="Enter chunking overlap here..."
-									class="input"
-								/>
+				<!-- Chunking Strategy -->
+				<tr class="tables-row">
+					<td class="table-label">Chunking Strategy <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<select
+							class="input"
+							name="chunkingStrategy"
+							bind:value={chunkingStrategy}
+							placeholder="Select type here..."
+						>
+							<option>Recursive Structure Aaware Splitting</option>
+							<option>Structure Aware Splitting</option>
+							<option>Content Aware Splitting</option>
+							<option>NPL chunking</option>
+						</select>
+					</td>
+				</tr>
+				<!-- Chunking Length -->
+				<tr class="tables-row">
+					<td class="table-label">Chunking length <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<input
+							type="number"
+							name="chunkingLenght"
+							min="0"
+							bind:value={chunkingLength}
+							placeholder="Enter chunking length here..."
+							class="input"
+						/>
+						{#if errors?.ChunkingLength}
+							<p class="text-error">{errors?.ChunkingLength}</p>
+						{/if}
+					</td>
+				</tr>
+				<!-- Chunking Overlap -->
+				<tr class="tables-row">
+					<td class="table-label">Chunking Overlap <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<input
+							type="number"
+							name="chunkOverlap"
+							min="0"
+							bind:value={chunkOverlap}
+							placeholder="Enter chunking overlap here..."
+							class="input"
+						/>
 
-								{#if errors?.ChunkingOverlap}
-									<p class="text-error">{errors?.ChunkingOverlap}</p>
-								{/if}
-							</td>
-						</tr>
-						<!-- Splitter -->
-						<tr class="tables-row">
-							<td class="table-label">Splitter <span class="text-red-700">*</span></td>
-							<td class="table-data">
-								<input
-									type="text"
-									name="splitter"
-									bind:value={splitter}
-									placeholder="Enter Splitter here..."
-									class="input"
-								/>
-								{#if errors?.Splitter}
-									<p class="text-error">{errors?.Splitter}</p>
-								{/if}
-							</td>
-						</tr>
-					</tbody>
-				</table>
+						{#if errors?.ChunkingOverlap}
+							<p class="text-error">{errors?.ChunkingOverlap}</p>
+						{/if}
+					</td>
+				</tr>
+				<!-- Splitter -->
+				<tr class="tables-row">
+					<td class="table-label">Splitter <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="splitter"
+							bind:value={splitter}
+							placeholder="Enter Splitter here..."
+							class="input"
+						/>
+						{#if errors?.Splitter}
+							<p class="text-error">{errors?.Splitter}</p>
+						{/if}
+					</td>
+				</tr>
+			</tbody>
+		</table>
 
-				<div class="btn-container">
-            		<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
-            		{#await promise}
-                		<Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            		{:then data}
-                		<Button type="submit" text="Submit" variant="primary" />
-            		{/await}
-				</div>
-			</form>
+		<div class="btn-container">
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
 		</div>
+	</form>
+</div>

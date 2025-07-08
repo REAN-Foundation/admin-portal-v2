@@ -474,7 +474,7 @@
 								<td class="table-data">
 									<select
 										name="correctAnswer"
-										class="health-system-input {errors?.correctAnswer ? 'input-text-error' : ''}"
+										class="input {errors?.correctAnswer ? 'input-text-error' : ''}"
 										bind:value={correctAnswer}
 									>
 										<option value="" disabled selected>Select correct answer</option>

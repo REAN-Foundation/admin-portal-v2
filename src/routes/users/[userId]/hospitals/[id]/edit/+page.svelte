@@ -110,7 +110,7 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6">
+<div class="p-6">
 	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
 			<h2 class="form-titles">Edit Hospital</h2>
@@ -118,7 +118,7 @@
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
 		</div>
-		<table class="table-c">
+		<table class=" w-full">
 			<tbody>
 				<tr class="tables-row">
 					<td class="table-label">Name <span class=" text-red-600">*</span></td>
