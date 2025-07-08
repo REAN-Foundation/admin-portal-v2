@@ -14,13 +14,13 @@
 	let { data, form } = $props();
 
 	let errors: Record<string, string> = $state({});
-	let name = $state('');
+	let name = $state(undefined);
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
-	let code = $state('');
-	let categoryId = $state('');
-	let description = $state('');
-	let version = $state('');
+	let code = $state(undefined);
+	let categoryId = $state(undefined);
+	let description = $state(undefined);
+	let version = $state(undefined);
 	let promise = $state();
 	let careplanCategories = $state(data.careplanCategories);
 
@@ -115,7 +115,6 @@
 							name="name"
 							placeholder="Enter name here..."
 							bind:value={name}
-							required
 						/>
 						{#if errors?.Name}
 							<p class="error-text">{errors?.Name}</p>
@@ -129,10 +128,9 @@
 						<input
 							type="text"
 							class="input {errors?.code ? 'input-text-error' : ''}"
-							name="healthSystemName"
+							name="code"
 							placeholder="Enter code here..."
 							bind:value={code}
-							required
 						/>
 						{#if errors?.Code}
 							<p class="error-text">{errors?.Code}</p>
@@ -149,9 +147,8 @@
 									? 'input-text-error'
 									: ''}"
 								bind:value={categoryId}
-								required
 							>
-								<option disabled selected>Select category of plan here...</option>
+								<!-- <option disabled selected>Select category of plan here...</option> -->
 								{#each careplanCategories as category}
 									<option value={category.id}>{category.Type}</option>
 								{/each}
