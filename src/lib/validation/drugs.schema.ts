@@ -6,7 +6,7 @@ export const createOrUpdateSchema = z.object({
             required_error: "Drug name is required.",
             invalid_type_error: "Drug name must be a string."
         })
-        .min(3, { message: "Drug name cannot be empty." })
+        .min(3, { message: "Drug name must be 3 characters long." })
         .max(128, { message: "Drug name must be at most 128 characters long." }),
 
     GenericName: z
