@@ -13,9 +13,9 @@
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let name = $state('');
+	let name = $state(undefined);
 	let description = $state('');
-	let messageType =  $state('Unknown');
+	let messageType =  $state('Educational');
 	let templateName = $state('');
 	let pathUrl = $state(undefined);
 	let version = $state('');
@@ -136,7 +136,7 @@ $effect(() => {
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {errors?.Name ? 'input-text-error' : ''}"
+							class="input {errors?.name ? 'input-text-error' : ''}"
 							name="name"
 							placeholder="Enter name here..."
 							bind:value={name}
@@ -168,7 +168,7 @@ $effect(() => {
 							class="input"
 							bind:value={messageType}
 						>
-							<option disabled value>Select message type</option>
+							
 							<option>Educational</option>
 							<option>Status</option>
 							<option>Unknown</option>
