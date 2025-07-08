@@ -6,7 +6,7 @@ export const createOrUpdateSchema = z.object({
             required_error: "Title is required.",
             invalid_type_error: "Title must be a string."
         })
-        .min(1, { message: "Title cannot be empty." })
+        .min(5, { message: "Title cannot be empty." })
         .max(256, { message: "Title must be at most 256 characters long." }),
 
     Description: z
@@ -27,7 +27,6 @@ export const createOrUpdateSchema = z.object({
             required_error: "Provider is required.",
             invalid_type_error: "Provider must be a string."
         })
-        .min(1, { message: "Provider cannot be empty." })
         .max(128, { message: "Provider must be at most 128 characters long." })
         .optional(),
 
@@ -36,7 +35,6 @@ export const createOrUpdateSchema = z.object({
             required_error: "Assessment code is required.",
             invalid_type_error: "Assessment code must be a string."
         })
-        .min(1, { message: "Assessment code cannot be empty." })
         .max(128, { message: "Assessment code must be at most 128 characters long." })
         .optional(),
 
