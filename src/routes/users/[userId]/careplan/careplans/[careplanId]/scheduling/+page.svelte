@@ -10,6 +10,7 @@
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { onMount } from 'svelte';
 	import { createOrUpdatSchedulingeSchema } from '$lib/validation/careplan.scheduling.schema';
+	import Button from '$lib/components/button/button.svelte';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -255,109 +256,103 @@
 
 <!-- Schedule Form -->
 {#if show}
-	<div class="px-6 py-4">
-		<div class="mx-auto">
-			<div class="health-system-table-container">
-				<form onsubmit={(event) => (promise = handleSubmit(event))}>
-					<table class="table-c">
-						<thead>
-							<tr>
-								<th>Schedule New Activity</th>
-								<th class="text-end">
-									<button type="button" onclick={hideForm} class="">
-										<Icon icon="material-symbols:close-rounded" class="text-xl" />
-									</button>
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>AssetType <span class="text-red-700">*</span></td>
-								<td>
-									<select
-										name="assetType"
-										class="health-system-input {errors?.assetType ? 'input-text-error' : ''}"
-										onchange={onSelectAssetType}
-										bind:value={assetType}
-									>
-										{#each types as val}
-											<option value={val}>{val}</option>
-										{/each}
-									</select>
-									{#if errors?.AssetType}
-										<p class="text-error">{errors?.AssetType}</p>
-									{/if}
-								</td>
-							</tr>
-							<tr>
-								<td class="align-top">Asset<span class=" text-red-600">*</span></td>
-								<td>
-									<select
-										name="assetId"
-										class="health-system-input {errors?.assetId ? 'input-text-error' : ''}"
-										bind:value={assetId}
-									>
-										{#each items as val}
-											<option value={val.value}>{val.label}</option>
-										{/each}
-									</select>
-									{#if errors?.AssetId}
-										<p class="text-error">{errors?.AssetId}</p>
-									{/if}
-								</td>
-							</tr>
-							<tr>
-								<td class="!py-3 align-top">Schedule Day<span class=" text-red-600">*</span></td>
-								<td>
-									<input
-										type="number"
-										name="day"
-										min="1"
-										bind:value={day}
-										placeholder="Enter day here...."
-										class="health-system-input {errors?.day ? 'input-text-error' : ''}"
-									/>
-									{#if errors?.ScheduleDay}
-										<p class="text-error">{errors?.ScheduleDay}</p>
-									{/if}
-								</td>
-							</tr>
-							<tr>
-								<td>Slot Of The Day<span class=" text-red-600">*</span></td>
-								<td>
-									<select name="timeSlot" class="input w-full" bind:value={timeSlot}>
-										{#each timeSlotValues as val}
-											<option value={val}>{val}</option>
-										{/each}
-									</select>
-									{#if errors?.TimeSlot}
-										<p class="text-error">{errors?.TimeSlot}</p>
-									{/if}
-								</td>
-							</tr>
-						</tbody>
-					</table>
-					<div class="button-container">
-						{#await promise}
-							<button type="submit" class="table-btn variant-soft-secondary" disabled>
-								Submiting
-							</button>
-						{:then data}
-							<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
-						{/await}
-					</div>
-				</form>
+	<div class="p-6">
+		<form onsubmit={(event) => (promise = handleSubmit(event))}>
+			<div class="form-headers">
+				<h2 class="form-titles">Schedule New Activity</h2>
+				<button type="button" onclick={hideForm} class="form-cancel-btn">
+					<Icon icon="material-symbols:close-rounded" />
+				</button>
 			</div>
-		</div>
+
+			<table class="w-full">
+				<tbody>
+					<tr class="tables-row">
+						<td class="table-label">Asset Type <span class="important-field">*</span></td>
+						<td class="table-data">
+							<select
+								name="assetType"
+								class="input {errors?.assetType ? 'input-text-error' : ''}"
+								onchange={onSelectAssetType}
+								bind:value={assetType}
+							>
+								{#each types as val}
+									<option value={val}>{val}</option>
+								{/each}
+							</select>
+							{#if errors?.AssetType}
+								<p class="error-text">{errors?.AssetType}</p>
+							{/if}
+						</td>
+					</tr>
+
+					<tr class="tables-row">
+						<td class="table-label align-top">Asset <span class="important-field">*</span></td>
+						<td class="table-data">
+							<select
+								name="assetId"
+								class="input {errors?.assetId ? 'input-text-error' : ''}"
+								bind:value={assetId}
+							>
+								{#each items as val}
+									<option value={val.value}>{val.label}</option>
+								{/each}
+							</select>
+							{#if errors?.AssetId}
+								<p class="error-text">{errors?.AssetId}</p>
+							{/if}
+						</td>
+					</tr>
+
+					<tr class="tables-row">
+						<td class="table-label">Schedule Day <span class="important-field">*</span></td>
+						<td class="table-data">
+							<input
+								type="number"
+								name="day"
+								min="1"
+								bind:value={day}
+								placeholder="Enter day here..."
+								class="input {errors?.day ? 'input-text-error' : ''}"
+							/>
+							{#if errors?.ScheduleDay}
+								<p class="error-text">{errors?.ScheduleDay}</p>
+							{/if}
+						</td>
+					</tr>
+
+					<tr class="tables-row">
+						<td class="table-label">Slot Of The Day <span class="important-field">*</span></td>
+						<td class="table-data">
+							<select
+								name="timeSlot"
+								class="input w-full {errors?.TimeSlot ? 'input-text-error' : ''}"
+								bind:value={timeSlot}
+							>
+								{#each timeSlotValues as val}
+									<option value={val}>{val}</option>
+								{/each}
+							</select>
+							{#if errors?.TimeSlot}
+								<p class="error-text">{errors?.TimeSlot}</p>
+							{/if}
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="btn-container">
+				{#await promise}
+					<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+				{:then data}
+					<Button type="submit" text="Submit" variant="primary" />
+				{/await}
+			</div>
+		</form>
 	</div>
 {:else}
 	<div class="mx-4 ml-auto flex w-fit flex-wrap justify-end">
-		<button
-			onclick={() => (show = true)}
-			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
-		>
-			Schedule New Activity
-		</button>
+		<Button text="Schedule New Activity" variant="primary" onclick={() => (show = true)} />
 	</div>
 {/if}
 

@@ -9,11 +9,11 @@
 	import { goto } from '$app/navigation';
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { CarePlanUpdateModel } from '$lib/types/careplan.types';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
-
 
 	let carePlanName = $state(data.carePlan.Name);
 	let code = $state(data.carePlan.Code);
@@ -22,9 +22,9 @@
 	let keywords: string[] = $state(data.carePlan.Tags);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-    let careplanCategory = $state(data.carePlan.Category.Type);
-    let categoryId = $state(data.carePlan.CategoryId);
-    let careplanCategories = $state(data.careplanCategories);
+	let careplanCategory = $state(data.carePlan.Category.Type);
+	let categoryId = $state(data.carePlan.CategoryId);
+	let careplanCategories = $state(data.careplanCategories);
 
 	let keywordsStr: string = $state('');
 
@@ -58,7 +58,7 @@
 			const careplanUpdateModel: CarePlanUpdateModel = {
 				Name: carePlanName,
 				Code: code,
-                CategoryId: categoryId,
+				CategoryId: categoryId,
 				Description: description,
 				Version: version,
 				Tags: keywords,
@@ -100,145 +100,129 @@
 		} catch (error) {
 			toastMessage();
 		}
-    };
-    $effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
+	};
+	$effect(() => {
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
+<div class="p-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit Careplan</h2>
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>
 
-<div class="px-6 py-4">
-    <div class="mx-auto">
-        <div class="health-system-table-container">
-            <form onsubmit={(event) => (promise = handleSubmit(event))}>
-                <table class="health-system-table">
-                    <thead>
-                        <tr>
-                            <th>Edit Careplan</th>
-                            <th class="text-end">
-                                <a href={viewRoute} class=" cancel-btn">
-                                    <Icon icon="material-symbols:close-rounded" />
-                                </a>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Name <span class=" text-red-600">*</span></td>
-                            <td>
-                                <input
-                                    type="text"
-                                    class="health-system-input {form?.errors?.carePlanName ? 'input-text-error' : ''}"
-                                    name="name"
-                                    placeholder="Enter name here..."
-                                    bind:value={carePlanName}
-                                />
-                                {#if errors?.Name}
-                                    <p class="text-error-500 text-xs">{errors?.Name}</p>
-                                {/if}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Code <span class=" text-red-600">*</span></td>
-                            <td>
-                                <input
-                                    type="text"
-                                    class="health-system-input {form?.errors?.code ? 'input-text-error' : ''}"
-                                    name="code"
-                                    placeholder="Enter name here..."
-                                    bind:value={code}
-                                />
-                                {#if errors?.Code}
-                                    <p class="text-error-500 text-xs">{errors?.Code}</p>
-                                {/if}
-                            </td>
-                        </tr>
-                         <tr>
-                            <td>Category <span class="text-red-700">*</span></td>
-                            <td>
-                                <select
-                                    name="categoryId"
-                                    class="select select-primary w-full {errors?.categoryId
-                                        ? 'input-text-error'
-                                        : ''}"
-                                    bind:value={categoryId}
-                                    required
-                                >
-                                    <option disabled selected>Select category of plan here...</option>
-                                    {#each careplanCategories as category}
-                                        <option value={category.id}>{category.Type}</option>
-                                    {/each}
-                                </select>
-                                
-                                {#if errors?.CategoryId}
-                                    <p class="text-error">{errors?.CategoryId}</p>
-                                {/if}
-                            </td>
-                        <tr>
-                            <td>Description <span class=" text-red-600"></span></td>
-                            <td>
-                                <input
-                                    type="text"
-                                    class="health-system-input {form?.errors?.description ? 'input-text-error' : ''}"
-                                    name="description"
-                                    placeholder="Enter description here..."
-                                    bind:value={description}
-                                />
-                                {#if errors?.Description}
-                                    <p class="text-error-500 text-xs">{errors?.Description}</p>
-                                {/if}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="!py-3">Tags</td>
-                            <td>
-                                <!-- <InputChips
-                                    bind:keywords
-                                    name="keywords"
-                                    id="keywords"
-                                />
-                                <input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} /> -->
-                                <InputChips
-                                    bind:keywords
-                                    name="keywords"
-                                    id="keywords"
-                                    />
-                                <input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Version <span class=" text-red-600"></span></td>
-                            <td>
-                                <input
-                                    type="text"
-                                    class="health-system-input {form?.errors?.version ? 'input-text-error' : ''}"
-                                    name="version"
-                                    placeholder="Enter version here..."
-                                    bind:value={version}
-                                />
-                                {#if errors?.Version}
-                                    <p class="text-error-500 text-xs">{errors?.Version}</p>
-                                {/if}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="button-container">
-                    <button
-                        type="button"
-                        onclick={handleReset}
-                        class="health-system-btn variant-soft-secondary">Reset</button
-                    >
-                    {#await promise}
-                        <button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-                            Submiting
-                        </button>
-                    {:then data}
-                        <button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
-                    {/await}
-                </div>
-            </form>
-        </div>
-    </div>
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Name <span class="important-field">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {form?.errors?.carePlanName ? 'input-text-error' : ''}"
+							name="name"
+							placeholder="Enter name here..."
+							bind:value={carePlanName}
+						/>
+						{#if errors?.Name}
+							<p class="error-text">{errors?.Name}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Code <span class="important-field">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {form?.errors?.code ? 'input-text-error' : ''}"
+							name="code"
+							placeholder="Enter code here..."
+							bind:value={code}
+						/>
+						{#if errors?.Code}
+							<p class="error-text">{errors?.Code}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Category <span class="important-field">*</span></td>
+					<td class="table-data">
+						<div class="relative w-full">
+							<select
+								name="categoryId"
+								class="select select-primary w-full pr-10 {errors?.categoryId
+									? 'input-text-error'
+									: ''}"
+								bind:value={categoryId}
+								required
+							>
+								<option disabled selected>Select category of plan here...</option>
+								{#each careplanCategories as category}
+									<option value={category.id}>{category.Type}</option>
+								{/each}
+							</select>
+							<div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+								<Icon icon="mdi:chevron-down" class="text-info h-5 w-5" />
+							</div>
+						</div>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Description</td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {form?.errors?.description ? 'input-text-error' : ''}"
+							name="description"
+							placeholder="Enter description here..."
+							bind:value={description}
+						/>
+						{#if errors?.Description}
+							<p class="error-text">{errors?.Description}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label align-top">Tags</td>
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Version</td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {form?.errors?.version ? 'input-text-error' : ''}"
+							name="version"
+							placeholder="Enter version here..."
+							bind:value={version}
+						/>
+						{#if errors?.Version}
+							<p class="error-text">{errors?.Version}</p>
+						{/if}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container">
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>
