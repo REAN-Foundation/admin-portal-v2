@@ -222,14 +222,15 @@
 					<thead>
 						<tr>
 							<th class="w-12"></th>
-							 <th class="text-start">
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Name')}>
-									Name {#if isSortingName}
-										{#if sortOrder === 'ascending'}
-											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
-										{:else}
-											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
-										{/if}
+									Name
+									{#if isSortingName}
+										<Icon
+											icon={`mdi:chevron-${sortOrder === 'ascending' ? 'up' : 'down'}`}
+											class="ml-1 inline"
+											width="16"
+										/>
 									{/if}
 								</button>
 							</th>
