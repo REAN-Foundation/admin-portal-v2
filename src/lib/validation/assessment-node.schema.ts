@@ -6,7 +6,7 @@ export const createOrUpdateSchema = z.object({
             required_error: "NodeType is required.",
             invalid_type_error: "NodeType must be a string."
         })
-        .min(1, { message: "NodeType cannot be empty." }),
+        .min(5, { message: "NodeType must be 5 characters long." }),
 
     ParentNodeId: z
         .string({

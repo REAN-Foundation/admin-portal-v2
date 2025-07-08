@@ -13,7 +13,7 @@
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let name = $state('');
+	let name = $state(undefined);
 	let transcript = $state('');
 	let pathUrl = $state(undefined);
 	let version = $state('');
@@ -100,23 +100,13 @@
 			</a>
 		</div>
 				<table class="w-full">
-					<!-- <thead>
-						<tr>
-							<th>Create Audio</th>
-							<th class="text-end">
-								<a href={assetRoute} class="health-system-btn variant-soft-secondary">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead> -->
 					<tbody>
 						<tr class="tables-row">
 							<td class="table-label">Name <span class="text-red-700">*</span></td>
 							<td class="table-data">
 								<input
 									type="text"
-									class="input {errors?.Name ? 'input-text-error' : ''}"
+									class="input {errors?.name ? 'input-text-error' : ''}"
 									name="name"
 									placeholder="Enter name here..."
 									bind:value={name}

@@ -19,7 +19,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	if (response.Status === 'failure' || response.HttpCode !== 200) {
 		throw error(response.HttpCode, response.Message);
 	}
-	let userRoles = response.Data.Roles;
+	const userRoles = response.Data.Roles;
 	userRoles.Items = setActiveRoles(userRoles.Items ?? []);
 	return {
 		userRoles,
