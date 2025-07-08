@@ -217,6 +217,7 @@
 
 			const response = await res.json();
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				response.Message = 'Q&A document updated successfully';
 				toastMessage(response);
 				goto(`${documentRoute}/${response?.Data?.id}/view`);
 				return;
