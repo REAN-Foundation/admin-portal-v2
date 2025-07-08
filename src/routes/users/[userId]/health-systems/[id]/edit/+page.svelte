@@ -84,63 +84,56 @@
 			toastMessage();
 		}
 	};
-	
-	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
 
+	$effect(() => {
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6">
-			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<div class="form-headers">
-					<h2 class="form-titles">Edit Health System</h2>
-					<a href={viewRoute} class="form-cancel-btn">
-						<Icon icon="material-symbols:close-rounded" />
-					</a>
-				</div>
-				<table class="w-full">
-					<tbody>
-						<tr class="tables-row">
-							<td class="table-label">Name <span class=" text-red-700">*</span></td>
-							<td class="table-data">
-								<input
-									type="text"
-									class="health-system-input {errors?.healthSystemName
-										? 'input-text-error'
-										: ''}"
-									name="healthSystemName"
-									placeholder="Enter name here..."
-									bind:value={healthSystemName}
-								/>
-								{#if errors?.Name}
-									<p class="text-error">{errors?.Name}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr class="tables-row">
-							<td class="table-label">Tags</td>
-							<td class="table-data">
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-									/>
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" bind:value={tags} /> -->
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="btn-container">
-            		<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
-            		{#await promise}
-                		<Button type="submit" text="Submitting" variant="primary" disabled={true} />
-           		 	{:then data}
-                		<Button type="submit" text="Submit" variant="primary" />
-            		{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit Health System</h2>
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Name <span class=" text-red-700">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {errors?.healthSystemName ? 'input-text-error' : ''}"
+							name="healthSystemName"
+							placeholder="Enter name here..."
+							bind:value={healthSystemName}
+						/>
+						{#if errors?.Name}
+							<p class="text-error">{errors?.Name}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Tags</td>
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" bind:value={tags} /> -->
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="btn-container">
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
+</div>
