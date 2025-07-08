@@ -8,6 +8,7 @@
 	import type { PromptTemplateUpdateModel } from '$lib/types/prompt.template.types';
 	import { createOrUpdateSchema } from '$lib/validation/prompt.template.schema';
 	import InputPrompts from '../../prompt.variables.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	////////////////////////////////////////////////////////////////////////////////
 
@@ -86,11 +87,12 @@
 	const userId = page.params.userId;
 	var promptId = page.params.id;
 	const createRoute = `/users/${userId}/bot-content/prompt-template/create`;
+	const editRoute = `/users/${userId}/bot-content/prompt-template/${promptId}/edit`;
 	const promptRoutes = `/users/${userId}/bot-content/prompt-template`;
 
 	const breadCrumbs = [
 		{ name: 'Prompt Template', path: promptRoutes },
-		{ name: 'Edit', path: createRoute }
+		{ name: 'Edit', path: editRoute }
 	];
 
 	const handleReset = () => {
@@ -173,25 +175,19 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th>Edit Prompt Template</th>
-							<th class="text-end">
-								<a href={promptRoutes} class=" cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
+<div class="px-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit Prompt Template</h2>
+			<a href={promptRoutes} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>		
+		<table class="w-full">
 					<tbody>
-						<tr>
-							<td>Name <span class=" text-red-600">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Name <span class=" text-red-600">*</span></td>
+							<td class="table-data">
 								<input
 									type="text"
 									name="name"
@@ -204,9 +200,9 @@
 								{/if}
 							</td>  
 						</tr>
-						<tr>
-							<td class="align-top">Description</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Description</td>
+							<td class="table-data">
 								<textarea
 									name="description"
 									placeholder="Enter description here..."
@@ -215,9 +211,9 @@
 								></textarea>
 							</td>
 						</tr>
-						<tr>
-							<td>Model<span class=" text-red-600">*</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Model<span class=" text-red-600">*</td>
+							<td class="table-data">
 								<select
 									class="input"
 									required
@@ -234,7 +230,7 @@
 								</select>
 							</td>
 						</tr>
-						<!-- <tr>
+						<!-- <tr class="tables-row">
 							<td>Prompt</td>
 							<td>
 								<textarea
@@ -248,9 +244,9 @@
 								</textarea>
 							</td>
 						</tr> -->
-                        <tr>
-							<td>Prompt <span class="text-red-700">*</span></td>
-							<td>
+                        <tr class="tables-row">
+							<td class="table-label">Prompt <span class="text-red-700">*</span></td>
+							<td class="table-data">
 								<textarea
 									name="prompt"
 									bind:value={prompt}
@@ -264,9 +260,9 @@
                                 {/if}
 							</td>
 						</tr>
-                        <tr>
-							<td class="align-top">Variables</td>
-							<td class="">
+                        <tr class="tables-row">
+							<td class="table-label">Variables</td>
+							<td class="table-data">
 								<div class="">
 									<InputPrompts 
 										bind:keywords={variables}
@@ -278,9 +274,9 @@
 							</td>
 						</tr>
 
-						<tr>
-							<td>Use Case Type </td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Use Case Type </td>
+							<td class="table-data">
 								<select
 									class="input"
 									required
@@ -296,9 +292,9 @@
 								</select>
 							</td>
 						</tr>
-                        <tr>
-                            <td>Group</td>
-                            <td>
+                        <tr class="tables-row">
+                            <td class="table-label">Group</td>
+                            <td class="table-data">
                                 <select
                                     class="input"
                                     required
@@ -317,7 +313,7 @@
                         </tr>
 						
 
-						<!-- <tr>
+						<!-- <tr class="tables-row">
 							<td class="align-top">Variables</td>
 							<td class="">
 								<div class="variables-container">
@@ -330,9 +326,9 @@
 								</div>
 							</td>
 						</tr> -->
-						<tr>
-							<td>Temperature</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Temperature</td>
+							<td class="table-data">
 								<input
 									name="temperature"
 									type="range"
@@ -351,9 +347,9 @@
 								</span></td
 							>
 						</tr>
-						<tr>
-							<td>Top P</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Top P</td>
+							<td class="table-data">
 								<input
 									name="topp"
 									type="range"
@@ -371,9 +367,9 @@
 								</span>
 							</td>
 						</tr>
-						<tr>
-							<td>Frequency Penalty</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Frequency Penalty</td>
+							<td class="table-data">
 								<input
 									name="frequencyPenalty"
 									type="range"
@@ -392,9 +388,9 @@
 								</span>
 							</td>
 						</tr>
-						<tr>
-							<td>Presence Penalty</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Presence Penalty</td>
+							<td class="table-data">
 								<input
 									name="presencePenalty"
 									type="range"
@@ -415,21 +411,14 @@
 						</tr>
 					</tbody>
 				</table>
-				<div class="button-container">
-					<button
-						type="button"
-						onclick={handleReset}
-						class="health-system-btn variant-soft-secondary">Reset</button
-					>
-					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
-					{/await}
+				<div class="btn-container">
+            		<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+            			{#await promise}
+                	<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+            			{:then data}
+                	<Button type="submit" text="Submit" variant="primary" />
+            			{/await}
 				</div>
+				
 			</form>
 		</div>
-	</div>
-</div>

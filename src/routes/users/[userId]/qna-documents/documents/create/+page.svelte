@@ -10,6 +10,7 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { FileUploadModel } from '$lib/types/file.upload.types.js';
 	import { fileUploadSchema } from '$lib/validation/file.upload.schema.js';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -233,28 +234,21 @@
 <!-- Breadcrumbs Component -->
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th>Create Document</th>
-							<th class="text-end">
-								<!-- Close Button -->
-								<a href={documentsRoute} class="table-btn variant-soft-secondary">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
+<div class="px-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Create Document</h2>
+			<a href={documentsRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>				
+		<table class="w-full">
 					<!-- Table Body -->
 					<tbody>
 						<!-- Name -->
-						<tr>
-							<td>Name <span class="text-red-700">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Name <span class="text-red-700">*</span></td>
+							<td class="table-data">
 								<input
 									type="text"
 									name="name"
@@ -269,9 +263,9 @@
 						</tr>
 
 						<!-- Description -->
-						<tr>
-							<td class="align-top">Description </td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Description </td>
+							<td class="table-daat">
 								<textarea
 									name="description"
 									placeholder="Enter description here..."
@@ -284,9 +278,9 @@
 							</td>
 						</tr>
 
-						<tr>
-							<td>File Name </td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">File Name </td>
+							<td class="table-data">
 								<input
 									type="text"
 									name="fileName"
@@ -300,14 +294,14 @@
 								{/if}
 							</td>
 						</tr>
-						<tr>
+						<tr class="tables-row">
 							<!-- Label Cell -->
-							<td>
+							<td class="table-label">
 								Upload File <span class="text-red-700">*</span>
 							</td>
 
 							<!-- Input Cell -->
-							<td>
+							<td class="table-data">
 								<div class="flex items-center space-x-4">
 									<!-- Select File Button -->
 									<label class="table-btn variant-filled-secondary">
@@ -331,9 +325,9 @@
 							</td>
 						</tr>
 
-						<tr>
-							<td>Keywords </td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Keywords </td>
+							<td class="table-data">
 								<InputChips
 									bind:keywords
 									name="keywords"
@@ -347,9 +341,9 @@
 							</td>
 						</tr>
 
-						<tr>
-							<td>Document Type <span class="text-red-700">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Document Type <span class="text-red-700">*</span></td>
+							<td class="table-data">
 								<input
 									type="text"
 									name="documentType"
@@ -364,7 +358,7 @@
 							</td>
 						</tr>
 						<!-- Source -->
-						<!-- <tr>
+						<!-- <tr class="tables-row">
 							<td>Source</td>
 							<td>
 								<input
@@ -377,7 +371,7 @@
 							</td>
 						</tr> -->
 						<!-- Parent Document -->
-						<!-- <tr>
+						<!-- <tr class="tables-row">
 							<td>Parent Document</td>
 							<td>
 								<input
@@ -394,7 +388,7 @@
 						</tr> -->
 						<!-- parent document Version -->
 
-						<!-- <tr>
+						<!-- <tr class="tables-row">
 							<td>Created By</td>
 							<td>
 								<input
@@ -410,9 +404,9 @@
 							</td>
 						</tr> -->
 						<!-- Chunking Strategy -->
-						<tr>
-							<td>Chunking Strategy <span class="text-red-700">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Chunking Strategy <span class="text-red-700">*</span></td>
+							<td class="table-data">
 								<select
 									class="input"
 									name="chunkingStrategy"
@@ -427,9 +421,9 @@
 							</td>
 						</tr>
 						<!-- Chunking Length -->
-						<tr>
-							<td class="text-start">Chunking length <span class="text-red-700">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Chunking length <span class="text-red-700">*</span></td>
+							<td class="table-data">
 								<input
 									type="number"
 									name="chunkingLenght"
@@ -444,9 +438,9 @@
 							</td>
 						</tr>
 						<!-- Chunking Overlap -->
-						<tr>
-							<td class="text-start">Chunking Overlap <span class="text-red-700">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Chunking Overlap <span class="text-red-700">*</span></td>
+							<td class="table-data">
 								<input
 									type="number"
 									name="chunkOverlap"
@@ -462,9 +456,9 @@
 							</td>
 						</tr>
 						<!-- Splitter -->
-						<tr>
-							<td class="text-start">Splitter <span class="text-red-700">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Splitter <span class="text-red-700">*</span></td>
+							<td class="table-data">
 								<input
 									type="text"
 									name="splitter"
@@ -480,16 +474,12 @@
 					</tbody>
 				</table>
 
-				<div class="button-container">
-					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
-					{/await}
-				</div>
+				<div class="btn-container">
+            		{#await promise}
+                		<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+            		{:then data}
+                		<Button type="submit" text="Submit" variant="primary" />
+            		{/await}
+        		</div>
 			</form>
 		</div>
-	</div>
-</div>

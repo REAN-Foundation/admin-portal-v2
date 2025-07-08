@@ -14,6 +14,7 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { FileUploadModel } from '$lib/types/file.upload.types';
 	import { fileUploadSchema } from '$lib/validation/file.upload.schema';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////
 	let { data, form }: { data: PageServerData; form: any } = $props();
@@ -258,28 +259,21 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th>Edit Document</th>
-							<th class="text-end">
-								<!-- Close Button -->
-								<a href={documentRoute} class="table-btn variant-soft-secondary">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
+<div class="px-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit Document</h2>
+			<a href={documentRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>				
+		<table class="w-full">
 					<!-- Table Body -->
 					<tbody>
 						<!-- Name -->
-						<tr>
-							<td>Name <span class="text-red-700">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Name <span class="text-red-700">*</span></td>
+							<td class="table-data">
 								<input
 									type="text"
 									name="name"
@@ -294,9 +288,9 @@
 						</tr>
 
 						<!-- Description -->
-						<tr>
-							<td class="align-top">Description </td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Description </td>
+							<td class="table-data">
 								<textarea
 									name="description"
 									placeholder="Enter description here..."
@@ -309,9 +303,9 @@
 							</td>
 						</tr>
 
-						<tr>
-							<td>File Name </td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">File Name </td>
+							<td class="table-data">
 								<input
 									type="text"
 									name="fileName"
@@ -325,14 +319,14 @@
 								{/if}
 							</td>
 						</tr>
-						<tr>
+						<tr class="tables-row">
 							<!-- Label Cell -->
-							<td>
+							<td class="table-label">
 								Upload File <span class="text-red-700">*</span>
 							</td>
 
 							<!-- Input Cell -->
-							<td>
+							<td class="table-data">
 								<div class="flex items-center space-x-4">
 									<!-- Select File Button -->
 									<label class="table-btn variant-filled-secondary">
@@ -355,9 +349,9 @@
 								{/if}
 							</td>
 						</tr>
-						<tr>
-							<td>Keywords <span class="text-red-700">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Keywords <span class="text-red-700">*</span></td>
+							<td class="table-data">
 								<InputChips
 									bind:keywords
 									name="keywords"
@@ -368,9 +362,9 @@
 							</td>
 						</tr>
 
-						<tr>
-							<td>Document Type <span class="text-red-700">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Document Type <span class="text-red-700">*</span></td>
+							<td class="table-data">
 								<input
 									type="text"
 									name="documentType"
@@ -385,7 +379,7 @@
 							</td>
 						</tr>
 						<!-- Source -->
-						<!-- <tr>
+						<!-- <tr class="tables-row">
 							<td>Source</td>
 							<td>
 								<input
@@ -398,7 +392,7 @@
 							</td>
 						</tr> -->
 						<!-- Parent Document -->
-						<!-- <tr>
+						<!-- <tr class="tables-row">
 							<td>Parent Document</td>
 							<td>
 								<input
@@ -414,9 +408,9 @@
 							</td>
 						</tr> -->
 						<!-- parent document Version -->
-						<tr>
-							<td>Version</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Version</td>
+							<td class="table-data">
 								<input
 									type="text"
 									name="version"
@@ -428,14 +422,14 @@
 							</td>
 						</tr>
 
-						<tr>
-							<td>Active</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Active</td>
+							<td class="table-data">
 								<input class="input bg-gray-100 text-gray-700" disabled type="text" name="active" bind:value={active} />
 							</td>
 						</tr>
 
-						<!-- <tr>
+						<!-- <tr class="tables-row">
 							<td>Created By</td>
 							<td>
 								<input
@@ -451,9 +445,9 @@
 							</td>
 						</tr> -->
 						<!-- Chunking Strategy -->
-						<tr>
-							<td>Chunking Strategy <span class="text-red-700">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Chunking Strategy <span class="text-red-700">*</span></td>
+							<td class="table-data">
 								<select
 									class="input"
 									name="chunkingStrategy"
@@ -468,8 +462,8 @@
 							</td>
 						</tr>
 						<!-- Chunking Length -->
-						<tr>
-							<td class="text-start">Chunking length <span class="text-red-700">*</span></td>
+						<tr class="tables-row">
+							<td class="table-label">Chunking length <span class="text-red-700">*</span></td>
 							<td>
 								<input
 									type="number"
@@ -485,9 +479,9 @@
 							</td>
 						</tr>
 						<!-- Chunking Overlap -->
-						<tr>
-							<td class="text-start">Chunking Overlap <span class="text-red-700">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Chunking Overlap <span class="text-red-700">*</span></td>
+							<td class="table-data">
 								<input
 									type="number"
 									name="chunkOverlap"
@@ -503,9 +497,9 @@
 							</td>
 						</tr>
 						<!-- Splitter -->
-						<tr>
-							<td class="text-start">Splitter <span class="text-red-700">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Splitter <span class="text-red-700">*</span></td>
+							<td class="table-data">
 								<input
 									type="text"
 									name="splitter"
@@ -521,21 +515,13 @@
 					</tbody>
 				</table>
 
-				<div class="button-container">
-					<button
-						type="button"
-						onclick={handleReset}
-						class="table-btn variant-soft-secondary">Reset</button
-					>
-					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
-					{/await}
+				<div class="btn-container">
+            		<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+            		{#await promise}
+                		<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+            		{:then data}
+                		<Button type="submit" text="Submit" variant="primary" />
+            		{/await}
 				</div>
 			</form>
 		</div>
-	</div>
-</div>
