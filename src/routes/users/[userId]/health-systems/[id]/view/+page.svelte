@@ -36,37 +36,21 @@
 <BreadCrumbs crumbs={breadCrumbs} />
 
 <div class="px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-2">
-		<Button
-			size="md"
-			href={editRoute}
-			text="Edit"
-			variant="primary"
-			iconBefore="mdi:edit"
-			iconSize="md"
-		></Button>
+	<div class="form-headers">
+		<h2 class="form-titles">View Action Plan</h2>
+		<a href={healthSystemRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
+		</a>
 	</div>
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<table class="health-system-table">
-				<thead>
-					<tr>
-						<th>View Health System</th>
-						<th class="text-end">
-							<a href={healthSystemRoute} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
-				</thead>
+			<table class="w-full">
 				<tbody>
-					<tr>
-						<td>Name</td>
-						<td>{healthSystemName}</td>
+					<tr class="tables-row">
+						<td class="table-label">Name</td>
+						<td class="table-data">{healthSystemName}</td>
 					</tr>
-					<tr>
-						<td>Tags</td>
-						<td>
+					<tr class="tables-row">
+						<td class="table-label">Tags</td>
+						<td class="table-data">
 							{#if tags.length <= 0}
 								<span class="span">Tags not specified</span>
 							{:else}
@@ -76,6 +60,8 @@
 					</tr>
 				</tbody>
 			</table>
+			<div class=" btn-container">
+        		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
+        		></Button>
+    		</div>
 		</div>
-	</div>
-</div>
