@@ -136,10 +136,10 @@ export const updateAssessmentTemplate = async (
 ) => {
 	const body = {
 		Title: title,
-		Description: description ? description : '',
+		Description: description ?? null,
 		Type: type,
-		Provider: provider ? provider : '',
-		ProviderAssessmentCode: providerAssessmentCode ? providerAssessmentCode : '',
+		Provider: provider ?? null,
+		ProviderAssessmentCode: providerAssessmentCode ?? null,
 		ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce ? serveListNodeChildrenAtOnce : false,
 		ScoringApplicable: scoringApplicable ? scoringApplicable : false,
 		Tags: tags ? tags : []
@@ -155,7 +155,6 @@ export const updateAssessmentTemplate = async (
 		`session-${sessionId}:req-searchAssessmentTemplates`,
 	];
 	await DashboardManager.findAndClear(findAndClearKeys);
-
 	return result;
 };
 
