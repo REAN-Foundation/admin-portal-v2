@@ -110,7 +110,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {errors?.Name ? 'input-text-error' : ''}"
+							class="input {errors?.name ? 'input-text-error' : ''}"
 							name="name"
 							placeholder="Enter name here..."
 							bind:value={name}

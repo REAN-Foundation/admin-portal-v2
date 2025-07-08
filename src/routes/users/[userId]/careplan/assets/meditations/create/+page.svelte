@@ -12,7 +12,7 @@
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let name = $state('');
+	let name = $state(undefined);
 	let description = $state('');
 	let meditationType = $state('Mindfulness');
 	let recommendedDurationMin = $state<number>();
@@ -108,7 +108,7 @@
           <td class="table-data">
             <input
               type="text"
-              class="input {errors?.Name ? 'input-text-error' : ''}"
+              class="input {errors?.name ? 'input-text-error' : ''}"
               name="name"
               placeholder="Enter name here..."
               bind:value={name}
@@ -138,7 +138,6 @@
           <td class="table-label">Meditation Type</td>
           <td class="table-data">
             <select class="input" bind:value={meditationType}>
-              <option disabled value>Select meditation type</option>
               <option>Mindfulness</option>
               <option>Spiritual</option>
               <option>Focused</option>

@@ -14,10 +14,10 @@
 	let { data, form } = $props();
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let name = $state('');
+	let name = $state(undefined);
 	let description = $state('');
 	let template = $state('');
-	let referenceTemplateCode = $state('');
+	let referenceTemplateCode = $state(undefined);
 	let version = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
@@ -125,8 +125,8 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {errors?.Name ? 'input-text-error' : ''}"
-							name="assessmentName"
+							class="input {errors?.name ? 'input-text-error' : ''}"
+							name="name"
 							placeholder="Enter name here..."
 							bind:value={name}
 						/>
@@ -182,7 +182,7 @@
 				bind:value={referenceTemplateCode}
 				class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
 			>
-				<option disabled selected value="">Select reference assessment here...</option>
+				<!-- <option disabled selected value="">Select reference assessment here...</option> -->
 				{#each assessmentTemplates as template}
 					<option value={template.DisplayCode}>{template.Title}</option>
 				{/each}
