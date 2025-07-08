@@ -26,7 +26,8 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 
 		const searchParams = {
 			careplanId,
-			participantId
+			participantId,
+			itemsPerPage: 10
 		};
 
 		// Get enrollment tasks

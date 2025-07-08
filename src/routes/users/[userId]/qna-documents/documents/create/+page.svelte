@@ -201,6 +201,7 @@
 			const response = await res.json();
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				response.Message = 'Q&A document created successfully';
 				toastMessage(response);
 				goto(`${documentsRoute}/${response?.Data?.id}/view`);
 				return;
