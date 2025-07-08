@@ -19,8 +19,6 @@
 	let enrollment = $state(data.enrollments.Items);
 	let retrivedEnrollments = $derived(enrollment);
 	let searchKeyword = $state(undefined);
-	let promise = $state();
-	let hasSearchResults = $state(true);
 
 	const userId = page.params.userId;
 	const enrollmentsRoute = () => `/users/${userId}/careplan/enrollments`;
