@@ -93,25 +93,19 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
+<div class="px-6">
 			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th>Edit Health System</th>
-							<th class="text-end">
-								<a href={viewRoute} class="form-cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
+				<div class="form-headers">
+					<h2 class="form-titles">Edit Health System</h2>
+					<a href={viewRoute} class="form-cancel-btn">
+						<Icon icon="material-symbols:close-rounded" />
+					</a>
+				</div>
+				<table class="w-full">
 					<tbody>
-						<tr>
-							<td>Name <span class=" text-red-700">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Name <span class=" text-red-700">*</span></td>
+							<td class="table-data">
 								<input
 									type="text"
 									class="health-system-input {errors?.healthSystemName
@@ -126,9 +120,9 @@
 								{/if}
 							</td>
 						</tr>
-						<tr>
-							<td class="!py-3">Tags</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Tags</td>
+							<td class="table-data">
 								<InputChips
 									bind:keywords
 									name="keywords"
@@ -140,15 +134,13 @@
 						</tr>
 					</tbody>
 				</table>
-				<div class="btn-container mr-5 mb-2">
-					<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
-					{#await promise}
-						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
-					{:then data}
-						<Button size="md" type="submit" text="Submit" variant="primary" />
-					{/await}
+				<div class="btn-container">
+            		<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+            		{#await promise}
+                		<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+           		 	{:then data}
+                		<Button type="submit" text="Submit" variant="primary" />
+            		{/await}
 				</div>
 			</form>
 		</div>
-	</div>
-</div>

@@ -7,6 +7,7 @@
 	import type { PromptTemplateCreateModel } from '$lib/types/prompt.template.types.js';
 	import { createOrUpdateSchema } from '$lib/validation/prompt.template.schema.js';
 	import InputPrompts from '../prompt.variables.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	////////////////////////////////////////////////////////////////////////////////
 
@@ -137,25 +138,19 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th>Create Prompt template</th>
-							<th class="text-end">
-								<a href={groupsRoute} class="cancel-btn variant-soft-secondary">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
+<div class="px-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Create Prompt template</h2>
+			<a href={groupsRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>				
+		<table class="w-full">
 					<tbody>
-						<tr>
-							<td>Name <span class="text-red-700">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Name <span class="text-red-700">*</span></td>
+							<td class="table-data">
 								<input
 									type="text"
 									name="name"
@@ -168,9 +163,9 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 								{/if}
 							</td>
 						</tr>
-						<tr>
-							<td class="align-top">Description </td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Description </td>
+							<td class="table-adta">
 								<textarea
 									name="description"
 									bind:value={description}
@@ -180,9 +175,9 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 							</td>
 						</tr>
 
-						<tr>
-							<td>Model <span class="text-red-700">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Model <span class="text-red-700">*</span></td>
+							<td class="table-data">
 								<select
 									class="input"
 									required
@@ -199,9 +194,9 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 								</select>
 							</td>
 						</tr>
-						<tr>
-							<td>Prompt <span class="text-red-700">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Prompt <span class="text-red-700">*</span></td>
+							<td class="table-data">
 								<textarea
 									name="prompt"
 									bind:value={prompt}
@@ -215,9 +210,9 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 								{/if}
 							</td>
 						</tr>
-                        <tr>
-							<td class="align-top">Variables</td>
-							<td class="">
+                        <tr class="tables-row">
+							<td class="table-label">Variables</td>
+							<td class="table-data">
 								<div class="">
 									<InputPrompts 
 										bind:keywords={variables}
@@ -228,9 +223,9 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 								</div>
 							</td>
 						</tr>
-						<tr>
-							<td>Use Case Type</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Use Case Type</td>
+							<td class="table-daat">
 								<select
 									class="input"
 									required
@@ -247,9 +242,9 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 							</td>
 						</tr>
 
-						<tr>
-							<td>Group</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Group</td>
+							<td class="table-data">
 								<select
 									class="input"
 									required
@@ -268,9 +263,9 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 						</tr>
 						
 
-						<tr>
-							<td>Temperature</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Temperature</td>
+							<td class="table-data">
 								<input
 									name="temperature"
 									type="range"
@@ -290,9 +285,9 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 								</span></td
 							>
 						</tr>
-						<tr>
-							<td>Top P</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Top P</td>
+							<td class="table-data">
 								<input
 									name="topp"
 									type="range"
@@ -310,9 +305,9 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 								</span>
 							</td>
 						</tr>
-						<tr>
-							<td>Frequency Penalty</td>
-							<td class="relative">
+						<tr class="tables-row">
+							<td class="table-label">Frequency Penalty</td>
+							<td class="table-data">
 								<input
 									name="frequencyPenalty"
 									type="range"
@@ -332,9 +327,9 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 								</span>
 							</td>
 						</tr>
-						<tr>
-							<td>Presence Penalty</td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Presence Penalty</td>
+							<td class="table-data">
 								<input
 									name="presencePenalty"
 									type="range"
@@ -355,16 +350,12 @@ function extractPlaceholdersFromPrompt(promptText: string): string[] {
 						</tr>
 					</tbody>
 				</table>
-				<div class="button-container">
-					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
-					{/await}
-				</div>
+				<div class="btn-container">
+            		{#await promise}
+                		<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+            		{:then data}
+                		<Button type="submit" text="Submit" variant="primary" />
+           		 {/await}
+       			 </div>
 			</form>
 		</div>
-	</div>
-</div>

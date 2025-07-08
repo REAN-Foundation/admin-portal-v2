@@ -105,7 +105,7 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="p-6">
+<div class="px-6">
 	<form onsubmit={(event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
 			<h2 class="form-titles">Edit Priority</h2>
