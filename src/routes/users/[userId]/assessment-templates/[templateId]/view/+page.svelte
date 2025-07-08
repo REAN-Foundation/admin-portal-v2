@@ -61,14 +61,76 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-2">
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<h2 class="form-titles">View Template</h2>
+		<a href={assessmentsRoutes} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
+		</a>
+	</div>
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<td class="table-label">Title</td>
+				<td class="table-data">{title}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Description</td>
+				<td class="table-data">{description}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Display code</td>
+				<td class="table-data">{displayCode}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Type</td>
+				<td class="table-data">{type}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Provider</td>
+				<td class="table-data">{provider}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Provider Assessment Code</td>
+				<td class="table-data">{providerAssessmentCode}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Serve List Node Children At Once</td>
+				<td class="table-data">{serveListNodeChildrenAtOnce}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Scoring Applicable</td>
+				<td class="table-data">{scoringApplicable}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Tags</td>
+				<td class="table-data">
+					{#if tags.length <= 0}
+						<span>Tags not specified</span>
+					{:else}
+						<span>{tags}</span>
+					{/if}
+				</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label align-top">Nodes</td>
+				<td class="table-data">
+					{#if assessmentNodes.length <= 1}
+						<div>Nodes are not available</div>
+					{:else}
+						<TreeView {assessmentNodes} {assessmentNodeView} />
+					{/if}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="btn-container">
 		<a
 			href={nodeRoute}
 			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
 		>
-			Add Node</a
-		>
+			Add Node
+		</a>
 		<a
 			href={editRoute}
 			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
@@ -76,76 +138,5 @@
 			<Icon icon="material-symbols:edit-outline" />
 			<span class="ml-1">Edit</span>
 		</a>
-	</div>
-
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<table class="health-system-table">
-				<thead>
-					<tr>
-						<th>View Template</th>
-						<th class="text-end">
-							<a href={assessmentsRoutes} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Title</td>
-						<td>{title}</td>
-					</tr>
-					<tr>
-						<td>Description</td>
-						<td>{description}</td>
-					</tr>
-					<tr>
-						<td>Display code</td>
-						<td>{displayCode}</td>
-					</tr>
-					<tr>
-						<td>Type</td>
-						<td>{type}</td>
-					</tr>
-					<tr>
-						<td>Provider</td>
-						<td>{provider}</td>
-					</tr>
-					<tr>
-						<td>Provider Assessment Code</td>
-						<td>{providerAssessmentCode}</td>
-					</tr>
-					<tr>
-						<td>Serve List Node Children At Once</td>
-						<td>{serveListNodeChildrenAtOnce}</td>
-					</tr>
-					<tr>
-						<td>Scoring Applicable</td>
-						<td>{scoringApplicable}</td>
-					</tr>
-					<tr>
-						<td>Tags</td>
-						<td>
-							{#if tags.length <= 0}
-								<span class="span">Tags not specified</span>
-							{:else}
-								<span class="span">{tags}</span>
-							{/if}
-						</td>
-					</tr>
-					<tr>
-						<td class="align-top">Nodes</td>
-						<td>
-							{#if assessmentNodes.length <= 1}
-								<div>Nodes are not available</div>
-							{:else}
-								<TreeView {assessmentNodes} {assessmentNodeView} />
-							{/if}
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
 	</div>
 </div>

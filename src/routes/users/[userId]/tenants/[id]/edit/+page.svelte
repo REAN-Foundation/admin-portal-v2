@@ -99,112 +99,104 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th>Edit Tenant</th>
-							<th class="text-end">
-								<a href={viewRoute} class="form-cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Name <span class="text-red-600">*</span></td>
-							<td>
-								<input
-									type="text"
-									name="name"
-									placeholder="Enter name here..."
-									class="health-system-input"
-									bind:value={name}
-								/>
-								{#if errors?.Name}
-									<p class="text-error">{errors?.Name}</p>
-								{/if}
-							</td>
-						</tr>
-
-						<tr>
-							<td>Description</td>
-							<td>
-								<textarea
-									name="description"
-									placeholder="Enter description here..."
-									class="health-system-input resize-none"
-									bind:value={description}
-								></textarea>
-								{#if errors?.Description}
-									<p class="text-error">{errors?.Description}</p>
-								{/if}
-							</td>
-						</tr>
-
-						<tr>
-							<td>Code</td>
-							<td>
-								<input
-									type="text"
-									name="code"
-									placeholder="Enter code here..."
-									class="health-system-input text-gray-500"
-									bind:value={code}
-									disabled
-								/>
-								{#if errors?.Code}
-									<p class="text-error">{errors?.Code}</p>
-								{/if}
-							</td>
-						</tr>
-
-						<tr>
-							<td>Phone</td>
-							<td>
-								<input
-									type="text"
-									name="phone"
-									placeholder="Enter phone here..."
-									class="health-system-input"
-									bind:value={phone}
-								/>
-								{#if errors?.Phone}
-									<p class="text-error">{errors?.Phone}</p>
-								{/if}
-							</td>
-						</tr>
-
-						<tr>
-							<td>Email</td>
-							<td>
-								<input
-									type="email"
-									name="email"
-									placeholder="Enter email here..."
-									class="health-system-input"
-									bind:value={email}
-								/>
-								{#if errors?.Email}
-									<p class="text-error">{errors?.Email}</p>
-								{/if}
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="btn-container mr-5 mb-2">
-					<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
-					{#await promise}
-						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
-					{:then data}
-						<Button size="md" type="submit" text="Submit" variant="primary" />
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit Tenant</h2>
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Name <span class="text-red-600">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="name"
+							placeholder="Enter name here..."
+							class="input {errors?.name ? 'input-text-error' : ''}"
+							bind:value={name}
+						/>
+						{#if errors?.Name}
+							<p class="text-error">{errors?.Name}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Description</td>
+					<td class="table-data">
+						<textarea
+							name="description"
+							placeholder="Enter description here..."
+							class="input resize-none {errors?.description ? 'input-text-error' : ''}"
+							bind:value={description}
+						></textarea>
+						{#if errors?.Description}
+							<p class="text-error">{errors?.Description}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Code</td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="code"
+							placeholder="Enter code here..."
+							class="input text-gray-500 {errors?.code ? 'input-text-error' : ''}"
+							bind:value={code}
+							disabled
+						/>
+						{#if errors?.Code}
+							<p class="text-error">{errors?.Code}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Phone</td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="phone"
+							placeholder="Enter phone here..."
+							class="input {errors?.phone ? 'input-text-error' : ''}"
+							bind:value={phone}
+						/>
+						{#if errors?.Phone}
+							<p class="text-error">{errors?.Phone}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Email</td>
+					<td class="table-data">
+						<input
+							type="email"
+							name="email"
+							placeholder="Enter email here..."
+							class="input {errors?.email ? 'input-text-error' : ''}"
+							bind:value={email}
+						/>
+						{#if errors?.Email}
+							<p class="text-error">{errors?.Email}</p>
+						{/if}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="btn-container">
+			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button size="md" type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>

@@ -10,6 +10,7 @@
 	import type { AssessmentNodeCreateModel } from '$lib/types/assessment-node.types';
 	import { createOrUpdateSchema } from '$lib/validation/assessment-node.schema';
 	import { page } from '$app/state';
+	import Button from '$lib/components/button/button.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
@@ -201,345 +202,331 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<form
-				onsubmit={async (event) => {
-					const result = handleSubmit(event);
-					if (result && typeof result.then === 'function') {
-						promise = result;
-					}
-				}}
-			>
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th>Create Node</th>
-							<th class="text-end">
-								<a href={assessmentNodeRoutes} class="health-system-btn variant-soft-secondary">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Node Type <span class="text-red-700">*</span></td>
-							<td>
-								<select
-									name="nodeType"
-									placeholder="Select node type here..."
-									class="health-system-input {errors?.nodeType ? 'input-text-error' : ''}"
-									onchange={(val) => onSelectNodeType(val)}
-								>
-									<option>Question</option>
-									<option>Message</option>
-									<option>Node list</option>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td>Parent Node <span class="text-red-700">*</span></td>
-							<td>
-								<select
-									name="parentNodeId"
-									class="health-system-input {errors?.parentNodeId ? 'input-text-error' : ''}"
-									placeholder="Select node type here..."
-									onchange={(val) => (parentNodeId = val.target.value)}
-									bind:value={parentNodeId}
-								>
-									{#each assessmentNodes as node}
-										{#if node.NodeType === 'Node list'}
-											<option value={node.id}
-												>{node.NodeType} - {node.Title} - {node.DisplayCode}</option
-											>
-										{/if}
-									{/each}
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td>Title <span class="text-red-700">*</span></td>
-							<td>
-								<input
-									type="text"
-									name="title"
-									bind:value={title}
-									placeholder="Enter title here...."
-									class="health-system-input {errors?.title ? 'input-text-error' : ''}"
-								/>
-								{#if errors?.Title}
-									<p class="text-error">{errors?.Title}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Required</td>
-							<td>
-								<input
-									type="checkbox"
-									name="required"
-									bind:checked={required}
-									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2
-									{errors?.required ? 'input-text-error' : ''}"
-								/>
-								{#if errors?.Required}
-									<p class="text-error">{errors?.Required}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td class="align-top">Description</td>
-							<td>
-								<textarea
-									name="description"
-									bind:value={description}
-									placeholder="Enter description here..."
-									class="health-system-input {errors?.description ? 'input-text-error' : ''}"
-								></textarea>
-								{#if errors?.Description}
-									<p class="text-error">{errors?.Description}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td class="align-top">Raw Data</td>
-							<td>
-								<textarea
-									name="rawData"
-									bind:value={rawData}
-									placeholder="Enter raw data here..."
-									class="health-system-input {errors?.rawData ? 'input-text-error' : ''}"
-								></textarea>
-								{#if errors?.RawData}
-									<p class="text-error">{errors?.RawData}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Sequence</td>
-							<td>
-								<input
-									type="number"
-									name="sequence"
-									placeholder="Enter sequence here..."
-									min="1"
-									step="1"
-									bind:value={sequence}
-									class="health-system-input {errors?.sequence ? 'input-text-error' : ''}"
-								/>
-								{#if errors?.Sequence}
-									<p class="text-error">{errors?.Sequence}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td class="align-top">Tags</td>
-							<td>
-								<InputChips bind:keywords name="keywords" id="keywords" />
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-							</td>
-						</tr>
-						{#if selectedNodeType === 'Question'}
-							<tr>
-								<td class="align-top">Query Response Type <span class=" text-red-600">*</span></td>
-								<td>
-									<select
-										id="mySelect"
-										name="queryType"
-										class="health-system-input {errors?.queryType ? 'input-text-error' : ''}"
-										placeholder="Select query type here..."
-										onchange={(val) => onSelectQueryResponseType(val)}
+<div class="p-6">
+	<form
+		onsubmit={async (event) => {
+			const result = handleSubmit(event);
+			if (result && typeof result.then === 'function') {
+				promise = result;
+			}
+		}}
+	>
+		<div class="form-headers">
+			<h2 class="form-titles">Create Node</h2>
+			<a href={assessmentNodeRoutes} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Node Type <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<select
+							name="nodeType"
+							placeholder="Select node type here..."
+							class="input {errors?.nodeType ? 'input-text-error' : ''}"
+							onchange={(val) => onSelectNodeType(val)}
+						>
+							<option>Question</option>
+							<option>Message</option>
+							<option>Node list</option>
+						</select>
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Parent Node <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<select
+							name="parentNodeId"
+							class="input {errors?.parentNodeId ? 'input-text-error' : ''}"
+							placeholder="Select node type here..."
+							onchange={(val) => (parentNodeId = val.target.value)}
+							bind:value={parentNodeId}
+						>
+							{#each assessmentNodes as node}
+								{#if node.NodeType === 'Node list'}
+									<option value={node.id}
+										>{node.NodeType} - {node.Title} - {node.DisplayCode}</option
 									>
-										{#each queryResponseTypes as responseType}
-											<option value={responseType}>{responseType}</option>
-										{/each}
-									</select>
-								</td>
-							</tr>
-							<tr>
-								<td>Field Identifier</td>
-								<td>
-									<select
-										name="fieldIdentifier"
-										bind:value={fieldIdentifier}
-										class="health-system-input {errors?.fieldIdentifier ? 'input-text-error' : ''}"
-									>
-										<option value="" disabled selected={fieldIdentifier === undefined}>
-											Select field identifier here...
-										</option>
-
-										{#each sortedIdentifiers as identifier}
-											<option value={identifier}>{toLabel(identifier)}</option>
-										{/each}
-									</select>
-
-									{#if errors?.FieldIdentifier}
-										<p class="text-error">{errors?.FieldIdentifier}</p>
-									{/if}
-								</td>
-							</tr>
-
-							<tr>
-								<td class="align-top">Field Identifier Unit</td>
-								<td>
-									<input
-										type="text"
-										name="fieldIdentifierUnit"
-										bind:value={fieldIdentifierUnit}
-										placeholder="Enter field identifier unit here...."
-										class="health-system-input {errors?.fieldIdentifierUnit
-											? 'input-text-error'
-											: ''}"
-									/>
-									{#if errors?.FieldIdentifierUnit}
-										<p class="text-error">{errors?.FieldIdentifierUnit}</p>
-									{/if}
-								</td>
-							</tr>
-							{#if $scoringApplicableCondition === true}
-								{#if selectedQueryType === 'Single Choice Selection' || selectedQueryType === 'Multi Choice Selection'}
-									<tr>
-										<td class="align-top">Options</td>
-										<td>
-											<Choice bind:optionArray />
-										</td>
-									</tr>
-									{#if selectedQueryType === 'Single Choice Selection'}
-										<tr>
-											<td>Correct Answer</td>
-											<td>
-												<select
-													name="correctAnswer"
-													class="input w-full"
-													bind:value={correctAnswer}
-												>
-													<option value="" disabled selected>Select correct answer</option>
-													{#each optionArray as option}
-														<option value={option.Sequence}>{option.Text}</option>
-													{/each}
-												</select>
-											</td>
-										</tr>
-									{/if}
-									<tr>
-										<td>Resolution Score</td>
-										<td>
-											<input
-												type="number"
-												name="resolutionScore"
-												placeholder="Enter resolution score here..."
-												min="1"
-												class="input w-full"
-												bind:value={resolutionScore}
-											/>
-											{#if errors?.ResolutionScore}
-												<p class="text-error">{errors?.ResolutionScore}</p>
-											{/if}
-										</td>
-									</tr>
-								{:else if selectedQueryType === 'Boolean'}
-									<tr>
-										<td>Correct Answer</td>
-										<td>
-											<select name="correctAnswer" class="input w-full" bind:value={correctAnswer}>
-												<option value="" disabled selected>Select correct answer</option>
-												<option value={true}>true</option>
-												<option value={false}>false</option>
-											</select>
-										</td>
-									</tr>
-
-									<tr>
-										<td>Resolution Score</td>
-										<td>
-											<input
-												type="number"
-												name="resolutionScore"
-												placeholder="Enter resolution score here..."
-												min="1"
-												class="input w-full
-													{errors?.resolutionScore ? 'border-error-300 text-error-500' : ''}"
-												bind:value={resolutionScore}
-											/>
-											{#if errors?.ResolutionScore}
-												<p class="text-error">{errors?.ResolutionScore}</p>
-											{/if}
-										</td>
-									</tr>
 								{/if}
-							{:else if selectedQueryType === 'Single Choice Selection' || selectedQueryType === 'Multi Choice Selection'}
-								<tr>
-									<td class="align-top">Options</td>
-									<td>
-										<Choice bind:optionArray />
+							{/each}
+						</select>
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Title <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="title"
+							bind:value={title}
+							placeholder="Enter title here...."
+							class="input {errors?.title ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.Title}
+							<p class="text-error">{errors?.Title}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Required</td>
+					<td class="table-data">
+						<input
+							type="checkbox"
+							name="required"
+							bind:checked={required}
+							class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2 {errors?.required
+								? 'input-text-error'
+								: ''}"
+						/>
+						{#if errors?.Required}
+							<p class="text-error">{errors?.Required}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label align-top">Description</td>
+					<td class="table-data">
+						<textarea
+							name="description"
+							bind:value={description}
+							placeholder="Enter description here..."
+							class="input {errors?.description ? 'input-text-error' : ''}"
+						></textarea>
+						{#if errors?.Description}
+							<p class="text-error">{errors?.Description}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label align-top">Raw Data</td>
+					<td class="table-data">
+						<textarea
+							name="rawData"
+							bind:value={rawData}
+							placeholder="Enter raw data here..."
+							class="input {errors?.rawData ? 'input-text-error' : ''}"
+						></textarea>
+						{#if errors?.RawData}
+							<p class="text-error">{errors?.RawData}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Sequence</td>
+					<td class="table-data">
+						<input
+							type="number"
+							name="sequence"
+							placeholder="Enter sequence here..."
+							min="1"
+							step="1"
+							bind:value={sequence}
+							class="input {errors?.sequence ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.Sequence}
+							<p class="text-error">{errors?.Sequence}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label align-top">Tags</td>
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
+				{#if selectedNodeType === 'Question'}
+					<tr class="tables-row">
+						<td class="table-label align-top"
+							>Query Response Type <span class=" text-red-600">*</span></td
+						>
+						<td class="table-data">
+							<select
+								id="mySelect"
+								name="queryType"
+								class="input {errors?.queryType ? 'input-text-error' : ''}"
+								placeholder="Select query type here..."
+								onchange={(val) => onSelectQueryResponseType(val)}
+							>
+								{#each queryResponseTypes as responseType}
+									<option value={responseType}>{responseType}</option>
+								{/each}
+							</select>
+						</td>
+					</tr>
+					<tr class="tables-row">
+						<td class="table-label">Field Identifier</td>
+						<td class="table-data">
+							<select
+								name="fieldIdentifier"
+								bind:value={fieldIdentifier}
+								class="input {errors?.fieldIdentifier ? 'input-text-error' : ''}"
+							>
+								<option value="" disabled selected={fieldIdentifier === undefined}>
+									Select field identifier here...
+								</option>
+
+								{#each sortedIdentifiers as identifier}
+									<option value={identifier}>{toLabel(identifier)}</option>
+								{/each}
+							</select>
+
+							{#if errors?.FieldIdentifier}
+								<p class="text-error">{errors?.FieldIdentifier}</p>
+							{/if}
+						</td>
+					</tr>
+
+					<tr class="tables-row">
+						<td class="table-label align-top">Field Identifier Unit</td>
+						<td class="table-data">
+							<input
+								type="text"
+								name="fieldIdentifierUnit"
+								bind:value={fieldIdentifierUnit}
+								placeholder="Enter field identifier unit here...."
+								class="input {errors?.fieldIdentifierUnit ? 'input-text-error' : ''}"
+							/>
+							{#if errors?.FieldIdentifierUnit}
+								<p class="text-error">{errors?.FieldIdentifierUnit}</p>
+							{/if}
+						</td>
+					</tr>
+					{#if $scoringApplicableCondition === true}
+						{#if selectedQueryType === 'Single Choice Selection' || selectedQueryType === 'Multi Choice Selection'}
+							<tr class="tables-row">
+								<td class="table-label align-top">Options</td>
+								<td class="table-data">
+									<Choice bind:optionArray />
+								</td>
+							</tr>
+							{#if selectedQueryType === 'Single Choice Selection'}
+								<tr class="tables-row">
+									<td class="table-label">Correct Answer</td>
+									<td class="table-data">
+										<select name="correctAnswer" class="input w-full" bind:value={correctAnswer}>
+											<option value="" disabled selected>Select correct answer</option>
+											{#each optionArray as option}
+												<option value={option.Sequence}>{option.Text}</option>
+											{/each}
+										</select>
 									</td>
 								</tr>
-								{#if selectedQueryType === 'Single Choice Selection'}
-									<tr>
-										<td>Correct Answer</td>
-										<td>
-											<select
-												name="correctAnswer"
-												class="health-system-input {errors?.correctAnswer
-													? 'input-text-error'
-													: ''}"
-												bind:value={correctAnswer}
-											>
-												<option value="" disabled selected>Select correct answer</option>
-												{#each optionArray as option}
-													<option value={option.Sequence}>{option.Text}</option>
-												{/each}
-											</select>
-										</td>
-									</tr>
-								{/if}
 							{/if}
-						{:else if selectedNodeType === 'Message'}
-							<tr>
-								<td class="align-top">Message <span class=" text-red-600">*</span></td>
-								<td>
-									<textarea
-										name="message"
-										placeholder="Enter message here..."
-										class="health-system-input {errors?.message ? 'input-text-error' : ''}"
-										bind:value={message}
-									></textarea>
-									{#if errors?.Message}
-										<p class="text-error">{errors?.Message}</p>
+							<tr class="tables-row">
+								<td class="table-label">Resolution Score</td>
+								<td class="table-data">
+									<input
+										type="number"
+										name="resolutionScore"
+										placeholder="Enter resolution score here..."
+										min="1"
+										class="input w-full"
+										bind:value={resolutionScore}
+									/>
+									{#if errors?.ResolutionScore}
+										<p class="text-error">{errors?.ResolutionScore}</p>
 									{/if}
 								</td>
 							</tr>
-						{:else}
-							<tr>
-								<td>Serve List Node Children At Once</td>
-								<td>
+						{:else if selectedQueryType === 'Boolean'}
+							<tr class="tables-row">
+								<td class="table-label">Correct Answer</td>
+								<td class="table-data">
+									<select name="correctAnswer" class="input w-full" bind:value={correctAnswer}>
+										<option value="" disabled selected>Select correct answer</option>
+										<option value={true}>true</option>
+										<option value={false}>false</option>
+									</select>
+								</td>
+							</tr>
+
+							<tr class="tables-row">
+								<td class="table-label">Resolution Score</td>
+								<td class="table-data">
 									<input
-										type="checkbox"
-										name="serveListNodeChildrenAtOnce"
-										bind:checked={serveListNodeChildrenAtOnce}
-										class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2
-									{errors?.serveListNodeChildrenAtOnce ? 'input-text-error' : ''}"
+										type="number"
+										name="resolutionScore"
+										placeholder="Enter resolution score here..."
+										min="1"
+										class="input w-full
+											{errors?.resolutionScore ? 'border-error-300 text-error-500' : ''}"
+										bind:value={resolutionScore}
 									/>
-									{#if errors?.ServeListNodeChildrenAtOnce}
-										<p class="text-error">{errors?.ServeListNodeChildrenAtOnce}</p>
+									{#if errors?.ResolutionScore}
+										<p class="text-error">{errors?.ResolutionScore}</p>
 									{/if}
 								</td>
 							</tr>
 						{/if}
-					</tbody>
-				</table>
-				<div class="button-container">
-					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
-					{/await}
-				</div>
-			</form>
+					{:else if selectedQueryType === 'Single Choice Selection' || selectedQueryType === 'Multi Choice Selection'}
+						<tr class="tables-row">
+							<td class="table-label align-top">Options</td>
+							<td class="table-data">
+								<Choice bind:optionArray />
+							</td>
+						</tr>
+						{#if selectedQueryType === 'Single Choice Selection'}
+							<tr class="tables-row">
+								<td class="table-label">Correct Answer</td>
+								<td class="table-data">
+									<select
+										name="correctAnswer"
+										class="health-system-input {errors?.correctAnswer ? 'input-text-error' : ''}"
+										bind:value={correctAnswer}
+									>
+										<option value="" disabled selected>Select correct answer</option>
+										{#each optionArray as option}
+											<option value={option.Sequence}>{option.Text}</option>
+										{/each}
+									</select>
+								</td>
+							</tr>
+						{/if}
+					{/if}
+				{:else if selectedNodeType === 'Message'}
+					<tr class="tables-row">
+						<td class="table-label align-top">Message <span class=" text-red-600">*</span></td>
+						<td class="table-data">
+							<textarea
+								name="message"
+								placeholder="Enter message here..."
+								class="input {errors?.message ? 'input-text-error' : ''}"
+								bind:value={message}
+							></textarea>
+							{#if errors?.Message}
+								<p class="text-error">{errors?.Message}</p>
+							{/if}
+						</td>
+					</tr>
+				{:else}
+					<tr class="tables-row">
+						<td class="table-label">Serve List Node Children At Once</td>
+						<td class="table-data">
+							<input
+								type="checkbox"
+								name="serveListNodeChildrenAtOnce"
+								bind:checked={serveListNodeChildrenAtOnce}
+								class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2 {errors?.serveListNodeChildrenAtOnce
+									? 'input-text-error'
+									: ''}"
+							/>
+							{#if errors?.ServeListNodeChildrenAtOnce}
+								<p class="text-error">{errors?.ServeListNodeChildrenAtOnce}</p>
+							{/if}
+						</td>
+					</tr>
+				{/if}
+			</tbody>
+		</table>
+		<div class="btn-container">
+			{#await promise}
+				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button size="md" type="submit" text="Submit" variant="primary" />
+			{/await}
 		</div>
-	</div>
+	</form>
 </div>

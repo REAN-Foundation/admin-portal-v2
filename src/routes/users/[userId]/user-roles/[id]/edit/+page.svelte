@@ -90,62 +90,54 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th>Edit User Role</th>
-							<th class="text-end">
-								<a href={viewRoute} class="form-cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Role Name <span class=" text-red-600">*</span></td>
-							<td>
-								<input
-									type="text"
-									name="roleName"
-									bind:value={roleName}
-									placeholder="Enter role name here..."
-									class="input {form?.errors?.roleName ? 'input-text-error' : ''}"
-								/>
-								{#if errors?.Name}
-									<p class="text-error">{errors?.Name}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td class="align-top">Description</td>
-							<td>
-								<textarea
-									name="description"
-									bind:value={description}
-									placeholder="Enter description here..."
-									class="input {form?.errors?.description ? 'input-text-error' : ''}"
-								></textarea>
-								{#if errors?.Description}
-									<p class="text-error">{errors?.Description}</p>
-								{/if}
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="btn-container mr-5 mb-2">
-					<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
-					{#await promise}
-						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
-					{:then data}
-						<Button size="md" type="submit" text="Submit" variant="primary" />
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit User Role</h2>
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Role Name <span class="text-red-600">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="roleName"
+							bind:value={roleName}
+							placeholder="Enter role name here..."
+							class="input {errors?.roleName ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.Name}
+							<p class="text-error">{errors?.Name}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label align-top">Description</td>
+					<td class="table-data">
+						<textarea
+							name="description"
+							bind:value={description}
+							placeholder="Enter description here..."
+							class="input {errors?.description ? 'input-text-error' : ''}"
+						></textarea>
+						{#if errors?.Description}
+							<p class="text-error">{errors?.Description}</p>
+						{/if}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="btn-container">
+			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button size="md" type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>
