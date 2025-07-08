@@ -59,13 +59,8 @@
 			</tr>
 		</tbody>
 	</table>
-	<div class="btn-container">
-		<a
-			href={editRoute}
-			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
-		>
-			<Icon icon="material-symbols:edit-outline" />
-			<span class="ml-1">Edit</span>
-		</a>
+	<div class=" btn-container">
+		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
+		></Button>
 	</div>
 </div>

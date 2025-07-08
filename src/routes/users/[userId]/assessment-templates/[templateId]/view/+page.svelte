@@ -6,6 +6,7 @@
 	import { onMount } from 'svelte';
 	import type { PageServerData } from './$types';
 	import TreeView from '$lib/components/tree-view.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -125,18 +126,9 @@
 		</tbody>
 	</table>
 	<div class="btn-container">
-		<a
-			href={nodeRoute}
-			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
-		>
-			Add Node
-		</a>
-		<a
-			href={editRoute}
-			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
-		>
-			<Icon icon="material-symbols:edit-outline" />
-			<span class="ml-1">Edit</span>
-		</a>
+		<Button href={nodeRoute} text="Add node" variant="primary" />
+
+		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
+		></Button>
 	</div>
 </div>

@@ -6,7 +6,7 @@
 	import Icon from '@iconify/svelte';
 	// import date from 'date-and-time';
 	import type { PageServerData } from './$types';
-    import { enhance } from '$app/forms';
+	import { enhance } from '$app/forms';
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -98,27 +98,21 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-			
-<form
-	method="post"
-	action="?/updateNotificationAction"
-	use:enhance
->
-<table class="health-system-table">
-	<thead>
+
+<form method="post" action="?/updateNotificationAction" use:enhance>
+	<table class="health-system-table">
+		<thead>
 			<tr>
 				<th>Edit Notification</th>
 				<th class="text-end">
-					<a href={viewRoute} 
-					class="health-system-btn variant-soft-secondary"
-					>
-						<Icon icon="material-symbols:close-rounded"  />
+					<a href={viewRoute} class="health-system-btn variant-soft-secondary">
+						<Icon icon="material-symbols:close-rounded" />
 					</a>
 				</th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr >
+			<tr>
 				<td>Title *</td>
 				<td>
 					<input
@@ -127,25 +121,20 @@
 						required
 						bind:value={title}
 						placeholder="Enter title here..."
-						class="health-system-input {form?.errors?.title ? 'input-text-error' : ''}"
+						class="input {form?.errors?.title ? 'input-text-error' : ''}"
 					/>
 					{#if form?.errors?.title}
 						<p class="text-error">{form?.errors?.title[0]}</p>
 					{/if}
 				</td>
 			</tr>
-			<tr >
-				<td >Body</td>
+			<tr>
+				<td>Body</td>
 				<td>
-					<textarea
-						name="body"
-						bind:value={Body}
-						placeholder="Enter body here..."
-						class="health-system-input"
-					/>
+					<textarea name="body" bind:value={Body} placeholder="Enter body here..." class="input" />
 				</td>
 			</tr>
-			<tr >
+			<tr>
 				<td>Type</td>
 				<td>
 					<select
@@ -166,11 +155,11 @@
 					</select>
 				</td>
 			</tr>
-			<tr >
+			<tr>
 				<td>Sent On</td>
 				<td>{date.format(sentOn, 'DD MMM YYYY')}</td>
 			</tr>
-			<tr >
+			<tr>
 				<td>Broadcast To All</td>
 				<td>
 					<input
@@ -182,7 +171,7 @@
 					/>
 				</td>
 			</tr>
-			<tr >
+			<tr>
 				<td class="align-top">Image</td>
 				<td>
 					{#if imageUrl === 'undefined'}
@@ -208,7 +197,7 @@
 			</tr>
 		</tbody>
 	</table>
-	<div class="flex gap-2 p-2 justify-end">
+	<div class="flex justify-end gap-2 p-2">
 		<button type="button" on:click={handleReset} class="btn variant-soft-secondary">Reset</button>
 		<button type="submit" class="btn variant-filled-secondary">Submit</button>
 	</div>

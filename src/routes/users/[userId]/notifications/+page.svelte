@@ -79,7 +79,7 @@
 							required
 							bind:value={title}
 							placeholder="Enter title here..."
-							class="health-system-input {form?.errors?.title ? 'input-text-error' : ''}"
+							class="input {form?.errors?.title ? 'input-text-error' : ''}"
 							minlength="2"
 							maxlength="50"
 						/>
@@ -94,7 +94,7 @@
 						<textarea
 							name="body"
 							placeholder="Enter body here..."
-							class="health-system-input"
+							class="input"
 							required
 							bind:value={body}
 							minlength="2"
@@ -118,7 +118,7 @@
 						<input
 							type="url"
 							name="url"
-							class="health-system-input"
+							class="input"
 							placeholder="Enter url here..."
 							bind:value={url}
 						/>

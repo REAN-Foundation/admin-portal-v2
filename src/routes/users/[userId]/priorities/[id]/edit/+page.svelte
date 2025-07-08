@@ -98,14 +98,13 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6">
+<div class="p-6">
 	<form onsubmit={(event) => (promise = handleSubmit(event))}>
 		<div class="form-headers">
 			<h2 class="form-titles">Edit Priority</h2>
@@ -133,18 +132,14 @@
 				<tr class="tables-row">
 					<td class="table-label align-top">Tags</td>
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-						/>
+						<InputChips bind:keywords name="keywords" id="keywords" />
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>
 			</tbody>
 		</table>
 		<div class="btn-container">
-			<Button type="button" text="Reset" variant="secondary" onclick={handleReset} />
+			<Button type="button" text="Reset" variant="primary" onclick={handleReset} />
 			{#await promise}
 				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
 			{:then data}
