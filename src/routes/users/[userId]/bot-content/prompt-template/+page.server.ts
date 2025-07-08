@@ -13,10 +13,10 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 
 	const response = await searchPromptTemplate(sessionId,
 		{
-			orderBy: 'Name',
-			order: 'ascending',
-			itemsPerPage: 10
-		}
+            orderBy: "Name",
+            order: "ascending",
+            itemsPerPage: 10
+        }
 	);
 
 	const prompts = response?.Data;

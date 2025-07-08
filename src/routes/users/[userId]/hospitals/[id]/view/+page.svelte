@@ -37,42 +37,26 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-2">
-		<Button
-			size="md"
-			href={editRoute}
-			text="Edit"
-			variant="primary"
-			iconBefore="mdi:edit"
-			iconSize="md"
-		></Button>
-	</div>
-	<div class="mx-auto">
-		<div class="table-container shadow">
-			<table class="table-c">
-				<thead>
-					<tr>
-						<th>View Hospital</th>
-						<th class="text-end">
-							<a href={hospitalRoute} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
-				</thead>
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<h2 class="form-titles">View Hospital</h2>
+		<a href={hospitalRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
+		</a>
+	</div>	
+			<table class="w-full">
 				<tbody>
-					<tr>
-						<td>Name</td>
-						<td>{hospitalName}</td>
+					<tr class="tables-row">
+						<td class="table-label">Name</td>
+						<td class="table-data">{hospitalName}</td>
 					</tr>
-					<tr>
-						<td>Health System</td>
-						<td>{healthSystemName}</td>
+					<tr class="tables-row">
+						<td class="table-label">Health System</td>
+						<td class="table-data">{healthSystemName}</td>
 					</tr>
-					<tr>
-						<td>Tags</td>
-						<td>
+					<tr class="tables-row">
+						<td class="table-label">Tags</td>
+						<td class="table-data">
 							{#if tags.length <= 0}
 								<span class="span">Tags not specified</span>
 							{:else}
@@ -82,6 +66,10 @@
 					</tr>
 				</tbody>
 			</table>
+			<div class=" btn-container">
+        		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
+        		></Button>
+    		</div>
 		</div>
-	</div>
-</div>
+			
+		
