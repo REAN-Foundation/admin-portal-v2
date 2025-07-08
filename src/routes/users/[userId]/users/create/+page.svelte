@@ -50,9 +50,8 @@
 		console.log('personRoles', personRoles);
 		const selectedRole = personRoles?.find((x) => x.RoleName === selectedUserRole);
 		if (selectedRole) {
-			selectedUserRoleId = selectedRole.id;			
+			selectedUserRoleId = selectedRole.id;
 		}
-
 	}
 
 	const handleSubmit = async (event: Event) => {
@@ -71,7 +70,7 @@
 				SelectedUserRoleId: selectedUserRoleId
 			};
 
-			console.log("password", password)
+			console.log('password', password);
 
 			const validationResult = createSchema.safeParse(usersCreateModel);
 			console.log(validationResult);
@@ -111,143 +110,135 @@
 	};
 
 	onMount(() => {
-	const defaultRole = userRoles?.find((r) => r.Title === 'System User');
-	if (defaultRole) {
-		role = defaultRole.Value;
-		const tmp = LocalStorageUtils.getItem('personRoles');
-		const personRoles = JSON.parse(tmp || '[]');
-		const match = personRoles.find((x) => x.RoleName === defaultRole.Value);
-		if (match) {
-			selectedUserRoleId = match.id;
+		const defaultRole = userRoles?.find((r) => r.Title === 'System User');
+		if (defaultRole) {
+			role = defaultRole.Value;
+			const tmp = LocalStorageUtils.getItem('personRoles');
+			const personRoles = JSON.parse(tmp || '[]');
+			const match = personRoles.find((x) => x.RoleName === defaultRole.Value);
+			if (match) {
+				selectedUserRoleId = match.id;
+			}
 		}
-	}
-});
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th>Create User</th>
-							<th class="text-end">
-								<a href={userRoute} class="form-cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>First Name <span class="text-red-700">*</span></td>
-							<td>
-								<input
-									type="text"
-									name="firstName"
-									bind:value={firstName}
-									placeholder="Enter first name here..."
-									class="input"
-								/>
-								{#if errors?.FirstName}
-									<p class="text-error ml-1">{errors?.FirstName}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Last Name <span class="text-red-700">*</span></td>
-							<td>
-								<input
-									type="text"
-									name="lastName"
-									bind:value={lastName}
-									placeholder="Enter last name here..."
-									class="input"
-								/>
-								{#if errors?.LastName}
-									<p class="text-error ml-1">{errors?.LastName}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Contact Number <span class="text-red-700">*</span></td>
-							<td class="flex gap-2">
-								<select name="countryCode" bind:value={countryCode} class="input !w-20">
-									<option>+1</option>
-									<option>+91</option>
-								</select>
-								<input
-									type="text"
-									name="phone"
-									bind:value={phone}
-									pattern="[0-9]*"
-									placeholder="Enter contact number here..."
-									class="input"
-								/>
-								{#if errors?.Phone}
-									<p class="text-error">{errors?.Phone}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Email <span class="text-red-700">*</span></td>
-							<td>
-								<input
-									type="email"
-									name="email"
-									bind:value={email}
-									placeholder="Enter email here..."
-									class="input"
-								/>
-								{#if errors?.Email}
-									<p class="text-error">{errors?.Email}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Role <span class="text-red-700">*</span></td>
-							<td>
-								<select
-									name="role"
-									bind:value={role}
-									class="input"
-									onchange={getRoleIdByRoleName}
-									placeholder="Select role here..."
-								>
-									{#each userRoles as role}
-										<option value={role.Value}>{role.Title}</option>
-									{/each}
-								</select>
-								<input type="hidden" name="selectedUserRoleId" bind:value={selectedUserRoleId} />
-							</td>
-						</tr>
-						<tr>
-							<td>Password <span class="text-red-700">*</span></td>
-							<td>
-								<PasswordInput bind:password />
-								{#if errors?.Password}
-									<p class="text-error">{errors?.Password}</p>
-								{:else}
-									<p class="text-error">
-										The password should be at least 8 characters long and must contain at least 1
-										capital letter, 1 small letter, 1 digit, and 1 special character.
-									</p>
-								{/if}
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="btn-container mr-5 mb-2">
-					{#await promise}
-						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
-					{:then data}
-						<Button size="md" type="submit" text="Submit" variant="primary" />
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Create User</h2>
+			<a href={userRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">First Name <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="firstName"
+							bind:value={firstName}
+							placeholder="Enter first name here..."
+							class="input {errors?.firstName ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.FirstName}
+							<p class="text-error ml-1">{errors?.FirstName}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Last Name <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="lastName"
+							bind:value={lastName}
+							placeholder="Enter last name here..."
+							class="input {errors?.lastName ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.LastName}
+							<p class="text-error ml-1">{errors?.LastName}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Contact Number <span class="text-red-700">*</span></td>
+					<td class="table-data flex gap-2">
+						<select name="countryCode" bind:value={countryCode} class="input !w-20">
+							<option>+1</option>
+							<option>+91</option>
+						</select>
+						<input
+							type="text"
+							name="phone"
+							bind:value={phone}
+							pattern="[0-9]*"
+							placeholder="Enter contact number here..."
+							class="input {errors?.phone ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.Phone}
+							<p class="text-error">{errors?.Phone}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Email <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<input
+							type="email"
+							name="email"
+							bind:value={email}
+							placeholder="Enter email here..."
+							class="input {errors?.email ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.Email}
+							<p class="text-error">{errors?.Email}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Role <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<select
+							name="role"
+							bind:value={role}
+							class="input"
+							onchange={getRoleIdByRoleName}
+							placeholder="Select role here..."
+						>
+							{#each userRoles as role}
+								<option value={role.Value}>{role.Title}</option>
+							{/each}
+						</select>
+						<input type="hidden" name="selectedUserRoleId" bind:value={selectedUserRoleId} />
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Password <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<PasswordInput bind:password />
+						{#if errors?.Password}
+							<p class="text-error">{errors?.Password}</p>
+						{:else}
+							<p class="text-error">
+								The password should be at least 8 characters long and must contain at least 1
+								capital letter, 1 small letter, 1 digit, and 1 special character.
+							</p>
+						{/if}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="btn-container">
+			{#await promise}
+				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button size="md" type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>

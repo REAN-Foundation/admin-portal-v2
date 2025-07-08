@@ -112,45 +112,44 @@
 			<a href={viewRoute} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" />
 			</a>
-		</div>			
-				<table class="w-full">
-					<tbody>
-						<tr class="tables-row">
-							<td class="table-label">Type <span class="important-field">*</span></td>
-							<td class="table-data">
-								<input
-									type="text"
-									class="input {errors?.type ? 'input-text-error' : ''}"
-									name="type"
-									placeholder="Enter name here..."
-									bind:value={type}
-								/>
-								{#if errors?.Type}
-									<p class="error-text">{errors?.Type}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr class="tables-row">
-							<td class="table-label">Tags</td>
-							<td class="table-data">
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-									/>
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags" bind:value={tags} /> -->
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="btn-container">
-            		<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
-            		{#await promise}
-                		<Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            		{:then data}
-                		<Button type="submit" text="Submit" variant="primary" />
-            		{/await}
-				</div>
-			</form>
 		</div>
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Type <span class="text-red-600">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {errors?.type ? 'input-text-error' : ''}"
+							name="type"
+							placeholder="Enter name here..."
+							bind:value={type}
+						/>
+						{#if errors?.Type}
+							<p class="text-error">{errors?.Type}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label align-top">Tags</td>
+					<td class="table-data">
+						<InputChips
+							bind:keywords
+							name="keywords"
+							id="keywords"
+						/>
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="btn-container">
+			<Button type="button" text="Reset" variant="secondary" onclick={handleReset} />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
+</div>

@@ -173,116 +173,108 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th>Edit Symptom</th>
-							<th class="text-end">
-								<a href={viewRoute} class="form-cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Symptom <span class=" text-red-600">*</span></td>
-							<td>
-								<input
-									type="text"
-									name="symptom"
-									bind:value={symptom}
-									placeholder="Enter symptom here..."
-									class="health-system-input"
-								/>
-								{#if errors?.Symptom}
-									<p class="text-error">{errors?.Symptom}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Description</td>
-							<td>
-								<textarea
-									name="description"
-									bind:value={description}
-									placeholder="Enter description here..."
-									class="health-system-input {form?.errors?.description ? 'input-text-error' : ''}"
-								></textarea>
-								{#if errors?.Description}
-									<p class="text-error">{errors?.Description}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td class="align-top">Tags</td>
-							<td>
-								<InputChips bind:keywords name="keywords" id="keywords" />
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-							</td>
-						</tr>
-						<tr>
-							<td>Language <span class=" text-red-600">*</span></td>
-							<td>
-								<input
-									type="text"
-									name="language"
-									bind:value={language}
-									placeholder="Enter language here..."
-									class="health-system-input"
-								/>
-								{#if errors?.Language}
-									<p class="text-error">{errors?.Language}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Image</td>
-							<td>
-								{#if imageUrl === 'undefined'}
-									<input
-										name="fileinput"
-										type="file"
-										required
-										class="health-system-input"
-										placeholder="Image"
-										onchange={async (e) => await onFileSelected(e)}
-									/>
-								{:else}
-									<Image cls="flex h-24 w-24 rounded-lg" source={imageUrl} w="24" h="24" />
-									<input
-										name="fileinput"
-										type="file"
-										class="health-system-input"
-										bind:this={symptomImage}
-										placeholder="Image"
-										onchange={async (e) => await onFileSelected(e)}
-									/>
-									{#if errorMessage}
-										<p class={`${errorMessage.Colour}`}>{errorMessage.Text}</p>
-									{/if}
-								{/if}
-								<input type="hidden" name="imageResourceId" value={imageResourceId} />
-								{#if errors?.ImageResourceId}
-									<p class="text-error">{errors?.ImageResourceId}</p>
-								{/if}
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="btn-container mr-5 mb-2">
-					<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
-					{#await promise}
-						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
-					{:then data}
-						<Button size="md" type="submit" text="Submit" variant="primary" />
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit Symptom</h2>
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Symptom <span class="text-red-600">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="symptom"
+							bind:value={symptom}
+							placeholder="Enter symptom here..."
+							class="input {errors?.symptom ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.Symptom}
+							<p class="text-error">{errors?.Symptom}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Description</td>
+					<td class="table-data">
+						<textarea
+							name="description"
+							bind:value={description}
+							placeholder="Enter description here..."
+							class="input {errors?.description ? 'input-text-error' : ''}"
+						></textarea>
+						{#if errors?.Description}
+							<p class="text-error">{errors?.Description}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label align-top">Tags</td>
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Language <span class="text-red-600">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="language"
+							bind:value={language}
+							placeholder="Enter language here..."
+							class="input {errors?.language ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.Language}
+							<p class="text-error">{errors?.Language}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Image</td>
+					<td class="table-data">
+						{#if imageUrl === 'undefined'}
+							<input
+								name="fileinput"
+								type="file"
+								required
+								class="input"
+								placeholder="Image"
+								onchange={async (e) => await onFileSelected(e)}
+							/>
+						{:else}
+							<Image cls="flex h-24 w-24 rounded-lg" source={imageUrl} w="24" h="24" />
+							<input
+								name="fileinput"
+								type="file"
+								class="input"
+								bind:this={symptomImage}
+								placeholder="Image"
+								onchange={async (e) => await onFileSelected(e)}
+							/>
+							{#if errorMessage}
+								<p class={`${errorMessage.Colour}`}>{errorMessage.Text}</p>
+							{/if}
+						{/if}
+						<input type="hidden" name="imageResourceId" value={imageResourceId} />
+						{#if errors?.ImageResourceId}
+							<p class="text-error">{errors?.ImageResourceId}</p>
+						{/if}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="btn-container">
+			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button size="md" type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>

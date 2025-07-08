@@ -45,8 +45,50 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-2">
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<h2 class="form-titles">View Symptom</h2>
+		<a href={symptomRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
+		</a>
+	</div>
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<td class="table-label">Symptom</td>
+				<td class="table-data">{symptom}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Description</td>
+				<td class="table-data">{description}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Language</td>
+				<td class="table-data">{language}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Tags</td>
+				<td class="table-data">
+					{#if tags.length <= 0}
+						<span>Tags not specified</span>
+					{:else}
+						<span>{tags}</span>
+					{/if}
+				</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label align-top">Image</td>
+				<td class="table-data">
+					{#if imageUrl == undefined || imageUrl == null}
+						Not specified
+					{:else}
+						<Image cls="flex h-24 w-24 rounded-lg" source={imageUrl} w="24" h="24" />
+					{/if}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="btn-container">
 		<Button
 			size="md"
 			href={editRoute}
@@ -54,58 +96,6 @@
 			variant="primary"
 			iconBefore="mdi:edit"
 			iconSize="md"
-		></Button>
-	</div>
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<table class="health-system-table">
-				<thead>
-					<tr>
-						<th>View Symptom</th>
-						<th class="text-end">
-							<a href={symptomRoute} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Symptom</td>
-						<td>{symptom}</td>
-					</tr>
-					<tr>
-						<td>Description</td>
-						<td>{description}</td>
-					</tr>
-					<tr>
-						<td>Language</td>
-						<td>{language}</td>
-					</tr>
-					<tr>
-						<td>Tags</td>
-						<td>
-							{#if tags.length <= 0}
-								<span class="span">Tags not specified</span>
-							{:else}
-								<span class="span">{tags}</span>
-							{/if}
-						</td>
-					</tr>
-					<tr>
-						<td class="align-top">Image</td>
-						<td>
-							{#if imageUrl == undefined || imageUrl == null}
-								Not specified
-							{:else}
-
-								<Image cls="flex h-24 w-24 rounded-lg" source={imageUrl} w="24" h="24" />
-								<!-- <img src={imageUrl} alt="Symptom Image" class="flex h-24 w-24 rounded-lg" /> -->
-							{/if}
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+		/>
 	</div>
 </div>

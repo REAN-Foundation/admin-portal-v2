@@ -32,37 +32,38 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<table class="table-c">
-				<thead>
-					<tr>
-						<th>View Goal</th>
-						<th class="text-end">
-							<a href={goalRoute} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded" class="" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Type</td>
-						<td>{type}</td>
-					</tr>
-					<tr>
-						<td>Tags</td>
-						<td>
-							{#if tags.length <= 0}
-								<span class="span">Tags not specified</span>
-							{:else}
-								<span class="span">{tags}</span>
-							{/if}
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<h2 class="form-titles">View Goal</h2>
+		<a href={goalRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
+		</a>
+	</div>
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<td class="table-label">Type</td>
+				<td class="table-data">{type}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Tags</td>
+				<td class="table-data">
+					{#if tags.length <= 0}
+						<span>Tags not specified</span>
+					{:else}
+						<span>{tags}</span>
+					{/if}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="btn-container">
+		<a
+			href={editRoute}
+			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
+		>
+			<Icon icon="material-symbols:edit-outline" />
+			<span class="ml-1">Edit</span>
+		</a>
 	</div>
 </div>

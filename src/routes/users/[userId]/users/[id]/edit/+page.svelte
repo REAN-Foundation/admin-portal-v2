@@ -116,122 +116,109 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th>Edit User</th>
-							<th class="text-end">
-								<a href={viewRoute} class="form-cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>First Name <span class="text-red-700">*</span></td>
-
-							<td>
-								<input
-									type="text"
-									name="firstName"
-									bind:value={firstName}
-									placeholder="Enter first name here..."
-									class="input"
-								/>
-								{#if errors?.FirstName}
-									<p class="text-error">{errors?.FirstName}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Last Name <span class="text-red-700">*</span></td>
-
-							<td>
-								<input
-									type="text"
-									name="lastName"
-									bind:value={lastName}
-									placeholder="Enter last name here..."
-									class="input"
-								/>
-								{#if errors?.LastName}
-									<p class="text-error">{errors?.LastName}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Contact Number <span class="text-red-700">*</span></td>
-
-							<td class="flex gap-2">
-								<select name="countryCode" bind:value={splitPhoneNumber[0]} class="input !w-20">
-									<option>+1</option>
-									<option>+91</option>
-								</select>
-								<input
-									type="text"
-									name="phone"
-									pattern="[0-9]*"
-									bind:value={splitPhoneNumber[1]}
-									placeholder="Enter contact number here..."
-									class="input {errors?.Phone ? 'input-text-error' : ''}"
-								/>
-								{#if errors?.Phone}
-									<p class="text-error">{errors?.Phone}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Email <span class="text-red-700">*</span></td>
-
-							<td>
-								<input
-									type="email"
-									name="email"
-									bind:value={email}
-									placeholder="Enter email here..."
-									class="input"
-								/>
-								{#if errors?.Email}
-									<p class="text-error">{errors?.Email}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Role <span class="text-red-700">*</span></td>
-
-							<td>
-								<select
-									name="roleId"
-									class="input"
-									placeholder="Select role here..."
-									disabled
-									bind:value={role}
-									onchange={getRoleIdByRoleName}
-								>
-									<option value="Tenant admin">Tenant Admin</option>
-									<option value="Tenant user">Tenant User</option>
-									<option value="System user">System User</option>
-									<option value="System admin">System Admin</option>
-								</select>
-								<input type="hidden" name="selectedUserRoleId" bind:value={selectedUserRoleId} />
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="btn-container mr-5 mb-2">
-					<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
-					{#await promise}
-						<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
-					{:then data}
-						<Button size="md" type="submit" text="Submit" variant="primary" />
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit User</h2>
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">First Name <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="firstName"
+							bind:value={firstName}
+							placeholder="Enter first name here..."
+							class="input {errors?.firstName ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.FirstName}
+							<p class="text-error">{errors?.FirstName}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Last Name <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="lastName"
+							bind:value={lastName}
+							placeholder="Enter last name here..."
+							class="input {errors?.lastName ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.LastName}
+							<p class="text-error">{errors?.LastName}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Contact Number <span class="text-red-700">*</span></td>
+					<td class="table-data flex gap-2">
+						<select name="countryCode" bind:value={splitPhoneNumber[0]} class="input !w-20">
+							<option>+1</option>
+							<option>+91</option>
+						</select>
+						<input
+							type="text"
+							name="phone"
+							pattern="[0-9]*"
+							bind:value={splitPhoneNumber[1]}
+							placeholder="Enter contact number here..."
+							class="input {errors?.phone ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.Phone}
+							<p class="text-error">{errors?.Phone}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Email <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<input
+							type="email"
+							name="email"
+							bind:value={email}
+							placeholder="Enter email here..."
+							class="input {errors?.email ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.Email}
+							<p class="text-error">{errors?.Email}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Role <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<select
+							name="roleId"
+							class="input"
+							placeholder="Select role here..."
+							disabled
+							bind:value={role}
+							onchange={getRoleIdByRoleName}
+						>
+							<option value="Tenant admin">Tenant Admin</option>
+							<option value="Tenant user">Tenant User</option>
+							<option value="System user">System User</option>
+							<option value="System admin">System Admin</option>
+						</select>
+						<input type="hidden" name="selectedUserRoleId" bind:value={selectedUserRoleId} />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="btn-container">
+			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button size="md" type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>
