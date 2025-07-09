@@ -40,7 +40,9 @@ export const POST = async (event: RequestEvent) => {
 			data.Description,
 			data.Code,
 			data.Phone,
-			data.Email
+			data.Email,
+			data.Username,
+			data.Password
 		);
 
 		return ResponseHandler.success(response);
