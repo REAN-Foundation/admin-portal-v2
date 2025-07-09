@@ -936,3 +936,33 @@ tr {
 .drag-input {
 	@apply mt-4 mb-4 w-full rounded border border-dashed border-[var(--color-outline)] bg-[var(--color-accent)] p-6 text-center text-[var(--color-info)] focus:outline-none;
 }
+
+/* File preview model */
+
+.preview-modal-backdrop {
+	@apply fixed inset-0 z-[1000] flex items-center justify-center;
+}
+
+.preview-modal-content {
+	@apply relative h-[90%] w-[90%] overflow-auto rounded-lg bg-white p-5;
+}
+
+.preview-close-btn {
+	@apply absolute top-3 right-1 text-2xl text-gray-600 hover:text-gray-900 focus:outline-none;
+}
+
+.text-content-preview {
+	@apply h-[calc(100%-40px)] w-full overflow-auto rounded bg-gray-100 p-4;
+}
+
+.text-content-preview pre {
+	@apply m-0 font-mono break-words whitespace-pre-wrap;
+}
+
+.download-prompt {
+	@apply p-6 text-center;
+}
+
+.download-btn {
+	@apply mt-4 inline-block rounded bg-gray-700 px-5 py-2 text-white hover:bg-gray-900;
+}

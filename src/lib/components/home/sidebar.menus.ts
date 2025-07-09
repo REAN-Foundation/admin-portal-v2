@@ -1267,7 +1267,7 @@ function addAppointmentMenu(
 	const gmu: SidebarMenu = {
 		name: 'GMU',
 		title: 'Appointment Follow-Up',
-		icon: 'simple-icons:gamedeveloper',
+		icon: 'material-symbols:list-alt-check-outline-rounded',
 		link: null,
 		children: []
 	};

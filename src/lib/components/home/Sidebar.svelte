@@ -32,7 +32,7 @@
 						onclick={() => (activeTab = 'Analytics')}
 					>
 						<div class="flex items-center gap-1">
-							<Icon icon={navParent.icon} class="text-2xl" />
+							<Icon icon={navParent.icon} class=" h-6 w-6" />
 							<span class="sidebar-text">{navParent.title}</span>
 						</div>
 					</a>
@@ -43,7 +43,7 @@
 						onclick={() => (activeTab = 'Appointment')}
 					>
 						<div class="flex items-center gap-1">
-							<Icon icon={navParent.icon} class="text-2xl" />
+							<Icon icon={navParent.icon} class=" h-6 w-6" />
 							<span class="sidebar-text">{navParent.title}</span>
 						</div>
 					</a>
@@ -54,7 +54,7 @@
 						onclick={() => (activeTab = 'Home')}
 					>
 						<div class="flex items-center gap-1">
-							<Icon icon={navParent.icon} class="text-2xl" />
+							<Icon icon={navParent.icon} class=" h-6 w-6" />
 							<span class="sidebar-text">{navParent.title}</span>
 						</div>
 					</a>
@@ -64,7 +64,7 @@
 						onclick={() => toggleDropdown(navParent.title)}
 					>
 						<div class="flex items-center gap-1">
-							<Icon icon={navParent.icon} class="text-2xl" />
+							<Icon icon={navParent.icon} class=" h-6 w-6" />
 							<span class="sidebar-text">{navParent.title}</span>
 						</div>
 						<span
