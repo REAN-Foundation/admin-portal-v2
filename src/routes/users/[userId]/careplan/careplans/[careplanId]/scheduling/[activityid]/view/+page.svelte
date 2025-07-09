@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
+	import Button from '$lib/components/button/button.svelte';
 	import Icon from '@iconify/svelte';
 
 	////////////////////////////////////////////////////////////////////////
@@ -38,49 +39,42 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
-<div class="px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-2">
-		<a
-			href={editRoute}
-			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
-		>
-			<Icon icon="material-symbols:edit-outline" />
-			<span>Edit</span>
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<h2 class="form-titles">View Careplan Activity</h2>
+		<a href={schedulingRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
 		</a>
 	</div>
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<table class="health-system-table">
-				<thead>
-					<tr>
-						<th>View Careplan Activity</th>
-						<th class="text-end">
-							<a href={schedulingRoute} class=" cancel-btn">
-								<Icon icon="material-symbols:close-rounded" class="" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>AssetType</td>
-						<td>{assetType}</td>
-					</tr>
-					<tr>
-						<td>Asset</td>
-						<td>{name}</td>
-					</tr>
-					<tr>
-						<td>Schedule Day</td>
-						<td>{day}</td>
-					</tr>
-					<tr>
-						<td>Time Slot</td>
-						<td>{timeslot}</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<td class="table-label">Asset Type</td>
+				<td class="table-data">{assetType}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Asset</td>
+				<td class="table-data">{name}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Schedule Day</td>
+				<td class="table-data">{day}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Time Slot</td>
+				<td class="table-data">{timeslot}</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div class="btn-container">
+		<Button
+			href={editRoute}
+			text="Edit"
+			variant="primary"
+			iconBefore="material-symbols:edit-outline"
+			iconSize="md"
+		/>
 	</div>
 </div>

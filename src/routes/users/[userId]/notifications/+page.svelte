@@ -44,70 +44,65 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<form method="post" action="?/createNotificationAction" use:enhance>
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th>Send Notification</th>
-							<th class="text-end">
-								<a href={notificationRoute} class="form-cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Topic <span class=" text-red-600">*</span></td>
-							<td>
-								<select
-									class="select w-full"
-									name="topic"
-									placeholder="Select topic here..."
-									bind:value={topic}
-								>
-									{#each Object.entries(NotificationTopics) as [key, value]}
-										<option value={key} selected={key === 'All_Users'}>{value}</option>
-									{/each}
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td>Title <span class=" text-red-600">*</span></td>
-							<td>
-								<input
-									type="text"
-									name="title"
-									required
-									bind:value={title}
-									placeholder="Enter title here..."
-									class="health-system-input {form?.errors?.title ? 'input-text-error' : ''}"
-									minlength="2"
-									maxlength="50"
-								/>
-								{#if form?.errors?.title}
-									<p class="text-error">{form?.errors?.title[0]}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Body <span class=" text-red-600">*</span></td>
-							<td>
-								<textarea
-									name="body"
-									placeholder="Enter body here..."
-									class="health-system-input"
-									required
-									bind:value={body}
-									minlength="2"
-									maxlength="150"
-								/>
-							</td>
-						</tr>
-						<!-- <tr>
+<div class="p-6">
+	<form method="post" action="?/createNotificationAction" use:enhance>
+		<div class="form-headers">
+			<h2 class="form-titles">Send Notification</h2>
+			<a href={notificationRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>
+
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Topic <span class="important-field">*</span></td>
+					<td class="table-data">
+						<select
+							class="select w-full"
+							name="topic"
+							placeholder="Select topic here..."
+							bind:value={topic}
+						>
+							{#each Object.entries(NotificationTopics) as [key, value]}
+								<option value={key} selected={key === 'All_Users'}>{value}</option>
+							{/each}
+						</select>
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Title <span class="important-field">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="title"
+							required
+							bind:value={title}
+							placeholder="Enter title here..."
+							class="input {form?.errors?.title ? 'input-text-error' : ''}"
+							minlength="2"
+							maxlength="50"
+						/>
+						{#if form?.errors?.title}
+							<p class="text-error">{form?.errors?.title[0]}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Body <span class="important-field">*</span></td>
+					<td class="table-data">
+						<textarea
+							name="body"
+							placeholder="Enter body here..."
+							class="input"
+							required
+							bind:value={body}
+							minlength="2"
+							maxlength="150"
+						/>
+					</td>
+				</tr>
+				<!-- <tr>
 				<td>Type <span class=" text-red-600">*</span></td>
 				<td>
 					<select class="select w-full" name="type" placeholder="Select type here...">
@@ -117,24 +112,22 @@
 					</select>
 				</td>
 			</tr> -->
-						<tr>
-							<td>URL</td>
-							<td>
-								<input
-									type="url"
-									name="url"
-									class="health-system-input"
-									placeholder="Enter url here..."
-									bind:value={url}
-								/>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="button-container">
-					<Button size="md" type="submit" text="Submit" variant="primary" />
-				</div>
-			</form>
+				<tr class="tables-row">
+					<td class="table-label">Url</td>
+					<td class="table-data">
+						<input
+							type="url"
+							name="url"
+							class="input"
+							placeholder="Enter url here..."
+							bind:value={url}
+						/>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="btn-container">
+			<Button size="md" type="submit" text="Submit" variant="primary" />
 		</div>
-	</div>
+	</form>
 </div>

@@ -3,6 +3,7 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
+	import Button from '$lib/components/button/button.svelte';
 
 	////////////////////////////////////////////////////////
 
@@ -26,7 +27,7 @@
 	let tags = tags_.join(', ');
 	let careplanCategory = carePlan.Category.Type;
 
-	console.log("careplan",carePlan)
+	console.log('careplan', carePlan);
 	const breadCrumbs = [
 		{
 			name: 'Careplans',
@@ -63,74 +64,62 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
-<div class="px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-2">
-		<button
-			onclick={exportCareplan}
-			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
-			>Export</button
-		>
-		<a
-			href={schedulingRoute}
-			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
-		>
-			<span>Scheduling</span>
-		</a>
-		<a
-			href={editRoute}
-			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
-		>
-			<Icon icon="material-symbols:edit-outline" />
-			<span>Edit</span>
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<h2 class="form-titles">View Careplan</h2>
+		<a href={healthSystemRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
 		</a>
 	</div>
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<table class="health-system-table">
-				<thead>
-					<tr>
-						<th>View Care Plan</th>
-						<th class="text-end">
-							<a href={healthSystemRoute} class=" cancel-btn">
-								<Icon icon="material-symbols:close-rounded" class="" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Name</td>
-						<td>{carePlanName}</td>
-					</tr>
-					<tr>
-						<td>Code</td>
-						<td>{code}</td>
-					</tr>
-					<tr>
-						<td>Category</td>
-						<td>{careplanCategory}</td>
-					</tr>
-					<tr>
-						<td>Description</td>
-						<td>{description}</td>
-					</tr>
-					<tr>
-						<td>Version</td>
-						<td>{version}</td>
-					</tr>
-					<tr>
-						<td>Tags</td>
-						<td>
-							{#if tags.length <= 0}
-								<span class="span">Tags not specified</span>
-							{:else}
-								<span class="span">{tags}</span>
-							{/if}
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<td class="table-label">Name</td>
+				<td class="table-data">{carePlanName}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Code</td>
+				<td class="table-data">{code}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Category</td>
+				<td class="table-data">{careplanCategory}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Description</td>
+				<td class="table-data">{description}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Version</td>
+				<td class="table-data">{version}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Tags</td>
+				<td class="table-data">
+					{#if tags.length <= 0}
+						<span>Tags not specified</span>
+					{:else}
+						<span>{tags}</span>
+					{/if}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div class="btn-container flex flex-wrap justify-end gap-2 pt-4">
+		<Button
+			onclick={exportCareplan}
+			text="Export"
+			variant="primary"
+			iconBefore="material-symbols:download"
+		/>
+		<Button
+			href={schedulingRoute}
+			text="Scheduling"
+			variant="primary"
+			iconBefore="material-symbols:schedule"
+		/>
+		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" />
 	</div>
 </div>
