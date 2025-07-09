@@ -141,7 +141,7 @@
 					<Label text="Appointment Type" />
 					<td class="table-data">
 						<select name="appointmentType" class="input" bind:value={appointmentType}>
-							<option disabled selected>Select appointment type</option>
+							<!-- <option disabled selected>Select appointment type</option> -->
 							<option>Doctor</option>
 							<option>Lab</option>
 							<option>Physiotherapy</option>

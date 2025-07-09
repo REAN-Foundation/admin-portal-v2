@@ -17,7 +17,7 @@
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let name = $state('');
+	let name = $state(undefined);
 	let description = $state('');
 	let meditationType = $state('Mindfulness');
 	let recommendedDurationMin = $state<number>();
@@ -131,28 +131,23 @@
 					</td>
 				</tr>
 
-				<tr class="tables-row">
-					<Label text="Meditation Type" />
-					<td class="table-data">
-						<select
-							class="input {errors?.MeditationType ? 'input-text-error' : ''}"
-							bind:value={meditationType}
-							name="meditationType"
-						>
-							<option disabled value>Select meditation type</option>
-							<option>Mindfulness</option>
-							<option>Spiritual</option>
-							<option>Focused</option>
-							<option>Mantra</option>
-							<option>Progressive relaxation</option>
-							<option>Transcendental</option>
-							<option>Visualization</option>
-						</select>
-						{#if errors?.MeditationType}
-							<p class="error-text">{errors?.MeditationType}</p>
-						{/if}
-					</td>
-				</tr>
+        <tr class="tables-row">
+          <td class="table-label">Meditation Type</td>
+          <td class="table-data">
+            <select class="input" bind:value={meditationType}>
+              <option>Mindfulness</option>
+              <option>Spiritual</option>
+              <option>Focused</option>
+              <option>Mantra</option>
+              <option>Progressive relaxation</option>
+              <option>Transcendental</option>
+              <option>Visualization</option>
+            </select>
+            {#if errors?.MeditationType}
+              <p class="error-text">{errors?.MeditationType}</p>
+            {/if}
+          </td>
+        </tr>
 
 				<tr class="tables-row">
 					<Label text="Recommended Duration (min)" />

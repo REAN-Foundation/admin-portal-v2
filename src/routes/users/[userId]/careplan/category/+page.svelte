@@ -163,7 +163,7 @@
 						<input
 							type="text"
 							name="categoryType"
-							placeholder="Search by name"
+							placeholder="Search by type"
 							bind:value={categoryType}
 							oninput={(event) => onSearchInput(event)}
 							class="table-input-field !pr-4 !pl-10"

@@ -139,13 +139,12 @@
 				</tr>
 			</tbody>
 		</table>
-
 		<div class="btn-container">
-			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
+			<Button type="button" text="Reset" variant="primary" onclick={handleReset} />
 			{#await promise}
-				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
 			{:then data}
-				<Button size="md" type="submit" text="Submit" variant="primary" />
+				<Button type="submit" text="Submit" variant="primary" />
 			{/await}
 		</div>
 	</form>

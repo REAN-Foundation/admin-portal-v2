@@ -70,54 +70,53 @@
 			<Icon icon="material-symbols:close-rounded" />
 		</a>
 	</div>
-
 	<table class="w-full">
 		<tbody>
 			<tr class="tables-row">
-				<Label text="Title" />
+				<td class="table-label">Title</td>
 				<td class="table-data">{title}</td>
 			</tr>
 			<tr class="tables-row">
-				<Label text="Description" />
+				<td class="table-label">Description</td>
 				<td class="table-data">{description}</td>
 			</tr>
 			<tr class="tables-row">
-				<Label text="Display Code" />
+				<td class="table-label">Display code</td>
 				<td class="table-data">{displayCode}</td>
 			</tr>
 			<tr class="tables-row">
-				<Label text="Type" />
+				<td class="table-label">Type</td>
 				<td class="table-data">{type}</td>
 			</tr>
 			<tr class="tables-row">
-				<Label text="Provider" />
+				<td class="table-label">Provider</td>
 				<td class="table-data">{provider}</td>
 			</tr>
 			<tr class="tables-row">
-				<Label text="Provider Assessment Code" />
+				<td class="table-label">Provider Assessment Code</td>
 				<td class="table-data">{providerAssessmentCode}</td>
 			</tr>
 			<tr class="tables-row">
-				<Label text="Serve List Node Children At Once" />
+				<td class="table-label">Serve List Node Children At Once</td>
 				<td class="table-data">{serveListNodeChildrenAtOnce}</td>
 			</tr>
 			<tr class="tables-row">
-				<Label text="Scoring Applicable" />
+				<td class="table-label">Scoring Applicable</td>
 				<td class="table-data">{scoringApplicable}</td>
 			</tr>
 			<tr class="tables-row">
-				<Label text="Tags" />
+				<td class="table-label">Tags</td>
 				<td class="table-data">
 					{#if tags.length <= 0}
-						<span class="span">Tags not specified</span>
+						<span>Tags not specified</span>
 					{:else}
-						<span class="span">{tags}</span>
+						<span>{tags}</span>
 					{/if}
 				</td>
 			</tr>
 			<tr class="tables-row">
-				<Label text="Nodes" />
-				<td class="table-data align-top">
+				<td class="table-label align-top">Nodes</td>
+				<td class="table-data">
 					{#if assessmentNodes.length <= 1}
 						<div>Nodes are not available</div>
 					{:else}
@@ -127,15 +126,10 @@
 			</tr>
 		</tbody>
 	</table>
+	<div class="btn-container">
+		<Button href={nodeRoute} text="Add node" variant="primary" />
 
-	<div class="btn-container mt-4 flex flex-wrap justify-end gap-2">
-		<Button href={nodeRoute} text="Add Node" variant="primary" />
-		<Button
-			href={editRoute}
-			text="Edit"
-			variant="primary"
-			iconBefore="material-symbols:edit-outline"
-			iconSize="md"
-		/>
+		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
+		></Button>
 	</div>
 </div>

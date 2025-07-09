@@ -63,7 +63,6 @@ export const GET = async (event: RequestEvent) => {
 
 export const PUT = async (event: RequestEvent) => {
     try {
-        console.log("Inside health system server PUT endpoints");
         const sessionId = event.locals?.sessionUser?.sessionId;
 
         if (!sessionId) {
@@ -74,7 +73,6 @@ export const PUT = async (event: RequestEvent) => {
         const request = event.request;
         const data: AssessmentTemplateUpdateModel = await request.json();
 
-        console.log("data", data);
         const validationResult = createOrUpdateSchema.safeParse(data);
         if (!validationResult.success) {
             return ResponseHandler.success({
@@ -85,7 +83,6 @@ export const PUT = async (event: RequestEvent) => {
             });
         }
 
-        console.log("validationResult", validationResult);
         const response = await updateAssessmentTemplate(
             sessionId,
             templateId,

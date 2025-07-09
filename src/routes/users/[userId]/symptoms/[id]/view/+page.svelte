@@ -77,9 +77,9 @@
 				</td>
 			</tr>
 			<tr class="tables-row">
-				<Label text="Image" />
+				<td class="table-label align-top">Image</td>
 				<td class="table-data">
-					{#if imageUrl == 'undefined' || imageUrl == null}
+					{#if imageUrl == undefined || imageUrl == null}
 						Not specified
 					{:else}
 						<Image cls="flex h-24 w-24 rounded-lg" source={imageUrl} w="24" h="24" />
@@ -88,4 +88,14 @@
 			</tr>
 		</tbody>
 	</table>
+	<div class="btn-container">
+		<Button
+			size="md"
+			href={editRoute}
+			text="Edit"
+			variant="primary"
+			iconBefore="mdi:edit"
+			iconSize="md"
+		/>
+	</div>
 </div>

@@ -76,27 +76,27 @@
 	<table class="w-full">
 		<tbody>
 			<tr class="tables-row">
-				<Label text="Name" />
+				<td class="table-label">Name</td>
 				<td class="table-data">{carePlanName}</td>
 			</tr>
 			<tr class="tables-row">
-				<Label text="Code" />
+				<td class="table-label">Code</td>
 				<td class="table-data">{code}</td>
 			</tr>
 			<tr class="tables-row">
-				<Label text="Category" />
+				<td class="table-label">Category</td>
 				<td class="table-data">{careplanCategory}</td>
 			</tr>
 			<tr class="tables-row">
-				<Label text="Description" />
+				<td class="table-label">Description</td>
 				<td class="table-data">{description}</td>
 			</tr>
 			<tr class="tables-row">
-				<Label text="Version" />
+				<td class="table-label">Version</td>
 				<td class="table-data">{version}</td>
 			</tr>
 			<tr class="tables-row">
-				<Label text="Tags" />
+				<td class="table-label">Tags</td>
 				<td class="table-data">
 					{#if tags.length <= 0}
 						<span>Tags not specified</span>
@@ -108,16 +108,19 @@
 		</tbody>
 	</table>
 
-	<div class="btn-container mt-4 flex flex-wrap justify-end gap-2">
-		<Button onclick={exportCareplan} text="Export" variant="primary" size="md" />
-		<Button href={schedulingRoute} text="Scheduling" variant="primary" size="md" />
+	<div class="btn-container flex flex-wrap justify-end gap-2 pt-4">
 		<Button
-			href={editRoute}
-			text="Edit"
-			iconBefore="material-symbols:edit-outline"
-			iconSize="md"
+			onclick={exportCareplan}
+			text="Export"
 			variant="primary"
-			size="md"
+			iconBefore="material-symbols:download"
 		/>
+		<Button
+			href={schedulingRoute}
+			text="Scheduling"
+			variant="primary"
+			iconBefore="material-symbols:schedule"
+		/>
+		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" />
 	</div>
 </div>

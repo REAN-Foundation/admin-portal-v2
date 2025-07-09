@@ -17,7 +17,7 @@
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let name = $state('');
+	let name = $state(undefined);
 	let description = $state('');
 	let version = $state('');
 	let keywords: string[] = $state([]);

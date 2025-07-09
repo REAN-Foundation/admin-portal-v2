@@ -73,6 +73,7 @@
 			console.log(response);
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				response.Message = 'User role created successfully';
 				toastMessage(response);
 				goto(`${personRoleTypesRoute}/${response?.Data?.RoleType?.id}/view`);
 				return;

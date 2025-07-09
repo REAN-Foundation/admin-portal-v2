@@ -90,11 +90,12 @@
 	const userId = page.params.userId;
 	var promptId = page.params.id;
 	const createRoute = `/users/${userId}/bot-content/prompt-template/create`;
+	const editRoute = `/users/${userId}/bot-content/prompt-template/${promptId}/edit`;
 	const promptRoutes = `/users/${userId}/bot-content/prompt-template`;
 
 	const breadCrumbs = [
 		{ name: 'Prompt Template', path: promptRoutes },
-		{ name: 'Edit', path: createRoute }
+		{ name: 'Edit', path: editRoute }
 	];
 
 	const handleReset = () => {

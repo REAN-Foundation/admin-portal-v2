@@ -99,16 +99,16 @@
 			if (!file) return;
 
 			// Check file size (50MB limit)
-			const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB in bytes
+			const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
 			if (file.size > MAX_FILE_SIZE) {
-				showMessage(`File size exceeds 50MB limit. Please select a smaller file.`, 'error');
+				showMessage(`File size exceeds 10MB limit. Please select a smaller file.`, 'error');
 				e.target.value = ''; // Clear the file input
 				return;
 			}
 
 			fileName = file.name;
 			selectFile = file;
-			
+
 			let reader = new FileReader();
 			reader.readAsDataURL(file);
 			reader.onload = async (e) => {
@@ -204,6 +204,7 @@
 			const response = await res.json();
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				response.Message = 'Q&A document created successfully';
 				toastMessage(response);
 				goto(`${documentsRoute}/${response?.Data?.id}/view`);
 				return;

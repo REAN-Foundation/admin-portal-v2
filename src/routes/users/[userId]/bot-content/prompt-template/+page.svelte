@@ -221,7 +221,7 @@
 				<table class="table-c min-w-full">
 					<thead>
 						<tr>
-							<th class="w-[5%]"></th>
+							<th class="w-12"></th>
 							<th class="w-[20%]">
 								<button onclick={() => sortTable('Name')}>
 									Name
@@ -245,7 +245,7 @@
 					<tbody>
 						{#if retrivedPrompts.length <= 0}
 							<tr class="text-center">
-								<td colspan="6">No records found</td>
+								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}
 							{#each retrivedPrompts as row, index}

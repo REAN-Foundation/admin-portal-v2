@@ -1,4 +1,4 @@
-import { error, type ServerLoadEvent } from '@sveltejs/kit';
+import { type ServerLoadEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { searchPromptTemplate } from '../../../../api/services/bot-content/prompt-template';
 
@@ -7,11 +7,17 @@ import { searchPromptTemplate } from '../../../../api/services/bot-content/promp
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
 
-	const createdByUserId = event.params.userId;
+	// const createdByUserId = event.params.userId;
 
 	event.depends('app:prompt-template');
 
-	const response = await searchPromptTemplate(sessionId);
+	const response = await searchPromptTemplate(sessionId,
+		{
+            orderBy: "Name",
+            order: "ascending",
+            itemsPerPage: 10
+        }
+	);
 
 	const prompts = response?.Data;
 

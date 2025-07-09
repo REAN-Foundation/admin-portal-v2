@@ -9,8 +9,11 @@
 	import type { VectorStoreCreateModel } from '$lib/types/vector.store.types';
 	import FilePreviewModal from '$lib/components/modal/file.preview.modal.svelte';
 	import Button from '$lib/components/button/button.svelte';
+<<<<<<< HEAD
 	import Label from '$lib/components/label/label.svelte';
 	import Heading from '$lib/components/heading/heading.svelte';
+=======
+>>>>>>> develop
 	///////////////////////////////////////////////////////////////////////////////
 	let { data }: { data: PageServerData } = $props();
 
@@ -114,14 +117,16 @@
 	const viewDocument = async () => {
 		try {
 			const res = await fetch(
-				`/api/server/file-resources/download/${resourceId}?asAttachment=false`
+				`/api/server/documents/file-resources/download/${resourceId}?asAttachment=false`
 			);
 
-			console.log('res', res);
-
 			if (!res.ok) {
-				console.error('Failed to fetch file');
-				toastMessage();
+				const errorText = await res.text();
+				console.error('Failed to fetch file:', errorText);
+				toastMessage({
+					Status: 'error',
+					Message: 'Failed to fetch document'
+				});
 				return;
 			}
 
@@ -129,10 +134,23 @@
 			fileType = mimeType;
 
 			const blob = await res.blob();
+
+			if (blob.size === 0) {
+				toastMessage({
+					Status: 'error',
+					Message: 'Document is empty'
+				});
+				return;
+			}
+
 			fileUrl = URL.createObjectURL(blob);
 			showModal = true;
 		} catch (error) {
-			toastMessage();
+			console.error('Error viewing document:', error);
+			toastMessage({
+				Status: 'error',
+				Message: 'Error viewing document'
+			});
 		}
 	};
 
@@ -146,14 +164,37 @@
 
 <!-- Rendering breadcrumbs component -->
 <BreadCrumbs crumbs={breadCrumbs} />
+<<<<<<< HEAD
 <div class="mx-auto w-full px-6 py-4">
 	<div class="form-headers">
 		<Heading text="View Document" />
 		<a href={documentRoute} class="cancel-btn">
 			<Icon icon="material-symbols:close-rounded" />
+=======
+
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<h2 class="form-titles">View Document</h2>
+		<a href={documentRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
 		</a>
 	</div>
+	<!-- <div class="flex flex-wrap justify-end gap-2 py-2">
+		<a href={editRoute} class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
+			<Icon icon="material-symbols:edit-outline" class="mr-1" />
+			<span>Edit</span>
+>>>>>>> develop
+		</a>
+	</div> -->
+	<table class="w-full">
+		<tbody>
+			<!-- Rows displaying document details -->
+			<tr class="tables-row">
+				<td class="table-label">Name</td>
+				<td class="table-data">{name}</td>
+			</tr>
 
+<<<<<<< HEAD
 	<table class="w-full">
 		<tbody>
 			<tr class="tables-row">
@@ -236,7 +277,85 @@
 		{:then data}
 			<Button type="submit" text="Publish" variant="primary" />
 		{/await}
+=======
+			<tr class="tables-row">
+				<td class="table-label">Description</td>
+				<td class="table-data">{description}</td>
+			</tr>
+
+			<tr class="tables-row">
+				<td class="table-label">File Name</td>
+				<td class="table-data"
+					>{fileName}
+					<Button
+						text="Open with Document Viewer"
+						type="button"
+						variant="primary"
+						onclick={viewDocument}
+						className="ml-2"
+						size="sm"
+					/>
+				</td>
+			</tr>
+
+			<tr class="tables-row">
+				<td class="table-label">Keywords </td>
+				<td class="table-data">{keywords}</td>
+			</tr>
+
+			<tr class="tables-row">
+				<td class="table-label">Document Type</td>
+				<td class="table-data">{documentType}</td>
+			</tr>
+
+			<!-- <tr class="tables-row">
+						<td>Source</td>
+						<td>{source}</td>
+					</tr> -->
+			<!-- <tr class="tables-row">
+							<td>Parent Document</td>
+							<td>{parentDocument}</td>
+						</tr> -->
+
+			<tr class="tables-row">
+				<td class="table-label">Version</td>
+				<td class="table-data">{parentDocumentVersion}</td>
+			</tr>
+
+			<tr class="tables-row">
+				<td class="table-label">Active</td>
+				<td class="table-data">{isActive}</td>
+			</tr>
+
+			<tr class="tables-row">
+				<td class="table-label">Chunking Strategy</td>
+				<td class="table-data">{chunkingStrategy}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Chunking Length</td>
+				<td class="table-data">{chunkingLength}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Chunking Overlap</td>
+				<td class="table-data">{chunkOverlap}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Splitter</td>
+				<td class="table-data">{splitter}</td>
+			</tr>
+			<!-- <tr class="tables-row">
+						<td>Last Updated</td>
+						<td>{createdBy}</td>
+					</tr> -->
+		</tbody>
+	</table>
+
+	<div class=" btn-container">
+		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
+		></Button>
+>>>>>>> develop
 	</div>
 
 	<FilePreviewModal {showModal} {fileUrl} {fileType} {closeModal} />
 </div>
+<FilePreviewModal {showModal} {fileUrl} {fileType} {closeModal} />

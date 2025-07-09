@@ -76,6 +76,7 @@
 			const response = await res.json();
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				response.Message = 'User role updated successfully';
 				toastMessage(response);
 				goto(`${personRoleTypesRoute}/${response?.Data?.RoleType?.id}/view`);
 				return;
@@ -129,7 +130,6 @@
 				</tr>
 			</tbody>
 		</table>
-
 		<div class="btn-container">
 			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
 			{#await promise}

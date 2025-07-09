@@ -18,13 +18,13 @@
 	let { data, form } = $props();
 
 	let errors: Record<string, string> = $state({});
-	let name = $state('');
+	let name = $state(undefined);
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
-	let code = $state('');
-	let categoryId = $state('');
-	let description = $state('');
-	let version = $state('');
+	let code = $state(undefined);
+	let categoryId = $state(undefined);
+	let description = $state(undefined);
+	let version = $state(undefined);
 	let promise = $state();
 	let careplanCategories = $state(data.careplanCategories);
 

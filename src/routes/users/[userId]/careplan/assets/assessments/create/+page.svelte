@@ -18,10 +18,10 @@
 	let { data, form } = $props();
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let name = $state('');
+	let name = $state(undefined);
 	let description = $state('');
 	let template = $state('');
-	let referenceTemplateCode = $state('');
+	let referenceTemplateCode = $state(undefined);
 	let version = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
@@ -46,6 +46,18 @@
 		try {
 			event.preventDefault();
 			errors = {};
+			if (assessmentTemplates.length === 0) {
+				errors = {
+					ReferenceTemplateCode: 'No assessmentavailable. Please create clinical assessments first.'
+				};
+				return;
+			}
+			if (!referenceTemplateCode || referenceTemplateCode.trim() === '') {
+				errors = {
+					ReferenceTemplateCode: 'Please select a reference assessment from the dropdown.'
+				};
+				return;
+			}
 
 			const assessmentCreateModel: AssessmentCreateModel = {
 				Name: name,
@@ -82,6 +94,7 @@
 				toastMessage(response);
 				// console.log('Full response:', response);
 				goto(`${assessmentRoute}/${response?.Data?.id}/view`);
+				return;
 			}
 			if (response.Errors) {
 				errors = response?.Errors || {};
@@ -168,24 +181,36 @@
 					</td>
 				</tr>
 				<tr class="tables-row">
-					<td class="table-label">Reference Template<span class="important-field">*</span></td>
-					<td class="table-data">
-						<select
-							bind:value={referenceTemplateCode}
-							class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
-						>
-							<option disabled selected value="">Select reference template here...</option>
-							{#each assessmentTemplates as template}
-								<option value={template.DisplayCode}>{template.Title}</option>
-							{/each}
-						</select>
-						{#if errors?.ReferenceTemplateCode}
-							<p class="error-text">{errors?.ReferenceTemplateCode}</p>
-						{/if}
-					</td>
-				</tr>
+	<td class="table-label">Reference Assessment<span class="important-field">*</span></td>
+	<td class="table-data">
+		{#if assessmentTemplates.length === 0}
+			<div class="flex items-center space-x-4">
+				<Button 
+					type="button" 
+					text="Add Assessment" 
+					variant="primary" 
+					onclick={() => goto(`/users/${userId}/assessment-templates/create`)}
+				/>
+				<div class="error-text">No assessment available</div>
+			</div>
+		{:else}
+			<select
+				bind:value={referenceTemplateCode}
+				class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
+			>
+				<!-- <option disabled selected value="">Select reference assessment here...</option> -->
+				{#each assessmentTemplates as template}
+					<option value={template.DisplayCode}>{template.Title}</option>
+				{/each}
+			</select>
+			{#if errors?.ReferenceTemplateCode}
+				<p class="error-text">{errors?.ReferenceTemplateCode}</p>
+			{/if}
+		{/if}
+	</td>
+</tr>
 
-				<tr class="tables-row">
+<tr class="tables-row">
 					<td class="table-label">Tags</td>
 					<td class="table-data">
 						<InputChips bind:keywords name="keywords" id="keywords" />
@@ -209,11 +234,11 @@
 		</table>
 
 		<div class="btn-container">
-			{#await promise}
-				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
-			{:then data}
-				<Button type="submit" text="Submit" variant="primary" />
-			{/await}
+            {#await promise}
+                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+            {:then data}
+                <Button type="submit" text="Submit" variant="primary" disabled={assessmentTemplates.length === 0} />
+            {/await}
 		</div>
 	</form>
 </div>

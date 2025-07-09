@@ -8,6 +8,7 @@
 	import { createOrUpdateSchema } from '$lib/validation/knowledge.nuggets.schema';
 	import type { KnowledgeNuggetsUpdateModel } from '$lib/types/knowledge.nuggets.types';
 	import InputChips from '$lib/components/input-chips.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -105,8 +106,8 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-		});
+		keywordsStr = keywords?.join(', ');
+	});
 
 	function addResource() {
 		additionalResources = newResource
@@ -117,118 +118,103 @@
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th>Edit Knowledge Nugget</th>
-							<th class="text-end">
-								<a href={viewRoute} class="cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Name <span class=" text-red-600">*</span></td>
-							<td>
-								<input
-									type="text"
-									name="topicName"
-									required
-									bind:value={topicName}
-									placeholder="Enter name here..."
-									class="input {form?.errors?.topicName ? 'input-text-error' : ''}"
-								/>
-								{#if form?.errors?.topicName}
-									<p class="text-error">{form?.errors?.topicName[0]}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Brief Information</td>
-							<td>
-								<textarea
-									name="briefInformation"
-									bind:value={briefInformation}
-									placeholder="Enter  brief information here..."
-									class="input {form?.errors?.briefInformation
-										? 'input-text-error'
-										: ''}"
-								></textarea>
-								{#if form?.errors?.briefInformation}
-									<p class="text-error">{form?.errors?.briefInformation[0]}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Detailed Information</td>
-							<td>
-								<textarea
-									name="detailedInformation"
-									bind:value={detailedInformation}
-									placeholder="Enter detailed information here..."
-									class="input {form?.errors?.detailedInformation
-										? 'input-text-error'
-										: ''}"
-								></textarea>
-								{#if form?.errors?.detailedInformation}
-									<p class="text-error">{form?.errors?.detailedInformation[0]}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Additional Resources</td>
-							<td>
-								<input
-									onchange={addResource}
-									type="text"
-									name="additionalResources"
-									bind:value={newResource}
-									class="input"
-									placeholder="Enter additional resource here..."
-								/>
-								{#if form?.errors?.additionalResources}
-									<p class="text-error">{form?.errors?.additionalResources[0]}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td class="align-top">Tags</td>
-							<td>
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-									/>
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								{#if form?.errors?.tags}
-									<p class="text-error">{form?.errors?.tags[0]}</p>
-								{/if}
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="button-container">
-					<button
-						type="button"
-						onclick={handleReset}
-						class="table-btn variant-soft-secondary">Reset</button
-					>
-					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit Knowledge Nugget</h2>
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Name <span class="important-field">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="topicName"
+							placeholder="Enter name here..."
+							bind:value={topicName}
+							class="input {form?.errors?.topicName ? 'input-text-error' : ''}"
+							required
+						/>
+						{#if form?.errors?.topicName}
+							<p class="error-text">{form?.errors?.topicName[0]}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Brief Information</td>
+					<td class="table-data">
+						<textarea
+							name="briefInformation"
+							class="input resize-none {form?.errors?.briefInformation ? 'input-text-error' : ''}"
+							bind:value={briefInformation}
+							placeholder="Enter brief information here..."
+						></textarea>
+						{#if form?.errors?.briefInformation}
+							<p class="error-text">{form?.errors?.briefInformation[0]}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Detailed Information</td>
+					<td class="table-data">
+						<textarea
+							name="detailedInformation"
+							class="input resize-none {form?.errors?.detailedInformation
+								? 'input-text-error'
+								: ''}"
+							bind:value={detailedInformation}
+							placeholder="Enter detailed information here..."
+						></textarea>
+						{#if form?.errors?.detailedInformation}
+							<p class="error-text">{form?.errors?.detailedInformation[0]}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Additional Resources</td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="additionalResources"
+							class="input {form?.errors?.additionalResources ? 'input-text-error' : ''}"
+							placeholder="Enter additional resource here..."
+							bind:value={newResource}
+							onchange={addResource}
+						/>
+						{#if form?.errors?.additionalResources}
+							<p class="error-text">{form?.errors?.additionalResources[0]}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label align-top">Tags</td>
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						{#if form?.errors?.tags}
+							<p class="error-text">{form?.errors?.tags[0]}</p>
+						{/if}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container">
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>

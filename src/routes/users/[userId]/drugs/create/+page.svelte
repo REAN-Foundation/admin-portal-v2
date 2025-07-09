@@ -194,12 +194,11 @@
 				</tr>
 			</tbody>
 		</table>
-
 		<div class="btn-container">
 			{#await promise}
-				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
 			{:then data}
-				<Button type="submit" text="Submit" variant="primary" />
+				<Button size="md" type="submit" text="Submit" variant="primary" />
 			{/await}
 		</div>
 	</form>

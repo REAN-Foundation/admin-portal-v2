@@ -17,7 +17,7 @@
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let categoryType = $state(data.careplanCategory.Type);
-	let categoryDescription = $state(data.careplanCategory.Description);
+	let categoryDescription = $state(data.careplanCategory.Description || undefined);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	const userId = page.params.userId;

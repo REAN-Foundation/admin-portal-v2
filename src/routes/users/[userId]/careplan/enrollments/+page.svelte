@@ -19,8 +19,6 @@
 	let enrollment = $state(data.enrollments.Items);
 	let retrivedEnrollments = $derived(enrollment);
 	let searchKeyword = $state(undefined);
-	let promise = $state();
-	let hasSearchResults = $state(true);
 
 	const userId = page.params.userId;
 	const enrollmentsRoute = () => `/users/${userId}/careplan/enrollments`;
@@ -219,8 +217,16 @@
 							placeholder="Search by careplan"
 							class="table-input-field !pr-10 !pl-10"
 						/>
+						
 						{#if carePlan}
-							<button type="button" onclick={() => (carePlan = '')} class="close-btn">
+							<button
+								type="button"
+								onclick={() => {
+									carePlan = '';
+									onSearchInput({ target: { name: 'name', value: '' } }, 'carePlan');
+								}}
+								class="close-btn"
+							>
 								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
@@ -240,7 +246,14 @@
 							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if displayId}
-							<button type="button" onclick={() => (displayId = '')} class="close-btn">
+							<button
+								type="button"
+								onclick={() => {
+									displayId = '';
+									onSearchInput({ target: { name: 'name', value: '' } }, 'displayId');
+								}}
+								class="close-btn"
+							>
 								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
@@ -257,11 +270,18 @@
 								oninput={(event) => onSearchInput(event, 'startDate')}
 								class="table-input-field pr-4 pl-10"
 							/>
-							<!-- {#if startDate}
-								<button type="button" onclick={() => (startDate = '')} class="close-btn">
-									<Icon icon="material-symbols:close" class="ml-6 text-gray-500" />
-								</button>
-							{/if} -->
+							{#if startDate}
+							<button
+								type="button"
+								onclick={() => {
+									startDate = '';
+									onSearchInput({ target: { name: 'name', value: '' } }, 'startDate');
+								}}
+								class="close-btn"
+							>
+								<!-- <Icon icon="material-symbols:close" /> -->
+							</button>
+						{/if}
 						</div>
 					</div>
 
@@ -276,11 +296,18 @@
 								oninput={(event) => onSearchInput(event, 'endDate')}
 								class="table-input-field pr-4 pl-10"
 							/>
-							<!-- {#if endDate}
-								<button type="button" onclick={() => (endDate = '')} class="close-btn">
-									<Icon icon="material-symbols:close" />
-								</button>
-							{/if} -->
+							{#if endDate}
+							<button
+								type="button"
+								onclick={() => {
+									endDate = '';
+									onSearchInput({ target: { name: 'name', value: '' } }, 'endDate');
+								}}
+								class="close-btn"
+							>
+								<!-- <Icon icon="material-symbols:close" /> -->
+							</button>
+						{/if}
 						</div>
 					</div>
 				</div>

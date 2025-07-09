@@ -17,9 +17,9 @@
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let name = $state('');
+	let name = $state(undefined);
 	let description = $state('');
-	let messageType = $state('Unknown');
+	let messageType =  $state('Educational');
 	let templateName = $state('');
 	let pathUrl = $state(undefined);
 	let version = $state('');
@@ -164,7 +164,7 @@
 							bind:value={messageType}
 							name="messageType"
 						>
-							<option disabled value>Select message type</option>
+							
 							<option>Educational</option>
 							<option>Status</option>
 							<option>Unknown</option>

@@ -121,7 +121,6 @@
 				</tr>
 			</tbody>
 		</table>
-
 		<div class="btn-container">
 			{#await promise}
 				<Button type="submit" text="Submitting" variant="primary" disabled={true} />

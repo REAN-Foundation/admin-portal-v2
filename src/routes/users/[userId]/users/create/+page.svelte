@@ -142,7 +142,6 @@
 					<Label text="First Name" required={true} />
 					<td class="table-data">
 						<Input
-							name="firstName"
 							type="text"
 							placeholder="Enter first name here..."
 							bind:value={firstName}
@@ -180,26 +179,6 @@
 								class="input"
 							/>
 						</div>
-						{#if errors?.Phone}
-							<p class="text-error">{errors?.Phone}</p>
-						{/if}
-					</td>
-				</tr>
-
-				<tr class="tables-row">
-					<Label text="Email" required={true} />
-					<td class="table-data">
-						<Input
-							name="email"
-							type="email"
-							placeholder="Enter email here..."
-							bind:value={email}
-							error={errors?.Email}
-						/>
-					</td>
-				</tr>
-				<tr class="tables-row">
-					<Label text="Role" required={true} />
 					<td class="table-data">
 						<select
 							name="role"

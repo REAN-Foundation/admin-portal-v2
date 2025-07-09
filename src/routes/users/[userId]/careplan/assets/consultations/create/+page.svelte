@@ -17,7 +17,7 @@
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let name = $state('');
+	let name = $state(undefined);
 	let description = $state('');
 	let version = $state('');
 	let consultationType = $state('Tele-consultation');
@@ -133,7 +133,7 @@
 					<Label text="Consultation Type" />
 					<td class="table-data">
 						<select class="input" bind:value={consultationType}>
-							<option disabled value>Select Consultation type</option>
+							<!-- <option disabled value>Select Consultation type</option> -->
 							<option>Tele-consultation</option>
 							<option>Visit-consultation</option>
 							<option>Other</option>

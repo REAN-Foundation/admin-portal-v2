@@ -3,12 +3,10 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Image from '$lib/components/image.svelte';
 	import Icon from '@iconify/svelte';
-	import InputChip from '$lib/components/input-chips.svelte';
 	import type { PageServerData } from './$types';
-	import { enhance } from '$app/forms';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
-	import type { SymptomUpdateModel } from '$lib/types/symptoms.types';
+	import type { SymptomUpdateModel, SymptomUploadModel } from '$lib/types/symptoms.types';
 	import { createOrUpdateSchema } from '$lib/validation/symptoms.schema';
 	import InputChips from '$lib/components/input-chips.svelte';
 	import Button from '$lib/components/button/button.svelte';
@@ -21,7 +19,6 @@
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
-	const MAX_FILE_SIZE = 1024 * 150;
 	let symptomImage = $state();
 
 	let errors: Record<string, string> = $state({});
@@ -70,68 +67,63 @@
 		}
 	];
 
+	let fileName = $state('');
+	const formData = new FormData();
+
 	const onFileSelected = async (e) => {
-		let file = e.target.files[0];
-		const fileSize = file.size;
-		if (fileSize > MAX_FILE_SIZE) {
-			errorMessage.Text = 'File should be less than 150 KB';
-			errorMessage.Colour = 'text-error-500';
-			symptomImage.value = null;
+		const input = e.target as HTMLInputElement;
+		const file = input.files?.[0];
+		fileName = file.name;
+
+		const fileCreateModel: SymptomUploadModel = {
+			UploadFile: file,
+			FileName: file.name,
+			FileType: file.type
+		};
+
+		const fileValidationResult = imageUploadSchema.safeParse(fileCreateModel);
+
+		if (!fileValidationResult.success) {
+			errors = Object.fromEntries(
+				Object.entries(fileValidationResult.error.flatten().fieldErrors).map(([key, val]) => [
+					key,
+					val?.[0] || 'This field is required'
+				])
+			);
 			return;
 		}
 
-		errorMessage.Text = 'Please wait, file upload is in progress';
-		errorMessage.Colour = 'text-error-500';
-
-		const formData = new FormData();
 		formData.append('file', file);
 		formData.append('filename', file.name);
-
-		try {
-			const res = await fetch(`/api/server/file-resources/upload/reancare`, {
-				// 	headers: {
-				// 	'Content-Type': 'application/json',
-				// 	Accept: 'application/json',
-				// },
-				method: 'POST',
-				body: formData
-			});
-
-			if (!res.ok) {
-				const errorText = await res.text();
-				throw new Error(errorText);
-			}
-
-			const response = await res.json();
-
-			if (response.Status === 'success' && response.HttpCode === 201) {
-				errorMessage.Text = 'File uploaded successfully';
-				errorMessage.Colour = 'text-success-500';
-				const imageUrl = response.Data.FileResources[0].url;
-				// console.log('imageResourceId', imageUrl);
-				const imageResourceId_ = response.Data.FileResources[0].id;
-				// console.log('ImageResource', imageResourceId_);
-				if (imageResourceId_) {
-					imageResourceId = imageResourceId_;
-					return true;
-				}
-				console.log(imageResourceId);
-			} else {
-				errorMessage.Text = response.Message;
-				errorMessage.Colour = 'text-error-500';
-			}
-		} catch (error) {
-			console.error('Error uploading file:', error);
-			errorMessage.Text = 'Error uploading file: ' + error.message;
-			errorMessage.Colour = 'text-error-500';
-		}
 	};
 
-	$inspect('this is keywords', keywords);
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
 			errors = {};
+
+				if (formData.has('file')) {
+				const fileRes = await fetch(`/api/server/file-resources/upload/reancare`, {
+					method: 'POST',
+					body: formData
+				});
+
+				const fileJson = await fileRes.json();
+
+				if (fileJson.Status === 'success' && fileJson.HttpCode === 201) {
+					const imageResourceId_ = fileJson.Data.FileResources[0].id;
+					if (imageResourceId_) {
+						imageResourceId = imageResourceId_;
+						errorMessage.Text = 'File uploaded successfully';
+						errorMessage.Colour = 'text-success-500';
+						// return true;
+					}
+					console.log(imageResourceId);
+				} else {
+					errorMessage.Text = fileJson.Message;
+					errorMessage.Colour = 'text-error-500';
+				}
+			}
 
 			const symptomUpdateModel: SymptomUpdateModel = {
 				Symptom: symptom,
@@ -141,10 +133,8 @@
 				ImageResourceId: imageResourceId
 			};
 
-			console.log(symptomUpdateModel, 'symptomUpdateModel');
 			const validationResult = createOrUpdateSchema.safeParse(symptomUpdateModel);
 
-			console.log(validationResult, 'validationResult');
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
 					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -247,7 +237,7 @@
 								name="fileinput"
 								type="file"
 								required
-								class="health-system-input"
+								class="input"
 								placeholder="Image"
 								onchange={async (e) => await onFileSelected(e)}
 							/>
@@ -256,7 +246,7 @@
 							<input
 								name="fileinput"
 								type="file"
-								class="health-system-input"
+								class="input"
 								bind:this={symptomImage}
 								placeholder="Image"
 								onchange={async (e) => await onFileSelected(e)}
@@ -273,7 +263,7 @@
 				</tr>
 			</tbody>
 		</table>
-		<div class="btn-container mr-5 mb-2">
+		<div class="btn-container">
 			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
 			{#await promise}
 				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />

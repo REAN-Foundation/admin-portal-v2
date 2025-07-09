@@ -21,7 +21,7 @@
 
 	let tenant = $state(data.tenant);
 	let name = tenant.Name;
-	let description = tenant.Description !== null ? tenant.Description : 'Not specified';
+	let description = tenant.Description !== null && tenant.Description !== '' ? tenant.Description : 'Not specified';
 	let code = tenant.Code;
 	let phone = tenant.Phone;
 	let email = tenant.Email;

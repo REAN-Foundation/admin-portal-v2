@@ -8,19 +8,59 @@
 	} from '$lib/themes/theme.selector';
 	import { showMessage } from '$lib/components/toast/message.utils';
 
-	//////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
+	
+	let showResetPassword  = $state(false);
+	let showForgotPassword  = $state(true);
+	let isLoading = $state(false);
 
-	let showResetPassword = $state(false);
-	let showForgotPassword = $state(true);
-	let email: any = $state(undefined);
-	let resetCode: any= $state(undefined);
-	let newPassword: any= $state(undefined);
-	let confirmPassword: any= $state(undefined);
+	let email = $state('');
+	let resetCode = $state('');
+	let newPassword = $state('');
+	let confirmPassword = $state('');
+	let errors: any = $state({});
+	let emailError = $state('');
 	let loginActiveTab = 'email';
 	let forgotPasswordActiveTab = $state('email');
-	let phone: any= $state(undefined);
-	let countryCode: any= $state(undefined);
-	let errors: any = $state({});
+	let phone = $state('');
+	let countryCode = $state('+1');
+
+	// Enhanced email validation function
+	function validateEmail(email: string): { isValid: boolean; message: string } {
+		if (!email || email.trim().length === 0) {
+			return { isValid: false, message: 'Email is required' };
+		}
+
+		const trimmedEmail = email.trim();
+		
+		// Check length limits
+		if (trimmedEmail.length > 254) {
+			return { isValid: false, message: 'Email address is too long' };
+		}
+
+		// Basic email format check
+		const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+		if (!emailRegex.test(trimmedEmail)) {
+			return { isValid: false, message: 'Please enter a valid email address' };
+		}
+
+		// Check for common invalid patterns
+		if (trimmedEmail.startsWith('.') || trimmedEmail.endsWith('.') || trimmedEmail.includes('..')) {
+			return { isValid: false, message: 'Email address contains invalid characters' };
+		}
+
+		if (trimmedEmail.includes('@.') || trimmedEmail.includes('.@')) {
+			return { isValid: false, message: 'Email address contains invalid characters' };
+		}
+
+		// Check for consecutive dots in domain
+		if (trimmedEmail.split('@')[1]?.includes('..')) {
+			return { isValid: false, message: 'Email domain contains invalid characters' };
+		}
+
+		return { isValid: true, message: '' };
+	}
+
 	const logoImageSource = getPublicLogoImageSource();
 	const footerText = `© ${new Date().getFullYear()} ${getPublicFooterText()}`;
 	const footerLink = getPublicFooterLink();
@@ -60,58 +100,91 @@
 			path: ['confirmPassword']
 		});
 
-	// async function handleForgotPassword() {
-	// 	let requestBody = {
-	// 		Email: email,
-	// 		CountryCode: countryCode,
-	// 		Phone: phone
-	// 	};
-	// 	const response = await fetch(`/api/server/users/send-reset-code`, {
-	// 		method: 'POST',
-	// 		body: JSON.stringify(requestBody),
-	// 		headers: { 'content-type': 'application/json' }
-	// 	});
-	// 	const res = await response.json();
-
-	// 	if (res.Status === 'success') {
-	// 		// toast.success(res.Message);
-	// 		console.log('password reset successfully');
-	// 		showResetPassword = true;
-	// 		showForgotPassword = false;
-	// 	} else {
-	// 		// toast.error(res.Message);
-	// 		console.log('error');
-	// 	}
-	// }
+		const forgotPasswordSchema = z
+	.object({
+		email: z.string().email({ message: 'Please enter a valid email address' }).optional(),
+		phone: z.string().regex(/^\d{10}$/, {
+			message: 'Please enter a valid 10-digit phone number'
+		}).optional(),
+		countryCode: z.string().optional() // only required for phone input
+	})
+	.refine((data) => data.email || data.phone, {
+		message: 'Email or phone is required'
+	})
+	.refine((data) => {
+		if (data.email) {
+			// Additional email validation checks
+			const email = data.email.trim();
+			if (email.length === 0) return false;
+			if (email.length > 254) return false; // RFC 5321 limit
+			if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return false;
+			// Check for common invalid patterns
+			if (email.startsWith('.') || email.endsWith('.') || email.includes('..')) return false;
+			if (email.includes('@.') || email.includes('.@')) return false;
+			return true;
+		}
+		return true;
+	}, {
+		message: 'Please enter a valid email address',
+		path: ['email']
+	});
 
 
 	async function handleForgotPassword() {
-		errors = {};
-		let requestBody = {
-			Email: email,
-			CountryCode: countryCode,
-			Phone: phone
-		};
+        try {
+            isLoading = true;
+            errors = {};
+			emailError = null;
 
-		try {
-			const response = await fetch(`/api/server/users/send-reset-code`, {
-				method: 'POST',
-				body: JSON.stringify(requestBody),
-				headers: { 'content-type': 'application/json' }
-			});
-			const res = await response.json();
-
-			if (res.Status === 'success') {
-				showMessage(res.Message || 'Reset code sent successfully', 'success', false, 3000);
-				showResetPassword = true;
-				showForgotPassword = false;
-			} else {
-				showMessage(res.Message || 'Failed to send reset code', 'error', false, 3000);
-			}
-		} catch (err) {
-			showMessage('Something went wrong. Please try again.', 'error', false, 3000);
-		}
-	}
+            if (forgotPasswordActiveTab === 'email') {
+                if (!email || email.trim().length === 0) {
+                    emailError = 'Email is required';
+                    return;
+                }
+                const emailValidation = validateEmail(email);
+                if (!emailValidation.isValid) {
+                    emailError = emailValidation.message;
+                    return;
+                }
+            }
+            
+            // Enhanced validation for phone tab
+            if (forgotPasswordActiveTab === 'phone') {
+                if (!phone || phone.trim().length === 0) {
+                    emailError = 'Phone number is required';
+                    return;
+                }
+                if (!/^\d{10}$/.test(phone.trim())) {
+                    emailError = 'Please enter a valid 10-digit phone number';
+                    return;
+                }
+            }
+            
+            let requestBody = {
+                Email: email,
+                CountryCode: countryCode,
+                Phone: phone
+            };
+            
+            const response = await fetch(`/api/server/users/send-reset-code`, {
+                method: 'POST',
+                body: JSON.stringify(requestBody),
+                headers: { 'content-type': 'application/json' }
+            });
+            const res = await response.json();
+            if (res.Status === 'success') {
+                showMessage(res.Message || 'Reset code sent successfully', 'success', false, 3000);
+                showResetPassword = true;
+                showForgotPassword = false;
+            } else {
+                emailError = res.Message || 'Failed to send reset code';
+            }
+        } catch (err) {
+            emailError = 'Something went wrong. Please try again.';
+        } finally {
+            isLoading = false;
+        }
+    }
 
 	async function handleResetPassword() {
 		errors = {};
@@ -170,6 +243,11 @@
 								name="loginType"
 								value="email"
 								bind:group={forgotPasswordActiveTab}
+								onchange={() => {
+									emailError = '';
+									email = '';
+									phone = '';
+								}}
 							/> Email
 						</label>
 						<label class="text-md flex items-center">
@@ -179,21 +257,44 @@
 								name="loginType"
 								value="phone"
 								bind:group={forgotPasswordActiveTab}
+								onchange={() => {
+									emailError = '';
+									email = '';
+									phone = '';
+								}}
 							/> Phone
 						</label>
 					</div>
 					{#if forgotPasswordActiveTab === 'email'}
-						<label class="label" for="email">
-							<span class="label-text-alt"></span>
-						</label>
 						<input
-							type="email"
+							type="text"
 							name="email"
-							placeholder="Enter your email"
+							placeholder="Enter your email address"
 							bind:value={email}
-							class="input mb-4"
+							class="input mb-1"
+							onblur={() => {
+								if (email && email.trim()) {
+									const validation = validateEmail(email);
+									if (!validation.isValid) {
+										emailError = validation.message;
+									} else {
+										emailError = '';
+									}
+								}
+							}}
+							oninput={() => {
+								// Clear error when user starts typing
+								if (emailError) {
+									emailError = '';
+								}
+							}}
 						/>
-					
+						{#if emailError}
+							<p class="error-text">{emailError}</p>
+						{/if}
+						{#if email && !emailError && forgotPasswordActiveTab === 'email'}
+							{@const validation = validateEmail(email)}
+						{/if}
 					{/if}
 					{#if forgotPasswordActiveTab === 'phone'}
 						<div class="mb-4 flex gap-2">
@@ -211,12 +312,35 @@
 									bind:value={phone}
 									class="input"
 									placeholder="Enter your mobile number"
+									onblur={() => {
+										if (phone && phone.trim()) {
+											if (!/^\d{10}$/.test(phone.trim())) {
+												emailError = 'Please enter a valid 10-digit phone number';
+											} else {
+												emailError = '';
+											}
+										}
+									}}
+									oninput={() => {
+										// Clear error when user starts typing
+										if (emailError) {
+											emailError = '';
+										}
+									}}
 								/>
 							</div>
 						</div>
+						{#if emailError && forgotPasswordActiveTab === 'phone'}
+							<p class="error-text">{emailError}</p>
+						{/if}
+						{#if phone && !emailError && forgotPasswordActiveTab === 'phone'}
+							{@const isValidPhone = /^\d{10}$/.test(phone.trim())}
+						{/if}
 					{/if}
 				</div>
-				<button type="submit" class="btn mb-6 w-full cursor-pointer">Send Reset Code</button>
+				<button type="submit" class="btn my-4 w-full cursor-pointer" disabled={isLoading}>
+					{isLoading ? 'Sending...' : 'Send Reset Code'}
+				</button>
 				<a href="/">
 					<button
 						type="button"

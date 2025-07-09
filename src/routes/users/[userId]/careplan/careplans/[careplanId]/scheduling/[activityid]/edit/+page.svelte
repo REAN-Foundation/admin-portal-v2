@@ -9,6 +9,7 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import Button from '$lib/components/button/button.svelte';
 	//////////////////////////////////////////////////////////////////////////
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
@@ -168,106 +169,89 @@
 	};
 	onMount(() => {
 		searchAssets({
-				sessionId: data.sessionId,
-				selectedAssetType: assetType
+			sessionId: data.sessionId,
+			selectedAssetType: assetType
 		});
 	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
-
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th>Edit Careplan Activity </th>
-							<th class="text-end">
-								<a href={viewRoute} class=" cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td class="!py-3">Asset Type<span class=" text-red-600">*</span></td>
-							<td>
-								<select
-									name="assetType"
-									bind:value={assetType}
-									class="health-system-input"
-									onchange={onSelectAssetType}
-									required
-								>
-									{#each assetTypes as val}
-										<option value={val}>{val}</option>
-									{/each}
-								</select>
-							</td>
-						</tr>
-
-						<tr>
-							<td>Asset <span class=" text-red-600">*</span></td>
-							<td>
-								<select name="assetId" class=" health-system-input" bind:value={assetId}>
-									{#each items as val}
-										<option value={val.value}>{val.label}</option>
-									{/each}
-								</select>
-								<!-- <input type="text" hidden bind:value={assetId} /> -->
-							</td>
-						</tr>
-						<tr>
-							<td class="!py-3">Time Slot<span class=" text-red-600">*</span></td>
-							<td>
-								<select
-									name="timeSlot"
-									bind:value={timeSlot}
-									class="dark:bg-surface-700 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 dark:border-gray-600 dark:text-black"
-									required
-								>
-									{#each timeSlots as val}
-										<option value={val}>{val}</option>
-									{/each}
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td>Schedule Day<span class=" text-red-600">*</span></td>
-							<td>
-								<input
-									type="number"
-									class="health-system-input {form?.errors?.day ? 'input-text-error' : ''}"
-									name="day"
-									min="1"
-									placeholder="Enter day here..."
-									bind:value={day}
-								/>
-								{#if errors?.Day}
-									<p class="text-error-500 text-xs">{errors?.Day}</p>
-								{/if}
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="button-container">
-					<button
-						type="button"
-						onclick={handleReset}
-						class="health-system-btn variant-soft-secondary">Reset</button
-					>
-					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit Careplan Activity</h2>
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Asset Type <span class="important-field">*</span></td>
+					<td class="table-data">
+						<select
+							name="assetType"
+							bind:value={assetType}
+							class="input"
+							onchange={onSelectAssetType}
+							required
+						>
+							{#each assetTypes as val}
+								<option value={val}>{val}</option>
+							{/each}
+						</select>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Asset <span class="important-field">*</span></td>
+					<td class="table-data">
+						<select name="assetId" class="input" bind:value={assetId}>
+							{#each items as val}
+								<option value={val.value}>{val.label}</option>
+							{/each}
+						</select>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Time Slot <span class="important-field">*</span></td>
+					<td class="table-data">
+						<select name="timeSlot" bind:value={timeSlot} class="input" required>
+							{#each timeSlots as val}
+								<option value={val}>{val}</option>
+							{/each}
+						</select>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Schedule Day <span class="important-field">*</span></td>
+					<td class="table-data">
+						<input
+							type="number"
+							min="1"
+							name="day"
+							bind:value={day}
+							placeholder="Enter day here..."
+							class="input {form?.errors?.day ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.Day}
+							<p class="error-text">{errors?.Day}</p>
+						{/if}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="btn-container">
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>

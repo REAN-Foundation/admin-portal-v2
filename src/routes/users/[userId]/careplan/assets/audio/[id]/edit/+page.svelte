@@ -175,7 +175,6 @@
 				</tr>
 			</tbody>
 		</table>
-
 		<div class="btn-container">
 			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
 			{#await promise}

@@ -60,6 +60,18 @@
 		try {
 			event.preventDefault();
 			errors = {};
+			if (assessmentTemplates.length === 0) {
+				errors = {
+					ReferenceTemplateCode: 'No assessment templates available. Please create clinical assessments first.'
+				};
+				return;
+			}
+			if (!referenceTemplateCode || referenceTemplateCode.trim() === '') {
+				errors = {
+					ReferenceTemplateCode: 'Please select a reference template from the dropdown.'
+				};
+				return;
+			}
 
 			const assessmentUpdateModel: AssessmentUpdateModel = {
 				Name: name,
@@ -177,29 +189,42 @@
 					</td>
 				</tr> -->
 
-				<!-- <tr class="tables-row">
-					<td class="table-label">Reference Template<span class="important-field">*</span></td>
+				<tr class="tables-row">
+					<td class="table-label">Reference Assessment<span class="important-field">*</span></td>
 					<td class="table-data">
-						<select
-							bind:value={referenceTemplateCode}
-							class="input {errors?.TemplateCode ? 'input-text-error' : ''}"
-						>
-							<option value="" disabled selected>
-								{assessmentTemplates?.length > 0 ? 'Select a template' : 'No templates available'}
-							</option>
-							{#each assessmentTemplate as template}
-								<option value={template.DisplayCode}>
-									{template.Title}
+						{#if assessmentTemplates.length === 0}
+							<div class="flex items-center space-x-4">
+							
+								<Button 
+									type="button" 
+									text="Add Assessment" 
+									variant="primary" 
+									onclick={() => goto(`/users/${userId}/assessment-templates/create`)}
+								/>
+								<div class="text-gray-500 italic">No assessment available</div>
+							</div>
+						{:else}
+							<select
+								bind:value={referenceTemplateCode}
+								class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
+							>
+								<option value="" disabled selected>
+									Select a assessment
 								</option>
-							{/each}
-						</select>
-						{#if errors?.TemplateCode}
-							<p class="error-text">{errors?.TemplateCode}</p>
+								{#each assessmentTemplates as template}
+									<option value={template.DisplayCode}>
+										{template.Title}
+									</option>
+								{/each}
+							</select>
+							{#if errors?.ReferenceTemplateCode}
+								<p class="error-text">{errors?.ReferenceTemplateCode}</p>
+							{/if}
 						{/if}
 					</td>
-				</tr> -->
+				</tr>
 
-				<tr class="tables-row">
+				<!-- <tr class="tables-row">
 					<td class="table-label">Reference Template<span class="important-field">*</span></td>
 					<td class="table-data">
 						<select
@@ -215,7 +240,7 @@
 							<p class="error-text">{errors?.ReferenceTemplateCode}</p>
 						{/if}
 					</td>
-				</tr>
+				</tr> -->
 
 				<tr class="tables-row">
 					<Label text="Tags" />
@@ -241,12 +266,12 @@
 		</table>
 
 		<div class="btn-container">
-			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
-			{#await promise}
-				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
-			{:then data}
-				<Button type="submit" text="Submit" variant="primary" />
-			{/await}
+            <Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+            {#await promise}
+                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+            {:then data}
+                <Button type="submit" text="Submit" variant="primary" disabled={assessmentTemplates.length === 0} />
+            {/await}
 		</div>
 	</form>
 </div>
