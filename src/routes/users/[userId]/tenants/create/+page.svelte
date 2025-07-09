@@ -18,6 +18,8 @@
 	let code = $state(undefined);
 	let phone = $state(undefined);
 	let email = $state(undefined);
+	let password = $state(undefined);
+	let username = $state(undefined);
 	let promise = $state();
 
 	data.title = 'Tenants Create';
@@ -40,7 +42,9 @@
 				Description: description,
 				Code: code,
 				Phone: phone,
-				Email: email
+				Email: email,
+				Username: username,
+				Password: password
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(tenantsCreateModel);
@@ -172,6 +176,36 @@
 						{/if}
 					</td>
 				</tr>
+					<tr>
+							<td>Username <span class="text-red-600">*</span></td>
+							<td>
+								<input
+									type="text"
+									bind:value={username}
+									class="input {errors?.username ? 'input-text-error' : ''}"
+									name="username"
+									placeholder="Enter username here..."
+								/>
+								{#if errors?.Username}
+									<p class="text-error">{errors?.Username}</p>
+								{/if}
+							</td>
+						</tr>
+						<tr>
+							<td>Password <span class="text-red-600">*</span></td>
+							<td>
+								<input
+									type="password"
+									bind:value={password}
+									class="input {errors?.password ? 'input-text-error' : ''}"
+									name="password"
+									placeholder="Enter password here..."
+								/>
+								{#if errors?.Password}
+									<p class="text-error">{errors?.Password}</p>
+								{/if}
+							</td>
+						</tr>
 			</tbody>
 		</table>
 		<div class="btn-container">
