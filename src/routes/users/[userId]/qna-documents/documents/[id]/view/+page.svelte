@@ -9,6 +9,8 @@
 	import type { VectorStoreCreateModel } from '$lib/types/vector.store.types';
 	import FilePreviewModal from '$lib/components/modal/file.preview.modal.svelte';
 	import Button from '$lib/components/button/button.svelte';
+	import Heading from '$lib/components/heading/heading.svelte';
+	import Label from '$lib/components/label/label.svelte';
 	///////////////////////////////////////////////////////////////////////////////
 	let { data }: { data: PageServerData } = $props();
 
@@ -159,103 +161,92 @@
 
 <!-- Rendering breadcrumbs component -->
 <BreadCrumbs crumbs={breadCrumbs} />
-
 <div class="mx-auto w-full px-6 py-4">
 	<div class="form-headers">
-		<h2 class="form-titles">View Document</h2>
+		<Heading text="View Document" />
 		<a href={documentRoute} class="cancel-btn">
 			<Icon icon="material-symbols:close-rounded" />
 		</a>
 	</div>
-	<!-- <div class="flex flex-wrap justify-end gap-2 py-2">
-		<a href={editRoute} class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
-			<Icon icon="material-symbols:edit-outline" class="mr-1" />
-			<span>Edit</span>
-		</a>
-	</div> -->
+
 	<table class="w-full">
 		<tbody>
-			<!-- Rows displaying document details -->
 			<tr class="tables-row">
-				<td class="table-label">Name</td>
+				<Label text="Name" />
 				<td class="table-data">{name}</td>
 			</tr>
 
 			<tr class="tables-row">
-				<td class="table-label">Description</td>
+				<Label text="Description" />
 				<td class="table-data">{description}</td>
 			</tr>
 
 			<tr class="tables-row">
-				<td class="table-label">File Name</td>
-				<td class="table-data"
-					>{fileName}
+				<Label text="File Name" />
+				<td class="table-data flex items-center gap-2">
+					<span>{fileName}</span>
 					<Button
 						text="Open with Document Viewer"
 						type="button"
 						variant="primary"
 						onclick={viewDocument}
-						className="ml-2"
 						size="sm"
 					/>
 				</td>
 			</tr>
 
 			<tr class="tables-row">
-				<td class="table-label">Keywords </td>
+				<Label text="Keywords" />
 				<td class="table-data">{keywords}</td>
 			</tr>
 
 			<tr class="tables-row">
-				<td class="table-label">Document Type</td>
+				<Label text="Document Type" />
 				<td class="table-data">{documentType}</td>
 			</tr>
 
-			<!-- <tr class="tables-row">
-						<td>Source</td>
-						<td>{source}</td>
-					</tr> -->
-			<!-- <tr class="tables-row">
-							<td>Parent Document</td>
-							<td>{parentDocument}</td>
-						</tr> -->
-
 			<tr class="tables-row">
-				<td class="table-label">Version</td>
+				<Label text="Version" />
 				<td class="table-data">{parentDocumentVersion}</td>
 			</tr>
 
 			<tr class="tables-row">
-				<td class="table-label">Active</td>
+				<Label text="Active" />
 				<td class="table-data">{isActive}</td>
 			</tr>
 
 			<tr class="tables-row">
-				<td class="table-label">Chunking Strategy</td>
+				<Label text="Chunking Strategy" />
 				<td class="table-data">{chunkingStrategy}</td>
 			</tr>
+
 			<tr class="tables-row">
-				<td class="table-label">Chunking Length</td>
+				<Label text="Chunking Length" />
 				<td class="table-data">{chunkingLength}</td>
 			</tr>
+
 			<tr class="tables-row">
-				<td class="table-label">Chunking Overlap</td>
+				<Label text="Chunking Overlap" />
 				<td class="table-data">{chunkOverlap}</td>
 			</tr>
+
 			<tr class="tables-row">
-				<td class="table-label">Splitter</td>
+				<Label text="Splitter" />
 				<td class="table-data">{splitter}</td>
 			</tr>
-			<!-- <tr class="tables-row">
-						<td>Last Updated</td>
-						<td>{createdBy}</td>
-					</tr> -->
 		</tbody>
 	</table>
 
-	<div class=" btn-container">
-		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
-		></Button>
+	<div class="btn-container">
+		<Button
+			href={editRoute}
+			text="Edit"
+			variant="primary"
+			iconBefore="mdi:edit"
+			iconSize="md"
+			size="md"
+		/>
 	</div>
 </div>
+
 <FilePreviewModal {showModal} {fileUrl} {fileType} {closeModal} />
