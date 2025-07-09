@@ -176,9 +176,9 @@
 						{/if}
 					</td>
 				</tr>
-					<tr>
-							<td>Username <span class="text-red-600">*</span></td>
-							<td>
+					<tr class="tables-row">
+							<td class="table-label">Username <span class="text-red-600">*</span></td>
+							<td class="table-data">
 								<input
 									type="text"
 									bind:value={username}
@@ -191,9 +191,9 @@
 								{/if}
 							</td>
 						</tr>
-						<tr>
-							<td>Password <span class="text-red-600">*</span></td>
-							<td>
+						<tr class="tables-row">
+							<td class="table-label">Password <span class="text-red-600">*</span></td>
+							<td class="table-data">
 								<input
 									type="password"
 									bind:value={password}
