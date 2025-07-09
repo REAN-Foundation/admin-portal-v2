@@ -55,7 +55,7 @@
 		"formidable": "^3.5.4",
 		"redis": "^4.7.0",
 		"sveltekit-flash-message": "^2.4.6",
-		"zod": "^3.24.2",
+		"zod": "^3.25.67",
 		"zod-form-data": "^2.0.5"
 	}
 }
