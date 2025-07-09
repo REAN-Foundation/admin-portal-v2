@@ -151,7 +151,7 @@
 					<td class="table-label">Exercise Type</td>
 					<td class="table-data">
 						<select class="input" bind:value={exerciseType}>
-							<option disabled value>Select exercise type</option>
+							<!-- <option disabled value>Select exercise type</option> -->
 							<option>Strength</option>
 							<option>Aerobic</option>
 							<option>Balance</option>
@@ -168,7 +168,7 @@
 					<td class="table-label">Intensity Level</td>
 					<td class="table-data">
 						<select class="input" bind:value={intensityLevel}>
-							<option disabled value>Select Intensity Level</option>
+							<!-- <option disabled value>Select Intensity Level</option> -->
 							<option>None</option>
 							<option>Minimal</option>
 							<option>Moderate</option>

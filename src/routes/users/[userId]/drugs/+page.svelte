@@ -186,8 +186,8 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="health-system-table-container mb-6 shadow">
-			<div class="health-system-search-border p-4">
+		<div class="table-container shadow">
+			<div class="search-border p-4">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow">
 						<Icon
@@ -200,7 +200,7 @@
 							placeholder="Search by name"
 							oninput={(event) => onSearchInput(event)}
 							bind:value={drugName}
-							class="health-system-input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if drugName}
 							<button
@@ -226,7 +226,7 @@
 							placeholder="Search by generic name"
 							oninput={(event) => onSearchInput(event)}
 							bind:value={genericName}
-							class="health-system-input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if genericName}
 							<button
@@ -246,29 +246,29 @@
 			</div>
 
 			<div class="overflow-x-auto">
-				<table class="health-system-table min-w-full">
+				<table class="table-c min-w-full">
 					<thead>
 						<tr>
-							<th class="w-12"></th>
-							<th class=" w-70">
+							<th class="w-[5%]"></th>
+							<th class=" w-[20%]">
 								<button onclick={() => sortTable('DrugName')}>
 									Name {isSortingName ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
 								</button>
 							</th>
-							<th class="w-64">
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('GenericName')}>
 									Generic Name {isSortingGenericName ? (sortOrder === 'ascending' ? '▲' : '▼') : ''}
 								</button>
 							</th>
-							<th class="w-24">Ingredients</th>
-							<th class="w-32">Created</th>
-							<th class="w-20"></th>
+							<th class="w-[20%]">Ingredients</th>
+							<th class="w-[20%]">Created</th>
+							<th class="w-[20%]"></th>
 						</tr>
 					</thead>
 					<tbody>
 						{#if retrivedDrugs <= 0}
 							<tr class="text-center">
-								<td aria-colindex={1} colspan="8"
+								<td aria-colindex={1} class="text-center" colspan="8"
 									>{isLoading ? 'Loading...' : 'No records found'}</td
 								>
 							</tr>
@@ -306,7 +306,7 @@
 									</td>
 
 									<td>
-										<div class="flex">
+										<div class="flex justify-end">
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"

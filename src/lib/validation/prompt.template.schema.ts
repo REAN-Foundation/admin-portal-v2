@@ -8,7 +8,10 @@ export const createOrUpdateSchema = z.object({
         .min(1, { message: 'Prompt Template name cannot be empty.' })
         .max(256, { message: 'Prompt Template name must be at most 256 characters long.' })
         .refine((val) => val.trim().length > 0, { message: 'Prompt Template name cannot contain only blank spaces.' }),
-    Description: z.string().optional(),
+    Description: z
+            .string()
+            .max(1024, { message: 'Description must be at most 1024 characters long.' })
+            .optional(),
     Model: z.string({
         required_error: 'Model is required.',
         invalid_type_error: 'Model must be a string.'

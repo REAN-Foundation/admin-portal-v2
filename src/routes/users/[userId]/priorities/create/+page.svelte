@@ -7,6 +7,7 @@
 	import type { PrioritiesTypeCreateModel } from '$lib/types/priorities.types.js';
 	import { createOrUpdateSchema } from '$lib/validation/priorities.schema.js';
 	import InputChips from '$lib/components/input-chips.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	////////////////////////////////////////////////////////////////////
 	let { data, form } = $props();
@@ -85,61 +86,50 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th>Create Priority</th>
-							<th class="text-end">
-								<a href={priorityRoute} class="cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Type *</td>
-							<td>
-								<input
-									type="text"
-									class="input {form?.errors?.type ? 'input-text-error' : ''}"
-									name="type"
-									placeholder="Enter name here..."
-									bind:value={type}
-								/>
-								{#if errors?.Type}
-									<p class="text-error-500 text-xs">{errors?.Type}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td class="!py-3 align-top">Tags</td>
-							<td>
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-									/>
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="button-container">
-					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Create Priority</h2>
+			<a href={priorityRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Type <span class="text-red-600">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {errors?.type ? 'input-text-error' : ''}"
+							name="type"
+							placeholder="Enter name here..."
+							bind:value={type}
+						/>
+						{#if errors?.Type}
+							<p class="text-error">{errors?.Type}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label align-top">Tags</td>
+					<td class="table-data">
+						<InputChips
+							bind:keywords
+							name="keywords"
+							id="keywords"
+						/>
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="btn-container">
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>

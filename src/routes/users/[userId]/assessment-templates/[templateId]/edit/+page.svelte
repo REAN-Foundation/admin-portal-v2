@@ -10,17 +10,18 @@
 	import { createOrUpdateSchema } from '$lib/validation/assessment.template.schema';
 	import type { AssessmentTemplateUpdateModel } from '$lib/types/assessment-template.types';
 	import InputChips from '$lib/components/input-chips.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	////////////////////////////////////////////////////////////////
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let title = $state(data.assessmentTemplate.Title),
-		description = $state(data.assessmentTemplate.Description||''),
+		description = $state(data.assessmentTemplate.Description || ''),
 		displayCode = $state(data.assessmentTemplate.DisplayCode),
 		assessmentType = $state(data.assessmentTemplate.Type),
-		provider = $state(data.assessmentTemplate.Provider||undefined),
-		providerAssessmentCode = $state(data.assessmentTemplate.ProviderAssessmentCode||undefined),
+		provider = $state(data.assessmentTemplate.Provider || undefined),
+		providerAssessmentCode = $state(data.assessmentTemplate.ProviderAssessmentCode || undefined),
 		serveListNodeChildrenAtOnce = $state(data.assessmentTemplate.ServeListNodeChildrenAtOnce),
 		scoringApplicable = $state(data.assessmentTemplate.ScoringApplicable),
 		keywords: string[] = $state(data.assessmentTemplate.Tags || []);
@@ -104,175 +105,154 @@
 		}
 	};
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-		});
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<form onsubmit={(event) => (promise = handleSubmit(event))}>
-				<table class="health-system-table">
-					<thead>
-						<tr>
-							<th>Edit Template</th>
-							<th class="text-end">
-								<a href={viewRoute} class=" cancel-btn">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Title <span class=" text-red-600">*</span></td>
-							<td>
-								<input
-									type="text"
-									name="title"
-									required
-									bind:value={title}
-									placeholder="Enter title here..."
-									class="health-system-input {form?.errors?.title ? 'input-text-error' : ''}"
-								/>
-								{#if errors?.Title}
-									<p class="text-error">{errors?.Title}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td class="align-top">Description</td>
-							<td>
-								<textarea
-									name="description"
-									bind:value={description}
-									placeholder="Enter description here..."
-									class="health-system-input {form?.errors?.description ? 'input-text-error' : ''}"
-								></textarea>
-								{#if errors?.Description}
-									<p class="text-error">{errors?.Description}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Type <span class=" text-red-600">*</span></td>
-							<td>
-								<select
-									name="type"
-									bind:value={assessmentType}
-									placeholder="Select type here..."
-									class="health-system-input {form?.errors?.assessmentType
-										? 'input-text-error'
-										: ''}"
-								>
-									<option selected>{assessmentType}</option>
-									<option>Daily Update</option>
-									<option>Symptoms</option>
-									<option>Survey</option>
-									<option>Protocol</option>
-									<option>Custom</option>
-								</select>
-								{#if errors?.Type}
-									<p class="text-error">{errors?.Type}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Provider</td>
-							<td>
-								<input
-									type="text"
-									name="provider"
-									bind:value={provider}
-									placeholder="Enter provider here"
-									class="health-system-input {form?.errors?.provider ? 'input-text-error' : ''}"
-								/>
-								{#if errors?.Provider}
-									<p class="text-error">{errors?.Provider}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Provider Assessment Code</td>
-							<td>
-								<input
-									type="text"
-									name="providerAssessmentCode"
-									bind:value={providerAssessmentCode}
-									placeholder="Enter provider assessment code here..."
-									class="health-system-input {form?.errors?.providerAssessmentCode
-										? 'input-text-error'
-										: ''}"
-								/>
-								{#if errors?.ProviderAssessmentCode}
-									<p class="text-error">{errors?.ProviderAssessmentCode}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Serve List Node Children At Once</td>
-							<td>
-								<input
-									type="checkbox"
-									name="serveListNodeChildrenAtOnce"
-									bind:checked={serveListNodeChildrenAtOnce}
-									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2 {form
-										?.errors?.serveListNodeChildrenAtOnce
-										? 'input-text-error'
-										: ''}"
-								/>
-								{#if errors?.ServeListNodeChildrenAtOnce}
-									<p class="text-error">{errors?.ServeListNodeChildrenAtOnce}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td>Scoring Applicable</td>
-							<td>
-								<input
-									type="checkbox"
-									name="scoringApplicable"
-									class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2 {form
-										?.errors?.scoringApplicable
-										? 'input-text-error'
-										: ''}"
-									bind:checked={scoringApplicable}
-								/>
-								{#if errors?.ScoringApplicable}
-									<p class="text-error">{errors?.ScoringApplicable}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<td class="align-top">Tags</td>
-							<td>
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-								/>
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="button-container">
-					<button
-						type="button"
-						onclick={handleReset}
-						class="health-system-btn variant-soft-secondary">Reset</button
-					>
-					{#await promise}
-						<button type="submit" class="health-system-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="health-system-btn variant-soft-secondary"> Submit </button>
-					{/await}
-				</div>
-			</form>
+<div class="p-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Edit Template</h2>
+			<a href={viewRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
 		</div>
-	</div>
+		<table class="w-full">
+			<tbody>
+				<tr class="tables-row">
+					<td class="table-label">Title <span class="text-red-600">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="title"
+							required
+							bind:value={title}
+							placeholder="Enter title here..."
+							class="input {errors?.title ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.Title}
+							<p class="text-error">{errors?.Title}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label align-top">Description</td>
+					<td class="table-data">
+						<textarea
+							name="description"
+							bind:value={description}
+							placeholder="Enter description here..."
+							class="input {errors?.description ? 'input-text-error' : ''}"
+						></textarea>
+						{#if errors?.Description}
+							<p class="text-error">{errors?.Description}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Type <span class="text-red-600">*</span></td>
+					<td class="table-data">
+						<select
+							name="type"
+							bind:value={assessmentType}
+							placeholder="Select type here..."
+							class="input {errors?.assessmentType ? 'input-text-error' : ''}"
+						>
+							<option selected>{assessmentType}</option>
+							{#if assessmentType !== 'Daily Update'}
+								<option>Daily Update</option>
+							{/if}
+							{#if assessmentType !== 'Survey'}
+								<option>Survey</option>
+							{/if}
+							{#if assessmentType !== 'Protocol'}
+								<option>Protocol</option>
+							{/if}
+							{#if assessmentType !== 'Custom'}
+								<option>Custom</option>
+							{/if}
+						</select>
+						{#if errors?.Type}
+							<p class="text-error">{errors?.Type}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Provider</td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="provider"
+							bind:value={provider}
+							placeholder="Enter provider here"
+							class="input {errors?.provider ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.Provider}
+							<p class="text-error">{errors?.Provider}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Provider Assessment Code</td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="providerAssessmentCode"
+							bind:value={providerAssessmentCode}
+							placeholder="Enter provider assessment code here..."
+							class="input {errors?.providerAssessmentCode ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.ProviderAssessmentCode}
+							<p class="text-error">{errors?.ProviderAssessmentCode}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Serve List Node Children At Once</td>
+					<td class="table-data">
+						<input
+							type="checkbox"
+							name="serveListNodeChildrenAtOnce"
+							bind:checked={serveListNodeChildrenAtOnce}
+							class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2 {errors?.serveListNodeChildrenAtOnce ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.ServeListNodeChildrenAtOnce}
+							<p class="text-error">{errors?.ServeListNodeChildrenAtOnce}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Scoring Applicable</td>
+					<td class="table-data">
+						<input
+							type="checkbox"
+							name="scoringApplicable"
+							class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2 {errors?.scoringApplicable ? 'input-text-error' : ''}"
+							bind:checked={scoringApplicable}
+						/>
+						{#if errors?.ScoringApplicable}
+							<p class="text-error">{errors?.ScoringApplicable}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label align-top">Tags</td>
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="btn-container">
+			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button size="md" type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
+	</form>
 </div>

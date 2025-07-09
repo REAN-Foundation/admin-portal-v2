@@ -156,14 +156,14 @@
 
 <div class="px-6 py-2">
 	<div class="mx-auto">
-		<div class="table-container my-6 shadow">
+		<div class="table-container shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow">
 						<input
 							type="text"
 							name="categoryType"
-							placeholder="Search by name"
+							placeholder="Search by type"
 							bind:value={categoryType}
 							oninput={(event) => onSearchInput(event)}
 							class="table-input-field !pr-4 !pl-10"
@@ -193,16 +193,20 @@
 				<table class="table-c min-w-full">
 					<thead>
 						<tr>
-							<th class="w-2"></th>
-							<th class="text-start">
+							<th class="w-[5%]"></th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Type')}>
 									Type {#if isSortingName}
-										<Icon icon={`mdi:chevron-${sortOrder === 'ascending' ? 'up' : 'down'}`} class="ml-1 inline" width="16" />
+										<Icon
+											icon={`mdi:chevron-${sortOrder === 'ascending' ? 'up' : 'down'}`}
+											class="ml-1 inline"
+											width="16"
+										/>
 									{/if}
 								</button>
 							</th>
-							<th>Description</th>
-							<th class=""></th>
+							<th class="w-[40%]">Description</th>
+							<th class="w-[20%]"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -221,7 +225,7 @@
 									</td>
 									<td>{row.Description || 'Not specified'}</td>
 									<td>
-										<div class="flex justify-end gap-2">
+										<div class="flex justify-end">
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"

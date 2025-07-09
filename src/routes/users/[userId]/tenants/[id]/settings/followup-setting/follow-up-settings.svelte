@@ -29,27 +29,38 @@
 	<input
 		type="text"
 		placeholder="Key"
-		class="w-1/2 rounded border p-2 text-sm"
+		class="w-1/2 rounded border p-2 text-sm text-[var(--color-info)]"
 		bind:value={newParamKey}
-        disabled={disabled}
+		{disabled}
 	/>
 	<input
 		type="text"
 		placeholder="Value"
-		class="w-1/2 rounded border p-2 text-sm"
+		class="w-1/2 rounded border p-2 text-sm text-[var(--color-info)]"
 		bind:value={newParamValue}
-        disabled={disabled}
+		{disabled}
 	/>
 </div>
-<button type="button" class="table-btn variant-filled-secondary gap-1" onclick={addQueryParam} disabled={disabled}>
+<button
+	type="button"
+	class="table-btn variant-filled-secondary gap-1"
+	onclick={addQueryParam}
+	{disabled}
+>
 	Add
 </button>
 
 {#if Object.keys(model)}
 	{#each Object.entries(model) as [key, value]}
-		<div class="mb-1 flex items-center justify-between rounded bg-gray-50 px-2 py-1 text-sm">
+		<div
+			class="mt-1 flex items-center justify-between rounded border border-[var(--color-outline)] bg-[var(--color-secondary)] px-2 py-1 text-sm text-[var(--color-info)]"
+		>
 			<span class="truncate">{key}: {value}</span>
-			<button class="health-system-btn !text-red-600" onclick={() => removeQueryParam(key)} disabled={disabled}>
+			<button
+				class="health-system-btn !text-red-600"
+				onclick={() => removeQueryParam(key)}
+				{disabled}
+			>
 				<Icon icon="material-symbols:delete-outline-rounded" height="15" width="15" />
 			</button>
 		</div>

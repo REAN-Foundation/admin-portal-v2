@@ -19,8 +19,6 @@
 	let enrollment = $state(data.enrollments.Items);
 	let retrivedEnrollments = $derived(enrollment);
 	let searchKeyword = $state(undefined);
-	let promise = $state();
-	let hasSearchResults = $state(true);
 
 	const userId = page.params.userId;
 	const enrollmentsRoute = () => `/users/${userId}/careplan/enrollments`;
@@ -203,7 +201,7 @@
 
 <div class="px-6 py-4">
 	<div class="mx-auto">
-		<div class="table-container mb-6 shadow">
+		<div class="table-container shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative pr-1.5">
@@ -216,11 +214,19 @@
 							type="text"
 							oninput={(event) => onSearchInput(event, 'carePlan')}
 							bind:value={carePlan}
-							placeholder="Search by care plan"
+							placeholder="Search by careplan"
 							class="table-input-field !pr-10 !pl-10"
 						/>
+						
 						{#if carePlan}
-							<button type="button" onclick={() => (carePlan = '')} class="close-btn">
+							<button
+								type="button"
+								onclick={() => {
+									carePlan = '';
+									onSearchInput({ target: { name: 'name', value: '' } }, 'carePlan');
+								}}
+								class="close-btn"
+							>
 								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
@@ -234,13 +240,20 @@
 						<input
 							type="text"
 							name="displayId"
-							placeholder="Search by Enrollment code"
+							placeholder="Search by enrollment code"
 							bind:value={displayId}
 							oninput={(event) => onSearchInput(event, 'displayId')}
-							class="table-input-field  !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if displayId}
-							<button type="button" onclick={() => (displayId = '')} class="close-btn">
+							<button
+								type="button"
+								onclick={() => {
+									displayId = '';
+									onSearchInput({ target: { name: 'name', value: '' } }, 'displayId');
+								}}
+								class="close-btn"
+							>
 								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
@@ -257,11 +270,18 @@
 								oninput={(event) => onSearchInput(event, 'startDate')}
 								class="table-input-field pr-4 pl-10"
 							/>
-							<!-- {#if startDate}
-								<button type="button" onclick={() => (startDate = '')} class="close-btn">
-									<Icon icon="material-symbols:close" class="ml-6 text-gray-500" />
-								</button>
-							{/if} -->
+							{#if startDate}
+							<button
+								type="button"
+								onclick={() => {
+									startDate = '';
+									onSearchInput({ target: { name: 'name', value: '' } }, 'startDate');
+								}}
+								class="close-btn"
+							>
+								<!-- <Icon icon="material-symbols:close" /> -->
+							</button>
+						{/if}
 						</div>
 					</div>
 
@@ -276,11 +296,18 @@
 								oninput={(event) => onSearchInput(event, 'endDate')}
 								class="table-input-field pr-4 pl-10"
 							/>
-							<!-- {#if endDate}
-								<button type="button" onclick={() => (endDate = '')} class="close-btn">
-									<Icon icon="material-symbols:close" />
-								</button>
-							{/if} -->
+							{#if endDate}
+							<button
+								type="button"
+								onclick={() => {
+									endDate = '';
+									onSearchInput({ target: { name: 'name', value: '' } }, 'endDate');
+								}}
+								class="close-btn"
+							>
+								<!-- <Icon icon="material-symbols:close" /> -->
+							</button>
+						{/if}
 						</div>
 					</div>
 				</div>
@@ -334,7 +361,9 @@
 					<tbody>
 						{#if retrivedEnrollments.length <= 0}
 							<tr>
-								<td colspan="7">{isLoading ? 'Loading...' : 'No records found'}</td>
+								<td class="text-center" colspan="7"
+									>{isLoading ? 'Loading...' : 'No records found'}</td
+								>
 							</tr>
 						{:else}
 							{#each retrivedEnrollments as enrollment, index}

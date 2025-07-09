@@ -273,7 +273,13 @@ const FileUploadConfigSchema = z.object({
 
 const ApiAuthConfigSchema = z.object({
     Method: z.union([HttpMethodEnum, z.literal('')]).optional(),
-    Url: z.string().optional(),
+    Url: z.string().trim()
+        .min(1, "Website URL is required")
+        .url('Invalid URL')
+        .refine(
+            val => /\.[a-z]{2,}/i.test(val.split('/')[2] || ''),
+            { message: 'URL must contain a valid domain.' }
+        ),
     Body: z.any().optional(),
     QueryParams: z.record(z.string()).optional(),
     Headers: z.record(z.string()).optional(),
@@ -289,9 +295,13 @@ const ApiAuthConfigSchema = z.object({
 
 const ApiFetchConfigSchema = z.object({
     Method: HttpMethodEnum,
-    Url: z.string({
-        required_error: "Url is required for ApiFetchConfig",
-    }),
+    Url: z.string().trim()
+    .min(1, "Website URL is required")
+    .url('Invalid URL')
+    .refine(
+        val => /\.[a-z]{2,}/i.test(val.split('/')[2] || ''),
+        { message: 'URL must contain a valid domain.' }
+    ),
     QueryParams: z.record(z.string()).optional(),
     Body: z.any().optional(),
     Headers: z.record(z.string()).optional(),

@@ -32,7 +32,7 @@
 		const formData = new FormData();
 		formData.append('file', file);
 
-		const res = await fetch(`/api/server/careplan/upload`, {
+		const res = await fetch(`/api/server/file-resources/upload/careplan`, {
 			method: 'POST',
 			body: formData
 		});
@@ -128,7 +128,7 @@
 
 									<input
 										type="text"
-										class="health-system-input bg-gray-100 text-gray-700 focus:outline-none"
+										class="input"
 										value={fileName}
 										readonly
 										placeholder="No file selected"

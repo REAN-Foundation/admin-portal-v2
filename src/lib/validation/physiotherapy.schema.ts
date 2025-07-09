@@ -4,11 +4,11 @@ import { zfd } from 'zod-form-data';
 export const createOrUpdateSchema = z.object({
     Name: z
         .string({
-            required_error: 'Physiotherapy name is required.',
-            invalid_type_error: 'Physiotherapy name must be a string.'
+            required_error: 'Name is required.',
+            invalid_type_error: 'Name must be a string.'
         })
-        .min(3, { message: 'Physiotherapy name must be at least 3 characters long.' })
-        .max(128, { message: 'Physiotherapy name must be at most 128 characters long.' }),
+        .min(1, { message: 'Name cannot be empty.' })
+        .max(128, { message: 'Name must be at most 128 characters long.' }),
 
     Description: z
         .string()

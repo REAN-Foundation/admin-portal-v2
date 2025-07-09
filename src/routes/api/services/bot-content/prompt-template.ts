@@ -110,8 +110,8 @@ export const updatePromptTemplate = async (
 ) => {
 	const body = {
 		Name: name ? name : null,
-		Description: description ? description : null,
-		Model: model ? model : null,
+		Description: description ?? null,
+		Model: model ?? null,
 		Prompt: prompt ? prompt : null,
 		Group: subgroup ? subgroup : null,
 		UseCaseType: useCaseType ? useCaseType : null,

@@ -17,6 +17,7 @@
 		labRecordType.DisplayName !== null && labRecordType.DisplayName !== ''
 			? labRecordType.DisplayName
 			: 'Not specified';
+	
 	let snowmedCode =
 		labRecordType.SnowmedCode !== null && labRecordType.SnowmedCode !== ''
 			? labRecordType.SnowmedCode
@@ -51,8 +52,46 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-2">
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<h2 class="form-titles">View Lab Record</h2>
+		<a href={labRecordTypesRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
+		</a>
+	</div>
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<td class="table-label">Type Name</td>
+				<td class="table-data">{typeName}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Display Name</td>
+				<td class="table-data">{displayName}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">SNOMED CODE</td>
+				<td class="table-data">{snowmedCode}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">LOINC CODE</td>
+				<td class="table-data">{loincCode}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Minimum Normal Range</td>
+				<td class="table-data">{normalRangeMin}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Maximum Normal Range</td>
+				<td class="table-data">{normalRangeMax}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Unit</td>
+				<td class="table-data">{unit}</td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="btn-container">
 		<Button
 			size="md"
 			href={editRoute}
@@ -60,52 +99,6 @@
 			variant="primary"
 			iconBefore="mdi:edit"
 			iconSize="md"
-		></Button>
-	</div>
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<table class="health-system-table">
-				<thead>
-					<tr>
-						<th>View Lab Record</th>
-						<th class="text-end">
-							<a href={labRecordTypesRoute} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Type Name</td>
-						<td>{typeName}</td>
-					</tr>
-					<tr>
-						<td>Display Name</td>
-						<td>{displayName}</td>
-					</tr>
-					<tr>
-						<td>SNOMED CODE</td>
-						<td>{snowmedCode}</td>
-					</tr>
-					<tr>
-						<td>LOINC CODE</td>
-						<td>{loincCode}</td>
-					</tr>
-					<tr>
-						<td>Minimum Normal Range</td>
-						<td>{normalRangeMin}</td>
-					</tr>
-					<tr>
-						<td>Maximum Normal Range</td>
-						<td>{normalRangeMax}</td>
-					</tr>
-					<tr>
-						<td>Unit</td>
-						<td>{unit}</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+		/>
 	</div>
 </div>

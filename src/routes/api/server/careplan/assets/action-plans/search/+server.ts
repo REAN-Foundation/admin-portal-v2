@@ -1,6 +1,8 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { ResponseHandler } from '$lib/utils/response.handler';
-import { searchAssets } from '../../../../../services/careplan/assets/action-plan';
+
+import { searchActionplans } from '../../../../../services/careplan/assets/action-plan';
+// import { searchAssets } from '../../../../../services/careplan/assets/action-plan';
 
 //////////////////////////////////////////////////////////////
 
@@ -22,8 +24,8 @@ export const GET = async (event: RequestEvent) => {
 		};
 
 		console.log('Search Parameters:', searchFilters);
-		const assetType = searchParams.get('assetType');
-		const response = await searchAssets(sessionId,assetType, searchFilters);
+		// const assetType = searchParams.get('assetType');
+		const response = await searchActionplans(sessionId, searchFilters);
 		return ResponseHandler.success(response);
 	} catch (error) {
 		console.error('Error retrieving assets:', error);

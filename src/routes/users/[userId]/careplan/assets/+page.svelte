@@ -19,7 +19,7 @@
 	let debounceTimeout;
 	let isLoading = $state(false);
 	let assets = $state(data.assets.Items);
-	// let retrivedAssets = $derived(assets);
+	let retrivedAssets = $derived(assets);
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
 	let isDeleting = $state(false);
@@ -48,13 +48,6 @@
 		size: totalAssetsCount,
 		amounts: [10, 20, 30, 50]
 	});
-
-	let retrivedAssets = $derived(
-	assets.slice(
-		paginationSettings.page * paginationSettings.limit,
-		(paginationSettings.page + 1) * paginationSettings.limit
-	)
-);
 
 	const assetRouteMap = {
 		'Action plan': 'action-plans',
@@ -207,9 +200,11 @@
 
 	const onSelectAssetType = async (e) => {
 		selectedAssetType = e.currentTarget.value;
+		paginationSettings.page = 0;
 		await searchAssets({
 			sessionId: data.sessionId,
-			selectedAssetType
+			selectedAssetType,
+			pageIndex: 0
 		});
 	};
 
@@ -245,7 +240,6 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-
 <div class="px-6 py-2">
 	<div class="mx-auto">
 		<div class="relative flex w-full md:w-1/3">
@@ -261,7 +255,7 @@
 			</div>
 		</div>
 
-		<div class="table-container my-6 shadow">
+		<div class="table-container mt-6 shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow">
@@ -273,8 +267,10 @@
 							oninput={(event) => onSearchInput(event, 'name')}
 							class="table-input-field !pr-4 !pl-10"
 						/>
-						<Icon icon="heroicons:magnifying-glass" 
-						class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400" />
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
 						{#if nameAssetSearch}
 							<button
 								type="button"
@@ -295,10 +291,13 @@
 							placeholder="Search by code"
 							bind:value={codeAssetSearch}
 							oninput={(event) => onSearchInput(event, 'code')}
-							class="input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
-						
-						<Icon icon="heroicons:magnifying-glass" class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400" />
+
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
 						{#if codeAssetSearch}
 							<button
 								type="button"
@@ -320,25 +319,33 @@
 				<table class="table-c min-w-full">
 					<thead>
 						<tr>
-							<th class="w-40"></th>
-							<th class="text-start">
+							<th class="w-[5%]"></th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Name')}>
-									Name 
+									Name
 									{#if isSortingName}
-										<Icon icon={`mdi:chevron-${sortOrder === 'ascending' ? 'up' : 'down'}`} class="ml-1 inline" width="16" />
+										<Icon
+											icon={`mdi:chevron-${sortOrder === 'ascending' ? 'up' : 'down'}`}
+											class="ml-1 inline"
+											width="16"
+										/>
 									{/if}
 								</button>
 							</th>
-							<th class="text-start">
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Code')}>
-									Code 
+									Code
 									{#if isSortingCode}
-										<Icon icon={`mdi:chevron-${sortOrder === 'ascending' ? 'up' : 'down'}`} class="ml-1 inline" width="16" />
+										<Icon
+											icon={`mdi:chevron-${sortOrder === 'ascending' ? 'up' : 'down'}`}
+											class="ml-1 inline"
+											width="16"
+										/>
 									{/if}
 								</button>
 							</th>
-							<th>Type</th>
-							<th>Created Date</th>
+							<th class="w-[20%]">Type</th>
+							<th class="w-[20%]">Created Date</th>
 							<!-- <th class="text-right whitespace-nowrap">Actions</th> -->
 						</tr>
 					</thead>
@@ -360,9 +367,9 @@
 									</td>
 									<td>{row.AssetCode || 'Not specified'}</td>
 									<td>{row.AssetCategory || 'Not specified'}</td>
-									<td>{TimeHelper.formatDateToReadable(row.CreatedAt, )}</td>
+									<td>{TimeHelper.formatDateToReadable(row.CreatedAt)}</td>
 									<td>
-										<div class="flex justify-end gap-2">
+										<div class="flex justify-end">
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"

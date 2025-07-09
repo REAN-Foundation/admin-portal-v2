@@ -4,11 +4,11 @@ import { zfd } from 'zod-form-data';
 export const createOrUpdateSchema = z.object({
     Name: z
         .string({
-            required_error: 'Meditation name is required.',
-            invalid_type_error: 'Meditation name must be a string.'
+            required_error: 'Name is required.',
+            invalid_type_error: 'Name must be a string.'
         })
-        .min(3, { message: 'Meditation name must be at least 3 characters long.' })
-        .max(128, { message: 'Meditation name must be at most 128 characters long.' }),
+        .min(1, { message: 'Name cannot be empty.' })
+        .max(128, { message: 'Name must be at most 128 characters long.' }),
 
     Description: z
         .string()

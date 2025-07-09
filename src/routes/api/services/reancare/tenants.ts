@@ -10,14 +10,18 @@ export const createTenant = async (
 	description: string,
 	code: string,
 	phone: string,
-	email: string
+	email: string,
+	username: string,
+	password: string
 ) => {
 	const body = {
 		Name: name,
 		Description: description ? description : null,
 		Code: code,
 		Phone: phone ? phone : null,
-		Email: email ? email : null
+		Email: email ? email : null,
+		Username: username ? username : null,
+		Password: password ? password : null
 	};
 
 	if (Helper.isPhone(phone)) {
@@ -63,7 +67,7 @@ export const updateTenant = async (
 ) => {
 	const body = {
 		Name: name,
-		Description: description ? description : null,
+		Description: description ?? null,
 		Code: code,
 		Phone: phone ? phone : null,
 		Email: email ? email : null

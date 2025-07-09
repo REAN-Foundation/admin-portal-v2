@@ -36,8 +36,38 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-2">
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<h2 class="form-titles">View User</h2>
+		<a href={userRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
+		</a>
+	</div>
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<td class="table-label">First Name</td>
+				<td class="table-data">{firstName}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Last Name</td>
+				<td class="table-data">{lastName}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Contact Number</td>
+				<td class="table-data">{phone}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Email</td>
+				<td class="table-data">{email}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Role</td>
+				<td class="table-data">{role}</td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="btn-container">
 		<Button
 			size="md"
 			href={editRoute}
@@ -45,44 +75,6 @@
 			variant="primary"
 			iconBefore="mdi:edit"
 			iconSize="md"
-		></Button>
-	</div>
-	<div class="mx-auto">
-		<div class="table-container">
-			<table class="table-c">
-				<thead>
-					<tr>
-						<th>View User</th>
-						<th class="text-end">
-							<a href={userRoute} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>First Name</td>
-						<td>{firstName}</td>
-					</tr>
-					<tr>
-						<td>Last Name</td>
-						<td>{lastName}</td>
-					</tr>
-					<tr>
-						<td>Contact Number</td>
-						<td>{phone}</td>
-					</tr>
-					<tr>
-						<td>Email</td>
-						<td>{email}</td>
-					</tr>
-					<tr>
-						<td>Role</td>
-						<td>{role}</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+		/>
 	</div>
 </div>

@@ -10,6 +10,7 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import type { FileUploadModel } from '$lib/types/file.upload.types.js';
 	import { fileUploadSchema } from '$lib/validation/file.upload.schema.js';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -55,54 +56,65 @@
 
 	// Function to upload file asynchronously
 	const upload = async (imgBase64, file) => {
-		const data = {};
-		console.log(imgBase64);
+		try {
+			if (!file) {
+				showMessage('No file selected', 'error');
+				return { success: false, error: 'No file selected' };
+			}
 
-		const imgData = imgBase64.split(',');
-		data['image'] = imgData[1];
-		console.log(JSON.stringify(data));
+			// Create form data with both file and metadata
+			const formData = new FormData();
+			formData.append('file', file);
 
-		if (!file) return;
+			const res = await fetch(`/api/server/file-resources/upload/bot-content`, {
+				method: 'POST',
+				body: formData
+			});
 
-		const formData = new FormData();
-		formData.append('file', file);
+			const response = await res.json();
+			console.log('Upload response:', response);
 
-		const res = await fetch(`/api/server/file-resources/upload`, {
-			method: 'POST',
-			body: formData
-		});
-		console.log(Date.now().toString());
-		const response = await res.json();
-		console.log('response', response);
-
-		if (response.Status === 'success' && response.HttpCode === 201) {
-			const imageResourceId = response.Data.id;
-			// const imageUrl_ = response.Data.FileResources[0].Url;
-			// console.log('imageUrl_', imageUrl_);
-			// if (imageUrl_) {
-			// 	imageUrl = imageUrl_;
-			// }
-			// console.log(imageUrl);
-			return { success: true, resourceId: response.Data?.id, response };
-		} else {
-			showMessage(response.Message, 'error');
-			return { success: false, error: response.Message };
+			if (response.Status === 'success' && response.HttpCode === 201) {
+				return { success: true, resourceId: response.Data?.id, response };
+			} else {
+				const errorMsg = response.Message || 'File upload failed';
+				showMessage(errorMsg, 'error');
+				return { success: false, error: errorMsg };
+			}
+		} catch (error) {
+			console.error('Upload error:', error);
+			const errorMsg = error.message || 'File upload failed';
+			showMessage(errorMsg, 'error');
+			return { success: false, error: errorMsg };
 		}
 	};
 
-    // Update your upload function in +page.svelte
-
-
 	// Function triggered when file is selected
 	const onFileSelected = async (e) => {
-		let f = e.target.files[0];
-		fileName = f.name;
-		selectFile = f;
-		let reader = new FileReader();
-		reader.readAsDataURL(f);
-		reader.onload = async (e) => {
-			fileinput = e.target.result;
-		};
+		try {
+			const file = e.target.files[0];
+			if (!file) return;
+
+			// Check file size (50MB limit)
+			const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+			if (file.size > MAX_FILE_SIZE) {
+				showMessage(`File size exceeds 10MB limit. Please select a smaller file.`, 'error');
+				e.target.value = ''; // Clear the file input
+				return;
+			}
+
+			fileName = file.name;
+			selectFile = file;
+
+			let reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = async (e) => {
+				fileinput = e.target.result;
+			};
+		} catch (error) {
+			console.error('File selection error:', error);
+			showMessage('Error selecting file', 'error');
+		}
 	};
 
 	const handleSubmit = async (event: Event) => {
@@ -131,7 +143,7 @@
 				ChunkingOverlap: chunkOverlap,
 				Splitter: splitter,
 				ResourceId: '',
-				Keywords: keywords.length > 0 ? keywords :null,
+				Keywords: keywords.length > 0 ? keywords : null,
 				DocumentType: documentType
 			};
 			const documentValidation = createOrUpdateSchema.safeParse(documentsCreateModel);
@@ -189,6 +201,7 @@
 			const response = await res.json();
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				response.Message = 'Q&A document created successfully';
 				toastMessage(response);
 				goto(`${documentsRoute}/${response?.Data?.id}/view`);
 				return;
@@ -205,8 +218,8 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
+		keywordsStr = keywords?.join(', ');
+	});
 
 	function handleDrop(event) {
 		event.preventDefault();
@@ -222,138 +235,127 @@
 <!-- Breadcrumbs Component -->
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="mx-auto">
-		<div class="table-container">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<table class="table-c">
-					<thead>
-						<tr>
-							<th>Create Document</th>
-							<th class="text-end">
-								<!-- Close Button -->
-								<a href={documentsRoute} class="table-btn variant-soft-secondary">
-									<Icon icon="material-symbols:close-rounded" />
-								</a>
-							</th>
-						</tr>
-					</thead>
-					<!-- Table Body -->
-					<tbody>
-						<!-- Name -->
-						<tr>
-							<td>Name <span class="text-red-700">*</span></td>
-							<td>
-								<input
-									type="text"
-									name="name"
-									bind:value={name}
-									placeholder="Enter name here..."
-									class="input"
-								/>
-								{#if errors?.Name}
-									<p class="text-error">{errors?.Name}</p>
-								{/if}
-							</td>
-						</tr>
+<div class="p-6">
+	<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<div class="form-headers">
+			<h2 class="form-titles">Create Document</h2>
+			<a href={documentsRoute} class="form-cancel-btn">
+				<Icon icon="material-symbols:close-rounded" />
+			</a>
+		</div>
+		<table class="w-full">
+			<!-- Table Body -->
+			<tbody>
+				<!-- Name -->
+				<tr class="tables-row">
+					<td class="table-label">Name <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="name"
+							bind:value={name}
+							placeholder="Enter name here..."
+							class="input"
+						/>
+						{#if errors?.Name}
+							<p class="text-error">{errors?.Name}</p>
+						{/if}
+					</td>
+				</tr>
 
-						<!-- Description -->
-						<tr>
-							<td class="align-top">Description </td>
-							<td>
-								<textarea
-									name="description"
-									placeholder="Enter description here..."
-									class="input"
-									bind:value={description}
-								></textarea>
-								{#if errors?.Description}
-									<p class="text-error">{errors?.Description}</p>
-								{/if}
-							</td>
-						</tr>
+				<!-- Description -->
+				<tr class="tables-row">
+					<td class="table-label">Description</td>
+					<td class="table-data">
+						<textarea
+							name="description"
+							placeholder="Enter description here..."
+							class="input"
+							bind:value={description}
+						></textarea>
+						{#if errors?.Description}
+							<p class="text-error">{errors?.Description}</p>
+						{/if}
+					</td>
+				</tr>
 
-						<tr>
-							<td>File Name </td>
-							<td>
-								<input
-									type="text"
-									name="fileName"
-									bind:value={fileName}
-                                    disabled
-									placeholder="Enter name here..."
-									class="input"
-								/>
-								{#if errors?.FileName}
-									<p class="text-error">{errors?.FileName}</p>
-								{/if}
-							</td>
-						</tr>
-						<tr>
-							<!-- Label Cell -->
-							<td>
-								Upload File <span class="text-red-700">*</span>
-							</td>
+				<tr class="tables-row">
+					<td class="table-label">File Name </td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="fileName"
+							bind:value={fileName}
+							disabled
+							placeholder="Enter name here..."
+							class="input"
+						/>
+						{#if errors?.FileName}
+							<p class="text-error">{errors?.FileName}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<!-- Label Cell -->
+					<td class="table-label">
+						Upload File <span class="text-red-700">*</span>
+					</td>
 
-							<!-- Input Cell -->
-							<td>
-								<div class="flex items-center space-x-4">
-									<!-- Select File Button -->
-									<label class="table-btn variant-filled-secondary">
-										Select File
-										<input type="file" class="hidden" onchange={onFileSelected} />
-									</label>
+					<!-- Input Cell -->
+					<td class="table-data">
+						<div class="flex items-center space-x-4">
+							<!-- Select File Button -->
+							<label class="table-btn variant-filled-secondary">
+								Select File
+								<input type="file" class="hidden" onchange={onFileSelected} />
+							</label>
 
-									<input
-										type="text"
-										class="input bg-gray-100 text-gray-700 focus:outline-none"
-										value={fileName}
-										readonly
-										placeholder="No file selected"
-									/>
-								</div>
+							<input
+								type="text"
+								class="input bg-gray-100 text-gray-700 focus:outline-none"
+								value={fileName}
+								readonly
+								placeholder="No file selected"
+							/>
+						</div>
 
-								<!-- Validation Error -->
-								{#if errors?.UploadFile}
-									<p class="text-error">{errors?.UploadFile}</p>
-								{/if}
-							</td>
-						</tr>
+						<!-- Validation Error -->
+						{#if errors?.UploadFile}
+							<p class="text-error">{errors?.UploadFile}</p>
+						{/if}
+					</td>
+				</tr>
 
-						<tr>
-							<td>Keywords </td>
-							<td>
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-									/>
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
-								{#if errors?.Keywords}
-									<p class="text-error">{errors?.Keywords}</p>
-								{/if}
-							</td>
-						</tr>
+				<tr class="tables-row">
+					<td class="table-label">Keywords </td>
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
+						{#if errors?.Keywords}
+							<p class="text-error">{errors?.Keywords}</p>
+						{/if}
+					</td>
+				</tr>
 
-						<tr>
-							<td>Document Type <span class="text-red-700">*</span></td>
-							<td>
-								<input
-									type="text"
-									name="documentType"
-									bind:value={documentType}
-                                    disabled
-									placeholder="Enter document type here..."
-									class="input"
-								/>
-								{#if errors?.DocumentType}
-									<p class="text-error">{errors?.DocumentType}</p>
-								{/if}
-							</td>
-						</tr>
-						<!-- Source -->
-						<!-- <tr>
+				<tr class="tables-row">
+					<td class="table-label">Document Type <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="documentType"
+							bind:value={documentType}
+							disabled
+							placeholder="Enter document type here..."
+							class="input"
+						/>
+						{#if errors?.DocumentType}
+							<p class="text-error">{errors?.DocumentType}</p>
+						{/if}
+					</td>
+				</tr>
+				<!-- Source -->
+				<!-- <tr class="tables-row">
 							<td>Source</td>
 							<td>
 								<input
@@ -365,8 +367,8 @@
 								/>
 							</td>
 						</tr> -->
-						<!-- Parent Document -->
-						<!-- <tr>
+				<!-- Parent Document -->
+				<!-- <tr class="tables-row">
 							<td>Parent Document</td>
 							<td>
 								<input
@@ -381,9 +383,9 @@
 								{/if}
 							</td>
 						</tr> -->
-						<!-- parent document Version -->
+				<!-- parent document Version -->
 
-						<!-- <tr>
+				<!-- <tr class="tables-row">
 							<td>Created By</td>
 							<td>
 								<input
@@ -398,87 +400,83 @@
 								{/if}
 							</td>
 						</tr> -->
-						<!-- Chunking Strategy -->
-						<tr>
-							<td>Chunking Strategy <span class="text-red-700">*</span></td>
-							<td>
-								<select
-									class="input"
-									name="chunkingStrategy"
-									bind:value={chunkingStrategy}
-									placeholder="Select type here..."
-								>
-									<option>Recursive Structure Aaware Splitting</option>
-									<option>Structure Aware Splitting</option>
-									<option>Content Aware Splitting</option>
-									<option>NPL chunking</option>
-								</select>
-							</td>
-						</tr>
-						<!-- Chunking Length -->
-						<tr>
-							<td class="text-start">Chunking length <span class="text-red-700">*</span></td>
-							<td>
-								<input
-									type="number"
-									name="chunkingLenght"
-									min="0"
-									bind:value={chunkingLength}
-									placeholder="Enter chunking length here..."
-									class="input"
-								/>
-								{#if errors?.ChunkingLength}
-									<p class="text-error">{errors?.ChunkingLength}</p>
-								{/if}
-							</td>
-						</tr>
-						<!-- Chunking Overlap -->
-						<tr>
-							<td class="text-start">Chunking Overlap <span class="text-red-700">*</span></td>
-							<td>
-								<input
-									type="number"
-									name="chunkOverlap"
-                                    min="0"
-									bind:value={chunkOverlap}
-									placeholder="Enter chunking overlap here..."
-									class="input"
-								/>
+				<!-- Chunking Strategy -->
+				<tr class="tables-row">
+					<td class="table-label">Chunking Strategy <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<select
+							class="input"
+							name="chunkingStrategy"
+							bind:value={chunkingStrategy}
+							placeholder="Select type here..."
+						>
+							<option>Recursive Structure Aaware Splitting</option>
+							<option>Structure Aware Splitting</option>
+							<option>Content Aware Splitting</option>
+							<option>NPL chunking</option>
+						</select>
+					</td>
+				</tr>
+				<!-- Chunking Length -->
+				<tr class="tables-row">
+					<td class="table-label">Chunking length <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<input
+							type="number"
+							name="chunkingLenght"
+							min="0"
+							bind:value={chunkingLength}
+							placeholder="Enter chunking length here..."
+							class="input"
+						/>
+						{#if errors?.ChunkingLength}
+							<p class="text-error">{errors?.ChunkingLength}</p>
+						{/if}
+					</td>
+				</tr>
+				<!-- Chunking Overlap -->
+				<tr class="tables-row">
+					<td class="table-label">Chunking Overlap <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<input
+							type="number"
+							name="chunkOverlap"
+							min="0"
+							bind:value={chunkOverlap}
+							placeholder="Enter chunking overlap here..."
+							class="input"
+						/>
 
-								{#if errors?.ChunkingOverlap}
-									<p class="text-error">{errors?.ChunkingOverlap}</p>
-								{/if}
-							</td>
-						</tr>
-						<!-- Splitter -->
-						<tr>
-							<td class="text-start">Splitter <span class="text-red-700">*</span></td>
-							<td>
-								<input
-									type="text"
-									name="splitter"
-									bind:value={splitter}
-									placeholder="Enter Splitter here..."
-									class="input"
-								/>
-								{#if errors?.Splitter}
-									<p class="text-error">{errors?.Splitter}</p>
-								{/if}
-							</td>
-						</tr>
-					</tbody>
-				</table>
+						{#if errors?.ChunkingOverlap}
+							<p class="text-error">{errors?.ChunkingOverlap}</p>
+						{/if}
+					</td>
+				</tr>
+				<!-- Splitter -->
+				<tr class="tables-row">
+					<td class="table-label">Splitter <span class="text-red-700">*</span></td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="splitter"
+							bind:value={splitter}
+							placeholder="Enter Splitter here..."
+							class="input"
+						/>
+						{#if errors?.Splitter}
+							<p class="text-error">{errors?.Splitter}</p>
+						{/if}
+					</td>
+				</tr>
+			</tbody>
+		</table>
 
-				<div class="button-container">
-					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
-					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
-					{/await}
-				</div>
-			</form>
+		<div class="btn-container">
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
 		</div>
-	</div>
+	</form>
 </div>

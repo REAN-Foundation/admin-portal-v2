@@ -2,14 +2,13 @@
 	import { page } from '$app/state';
 	import Icon from '@iconify/svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
-	import {
-		ChatBotSettingsSchema	} from '$lib/validation/tenant.settings.schema.js';
+	import { ChatBotSettingsSchema } from '$lib/validation/tenant.settings.schema.js';
 	import type {
 		ChatBotSettings,
 		ConsentSettings,
-		FaviconUploadModel
+		FaviconUploadModel,
+		LogoUploadModel
 	} from '$lib/types/tenant.settings.types.js';
-	import ConsentModel from '$routes/users/[userId]/tenants/[id]/settings/chatbot-setting/consent.modal.svelte';
 	import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema.js';
 	import Progressive from './progressive.update.svelte';
 	import ExportSettingsDialog from './export-settings.dialog.svelte';
@@ -34,46 +33,50 @@
 	let showExportDialog = $state(false);
 	let isCreatingSecret = $state(false);
 
-	let previousConsent = $derived(chatBotSetting.ChatBot.Consent);
-	let faviconUrl = $derived(chatBotSetting.ChatBot.Favicon);
+	let faviconUrl = chatBotSetting.ChatBot.Favicon;
+	let logoUrl = chatBotSetting.ChatBot.OrganizationLogo;
+	let logoUrlResult = $state('');
+	let faviconUrlResult = $state('');
+
 	// let disabled = $state(data.commonSettings.UserInterfaces.ChatBot);
 	let disabled = $state(data.isChatBotEnabled);
 	let edit = $state(false);
-	let fileName = $state('')
+	let fileName = $state('');
+	let logoName = $state('');
 
 	const totalSteps = 3;
 	let currentSection = $state(0);
 
 	const handleEditClick = async () => {
-        if (!disabled) {
-            addToast({
-                message: 'This setting is disabled. Please update it from the main settings.',
-                type: 'info',
-                timeout: 3000
-            });
-            return;
-        }
-        if (!edit) {
-            addToast({
-                message: 'Edit mode enabled.',
-                type: 'info',
-                timeout: 3000
-            });
-            edit = true;
-        } else {
-            addToast({
-                message: 'Edit mode disabled.',
-                type: 'info',
-                timeout: 3000
-            });
-            edit = false;
-        }
+		if (!disabled) {
+			addToast({
+				message: 'This setting is disabled. Please update it from the main settings.',
+				type: 'info',
+				timeout: 3000
+			});
+			return;
+		}
+		if (!edit) {
+			addToast({
+				message: 'Edit mode enabled.',
+				type: 'info',
+				timeout: 3000
+			});
+			edit = true;
+		} else {
+			addToast({
+				message: 'Edit mode disabled.',
+				type: 'info',
+				timeout: 3000
+			});
+			edit = false;
+		}
 	};
 
 	const onFileSelected = async (e) => {
 		const input = e.target as HTMLInputElement;
 		const file = input.files?.[0];
-		fileName = file.name
+		fileName = file.name;
 
 		const fileCreateModel: FaviconUploadModel = {
 			UploadFile: file,
@@ -83,8 +86,6 @@
 
 		const fileValidationResult = imageUploadSchema.safeParse(fileCreateModel);
 
-		console.log("validation result", fileValidationResult);
-		
 		if (!fileValidationResult.success) {
 			errors = Object.fromEntries(
 				Object.entries(fileValidationResult.error.flatten().fieldErrors).map(([key, val]) => [
@@ -99,77 +100,94 @@
 		formData.append('filename', file.name);
 	};
 
+	const onLogoSelected = async (e) => {
+		const input = e.target as HTMLInputElement;
+		const file = input.files?.[0];
+		logoName = file.name;
+
+		const fileCreateModel: LogoUploadModel = {
+			UploadFile: file,
+			FileName: file.name,
+			FileType: file.type
+		};
+
+		const fileValidationResult = imageUploadSchema.safeParse(fileCreateModel);
+
+		if (!fileValidationResult.success) {
+			errors = Object.fromEntries(
+				Object.entries(fileValidationResult.error.flatten().fieldErrors).map(([key, val]) => [
+					key,
+					val?.[0] || 'This field is required'
+				])
+			);
+			return;
+		}
+
+		formData.append('logofile', file);
+		formData.append('filename', file.name);
+	};
+
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
 		errors = {};
 
 		// let isConsentSaved = false;
 		let isFaviconUploaded = false;
+		let isLogoUploaded = false;
 		// let isChatBotSaved = false;
 
 		try {
-            if (!edit) {
-                addToast({
-                    message: 'Nothing to edit !',
-                    type: 'info',
-                    timeout: 3000
-                });
-                return;
-            }
-			// ----------------------------- CONSENT SETTINGS -----------------------------
-			// const consentSettingModel: ConsentSettings = {
-			// 	TenantId: tenantId,
-			// 	TenantCode: tenantCode,
-			// 	TenantName: tenantName,
-			// 	DefaultLanguage: consentSetting.DefaultLanguage,
-			// 	Messages: consentSetting.Messages
-			// };
+			if (!edit) {
+				addToast({
+					message: 'Nothing to edit !',
+					type: 'info',
+					timeout: 3000
+				});
+				return;
+			}
 
-			// const consentValidation = ConsentSettingsSchema.safeParse(consentSettingModel);
-			// if (!consentValidation.success) {
-			// 	errors = Object.fromEntries(
-			// 		Object.entries(consentValidation.error.flatten().fieldErrors).map(([key, val]) => [
-			// 			key,
-			// 			val?.[0] || 'This field is required'
-			// 		])
-			// 	);
-			// 	return;
-			// }
+			//------------------------------LOGO UPLOAD---------------------------------
 
-			// const consentRes = await fetch(`/api/server/tenants/settings/${tenantId}/Consent`, {
-			// 	method: 'PUT',
-			// 	body: JSON.stringify(consentSettingModel),
-			// 	headers: { 'content-type': 'application/json' }
-			// });
+			if (formData.has('logofile')) {
+				const fileRes = await fetch(`/api/server/tenants/settings/upload`, {
+					method: 'POST',
+					body: formData
+				});
 
-			// const consentJson = await consentRes.json();
-			// if (consentJson.HttpCode === 200 || consentJson.HttpCode === 201) {
-			// 	isConsentSaved = true;
-			// } else if (consentJson.Errors) {
-			// 	errors = consentJson.Errors;
-			// 	addToast({ message: 'Consent settings failed.', type: 'error', timeout: 3000 });
-			// 	return;
-			// }
+				const fileJson = await fileRes.json();
+
+				if (fileJson.HttpCode === 200 || fileJson.HttpCode === 201) {
+					logoUrl = fileJson.Data.FileResources[0].Url;
+
+					isLogoUploaded = true;
+				} else {
+					addToast({ message: 'Logo upload failed.', type: 'error', timeout: 3000 });
+					return;
+				}
+			} else {
+				isLogoUploaded = true;
+			}
 
 			// ----------------------------- FAVICON UPLOAD -----------------------------
-			// if (formData.has('file')) {
-			// 	const fileRes = await fetch(`/api/server/tenants/upload`, {
-			// 		method: 'POST',
-			// 		body: formData
-			// 	});
+			if (formData.has('file')) {
+				const fileRes = await fetch(`/api/server/tenants/upload`, {
+					method: 'POST',
+					body: formData
+				});
 
-			// 	const fileJson = await fileRes.json();
+				const fileJson = await fileRes.json();
 
-			// 	if (fileJson.HttpCode === 200 || fileJson.HttpCode === 201) {
-			// 		faviconUrl = fileJson.Data.FileResources[0].Url;
-			// 		isFaviconUploaded = true;
-			// 	} else {
-			// 		addToast({ message: 'Favicon upload failed.', type: 'error', timeout: 3000 });
-			// 		return;
-			// 	}
-			// } else {
-			// 	isFaviconUploaded = true; // no file, but treat as passed
-			// }
+				if (fileJson.HttpCode === 200 || fileJson.HttpCode === 201) {
+					faviconUrl = fileJson.Data.FileResources[0].Url;
+
+					isFaviconUploaded = true;
+				} else {
+					addToast({ message: 'Favicon upload failed.', type: 'error', timeout: 3000 });
+					return;
+				}
+			} else {
+				isFaviconUploaded = true; // no file, but treat as passed
+			}
 
 			// ----------------------------- CHATBOT SETTINGS -----------------------------
 			const chatbotCreateModel: ChatBotSettings = {
@@ -177,7 +195,7 @@
 				Description: chatBotSetting.ChatBot.Description,
 				DefaultLanguage: chatBotSetting.ChatBot.DefaultLanguage,
 				OrganizationName: chatBotSetting.ChatBot.OrganizationName,
-				OrganizationLogo: chatBotSetting.ChatBot.OrganizationLogo,
+				OrganizationLogo: logoUrl,
 				OrganizationWebsite: chatBotSetting.ChatBot.OrganizationWebsite,
 				Favicon: faviconUrl,
 				MessageChannels: {
@@ -222,7 +240,7 @@
 
 			const chatBotJson = await chatBotRes.json();
 			if (chatBotJson.HttpCode === 200 || chatBotJson.HttpCode === 201) {
-                toastMessage(chatBotJson);
+				toastMessage(chatBotJson);
 				edit = false;
 			} else if (chatBotJson.Errors) {
 				errors = chatBotJson.Errors;
@@ -248,39 +266,7 @@
 		SupportChannels: '/tenant-setting/chatbot/support_channel.svg#icon'
 	};
 
-	// const chatBotSettings = {
-	// 	MessageChannels: {
-	// 		WhatsApp: {
-	// 			Name: 'WhatsApp',
-	// 			IconPath: 'ic:twotone-whatsapp',
-	// 			Description: 'Connect with WhatsApp for messaging and notifications.'
-	// 		},
-	// 		Telegram: {
-	// 			Name: 'Telegram',
-	// 			IconPath: 'iconoir:telegram',
-	// 			Description: 'Connect with Telegram for messaging and notifications.'
-	// 		}
-	// 	},
-	// 	SupportChannels: {
-	// 		ClickUp: {
-	// 			Name: 'ClickUp',
-	// 			IconPath: 'lineicons:clickup',
-	// 			Description: 'Connect with ClickUp for task management and collaboration.'
-	// 		},
-	// 		Slack: {
-	// 			Name: 'Slack',
-	// 			IconPath: 'basil:slack-outline',
-	// 			Description: 'Connect with Slack for team communication and collaboration.'
-	// 		},
-	// 		Email: {
-	// 			Name: 'Email',
-	// 			IconPath: 'line-md:email',
-	// 			Description: 'Connect with Email for email notifications and communication.'
-	// 		}
-	// 	}
-	// } as const;
-
-    const chatBotSettings = {
+	const chatBotSettings = {
 		MessageChannels: {
 			Name: 'Message Channels',
 			IconPath: 'mdi:message-outline',
@@ -312,73 +298,73 @@
 			},
 			Email: {
 				Name: 'Email',
-				IconPath: 'line-md:email',
+				IconPath: 'mdi:email-outline',
 				Description: 'Connect with Email for notifications.'
 			}
 		},
 
-			Personalization: {
-				Name: 'Personalization',
-				IconPath: 'mdi:account-circle-outline',
-				Description: 'Enable personalized chatbot responses.'
-			},
-			LocationContext: {
-				Name: 'Location Context',
-				IconPath: 'mdi:map-marker-outline',
-				Description: 'Use location data for contextual responses.'
-			},
-			Localization: {
-				Name: 'Localization',
-				IconPath: 'mdi:translate',
-				Description: 'Support multiple languages and regions.'
-			},
-			RemindersMedication: {
-				Name: 'Medication Reminders',
-				IconPath: 'mdi:pill',
-				Description: 'Send medication reminder notifications.'
-			},
-			QnA: {
-				Name: 'Q&A',
-				IconPath: 'mdi:help-circle-outline',
-				Description: 'Enable question and answer functionality.'
-			},
-			Consent: {
-				Name: 'Consent',
-				IconPath: 'mdi:shield-check-outline',
-				Description: 'Collect user consent and privacy agreements.'
-			},
-			WelcomeMessage: {
-				Name: 'Welcome Message',
-				IconPath: 'mdi:hand-wave-outline',
-				Description: 'Send greeting messages to new users.'
-			},
-			Feedback: {
-				Name: 'Feedback',
-				IconPath: 'mdi:comment-outline',
-				Description: 'Collect user feedback and ratings.'
-			},
-			ReminderAppointment: {
-				Name: 'Appointment Reminders',
-				IconPath: 'mdi:calendar-clock',
-				Description: 'Send appointment reminder notifications.'
-			},
-			AppointmentFollowup: {
-				Name: 'Appointment Followup',
-				IconPath: 'mdi:calendar-check',
-				Description: 'Follow up after appointments with users.'
-			},
-			ConversationHistory: {
-				Name: 'Conversation History',
-				IconPath: 'mdi:history',
-				Description: 'Store and access previous conversations.'
-			},
-			Emojis: {
-				Name: 'Emojis',
-				IconPath: 'mdi:emoticon-happy-outline',
-				Description: 'Use emojis in chatbot responses.'
-			}
+		Personalization: {
+			Name: 'Personalization',
+			IconPath: 'mdi:account-circle-outline',
+			Description: 'Enable personalized chatbot responses.'
+		},
+		LocationContext: {
+			Name: 'Location Context',
+			IconPath: 'mdi:map-marker-outline',
+			Description: 'Use location data for contextual responses.'
+		},
+		Localization: {
+			Name: 'Localization',
+			IconPath: 'mdi:translate',
+			Description: 'Support multiple languages and regions.'
+		},
+		RemindersMedication: {
+			Name: 'Medication Reminders',
+			IconPath: 'mdi:pill',
+			Description: 'Send medication reminder notifications.'
+		},
+		QnA: {
+			Name: 'Q&A',
+			IconPath: 'mdi:help-circle-outline',
+			Description: 'Enable question and answer functionality.'
+		},
+		Consent: {
+			Name: 'Consent',
+			IconPath: 'mdi:shield-check-outline',
+			Description: 'Collect user consent and privacy agreements.'
+		},
+		WelcomeMessage: {
+			Name: 'Welcome Message',
+			IconPath: 'mdi:hand-wave-outline',
+			Description: 'Send greeting messages to new users.'
+		},
+		Feedback: {
+			Name: 'Feedback',
+			IconPath: 'mdi:comment-outline',
+			Description: 'Collect user feedback and ratings.'
+		},
+		ReminderAppointment: {
+			Name: 'Appointment Reminders',
+			IconPath: 'mdi:calendar-clock-outline',
+			Description: 'Send appointment reminder notifications.'
+		},
+		AppointmentFollowup: {
+			Name: 'Appointment Followup',
+			IconPath: 'mdi:calendar-check-outline',
+			Description: 'Follow up after appointments with users.'
+		},
+		ConversationHistory: {
+			Name: 'Conversation History',
+			IconPath: 'mdi:history',
+			Description: 'Store and access previous conversations.'
+		},
+		Emojis: {
+			Name: 'Emojis',
+			IconPath: 'mdi:emoticon-happy-outline',
+			Description: 'Use emojis in chatbot responses.'
+		}
 	} as const;
-	
+
 	function getSettingMeta(group: keyof typeof chatBotSettings, key: string) {
 		const setting = chatBotSettings?.[group]?.[key];
 
@@ -392,119 +378,106 @@
 	}
 
 	$effect(() => {
-		if (edit === false && chatBotSetting.ChatBot.Consent === true && previousConsent === false) {
-			showCancelModel = true;
-		}
-
-		previousConsent = chatBotSetting.ChatBot.Consent;
+		// if (edit === false && chatBotSetting.ChatBot.Consent === true && previousConsent === false) {
+		// 	showCancelModel = true;
+		// }
+		// previousConsent = chatBotSetting.ChatBot.Consent;
 	});
 
-		async function getBotSecret() {
-
+	async function getBotSecret() {
 		showExportDialog = true;
-
 	}
 </script>
 
-<ConsentModel
-	{showCancelModel}
-	onClose={() => (showCancelModel = false)}
-	{form}
-	bind:consentSetting
-	{tenantName}
-	{tenantCode}
-/>
-
 <div class="px-5 py-4">
-	<div class="mx-auto">
+	<!-- Stepper above border -->
+	<div class="w-full py-4">
+		<div class="flex w-full items-start justify-between">
+			<div class="flex flex-1 flex-col items-center">
+				<div class="flex w-full items-center">
+					{#each Array(totalSteps) as _, index}
+						<!-- Step circle -->
+						<div
+							class={`step-number 
+							${
+								index < currentSection
+									? 'step-completed'
+									: index === currentSection
+										? 'stepper-active'
+										: 'stepper-inactive'
+							}`}
+						>
+							{index < currentSection ? index + 1 : index + 1}
+						</div>
+						<!-- Line between steps -->
+						{#if index < totalSteps - 1}
+							<div
+								class="mx-1 h-0.5 flex-1 bg-gray-300"
+								class:bg-blue-600={index < currentSection - 1}
+							></div>
+						{/if}
+					{/each}
+				</div>
+				<!-- Step label -->
+				<div class="mt-2 text-center text-sm text-[var(--color-info)]">
+					Step {currentSection + 1} of {totalSteps}
+				</div>
+			</div>
+			<!-- Create Secret Button -->
+			<button
+				type="button"
+				class="table-btn variant-filled-secondary ml-4"
+				onclick={getBotSecret}
+				disabled={isCreatingSecret}
+			>
+				<Icon icon="material-symbols:upload" class="mr-1" />
+				{isCreatingSecret ? 'Creating...' : 'Create Secret'}
+			</button>
+		</div>
+	</div>
+	<div class="mx-auto my-6 border border-[var(--color-outline)]">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<!-- Stepper -->
+			<!-- Heading -->
 
-			<div class="w-full py-4">
-				<div class="flex w-full items-start justify-between">
-					<div class="flex flex-col items-center flex-1">
-						<div class="flex w-full items-center">
-							{#each Array(totalSteps) as _, index}
-								<!-- Step circle -->
-								<div
-									class={`step-number 
-									${
-										index < currentSection
-											? 'step-completed'
-											: index === currentSection
-												? 'stepper-active'
-												: 'stepper-inactive'
-									}`}
-								>
-									{index < currentSection ? index + 1 : index + 1}
-								</div>
-								<!-- Line between steps -->
-								{#if index < totalSteps - 1}
-									<div
-										class="mx-1 h-0.5 flex-1 bg-gray-300"
-										class:bg-blue-600={index < currentSection - 1}
-									></div>
-								{/if}
-							{/each}
-						</div>
-						<!-- Step label -->
-						<div class="mt-2 text-center text-sm text-gray-600">
-							Step {currentSection + 1} of {totalSteps}
-						</div>
-					</div>
-					<!-- Create Secret Button -->
+			<div
+				class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6"
+			>
+				<h1 class="text-xl text-[var(--color-info)]">Chatbot Settings</h1>
+				<div class="flex items-center gap-2 text-end">
 					<button
 						type="button"
-						class="table-btn variant-filled-secondary ml-4"
-						onclick={getBotSecret}
-						disabled={isCreatingSecret}
+						class="table-btn variant-filled-secondary gap-1"
+						onclick={handleEditClick}
 					>
-						<Icon icon="material-symbols:upload" class="mr-1" />
-						{isCreatingSecret ? 'Creating...' : 'Create Secret'}
+						<Icon icon="material-symbols:edit-outline" />
+						<!-- <span>{edit ? 'Save' : 'Edit'}</span> -->
 					</button>
+					<a
+						href={tenantRoute}
+						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+					>
+						<Icon icon="material-symbols:close-rounded" class=" h-5" />
+					</a>
 				</div>
 			</div>
 
-			<div class="table-container">
-				<!-- Heading -->
-
-				<div
-					class="flex items-center justify-between !rounded-b-none border bg-[#F2F3F5] px-5 py-6"
-				>
-					<h1 class=" mx-1 text-xl">Chatbot Settings</h1>
-					<div class="flex items-center gap-2 text-end">
-						<button
-							type="button"
-							class="table-btn variant-filled-secondary gap-1"
-							onclick={handleEditClick}
-						>
-							<Icon icon="material-symbols:edit-outline" />
-							<!-- <span>{edit ? 'Save' : 'Edit'}</span> -->
-						</button>
-						<a
-							href={tenantRoute}
-							class="inline-flex items-center justify-center rounded-md border-[0.5px] !border-red-200 px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
-						>
-							<Icon icon="material-symbols:close-rounded" class=" h-5" />
-						</a>
-					</div>
-				</div>
-
-				<!-- content -->
-				<div>
-					<Progressive
-						bind:chatBotSetting
-						{edit}
-						{iconPaths}
-						{getSettingMeta}
-						bind:showCancelModel
-						{onFileSelected}
-						bind:currentSection
-						{fileName}
-						chatBotUISettings = {chatBotSettings}
-					/>
-				</div>
+			<!-- content -->
+			<div class="flex flex-col space-y-4">
+				<Progressive
+					bind:chatBotSetting
+					{edit}
+					{iconPaths}
+					{getSettingMeta}
+					bind:showCancelModel
+					{onFileSelected}
+					bind:currentSection
+					{fileName}
+					chatBotUISettings={chatBotSettings}
+					{onLogoSelected}
+					{logoName}
+				/>
 			</div>
+			<!-- <hr class="border-[0.5px] border-t border-[var(--color-outline)]" /> -->
 		</form>
 	</div>
 </div>

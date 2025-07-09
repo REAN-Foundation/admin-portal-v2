@@ -14,21 +14,19 @@
 	let { data, form } = $props();
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let name = $state('');
+	let name = $state(undefined);
 	let description = $state('');
 	let template = $state('');
-	let referenceTemplateCode = $state('');
+	let referenceTemplateCode = $state(undefined);
 	let version = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
-	// let assessmentTemplates = $state([]);
-	
-	 let assessmentTemplates = data.assessmentTemplates ?? [];
+
+	let assessmentTemplates = data.assessmentTemplates ?? [];
 	console.log('assessmentTemplates', assessmentTemplates);
 
 	data.title = 'Create Assessment';
 	const userId = page.params.userId;
-	// const tenantId = data?.sessionUser?.tenantId;
 	const tenantId = data?.tenantId;
 
 	const assetRoute = `/users/${userId}/careplan/assets`;
@@ -44,6 +42,18 @@
 		try {
 			event.preventDefault();
 			errors = {};
+			if (assessmentTemplates.length === 0) {
+				errors = {
+					ReferenceTemplateCode: 'No assessmentavailable. Please create clinical assessments first.'
+				};
+				return;
+			}
+			if (!referenceTemplateCode || referenceTemplateCode.trim() === '') {
+				errors = {
+					ReferenceTemplateCode: 'Please select a reference assessment from the dropdown.'
+				};
+				return;
+			}
 
 			const assessmentCreateModel: AssessmentCreateModel = {
 				Name: name,
@@ -56,7 +66,7 @@
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentCreateModel);
-			console.log("Validation result", validationResult)
+			console.log('Validation result', validationResult);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -67,7 +77,7 @@
 				);
 				return;
 			}
-			// console.log(assessmentCreateModel); 
+			// console.log(assessmentCreateModel);
 			const res = await fetch(`/api/server/careplan/assets/assessments`, {
 				method: 'POST',
 				body: JSON.stringify(assessmentCreateModel),
@@ -79,8 +89,9 @@
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				// console.log('Full response:', response);
-			    goto(`${assessmentRoute}/${response?.Data?.id}/view`);
-			} 
+				goto(`${assessmentRoute}/${response?.Data?.id}/view`);
+				return;
+			}
 			if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -92,9 +103,8 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -115,8 +125,8 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {errors?.Name ? 'input-text-error' : ''}"
-							name="assessmentName"
+							class="input {errors?.name ? 'input-text-error' : ''}"
+							name="name"
 							placeholder="Enter name here..."
 							bind:value={name}
 						/>
@@ -131,7 +141,9 @@
 					<td class="table-data">
 						<textarea
 							name="description"
-							class="input resize-none {errors?.Description ? 'border-error-300' : 'border-primary-200'}"
+							class="input resize-none {errors?.Description
+								? 'border-error-300'
+								: 'border-primary-200'}"
 							bind:value={description}
 							placeholder="Enter description here..."
 						></textarea>
@@ -153,19 +165,31 @@
 					</td>
 				</tr>
 				<tr class="tables-row">
-	<td class="table-label">Reference Template Code <span class="important-field">*</span></td>
+	<td class="table-label">Reference Assessment<span class="important-field">*</span></td>
 	<td class="table-data">
-		<select
-			bind:value={referenceTemplateCode}
-			class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
-		>
-			<option disabled selected value="">Select reference template here...</option>
-			{#each assessmentTemplates as template}
-				<option value={template.DisplayCode}>{template.Title}</option>
-			{/each}
-		</select>
-		{#if errors?.ReferenceTemplateCode}
-			<p class="error-text">{errors?.ReferenceTemplateCode}</p>
+		{#if assessmentTemplates.length === 0}
+			<div class="flex items-center space-x-4">
+				<Button 
+					type="button" 
+					text="Add Assessment" 
+					variant="primary" 
+					onclick={() => goto(`/users/${userId}/assessment-templates/create`)}
+				/>
+				<div class="error-text">No assessment available</div>
+			</div>
+		{:else}
+			<select
+				bind:value={referenceTemplateCode}
+				class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
+			>
+				<!-- <option disabled selected value="">Select reference assessment here...</option> -->
+				{#each assessmentTemplates as template}
+					<option value={template.DisplayCode}>{template.Title}</option>
+				{/each}
+			</select>
+			{#if errors?.ReferenceTemplateCode}
+				<p class="error-text">{errors?.ReferenceTemplateCode}</p>
+			{/if}
 		{/if}
 	</td>
 </tr>
@@ -173,11 +197,7 @@
 <tr class="tables-row">
 					<td class="table-label">Tags</td>
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
+						<InputChips bind:keywords name="keywords" id="keywords" />
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>
@@ -204,9 +224,8 @@
             {#await promise}
                 <Button type="submit" text="Submitting" variant="primary" disabled={true} />
             {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
+                <Button type="submit" text="Submit" variant="primary" disabled={assessmentTemplates.length === 0} />
             {/await}
 		</div>
 	</form>
 </div>
-

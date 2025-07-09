@@ -22,7 +22,10 @@
 		assessmentNodes.Description !== null && assessmentNodes.Description !== ''
 			? assessmentNodes.Description
 			: 'Not specified';
-	const message = assessmentNodes.Message !== null && assessmentNodes.Message !== '' ? assessmentNodes.Message : 'Not specified';
+	const message =
+		assessmentNodes.Message !== null && assessmentNodes.Message !== ''
+			? assessmentNodes.Message
+			: 'Not specified';
 	const serveListNodeChildrenAtOnce = assessmentNodes.ServeListNodeChildrenAtOnce ?? null;
 	const queryType = assessmentNodes.QueryResponseType;
 	const options = assessmentNodes.Options ?? [];
@@ -32,13 +35,76 @@
 	const tags_ = Array.isArray(assessmentNodes?.Tags) ? assessmentNodes.Tags : [];
 	const tags = tags_.join(', ');
 	const correctAnswer = assessmentNodes.CorrectAnswer ?? null;
-	const rawData =
-		assessmentNodes.RawData !== null && assessmentNodes.RawData !== ''
-			? assessmentNodes.RawData
-			: 'Not specified';
+
+	const formatRawData = (data: any) => {
+		if (!data || data === '{}' || data === '' || data === null || data === undefined) {
+			return 'Not specified';
+		}
+
+		try {
+			if (typeof data === 'object') {
+				if (Object.keys(data).length === 0) {
+					return 'Not specified';
+				}
+				return JSON.stringify(data, null, 2);
+			}
+
+			if (typeof data === 'string') {
+				const parsed = JSON.parse(data);
+				if (Object.keys(parsed).length === 0) {
+					return 'Not specified';
+				}
+				return JSON.stringify(parsed, null, 2);
+			}
+
+			return 'Not specified';
+		} catch (error) {
+			return data || 'Not specified';
+		}
+	};
+
+	const rawData = formatRawData(assessmentNodes.RawData);
+	const isJsonData = rawData !== 'Not specified' && rawData !== assessmentNodes.RawData;
 
 	const fieldIdentifier = assessmentNodes.FieldIdentifier ?? null;
 	const fieldIdentifierUnit = assessmentNodes.FieldIdentifierUnit ?? null;
+
+	// Field identifier options for editing
+	const AssessmentFieldIdentifiers = [
+		'General:PersonalProfile:FirstName',
+		'General:PersonalProfile:LastName',
+		'General:PersonalProfile:Name',
+		'General:PersonalProfile:Age',
+		'General:PersonalProfile:DateOfBirth',
+		'General:PersonalProfile:Gender',
+		'Clinical:HealthProfile:BloodGroup',
+		'Clinical:HealthProfile:Ethnicity',
+		'Clinical:HealthProfile:Race',
+		'Clinical:HealthProfile:MaritalStatus',
+		'Clinical:HealthProfile:Occupation',
+		'Clinical:HealthProfile:Smoking',
+		'Clinical:Vitals:BloodPressure:Systolic',
+		'Clinical:Vitals:BloodPressure:Diastolic',
+		'Clinical:Vitals:Pulse',
+		'Clinical:Vitals:Temperature',
+		'Clinical:Vitals:Weight',
+		'Clinical:Vitals:Height',
+		'Clinical:Vitals:OxygenSaturation',
+		'Clinical:Vitals:BloodGlucose',
+		'Clinical:LabRecords:Cholesterol',
+		'Clinical:LabRecords:Triglycerides',
+		'Clinical:LabRecords:LDL',
+		'Clinical:LabRecords:HDL',
+		'Clinical:LabRecords:A1C'
+	];
+
+	const sortedIdentifiers = AssessmentFieldIdentifiers;
+
+	function toLabel(identifier: string) {
+		const parts = identifier.split(':');
+		const lastPart = parts[parts.length - 1];
+		return lastPart.replace(/([a-z])([A-Z])/g, '$1 $2'); // adds space before capital letters
+	}
 	let resolutionScore = $state();
 
 	if (nodeType === 'Question') {
@@ -46,8 +112,6 @@
 	}
 
 	scoringApplicableCondition.set(data.templateDetails.ScoringApplicable);
-
-	console.log('assessmentNode', assessmentNodes);
 
 	const userId = page.params.userId;
 	const templateId = page.params.templateId;
@@ -79,6 +143,7 @@
 			path: viewRoute
 		}
 	];
+
 	const handleAssessmentNodeDelete = async (id) => {
 		const assessmentNodeId = id;
 		console.log('assessmentNodeId', assessmentNodeId);
@@ -106,8 +171,6 @@
 		model = false;
 	};
 	const onUpdateScoringCondition = async (score: number) => {
-		// const scoringId = data.assessmentNode.ScoringCondition.id;
-		// console.log(scoringId);
 		resolutionScore = score;
 		console.log('resolutionScore', resolutionScore);
 		handleSubmit(event);
@@ -146,15 +209,12 @@
 				}
 			);
 
-			// console.log(scoringId);
 			const response = await res.json();
-			// const scoringCondition = JSON.parse(resp);
 
 			console.log('response', response);
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				// goto(`${assessmentsRoutes}/${response?.Data?.AssessmentTemplate?.id}/view`);
-				// resolutionScore = scoringCondition.ResolutionScore;
+
 				return;
 			}
 			if (response.Errors) {
@@ -166,33 +226,205 @@
 			toastMessage();
 		}
 	};
-
-	// async function updateScoringCondition(model) {
-	// 	const response = await fetch(`/api/server/assessment-nodes/update-scoring-condition`, {
-	// 		method: 'POST',
-	// 		body: JSON.stringify(model),
-	// 		headers: { 'content-type': 'application/json' }
-	// 	});
-	// }
 </script>
 
-<!-- <UpdateScoringCondition
-	on:updateScoringCondition={async (e) => await onUpdateScoringCondition(e.detail.resolutionScore)}
-/> -->
 {#if model}
 	<UpdateScoringCondition {onUpdateScoringCondition} {closeModal} />
 {/if}
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-2">
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<h2 class="form-titles">View Node</h2>
+		<a href={assessmentNodeRoutes} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
+		</a>
+	</div>
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<td class="table-label">Node Type</td>
+				<td class="table-data">{nodeType}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Parent Node</td>
+				<td class="table-data">{displayCode}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Title</td>
+				<td class="table-data">{title}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Description</td>
+				<td class="table-data">{description}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Raw Data</td>
+				<td class="table-data">
+					{#if isJsonData}
+						{rawData}
+					{:else}
+						{rawData}
+					{/if}
+				</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Sequence</td>
+				<td class="table-data">{sequence}</td>
+			</tr>
+			{#if nodeType === 'Question'}
+				<tr class="tables-row">
+					<td class="table-label">Field Identifier</td>
+					<td class="table-data">{fieldIdentifier ? toLabel(fieldIdentifier) : 'Not specified'}</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Field Identifier Unit</td>
+					<td class="table-data">{fieldIdentifierUnit}</td>
+				</tr>
+			{/if}
+			<tr class="tables-row">
+				<td class="table-label">Tags</td>
+				<td class="table-data">
+					{#if tags.length <= 0}
+						<span>Tags not specified</span>
+					{:else}
+						<span>{tags}</span>
+					{/if}
+				</td>
+			</tr>
+			{#if nodeType === 'Question'}
+				<tr class="tables-row">
+					<td class="table-label">Query Response Type</td>
+					<td class="table-data">{queryType}</td>
+				</tr>
+				{#if options.length > 0}
+					<tr class="tables-row">
+						<td class="table-label align-top">Options</td>
+						<td class="table-data">
+							<ol class="ml-3 list-decimal">
+								{#each options as option}
+									<li>{option.Text}</li>
+								{/each}
+							</ol>
+						</td>
+					</tr>
+				{/if}
+				{#if queryType === 'Single Choice Selection'}
+					<tr class="tables-row">
+						<td class="table-label">Correct Answer</td>
+						<td class="table-data">
+							{#if correctAnswer}
+								{#if options.length > 0}
+									{#each options as option}
+										{#if option.Sequence == correctAnswer}
+											{option.Text}
+										{/if}
+									{/each}
+								{/if}
+							{:else}
+								<span>Not specified</span>
+							{/if}
+						</td>
+					</tr>
+				{/if}
+				{#if $scoringApplicableCondition === true}
+					<tr class="tables-row">
+						<td class="table-label">Resolution Score</td>
+						<td class="table-data">
+							<div class="flex items-center">
+								<span>{resolutionScore}</span>
+							</div>
+						</td>
+					</tr>
+				{/if}
+			{:else if nodeType === 'Message'}
+				<tr class="tables-row">
+					<td class="table-label">Message</td>
+					<td class="table-data">{message}</td>
+				</tr>
+			{:else if nodeType === 'Node list'}
+				<tr class="tables-row">
+					<td class="table-label">Serve List Node Children At Once</td>
+					<td class="table-data">{serveListNodeChildrenAtOnce}</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label align-top">Children Nodes</td>
+					<td class="table-data">
+						{#if childrenNodes.length <= 0}
+							<span>Children nodes not available!</span>
+						{:else}
+							<div class="health-system-table-container">
+								<table class="health-system-table">
+									<thead>
+										<tr>
+											<th>Sequence</th>
+											<th>Node type</th>
+											<th>Title</th>
+											<th />
+											<th />
+										</tr>
+									</thead>
+									<tbody class="!bg-white dark:!bg-inherit">
+										{#each childrenNodes as node}
+											<tr>
+												<td>{node.Sequence}</td>
+												<td>{node.NodeType}</td>
+												<td>{Helper.truncateText(node.Title, 30)}</td>
+												<td role="gridcell" aria-colindex={2} tabindex="0">
+													<div class="flex">
+														<Tooltip text="Edit" forceShow={true}>
+															<button class="">
+																<a
+																	href={editNodeRoute(node.id)}
+																	class="health-system-btn group"
+																>
+																	<Icon
+																		icon="material-symbols:edit-outline"
+																		class="health-system-icon"
+																	/>
+																</a>
+															</button>
+														</Tooltip>
+														<Tooltip text="View" forceShow={true}>
+															<button>
+																<a href={viewRoute} class=" health-system-btn group"
+																	><Icon
+																		icon="icon-park-outline:preview-open"
+																		class="health-system-icon"
+																	/>
+																</a>
+															</button>
+														</Tooltip>
+														<Tooltip text="Delete" forceShow={true}>
+															<button
+																class="health-system-btn !text-red-600"
+																onclick={() => handleAssessmentNodeDelete(node.id)}
+															>
+																<Icon icon="material-symbols:delete-outline-rounded" />
+															</button>
+														</Tooltip>
+													</div>
+												</td>
+											</tr>
+										{/each}
+									</tbody>
+								</table>
+							</div>
+						{/if}
+					</td>
+				</tr>
+			{/if}
+		</tbody>
+	</table>
+	<div class="btn-container">
 		{#if nodeType === 'Node list'}
 			<a
 				href={createNodeRoute}
 				class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
-				>Add child</a
 			>
+				Add child
+			</a>
 		{/if}
 		<a
 			href={editRoute}
@@ -201,207 +433,6 @@
 			<Icon icon="material-symbols:edit-outline" />
 			<span class="ml-1">Edit</span>
 		</a>
-	</div>
-
-	<div class="mx-auto">
-		<div class="health-system-table-container">
-			<table class="health-system-table">
-				<thead>
-					<tr>
-						<th>View Node</th>
-						<th class="text-end">
-							<a href={assessmentNodeRoutes} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Node Type</td>
-						<td>{nodeType}</td>
-					</tr>
-					<tr>
-						<td>Parent Node</td>
-						<td>{displayCode}</td>
-					</tr>
-					<tr>
-						<td>Title</td>
-						<td>{title}</td>
-					</tr>
-					<tr>
-						<td>Description</td>
-						<td>{description}</td>
-					</tr>
-					<tr>
-						<td>Raw Data</td>
-						<td>{rawData}</td>
-					</tr>
-					<tr>
-						<td>Sequence</td>
-						<td>{sequence}</td>
-					</tr>
-					<tr>
-						<td>Field Identifier</td>
-						<td>{fieldIdentifier}</td>
-					</tr>
-					<tr>
-						<td>Field Identifier Unit</td>
-						<td>{fieldIdentifierUnit}</td>
-					</tr><tr>
-						<td>Tags</td>
-						<td>
-							{#if tags.length <= 0}
-								<span class="span">Tags not specified</span>
-							{:else}
-								<span class="span">{tags}</span>
-							{/if}
-						</td>
-					</tr>
-					{#if nodeType === 'Question'}
-						<tr>
-							<td>Query Response Type</td>
-							<td>{queryType}</td>
-						</tr>
-						{#if options.length > 0}
-							<tr>
-								<td class="align-top">Options</td>
-								<td>
-									<ol class="ml-3 list-decimal">
-										{#each options as option}
-											<li>{option.Text}</li>
-										{/each}
-									</ol>
-								</td>
-							</tr>
-						{/if}
-						{#if queryType === 'Single Choice Selection'}
-							<tr>
-								<td>Correct Answer</td>
-								<td>
-									{#if correctAnswer}
-										{#if options.length > 0}
-											{#each options as option}
-												{#if option.Sequence == correctAnswer}
-													{option.Text}
-												{/if}
-											{/each}
-											<!-- {:else}
-								<span class="span" >No options available</span> -->
-										{/if}
-									{:else}
-										<span class="span">Not specified</span>
-									{/if}
-								</td>
-							</tr>
-						{/if}
-						{#if $scoringApplicableCondition === true}
-							<tr>
-								<td>Resolution Score</td>
-								<td>
-									<div class="flex items-center">
-										<span>{resolutionScore}</span>
-
-										<!-- <button
-											onclick={openModal}
-											class="px-2 text-center text-gray-500 hover:text-blue-600"
-										>
-											<Icon icon="material-symbols:edit-outline" class="text-lg" />
-										</button> -->
-									</div>
-								</td>
-							</tr>
-						{/if}
-					{:else if nodeType === 'Message'}
-						<tr>
-							<td>Message</td>
-							<td>{message}</td>
-						</tr>
-					{:else if nodeType === 'Node list'}
-						<tr>
-							<td>Serve List Node Children At Once</td>
-							<td>{serveListNodeChildrenAtOnce}</td>
-						</tr>
-						<tr>
-							<td class="align-top">Children Nodes</td>
-							<td>
-								{#if childrenNodes.length <= 0}
-									<span class="span">Children nodes not available!</span>
-								{:else}
-									<div class="health-system-table-container">
-										<table class="health-system-table">
-											<thead>
-												<tr>
-													<th>Sequence</th>
-													<th>Node type</th>
-													<th>Title</th>
-													<th />
-													<th />
-												</tr>
-											</thead>
-											<tbody class="!bg-white dark:!bg-inherit">
-												{#each childrenNodes as node}
-													<tr>
-														<td>{node.Sequence}</td>
-														<td>{node.NodeType}</td>
-														<td>{Helper.truncateText(node.Title, 30)}</td>
-														<!-- <td>
-															<a
-																href={editNodeRoute(node.id)}
-																class="btn hover:variant-soft-primary -my-1 p-2"
-															>
-																<Icon icon="material-symbols:edit-outline" class="text-lg" />
-															</a>
-														</td> -->
-														<td role="gridcell" aria-colindex={2} tabindex="0">
-															<div class="flex">
-																<Tooltip text="Edit" forceShow={true}>
-																	<button class="">
-																		<a
-																			href={editNodeRoute(node.id)}
-																			class="health-system-btn group"
-																		>
-																			<Icon
-																				icon="material-symbols:edit-outline"
-																				class="health-system-icon"
-																			/>
-																		</a>
-																	</button>
-																</Tooltip>
-
-																<Tooltip text="View" forceShow={true}>
-																	<button>
-																		<a href={viewRoute} class=" health-system-btn group"
-																			><Icon
-																				icon="icon-park-outline:preview-open"
-																				class="health-system-icon"
-																			/>
-																		</a>
-																	</button>
-																</Tooltip>
-
-																<Tooltip text="Delete" forceShow={true}>
-																	<button
-																		class="health-system-btn !text-red-600"
-																		onclick={() => handleAssessmentNodeDelete(node.id)}
-																	>
-																		<Icon icon="material-symbols:delete-outline-rounded" />
-																	</button>
-																</Tooltip>
-															</div>
-														</td>
-													</tr>
-												{/each}
-											</tbody>
-										</table>
-									</div>
-								{/if}
-							</td>
-						</tr>
-					{/if}
-				</tbody>
-			</table>
-		</div>
 	</div>
 </div>
 

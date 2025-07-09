@@ -12,7 +12,6 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
 		console.log(`Upload in progress---`);
 
 		const formData = await event.request.formData();
-		console.log('formData', formData);
 		const file = formData.get('file') as File;
 		const filename = file.name;
 
@@ -52,7 +51,7 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
 
 		console.log('Uploading file resource ...');
 		const response = await uploadBinary(sessionId, fileBuffer, filename, true);
-		console.log("This is response ", JSON.stringify(response, null, 2));
+		console.log('This is response ', JSON.stringify(response, null, 2));
 
 		fs.unlinkSync(filePath);
 

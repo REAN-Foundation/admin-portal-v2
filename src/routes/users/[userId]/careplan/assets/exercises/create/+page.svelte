@@ -13,10 +13,10 @@
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let name = $state('');
+	let name = $state(undefined);
 	let description = $state('');
-	let exerciseType = $state('Aerobic');
-	let intensityLevel = $state('Moderate');
+	let exerciseType = $state('Strength');
+	let intensityLevel = $state('None');
 	let recommendedDurationMin = $state<number>();
 	let version = $state('');
 	let keywords: string[] = $state([]);
@@ -109,7 +109,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {errors?.Name ? 'input-text-error' : ''}"
+							class="input {errors?.name ? 'input-text-error' : ''}"
 							name="name"
 							placeholder="Enter name here..."
 							bind:value={name}
@@ -136,7 +136,7 @@
 					<td class="table-label">Exercise Type</td>
 					<td class="table-data">
 						<select class="input" bind:value={exerciseType}>
-							<option disabled value>Select exercise type</option>
+							<!-- <option disabled value>Select exercise type</option> -->
 							<option>Strength</option>
 							<option>Aerobic</option>
 							<option>Balance</option>
@@ -153,8 +153,8 @@
 					<td class="table-label">Intensity Level</td>
 					<td class="table-data">
 						<select class="input" bind:value={intensityLevel}>
-							<option disabled value>Select Intensity Level</option>
-							<option>None</option>
+							<!-- <option disabled value>Select Intensity Level</option> -->
+							<option selected>None</option>
 							<option>Minimal</option>
 							<option>Moderate</option>
 							<option>Somewhat hard</option>

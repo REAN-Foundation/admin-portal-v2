@@ -91,7 +91,7 @@
 									name="title"
 									required
 									placeholder="Enter title here..."
-									class="health-system-input {form?.errors?.title ? 'input-text-error' : ''}"
+									class="input {form?.errors?.title ? 'input-text-error' : ''}"
 								/>
 								{#if form?.errors?.title}
 									<p class="text-error">{form?.errors?.title[0]}</p>
@@ -101,17 +101,13 @@
 						<tr>
 							<td>Body</td>
 							<td>
-								<textarea
-									name="body"
-									placeholder="Enter body here..."
-									class="health-system-input"
-								/>
+								<textarea name="body" placeholder="Enter body here..." class="input" />
 							</td>
 						</tr>
 						<tr>
 							<td>Type</td>
 							<td>
-								<select class="health-system-input" name="type" placeholder="select type here...">
+								<select class="input" name="type" placeholder="select type here...">
 									<option selected>General</option>
 									<option value="Email">Email</option>
 									<option value="SMS">SMS</option>
@@ -140,7 +136,7 @@
 								<input
 									name="fileinput"
 									type="file"
-									class="health-system-input"
+									class="input"
 									placeholder="Image"
 									onchange={async (e) => await onFileSelected(e)}
 								/>

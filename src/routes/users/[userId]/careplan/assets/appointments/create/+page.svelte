@@ -114,7 +114,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {errors?.Name ? 'input-text-error' : ''}"
+							class="input {errors?.name ? 'input-text-error' : ''}"
 							name="name"
 							placeholder="Enter name here..."
 							bind:value={name}
@@ -142,7 +142,7 @@
 					<td class="table-label">Appointment Type</td>
 					<td class="table-data">
 						<select name="appointmentType" class="input" bind:value={appointmentType}>
-							<option disabled selected>Select appointment type</option>
+							<!-- <option disabled selected>Select appointment type</option> -->
 							<option>Doctor</option>
 							<option>Lab</option>
 							<option>Physiotherapy</option>
