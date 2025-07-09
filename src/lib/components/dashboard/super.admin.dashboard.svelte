@@ -54,7 +54,7 @@
     {/each} -->
 </dl>
 
-<div class=" dashboard-subcards">
+<div class=" dashboard-subcards px-4 pt-2">
 	<!-- <FunnelCard {labels} dataSource={funnelChartData} /> -->
 	<PlatformStatsCard {deviceDetails} />
 </div>
