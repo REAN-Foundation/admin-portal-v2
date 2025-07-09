@@ -23,7 +23,7 @@
 
 {#if showModal}
 	<div
-		class="preview-modal-backdrop"
+		class="preview-modal-backdrop bg-opacity-50 bg-black"
 		role="button"
 		tabindex="0"
 		onclick={closeModal}
@@ -31,8 +31,8 @@
 			if (e.key === 'Enter' || e.key === ' ') closeModal();
 		}}
 	>
-		<div 
-			class="preview-modal-content" 
+		<div
+			class="preview-modal-content"
 			onclick={(e) => e.stopPropagation()}
 			onkeydown={(e) => e.stopPropagation()}
 		>
@@ -41,15 +41,18 @@
 			</button>
 
 			{#if fileType?.includes('pdf')}
-				<iframe title="PDF Preview" src={fileUrl} width="100%" height="100%" style="border: none;"></iframe>
+				<iframe title="PDF Preview" src={fileUrl} width="100%" height="100%" style="border: none;"
+				></iframe>
 			{:else if fileType?.includes('csv') || fileType?.includes('text/plain')}
 				<div class="text-content-preview">
 					<pre>{textContent}</pre>
 				</div>
 			{:else if fileType?.includes('json')}
-				<iframe title="JSON Preview" src={fileUrl} width="100%" height="100%" style="border: none;"></iframe>
+				<iframe title="JSON Preview" src={fileUrl} width="100%" height="100%" style="border: none;"
+				></iframe>
 			{:else if fileType?.includes('xml')}
-				<iframe title="XML Preview" src={fileUrl} width="100%" height="100%" style="border: none;"></iframe>
+				<iframe title="XML Preview" src={fileUrl} width="100%" height="100%" style="border: none;"
+				></iframe>
 			{:else if fileType?.includes('sheet') || fileType?.includes('excel')}
 				<div class="download-prompt">
 					<p>This is a spreadsheet file that cannot be previewed directly.</p>
@@ -65,6 +68,7 @@
 	</div>
 {/if}
 
+<!-- 
 <style>
 	.preview-modal-backdrop {
 		position: fixed;
@@ -133,4 +137,4 @@
 	.download-btn:hover {
 		background: #2d3748;
 	}
-</style>
+</style> -->
