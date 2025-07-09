@@ -46,63 +46,53 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-2">
-		<div class=" btn-container">
-			<Button
-				size="md"
-				href={editRoute}
-				text="Edit"
-				variant="primary"
-				iconBefore="mdi:edit"
-				iconSize="md"
-			></Button>
-		</div>
+<div class="mx-auto w-full px-6 py-4">
+	<div class="form-headers">
+		<h2 class="form-titles">View Drug</h2>
+		<a href={drugRoute} class="cancel-btn">
+			<Icon icon="material-symbols:close-rounded" />
+		</a>
 	</div>
-	<div class="mx-auto">
-		<div class="table-container">
-			<table class="table-c">
-				<thead>
-					<tr>
-						<th>View Drug</th>
-						<th class="text-end">
-							<a href={drugRoute} class="cancel-btn">
-								<Icon icon="material-symbols:close-rounded" />
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Name</td>
-						<td>{drugName}</td>
-					</tr>
-					<tr>
-						<td>Generic Name</td>
-						<td>{genericName}</td>
-					</tr>
-					<tr>
-						<td>Ingredients</td>
-						<td>{ingredients}</td>
-					</tr>
-					<tr>
-						<td>Strength</td>
-						<td>{strength}</td>
-					</tr>
-					<tr>
-						<td>Commercial Name</td>
-						<td>{commercialNames}</td>
-					</tr>
-					<tr>
-						<td>Manufacture</td>
-						<td>{manufacturer}</td>
-					</tr>
-					<tr>
-						<td>Other Information</td>
-						<td>{otherInformation}</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+	<table class="w-full">
+		<tbody>
+			<tr class="tables-row">
+				<td class="table-label">Name</td>
+				<td class="table-data">{drugName}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Generic Name</td>
+				<td class="table-data">{genericName}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Ingredients</td>
+				<td class="table-data">{ingredients}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Strength</td>
+				<td class="table-data">{strength}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Commercial Name</td>
+				<td class="table-data">{commercialNames}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Manufacture</td>
+				<td class="table-data">{manufacturer}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Other Information</td>
+				<td class="table-data">{otherInformation}</td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="btn-container">
+		<Button
+			size="md"
+			href={editRoute}
+			text="Edit"
+			variant="primary"
+			iconBefore="mdi:edit"
+			iconSize="md"
+		/>
 	</div>
 </div>
