@@ -141,7 +141,7 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Code</td>
+					<td class="table-label">Code <span class="text-red-600">*</span></td>
 					<td class="table-data">
 						<input
 							type="text"
@@ -158,7 +158,7 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Phone</td>
+					<td class="table-label">Contact Number <span class="text-red-600">*</span></td>
 					<td class="table-data">
 						<input
 							type="text"
@@ -174,7 +174,7 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Email</td>
+					<td class="table-label">Email <span class="text-red-600">*</span></td>
 					<td class="table-data">
 						<input
 							type="email"
