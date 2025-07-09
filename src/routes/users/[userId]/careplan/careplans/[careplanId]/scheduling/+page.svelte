@@ -139,9 +139,20 @@
 		});
 		const response = await res.json();
 
-		items = response.Data.Items.map((obj) => {
+		let mappedItems = response.Data.Items.map((obj) => {
 			return { value: obj.id, label: obj.Name };
 		});
+
+		// Move selected asset to the front if it exists
+		if (assetId) {
+			const idx = mappedItems.findIndex(item => item.value === assetId);
+			if (idx > 0) {
+				const [selected] = mappedItems.splice(idx, 1);
+				mappedItems.unshift(selected);
+			}
+		}
+
+		items = mappedItems;
 		console.log('items: ', items);
 		return items;
 	}
@@ -183,6 +194,14 @@
 		try {
 			event.preventDefault();
 			errors = {};
+
+			// Validate asset existence
+			const selectedAsset = items.find(item => item.value === assetId);
+			if (!selectedAsset) {
+				errors = { ...errors, AssetId: "Asset not selected" };
+				return;
+			}
+
 			const careplanSchedulCreateModel: CarePlanSchedulingCreateModel = {
 				AssetType: assetType,
 				AssetId: assetId,
@@ -289,17 +308,29 @@
 					<tr class="tables-row">
 						<td class="table-label align-top">Asset <span class="important-field">*</span></td>
 						<td class="table-data">
-							<select
-								name="assetId"
-								class="input {errors?.assetId ? 'input-text-error' : ''}"
-								bind:value={assetId}
-							>
-								{#each items as val}
-									<option value={val.value}>{val.label}</option>
-								{/each}
-							</select>
-							{#if errors?.AssetId}
-								<p class="error-text">{errors?.AssetId}</p>
+							{#if items.length === 0}
+								<div class="flex items-center gap-2 mt-2">
+		
+									<Button
+										text="Add Asset"
+										variant="secondary"
+										onclick={() => goto(`/users/${userId}/careplan/assets/${assetRouteMap[assetType]}/create`)}
+									/>
+									<span class="text-warning">No assets found for this type.</span>
+								</div>
+							{:else}
+								<select
+									name="assetId"
+									class="input {errors?.assetId ? 'input-text-error' : ''}"
+									bind:value={assetId}
+								>
+									{#each items as val}
+										<option value={val.value}>{val.label}</option>
+									{/each}
+								</select>
+								{#if errors?.AssetId}
+									<p class="error-text">{errors?.AssetId}</p>
+								{/if}
 							{/if}
 						</td>
 					</tr>

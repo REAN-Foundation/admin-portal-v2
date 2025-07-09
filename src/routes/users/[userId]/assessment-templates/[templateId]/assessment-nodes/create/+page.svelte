@@ -133,12 +133,14 @@
 
 			const finalValue = correctAnswer === '' ? undefined : correctAnswer;
 
+			const sequenceValue = sequence === '' ? undefined : sequence;
+
 			const assessmentNodeCreateModel: AssessmentNodeCreateModel = {
 				NodeType: selectedNodeType,
 				ParentNodeId: parentNodeId,
 				Title: title,
 				Description: description,
-				Sequence: sequence,
+				Sequence: sequenceValue,
 				QueryType: selectedQueryType,
 				ResolutionScore: resolutionScore,
 				ProviderAssessmentCode: providerAssessmentCode,

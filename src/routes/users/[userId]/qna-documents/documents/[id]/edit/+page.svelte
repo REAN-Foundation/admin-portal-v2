@@ -416,7 +416,7 @@
 					</td>
 				</tr>
 
-				<tr class="tables-row">
+				<!-- <tr class="tables-row">
 					<td class="table-label">Active</td>
 					<td class="table-data">
 						<input
@@ -427,7 +427,7 @@
 							bind:value={active}
 						/>
 					</td>
-				</tr>
+				</tr> -->
 
 				<!-- <tr class="tables-row">
 							<td>Created By</td>
