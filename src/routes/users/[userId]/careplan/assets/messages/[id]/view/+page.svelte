@@ -9,10 +9,12 @@
 
 	const userId = page.params.userId;
 	var messageId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Message';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const editRoute = `/users/${userId}/careplan/assets/messages/${messageId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/messages/${messageId}/view`;
-	const messageRoute = `/users/${userId}/careplan/assets/messages`;
+	const messageRoute = `/users/${userId}/careplan/assets/messages/create`;
 
 	let { data }: { data: PageServerData } = $props();
 
@@ -33,6 +35,10 @@
 		{
 			name: 'Assets',
 			path: assetRoute
+		},
+		{
+			name: 'Message',
+			path: messageRoute
 		},
 		{
 			name: 'View',

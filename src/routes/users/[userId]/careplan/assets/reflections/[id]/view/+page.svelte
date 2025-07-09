@@ -9,7 +9,9 @@
 
 	const userId = page.params.userId;
 	const reflectionId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Reflection';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const editRoute = `/users/${userId}/careplan/assets/reflections/${reflectionId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/reflections/${reflectionId}/view`;
 	const reflectionRoute = `/users/${userId}/careplan/assets/reflections/create`;
@@ -29,7 +31,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Reflection',
+			path: reflectionRoute
+		},
 		{
 			name: 'View',
 			path: viewRoute

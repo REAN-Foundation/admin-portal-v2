@@ -26,13 +26,17 @@
 	var challengesId = page.params.id;
 	const tenantId = data.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Challenge';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/challenges`;
 	const editRoute = `/users/${userId}/careplan/assets/challenges/${challengesId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/challenges/${challengesId}/view`;
 	const challengesRoute = `/users/${userId}/careplan/assets/challenges`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute},
+		{ name: 'Challenge', path: createRoute},
 		{ name: 'Edit', path: editRoute }
 	];
 

@@ -9,10 +9,12 @@
 
 	const userId = page.params.userId;
 	var checkupsId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Checkup';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const editRoute = `/users/${userId}/careplan/assets/checkups/${checkupsId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/checkups/${checkupsId}/view`;
-	const checkupsRoute = `/users/${userId}/careplan/assets/checkups`;
+	const checkupsRoute = `/users/${userId}/careplan/assets/checkups/create`;
 
 	let { data }: { data: PageServerData } = $props();
 
@@ -28,6 +30,9 @@
 		{
 			name: 'Assets',
 			path: assetRoute
+		},
+		{ name: 'Checkup',
+		 path: checkupsRoute 
 		},
 		{
 			name: 'View',

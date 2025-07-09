@@ -26,13 +26,17 @@
 	var meditationId = page.params.id;
   const tenantId = data.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Meditation';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+  const createRoute = `/users/${userId}/careplan/assets/meditations`;
 	const editRoute = `/users/${userId}/careplan/assets/meditations/${meditationId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/meditations/${meditationId}/view`;
 	const meditationRoute = `/users/${userId}/careplan/assets/meditations`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+    { name: 'Meditation', path: createRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
