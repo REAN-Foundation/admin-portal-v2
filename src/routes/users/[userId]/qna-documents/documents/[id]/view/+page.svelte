@@ -9,11 +9,6 @@
 	import type { VectorStoreCreateModel } from '$lib/types/vector.store.types';
 	import FilePreviewModal from '$lib/components/modal/file.preview.modal.svelte';
 	import Button from '$lib/components/button/button.svelte';
-<<<<<<< HEAD
-	import Label from '$lib/components/label/label.svelte';
-	import Heading from '$lib/components/heading/heading.svelte';
-=======
->>>>>>> develop
 	///////////////////////////////////////////////////////////////////////////////
 	let { data }: { data: PageServerData } = $props();
 
@@ -164,13 +159,6 @@
 
 <!-- Rendering breadcrumbs component -->
 <BreadCrumbs crumbs={breadCrumbs} />
-<<<<<<< HEAD
-<div class="mx-auto w-full px-6 py-4">
-	<div class="form-headers">
-		<Heading text="View Document" />
-		<a href={documentRoute} class="cancel-btn">
-			<Icon icon="material-symbols:close-rounded" />
-=======
 
 <div class="mx-auto w-full px-6 py-4">
 	<div class="form-headers">
@@ -183,7 +171,6 @@
 		<a href={editRoute} class="table-btn variant-filled-secondary hover:!variant-soft-secondary">
 			<Icon icon="material-symbols:edit-outline" class="mr-1" />
 			<span>Edit</span>
->>>>>>> develop
 		</a>
 	</div> -->
 	<table class="w-full">
@@ -194,90 +181,6 @@
 				<td class="table-data">{name}</td>
 			</tr>
 
-<<<<<<< HEAD
-	<table class="w-full">
-		<tbody>
-			<tr class="tables-row">
-				<Label text="Name" />
-				<td class="table-data">{name}</td>
-			</tr>
-
-			<tr class="tables-row">
-				<Label text="Description" />
-				<td class="table-data">{description}</td>
-			</tr>
-
-			<tr class="tables-row">
-				<Label text="File Name" />
-				<td class="table-data flex items-center gap-4">
-					{fileName}
-					<Button
-						type="button"
-						text="Open with Document Viewer"
-						variant="primary"
-						onclick={viewDocument}
-					/>
-				</td>
-			</tr>
-
-			<tr class="tables-row">
-				<Label text="Keywords" />
-				<td class="table-data">{keywords}</td>
-			</tr>
-
-			<tr class="tables-row">
-				<Label text="Document Type" />
-				<td class="table-data">{documentType}</td>
-			</tr>
-
-			<tr class="tables-row">
-				<Label text="Version" />
-				<td class="table-data">{parentDocumentVersion}</td>
-			</tr>
-
-			<tr class="tables-row">
-				<Label text="Active" />
-				<td class="table-data">{isActive}</td>
-			</tr>
-
-			<tr class="tables-row">
-				<Label text="Chunking Strategy" />
-				<td class="table-data">{chunkingStrategy}</td>
-			</tr>
-
-			<tr class="tables-row">
-				<Label text="Chunking Length" />
-				<td class="table-data">{chunkingLength}</td>
-			</tr>
-
-			<tr class="tables-row">
-				<Label text="Chunk Overlap" />
-				<td class="table-data">{chunkOverlap}</td>
-			</tr>
-
-			<tr class="tables-row">
-				<Label text="Splitter" />
-				<td class="table-data">{splitter}</td>
-			</tr>
-		</tbody>
-	</table>
-
-	<div class="btn-container mt-6 flex flex-wrap items-center justify-between gap-4">
-		<Button
-			href={editRoute}
-			text="Edit"
-			variant="primary"
-			iconBefore="material-symbols:edit-outline"
-			iconSize="md"
-			size="md"
-		/>
-
-		{#await promise}
-			<Button type="submit" text="Publishing" variant="primary" disabled={true} />
-		{:then data}
-			<Button type="submit" text="Publish" variant="primary" />
-		{/await}
-=======
 			<tr class="tables-row">
 				<td class="table-label">Description</td>
 				<td class="table-data">{description}</td>
@@ -353,9 +256,6 @@
 	<div class=" btn-container">
 		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
 		></Button>
->>>>>>> develop
 	</div>
-
-	<FilePreviewModal {showModal} {fileUrl} {fileType} {closeModal} />
 </div>
 <FilePreviewModal {showModal} {fileUrl} {fileType} {closeModal} />
