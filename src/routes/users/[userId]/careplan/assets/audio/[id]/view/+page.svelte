@@ -9,7 +9,9 @@
 
 	const userId = page.params.userId;
 	var audioId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = page.url.searchParams.get('assetType') || 'Audio';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const editRoute = `/users/${userId}/careplan/assets/audio/${audioId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/audio/${audioId}/view`;
 	const audioRoute = `/users/${userId}/careplan/assets/audio/create`;
@@ -29,6 +31,10 @@
 		{
 			name: 'Assets',
 			path: assetRoute
+		},
+		{
+			name: 'Audio',
+			path: audioRoute
 		},
 		{
 			name: 'View',

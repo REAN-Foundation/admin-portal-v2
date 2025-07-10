@@ -28,11 +28,12 @@
 	const assetType = page.url.searchParams.get('assetType') || 'Audio';
 	
 	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
-	const createRoute = `/users/${userId}/careplan/assets/audio/create?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/audio/create`;
 	const audioRoute = `/users/${userId}/careplan/assets/audio`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+		{ name: 'Audio', path: createRoute },
 		{ name: 'Create', path: createRoute }
 	];
 
