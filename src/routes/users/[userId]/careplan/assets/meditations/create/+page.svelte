@@ -137,7 +137,8 @@
         <tr class="tables-row">
           <td class="table-label">Meditation Type</td>
           <td class="table-data">
-            <select class="input" bind:value={meditationType}>
+            <div class="relative">
+            <select class="select" bind:value={meditationType}>
               <option>Mindfulness</option>
               <option>Spiritual</option>
               <option>Focused</option>
@@ -146,6 +147,10 @@
               <option>Transcendental</option>
               <option>Visualization</option>
             </select>
+            <div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
             {#if errors?.MeditationType}
               <p class="error-text">{errors?.MeditationType}</p>
             {/if}

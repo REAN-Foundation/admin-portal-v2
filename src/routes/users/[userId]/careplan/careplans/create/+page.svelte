@@ -140,10 +140,10 @@
 				<tr class="tables-row">
 					<td class="table-label">Category <span class="important-field">*</span></td>
 					<td class="table-data">
-						<div class="relative w-full">
+						<div class="relative ">
 							<select
 								name="categoryId"
-								class="select select-primary w-full pr-10 {errors?.categoryId
+								class="select  {errors?.categoryId
 									? 'input-text-error'
 									: ''}"
 								bind:value={categoryId}
@@ -153,8 +153,8 @@
 									<option value={category.id}>{category.Type}</option>
 								{/each}
 							</select>
-							<div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
-								<Icon icon="mdi:chevron-down" class="text-info h-5 w-5" />
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
 							</div>
 						</div>
 					</td>

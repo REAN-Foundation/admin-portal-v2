@@ -175,13 +175,19 @@
 				<tr class="tables-row">
 					<td class="table-label">Model <span class="important-field">*</span></td>
 					<td class="table-data">
-						<select class="input" required name="model" bind:value={model}>
+						<div class="relative">
+
+						<select class="select" required name="model" bind:value={model}>
 							<option value="OpenAi GPT 3.5 Turbo">OpenAi GPT 3.5 Turbo</option>
 							<option value="OpenAi GPT 3.5">OpenAi GPT 3.5</option>
 							<option value="OpenAi GPT 4 Turbo">OpenAi GPT 4 Turbo</option>
 							<option value="OpenAi GPT 4">OpenAi GPT 4</option>
 							<option value="OpenAi GPT 4o">OpenAi GPT 4o</option>
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 
@@ -217,20 +223,26 @@
 				<tr class="tables-row">
 					<td class="table-label">Use Case Type</td>
 					<td class="table-data">
-						<select class="input" required name="useCaseType" bind:value={useCaseType}>
+						<div class="relative">
+						<select class="select" required name="useCaseType" bind:value={useCaseType}>
 							<option value="Chat">Chat</option>
 							<option value="Classification">Classification</option>
 							<option value="Extraction">Extraction</option>
 							<option value="Summarization">Summarization</option>
 							<option value="Generation">Generation</option>
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 
 				<tr class="tables-row">
 					<td class="table-label">Group</td>
 					<td class="table-data">
-						<select class="input" required name="group" bind:value={group}>
+						<div class="relative">
+						<select class="select" required name="group" bind:value={group}>
 							<option value="Chat Default">Chat Default</option>
 							<option value="Content Generation">Content Generation</option>
 							<option value="Generic">Generic</option>
@@ -238,6 +250,10 @@
 							<option value="Evaluation and Quality">Evaluation and Quality</option>
 							<option value="Chat Custom">Chat Custom</option>
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 

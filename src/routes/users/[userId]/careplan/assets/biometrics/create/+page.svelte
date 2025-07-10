@@ -131,9 +131,10 @@
 			</td>
 			</tr>
 			<tr class="tables-row">
-			<td class="table-label">Biometrics Type<span class="text-red-700">*</span></td>
+			<td class="table-label">Biometrics Type <span class="text-red-700">*</span></td>
 			<td class="table-data">
-				<select required class="input" bind:value={biometricsType}>
+				<div class="relative">
+				<select required class="select" bind:value={biometricsType}>
 					<option>Blood pressure</option>
 					<option>Blood glucose</option>
 					<option>Blood oxygen saturation</option>
@@ -143,6 +144,10 @@
 					<option>Pulse</option>
 					<option>Other</option>
 				</select>
+				<div class="select-icon-container">
+					<Icon icon="mdi:chevron-down" class="select-icon" />
+				</div>
+			</div>
 			</td>
 			</tr>
 			<tr class="tables-row">

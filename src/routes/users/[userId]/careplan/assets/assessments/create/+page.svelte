@@ -165,7 +165,7 @@
 					</td>
 				</tr>
 				<tr class="tables-row">
-	<td class="table-label">Reference Assessment<span class="important-field">*</span></td>
+	<td class="table-label">Reference Assessment <span class="important-field">*</span></td>
 	<td class="table-data">
 		{#if assessmentTemplates.length === 0}
 			<div class="flex items-center space-x-4">
@@ -178,15 +178,20 @@
 				<div class="error-text">No assessment available</div>
 			</div>
 		{:else}
+		<div class="relative">
 			<select
 				bind:value={referenceTemplateCode}
-				class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
+				class="select {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
 			>
 				<!-- <option disabled selected value="">Select reference assessment here...</option> -->
 				{#each assessmentTemplates as template}
 					<option value={template.DisplayCode}>{template.Title}</option>
 				{/each}
 			</select>
+			<div class="select-icon-container">
+				<Icon icon="mdi:chevron-down" class="select-icon" />
+			</div>
+		</div>
 			{#if errors?.ReferenceTemplateCode}
 				<p class="error-text">{errors?.ReferenceTemplateCode}</p>
 			{/if}

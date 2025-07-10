@@ -141,13 +141,18 @@
 				<tr class="tables-row">
 					<td class="table-label">Appointment Type</td>
 					<td class="table-data">
-						<select name="appointmentType" class="input" bind:value={appointmentType}>
+						<div class="relative">
+						<select name="appointmentType" class="select" bind:value={appointmentType}>
 							<!-- <option disabled selected>Select appointment type</option> -->
 							<option>Doctor</option>
 							<option>Lab</option>
 							<option>Physiotherapy</option>
 							<option>Other</option>
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 				<tr class="tables-row">

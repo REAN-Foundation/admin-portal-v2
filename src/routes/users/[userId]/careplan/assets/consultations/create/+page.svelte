@@ -58,7 +58,7 @@
 				);
 				return;
 			}
-			console.log(consultationCreateModel)
+			console.log(consultationCreateModel);
 			const res = await fetch(`/api/server/careplan/assets/consultations`, {
 				method: 'POST',
 				body: JSON.stringify(consultationCreateModel),
@@ -69,9 +69,9 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				// console.log("Redirecting to:", response?.Data?.id); 
-				console.log("Full response:", response);
-				await goto(`${consultationRoute}/${response?.Data?.id}/view`); 
+				// console.log("Redirecting to:", response?.Data?.id);
+				console.log('Full response:', response);
+				await goto(`${consultationRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -83,9 +83,8 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -122,7 +121,9 @@
 					<td class="table-data">
 						<textarea
 							name="description"
-							class="input resize-none {errors?.Description ? 'border-error-300' : 'border-primary-200'}"
+							class="input resize-none {errors?.Description
+								? 'border-error-300'
+								: 'border-primary-200'}"
 							bind:value={description}
 							placeholder="Enter description here..."
 						></textarea>
@@ -132,23 +133,24 @@
 				<tr class="tables-row">
 					<td class="table-label">Consultation Type</td>
 					<td class="table-data">
-						<select class="input" bind:value={consultationType}>
-							<!-- <option disabled value>Select Consultation type</option> -->
-							<option>Tele-consultation</option>
-							<option>Visit-consultation</option>
-							<option>Other</option>
-						</select>
+						<div class="relative">
+							<select class="select" bind:value={consultationType}>
+								<!-- <option disabled value>Select Consultation type</option> -->
+								<option>Tele-consultation</option>
+								<option>Visit-consultation</option>
+								<option>Other</option>
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
 					</td>
 				</tr>
 
 				<tr class="tables-row">
 					<td class="table-label">Tags</td>
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
+						<InputChips bind:keywords name="keywords" id="keywords" />
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>
@@ -172,12 +174,11 @@
 		</table>
 
 		<div class="btn-container">
-            {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
-            {/await}
-</div>
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
 	</form>
 </div>
-

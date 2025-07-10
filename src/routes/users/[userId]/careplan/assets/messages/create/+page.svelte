@@ -164,8 +164,9 @@ $effect(() => {
 						Message Type <span class="important-field">*</span>
 					</td>
 					<td class="table-data">
+						<div class="relative">
 						<select
-							class="input"
+							class="select"
 							bind:value={messageType}
 						>
 							
@@ -173,6 +174,10 @@ $effect(() => {
 							<option>Status</option>
 							<option>Unknown</option>
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 

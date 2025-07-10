@@ -175,12 +175,17 @@ $effect(() => {
 				<tr class="tables-row">
 					<td class="table-label">Message Type</td>
 					<td class="table-data">
-						<select class="input" bind:value={messageType}>
+						<div class="relative">
+						<select class="select" bind:value={messageType}>
 							<option disabled value>Select message type</option>
 							<option>Educational</option>
 							<option>Status</option>
 							<option>Unknown</option>
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 

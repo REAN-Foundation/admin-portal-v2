@@ -203,17 +203,22 @@
 				<tr class="tables-row">
 					<td class="table-label">Role <span class="text-red-700">*</span></td>
 					<td class="table-data">
-						<select
-							name="role"
-							bind:value={role}
-							class="input"
-							onchange={getRoleIdByRoleName}
-							placeholder="Select role here..."
-						>
-							{#each userRoles as role}
-								<option value={role.Value}>{role.Title}</option>
-							{/each}
-						</select>
+						<div class="relative">
+							<select
+								name="role"
+								bind:value={role}
+								class="select"
+								onchange={getRoleIdByRoleName}
+								placeholder="Select role here..."
+							>
+								{#each userRoles as role}
+									<option value={role.Value}>{role.Title}</option>
+								{/each}
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
 						<input type="hidden" name="selectedUserRoleId" bind:value={selectedUserRoleId} />
 					</td>
 				</tr>
