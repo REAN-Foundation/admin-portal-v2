@@ -288,7 +288,7 @@
 			</div>
 		</div>
 
-		<div class="table-container mt-4 shadow">
+		<div class="table-container mt-6 shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="relative w-auto grow">

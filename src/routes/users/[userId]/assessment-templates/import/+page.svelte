@@ -131,7 +131,7 @@
 
 									<input
 										type="text"
-										class="health-system-input bg-gray-100 text-gray-700 focus:outline-none"
+										class="input"
 										value={fileName}
 										readonly
 										placeholder="No file selected"

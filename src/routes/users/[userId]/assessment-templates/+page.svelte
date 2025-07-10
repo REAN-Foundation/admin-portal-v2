@@ -201,8 +201,7 @@
 		<div class="table-container shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
-					<!-- <div class="flex gap-4 flex-row"> -->
-					<div class="relative w-auto grow">
+					<div class="relative w-full md:w-auto flex-1">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
@@ -229,7 +228,7 @@
 						{/if}
 					</div>
 
-					<div class="relative w-auto grow">
+					<div class="relative w-full md:w-auto flex-1">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
@@ -255,7 +254,7 @@
 							</button>
 						{/if}
 					</div>
-					<div class="relative w-auto grow">
+					<div class="relative w-full md:w-auto flex-1">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
@@ -281,7 +280,6 @@
 							</button>
 						{/if}
 					</div>
-					<!-- </div> -->
 					<Button href={importRoute} text="Import" variant="primary"></Button>
 
 					<Button href={createRoute} text="Add New" variant="primary"></Button>

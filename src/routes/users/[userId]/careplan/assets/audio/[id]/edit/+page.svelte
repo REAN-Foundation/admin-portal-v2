@@ -22,7 +22,6 @@
 	let keywordsStr: string = $state('');
 	let keywords: string[] = $state(data.audio.Tags);
 
-
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
 	var audioId = page.params.id;
@@ -99,9 +98,8 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -130,68 +128,62 @@
 							<p class="text-error">{errors?.Name}</p>
 						{/if}
 					</td>
-					</tr>
-					<tr class="tables-row">
-						<td class="table-label">Transcript</td>
-						<td class="table-data">
-							<input
-									type="textarea"
-									class="input {errors?.Transcript
-											? 'input-text-error'
-											: ''}"
-									name="transcript"
-									placeholder="Enter transcript here..."
-									bind:value={transcript}
-								/>
-								{#if errors?.Transcript}
-								<p class="text-error">{errors?.Transcript}</p>
-								{/if}
-							</td>
-						</tr>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Transcript</td>
+					<td class="table-data">
+						<input
+							type="textarea"
+							class="input {errors?.Transcript ? 'input-text-error' : ''}"
+							name="transcript"
+							placeholder="Enter transcript here..."
+							bind:value={transcript}
+						/>
+						{#if errors?.Transcript}
+							<p class="text-error">{errors?.Transcript}</p>
+						{/if}
+					</td>
+				</tr>
 
-						<tr class="tables-row">
-                            <td class="table-label">URL</td>
-                            <td class="table-data">
-                                <input
-                                    type="url"
-									name="url"
-									bind:value={pathUrl}
-									placeholder="Enter url here"
-                                    class="health-system-input {errors?.Url ? 'input-text-error' : ''}"
-                                />
-                                {#if errors?.Url}
-                                    <p class="text-error">{errors?.Url}</p>
-                                {/if}
-                            </td>
-                        </tr>
+				<tr class="tables-row">
+					<td class="table-label">URL</td>
+					<td class="table-data">
+						<input
+							type="url"
+							name="url"
+							bind:value={pathUrl}
+							placeholder="Enter url here"
+							class="input {errors?.Url ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.Url}
+							<p class="text-error">{errors?.Url}</p>
+						{/if}
+					</td>
+				</tr>
 
-						<tr class="tables-row">
-							<td class="table-label">Tags</td>
-							<td class="table-data">
-								<InputChips
-									bind:keywords
-									name="keywords"
-									id="keywords"
-									/>
-								<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-								<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
-							</td>
-						</tr>
-						<tr class="tables-row">
-							<td class="table-label">Version</td>
-							<td class="table-data">
-								<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="btn-container">
-            		<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
-            			{#await promise}
-                    <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-           			 {:then data}
-                	<Button type="submit" text="Submit" variant="primary" />
-            			{/await}
-				</div>
-			</form>
+				<tr class="tables-row">
+					<td class="table-label">Tags</td>
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Version</td>
+					<td class="table-data">
+						<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="btn-container">
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
 		</div>
+	</form>
+</div>

@@ -15,12 +15,12 @@
 
 	let { data }: { data: PageServerData } = $props();
 
-	$inspect("This is data",data)
+	$inspect('This is data', data);
 	let debounceTimeout;
 	let isLoading = $state(false);
 	let assessmentNodes = $state(data.assessmentNodes.Items);
 	let retrivedAssessmentNodes = $derived(
-		assessmentNodes.filter(node => node.Title !== "Assessment root node")
+		assessmentNodes.filter((node) => node.Title !== 'Assessment root node')
 	);
 
 	let openDeleteModal = $state(false);
@@ -221,7 +221,7 @@
 							placeholder="Search by title"
 							oninput={(event) => onSearchInput(event)}
 							bind:value={title}
-							class="health-system-input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if title}
 							<button
@@ -247,7 +247,7 @@
 							placeholder="Search by node type"
 							oninput={(event) => onSearchInput(event)}
 							bind:value={nodeType}
-							class="health-system-input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if nodeType}
 							<button
@@ -273,7 +273,7 @@
 							placeholder="Search by tags"
 							oninput={(event) => onSearchInput(event)}
 							bind:value={tags}
-							class="health-system-input !pr-4 !pl-10"
+							class="table-input-field !pr-4 !pl-10"
 						/>
 						{#if tags}
 							<button
@@ -288,9 +288,7 @@
 							</button>
 						{/if}
 					</div>
-					<button class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary">
-						<a href={createRoute}>Add New</a>
-					</button>
+					<Button href={createRoute} text="Add New" variant="primary" />
 				</div>
 			</div>
 
