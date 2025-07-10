@@ -406,7 +406,7 @@
 					<td class="table-data">
 						<Input name="active" type="text" bind:value={active} disabled />
 					</td>
-				</tr>
+				</tr> 
 
 				<!-- <tr>
 							<td>Created By</td>
