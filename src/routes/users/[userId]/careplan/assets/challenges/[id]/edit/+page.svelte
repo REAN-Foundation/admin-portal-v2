@@ -29,7 +29,7 @@
 	const assetType = 'Challenge';
 	
 	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
-	const createRoute = `/users/${userId}/careplan/assets/challenges`;
+	const createRoute = `/users/${userId}/careplan/assets/challenges/create`;
 	const editRoute = `/users/${userId}/careplan/assets/challenges/${challengesId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/challenges/${challengesId}/view`;
 	const challengesRoute = `/users/${userId}/careplan/assets/challenges`;
