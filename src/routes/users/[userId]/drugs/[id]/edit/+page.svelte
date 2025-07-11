@@ -155,7 +155,6 @@
 				<tr class="tables-row">
 					<Label text="Strength" />
 					<td class="table-data">
-						<select name="strength" class="input" bind:value={strength}>
 						<div class="relative">
 						<select name="strength" bind:value={strength} class="select {errors?.strength ? 'input-text-error' : ''}">
 							<option value="High">High</option>
