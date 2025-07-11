@@ -11,6 +11,7 @@
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import Button from '$lib/components/button/button.svelte';
+	import { goto } from '$app/navigation';
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -30,7 +31,9 @@
 	const assetType = data.assetTypes;
 
 	let types = assetType.Data.AssetTypes;
-	let selectedAssetType = $state('Action plan');
+	// let selectedAssetType = $state('Action plan');
+	let selectedAssetType = $state(page.url.searchParams.get('assetType') || 'Action plan');
+
 
 	let nameAssetSearch = $state(undefined);
 	let codeAssetSearch = $state(undefined);
@@ -47,6 +50,26 @@
 		limit: 10,
 		size: totalAssetsCount,
 		amounts: [10, 20, 30, 50]
+	});
+
+	// Initialize the page with the correct asset type data
+	async function initializePage() {
+		// If there's a selected asset type from URL params and it's not the default 'Action plan'
+		if (selectedAssetType && selectedAssetType !== 'Action plan') {
+			await searchAssets({
+				nameAssetSearch: nameAssetSearch,
+				codeAssetSearch: codeAssetSearch,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortBy,
+				sortOrder
+			});
+		}
+	}
+
+	// Run initialization when component loads
+	$effect(() => {
+		initializePage();
 	});
 
 	const assetRouteMap = {
@@ -78,14 +101,14 @@
 	};
 
 	let createRoute = $derived(
-		`/users/${userId}/careplan/assets/${assetRouteMap[selectedAssetType]}/create/`
+		`/users/${userId}/careplan/assets/${assetRouteMap[selectedAssetType]}/create/?assetType=${selectedAssetType}`
 	);
-	let assetRoute = $derived(`/users/${userId}/careplan/assets`);
+	let assetRoute = $derived(`/users/${userId}/careplan/assets?assetType=${selectedAssetType}`);
 	const editRoute = (rowId: string) =>
-		`/users/${userId}/careplan/assets/${assetRouteMap[selectedAssetType]}/${rowId}/edit`;
+		`/users/${userId}/careplan/assets/${assetRouteMap[selectedAssetType]}/${rowId}/edit?assetType=${selectedAssetType}`;
 
 	const viewRoute = (rowId: string) =>
-		`/users/${userId}/careplan/assets/${assetRouteMap[selectedAssetType]}/${rowId}/view`;
+		`/users/${userId}/careplan/assets/${assetRouteMap[selectedAssetType]}/${rowId}/view?assetType=${selectedAssetType}`;
 
 	const breadCrumbs = [{ name: 'Assets', path: assetRoute }];
 
@@ -201,11 +224,19 @@
 	const onSelectAssetType = async (e) => {
 		selectedAssetType = e.currentTarget.value;
 		paginationSettings.page = 0;
+		nameAssetSearch = undefined;
+		codeAssetSearch = undefined;
+		
 		await searchAssets({
-			sessionId: data.sessionId,
-			selectedAssetType,
-			pageIndex: 0
+			nameAssetSearch: nameAssetSearch,
+			codeAssetSearch: codeAssetSearch,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
 		});
+		
+		goto(`/users/${userId}/careplan/assets?assetType=${selectedAssetType}`);
 	};
 
 	const handleAssetsDelete = async (id) => {
@@ -243,7 +274,9 @@
 <div class="px-6 py-2">
 	<div class="mx-auto">
 		<div class="relative flex w-full md:w-1/3">
-			<select id="height" class="select" onchange={onSelectAssetType}>
+			<!-- <select id="height" class="select" onchange={onSelectAssetType}> -->
+			 <select class="select" bind:value={selectedAssetType} onchange={onSelectAssetType}>
+
 				{#each types as val}
 					<option value={val}>
 						{val}

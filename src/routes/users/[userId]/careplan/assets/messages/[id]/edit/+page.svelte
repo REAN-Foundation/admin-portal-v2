@@ -30,13 +30,17 @@
 	const tenantId = data.tenantId;
 	var messageId = page.params.id;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Message';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/messages/create`;
 	const editRoute = `/users/${userId}/careplan/assets/messages/${messageId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/messages/${messageId}/view`;
 	const messageRoute = `/users/${userId}/careplan/assets/messages`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+		{ name: 'Message', path: createRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
@@ -175,12 +179,17 @@ $effect(() => {
 				<tr class="tables-row">
 					<td class="table-label">Message Type</td>
 					<td class="table-data">
-						<select class="input" bind:value={messageType}>
+						<div class="relative">
+						<select class="select" bind:value={messageType}>
 							<option disabled value>Select message type</option>
 							<option>Educational</option>
 							<option>Status</option>
 							<option>Unknown</option>
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 

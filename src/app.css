@@ -966,3 +966,15 @@ tr {
 .download-btn {
 	@apply mt-4 inline-block rounded bg-gray-700 px-5 py-2 text-white hover:bg-gray-900;
 }
+
+
+/* select css */
+.select {
+	@apply w-full rounded border border-[var(--color-outline)] bg-[var(--color-accent)] p-2 text-[var(--color-info)] focus:outline-none;
+}
+.select-icon-container{
+	@apply pointer-events-none absolute inset-y-0 right-2 flex items-center;
+}
+.select-icon{
+	@apply text-[var(--color-info)] h-5 w-5;
+}

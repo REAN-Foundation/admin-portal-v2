@@ -9,10 +9,13 @@
 
 	const userId = page.params.userId;
 	var assessmentId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	// Get asset type from URL params or default to 'Assessment'
+	const assetType = 'Assessment';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const editRoute = `/users/${userId}/careplan/assets/assessments/${assessmentId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/assessments/${assessmentId}/view`;
-	const assessmentRoute = `/users/${userId}/careplan/assets/assessments`;
+	const assessmentRoute = `/users/${userId}/careplan/assets/assessments/create`;
 
 	let { data }: { data: PageServerData } = $props();
 
@@ -38,6 +41,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
+		{
+			name: 'Assessment',
+			path: assessmentRoute
+		},		
 		{
 			name: 'View',
 			path: viewRoute

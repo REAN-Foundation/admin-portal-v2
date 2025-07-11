@@ -29,7 +29,9 @@
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
 	const appointmentId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	// const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=Appointment`;
+	const createRoute = `/users/${userId}/careplan/assets/appointments/create`;
 	const editRoute = `/users/${userId}/careplan/assets/appointments/${appointmentId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/appointments/${appointmentId}/view`;
 	const appointmentRoute = `/users/${userId}/careplan/assets/appointments`;
@@ -39,7 +41,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: "Appointment",
+			path: createRoute
+		},
 		{
 			name: 'Edit',
 			path: editRoute
@@ -158,12 +163,17 @@
 				<tr class="tables-row">
 					<td class="table-label">Appointment Type</td>
 					<td class="table-data">
-						<select name="appointmentType" bind:value={appointmentType} class="input">
+						<div class="relative">
+						<select name="appointmentType" bind:value={appointmentType} class="select">
 							<option>Doctor</option>
 							<option>Lab</option>
 							<option>Physiotherapy</option>
 							<option>Other</option>
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 				<tr class="tables-row">

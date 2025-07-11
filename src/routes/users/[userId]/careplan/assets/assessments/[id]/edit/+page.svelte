@@ -30,14 +30,18 @@
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
 	var assessmentId = page.params.id;
+	// Get asset type from URL params or default to 'Assessment'
+	const assetType = 'Assessment';
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/assessments/create`;
 	const editRoute = `/users/${userId}/careplan/assets/assessments/${assessmentId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/assessments/${assessmentId}/view`;
 	const assessmentRoute = `/users/${userId}/careplan/assets/assessments`;
 
 	const breadCrumbs = [
 		{ name: 'Asset', path: assetRoute },
+		{ name: 'Assessment', path: createRoute},
 		{ name: 'Edit', path: editRoute }
 	];
 
@@ -58,7 +62,8 @@
 			errors = {};
 			if (assessmentTemplates.length === 0) {
 				errors = {
-					ReferenceTemplateCode: 'No assessment templates available. Please create clinical assessments first.'
+					ReferenceTemplateCode:
+						'No assessment templates available. Please create clinical assessments first.'
 				};
 				return;
 			}
@@ -195,29 +200,31 @@
 					<td class="table-data">
 						{#if assessmentTemplates.length === 0}
 							<div class="flex items-center space-x-4">
-							
-								<Button 
-									type="button" 
-									text="Add Assessment" 
-									variant="primary" 
+								<Button
+									type="button"
+									text="Add Assessment"
+									variant="primary"
 									onclick={() => goto(`/users/${userId}/assessment-templates/create`)}
 								/>
 								<div class="text-gray-500 italic">No assessment available</div>
 							</div>
 						{:else}
-							<select
-								bind:value={referenceTemplateCode}
-								class="input {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
-							>
-								<option value="" disabled selected>
-									Select a assessment
-								</option>
-								{#each assessmentTemplates as template}
-									<option value={template.DisplayCode}>
-										{template.Title}
-									</option>
-								{/each}
-							</select>
+							<div class="relative">
+								<select
+									bind:value={referenceTemplateCode}
+									class="select {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
+								>
+									<option value="" disabled selected> Select a assessment </option>
+									{#each assessmentTemplates as template}
+										<option value={template.DisplayCode}>
+											{template.Title}
+										</option>
+									{/each}
+								</select>
+								<div class="select-icon-container">
+									<Icon icon="mdi:chevron-down" class="select-icon" />
+								</div>
+							</div>
 							{#if errors?.ReferenceTemplateCode}
 								<p class="error-text">{errors?.ReferenceTemplateCode}</p>
 							{/if}
@@ -270,12 +277,17 @@
 		</table>
 
 		<div class="btn-container">
-            <Button type="button" onclick={handleReset} text="Reset" variant="primary" />
-            {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" disabled={assessmentTemplates.length === 0} />
-            {/await}
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button
+					type="submit"
+					text="Submit"
+					variant="primary"
+					disabled={assessmentTemplates.length === 0}
+				/>
+			{/await}
 		</div>
 	</form>
 </div>

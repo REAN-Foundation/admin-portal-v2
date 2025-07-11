@@ -9,10 +9,12 @@
 
 	const userId = page.params.userId;
 	var physiotherapyId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Physiotherapy';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const editRoute = `/users/${userId}/careplan/assets/physiotherapy/${physiotherapyId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/physiotherapy/${physiotherapyId}/view`;
-	const physiotherapyRoute = `/users/${userId}/careplan/assets/physiotherapy`;
+	const physiotherapyRoute = `/users/${userId}/careplan/assets/physiotherapy/create`;
 
 	let { data }: { data: PageServerData } = $props();
 
@@ -29,6 +31,10 @@
 		{
 			name: 'Assets',
 			path: assetRoute
+		},
+		{
+			name: 'Physiotherapy',
+			path: physiotherapyRoute
 		},
 		{
 			name: 'View',

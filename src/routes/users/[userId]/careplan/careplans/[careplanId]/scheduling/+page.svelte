@@ -289,9 +289,11 @@
 					<tr class="tables-row">
 						<td class="table-label">Asset Type <span class="important-field">*</span></td>
 						<td class="table-data">
+							<div class="relative">
+
 							<select
 								name="assetType"
-								class="input {errors?.assetType ? 'input-text-error' : ''}"
+								class="select {errors?.assetType ? 'input-text-error' : ''}"
 								onchange={onSelectAssetType}
 								bind:value={assetType}
 							>
@@ -299,6 +301,10 @@
 									<option value={val}>{val}</option>
 								{/each}
 							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
 							{#if errors?.AssetType}
 								<p class="error-text">{errors?.AssetType}</p>
 							{/if}
@@ -319,15 +325,21 @@
 									<span class="text-warning">No assets found for this type.</span>
 								</div>
 							{:else}
+							<div class="relative">
+
 								<select
 									name="assetId"
-									class="input {errors?.assetId ? 'input-text-error' : ''}"
+									class="select {errors?.assetId ? 'input-text-error' : ''}"
 									bind:value={assetId}
 								>
 									{#each items as val}
 										<option value={val.value}>{val.label}</option>
 									{/each}
 								</select>
+								<div class="select-icon-container">
+									<Icon icon="mdi:chevron-down" class="select-icon" />
+								</div>
+							</div>
 								{#if errors?.AssetId}
 									<p class="error-text">{errors?.AssetId}</p>
 								{/if}
@@ -355,15 +367,20 @@
 					<tr class="tables-row">
 						<td class="table-label">Slot Of The Day <span class="important-field">*</span></td>
 						<td class="table-data">
+							<div class="relative">
 							<select
 								name="timeSlot"
-								class="input w-full {errors?.TimeSlot ? 'input-text-error' : ''}"
+								class="select {errors?.TimeSlot ? 'input-text-error' : ''}"
 								bind:value={timeSlot}
 							>
 								{#each timeSlotValues as val}
 									<option value={val}>{val}</option>
 								{/each}
 							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
 							{#if errors?.TimeSlot}
 								<p class="error-text">{errors?.TimeSlot}</p>
 							{/if}

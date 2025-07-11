@@ -24,13 +24,17 @@
 	var reminderId = page.params.id;
 	const tenantId = data.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Reminder';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/reminders/create`;
 	const editRoute = `/users/${userId}/careplan/assets/reminders/${reminderId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/reminders/${reminderId}/view`;
 	const reminderRoute = `/users/${userId}/careplan/assets/reminders`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+		{ name: 'Reminder', path: createRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 

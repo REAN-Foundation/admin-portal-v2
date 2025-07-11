@@ -30,7 +30,10 @@
 	const videoId = page.params.id;
 	const tenantId = data.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Video';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/video/create`;
 	const editRoute = `/users/${userId}/careplan/assets/video/${videoId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/video/${videoId}/view`;
 	const videoRoute = `/users/${userId}/careplan/assets/video`;
@@ -40,7 +43,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Video',
+			path: createRoute
+		},
 		{
 			name: 'Edit',
 			path: editRoute
