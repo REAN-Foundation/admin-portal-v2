@@ -11,10 +11,13 @@
 
 	const userId = page.params.userId;
 	var goalsId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	// Get asset type from URL params or default to 'Goal'
+	const assetType = page.url.searchParams.get('assetType') || 'Goal';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const editRoute = `/users/${userId}/careplan/assets/goals/${goalsId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/goals/${goalsId}/view`;
-	const goalsRoute = `/users/${userId}/careplan/assets/goals`;
+	const goalsRoute = `/users/${userId}/careplan/assets/goals/create`;
 
 	let { data }: { data: PageServerData } = $props();
 
@@ -30,6 +33,10 @@
 		{
 			name: 'Assets',
 			path: assetRoute
+		},
+		{
+			name: 'Goal',
+			path: goalsRoute
 		},
 		{
 			name: 'View',

@@ -156,11 +156,17 @@
 					<Label text="Strength" />
 					<td class="table-data">
 						<select name="strength" class="input" bind:value={strength}>
+						<div class="relative">
+						<select name="strength" bind:value={strength} class="select {errors?.strength ? 'input-text-error' : ''}">
 							<option value="High">High</option>
 							<option value="Auto">Auto</option>
 							<option value="Medium">Medium</option>
 							<option value="Low">Low</option>
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 						{#if errors?.Strength}
 							<p class="text-error">{errors?.Strength}</p>
 						{/if}

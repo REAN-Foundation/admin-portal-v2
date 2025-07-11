@@ -32,7 +32,10 @@
 	const reflectionId = page.params.id;
 	const tenantId = data.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Reflection';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/reflections/create`;
 	const editRoute = `/users/${userId}/careplan/assets/reflections/${reflectionId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/reflections/${reflectionId}/view`;
 	const reflectionRoute = `/users/${userId}/careplan/assets/reflections`;
@@ -42,7 +45,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Reflection',
+			path: createRoute
+		},
 		{
 			name: 'Edit',
 			path: editRoute

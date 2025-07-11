@@ -32,7 +32,10 @@
 	const priorityId = page.params.id;
 	const tenantId = data.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Priority';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/priorities/create`;
 	const editRoute = `/users/${userId}/careplan/assets/priorities/${priorityId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/priorities/${priorityId}/view`;
 	const priorityRoute = `/users/${userId}/careplan/assets/priorities`;
@@ -42,7 +45,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Priority',
+			path: createRoute
+		},
 		{
 			name: 'Edit',
 			path: editRoute

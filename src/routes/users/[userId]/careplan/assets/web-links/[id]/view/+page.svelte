@@ -10,7 +10,9 @@
 
 	const userId = page.params.userId;
 	const webLinkId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = page.url.searchParams.get('assetType') || 'Web link';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const editRoute = `/users/${userId}/careplan/assets/web-links/${webLinkId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/web-links/${webLinkId}/view`;
 	const weblinkRoute = `/users/${userId}/careplan/assets/web-links/create`;
@@ -30,7 +32,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Web link',
+			path: weblinkRoute
+		},
 		{
 			name: 'View',
 			path: viewRoute

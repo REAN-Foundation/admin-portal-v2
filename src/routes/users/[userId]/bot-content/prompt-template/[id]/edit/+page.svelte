@@ -216,13 +216,8 @@
 				<tr class="tables-row">
 					<Label text="Model" required={true} />
 					<td class="table-data">
-						<select
-							class="select w-full"
-							required
-							name="model"
-							bind:value={model}
-							placeholder="Select type here..."
-						>
+						<div class="relative">
+						<select class="select" required name="model" bind:value={model}>
 							<option value="OpenAi GPT 3.5 Turbo">OpenAi GPT 3.5 Turbo</option>
 							<option value="OpenAi GPT 3.5">OpenAi GPT 3.5</option>
 							<option value="OpenAi GPT 4 Turbo">OpenAi GPT 4 Turbo</option>
@@ -230,6 +225,10 @@
 							<option value="OpenAi GPT 4o">OpenAi GPT 4o</option>
 							<option value="OpenAi GPT 3.5 Turbo">OpenAi GPT 3.5 Turbo</option>
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 				<!-- <tr>
@@ -277,38 +276,36 @@
 				<tr class="tables-row">
 					<Label text="Use Case Type" />
 					<td class="table-data">
-						<select
-							class="input"
-							required
-							name="useCaseType"
-							bind:value={useCaseType}
-							placeholder="Select type here..."
-						>
+						<div class="relative">
+						<select class="input" name="useCaseType" bind:value={useCaseType}>
 							<option value="Chat">Chat</option>
 							<option value="Classification">Classification</option>
 							<option value="Extraction">Extraction</option>
 							<option value="Summarization">Summarization</option>
 							<option value="Generation">Generation</option>
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 				<tr class="tables-row">
 					<Label text="Group" />
 					<td class="table-data">
-						<select
-							class="input"
-							required
-							name="group"
-							bind:value={group}
-							placeholder="Select Group here..."
-						>
-							<option value="Chat Default" selected>Chat Default</option>
+						<div class="relative">
+						<select class="select" name="group" bind:value={group}>
+							<option value="Chat Default">Chat Default</option>
 							<option value="Content Generation">Content Generation</option>
 							<option value="Generic">Generic</option>
 							<option value="Miscellaneous">Miscellaneous</option>
 							<option value="Evaluation and Quality">Evaluation and Quality</option>
 							<option value="Chat Custom">Chat Custom</option>
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 

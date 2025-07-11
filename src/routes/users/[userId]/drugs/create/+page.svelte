@@ -129,27 +129,23 @@
 				<tr class="tables-row">
 					<Label text="Ingredients" />
 					<td class="table-data">
-						<Input
-							name="ingredients"
-							type="text"
-							placeholder="Enter ingredients here..."
-							bind:value={ingredients}
-							error={errors?.Ingredients}
-						/>
-					</td>
-				</tr>
-
-				<tr class="tables-row">
-					<Label text="Strength" />
-					<td class="table-data">
-						<select name="strength" class="input" bind:value={strength}>
+						<div class="relative">
+						<select
+							name="strength"
+							class="select {errors?.strength ? 'input-text-error' : ''}"
+							bind:value={strength}
+						>
 							<option value="High">High</option>
 							<option value="Auto">Auto</option>
 							<option value="Medium">Medium</option>
 							<option value="Low">Low</option>
 						</select>
-						{#if errors?.strength}
-							<p class="text-error">{errors?.strength}</p>
+						<div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+							<Icon icon="mdi:chevron-down" class="text-info h-5 w-5" />
+						</div>
+					</div>
+						{#if errors?.Strength}
+							<p class="text-error">{errors?.Strength}</p>
 						{/if}
 					</td>
 				</tr>

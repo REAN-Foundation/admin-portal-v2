@@ -30,13 +30,17 @@
 	var meditationId = page.params.id;
 	const tenantId = data.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Meditation';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+  const createRoute = `/users/${userId}/careplan/assets/meditations/create`;
 	const editRoute = `/users/${userId}/careplan/assets/meditations/${meditationId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/meditations/${meditationId}/view`;
 	const meditationRoute = `/users/${userId}/careplan/assets/meditations`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+    { name: 'Meditation', path: createRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
@@ -143,21 +147,27 @@
 					</td>
 				</tr>
 
-				<tr class="tables-row">
-					<Label text="Meditation Type" />
-					<td class="table-data">
-						<select class="input" bind:value={meditationType}>
-							<option disabled value>Select meditation type</option>
-							<option>Mindfulness</option>
-							<option>Spiritual</option>
-							<option>Focused</option>
-							<option>Mantra</option>
-							<option>Progressive relaxation</option>
-							<option>Transcendental</option>
-							<option>Visualization</option>
-						</select>
-					</td>
-				</tr>
+				
+        <tr class="tables-row">
+			<Label text="Meditation Type" />
+			<td class="table-data">
+            <div class="relative">
+            <select class="select" bind:value={meditationType}>
+              <option disabled value>Select meditation type</option>
+              <option>Mindfulness</option>
+              <option>Spiritual</option>
+              <option>Focused</option>
+              <option>Mantra</option>
+              <option>Progressive relaxation</option>
+              <option>Transcendental</option>
+              <option>Visualization</option>
+            </select>
+            <div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
+          </td>
+        </tr>
 
 				<tr class="tables-row">
 					<Label text="Recommended Duration Min" />

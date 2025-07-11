@@ -10,7 +10,9 @@
 
 	const userId = page.params.userId;
 	const priorityId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Priority';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const editRoute = `/users/${userId}/careplan/assets/priorities/${priorityId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/priorities/${priorityId}/view`;
 	const priorityRoute = `/users/${userId}/careplan/assets/priorities/create`;
@@ -30,7 +32,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Priority',
+			path: priorityRoute
+		},
 		{
 			name: 'View',
 			path: viewRoute

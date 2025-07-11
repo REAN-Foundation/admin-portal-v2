@@ -10,10 +10,13 @@
 
 	const userId = page.params.userId;
 	var medicationsId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	// Get asset type from URL params or default to 'Medication'
+	const assetType = page.url.searchParams.get('assetType') || 'Medication';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const editRoute = `/users/${userId}/careplan/assets/medications/${medicationsId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/medications/${medicationsId}/view`;
-	const medicationsRoute = `/users/${userId}/careplan/assets/medications`;
+	const medicationsRoute = `/users/${userId}/careplan/assets/medications/create`;
 
 	let { data }: { data: PageServerData } = $props();
 
@@ -29,6 +32,10 @@
 		{
 			name: 'Assets',
 			path: assetRoute
+		},
+		{
+			name: 'Medication',
+			path: medicationsRoute
 		},
 		{
 			name: 'View',

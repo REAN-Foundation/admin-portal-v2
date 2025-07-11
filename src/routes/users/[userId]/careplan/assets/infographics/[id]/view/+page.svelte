@@ -11,10 +11,13 @@
 
 	const userId = page.params.userId;
 	var infographicsId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	// Get asset type from URL params or default to 'Infographics'
+	const assetType = page.url.searchParams.get('assetType') || 'Infographics';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const editRoute = `/users/${userId}/careplan/assets/infographics/${infographicsId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/infographics/${infographicsId}/view`;
-	const infographicsRoute = `/users/${userId}/careplan/assets/infographics`;
+	const infographicsRoute = `/users/${userId}/careplan/assets/infographics/create`;
 
 	let { data }: { data: PageServerData } = $props();
 
@@ -32,6 +35,10 @@
 		{
 			name: 'Assets',
 			path: assetRoute
+		},
+		{
+			name: 'Infographics',
+			path: infographicsRoute
 		},
 		{
 			name: 'View',

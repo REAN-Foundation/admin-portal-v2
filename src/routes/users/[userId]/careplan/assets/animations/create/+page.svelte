@@ -29,7 +29,11 @@
 	const userId = page.params.userId;
 	const tenantId = data.sessionUser.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	// const assetRoute = `/users/${userId}/careplan/assets`;
+	const selectedAssetType = 'Animation'; // dynamically set per asset file
+
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${selectedAssetType}`;
+
 	const createRoute = `/users/${userId}/careplan/assets/animations/create`;
 	const animationRoute = `/users/${userId}/careplan/assets/animations`;
 
@@ -38,7 +42,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Animation',
+			path: createRoute
+		},
 		{
 			name: 'Create',
 			path: createRoute

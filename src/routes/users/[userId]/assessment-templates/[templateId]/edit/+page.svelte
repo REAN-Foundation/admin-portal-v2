@@ -154,11 +154,12 @@
 				<tr class="tables-row">
 					<Label text="Type" required={true} />
 					<td class="table-data">
+						<div class="relative">
 						<select
 							name="type"
 							bind:value={assessmentType}
 							placeholder="Select type here..."
-							class="health-system-input {form?.errors?.assessmentType ? 'input-text-error' : ''}"
+							class="select {errors?.assessmentType ? 'input-text-error' : ''}"
 						>
 							<option selected>{assessmentType}</option>
 							<option>Daily Update</option>
@@ -167,6 +168,10 @@
 							<option>Protocol</option>
 							<option>Custom</option>
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 						{#if errors?.Type}
 							<p class="text-error">{errors?.Type}</p>
 						{/if}

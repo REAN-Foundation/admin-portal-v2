@@ -10,10 +10,12 @@
 
 	const userId = page.params.userId;
 	var meditationId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Meditation';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const editRoute = `/users/${userId}/careplan/assets/meditations/${meditationId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/meditations/${meditationId}/view`;
-	const meditationRoute = `/users/${userId}/careplan/assets/meditations`;
+	const meditationRoute = `/users/${userId}/careplan/assets/meditations/create`;
 
 	let { data }: { data: PageServerData } = $props();
 
@@ -31,6 +33,10 @@
 		{
 			name: 'Assets',
 			path: assetRoute
+		},
+		{
+			name: 'Meditation',
+			path: meditationRoute
 		},
 		{
 			name: 'View',

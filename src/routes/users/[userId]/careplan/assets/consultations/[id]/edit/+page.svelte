@@ -29,13 +29,17 @@
 	var consultationId = page.params.id;
 	const tenantId = data.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = page.url.searchParams.get('assetType') || 'Consultation';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/consultations/create`;
 	const editRoute = `/users/${userId}/careplan/assets/consultations/${consultationId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/consultations/${consultationId}/view`;
 	const consultationRoute = `/users/${userId}/careplan/assets/consultations`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+		{ name: 'Consultation', path: createRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
@@ -144,12 +148,17 @@
 				<tr class="tables-row">
 					<Label text="Consultation Type" />
 					<td class="table-data">
-						<select class="input" bind:value={consultationType}>
-							<option disabled value>Select Consultation type</option>
-							<option>Tele-consultation</option>
-							<option>Visit-consultation</option>
-							<option>Other</option>
-						</select>
+						<div class="relative">
+							<select class="select" bind:value={consultationType}>
+								<option disabled value>Select Consultation type</option>
+								<option>Tele-consultation</option>
+								<option>Visit-consultation</option>
+								<option>Other</option>
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
 					</td>
 				</tr>
 

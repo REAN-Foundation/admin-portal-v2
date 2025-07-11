@@ -28,7 +28,9 @@
 	const userId = page.params.userId;
 	const tenantId = data.sessionUser.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Video';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const createRoute = `/users/${userId}/careplan/assets/video/create`;
 	const videoRoute = `/users/${userId}/careplan/assets/video`;
 
@@ -37,7 +39,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Video',
+			path: createRoute
+		},
 		{
 			name: 'Create',
 			path: createRoute

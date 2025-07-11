@@ -29,12 +29,16 @@
 	const userId = page.params.userId;
 	const tenantId = data.sessionUser.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	// Get asset type from URL params or default to 'Meditation'
+	const assetType = 'Meditation';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const createRoute = `/users/${userId}/careplan/assets/meditations/create`;
 	const meditationRoute = `/users/${userId}/careplan/assets/meditations`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+    { name: 'Meditation', path: createRoute },
 		{ name: 'Create', path: createRoute }
 	];
 
@@ -134,7 +138,8 @@
         <tr class="tables-row">
           <td class="table-label">Meditation Type</td>
           <td class="table-data">
-            <select class="input" bind:value={meditationType}>
+            <div class="relative">
+            <select class="select" bind:value={meditationType}>
               <option>Mindfulness</option>
               <option>Spiritual</option>
               <option>Focused</option>
@@ -143,6 +148,10 @@
               <option>Transcendental</option>
               <option>Visualization</option>
             </select>
+            <div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
             {#if errors?.MeditationType}
               <p class="error-text">{errors?.MeditationType}</p>
             {/if}

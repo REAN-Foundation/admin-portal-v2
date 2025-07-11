@@ -427,17 +427,22 @@
 				<tr class="tables-row">
 					<Label text="Chunking Strategy" required={true} />
 					<td class="table-data">
-						<select
-							class="input"
-							name="chunkingStrategy"
-							bind:value={chunkingStrategy}
-							placeholder="Select type here..."
-						>
-							<option>Recursive Structure Aaware Splitting</option>
-							<option>Structure Aware Splitting</option>
-							<option>Content Aware Splitting</option>
-							<option>NPL chunking</option>
-						</select>
+						<div class="relative">
+							<select
+								class="select"
+								name="chunkingStrategy"
+								bind:value={chunkingStrategy}
+								placeholder="Select type here..."
+							>
+								<option>Recursive Structure Aaware Splitting</option>
+								<option>Structure Aware Splitting</option>
+								<option>Content Aware Splitting</option>
+								<option>NPL chunking</option>
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
 					</td>
 				</tr>
 				<!-- Chunking Length -->

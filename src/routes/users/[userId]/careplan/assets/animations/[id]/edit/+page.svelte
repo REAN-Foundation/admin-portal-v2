@@ -33,9 +33,10 @@
 	const tenantId = data.tenantId;
 	const animationId = page.params.id;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
-	const editRoute = `/users/${userId}/careplan/assets/animations/${animationId}/edit`;
-	const viewRoute = `/users/${userId}/careplan/assets/animations/${animationId}/view`;
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=Animation`;
+	const createRoute = `/users/${userId}/careplan/assets/animations/create?assetType=Animation`;
+	const editRoute = `/users/${userId}/careplan/assets/animations/${animationId}/edit?assetType=Animation`;
+	const viewRoute = `/users/${userId}/careplan/assets/animations/${animationId}/view?assetType=Animation`;
 	const animationRoute = `/users/${userId}/careplan/assets/animations`;
 
 	const breadCrumbs = [
@@ -43,7 +44,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Animation',
+			path: createRoute
+		},
 		{
 			name: 'Edit',
 			path: editRoute
@@ -94,6 +98,7 @@
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				goto(`${animationRoute}/${response?.Data?.id}/view`);
+
 				return;
 			}
 

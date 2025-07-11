@@ -10,7 +10,9 @@
 
 	const userId = page.params.userId;
 	const wordPowerId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = page.url.searchParams.get('assetType') || 'Word power';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const editRoute = `/users/${userId}/careplan/assets/word-power/${wordPowerId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/word-power/${wordPowerId}/view`;
 	const wordpowerRoute = `/users/${userId}/careplan/assets/word-power/create`;
@@ -31,7 +33,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Word power',
+			path: wordpowerRoute
+		},
 		{
 			name: 'View',
 			path: viewRoute

@@ -28,14 +28,18 @@
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
 	var infographicsId = page.params.id;
+	// Get asset type from URL params or default to 'Infographics'
+	const assetType = page.url.searchParams.get('assetType') || 'Infographics';
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
-	const editRoute = `/users/${userId}/careplan/assets/infographics/${infographicsId}/edit`;
-	const viewRoute = `/users/${userId}/careplan/assets/infographics/${infographicsId}/view`;
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/infographics/create`;
+	const editRoute = `/users/${userId}/careplan/assets/infographics/${infographicsId}/edit?assetType=${assetType}`;
+	const viewRoute = `/users/${userId}/careplan/assets/infographics/${infographicsId}/view?assetType=${assetType}`;
 	const infographicsRoute = `/users/${userId}/careplan/assets/infographics`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+		{ name: 'Infographics', path: createRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 

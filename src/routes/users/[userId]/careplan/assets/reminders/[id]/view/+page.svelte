@@ -10,10 +10,12 @@
 
 	const userId = page.params.userId;
 	var remindersId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Reminder';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const editRoute = `/users/${userId}/careplan/assets/reminders/${remindersId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/reminders/${remindersId}/view`;
-	const remindersRoute = `/users/${userId}/careplan/assets/reminders`;
+	const remindersRoute = `/users/${userId}/careplan/assets/reminders/create`;
 
 	let { data }: { data: PageServerData } = $props();
 
@@ -29,6 +31,10 @@
 		{
 			name: 'Assets',
 			path: assetRoute
+		},
+		{
+			name: 'Reminder',
+			path: remindersRoute
 		},
 		{
 			name: 'View',

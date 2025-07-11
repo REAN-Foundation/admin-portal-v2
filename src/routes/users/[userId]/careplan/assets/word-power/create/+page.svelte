@@ -27,7 +27,11 @@
 	const userId = page.params.userId;
 	const tenantId = data.sessionUser.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+
+	// Get asset type from URL params or default to 'Word power'
+	const assetType = page.url.searchParams.get('assetType') || 'Word power';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const createRoute = `/users/${userId}/careplan/assets/word-power/create`;
 	const wordpowerRoute = `/users/${userId}/careplan/assets/word-power`;
 
@@ -36,7 +40,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Word power',
+			path: createRoute
+		},
 		{
 			name: 'Create',
 			path: createRoute

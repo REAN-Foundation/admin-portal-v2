@@ -120,13 +120,18 @@
 				<tr class="tables-row">
 					<Label text="Health System" required={true} />
 					<td class="table-data">
-						<select name="healthSystemId" class="input !pr-4" bind:value={selectedHealthSystemId}>
+						<div class="relative">
+						<select name="healthSystemId" class="select" bind:value={selectedHealthSystemId}>
 							{#each healthSystems as healthSystem}
 								{#if healthSystemId !== healthSystem.id}
 									<option value={healthSystem.id}>{healthSystem.Name}</option>
 								{/if}
 							{/each}
 						</select>
+						<div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+							<Icon icon="mdi:chevron-down" class="text-info h-5 w-5" />
+						</div>
+					</div>
 					</td>
 				</tr>
 

@@ -29,13 +29,17 @@
 	const tenantId = data.tenantId;
 	var physiotherapyId = page.params.id;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Physiotherapy';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/physiotherapy/create`;
 	const editRoute = `/users/${userId}/careplan/assets/physiotherapy/${physiotherapyId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/physiotherapy/${physiotherapyId}/view`;
 	const physiotherapyRoute = `/users/${userId}/careplan/assets/physiotherapy`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+		{ name: 'Physiotherapy', path: createRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 

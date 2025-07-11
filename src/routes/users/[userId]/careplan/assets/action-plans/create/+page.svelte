@@ -28,8 +28,11 @@
 	const userId = page.params.userId;
 	const tenantId = data.sessionUser.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
-	const createRoute = `/users/${userId}/careplan/assets/action-plans/create`;
+	// Get asset type from URL params or default to 'Action plan'
+	const assetType = page.url.searchParams.get('assetType') || 'Action plan';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/action-plans/create?assetType=${assetType}`;
 	const actionPlanRoute = `/users/${userId}/careplan/assets/action-plans`;
 
 	const breadCrumbs = [
@@ -37,7 +40,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Action-Plan',
+			path: createRoute
+		},
 		{
 			name: 'Create',
 			path: createRoute

@@ -31,12 +31,16 @@
 	const userId = page.params.userId;
 	const tenantId = data.sessionUser.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	// Get asset type from URL params or default to 'Message'
+	const assetType = 'Message';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const createRoute = `/users/${userId}/careplan/assets/messages/create`;
 	const messagesRoute = `/users/${userId}/careplan/assets/messages`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+		{ name: 'Message', path: createRoute },
 		{ name: 'Create', path: createRoute }
 	];
 
@@ -159,8 +163,9 @@
 				<tr class="tables-row">
 					<Label text="Message Type" required={true} />
 					<td class="table-data">
+						<div class="relative">
 						<select
-							class="input {errors?.MessageType ? 'input-text-error' : ''}"
+							class="select"
 							bind:value={messageType}
 							name="messageType"
 						>
@@ -169,9 +174,10 @@
 							<option>Status</option>
 							<option>Unknown</option>
 						</select>
-						{#if errors?.MessageType}
-							<p class="error-text">{errors?.MessageType}</p>
-						{/if}
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 

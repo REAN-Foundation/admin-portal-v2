@@ -27,7 +27,10 @@
 	const userId = page.params.userId;
 	const tenantId = data.sessionUser.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	// Get asset type from URL params or default to 'Reflection'
+	const assetType = 'Reflection';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const createRoute = `/users/${userId}/careplan/assets/reflections/create`;
 	const reflectionRoute = `/users/${userId}/careplan/assets/reflections`;
 
@@ -36,7 +39,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Reflection',
+			path: createRoute
+		},
 		{
 			name: 'Create',
 			path: createRoute

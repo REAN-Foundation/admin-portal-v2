@@ -28,7 +28,10 @@
 	const userId = page.params.userId;
 	const tenantId = data.sessionUser.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	// Get asset type from URL params or default to 'Article'
+	const selectedAssetType = 'Article';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${selectedAssetType}`;
 	const createRoute = `/users/${userId}/careplan/assets/articles/create`;
 	const articleRoute = `/users/${userId}/careplan/assets/articles`;
 
@@ -37,7 +40,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Article',
+			path: createRoute
+		},
 		{
 			name: 'Create',
 			path: createRoute

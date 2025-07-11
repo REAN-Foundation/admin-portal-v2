@@ -29,12 +29,16 @@
 	const userId = page.params.userId;
 	const tenantId = data.sessionUser.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	// Get asset type from URL params or default to 'Biometrics'
+	const assetType = 'Biometrics';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const createRoute = `/users/${userId}/careplan/assets/biometrics/create`;
 	const biometricsRoute = `/users/${userId}/careplan/assets/biometrics`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+		{ name: 'Biometric', path: createRoute },
 		{ name: 'Create', path: createRoute }
 	];
 
@@ -116,7 +120,73 @@
 							error={errors?.Name}
 						/>
 					</td>
-				</tr>
+			</tr>
+			<tr class="tables-row">
+			<td class="table-label">Description</td>
+			<td class="table-data">
+				<textarea
+					name="description"
+					class="input w-full {errors?.Code ? 'border-error-300' : 'border-primary-200'}"
+					bind:value={description}
+					placeholder="Enter description here..."
+					>
+				</textarea>
+			</td>
+			</tr>
+			<tr class="tables-row">
+			<td class="table-label">Biometrics Type <span class="text-red-700">*</span></td>
+			<td class="table-data">
+				<div class="relative">
+				<select required class="select" bind:value={biometricsType}>
+					<option>Blood pressure</option>
+					<option>Blood glucose</option>
+					<option>Blood oxygen saturation</option>
+					<option>Body height</option>
+					<option>Body weight</option>
+					<option>Body temperature</option>
+					<option>Pulse</option>
+					<option>Other</option>
+				</select>
+				<div class="select-icon-container">
+					<Icon icon="mdi:chevron-down" class="select-icon" />
+				</div>
+			</div>
+			</td>
+			</tr>
+			<tr class="tables-row">
+			<td class="table-label">Measurement Unit</td>
+			<td class="table-data">
+						<input
+							type="text"
+							class="input {errors?.measurementUnit ? 'input-text-error' : ''}"
+							name="measurementUnit"
+							placeholder="Enter unit here..."
+							bind:value={measurementUnit}
+						/>
+						{#if errors?.MeasurementUnit}
+							<p class="error-text">{errors?.MeasurementUnit}</p>
+						{/if}
+					</td>
+			</tr>
+			<tr class="tables-row">
+			<td class="table-label">Tags</td>
+			<td class="table-data">
+				<InputChips
+					bind:keywords
+					name="keywords"
+					id="keywords"
+						/>
+					<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+			</td>
+			</tr>
+			<tr class="tables-row">
+			<td class="table-label">Version</td>
+			<td class="table-data">
+				<input type="text" bind:value={version} class="input" placeholder="V 1.0" />
+			</td>
+			</tr>
+		</tbody>
+	</table>
 
 				<tr class="tables-row">
 					<Label text="Description" />

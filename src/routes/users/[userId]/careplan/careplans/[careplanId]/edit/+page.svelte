@@ -170,7 +170,33 @@
 				<tr class="tables-row">
 					<Label text="Description" />
 					<td class="table-data">
-						<Textarea
+						<div class="relative ">
+							<select
+								name="categoryId"
+								class="select  {errors?.categoryId
+									? 'input-text-error'
+									: ''}"
+								bind:value={categoryId}
+								required
+							>
+								<option disabled selected>Select category of plan here...</option>
+								{#each careplanCategories as category}
+									<option value={category.id}>{category.Type}</option>
+								{/each}
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Description</td>
+					<td class="table-data">
+						<input
+							type="text"
+							class="input {form?.errors?.description ? 'input-text-error' : ''}"
 							name="description"
 							placeholder="Enter description here..."
 							bind:value={description}

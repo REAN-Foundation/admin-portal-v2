@@ -28,13 +28,17 @@
 	var medicationsId = page.params.id;
 	const tenantId = data.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Medication';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/medications/create`;
 	const editRoute = `/users/${userId}/careplan/assets/medications/${medicationsId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/biometric/${medicationsId}/view`;
 	const medicationsRoute = `/users/${userId}/careplan/assets/medications`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+		{ name: 'Medication', path: createRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 

@@ -11,7 +11,7 @@
 
 	const userId = page.params.userId;
 	var biometricsId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=Biometrics`;
 	const editRoute = `/users/${userId}/careplan/assets/biometrics/${biometricsId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/biometrics/${biometricsId}/view`;
 	const createRoute = `/users/${userId}/careplan/assets/biometrics/create`;
@@ -32,6 +32,10 @@
 		{
 			name: 'Assets',
 			path: assetRoute
+		},
+		{
+			name: 'Biometric',
+			path: createRoute
 		},
 		{
 			name: 'View',

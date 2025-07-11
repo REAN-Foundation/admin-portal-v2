@@ -30,12 +30,16 @@
 	const userId = page.params.userId;
 	const tenantId = data.sessionUser.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	// Get asset type from URL params or default to 'Exercise'
+	const assetType = page.url.searchParams.get('assetType') || 'Exercise';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const createRoute = `/users/${userId}/careplan/assets/exercises/create`;
 	const exerciseRoute = `/users/${userId}/careplan/assets/exercises`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+		{ name: 'Exercise', path: createRoute },
 		{ name: 'Create', path: createRoute }
 	];
 
@@ -135,7 +139,8 @@
 				<tr class="tables-row">
 					<Label text="Exercise Type" />
 					<td class="table-data">
-						<select class="input" bind:value={exerciseType}>
+						<div class="relative">
+						<select class="select" bind:value={exerciseType}>
 							<!-- <option disabled value>Select exercise type</option> -->
 							<option>Strength</option>
 							<option>Aerobic</option>
@@ -146,13 +151,18 @@
 							<option>Pulse</option>
 							<option>Other</option>
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 
 				<tr class="tables-row">
 					<Label text="Intensity Level" />
 					<td class="table-data">
-						<select class="input" bind:value={intensityLevel}>
+						<div class="relative">
+						<select class="select" bind:value={intensityLevel}>
 							<!-- <option disabled value>Select Intensity Level</option> -->
 							<option selected>None</option>
 							<option>Minimal</option>
@@ -164,6 +174,10 @@
 							<option>Extremely hard</option>
 							<option>Maximum effort</option>
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 

@@ -12,10 +12,12 @@
 
 	const userId = page.params.userId;
 	var challengesId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Challenge';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const editRoute = `/users/${userId}/careplan/assets/challenges/${challengesId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/challenges/${challengesId}/view`;
-	const challengesRoute = `/users/${userId}/careplan/assets/challenges`;
+	const challengesRoute = `/users/${userId}/careplan/assets/challenges/create`;
 
 	let { data }: { data: PageServerData } = $props();
 
@@ -32,7 +34,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Challenge',
+			path: challengesRoute
+		},		
 		{
 			name: 'View',
 			path: viewRoute

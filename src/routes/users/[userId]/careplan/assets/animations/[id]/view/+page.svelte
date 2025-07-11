@@ -10,7 +10,7 @@
 
 	const userId = page.params.userId;
 	const animationId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=Animation`;
 	const editRoute = `/users/${userId}/careplan/assets/animations/${animationId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/animations/${animationId}/view`;
 	const animationRoute = `/users/${userId}/careplan/assets/animations/create`;
@@ -30,7 +30,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Animation',
+			path: animationRoute
+		},
 		{
 			name: 'View',
 			path: viewRoute

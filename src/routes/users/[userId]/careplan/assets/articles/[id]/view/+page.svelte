@@ -11,7 +11,8 @@
 
 	const userId = page.params.userId;
 	const articleId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const selectedAssetType = 'Article';
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${selectedAssetType}`;
 	const editRoute = `/users/${userId}/careplan/assets/articles/${articleId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/articles/${articleId}/view`;
 	const articleRoute = `/users/${userId}/careplan/assets/articles/create`;
@@ -31,7 +32,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Article',
+			path: articleRoute
+		},
 		{
 			name: 'View',
 			path: viewRoute

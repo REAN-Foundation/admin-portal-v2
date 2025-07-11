@@ -31,13 +31,15 @@
 	const tenantId = data.tenantId;
 	var biometricsId = page.params.id;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=Biometrics`;
+	const createRoute = `/users/${userId}/careplan/assets/biometrics/create`;
 	const editRoute = `/users/${userId}/careplan/assets/biometrics/${biometricsId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/biometric/${biometricsId}/view`;
 	const biometricsRoute = `/users/${userId}/careplan/assets/biometrics`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+		{ name: 'Biometric', path: createRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 
@@ -147,7 +149,8 @@
 				<tr class="tables-row">
 					<Label text="Biometrics Type" />
 					<td class="table-data">
-						<select class="input" bind:value={biometricsType} name="biometricsType">
+						<div class="relative">
+						<select class="select" bind:value={biometricsType}>
 							<option disabled value>Select biometrics type</option>
 							<option>Blood pressure</option>
 							<option>Blood glucose</option>
@@ -158,6 +161,10 @@
 							<option>Pulse</option>
 							<option>Other</option>
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 

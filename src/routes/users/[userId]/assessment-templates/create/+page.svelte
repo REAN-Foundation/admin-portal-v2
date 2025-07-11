@@ -139,11 +139,12 @@
 				<tr class="tables-row">
 					<Label text="Type" required={true} />
 					<td class="table-data">
+						<div class="relative">
 						<select
 							name="type"
 							placeholder="Select type here..."
 							bind:value={type}
-							class="health-system-input {form?.errors?.type ? 'input-text-error' : ''}"
+							class="select {errors?.type ? 'input-text-error' : ''}"
 						>
 							<option>Daily Update</option>
 							<option>Symptoms</option>
@@ -151,6 +152,10 @@
 							<option>Protocol</option>
 							<option>Custom</option>
 						</select>
+						<div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+							<Icon icon="mdi:chevron-down" class="text-info h-5 w-5" />
+						</div>
+					</div>
 						{#if errors?.Type}
 							<p class="text-error">{errors?.Type}</p>
 						{/if}

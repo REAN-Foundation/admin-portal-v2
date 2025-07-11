@@ -29,13 +29,17 @@
 	const tenantId = data.tenantId;
 	var checkupsId = page.params.id;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Checkup';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/checkups/create`;
 	const editRoute = `/users/${userId}/careplan/assets/checkups/${checkupsId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/checkups/${checkupsId}/view`;
 	const checkupsRoute = `/users/${userId}/careplan/assets/checkups`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+		{ name: 'Checkup', path: createRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 

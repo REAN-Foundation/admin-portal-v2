@@ -29,8 +29,11 @@
 	const userId = page.params.userId;
 	const tenantId = data.sessionUser.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
-	const createRoute = `/users/${userId}/careplan/assets/appointments/create`;
+	// Get asset type from URL params or default to 'Appointment'
+	const assetType ='Appointment';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/appointments/create?assetType=${assetType}`;
 	const appointmentRoute = `/users/${userId}/careplan/assets/appointments`;
 
 	const breadCrumbs = [
@@ -38,7 +41,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Appointment',
+			path: createRoute
+		},		
 		{
 			name: 'Create',
 			path: createRoute
@@ -140,13 +146,18 @@
 				<tr class="tables-row">
 					<Label text="Appointment Type" />
 					<td class="table-data">
-						<select name="appointmentType" class="input" bind:value={appointmentType}>
+						<div class="relative">
+						<select name="appointmentType" class="select" bind:value={appointmentType}>
 							<!-- <option disabled selected>Select appointment type</option> -->
 							<option>Doctor</option>
 							<option>Lab</option>
 							<option>Physiotherapy</option>
 							<option>Other</option>
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 

@@ -27,13 +27,16 @@
 	const userId = page.params.userId;
 	const tenantId = data.sessionUser.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
-	const createRoute = `/users/${userId}/careplan/assets/challenges/create`;
+	// Get asset type from URL params or default to 'Challenge'
+	const assetType = 'Challenge';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/challenges/create?assetType=${assetType}`;
 	const challengesRoute = `/users/${userId}/careplan/assets/challenges`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
-
+		{ name: 'Challenge', path: createRoute },	
 		{ name: 'Create', path: createRoute }
 	];
 
