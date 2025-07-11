@@ -23,14 +23,18 @@
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
 	var goalsId = page.params.id;
+	// Get asset type from URL params or default to 'Goal'
+	const assetType = page.url.searchParams.get('assetType') || 'Goal';
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/goals/create`;
 	const editRoute = `/users/${userId}/careplan/assets/goals/${goalsId}/edit`;
-	const viewRoute = `/users/${userId}/careplan/assets/biometric/${goalsId}/view`;
+	const viewRoute = `/users/${userId}/careplan/assets/goals/${goalsId}/view`;
 	const goalsRoute = `/users/${userId}/careplan/assets/goals`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+		{ name: 'Goal', path: createRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 

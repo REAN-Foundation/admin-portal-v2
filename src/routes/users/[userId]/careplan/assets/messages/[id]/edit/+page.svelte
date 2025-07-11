@@ -30,13 +30,17 @@
 	const tenantId = data.tenantId;
 	var messageId = page.params.id;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Message';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/messages/create`;
 	const editRoute = `/users/${userId}/careplan/assets/messages/${messageId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/messages/${messageId}/view`;
 	const messageRoute = `/users/${userId}/careplan/assets/messages`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+		{ name: 'Message', path: createRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 

@@ -23,9 +23,12 @@
 	data.title = 'Action-plan Create';
 	const userId = page.params.userId;
 	const tenantId = data.sessionUser.tenantId;
+
+	// Get asset type from URL params or default to 'Action plan'
+	const assetType = page.url.searchParams.get('assetType') || 'Action plan';
 	
-	const assetRoute = `/users/${userId}/careplan/assets`;
-	const createRoute = `/users/${userId}/careplan/assets/action-plans/create`;
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/action-plans/create?assetType=${assetType}`;
 	const actionPlanRoute = `/users/${userId}/careplan/assets/action-plans`;
 
 	const breadCrumbs = [
@@ -33,7 +36,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Action-Plan',
+			path: createRoute
+		},
 		{
 			name: 'Create',
 			path: createRoute
@@ -89,9 +95,8 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -140,11 +145,7 @@
 				<tr class="tables-row">
 					<td class="table-label">Tags</td>
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
+						<InputChips bind:keywords name="keywords" id="keywords" />
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>
@@ -168,11 +169,11 @@
 		</table>
 
 		<div class="btn-container">
-            {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
-            {/await}
-        </div>
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
+		</div>
 	</form>
 </div>

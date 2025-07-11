@@ -24,8 +24,10 @@
 	const userId = page.params.userId;
 	const tenantId = data.sessionUser.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
-	const createRoute = `/users/${userId}/careplan/assets/web-links/create`;
+	const assetType = page.url.searchParams.get('assetType') || 'Web link';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/web-links/create?assetType=${assetType}`;
 	const weblinkRoute = `/users/${userId}/careplan/assets/web-links`;
 
 	const breadCrumbs = [
@@ -33,7 +35,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Web link',
+			path: createRoute
+		},
 		{
 			name: 'Create',
 			path: createRoute

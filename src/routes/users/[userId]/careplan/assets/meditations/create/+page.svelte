@@ -24,12 +24,16 @@
 	const userId = page.params.userId;
   const tenantId = data.sessionUser.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	// Get asset type from URL params or default to 'Meditation'
+	const assetType = 'Meditation';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const createRoute = `/users/${userId}/careplan/assets/meditations/create`;
 	const meditationRoute = `/users/${userId}/careplan/assets/meditations`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+    { name: 'Meditation', path: createRoute },
 		{ name: 'Create', path: createRoute }
 	];
 
