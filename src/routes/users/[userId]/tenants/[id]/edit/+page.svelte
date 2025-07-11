@@ -163,7 +163,7 @@
 						<input
 							type="text"
 							name="phone"
-							placeholder="Enter phone here..."
+							placeholder="Enter contact number here..."
 							class="input {errors?.phone ? 'input-text-error' : ''}"
 							bind:value={phone}
 						/>

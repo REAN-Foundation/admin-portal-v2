@@ -9,14 +9,14 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 	const sessionId = event.cookies.get('sessionId');
 	const assessmentNodeId = event.params.nodeId;
 	const templateId = event.params.templateId;
-	const response = await getAssessmentNodeById(sessionId, templateId, assessmentNodeId);
-	const templateDetails_ = await getAssessmentTemplateById(sessionId, templateId);
-	const templateDetails = templateDetails_.Data.AssessmentTemplate;
+	let response = await getAssessmentNodeById(sessionId, templateId, assessmentNodeId);
+	let templateDetails_ = await getAssessmentTemplateById(sessionId, templateId);
+	let templateDetails = templateDetails_.Data.AssessmentTemplate;
 
 	if (response.Status === 'failure' || response.HttpCode !== 200) {
 		throw error(response.HttpCode, response.Message);
 	}
-	const assessmentNode = response?.Data?.AssessmentNode;
+	let assessmentNode = response?.Data?.AssessmentNode;
 	const id = response?.Data?.AssessmentNode?.id;
 	return {
 		location: `${id}/edit`,
