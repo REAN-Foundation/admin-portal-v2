@@ -139,7 +139,8 @@
 				<tr class="tables-row">
 					<td class="table-label">Health System <span class=" text-red-600">*</span></td>
 					<td class="table-data">
-						<select name="healthSystemId" class=" input">
+						<div class="relative">
+						<select name="healthSystemId" class="select">
 							<option value={healthSystemId}>{healthSystemName}</option>
 							{#each healthSystems as healthSystem}
 								{#if healthSystemId !== healthSystem.id}
@@ -147,6 +148,10 @@
 								{/if}
 							{/each}
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 						<input type="text" hidden bind:value={healthSystemId} />
 					</td>
 				</tr>

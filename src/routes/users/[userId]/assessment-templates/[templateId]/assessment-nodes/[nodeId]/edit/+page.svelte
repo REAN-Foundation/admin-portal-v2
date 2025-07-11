@@ -320,27 +320,31 @@
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>
-				<tr>
+				<tr class="tables-row">
 					<td class="table-label">Field Identifier</td>
 					<td class="table-data">
+						<div class="relative">
 						<select
 							name="fieldIdentifier"
 							bind:value={fieldIdentifier}
-							class="input {errors?.fieldIdentifier ? 'input-text-error' : ''}"
+							class="select {errors?.fieldIdentifier ? 'input-text-error' : ''}"
 						>
 							<option value="" disabled selected>Select field identifier here...</option>
 							{#each sortedIdentifiers as identifier}
 								<option value={identifier}>{toLabel(identifier)}</option>
 							{/each}
 						</select>
-
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 						{#if errors?.FieldIdentifier}
 							<p class="text-error">{errors?.FieldIdentifier}</p>
 						{/if}
 					</td>
 				</tr>
-				<tr>
-					<td class="table-label align-top">Field Identifier Unit</td>
+				<tr class="tables-row">
+					<td class="table-label">Field Identifier Unit</td>
 					<td class="table-data">
 						<input
 							type="text"
@@ -430,14 +434,14 @@
 						</td>
 					</tr>
 				{:else}
-					<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
+					<tr class="tables-row">
 						<td class="table-label">Serve List Node Children At Once</td>
 						<td class="table-data">
 							<input
 								type="checkbox"
 								name="serveListNodeChildrenAtOnce"
 								bind:checked={serveListNodeChildrenAtOnce}
-								class="input {errors?.serveListNodeChildrenAtOnce
+								class=" {errors?.serveListNodeChildrenAtOnce
 									? 'input-text-error'
 									: ''}"
 							/>

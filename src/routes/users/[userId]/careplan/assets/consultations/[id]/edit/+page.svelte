@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import type { PageServerData } from './$types'
+	import type { PageServerData } from './$types';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
@@ -39,17 +39,17 @@
 		{ name: 'Edit', path: editRoute }
 	];
 
-	const handleReset =  () => {
-		 name = data?.consultation?.Name;
-		 consultationId = page.params.id;
-		 description = data?.consultation?.Description;
-		 version = data?.consultation?.Version;
-		 consultationType = data?.consultation.ConsultationType;
-		 keywords = data?.consultation?.Tags;
-		 errors = {};
-		}
+	const handleReset = () => {
+		name = data?.consultation?.Name;
+		consultationId = page.params.id;
+		description = data?.consultation?.Description;
+		version = data?.consultation?.Version;
+		consultationType = data?.consultation.ConsultationType;
+		keywords = data?.consultation?.Tags;
+		errors = {};
+	};
 
-		const handleSubmit = async (event: Event) => {
+	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
 			errors = {};
@@ -85,9 +85,9 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				// console.log("Redirecting to:", response?.Data?.id); 
-				console.log("Full response:", response);
-				await goto(`${consultationRoute}/${response?.Data?.id}/view`); 
+				// console.log("Redirecting to:", response?.Data?.id);
+				console.log('Full response:', response);
+				await goto(`${consultationRoute}/${response?.Data?.id}/view`);
 			} else if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -99,9 +99,8 @@
 	};
 
 	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
-
+		keywordsStr = keywords?.join(', ');
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -148,23 +147,24 @@
 				<tr class="tables-row">
 					<td class="table-label">Consultation Type</td>
 					<td class="table-data">
-						<select class="input" bind:value={consultationType}>
-							<option disabled value>Select Consultation type</option>
-							<option>Tele-consultation</option>
-							<option>Visit-consultation</option>
-							<option>Other</option>
-						</select>
+						<div class="relative">
+							<select class="select" bind:value={consultationType}>
+								<option disabled value>Select Consultation type</option>
+								<option>Tele-consultation</option>
+								<option>Visit-consultation</option>
+								<option>Other</option>
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
 					</td>
 				</tr>
 
 				<tr class="tables-row">
 					<td class="table-label">Tags</td>
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
+						<InputChips bind:keywords name="keywords" id="keywords" />
 						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
 					</td>
 				</tr>
@@ -188,14 +188,12 @@
 		</table>
 
 		<div class="btn-container">
-            <Button type="button" onclick={handleReset} text="Reset" variant="primary" />
-            {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
-            {/await}
+			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
 		</div>
-
 	</form>
 </div>
-

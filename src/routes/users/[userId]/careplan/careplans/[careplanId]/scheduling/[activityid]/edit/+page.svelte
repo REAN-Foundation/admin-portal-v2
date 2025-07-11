@@ -190,10 +190,12 @@
 				<tr class="tables-row">
 					<td class="table-label">Asset Type <span class="important-field">*</span></td>
 					<td class="table-data">
+						<div class="relative">
+
 						<select
 							name="assetType"
 							bind:value={assetType}
-							class="input"
+							class="select"
 							onchange={onSelectAssetType}
 							required
 						>
@@ -201,28 +203,44 @@
 								<option value={val}>{val}</option>
 							{/each}
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 
 				<tr class="tables-row">
 					<td class="table-label">Asset <span class="important-field">*</span></td>
 					<td class="table-data">
-						<select name="assetId" class="input" bind:value={assetId}>
+						<div class="relative">
+
+						<select name="assetId" class="select" bind:value={assetId}>
 							{#each items as val}
 								<option value={val.value}>{val.label}</option>
 							{/each}
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 
 				<tr class="tables-row">
 					<td class="table-label">Time Slot <span class="important-field">*</span></td>
 					<td class="table-data">
-						<select name="timeSlot" bind:value={timeSlot} class="input" required>
+						<div class="relative">
+
+						<select name="timeSlot" bind:value={timeSlot} class="select" required>
 							{#each timeSlots as val}
 								<option value={val}>{val}</option>
 							{/each}
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 

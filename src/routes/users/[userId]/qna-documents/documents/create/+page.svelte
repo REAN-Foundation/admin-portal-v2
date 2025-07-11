@@ -404,8 +404,10 @@
 				<tr class="tables-row">
 					<td class="table-label">Chunking Strategy <span class="text-red-700">*</span></td>
 					<td class="table-data">
+						<div class="relative">
+
 						<select
-							class="input"
+							class="select"
 							name="chunkingStrategy"
 							bind:value={chunkingStrategy}
 							placeholder="Select type here..."
@@ -415,6 +417,10 @@
 							<option>Content Aware Splitting</option>
 							<option>NPL chunking</option>
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 				<!-- Chunking Length -->

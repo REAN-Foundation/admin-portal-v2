@@ -224,24 +224,30 @@
 				<tr class="tables-row">
 					<td class="table-label">Node Type <span class="text-red-700">*</span></td>
 					<td class="table-data">
-						<select
-							name="nodeType"
-							placeholder="Select node type here..."
-							class="input {errors?.nodeType ? 'input-text-error' : ''}"
-							onchange={(val) => onSelectNodeType(val)}
-						>
-							<option>Question</option>
-							<option>Message</option>
-							<option>Node list</option>
-						</select>
+						<div class="relative">
+							<select
+								name="nodeType"
+								placeholder="Select node type here..."
+								class="select {errors?.nodeType ? 'input-text-error' : ''}"
+								onchange={(val) => onSelectNodeType(val)}
+							>
+								<option>Question</option>
+								<option>Message</option>
+								<option>Node list</option>
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
 					</td>
 				</tr>
 				<tr class="tables-row">
 					<td class="table-label">Parent Node <span class="text-red-700">*</span></td>
 					<td class="table-data">
+						<div class="relative">
 						<select
 							name="parentNodeId"
-							class="input {errors?.parentNodeId ? 'input-text-error' : ''}"
+							class="select {errors?.parentNodeId ? 'input-text-error' : ''}"
 							placeholder="Select node type here..."
 							onchange={(val) => (parentNodeId = val.target.value)}
 							bind:value={parentNodeId}
@@ -254,6 +260,10 @@
 								{/if}
 							{/each}
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 					</td>
 				</tr>
 				<tr class="tables-row">
@@ -345,10 +355,11 @@
 							>Query Response Type <span class=" text-red-600">*</span></td
 						>
 						<td class="table-data">
+							<div class="relative">
 							<select
 								id="mySelect"
 								name="queryType"
-								class="input {errors?.queryType ? 'input-text-error' : ''}"
+								class="select{errors?.queryType ? 'input-text-error' : ''}"
 								placeholder="Select query type here..."
 								onchange={(val) => onSelectQueryResponseType(val)}
 							>
@@ -356,15 +367,20 @@
 									<option value={responseType}>{responseType}</option>
 								{/each}
 							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
 						</td>
 					</tr>
 					<tr class="tables-row">
 						<td class="table-label">Field Identifier</td>
 						<td class="table-data">
+							<div class="relative">
 							<select
 								name="fieldIdentifier"
 								bind:value={fieldIdentifier}
-								class="input {errors?.fieldIdentifier ? 'input-text-error' : ''}"
+								class="select {errors?.fieldIdentifier ? 'input-text-error' : ''}"
 							>
 								<option value="" disabled selected={fieldIdentifier === undefined}>
 									Select field identifier here...
@@ -374,7 +390,10 @@
 									<option value={identifier}>{toLabel(identifier)}</option>
 								{/each}
 							</select>
-
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
 							{#if errors?.FieldIdentifier}
 								<p class="text-error">{errors?.FieldIdentifier}</p>
 							{/if}

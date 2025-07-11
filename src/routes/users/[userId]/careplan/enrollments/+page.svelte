@@ -204,7 +204,7 @@
 		<div class="table-container shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="relative pr-1.5">
+					<div class="relative w-auto grow">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
@@ -232,7 +232,7 @@
 						{/if}
 					</div>
 
-					<div class="relative pr-1.5">
+					<div class="relative w-auto grow">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
@@ -261,7 +261,7 @@
 
 					<div class="relative flex flex-row items-center pr-1.5">
 						<label class="pr-2">Start date</label>
-						<div class="flex items-center space-x-2">
+						<div class="relative w-auto grow">
 							<input
 								type="date"
 								name="startDate"
@@ -287,7 +287,7 @@
 
 					<div class="relative flex flex-row items-center pr-1.5">
 						<label class="pr-2">End date</label>
-						<div class="flex items-center space-x-2">
+						<div class="relative w-auto grow">
 							<input
 								type="date"
 								name="endDate"
