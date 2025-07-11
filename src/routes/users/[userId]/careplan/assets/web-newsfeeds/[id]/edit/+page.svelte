@@ -30,7 +30,10 @@
 	const webNewsfeedId = page.params.id;
 	const tenantId = data.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = page.url.searchParams.get('assetType') || 'Web newsfeed';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/web-newsfeeds/create`;
 	const editRoute = `/users/${userId}/careplan/assets/web-newsfeeds/${webNewsfeedId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/web-newsfeeds/${webNewsfeedId}/view`;
 	const webNewsfeedRoute = `/users/${userId}/careplan/assets/web-newsfeeds`;
@@ -40,7 +43,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Web newsfeed',
+			path: createRoute
+		},
 		{
 			name: 'Edit',
 			path: editRoute

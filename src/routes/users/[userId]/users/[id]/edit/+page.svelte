@@ -194,19 +194,24 @@
 				<tr class="tables-row">
 					<td class="table-label">Role <span class="text-red-700">*</span></td>
 					<td class="table-data">
-						<select
-							name="roleId"
-							class="input"
-							placeholder="Select role here..."
-							disabled
-							bind:value={role}
-							onchange={getRoleIdByRoleName}
-						>
-							<option value="Tenant admin">Tenant Admin</option>
-							<option value="Tenant user">Tenant User</option>
-							<option value="System user">System User</option>
-							<option value="System admin">System Admin</option>
-						</select>
+						<div class="relative">
+							<select
+								name="roleId"
+								class="select"
+								placeholder="Select role here..."
+								disabled
+								bind:value={role}
+								onchange={getRoleIdByRoleName}
+							>
+								<option value="Tenant admin">Tenant Admin</option>
+								<option value="Tenant user">Tenant User</option>
+								<option value="System user">System User</option>
+								<option value="System admin">System Admin</option>
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
 						<input type="hidden" name="selectedUserRoleId" bind:value={selectedUserRoleId} />
 					</td>
 				</tr>

@@ -30,7 +30,10 @@
 	const webLinkId = page.params.id;
 	const tenantId = data.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = page.url.searchParams.get('assetType') || 'Web link';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/web-links/create`;
 	const editRoute = `/users/${userId}/careplan/assets/web-links/${webLinkId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/web-links/${webLinkId}/view`;
 	const weblinkRoute = `/users/${userId}/careplan/assets/web-links`;
@@ -40,7 +43,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Web link',
+			path: createRoute
+		},
 		{
 			name: 'Edit',
 			path: editRoute

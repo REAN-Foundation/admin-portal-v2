@@ -140,17 +140,22 @@
 				<tr class="tables-row">
 					<td class="table-label">Type <span class="text-red-700">*</span></td>
 					<td class="table-data">
+						<div class="relative">
 						<select
 							name="type"
 							placeholder="Select type here..."
 							bind:value={type}
-							class="input {errors?.type ? 'input-text-error' : ''}"
+							class="select {errors?.type ? 'input-text-error' : ''}"
 						>
 							<option>Daily Update</option>
 							<option>Survey</option>
 							<option>Protocol</option>
 							<option>Custom</option>
 						</select>
+						<div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+							<Icon icon="mdi:chevron-down" class="text-info h-5 w-5" />
+						</div>
+					</div>
 						{#if errors?.Type}
 							<p class="text-error">{errors?.Type}</p>
 						{/if}

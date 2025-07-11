@@ -10,6 +10,7 @@
 	import { createOrUpdateSchema } from '$lib/validation/scoring.condition.schema';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -444,20 +445,10 @@
 	</table>
 	<div class="btn-container">
 		{#if nodeType === 'Node list'}
-			<a
-				href={createNodeRoute}
-				class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
-			>
-				Add child
-			</a>
+		<Button href={createNodeRoute} text="Add Child" variant="primary" />
 		{/if}
-		<a
-			href={editRoute}
-			class="health-system-btn variant-filled-secondary hover:!variant-soft-secondary"
-		>
-			<Icon icon="material-symbols:edit-outline" />
-			<span class="ml-1">Edit</span>
-		</a>
+		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
+		></Button>
 	</div>
 </div>
 
