@@ -25,13 +25,17 @@
 	var consultationId = page.params.id;
 	const tenantId = data.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = page.url.searchParams.get('assetType') || 'Consultation';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/consultations/create`;
 	const editRoute = `/users/${userId}/careplan/assets/consultations/${consultationId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/consultations/${consultationId}/view`;
 	const consultationRoute = `/users/${userId}/careplan/assets/consultations`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+		{ name: 'Consultation', path: createRoute },
 		{ name: 'Edit', path: editRoute }
 	];
 

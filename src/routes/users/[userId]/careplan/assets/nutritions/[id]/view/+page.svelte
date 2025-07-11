@@ -8,7 +8,9 @@
 
 	const userId = page.params.userId;
 	const nutritionId = page.params.id;
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetType = 'Nutrition';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const editRoute = `/users/${userId}/careplan/assets/nutritions/${nutritionId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/nutritions/${nutritionId}/view`;
 	const nutritionRoute = `/users/${userId}/careplan/assets/nutritions/create`;
@@ -28,7 +30,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Nutrition',
+			path: nutritionRoute
+		},
 		{
 			name: 'View',
 			path: viewRoute

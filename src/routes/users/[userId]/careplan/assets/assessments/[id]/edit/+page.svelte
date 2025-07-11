@@ -30,14 +30,18 @@
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
 	var assessmentId = page.params.id;
+	// Get asset type from URL params or default to 'Assessment'
+	const assetType = 'Assessment';
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/assessments/create`;
 	const editRoute = `/users/${userId}/careplan/assets/assessments/${assessmentId}/edit`;
 	const viewRoute = `/users/${userId}/careplan/assets/assessments/${assessmentId}/view`;
 	const assessmentRoute = `/users/${userId}/careplan/assets/assessments`;
 
 	const breadCrumbs = [
 		{ name: 'Asset', path: assetRoute },
+		{ name: 'Assessment', path: createRoute},
 		{ name: 'Edit', path: editRoute }
 	];
 

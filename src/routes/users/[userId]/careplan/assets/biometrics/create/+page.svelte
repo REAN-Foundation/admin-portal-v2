@@ -25,12 +25,16 @@
 	const userId = page.params.userId;
 	const tenantId = data.sessionUser.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
+	// Get asset type from URL params or default to 'Biometrics'
+	const assetType = 'Biometrics';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
 	const createRoute = `/users/${userId}/careplan/assets/biometrics/create`;
 	const biometricsRoute = `/users/${userId}/careplan/assets/biometrics`;
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
+		{ name: 'Biometric', path: createRoute },
 		{ name: 'Create', path: createRoute }
 	];
 

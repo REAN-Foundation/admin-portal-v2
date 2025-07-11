@@ -24,8 +24,11 @@
 	const userId = page.params.userId;
 	const tenantId = data.sessionUser.tenantId;
 
-	const assetRoute = `/users/${userId}/careplan/assets`;
-	const createRoute = `/users/${userId}/careplan/assets/web-newsfeeds`;
+	// Get asset type from URL params or default to 'Web newsfeed'
+	const assetType = page.url.searchParams.get('assetType') || 'Web newsfeed';
+	
+	const assetRoute = `/users/${userId}/careplan/assets?assetType=${assetType}`;
+	const createRoute = `/users/${userId}/careplan/assets/web-newsfeeds/create?assetType=${assetType}`;
 	const webNewsfeedRoute = `/users/${userId}/careplan/assets/web-newsfeeds`;
 
 	const breadCrumbs = [
@@ -33,7 +36,10 @@
 			name: 'Assets',
 			path: assetRoute
 		},
-
+		{
+			name: 'Web newsfeed',
+			path: createRoute
+		},
 		{
 			name: 'Create',
 			path: createRoute
