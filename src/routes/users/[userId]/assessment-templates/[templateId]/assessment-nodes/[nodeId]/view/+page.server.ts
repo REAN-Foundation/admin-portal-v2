@@ -1,23 +1,25 @@
-import { error, type RequestEvent } from '@sveltejs/kit';
+import { error, type ServerLoadEvent } from '@sveltejs/kit';
 import { getAssessmentTemplateById } from '../../../../../../../api/services/reancare/assessments/assessment-templates';
 import type { PageServerLoad } from './$types';
 import { getAssessmentNodeById } from '../../../../../../../api/services/reancare/assessments/assessment-nodes';
 
 ////////////////////////////////////////////////////////////////////////////
 
-export const load: PageServerLoad = async (event: RequestEvent) => {
+export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
+	event.depends('app:assessment-nodes');
 	const assessmentNodeId = event.params.nodeId;
 	const templateId = event.params.templateId;
-	let response = await getAssessmentNodeById(sessionId, templateId, assessmentNodeId);
-	let templateDetails_ = await getAssessmentTemplateById(sessionId, templateId);
-	let templateDetails = templateDetails_.Data.AssessmentTemplate;
+	const response = await getAssessmentNodeById(sessionId, templateId, assessmentNodeId);
+	const templateDetails_ = await getAssessmentTemplateById(sessionId, templateId);
+	const templateDetails = templateDetails_.Data.AssessmentTemplate;
 
 	if (response.Status === 'failure' || response.HttpCode !== 200) {
 		throw error(response.HttpCode, response.Message);
 	}
-	let assessmentNode = response?.Data?.AssessmentNode;
+	const assessmentNode = response?.Data?.AssessmentNode;
 	const id = response?.Data?.AssessmentNode?.id;
+	console.log('Assessnent Node',assessmentNode.Children);
 	return {
 		location: `${id}/edit`,
 		assessmentNode,
