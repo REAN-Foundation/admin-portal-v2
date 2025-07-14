@@ -253,10 +253,10 @@
 							name="day"
 							bind:value={day}
 							placeholder="Enter day here..."
-							class="input {form?.errors?.day ? 'input-text-error' : ''}"
+							class="input {errors?.ScheduleDay ? 'input-text-error' : ''}"
 						/>
-						{#if errors?.Day}
-							<p class="error-text">{errors?.Day}</p>
+						{#if errors?.ScheduleDay}
+							<p class="error-text">{errors?.ScheduleDay}</p>
 						{/if}
 					</td>
 				</tr>
