@@ -7,6 +7,7 @@
 	import type { PageServerData } from './$types';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import { page } from '$app/state';
+	import { invalidateAll } from '$app/navigation';
 	import { createOrUpdateSchema } from '$lib/validation/scoring.condition.schema';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
@@ -72,9 +73,10 @@
 	let rawData = $derived(formatRawData(assessmentNode.RawData));
 	let isJsonData = $derived(rawData !== 'Not specified' && rawData !== assessmentNode.RawData);
 
-	let fieldIdentifier = $derived(assessmentNode.FieldIdentifier ?? null);
-	let fieldIdentifierUnit = $derived(assessmentNode.FieldIdentifierUnit ?? null);
+	let fieldIdentifier = $derived(assessmentNode.FieldIdentifier !== null && assessmentNode.FieldIdentifier!== '' ? assessmentNode.FieldIdentifier : 'Not specified' );
+	let fieldIdentifierUnit = $derived(assessmentNode.FieldIdentifierUnit !== null && assessmentNode.FieldIdentifierUnit!== '' ? assessmentNode.FieldIdentifierUnit : 'Not specified' );
 
+	$inspect('childrenNodes', childrenNodes);
 	// Field identifier options for editing
 	const AssessmentFieldIdentifiers = [
 		'General:PersonalProfile:FirstName',
@@ -157,22 +159,6 @@
 		idToBeDeleted = id;
 	};
 
-	// const handleAssessmentNodeDelete = async () => {
-	// 	const assessmentNodeId = idToBeDeleted;
-	// 	console.log('assessmentNodeId', assessmentNodeId);
-	// 	const model = {
-	// 		sessionId: data.sessionId,
-	// 		assessmentTemplateId: templateId,
-	// 		assessmentNodeId: assessmentNodeId
-	// 	};
-	// 	await fetch(`/api/server/assessments/assessment-nodes`, {
-	// 		method: 'DELETE',
-	// 		body: JSON.stringify(model),
-	// 		headers: { 'content-type': 'application/json' }
-	// 	});
-	// 	window.location.href = viewRoute;
-	// };
-
 	const handleAssessmentNodeDelete = async (id) => {
 		id = idToBeDeleted;
 		const response = await fetch(
@@ -188,6 +174,9 @@
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);
+			openDeleteModal = false;
+			idToBeDeleted = null;
+			await invalidateAll();
 		} else {
 			toastMessage(res);
 		}
