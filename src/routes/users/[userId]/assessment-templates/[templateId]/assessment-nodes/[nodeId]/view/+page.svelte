@@ -7,37 +7,43 @@
 	import type { PageServerData } from './$types';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import { page } from '$app/state';
+	import { invalidateAll } from '$app/navigation';
 	import { createOrUpdateSchema } from '$lib/validation/scoring.condition.schema';
 	import { toastMessage } from '$lib/components/toast/toast.store';
+	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import Button from '$lib/components/button/button.svelte';
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 	let errors: Record<string, string> = $state({});
+	let openDeleteModal = $state(false);
+	let idToBeDeleted = $state(null);
+	let isDeleting = $state(false);
 	let templateTitle = data.templateDetails.Title;
-	const assessmentNodes = $state(data.assessmentNode);
-	const nodeType = assessmentNodes.NodeType;
-	const title = assessmentNodes.Title;
-	const description =
-		assessmentNodes.Description !== null && assessmentNodes.Description !== ''
-			? assessmentNodes.Description
-			: 'Not specified';
-	const message =
-		assessmentNodes.Message !== null && assessmentNodes.Message !== ''
-			? assessmentNodes.Message
-			: 'Not specified';
-	const serveListNodeChildrenAtOnce = assessmentNodes.ServeListNodeChildrenAtOnce ?? null;
-	const queryType = assessmentNodes.QueryResponseType;
-	const options = assessmentNodes.Options ?? [];
-	const childrenNodes = assessmentNodes.Children ?? [];
-	const displayCode = assessmentNodes.DisplayCode;
-	const sequence = assessmentNodes.Sequence;
-	const tags_ = Array.isArray(assessmentNodes?.Tags) ? assessmentNodes.Tags : [];
-	const tags = tags_.join(', ');
-	const correctAnswer = assessmentNodes.CorrectAnswer ?? null;
+	let assessmentNode = $derived(data.assessmentNode)
+	$inspect('Assesment node', assessmentNode);
+	let nodeType = $derived(assessmentNode.NodeType);
+	let title = $derived(assessmentNode.Title);
+	let description =$derived(
+		assessmentNode.Description !== null && assessmentNode.Description !== ''
+			? assessmentNode.Description
+			: 'Not specified');
+	let message =$derived(
+		assessmentNode.Message !== null && assessmentNode.Message !== ''
+			? assessmentNode.Message
+			: 'Not specified');
+	let serveListNodeChildrenAtOnce = $derived(assessmentNode.ServeListNodeChildrenAtOnce ?? null);
+	let queryType = $derived(assessmentNode.QueryResponseType);
+	let options = $derived(assessmentNode.Options ?? []);
+	let childrenNodes = $derived(assessmentNode.Children ?? []);
+	let displayCode = $derived(assessmentNode.DisplayCode);
+	let sequence = $derived(assessmentNode.Sequence);
+	let tags_ = $derived(Array.isArray(assessmentNode?.Tags) ? assessmentNode.Tags : []);
+	let tags = $derived(tags_.join(', '));
+	let correctAnswer = $derived(assessmentNode.CorrectAnswer ?? null);
 
-	const formatRawData = (data: any) => {
+	let formatRawData = (data: any) => {
 		if (!data || data === '{}' || data === '' || data === null || data === undefined) {
 			return 'Not specified';
 		}
@@ -64,12 +70,13 @@
 		}
 	};
 
-	const rawData = formatRawData(assessmentNodes.RawData);
-	const isJsonData = rawData !== 'Not specified' && rawData !== assessmentNodes.RawData;
+	let rawData = $derived(formatRawData(assessmentNode.RawData));
+	let isJsonData = $derived(rawData !== 'Not specified' && rawData !== assessmentNode.RawData);
 
-	const fieldIdentifier = assessmentNodes.FieldIdentifier ?? null;
-	const fieldIdentifierUnit = assessmentNodes.FieldIdentifierUnit ?? null;
+	let fieldIdentifier = $derived(assessmentNode.FieldIdentifier !== null && assessmentNode.FieldIdentifier!== '' ? assessmentNode.FieldIdentifier : 'Not specified' );
+	let fieldIdentifierUnit = $derived(assessmentNode.FieldIdentifierUnit !== null && assessmentNode.FieldIdentifierUnit!== '' ? assessmentNode.FieldIdentifierUnit : 'Not specified' );
 
+	$inspect('childrenNodes', childrenNodes);
 	// Field identifier options for editing
 	const AssessmentFieldIdentifiers = [
 		'General:PersonalProfile:FirstName',
@@ -109,7 +116,7 @@
 	let resolutionScore = $state();
 
 	if (nodeType === 'Question') {
-		resolutionScore = assessmentNodes.ScoringCondition?.ResolutionScore ?? 'Not specified';
+		resolutionScore = assessmentNode.ScoringCondition?.ResolutionScore ?? 'Not specified';
 	}
 
 	scoringApplicableCondition.set(data.templateDetails.ScoringApplicable);
@@ -125,6 +132,8 @@
 	const assessmentTemplateView = `/users/${userId}/assessment-templates/${templateId}/view`;
 	const editNodeRoute = (id) =>
 		`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${id}/edit`;
+	const viewNodeRoute = (id) =>
+		`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${id}/view`;
 
 	const breadCrumbs = [
 		{
@@ -145,20 +154,32 @@
 		}
 	];
 
+	const handleDeleteClick = (id: string) => {
+		openDeleteModal = true;
+		idToBeDeleted = id;
+	};
+
 	const handleAssessmentNodeDelete = async (id) => {
-		const assessmentNodeId = id;
-		console.log('assessmentNodeId', assessmentNodeId);
-		const model = {
-			sessionId: data.sessionId,
-			assessmentTemplateId: templateId,
-			assessmentNodeId: assessmentNodeId
-		};
-		await fetch(`/api/server/assessments/assessment-nodes`, {
-			method: 'DELETE',
-			body: JSON.stringify(model),
-			headers: { 'content-type': 'application/json' }
-		});
-		window.location.href = viewRoute;
+		id = idToBeDeleted;
+		const response = await fetch(
+			`/api/server/assessments/assessment-nodes/${id}?templateId=${templateId}`,
+			{
+				method: 'DELETE',
+				headers: { 'content-type': 'application/json' }
+			}
+		);
+
+		const res = await response.json();
+
+		if (res.HttpCode === 200) {
+			isDeleting = true;
+			toastMessage(res);
+			openDeleteModal = false;
+			idToBeDeleted = null;
+			await invalidateAll();
+		} else {
+			toastMessage(res);
+		}
 	};
 
 	let model = $state(false);
@@ -181,7 +202,7 @@
 		try {
 			event.preventDefault();
 			errors = {};
-			const scoringId = data.assessmentNode.ScoringCondition ?? undefined;
+			let scoringId = assessmentNode.ScoringCondition ?? undefined;
 
 			const scoringConditionUpdateModel = {
 				ScoringConditionId: scoringId,
@@ -375,32 +396,25 @@
 												<td role="gridcell" aria-colindex={2} tabindex="0">
 													<div class="flex">
 														<Tooltip text="Edit" forceShow={true}>
-															<button class="">
-																<a
-																	href={editNodeRoute(node.id)}
-																	class="health-system-btn group"
-																>
-																	<Icon
-																		icon="material-symbols:edit-outline"
-																		class="health-system-icon"
-																	/>
-																</a>
-															</button>
+															<a href={editNodeRoute(node.id)} class="health-system-btn group">
+																<Icon
+																	icon="material-symbols:edit-outline"
+																	class="health-system-icon"
+																/>
+															</a>
 														</Tooltip>
 														<Tooltip text="View" forceShow={true}>
-															<button>
-																<a href={viewRoute} class=" health-system-btn group"
-																	><Icon
-																		icon="icon-park-outline:preview-open"
-																		class="health-system-icon"
-																	/>
-																</a>
-															</button>
+															<a href={viewNodeRoute(node.id)} class=" health-system-btn group"
+																><Icon
+																	icon="icon-park-outline:preview-open"
+																	class="health-system-icon"
+																/>
+															</a>
 														</Tooltip>
 														<Tooltip text="Delete" forceShow={true}>
 															<button
 																class="health-system-btn !text-red-600"
-																onclick={() => handleAssessmentNodeDelete(node.id)}
+																onclick={() => handleDeleteClick(node.id)}
 															>
 																<Icon icon="material-symbols:delete-outline-rounded" />
 															</button>
@@ -427,9 +441,8 @@
 	</div>
 </div>
 
-<!-- <Confirmation
+<Confirmation
 	bind:isOpen={openDeleteModal}
-	title="Delete Assessment Template"
+	title="Delete Assessment Node"
 	onConfirm={handleAssessmentNodeDelete}
-	id={idToBeDeleted}
-/> -->
+/>

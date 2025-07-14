@@ -204,6 +204,7 @@
 									type="button"
 									onclick={() => {
 										promptName = '';
+										onSearchInput({ target: { name: 'name', value: '' } });
 									}}
 									class="close-btn"
 								>

@@ -26,11 +26,11 @@ export const createOrUpdateSchema = z.object({
 
 	Phone: z
 		.string({
-			required_error: 'Phone number is required.',
-			invalid_type_error: 'Phone must be a string.'
+			required_error: 'Contact number is required.',
+			invalid_type_error: 'Contact must be a string.'
 		})
-		.min(7, { message: 'Phone number is too short.' })
-		.max(15, { message: 'Phone number is too long.' }),
+		.min(7, { message: 'Contact number is too short.' })
+		.max(15, { message: 'Contact number is too long.' }),
 
 	Description: z
 		.string({

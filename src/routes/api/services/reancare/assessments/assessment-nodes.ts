@@ -64,12 +64,12 @@ export const getAssessmentNodeById = async (
 	nodeId: string
 ) => {
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}`;
-	const cacheKey = `session-${sessionId}:req-getAssessmentNodeById-${nodeId}`;
-	if (await DashboardManager.has(cacheKey)) {
-		return await DashboardManager.get(cacheKey);
-	}
+	// const cacheKey = `session-${sessionId}:req-getAssessmentNodeById-${nodeId}`;
+	// if (await DashboardManager.has(cacheKey)) {
+	// 	return await DashboardManager.get(cacheKey);
+	// }
 	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
-	await DashboardManager.set(cacheKey, result);
+	// await DashboardManager.set(cacheKey, result);
 	return result;
 
 	
@@ -180,18 +180,35 @@ export const deleteAssessmentNode = async (
 	nodeId: string
 ) => {
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}`;
-	const result = await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
-
+	
+	let parentNodeId = null;
+	try {
+		const nodeResponse = await getAssessmentNodeById(sessionId, templateId, nodeId);
+		if (nodeResponse.Status === 'success' && nodeResponse.Data?.AssessmentNode) {
+			parentNodeId = nodeResponse.Data.AssessmentNode.ParentNodeId;
+		}
+	} catch {
+		console.log('Could not get parent node ID, proceeding with deletion');
+	}
+	
 	const keysToBeDeleted = [
 		`session-${sessionId}:req-getAssessmentNodeById-${nodeId}`,
+		`session-${sessionId}:req-getAssessmentTemplateById-${templateId}`	
 	];
+	
+	if (parentNodeId) {
+		keysToBeDeleted.push(`session-${sessionId}:req-getAssessmentNodeById-${parentNodeId}`);
+	}
+
+	console.log('keysToBeDeleted', keysToBeDeleted)
 	await DashboardManager.deleteMany(keysToBeDeleted);
 
 	const findAndClearKeys = [
 		`session-${sessionId}:req-searchAssessmentNodes`,
+		`session-${sessionId}:req-searchAssessmentTemplates`,
 	];
 	await DashboardManager.findAndClear(findAndClearKeys);
-
+	const result = await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
 	return result;
 };
 
