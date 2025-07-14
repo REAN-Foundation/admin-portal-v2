@@ -4,7 +4,7 @@
 </script>
 
 <div class="tree-connector pl-4">
-	{#if node.NodeType === 'Node list' && node.Children && node.Children.length > 0}
+	{#if node.NodeType === 'Node list'}
 		<details class="group">
 			<summary class="flex cursor-pointer items-center gap-2 text-[var(--color-info)] hover:text-blue-600">
 				<span class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-secondary)] text-sm text-[var(--color-info)]">
@@ -14,15 +14,17 @@
 					{node.Sequence}-{node.NodeType}-{node.Title}
 				</a>
 			</summary>
-			<div class="relative mt-2 ml-4 space-y-2 border-l-2 border-[var(--color-active)] pl-4">
-				{#each node.Children as child}
-					<Self node={child} {assessmentNodeView} />
-				{/each}
-			</div>
+			{#if node.Children && node.Children.length > 0}
+				<div class="relative mt-2 ml-4 space-y-2 border-l-2 border-[var(--color-active)] pl-4">
+					{#each node.Children as child}
+						<Self node={child} {assessmentNodeView} />
+					{/each}
+				</div>
+			{/if}
 		</details>
 	{:else if node.NodeType === 'Question'}
 		<div class="flex items-center gap-2 text-[var(--color-info)] hover:text-blue-600">
-			<span class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-secondary)] text-sm text-white">
+			<span class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-secondary)] text-sm text-[var(--color-info)]">
 				?
 			</span>
 			<a class="hover:underline" href={assessmentNodeView(node.id)}>
