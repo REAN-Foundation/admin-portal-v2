@@ -124,7 +124,7 @@
 						<input
 							type="text"
 							name="topicName"
-							class="input {errors?.Name ? 'input-text-error' : ''}"
+							class="input {errors?.topicName ? 'input-text-error' : ''}"
 							placeholder="Enter name here..."
 							bind:value={topicName}
 						/>

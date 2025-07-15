@@ -248,7 +248,7 @@
 				<tr class="tables-row">
 					<td class="table-label text-gray-500">Node Type <span class="text-red-600">*</span></td>
 					<td class="table-data">
-						<input type="text" disabled bind:value={nodeType} class="input text-gray-500" />
+						<input type="text" disabled bind:value={nodeType} class="grayout-input text-gray-500" />
 						<input type="hidden" name="nodeType" bind:value={nodeType} class="input text-gray-500" />
 					</td>
 				</tr>
@@ -371,7 +371,7 @@
 								id="mySelect"
 								name="queryType"
 								disabled
-								class="input {errors?.queryType
+								class="grayout-input {errors?.queryType
 									? 'input-text-error'
 									: ''} text-gray-500"
 								placeholder="Select query type here..."
@@ -395,7 +395,7 @@
 								<td class="table-data">
 									<select
 										name="correctAnswer"
-										class="input {errors?.correctAnswer
+										class="grayout-input {errors?.correctAnswer
 											? 'input-text-error'
 											: ''}"
 										bind:value={correctAnswer}
