@@ -158,6 +158,7 @@
 		console.log('deleted Response', res);
 		if (res.HttpCode === 200) {
 			isDeleting = true;
+			res.Message = 'User Role deleted successfully';
 			toastMessage(res);
 		} else {
 			toastMessage(res);
@@ -254,7 +255,7 @@
 									<td>
 										<Tooltip text={row.Description || 'Not specified'}>
 											<span class="cursor-pointer">
-												{row.Description !== null
+												{row.Description !== null && row.Description !== ''
 													? Helper.truncateText(row.Description, 60)
 													: 'Not specified'}
 											</span>
