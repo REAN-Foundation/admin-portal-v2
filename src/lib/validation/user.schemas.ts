@@ -16,8 +16,8 @@ export const createSchema = z.object({
 		.min(1, { message: 'Last name cannot be empty.' })
 		.max(256, { message: 'Last name must be at most 256 characters long.' }),
 	Phone: z.string({
-		required_error: 'Phone number is required.',
-		invalid_type_error: 'Phone number must be a string.'
+		required_error: 'Contact number is required.',
+		invalid_type_error: 'Contact number must be a string.'
 	}),
 	Email: z
 		.string({
@@ -59,8 +59,8 @@ export const updateSchema = z.object({
 		.min(1, { message: 'Last name cannot be empty.' })
 		.max(256, { message: 'Last name must be at most 256 characters long.' }),
 	Phone: z.string({
-		required_error: 'Phone number is required.',
-		invalid_type_error: 'Phone number must be a string.'
+		required_error: 'Contact number is required.',
+		invalid_type_error: 'Contact number must be a string.'
 	}),
 	Email: z
 		.string({
