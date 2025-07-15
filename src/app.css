@@ -978,3 +978,6 @@ tr {
 .select-icon{
 	@apply text-[var(--color-info)] h-5 w-5;
 }
+.grayout-input {
+	@apply w-full rounded border border-[var(--color-outline)] bg-[var(--color-accent)] p-2 text-gray-500 focus:outline-none;
+}

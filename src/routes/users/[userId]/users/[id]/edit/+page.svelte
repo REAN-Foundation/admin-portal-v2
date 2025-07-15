@@ -158,18 +158,26 @@
 				</tr>
 				<tr class="tables-row">
 					<td class="table-label">Contact Number <span class="text-red-700">*</span></td>
-					<td class="table-data flex gap-2">
-						<select name="countryCode" bind:value={splitPhoneNumber[0]} class="input !w-20">
+					<td class="table-data">
+						<!-- <select name="countryCode" bind:value={splitPhoneNumber[0]} class="input !w-20">
 							<option>+1</option>
 							<option>+91</option>
-						</select>
-						<input
+						</select> -->
+						<!-- <input
 							type="text"
 							name="phone"
 							pattern="[0-9]*"
 							bind:value={splitPhoneNumber[1]}
 							placeholder="Enter contact number here..."
 							class="input {errors?.phone ? 'input-text-error' : ''}"
+						/> -->
+						<input
+							type="text"
+							name="phone"
+							pattern="[0-9]*"
+							bind:value={phone}
+							placeholder="Enter contact number here..."
+							class="grayout-input {errors?.phone ? 'input-text-error' : ''}"
 						/>
 						{#if errors?.Phone}
 							<p class="text-error">{errors?.Phone}</p>
@@ -195,7 +203,13 @@
 					<td class="table-label">Role <span class="text-red-700">*</span></td>
 					<td class="table-data">
 						<div class="relative">
-							<select
+							<input
+							type="text"
+							name="roleId"
+							bind:value={role}
+							class="grayout-input {errors?.role ? 'input-text-error' : ''}"
+							/>
+							<!-- <select
 								name="roleId"
 								class="select"
 								placeholder="Select role here..."
@@ -207,10 +221,10 @@
 								<option value="Tenant user">Tenant User</option>
 								<option value="System user">System User</option>
 								<option value="System admin">System Admin</option>
-							</select>
-							<div class="select-icon-container">
+							</select> -->
+							<!-- <div class="select-icon-container">
 								<Icon icon="mdi:chevron-down" class="select-icon" />
-							</div>
+							</div> -->
 						</div>
 						<input type="hidden" name="selectedUserRoleId" bind:value={selectedUserRoleId} />
 					</td>
