@@ -22,10 +22,10 @@ export const createOrUpdateSchema = z.object({
 	CreatedBy: z.string().optional(),
 	ChunkingStratergy: z
 		.string({
-			required_error: 'chunking stratergy is required.',
-			invalid_type_error: 'chunking stratergy must be a string.'
+			required_error: 'Chunking stratergy is required.',
+			invalid_type_error: 'Chunking stratergy must be a string.'
 		})
-		.min(1, { message: 'chunking stratergy cannot be empty.' }),
+		.min(1, { message: 'Chunking stratergy cannot be empty.' }),
 	ChunkingLength: z
 		.number({
 			required_error: 'Chunking length is required.',
@@ -37,10 +37,10 @@ export const createOrUpdateSchema = z.object({
 		}),
 	ChunkingOverlap: z
 		.number({
-			required_error: 'chunking overlap is required.',
-			invalid_type_error: 'chunking overlap must be a number.'
+			required_error: 'Chunking overlap is required.',
+			invalid_type_error: 'Chunking overlap must be a number.'
 		})
-		.min(1, { message: 'chunking overlap cannot be empty.' }),
+		.min(1, { message: 'Chunking overlap cannot be empty.' }),
 	Splitter: z
 		.string({
 			required_error: 'Splitter is required.',

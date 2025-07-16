@@ -58,6 +58,7 @@
 				<tr class="tables-row">
 					<td class="table-label">Topic <span class="important-field">*</span></td>
 					<td class="table-data">
+						<div class="relative">
 						<select
 							class="select w-full"
 							name="topic"
@@ -68,6 +69,10 @@
 								<option value={key} selected={key === 'All_Users'}>{value}</option>
 							{/each}
 						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+						</div>
 					</td>
 				</tr>
 				<tr class="tables-row">
@@ -113,7 +118,7 @@
 				</td>
 			</tr> -->
 				<tr class="tables-row">
-					<td class="table-label">Url</td>
+					<td class="table-label">URL</td>
 					<td class="table-data">
 						<input
 							type="url"

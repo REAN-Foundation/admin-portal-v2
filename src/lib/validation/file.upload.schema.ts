@@ -44,7 +44,7 @@ export const fileUploadSchema = z.object({
 		},
 		{
 			message:
-				'Upload file must be a PDF, XML, TEXT, JSON, Excel, Word, or PowerPoint file and less than 50MB.'
+				'Upload file must be a PDF, XML, TEXT, JSON, Excel, Word, CSV or PowerPoint file and less than 50MB.'
 		}
 	),
 	FileName: z.string({

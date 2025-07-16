@@ -16,7 +16,7 @@
 
 	let id = data.document.id;
 	let name = data.document.Name;
-	let description = data.document.Description;
+	let description = data.document.Description !== null && data.document.Description !== '' ? data.document.Description : 'Not specified';
 	let fileName = data.document.FileResource.OriginalFilename;
 	let source = data.document.Source;
 	let parentDocument = data.document.FileResource.OriginalFilename;
@@ -27,7 +27,7 @@
 	let splitter = data.document.Splitter;
 	let isActive = data.document.IsActive;
 	let createdBy = data.document.CreatedBy;
-	let keywords = data.document.Keyword;
+	let keywords = data.document.Keyword !== null && data.document.Keyword !== '' ? data.document.Keyword : 'Not specified';
 	let documentType = data.document.DocumentType;
 
 	let fileUrl: string | null = $state(null);

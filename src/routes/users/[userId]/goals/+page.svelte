@@ -228,7 +228,7 @@
 									</td>
 
 									<td>
-										{row.Tags || 'Not specified'}
+										{row.Tags.length > 0 ? row.Tags : 'Not specified'}
 									</td>
 
 									<td>

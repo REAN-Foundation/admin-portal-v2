@@ -75,7 +75,7 @@ export const updatePersonRoleType = async (
 ) => {
 	const body = {
 		RoleName: roleName,
-		Description: description ? description : null
+		Description: description ? description : ''
 	};
 	const url = BACKEND_API_URL + `/types/person-roles/${personRoleTypeId}`;
 	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);

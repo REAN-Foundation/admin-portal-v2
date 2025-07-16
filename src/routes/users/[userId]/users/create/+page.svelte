@@ -167,19 +167,22 @@
 				</tr>
 				<tr class="tables-row">
 					<td class="table-label">Contact Number <span class="text-red-700">*</span></td>
-					<td class="table-data flex gap-2">
-						<select name="countryCode" bind:value={countryCode} class="input !w-20">
-							<option>+1</option>
-							<option>+91</option>
-						</select>
-						<input
-							type="text"
-							name="phone"
-							bind:value={phone}
-							pattern="[0-9]*"
-							placeholder="Enter contact number here..."
-							class="input {errors?.phone ? 'input-text-error' : ''}"
-						/>
+					<td class="table-data ">
+						<div class="flex gap-2">
+							<select name="countryCode" bind:value={countryCode} class="input !w-20">
+								<option>+1</option>
+								<option>+91</option>
+							</select>
+							<input
+								type="text"
+								name="phone"
+								bind:value={phone}
+								pattern="[0-9]*"
+								placeholder="Enter contact number here..."
+								class="input {errors?.phone ? 'input-text-error' : ''}"
+							/>
+						</div>
+						
 						{#if errors?.Phone}
 							<p class="text-error">{errors?.Phone}</p>
 						{/if}
