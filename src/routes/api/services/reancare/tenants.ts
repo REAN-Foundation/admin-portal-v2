@@ -14,15 +14,7 @@ export const createTenant = async (
 	username: string,
 	password: string
 ) => {
-	const body = {
-		Name: name,
-		Description: description ? description : null,
-		Code: code,
-		Phone: phone ? phone : null,
-		Email: email ? email : null,
-		Username: username ? username : null,
-		Password: password ? password : null
-	};
+    const body = getTenantCreateModel(name, description, code, phone, email, username, password);
 
 	if (Helper.isPhone(phone)) {
 		body.Phone = Helper.sanitizePhone(phone);
@@ -114,4 +106,16 @@ export const createTenantSchema = async (
 	const url = BACKEND_API_URL + `/tenants/${tenantId}/settings/database/create-bot-schema`;
 
 	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+};
+
+const getTenantCreateModel = (name: string, description: string, code: string, phone: string, email: string, username: string, password: string) => {
+	const body: any = {};
+    if(name) body.Name = name;
+    if(description) body.Description = description;
+    if(code) body.Code = code;
+    if(phone) body.Phone = phone;
+    if(email) body.Email = email;
+    if(username) body.UserName = username;
+    if(password) body.Password = password;
+    return body;
 };

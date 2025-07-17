@@ -37,5 +37,33 @@ export const createOrUpdateSchema = z.object({
 			invalid_type_error: 'Description must be a string.'
 		})
 		.max(500, { message: 'Description must be at most 500 characters long.' })
+		.optional(),
+
+	Username: z
+		.string({
+			invalid_type_error: 'UserName must be a string.'
+		})
+		.max(10, { message: 'UserName must be at most 10 characters long.' })
 		.optional()
+		.refine(
+			val => val === undefined || val === null || val === '' || val.length >= 1,
+			{ message: 'UserName cannot be empty.' }
+		),
+
+	Password: z
+		.string()
+		.max(256, { message: 'Password must be at most 256 characters long.' })
+		.optional()
+		.refine(
+			val =>
+				!val ||
+				(
+					val.length >= 8 &&
+					/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/.test(val)
+				),
+			{
+				message:
+					'The password should be at least 8 characters long and must contain at least 1 capital letter, 1 small letter, 1 digit, and 1 special character.'
+			}
+		),
 });
