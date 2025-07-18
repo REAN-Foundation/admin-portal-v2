@@ -57,7 +57,7 @@
 			});
 			const searchResult = await res.json();
 
-			totalCategoryCount = searchResult.Data.Items.TotalCount;
+			totalCategoryCount = searchResult.Data.TotalCount;
 			paginationSettings.size = totalCategoryCount;
 
 			categories = searchResult.Data.Items.map((item, index) => ({
