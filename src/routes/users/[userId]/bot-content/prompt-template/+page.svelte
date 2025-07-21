@@ -17,7 +17,7 @@
 
 	let debounceTimeout;
 	let isLoading = $state(false);
-	let prompts = $state(data.prompts.Items);
+	let prompts = $state(data.prompts?.Items || []);
 	let retrivedPrompts = $derived(prompts);
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
@@ -37,7 +37,7 @@
 	let sortBy = $state('Name');
 	let sortOrder = $state('ascending');
 
-	let totalPromptsCount = $state(data.prompts.TotalCount);
+	let totalPromptsCount = $state(data.prompts?.TotalCount);
 
 	$inspect('retrivedPrompts', retrivedPrompts);
 	$inspect('searchKeyword', searchKeyword);
