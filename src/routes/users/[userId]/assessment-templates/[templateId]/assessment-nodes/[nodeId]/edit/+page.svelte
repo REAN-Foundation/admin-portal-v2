@@ -28,7 +28,11 @@
 		sequence = $state(data.assessmentNode.Sequence ?? undefined),
 		serveListNodeChildrenAtOnce = $state(data.assessmentNode.ServeListNodeChildrenAtOnce ?? false),
 		tags = $state(data.assessmentNode.Tags || []),
-		correctAnswer = $state(data.assessmentNode.CorrectAnswer ?? undefined),
+		correctAnswer = $state(
+			data.assessmentNode.CorrectAnswer !== undefined && data.assessmentNode.CorrectAnswer !== null
+				? String(data.assessmentNode.CorrectAnswer)
+				: ''
+		),
 		keywords: string[] = $state(data.assessmentNode.Tags || []),
 		resolutionScore = $state(data.assessmentNode.ResolutionScore ?? undefined),
 		providerAssessmentCode = $state(data.assessmentNode.ProviderAssessmentCode ?? undefined),
@@ -70,6 +74,8 @@
 			? options.find((option) => String(option.Sequence) === String(correctAnswer))
 			: null
 	);
+
+	$inspect('selectedOption', selectedOption)
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
@@ -361,7 +367,7 @@
 					</td>
 				</tr>
 				{#if selectedNodeType === 'Question'}
-					<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
+					<tr class=" ">
 						<td class="table-label align-top text-gray-500"
 							>Query Response Type <span class="text-red-600">*</span></td
 						>
@@ -382,7 +388,7 @@
 						</td>
 					</tr>
 					{#if selectedQueryType === 'Single Choice Selection' || selectedQueryType === 'Multi Choice Selection'}
-						<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
+						<tr>
 							<td class="table-label align-top">Options</td>
 							<td class="table-data">
 								<Choice bind:optionArray />
@@ -390,7 +396,7 @@
 						</tr>
 
 						{#if selectedQueryType === 'Single Choice Selection'}
-							<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
+							<tr class="">
 								<td class="table-label">Correct Answer</td>
 								<td class="table-data">
 									<select
@@ -400,14 +406,9 @@
 											: ''}"
 										bind:value={correctAnswer}
 									>
-										<!-- <option value="" disabled>Select correct answer</option> -->
-										{#if selectedOption}
-											<option selected value={selectedOption.Sequence}
-												>{selectedOption.Text}</option
-											>
-										{/if}
-										{#each options as option}
-											<option value={option.Sequence}>
+										<option value="" disabled>Select correct answer</option>
+										{#each optionArray as option}
+											<option value={String(option.Sequence)}>
 												{option.Text}
 											</option>
 										{/each}

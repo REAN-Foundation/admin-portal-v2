@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
@@ -69,10 +70,12 @@
 
 		if (result.HttpCode === 200 || result.HttpCode === 201) {
 			toastMessage(result);
+			invalidateAll();
 			const updatedOption = result.Data?.NodeOption;
 			optionArray = optionArray.map((opt, i) =>
 				i === index ? { ...updatedOption, isEditing: false } : opt
 			);
+
 		} else {
 			errors = result?.Errors || {};
 			toastMessage(result);
@@ -107,6 +110,7 @@
 					(opt) => opt.Text !== optionToDelete.Text && opt.Sequence !== optionToDelete.Sequence
 				);
 				toastMessage(res);
+				invalidateAll();
 			} else {
 				toastMessage(res);
 			}
