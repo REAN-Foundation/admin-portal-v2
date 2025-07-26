@@ -21,7 +21,7 @@
 	let carePlan = $state(data.carePlan);
 	let carePlanName = carePlan.Name;
 	let code = carePlan.Code;
-	let description = carePlan.Description;
+	let description = carePlan.Description !== null ? carePlan.Description : 'Not specified';
 	let version = carePlan.Version;
 	let tags_ = data.carePlan.Tags;
 	let tags = tags_.join(', ');
