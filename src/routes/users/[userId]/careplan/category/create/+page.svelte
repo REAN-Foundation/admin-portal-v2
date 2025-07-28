@@ -90,7 +90,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {errors?.Type ? 'input-text-error' : ''}"
+							class="input"
 							name="categoryType"
 							placeholder="Enter category type here..."
 							bind:value={categoryType}
@@ -104,11 +104,10 @@
 					<td class="table-label">Description</td>
 					<td class="table-data">
 						<textarea
-							class="input resize-none {errors?.Description ? 'border-error-300' : 'border-primary-200'}"
+							class="input"
 							name="categoryDescription"
 							placeholder="Enter description here..."
 							bind:value={categoryDescription}
-							rows="4"
 						></textarea>
 						{#if errors?.Description}
 							<p class="error-text">{errors?.Description}</p>

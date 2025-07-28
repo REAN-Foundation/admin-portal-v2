@@ -41,8 +41,8 @@
 				DisplayName: displayName,
 				SnowmedCode: snowmedCode,
 				LoincCode: loincCode,
-				NormalRangeMin: normalRangeMin,
-				NormalRangeMax: normalRangeMax,
+				NormalRangeMin: normalRangeMin === "" || isNaN(Number(normalRangeMin)) ? undefined : Number(normalRangeMin),
+				NormalRangeMax: normalRangeMax === "" || isNaN(Number(normalRangeMax)) ? undefined : Number(normalRangeMax),
 				Unit: unit
 			};
 

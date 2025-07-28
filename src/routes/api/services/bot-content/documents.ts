@@ -114,7 +114,7 @@ export const updateDocuments = async (
 ) => {
 	const body = {
 		Name: name,
-		Description: description ? description : null,
+		Description: description ? description : '',
 		ResourceId: resourceId ? resourceId : null,
 		// FileName: fileName ? fileName : null,
 		// Source: source ? source : null,

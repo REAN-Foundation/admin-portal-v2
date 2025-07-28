@@ -55,19 +55,15 @@ export const POST = async (event: RequestEvent) => {
 
         await writeFile(filePath, Buffer.from(await file?.arrayBuffer()));
 
-        if (!fs.existsSync(filePath)) {
-            return ResponseHandler.success({
-                Status: 'failure',
-                HttpCode: 400,
-                Message: 'File not created',
-                Errors: Object.fromEntries(
-                    Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-                        key,
-                        val?.[0] || ''
-                    ])
-                )
-            });
-        }
+         if (!fs.existsSync(filePath)) {
+                   console.log('File not created');
+                   return ResponseHandler.success({
+                       Status: 'failure',
+                       HttpCode: 400,
+                       Message: 'File not created',
+                       Errors: { file: 'File was not created on the server.' }
+                   });
+               }
 
         const response = await importCareplan(sessionId, filename, filePath);
 

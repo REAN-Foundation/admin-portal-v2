@@ -23,23 +23,15 @@ export const createOrUpdateSchema = z.object({
         .optional(),
 
      TemplateVariables: z
-        .record(z.union([z.string(), z.number(), z.boolean(), z.null()]), {
-            invalid_type_error: "TemplateVariables must be an object with values of type string, number, boolean, or null",
-        })
+        .any()
         .optional()
         .refine(
-            (val) =>
-                val === undefined ||
-                Object.values(val).every(
-                    (v) =>
-                        typeof v === "string" ||
-                        typeof v === "number" ||
-                        typeof v === "boolean" ||
-                        v === null
-                ),
+            (val) => {
+                if (val === undefined || val === null) return true;
+                return typeof val === 'object' && val !== null;
+            },
             {
-                message:
-                    "Each value in TemplateVariables must be string, number, boolean, or null",
+                message: "TemplateVariables must be a valid JSON object",
             }
         ),
 

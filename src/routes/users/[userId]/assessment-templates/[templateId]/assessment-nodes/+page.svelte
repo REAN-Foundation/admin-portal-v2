@@ -19,10 +19,12 @@
 	let debounceTimeout;
 	let isLoading = $state(false);
 	let assessmentNodes = $state(data.assessmentNodes.Items);
-	let retrivedAssessmentNodes = $derived(
-		assessmentNodes.filter((node) => node.Title !== 'Assessment root node')
+	// let retrivedAssessmentNodes = $derived(
+	// 	assessmentNodes.filter((node) => node.Title !== 'Assessment root node')
+	// );
+let retrivedAssessmentNodes = $derived(
+		assessmentNodes
 	);
-
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
 	let isDeleting = $state(false);
@@ -355,19 +357,15 @@
 									<td role="gridcell" aria-colindex={2} tabindex="0"
 										>{row.Tags.length > 0 ? row.Tags : 'Not specified'}</td
 									>
-									<!-- <td>
-							<a href={editRoute(row.id)} class="btn hover:variant-soft-primary -my-1 p-2">
-								<Icon icon="material-symbols:edit-outline" class="text-lg" />
-							</a>
-						</td> -->
 									<td role="gridcell" aria-colindex={2} tabindex="0">
-										<div class="flex justify-end">
+										<div class="flex justify-end gap-1">
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"
 												icon="material-symbols:edit-outline"
 												iconSize="sm"
-												tooltip="Edit"
+												tooltip={row.Title === 'Assessment root node' ? "Root node can't be edited" : "Edit"}
+												disabled={row.Title === 'Assessment root node'}
 											/>
 											<Button
 												href={viewRoute(row.id)}
@@ -382,7 +380,8 @@
 												icon="material-symbols:delete-outline-rounded"
 												iconSize="sm"
 												color="red"
-												tooltip="Delete"
+												tooltip={row.Title === 'Assessment root node' ? "Root node can't be deleted" : "Delete"}
+												disabled={row.Title === 'Assessment root node'}
 											/>
 										</div>
 									</td>
