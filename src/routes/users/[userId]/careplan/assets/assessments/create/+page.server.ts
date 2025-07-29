@@ -12,7 +12,8 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 
 	const response = await searchAssessmentTemplates(sessionId, {
 		orderBy: 'Title',
-		order: 'ascending'
+		order: 'ascending',
+		itemsPerPage: 500
 	});
 
 	const assessmentTemplates = response?.Data?.AssessmentTemplateRecords?.Items || [];

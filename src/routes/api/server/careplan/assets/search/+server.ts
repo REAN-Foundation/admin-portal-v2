@@ -18,7 +18,7 @@ export const GET = async (event: RequestEvent) => {
 			assetCode: searchParams.get('code') ?? undefined,
 			orderBy: searchParams.get('sortBy') ?? 'CreatedAt',
 			order: searchParams.get('sortOrder') ?? 'ascending',
-			itemsPerPage: parseInt(searchParams.get('itemsPerPage') ?? '10'),
+			itemsPerPage: parseInt(searchParams.get('itemsPerPage') ?? '500'),
 			pageIndex: parseInt(searchParams.get('pageIndex') ?? '0')
 		};
 
