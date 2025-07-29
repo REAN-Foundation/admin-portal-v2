@@ -15,7 +15,8 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const id = response?.Data?.id;
 	const templatesResponse = await searchAssessmentTemplates(sessionId, {
 			orderBy: 'Title',
-			order: 'ascending'
+			order: 'ascending',
+			itemsPerPage: 500
 		});
 		const assessmentTemplates = templatesResponse?.Data?.AssessmentTemplateRecords?.Items ?? [];
 
