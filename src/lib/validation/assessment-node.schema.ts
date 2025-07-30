@@ -30,7 +30,6 @@ export const createOrUpdateSchema = z.object({
 
     RawData: z
         .string()
-        .max(1024, { message: "Raw Data must be at most 1024 characters." })
         .optional(),
 
     Sequence: z
