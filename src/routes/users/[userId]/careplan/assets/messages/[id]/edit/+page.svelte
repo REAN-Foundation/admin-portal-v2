@@ -166,7 +166,7 @@ $effect(() => {
 					<td class="table-data">
 						<textarea
 							name="description"
-							class="input resize-none {errors?.Description ? 'input-text-error' : ''}"
+							class="input {errors?.Description ? 'input-text-error' : ''}"
 							bind:value={description}
 							placeholder="Enter description here..."
 						></textarea>
@@ -214,7 +214,7 @@ $effect(() => {
 					<td class="table-data">
 					<textarea
 						name="templateVariablesText"
-						class="input resize-none {errors?.TemplateVariables ? 'border-error-300' : 'border-primary-200'}"
+						class="input {errors?.TemplateVariables ? 'border-error-300' : 'border-primary-200'}"
 						bind:value={templateVariablesText}
 						placeholder="Enter template variables here..."
 						></textarea>
