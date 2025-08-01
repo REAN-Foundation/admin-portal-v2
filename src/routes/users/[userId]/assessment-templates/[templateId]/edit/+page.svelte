@@ -162,6 +162,9 @@
 							class="select {errors?.assessmentType ? 'input-text-error' : ''}"
 						>
 							<option selected>{assessmentType}</option>
+							{#if assessmentType !== 'Careplan'}
+								<option>Careplan</option>
+							{/if}
 							{#if assessmentType !== 'Daily Update'}
 								<option>Daily Update</option>
 							{/if}
