@@ -1,6 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { ResponseHandler } from '$lib/utils/response.handler';
 import { searchVideos } from '$routes/api/services/careplan/assets/video';
+import { createSearchFilters } from '$lib/utils/search.utils';
 
 //////////////////////////////////////////////////////////////
 
@@ -11,14 +12,9 @@ export const GET = async (event: RequestEvent) => {
 			return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session.'));
 		}
 
-		const searchParams: URLSearchParams = event.url.searchParams;
-		const searchFilters = {
-			name: searchParams.get('name') ?? undefined,
-			orderBy: searchParams.get('sortBy') ?? 'CreatedAt',
-			order: searchParams.get('sortOrder') ?? 'ascending',
-			itemsPerPage: parseInt(searchParams.get('itemsPerPage') ?? '10'),
-			pageIndex: parseInt(searchParams.get('pageIndex') ?? '0')
-		};
+		const searchFilters = createSearchFilters(event, {
+			name: event.url.searchParams.get('name') ?? undefined,
+		});
 
 		console.log('Search Parameters:', searchFilters);
 		const response = await searchVideos(sessionId, searchFilters);

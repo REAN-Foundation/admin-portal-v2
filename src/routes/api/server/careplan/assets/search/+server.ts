@@ -1,6 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { ResponseHandler } from '$lib/utils/response.handler';
 import { searchAssets } from '$routes/api/services/careplan/assets/asset';
+import { createSearchFilters } from '$lib/utils/search.utils';
 
 //////////////////////////////////////////////////////////////
 
@@ -11,16 +12,11 @@ export const GET = async (event: RequestEvent) => {
 			return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session.'));
 		}
 
-		const searchParams: URLSearchParams = event.url.searchParams;
-		const assetTypeRoute = searchParams.get('assetType');
-		const searchFilters = {
-			name: searchParams.get('name') ?? undefined,
-			assetCode: searchParams.get('code') ?? undefined,
-			orderBy: searchParams.get('sortBy') ?? 'CreatedAt',
-			order: searchParams.get('sortOrder') ?? 'ascending',
-			itemsPerPage: parseInt(searchParams.get('itemsPerPage') ?? '500'),
-			pageIndex: parseInt(searchParams.get('pageIndex') ?? '0')
-		};
+		const assetTypeRoute = event.url.searchParams.get('assetType');
+		const searchFilters = createSearchFilters(event, {
+			name: event.url.searchParams.get('name') ?? undefined,
+			assetCode: event.url.searchParams.get('code') ?? undefined,
+		});
 
 		console.log('Search Parameters:', searchFilters);
 		const response = await searchAssets(sessionId, assetTypeRoute, searchFilters);
