@@ -4,6 +4,7 @@
 	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
 	import Tooltip from '$lib/components/tooltip.svelte';
+	import Button from '$lib/components/button/button.svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
@@ -22,6 +23,7 @@
 
 	const userId = page.params.userId;
 	const enrollmentsRoute = () => `/users/${userId}/careplan/enrollments`;
+	const createRoute = `/users/${userId}/careplan/enrollments/create`;
 	const viewRoute = (id) => `/users/${userId}/careplan/enrollments/${id}/view`;
 
 	const breadCrumbs = [
@@ -310,6 +312,8 @@
 						{/if}
 						</div>
 					</div>
+
+					<Button href={createRoute} text="Create Enrollment" variant="primary" />
 				</div>
 			</div>
 

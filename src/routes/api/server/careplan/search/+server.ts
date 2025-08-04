@@ -12,12 +12,20 @@ export const GET = async (event: RequestEvent) => {
             return ResponseHandler.handleError(401, null, new Error("Access denied: Invalid session."));
         }
 
-        const searchFilters = createSearchFilters(event, {
-            name: event.url.searchParams.get("name") ?? undefined,
-        });
+        				const searchFilters = createSearchFilters(event, {
+			name: event.url.searchParams.get("name") ?? undefined,
+			code: event.url.searchParams.get("code") ?? undefined,
+		});
 
-        const response = await searchCareplan(sessionId, searchFilters);
-        return ResponseHandler.success(response);
+		console.log('Careplan search filters:', searchFilters);
+		console.log('Careplan search URL params:', {
+			name: event.url.searchParams.get("name"),
+			code: event.url.searchParams.get("code")
+		});
+
+		const response = await searchCareplan(sessionId, searchFilters);
+		console.log('Careplan search response:', response);
+		return ResponseHandler.success(response);
 
     } catch (error) {
         console.error("Error retrieving careplans:", error);
