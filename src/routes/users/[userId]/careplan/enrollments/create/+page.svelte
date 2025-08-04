@@ -20,7 +20,7 @@
 	let selectedPatientUserId = $state('');
 	let selectedPatientName = $state('');
 	let selectedPatientPhone = $state('');
-	let selectedChannel = $state('default');
+	let selectedChannel = $state('WhatsApp');
 
 	$inspect('selectedCareplanId', selectedCareplanId);
 	$inspect('selectedCareplanName', selectedCareplanName);
@@ -81,7 +81,8 @@
 			const enrollmentData: EnrollmentCreateModel = {
 				PatientUserId: selectedPatientUserId,
 				PlanName: selectedCareplanName,
-				PlanCode: selectedCareplanCode
+				PlanCode: selectedCareplanCode,
+				channel: selectedChannel
 			};
 
 			const res = await fetch('/api/server/careplan/enrollments/create', {
@@ -161,7 +162,7 @@
 					</td>
 				</tr>
 
-				<!-- <tr class="tables-row">
+				<tr class="tables-row">
 					<td class="table-label">Channel</td>
 					<td class="table-data">
 						<div class="relative">
@@ -169,16 +170,16 @@
 								bind:value={selectedChannel}
 								class="select"
 							>
-								{#each channelOptions as option}
-									<option value={option.value}>{option.label}</option>
-								{/each}
+								<option value="">Select Channel</option>
+								<option value="WhatsApp">WhatsApp</option>
+								<option value="Telegram">Telegram</option>
 							</select>
 							<div class="select-icon-container">
 								<Icon icon="mdi:chevron-down" class="select-icon" />
 							</div>
 						</div>
 					</td>
-				</tr> -->
+				</tr>
 			</tbody>
 		</table>
 
