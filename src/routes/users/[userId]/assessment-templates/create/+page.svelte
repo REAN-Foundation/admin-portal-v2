@@ -148,9 +148,11 @@
 							class="select {errors?.type ? 'input-text-error' : ''}"
 						>
 							<option>Daily Update</option>
+							<option>Careplan</option>
 							<option>Survey</option>
 							<option>Protocol</option>
 							<option>Custom</option>
+							
 						</select>
 						<div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
 							<Icon icon="mdi:chevron-down" class="text-info h-5 w-5" />

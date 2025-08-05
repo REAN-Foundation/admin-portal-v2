@@ -17,7 +17,8 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	try {
 		const careplanId = event.params.careplanId;
 		const searchParams = {
-			careplanId: careplanId
+			careplanId: careplanId,
+			itemsPerPage: 500
 		};
 		const careplan = await getCarePlanById(sessionId, careplanId);
 		const response = await searchCarePlanActivities(sessionId, searchParams);
