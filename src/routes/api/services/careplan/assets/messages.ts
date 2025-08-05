@@ -85,10 +85,10 @@ export const updateMessage = async (
 ) => {
 	const body = {
 		Name              : name,
-		Description       : description,
+		Description       : description ? description : '',
 		MessageType       : messageType,
 		TemplateName      : templateName,
-		TemplateVariables : templateVariables || {},
+		TemplateVariables : templateVariables ? templateVariables : {},
 		Url               : pathUrl,
 		Tags              : tags,
 		TenantId          : tenantId,
