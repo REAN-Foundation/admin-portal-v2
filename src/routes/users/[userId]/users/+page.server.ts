@@ -3,6 +3,7 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { searchPersonRoleTypes } from '../../../api/services/reancare/person-role-types';
 import { addPermissionMatrix, searchUsers } from '../../../api/services/reancare/user';
+import { createSearchFilters } from '$lib/utils/search.utils';
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -32,13 +33,15 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 		}
 	});
 
-	const response = await searchUsers(sessionId, {
+	const searchFilters = createSearchFilters(event, {
 		orderBy: 'CreatedAt',
 		order: 'ascending',
 		itemsPerPage: 10,
-
 		roleIds: selectedRoles.length ? (selectedRoles as string[]) : null
 	});
+	
+	console.log('Search Parameters:', searchFilters);
+	const response = await searchUsers(sessionId, searchFilters);
 	if (response.Status === 'failure' || response.HttpCode !== 200) {
 		throw error(response.HttpCode, response.Message);
 	}
