@@ -28,11 +28,7 @@
 		sequence = $state(data.assessmentNode.Sequence ?? undefined),
 		serveListNodeChildrenAtOnce = $state(data.assessmentNode.ServeListNodeChildrenAtOnce ?? false),
 		tags = $state(data.assessmentNode.Tags || []),
-		correctAnswer = $state(
-			data.assessmentNode.CorrectAnswer !== undefined && data.assessmentNode.CorrectAnswer !== null
-				? String(data.assessmentNode.CorrectAnswer)
-				: ''
-		),
+        correctAnswer = $state(data.assessmentNode.CorrectAnswer ?? null),
 		keywords: string[] = $state(data.assessmentNode.Tags || []),
 		resolutionScore = $state(data.assessmentNode.ResolutionScore ?? undefined),
 		providerAssessmentCode = $state(data.assessmentNode.ProviderAssessmentCode ?? undefined),
@@ -40,7 +36,13 @@
 		required = $state(data.assessmentNode.Required ?? false),
 		fieldIdentifier = $state(data.assessmentNode.FieldIdentifier ?? undefined),
 		fieldIdentifierUnit = $state(data.assessmentNode.FieldIdentifierUnit ?? undefined),
-		rawData = $state(formatRawDataEdit(data.assessmentNode.RawData));
+		rawData = $state(
+                        typeof data.assessmentNode.RawData === 'string'
+                            ? data.assessmentNode.RawData
+                            : data.assessmentNode.RawData
+                            ? JSON.stringify(data.assessmentNode.RawData, null, 2)
+                            : ''
+                        );
 
 	let optionArray = $derived(options);
 
