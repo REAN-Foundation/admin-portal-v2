@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const INVALID_JSON = Symbol('invalid_json');
+
 export const createOrUpdateSchema = z.object({
     NodeType: z
         .string({
@@ -29,8 +31,25 @@ export const createOrUpdateSchema = z.object({
         .optional(),
 
     RawData: z
-        .string()
-        .optional(),
+    .preprocess((val) => {
+        if (typeof val === 'string') {
+            if (val.trim() === '') return undefined;
+        try {
+            return JSON.parse(val);
+        } catch {
+            return INVALID_JSON;
+        }
+        }
+        return val;
+    }, z.union([
+        z.record(z.any()),
+        z.null(),
+        z.undefined(),
+        z.literal(INVALID_JSON)
+    ]))
+    .refine((val) => val !== INVALID_JSON, {
+        message: "RawData must be a valid JSON object.",
+    }),
 
     Sequence: z
         .number({
@@ -112,6 +131,7 @@ export const createOrUpdateSchema = z.object({
                 invalid_type_error: "CorrectAnswer must be a number or boolean."
             })
         ])
+        .nullable()
         .optional(),
 
     FieldIdentifier: z
