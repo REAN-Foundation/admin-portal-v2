@@ -70,7 +70,13 @@
 		}
 	};
 
-	let rawData = $derived(formatRawData(assessmentNode.RawData));
+    let rawData = $state(
+                        typeof data.assessmentNode.RawData === 'string'
+                            ? data.assessmentNode.RawData
+                            : data.assessmentNode.RawData
+                            ? JSON.stringify(data.assessmentNode.RawData, null, 2)
+                            : ''
+                        );
 	let isJsonData = $derived(rawData !== 'Not specified' && rawData !== assessmentNode.RawData);
 
 	let fieldIdentifier = $derived(assessmentNode.FieldIdentifier !== null && assessmentNode.FieldIdentifier!== '' ? assessmentNode.FieldIdentifier : 'Not specified' );
