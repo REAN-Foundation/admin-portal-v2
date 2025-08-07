@@ -12,6 +12,8 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import Button from '$lib/components/button/button.svelte';
+	import AssessmentPathManager from '$lib/components/assessment/assessment-path-manager.svelte';
+	import type { CAssessmentNodePath } from '$lib/types/assessment-path.types';
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -114,6 +116,9 @@
 		return lastPart.replace(/([a-z])([A-Z])/g, '$1 $2'); // adds space before capital letters
 	}
 	let resolutionScore = $state();
+	let nodePaths = $state<CAssessmentNodePath[]>([]);
+	let availableNodes = $state([]);
+	let isLoadingPaths = $state(false);
 
 	if (nodeType === 'Question') {
 		resolutionScore = assessmentNode.ScoringCondition?.ResolutionScore ?? 'Not specified';
@@ -134,6 +139,7 @@
 		`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${id}/edit`;
 	const viewNodeRoute = (id) =>
 		`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${id}/view`;
+	const pathsRoute = `/users/${userId}/assessment-templates/${templateId}/paths`;
 
 	const breadCrumbs = [
 		{
@@ -248,6 +254,82 @@
 			toastMessage();
 		}
 	};
+
+	// Load available nodes for path creation
+	const loadAvailableNodes = async () => {
+		try {
+			const response = await fetch(`/api/server/assessments/assessment-nodes/search?templateId=${templateId}`);
+			const result = await response.json();
+			if (result.Data && result.Data.Items) {
+				availableNodes = result.Data.Items;
+			}
+		} catch (error) {
+			console.error('Failed to load available nodes:', error);
+		}
+	};
+
+	// Load paths for this specific node
+	const loadNodePaths = async () => {
+		try {
+			isLoadingPaths = true;
+			const response = await fetch(`/api/server/assessments/${templateId}/nodes/${nodeId}/paths`);
+			const result = await response.json();
+			if (result.Data && result.Data.Items) {
+				nodePaths = result.Data.Items;
+			}
+		} catch (error) {
+			console.error('Failed to load node paths:', error);
+			toastMessage({
+				Status: 'failure',
+				Message: 'Failed to load assessment paths'
+			});
+		} finally {
+			isLoadingPaths = false;
+		}
+	};
+
+	// Handle path changes
+	const handlePathChange = async (updatedPaths: CAssessmentNodePath[]) => {
+		nodePaths = updatedPaths;
+		console.log('Node paths updated:', updatedPaths);
+	};
+
+	// Save paths to backend
+	const savePathsToBackend = async () => {
+		try {
+			for (const path of nodePaths) {
+				if (path.id) {
+					// Update existing path
+					await fetch(`/api/server/assessments/${templateId}/nodes/${nodeId}/paths/${path.id}`, {
+						method: 'PUT',
+						headers: { 'content-type': 'application/json' },
+						body: JSON.stringify(path)
+					});
+				} else {
+					// Create new path
+					await fetch(`/api/server/assessments/${templateId}/nodes/${nodeId}/paths`, {
+						method: 'POST',
+						headers: { 'content-type': 'application/json' },
+						body: JSON.stringify(path)
+					});
+				}
+			}
+			toastMessage({
+				Status: 'success',
+				Message: 'Paths saved successfully'
+			});
+		} catch (error) {
+			console.error('Failed to save paths:', error);
+			toastMessage({
+				Status: 'failure',
+				Message: 'Failed to save paths'
+			});
+		}
+	};
+
+	// Initialize paths and nodes
+	loadAvailableNodes();
+	loadNodePaths();
 </script>
 
 {#if model}
@@ -438,6 +520,44 @@
 		{/if}
 		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
 		></Button>
+	</div>
+
+	<!-- Assessment Paths Section -->
+	<div class="mt-8">
+		<div class="flex justify-between items-center mb-4">
+			<h3 class="text-lg font-semibold">Assessment Paths & Conditions</h3>
+			<div class="flex space-x-2">
+				<Button onclick={savePathsToBackend} text="Save Paths" variant="primary" iconBefore="mdi:content-save" iconSize="sm" />
+				<Button href={pathsRoute} text="Manage All Paths" variant="secondary" iconBefore="mdi:map-marker-path" iconSize="sm" />
+			</div>
+		</div>
+		
+		{#if isLoadingPaths}
+			<div class="flex justify-center items-center py-8">
+				<Icon icon="mdi:loading" class="h-6 w-6 animate-spin" />
+				<span class="ml-2">Loading paths...</span>
+			</div>
+		{:else}
+			<div class="bg-gray-50 rounded-lg p-4 mb-4">
+				<div class="flex items-center mb-3">
+					<Icon icon="mdi:information" class="h-5 w-5 text-blue-600 mr-2" />
+					<span class="text-sm text-gray-700">
+						Manage paths and conditions for this node. Paths define how the assessment flows from this node to other nodes.
+					</span>
+				</div>
+				<div class="text-xs text-gray-600">
+					<strong>Current Node:</strong> {title} ({displayCode})
+				</div>
+			</div>
+			
+			<AssessmentPathManager 
+				bind:paths={nodePaths}
+				bind:availableNodes={availableNodes}
+				onPathChange={handlePathChange}
+				parentNodeId={nodeId}
+				templateId={templateId}
+			/>
+		{/if}
 	</div>
 </div>
 

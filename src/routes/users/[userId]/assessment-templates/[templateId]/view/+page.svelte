@@ -51,6 +51,7 @@
 	const viewRoute = `/users/${userId}/assessment-templates/${templateId}/view`;
 	const assessmentsRoutes = `/users/${userId}/assessment-templates`;
 	const nodeRoute = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/create`;
+	const pathsRoute = `/users/${userId}/assessment-templates/${templateId}/paths`;
 	const assessmentNodeView = (nodeId) =>
 		`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/view`;
 
@@ -127,8 +128,7 @@
 	</table>
 	<div class="btn-container">
 		<Button href={nodeRoute} text="Add node" variant="primary" />
-
-		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
-		></Button>
+		<Button href={pathsRoute} text="Paths" variant="secondary" iconBefore="mdi:map-marker-path" iconSize="md" />
+		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md" />
 	</div>
 </div>
