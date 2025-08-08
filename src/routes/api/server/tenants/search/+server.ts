@@ -1,6 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { ResponseHandler } from '$lib/utils/response.handler';
 import { searchTenants } from '../../../services/reancare/tenants';
+import { createSearchFilters } from '$lib/utils/search.utils';
 
 //////////////////////////////////////////////////////////////
 
@@ -11,15 +12,11 @@ export const GET = async (event: RequestEvent) => {
 			return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session.'));
 		}
 
-		const searchParams: URLSearchParams = event.url.searchParams;
-		const searchFilters = {
-			name: searchParams.get('name') ?? undefined,
-			code: searchParams.get('code') ?? undefined,
-			orderBy: searchParams.get('sortBy') ?? 'CreatedAt',
-			order: searchParams.get('sortOrder') ?? 'ascending',
-			itemsPerPage: parseInt(searchParams.get('itemsPerPage') ?? '10'),
-			pageIndex: parseInt(searchParams.get('pageIndex') ?? '0')
-		};
+		// For tenants search, tenantId filtering is automatically excluded for system admins
+		const searchFilters = createSearchFilters(event, {
+			name: event.url.searchParams.get('name') ?? undefined,
+			code: event.url.searchParams.get('code') ?? undefined,
+		});
 
 		console.log('Search Parameters:', searchFilters);
 		const response = await searchTenants(sessionId, searchFilters);

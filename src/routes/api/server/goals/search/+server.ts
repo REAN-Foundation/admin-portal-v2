@@ -1,6 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { ResponseHandler } from "$lib/utils/response.handler";
 import { searchGoals } from '../../../services/reancare/goals';
+import { createSearchFilters } from '$lib/utils/search.utils';
 
 //////////////////////////////////////////////////////////////
 
@@ -11,15 +12,10 @@ export const GET = async (event: RequestEvent) => {
 			return ResponseHandler.handleError(401, null, new Error("Access denied: Invalid session."));
 		}
 
-		const searchParams: URLSearchParams = event.url.searchParams;
-		const searchFilters = {
-			type: searchParams.get("type") ?? undefined,
-			tags: searchParams.get("tags") ?? undefined,
-			orderBy: searchParams.get("sortBy") ?? "CreatedAt",
-			order: searchParams.get("sortOrder") ?? "ascending",
-			itemsPerPage: parseInt(searchParams.get("itemsPerPage") ?? "10"),
-			pageIndex: parseInt(searchParams.get("pageIndex") ?? "0"),
-		};
+		const searchFilters = createSearchFilters(event, {
+			type: event.url.searchParams.get("type") ?? undefined,
+			tags: event.url.searchParams.get("tags") ?? undefined,
+		});
 
 		console.log("Search Parameters:", searchFilters);
 		const response = await searchGoals(sessionId, searchFilters);

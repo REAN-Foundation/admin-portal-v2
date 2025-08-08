@@ -3,6 +3,7 @@ import { redirect } from 'sveltekit-flash-message/server';
 import { errorMessage } from '$lib/utils/message.utils';
 import { searchEnrollments } from '../../../../api/services/careplan/enrollments';
 import type { PageServerLoad } from '../../../../$types';
+import { createSearchFilters } from '$lib/utils/search.utils';
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -12,9 +13,12 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 	console.log('sessionId', sessionId);
 
 	try {
-		const response = await searchEnrollments(sessionId, {
+		const searchFilters = createSearchFilters(event, {
 			itemsPerPage: 10
 		});
+		
+		console.log('Search Parameters:', searchFilters);
+		const response = await searchEnrollments(sessionId, searchFilters);
 		const enrollments = response.Data;
 		return {
 			enrollments,

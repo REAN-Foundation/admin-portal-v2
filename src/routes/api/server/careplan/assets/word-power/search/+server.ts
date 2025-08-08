@@ -1,6 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { ResponseHandler } from '$lib/utils/response.handler';
 import { searchWordPower } from '$routes/api/services/careplan/assets/word-power';
+import { createSearchFilters } from '$lib/utils/search.utils';
 
 //////////////////////////////////////////////////////////////
 
@@ -11,20 +12,16 @@ export const GET = async (event: RequestEvent) => {
 			return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session.'));
 		}
 
-		const searchParams: URLSearchParams = event.url.searchParams;
-		const searchFilters: Record<string, string> = {
-							name: searchParams.get('name') ?? '',
-							code: searchParams.get('code') ?? '',
-							orderBy: searchParams.get('sortBy') ?? 'CreatedAt',
-							order: searchParams.get('sortOrder') ?? 'ascending',
-							itemsPerPage: (searchParams.get('itemsPerPage') ?? '10').toString(),
-							pageIndex: (searchParams.get('pageIndex') ?? '0').toString()
-						};
-						console.log('Search Parameters:', searchFilters);
-						const response = await searchWordPower(sessionId, searchFilters);
+		const searchFilters = createSearchFilters(event, {
+			name: event.url.searchParams.get('name') ?? undefined,
+			code: event.url.searchParams.get('code') ?? undefined,
+		});
+
+		console.log('Search Parameters:', searchFilters);
+		const response = await searchWordPower(sessionId, searchFilters);
 		return ResponseHandler.success(response);
 	} catch (error) {
-		console.error('Error retrieving assets:', error);
+		console.error('Error retrieving word power:', error);
 		return ResponseHandler.handleError(500, null, error);
 	}
 };

@@ -1,6 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { addPermissionMatrix, searchUsers } from '../../../services/reancare/user';
 import { ResponseHandler } from '$lib/utils/response.handler';
+import { createSearchFilters } from '$lib/utils/search.utils';
 //////////////////////////////////////////////////////////////
 
 export const GET = async (event: RequestEvent) => {
@@ -12,21 +13,15 @@ export const GET = async (event: RequestEvent) => {
 
 		const tenantId = event.locals?.sessionUser?.tenantId;
 		const userRole = event.locals?.sessionUser?.roleName;
-
 		const userId = event.locals?.sessionUser?.userId;
 		const userRoleId = event.locals.sessionUser.roleId;
-		const searchParams: URLSearchParams = event.url.searchParams;
 
-		const searchFilters = {
-			firstName: searchParams.get('firstName') ?? undefined,
-			email: searchParams.get('email') ?? undefined,
-			phone: searchParams.get('phone') ?? undefined,
-			roleIds: searchParams.get('roleIds') ?? undefined,
-			orderBy: searchParams.get('sortBy') ?? 'CreatedAt',
-			order: searchParams.get('sortOrder') ?? 'ascending',
-			itemsPerPage: parseInt(searchParams.get('itemsPerPage') ?? '10'),
-			pageIndex: parseInt(searchParams.get('pageIndex') ?? '0')
-		};
+		const searchFilters = createSearchFilters(event, {
+			firstName: event.url.searchParams.get('firstName') ?? undefined,
+			email: event.url.searchParams.get('email') ?? undefined,
+			phone: event.url.searchParams.get('phone') ?? undefined,
+			roleIds: event.url.searchParams.get('roleIds') ?? undefined,
+		});
 
 		const response = await searchUsers(sessionId, searchFilters);
 
@@ -43,7 +38,7 @@ export const GET = async (event: RequestEvent) => {
 		// console.log("***",  users);
 		return new Response(JSON.stringify(users));
 	} catch (err) {
-		console.error(`Error retriving users: ${err.message}`);
+		console.error(`Error retrieving users: ${err.message}`);
 		return new Response(err.message);
 	}
 };

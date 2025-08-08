@@ -1,18 +1,22 @@
 import { error, type ServerLoadEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { createSearchFilters } from '$lib/utils/search.utils';
 import { searchAssessmentTemplates } from '../../../api/services/reancare/assessments/assessment-templates';
-// import { searchAssessmentTemplates } from '../../../api/services/reancare/assessments/assessment-templates';
 
 ////////////////////////////////////////////////////////////////////////////
 
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     const sessionId = event.cookies.get('sessionId');
     event.depends('app:assessmentTemplate')
-    const response = await searchAssessmentTemplates(sessionId, {
+    
+    const searchFilters = createSearchFilters(event, {
         orderBy: "Title",
         order: "ascending",
         itemsPerPage: 10
     });
+    
+    console.log('Search Parametersxxxxxxx', searchFilters);
+    const response = await searchAssessmentTemplates(sessionId, searchFilters);
     if (response.Status === 'failure' || response.HttpCode !== 200) {
         throw error(response.HttpCode, response.Message);
     }

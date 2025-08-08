@@ -1,6 +1,7 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
 import type { RequestEvent } from "@sveltejs/kit";
 import { searchAudio } from "../../../../../services/careplan/assets/audio";
+import { createSearchFilters } from '$lib/utils/search.utils';
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -11,18 +12,13 @@ export const GET = async (event: RequestEvent) => {
             return ResponseHandler.handleError(401, null, new Error("Access denied: Invalid session."));
         }
 
-        const searchParams: URLSearchParams = event.url.searchParams;
-        const searchFilters: Record<string, string> = {
-                    name: searchParams.get('name') ?? '',
-                    code: searchParams.get('code') ?? '',
-                    orderBy: searchParams.get('sortBy') ?? 'CreatedAt',
-                    order: searchParams.get('sortOrder') ?? 'ascending',
-                    itemsPerPage: parseInt(searchParams.get('itemsPerPage') ?? '10').toString(),
-                    pageIndex: parseInt(searchParams.get('pageIndex') ?? '0').toString()       
-                };
+        const searchFilters = createSearchFilters(event, {
+            name: event.url.searchParams.get('name') ?? undefined,
+            code: event.url.searchParams.get('code') ?? undefined,
+        });
         
-                console.log('Search Parameters:', searchFilters);
-                const response = await searchAudio(sessionId, searchFilters);
+        console.log('Search Parameters:', searchFilters);
+        const response = await searchAudio(sessionId, searchFilters);
         return ResponseHandler.success(response);
 
     } catch (error) {

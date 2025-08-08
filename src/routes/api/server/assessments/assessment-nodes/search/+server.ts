@@ -1,6 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { searchAssessmentNodes } from '../../../../services/reancare/assessments/assessment-nodes';
 import { ResponseHandler } from '$lib/utils/response.handler';
+import { createSearchFilters } from '$lib/utils/search.utils';
 
 //////////////////////////////////////////////////////////////
 
@@ -11,47 +12,20 @@ export const GET = async (event: RequestEvent) => {
 			return ResponseHandler.handleError(401, null, new Error("Access denied: Invalid session."));
 		}
 
-		const searchParams: URLSearchParams = event.url.searchParams;
 		const templateId = event.url.searchParams.get('templateId');
-		const searchFilters = {
+		const searchFilters = createSearchFilters(event, {
 			templateId,
-			title: searchParams.get("title") ?? undefined,
-			nodeType: searchParams.get('nodeType') ?? undefined,
-			tags: searchParams.get('tags') ?? undefined,
-			orderBy: searchParams.get("sortBy") ?? "CreatedAt",
-			order: searchParams.get("sortOrder") ?? "ascending",
-			itemsPerPage: parseInt(searchParams.get("itemsPerPage") ?? "10"),
-			pageIndex: parseInt(searchParams.get("pageIndex") ?? "0"),
-		};
+			title: event.url.searchParams.get("title") ?? undefined,
+			nodeType: event.url.searchParams.get('nodeType') ?? undefined,
+			tags: event.url.searchParams.get('tags') ?? undefined,
+		});
 
-		// try {
-		// 	const searchParams = {
-		// 		templateId,
-		// 		title,
-		// 		nodeType,
-		// 		tags: tags,
-		// 		orderBy: sortBy,
-		// 		order: sortOrder,
-		// 		itemsPerPage,
-		// 		pageIndex
-		// 	};
-		// 		console.log('Search parms: ', searchParams);
-		// 		const response = await searchAssessmentNodes(sessionId, searchParams);
-		// 		const items = response.Data.AssessmentNodeRecords.Items;
-
-		// 		return new Response(JSON.stringify(items));
-		// 	} catch (err) {
-		// 		console.error(`Error retriving assessment node: ${err.message}`);
-		// 		return new Response(err.message);
-		// 	}
-		// };
-
-		console.log('Search parms: ', searchParams);
+		console.log('Search Parameters:', searchFilters);
 		const response = await searchAssessmentNodes(sessionId, searchFilters);
 
 		return ResponseHandler.success(response);
 	} catch (error) {
-		console.error("Error retriving assessment templates:", error);
+		console.error("Error retrieving assessment nodes:", error);
 		return ResponseHandler.handleError(500, null, error);
 	}
 };

@@ -1,6 +1,6 @@
-import { CAREPLAN_BACKEND_API_URL } from '$env/static/private';
+import { BACKEND_API_URL, CAREPLAN_BACKEND_API_URL } from '$env/static/private';
 import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
-import { del, get } from './common.careplan';
+import { del, get, post } from './common.careplan';
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -44,6 +44,36 @@ export const searchEnrollments = async (sessionId: string, searchParams?) => {
 export const getEnrollmentStats = async (sessionId: string,participantId:string) => {
     const url = CAREPLAN_BACKEND_API_URL + `/enrollments/${participantId}/stats`;
     return await get(sessionId, url, true);
+};
+
+export const createEnrollment = async (
+    sessionId: string,
+    tenantName: string,
+    patientUserId: string,
+    planCode: string,
+    planName: string,
+    channel: string = 'WhatsApp'
+) => {
+    const url = BACKEND_API_URL + `/care-plans/patients/${patientUserId}/enroll`;
+    const body = {
+        Provider : 'REAN',
+        StartDate: new Date().toISOString(),
+        TenantName : tenantName,
+        PlanCode : planCode,
+        PlanName : planName,
+        Channel : channel,
+        IsTest : true
+    };
+    console.log('body', body);
+    console.log('url', url);
+    const result = await post(sessionId, url, body, true);
+
+    const findAndClearKeys = [
+        `session-${sessionId}:req-searchEnrollments`,
+    ];
+    await DashboardManager.findAndClear(findAndClearKeys);
+
+    return result;
 };
 
 export const deleteEnrollment = async (sessionId: string, enrollmentId: string) => {

@@ -1,6 +1,7 @@
 import { type RequestEvent } from '@sveltejs/kit';
 import { searchKnowledgeNuggets } from '../../../services/reancare/knowledge-nuggets';
 import { ResponseHandler } from '$lib/utils/response.handler';
+import { createSearchFilters } from '$lib/utils/search.utils';
 
 //////////////////////////////////////////////////////////////
 
@@ -11,17 +12,12 @@ export const GET = async (event: RequestEvent) => {
 			return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session.'));
 		}
 
-		const searchParams: URLSearchParams = event.url.searchParams;
+		const searchFilters = createSearchFilters(event, {
+			topicName: event.url.searchParams.get('topicName') ?? undefined,
+			tags: event.url.searchParams.get('tags') ?? undefined,
+		});
 
-		const searchFilters = {
-			topicName: searchParams.get('topicName') ?? undefined,
-			tags: searchParams.get('tags') ?? undefined,
-			orderBy: searchParams.get('sortBy') ?? 'CreatedAt',
-			order: searchParams.get('sortOrder') ?? 'ascending',
-			itemsPerPage: parseInt(searchParams.get('itemsPerPage') ?? '10'),
-			pageIndex: parseInt(searchParams.get('pageIndex') ?? '0')
-		};
-		console.log('Search parms: ', searchParams);
+		console.log('Search parms: ', searchFilters);
 		const response = await searchKnowledgeNuggets(sessionId, searchFilters);
 
 		return ResponseHandler.success(response);
