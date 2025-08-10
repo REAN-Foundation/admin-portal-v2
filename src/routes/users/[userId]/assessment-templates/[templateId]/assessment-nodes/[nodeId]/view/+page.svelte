@@ -12,7 +12,7 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import Button from '$lib/components/button/button.svelte';
-
+	
 	////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
@@ -36,6 +36,7 @@
 	let serveListNodeChildrenAtOnce = $derived(assessmentNode.ServeListNodeChildrenAtOnce ?? null);
 	let queryType = $derived(assessmentNode.QueryResponseType);
 	let options = $derived(assessmentNode.Options ?? []);
+	$inspect('options', options);
 	let childrenNodes = $derived(assessmentNode.Children ?? []);
 	let displayCode = $derived(assessmentNode.DisplayCode);
 	let sequence = $derived(assessmentNode.Sequence);
@@ -140,7 +141,7 @@
 		`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${id}/edit`;
 	const viewNodeRoute = (id) =>
 		`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${id}/view`;
-
+    const createPathRoute = (optionId) => `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths/create`
 	const breadCrumbs = [
 		{
 			name: 'Assessments',
@@ -330,11 +331,28 @@
 					<tr class="tables-row">
 						<td class="table-label align-top">Options</td>
 						<td class="table-data">
-							<ol class="ml-3 list-decimal">
-								{#each options as option}
-									<li>{option.Text}</li>
-								{/each}
-							</ol>
+							{#if queryType === 'Single Choice Selection'}
+								<div class="space-y-2">
+									{#each options as option, index}
+										<div class="flex items-center justify-between p-3 border rounded-lg bg-gray-50 dark:bg-gray-800">
+											<span class="font-medium">{index + 1}. {option.Text}</span>
+											<Button 
+												href={createPathRoute(option.id)}
+												text="Add Path" 
+												variant="secondary" 
+												iconBefore="mdi:plus" 
+												iconSize="sm"
+											/>
+										</div>
+									{/each}
+								</div>
+							{:else}
+								<ol class="ml-3 list-decimal">
+									{#each options as option}
+										<li>{option.Text}</li>
+									{/each}
+								</ol>
+							{/if}
 						</td>
 					</tr>
 				{/if}

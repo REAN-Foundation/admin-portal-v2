@@ -257,6 +257,8 @@
 									<option value={node.id}
 										>{node.NodeType} - {node.Title} - {node.DisplayCode}</option
 									>
+								{:else}
+									<option value={node.id}>{node.Title} - {node.DisplayCode}</option>
 								{/if}
 							{/each}
 						</select>
