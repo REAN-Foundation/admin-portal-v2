@@ -207,4 +207,8 @@ export class Helper {
             .replace(/-/g, ' ') 
             .replace(/\b\w/g, (char) => char.toUpperCase());
     }
+
+    public static isDefaultTenant = (tenantCode: string, roleName: string) => {
+        return tenantCode === 'default' && roleName === 'System admin';
+    }
 }

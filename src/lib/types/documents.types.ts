@@ -5,6 +5,8 @@ export interface DocumentsCreateModel {
 	Source: string;
 	ParentDocument: string;
 	Active: boolean;
+    TenantId?: string;
+    TenantCode?: string;
 	CreatedBy: string;
 	ChunkingStratergy: string;
 	ChunkingLength: number;
