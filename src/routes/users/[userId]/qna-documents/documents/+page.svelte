@@ -15,7 +15,7 @@
 
 	let { data }: { data: PageServerData } = $props();
 
-	let documents = $state(data.documents.Items);
+	let documents = $state(data.documents?.Items || []);
 
 	let retrivedDocuments = $derived(documents);
 	let debounceTimeout;
@@ -40,7 +40,7 @@
 	let sortBy = $state('Name');
 	let sortOrder = $state('ascending');
 
-	let totalDocumentsCount = $state(data.documents.TotalCount);
+	let totalDocumentsCount = $state(data.documents?.TotalCount || 0);
 
 	let isSortingName = $state(false);
 

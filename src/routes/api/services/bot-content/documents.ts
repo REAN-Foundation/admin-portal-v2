@@ -21,7 +21,9 @@ export const createDocuments = async (
 	isActive: boolean,
 	keywords: string,
 	documentType: string,
-	createdBy: string
+	createdBy: string,
+	tenantId: string,
+	tenantCode: string
 ) => {
 	const body = {
 		Name: name,
@@ -38,7 +40,9 @@ export const createDocuments = async (
 		ChunkOverlap: chunkOverlap ? chunkOverlap : null,
 		Splitter: splitter ? splitter : null,
 		IsActive: isActive ? isActive : false,
-		CreatedByUserId: createdBy ? createdBy : null
+		CreatedByUserId: createdBy ? createdBy : null,
+		TenantId: tenantId ? tenantId : null,
+		TenantCode: tenantCode ? tenantCode : null
 	};
 
 	const url = BOT_CONTENT_API_URL + '/documents';
