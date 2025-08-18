@@ -6,6 +6,7 @@ import {
 } from '$routes/api/services/careplan/scheduling';
 import { getAssetsType } from '$routes/api/services/careplan/assets/asset';
 import { getTimeSlots } from '$routes/api/services/careplan/types';
+import { MAX_ITEMS_PER_PAGE } from '$lib/components/utils/helper';
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -18,7 +19,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 		const careplanId = event.params.careplanId;
 		const searchParams = {
 			careplanId: careplanId,
-			itemsPerPage: 500
+			itemsPerPage: MAX_ITEMS_PER_PAGE
 		};
 		const careplan = await getCarePlanById(sessionId, careplanId);
 		const response = await searchCarePlanActivities(sessionId, searchParams);

@@ -1,4 +1,4 @@
-
+export const MAX_ITEMS_PER_PAGE = 500;
 export class Helper {
 
     static isEmail = (str: string): boolean => {
