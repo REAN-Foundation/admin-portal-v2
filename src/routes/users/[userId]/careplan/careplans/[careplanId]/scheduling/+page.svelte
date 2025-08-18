@@ -11,6 +11,7 @@
 	import { onMount } from 'svelte';
 	import { createOrUpdatSchedulingeSchema } from '$lib/validation/careplan.scheduling.schema';
 	import Button from '$lib/components/button/button.svelte';
+	import { MAX_ITEMS_PER_PAGE } from '$lib/components/utils/helper';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -130,7 +131,7 @@
 
 	async function searchAssets(model) {
 		const selectedAssetRoute = assetRouteMap[selectedAssetType];
-		let url = `/api/server/careplan/assets/search?assetType=${selectedAssetRoute}`;
+		let url = `/api/server/careplan/assets/search?assetType=${selectedAssetRoute}&itemsPerPage=${MAX_ITEMS_PER_PAGE}`;
 		const res = await fetch(url, {
 			method: 'GET',
 			headers: {

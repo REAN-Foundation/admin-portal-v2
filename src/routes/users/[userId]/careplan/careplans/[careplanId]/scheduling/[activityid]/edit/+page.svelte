@@ -10,6 +10,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import Button from '$lib/components/button/button.svelte';
+	import { MAX_ITEMS_PER_PAGE } from '$lib/components/utils/helper';
 	//////////////////////////////////////////////////////////////////////////
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
@@ -100,7 +101,7 @@
 		console.log(model);
 		const selectedAssetRoute = assetRouteMap[selectedAssetType];
 
-		let url = `/api/server/careplan/assets/search?assetType=${selectedAssetRoute}`;
+		let url = `/api/server/careplan/assets/search?assetType=${selectedAssetRoute}&itemsPerPage=${MAX_ITEMS_PER_PAGE}`;
 		const res = await fetch(url, {
 			method: 'GET',
 			headers: {
