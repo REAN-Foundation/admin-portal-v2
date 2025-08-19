@@ -2,18 +2,17 @@
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
-	import { toastMessage } from '$lib/components/toast/toast.store.js';
+	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
 	import Button from '$lib/components/button/button.svelte';
 	import SearchDropdown from '$lib/components/search-dropdown.svelte';
-	import type { C } from 'vitest/dist/chunks/environment.d8YfPkTm.js';
-	import type { EnrollmentCreateModel } from '$lib/types/enrollment.types.js';
+	import type { EnrollmentCreateModel } from '$lib/types/enrollment.types';
+	import { createSchema } from '$lib/validation/enrollment.schema';
 
-	let { data } = $props();
+    //////////////////////////////////////////////////////////////////////////////
+
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	
-	// Form data
 	let selectedCareplanId = $state('');
 	let selectedCareplanName = $state('');
 	let selectedCareplanCode = $state('');
@@ -21,13 +20,11 @@
 	let selectedPatientName = $state('');
 	let selectedPatientPhone = $state('');
 	let selectedChannel = $state('WhatsApp');
-
-	$inspect('selectedCareplanId', selectedCareplanId);
-	$inspect('selectedCareplanName', selectedCareplanName);
-	$inspect('selectedPatientId', selectedPatientUserId);
-	$inspect('selectedPatientName', selectedPatientName);
-	$inspect('selectedPatientPhone', selectedPatientPhone);
-	$inspect('selectedChannel', selectedChannel);
+	let numberOfDays: number = $state();
+	let startHour: number = $state();
+	let startMinutes: number = $state();
+	let intervalMinutes: number = $state();
+	let startFromTomorrow = $state(false);
 
 	const userId = page.params.userId;
 	const enrollmentsRoute = `/users/${userId}/careplan/enrollments`;
@@ -82,8 +79,25 @@
 				PatientUserId: selectedPatientUserId,
 				PlanName: selectedCareplanName,
 				PlanCode: selectedCareplanCode,
-				channel: selectedChannel
+				Channel: selectedChannel,
+				NumberOfDays: numberOfDays,
+				StartHour: startHour,
+				StartMinutes: startMinutes,
+				IntervalMinutes: intervalMinutes,
+				StartFromTomorrow: startFromTomorrow
 			};
+
+				const validationResult = createSchema.safeParse(enrollmentData);
+
+			if (!validationResult.success) {
+				errors = Object.fromEntries(
+					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				);
+				return;
+			}
 
 			const res = await fetch('/api/server/careplan/enrollments/create', {
 				method: 'POST',
@@ -125,7 +139,7 @@
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
-					<td class="table-label">Careplan name <span class="important-field">*</span></td>
+					<td class="table-label">Careplan Name <span class="important-field">*</span></td>
 					<td class="table-data">
 						<SearchDropdown
 							placeholder="Search careplans..."
@@ -163,7 +177,7 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">Channel</td>
+					<td class="table-label">Channel <span class="important-field">*</span></td>
 					<td class="table-data">
 						<div class="relative">
 							<select
@@ -178,6 +192,86 @@
 								<Icon icon="mdi:chevron-down" class="select-icon" />
 							</div>
 						</div>
+					</td>
+				</tr>
+
+				<!-- Scheduling Section -->
+				<tr class="tables-row">
+					<td class="table-label">Number of Days </td>
+					<td class="table-data">
+						<input
+							type="number"
+							bind:value={numberOfDays}
+							min="1"
+							max="84"
+							class="input"
+							placeholder="Enter number of days..."
+						/>
+						{#if errors?.NumberOfDays}
+							<p class="error-text">{errors.NumberOfDays}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Start Time</td>
+					<td class="table-data">
+						<div class="flex gap-2 items-center">
+							<input
+								type="number"
+								bind:value={startHour}
+								min="0"
+								max="23"
+								class="input w-20 {errors?.startHour ? 'input-text-error' : ''}"
+								placeholder="Enter the start hour..."
+							/>
+							<span class="text-gray-500">:</span>
+							<input
+								type="number"
+								bind:value={startMinutes}
+								min="0"
+								max="59"
+								class="input w-20 {errors?.startMinutes ? 'input-text-error' : ''}"
+								placeholder="Enter the start min..."
+							/>
+						</div>
+						{#if errors?.StartHour || errors?.StartMinutes}
+							<p class="error-text">{errors?.StartHour || errors?.StartMinutes}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Interval (Minutes)</td>
+					<td class="table-data">
+						<input
+							type="number"
+							bind:value={intervalMinutes}
+							min="0"
+							max="1440"
+							class="input {errors?.intervalMinutes ? 'input-text-error' : ''}"
+							placeholder="Enter time between tasks..."
+						/>
+						{#if errors?.IntervalMinutes}
+							<p class="error-text">{errors.IntervalMinutes}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Start From Tomorrow</td>
+					<td class="table-data">
+						<div class="flex items-center">
+							<input
+								type="checkbox"
+								id="startFromTomorrow"
+								bind:checked={startFromTomorrow}
+								class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2 {errors?.startFromTomorrow ? 'input-text-error' : ''}"
+							/>
+						</div>
+						{#if errors?.StartFromTomorrow}
+							<p class="error-text">{errors.StartFromTomorrow}</p>
+						{/if}
 					</td>
 				</tr>
 			</tbody>
