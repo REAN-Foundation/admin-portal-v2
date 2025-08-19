@@ -52,18 +52,38 @@ export const createEnrollment = async (
     patientUserId: string,
     planCode: string,
     planName: string,
-    channel: string = 'WhatsApp'
+    channel: string = 'WhatsApp',
+    numberOfDays: number = 1,
+    startHour: number = 9,
+    startMinutes: number = 0,
+    intervalMinutes: number = 0,
+    startFromTomorrow: boolean = false
 ) => {
     const url = BACKEND_API_URL + `/care-plans/patients/${patientUserId}/enroll`;
+    
+    const startDate = new Date();
+    if (startFromTomorrow) {
+        startDate.setDate(startDate.getDate() + 1);
+    }
+    
     const body = {
         Provider : 'REAN',
-        StartDate: new Date().toISOString(),
+        StartDate: startDate.toISOString(),
         TenantName : tenantName,
         PlanCode : planCode,
         PlanName : planName,
         Channel : channel,
-        IsTest : true
+        IsTest : true,
+        ScheduleConfig :{
+            NumberOfDays: numberOfDays,
+            StartHour: startHour,
+            StartMinutes: startMinutes,
+            IntervalMinutes: intervalMinutes,
+            StartFromTomorrow: startFromTomorrow
+        }
+ 
     };
+    
     console.log('body', body);
     console.log('url', url);
     const result = await post(sessionId, url, body, true);

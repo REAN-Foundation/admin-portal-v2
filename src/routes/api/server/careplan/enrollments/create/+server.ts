@@ -39,7 +39,12 @@ export const POST = async (event: RequestEvent) => {
 			data.PatientUserId,
 			data.PlanName,
 			data.PlanCode,
-			data.channel
+			data.Channel,
+			data.NumberOfDays,
+			data.StartHour,
+			data.StartMinutes,
+			data.IntervalMinutes,
+			data.StartFromTomorrow
 		);
 
 		return ResponseHandler.success(response);
