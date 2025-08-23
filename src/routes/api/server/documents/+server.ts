@@ -59,7 +59,9 @@ export const POST = async (event: RequestEvent) => {
 			data.Active,
 			keywords,
 			data.DocumentType,
-			createdByUserId
+			createdByUserId,
+			event.locals?.sessionUser?.tenantId,
+			event.locals?.sessionUser?.tenantCode
 		);
 
 		return ResponseHandler.success(response);
