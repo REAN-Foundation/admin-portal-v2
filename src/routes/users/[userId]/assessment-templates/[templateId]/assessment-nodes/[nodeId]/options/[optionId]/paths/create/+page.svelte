@@ -5,14 +5,16 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
+	import { goto } from '$app/navigation';
 
 	///////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 
 	// Form state
-	let options = $state(data.optionData?.Text || '');
-	$inspect('options',options);
+	let optionText = $state(data.optionData?.Text || '');
+	let optionSequence = $state(data.optionData?.Sequence || 0);
+	$inspect('options',optionText);
 	let messageBeforeQuestion = $state('');
 	let isExitPath = $state(false);
 	let nextNode = $state('');
@@ -38,11 +40,17 @@
 	const nodeId = page.params.nodeId;
 	const optionId = page.params.optionId;
 
+	const asssemsntPath = `/users/${userId}/assessment-templates`
+	const nodePath = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/view`;
+	const nodeViewPath = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/view`;
+	const createPath = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths/create`;
+	const viewPath = (pathId) => `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths/${pathId}/view`;
+
 	// Breadcrumb navigation
 	const breadCrumbs = [
 		{
 			name: 'Assessments',
-			path: `/users/${userId}/assessment-templates`
+			path: asssemsntPath
 		},
 		// {
 		// 	name: 'Assessment Templates',
@@ -50,19 +58,17 @@
 		// },
 		{
 			name: 'Nodes',
-			path: `/users/${userId}/assessment-templates/${templateId}/assessment-nodes`
+			path: nodePath
 		},
 		{
 			name: 'View Node',
-			path: `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/view`
+			path: nodeViewPath
 		},
 		{
 			name: 'Create Path',
-			path: `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths/create`
+			path: createPath
 		}
 	];
-
-
 
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
@@ -92,7 +98,8 @@
 				MessageBeforeQuestion: messageBeforeQuestion.trim() || undefined,
 				IsExitPath: isExitPath,
 				NextNodeId: nextNodeId,
-				NextNodeDisplayCode: nextNodeDisplayCode.trim() || undefined
+				NextNodeDisplayCode: nextNodeDisplayCode.trim() || undefined,
+				// OptionSequence: optionSequence
 			};
 
 			// Call API to create path
@@ -104,14 +111,60 @@
 
 			const result = await response.json();
 
-			if (result.Status === 'success' && (result.HttpCode === 200 || result.HttpCode === 201)) {
-				toastMessage({
-					Status: 'success',
-					Message: 'Path created successfully'
-				});
+			console.log('result',result);
 
-				// Redirect back to the node view
-				window.location.href = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/view`;
+			if (result.Status === 'success' && (result.HttpCode === 200 || result.HttpCode === 201)) {
+				// Get the path ID from the response
+				const pathId = result.Data?.NodePath?.id;
+				console.log('Path ID:', pathId);
+				console.log('Path ID:', result.Data);
+				if (pathId) {
+					try {
+						// Call the conditions API with pathId and optionSequence
+						const conditionResponse = await fetch(`/api/server/assessments/paths/${pathId}/conditions`, {
+							method: 'POST',
+							headers: { 'content-type': 'application/json' },
+							body: JSON.stringify({	
+								TemplateId: templateId,
+								NodeId: nodeId,
+								PathId: pathId,
+								OptionSequence: optionSequence
+							})
+						});
+
+						const conditionResult = await conditionResponse.json();
+						
+						if (conditionResult.Status === 'success' && (conditionResult.HttpCode === 200 || conditionResult.HttpCode === 201)) {
+							toastMessage({
+								HttpCode: 200,
+								Message: 'Path and condition created successfully'
+							});
+							goto(`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/path/${pathId}/view`);
+						} else {
+							console.warn('Condition creation failed:', conditionResult.Message);
+							toastMessage({
+								Status: 'success',
+								Message: 'Path created successfully, but condition creation failed'
+							});
+							goto(`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths`);
+						}
+					} catch (conditionError) {
+						console.error('Error creating condition:', conditionError);
+						toastMessage({
+							Status: 'success',
+							Message: 'Path created successfully, but condition creation failed'
+						});
+						goto(`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths`);
+					}
+				} else {
+					toastMessage({
+						Status: 'success',
+						Message: 'Path created successfully'
+					});
+					goto(`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths`);
+				}
+
+				// window.location.href = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/view`;
 			} else {
 				toastMessage({
 					Status: 'error',
@@ -131,7 +184,7 @@
 	};
 
 	const handleCancel = () => {
-		window.location.href = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/view`;
+		goto(`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths`);
 	};
 </script>
 
@@ -139,7 +192,7 @@
 
 <div class="mx-auto w-full px-6 py-4">
 	<div class="form-headers">
-		<h2 class="form-titles">Create Assessment Path</h2>
+		<h2 class="form-titles">Create Path</h2>
 		<button onclick={handleCancel} class="form-cancel-btn">
 			<Icon icon="material-symbols:close-rounded" />
 		</button>
@@ -154,7 +207,7 @@
 						<input
 							type="text"
 							id="options"
-							bind:value={options}
+							bind:value={optionText}
 							class="input bg-gray-100 text-gray-600 cursor-not-allowed"
 							placeholder="Enter option text here..."
 							disabled
@@ -254,13 +307,13 @@
 		<input type="hidden" id="nextNodeDisplayCode" bind:value={nextNodeDisplayCode} />
 
 		<div class="btn-container">
-			<Button
+			<!-- <Button
 				size="md"
 				type="button"
 				text="Cancel"
 				variant="secondary"
 				onclick={handleCancel}
-			/>
+			/> -->
 			<Button
 				size="md"
 				type="submit"

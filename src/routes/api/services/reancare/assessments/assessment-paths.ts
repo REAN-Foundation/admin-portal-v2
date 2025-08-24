@@ -96,7 +96,7 @@ export const getAssessmentPathById = async (
 	optionId: string,
 	pathId: string
 ) => {
-	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/options/${optionId}/paths/${pathId}`;
+	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/paths/${pathId}`;
 	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
 
 	return result;
