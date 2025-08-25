@@ -33,10 +33,10 @@
 #     ;;
 # esac
 
-# Copy files from S3
-aws s3 cp s3://$ENV_FILE_BUCKET/.env ./.env
-aws s3 cp s3://$CONSTANTS_FILE_BUCKET/constants.ts ./src/lib/constants.ts
-aws s3 cp s3://$FAVICON_FILE_BUCKET/favicon.png ./static/favicon.png
+# Download files from Azure Storage
+az storage blob download --container-name $CONTAINER_NAME --name .env --file /app/.env --account-name $ACCOUNT_NAME --account-key $ACCOUNT_KEY
+az storage blob download --container-name $CONTAINER_NAME --name constants.ts --file /app/src/lib/constants.ts --account-name $ACCOUNT_NAME --account-key $ACCOUNT_KEY
+az storage blob download --container-name $CONTAINER_NAME --name favicon.png --file /app/static/favicon.png
 
 chmod +x ./src/lib/constants.ts
 cd /app/build

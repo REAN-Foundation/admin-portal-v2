@@ -1,4 +1,4 @@
-FROM node:18.20-alpine3.20 AS builder
+FROM node:18.20.8-alpine3.21 AS builder
 
 WORKDIR /app
 COPY . .
@@ -9,18 +9,18 @@ RUN npm run build
 
 #######################################
 
-FROM node:18.20-alpine3.20
+FROM node:18.20.8-alpine3.21
 
-RUN apk add bash
+RUN apk add bash gcc musl-dev python3-dev libffi-dev openssl-dev cargo make dos2unix
+
 RUN apk add --no-cache \
-        # python3 \
-        aws-cli \
+        python3 \
+        py3-pip \
         git \
+    && pip3 install --break-system-packages azure-cli \
     && rm -rf /var/cache/apk/*
 RUN apk add --update alpine-sdk
-# RUN apk add chromium \
-#     harfbuzz
-# RUN apk --no-cache add aws-cli
+
 
 RUN apk update
 RUN apk upgrade
@@ -43,6 +43,8 @@ ENV ENVIRONMENT=${ENVIRONMENT}
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 ENV BODY_SIZE_LIMIT=52428800
 
+RUN dos2unix /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
-# ENTRYPOINT ["/bin/bash", "-c", "/app/entrypoint.sh $ENVIRONMENT"]
-CMD ["node", "build/index.js"]
+
+ENTRYPOINT ["/bin/bash", "-c", "/app/entrypoint.sh $ENVIRONMENT"]
+# CMD ["node", "build/index.js"]
