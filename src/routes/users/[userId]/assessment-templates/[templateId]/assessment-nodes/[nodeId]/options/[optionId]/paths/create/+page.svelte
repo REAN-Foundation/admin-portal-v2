@@ -23,7 +23,6 @@
 	let errors: Record<string, string> = $state({});
 	let isSubmitting = $state(false);
 
-	// Auto-update nextNodeDisplayCode when nextNode changes
 	$effect(() => {
 		if (nextNode && data.childNodes.length > 0) {
 			const selectedNode = data.childNodes.find(node => node.id === nextNode);
@@ -39,6 +38,8 @@
 	const templateId = page.params.templateId;
 	const nodeId = page.params.nodeId;
 	const optionId = page.params.optionId;
+
+	console.log('option ID in create:', optionId);
 
 	const asssemsntPath = `/users/${userId}/assessment-templates`
 	const nodePath = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/view`;
@@ -119,6 +120,8 @@
 				console.log('Path ID:', pathId);
 				console.log('Path ID:', result.Data);
 				if (pathId) {
+
+					console.log("optionSequence",optionSequence);
 					try {
 						// Call the conditions API with pathId and optionSequence
 						const conditionResponse = await fetch(`/api/server/assessments/paths/${pathId}/conditions`, {
@@ -139,7 +142,9 @@
 								HttpCode: 200,
 								Message: 'Path and condition created successfully'
 							});
-							goto(`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/path/${pathId}/view`);
+							// goto(`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths/${pathId}/view`);
+							goto(nodeViewPath);
+
 						} else {
 							console.warn('Condition creation failed:', conditionResult.Message);
 							toastMessage({

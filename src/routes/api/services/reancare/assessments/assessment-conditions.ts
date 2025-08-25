@@ -8,7 +8,7 @@ export const createAssessmentCondition = async (
 	templateId: string,
 	nodeId: string,
 	pathId: string,
-	OptionSequece: number
+	OptionSequence: number
 ) => {
 
 	const body = {
@@ -23,9 +23,12 @@ export const createAssessmentCondition = async (
     SecondOperand: {
         DataType: "Integer",
         Name: "ExpectedAnswer",
-        Value: OptionSequece
+        Value: OptionSequence
     }
 	}
+
+	
+	console.log("COndition body", body);
 
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/paths/${pathId}/conditions`;
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);

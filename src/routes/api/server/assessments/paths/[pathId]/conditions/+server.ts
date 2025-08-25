@@ -47,7 +47,7 @@ export const POST = async (event: RequestEvent) => {
 			data.TemplateId,
 			data.NodeId,
 			data.PathId,
-			data.OptionSequece
+			data.OptionSequence
 		);
 		
 		return ResponseHandler.success(response);

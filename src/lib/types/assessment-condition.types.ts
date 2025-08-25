@@ -38,5 +38,5 @@ export interface AssessmentConditionCreateModel {
 	TemplateId?: string;
 	NodeId?: string;
 	PathId?: string; // Chosen path if the condition satisfies
-	OptionSequece ?: number; // Chosen option sequence if the condition satisfies
+	OptionSequence ?: number; // Chosen option sequence if the condition satisfies
 }

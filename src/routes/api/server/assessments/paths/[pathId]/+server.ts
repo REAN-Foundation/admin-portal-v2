@@ -31,7 +31,7 @@ export const GET = async (event: RequestEvent) => {
 			return ResponseHandler.handleError(400, null, new Error("Template ID, Node ID, and Option ID are required as query parameters."));
 		}
 
-		const response = await getAssessmentPathById(sessionId, templateId, nodeId, optionId, pathId);
+		const response = await getAssessmentPathById(sessionId, templateId, nodeId, pathId);
 		return ResponseHandler.success(response);
 
 	} catch (error) {
