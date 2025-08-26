@@ -135,6 +135,12 @@
 
 			const sequenceValue = sequence === '' ? undefined : sequence;
 
+			// Ensure each option has ProviderGivenCode set to its Text value
+			const processedOptions = optionArray.map(option => ({
+				...option,
+				ProviderGivenCode: option.ProviderGivenCode || option.Text
+			}));
+
 			const assessmentNodeCreateModel: AssessmentNodeCreateModel = {
 				NodeType: selectedNodeType,
 				ParentNodeId: parentNodeId,
@@ -146,7 +152,7 @@
 				ProviderAssessmentCode: providerAssessmentCode,
 				ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce,
 				ScoringApplicable: scoringApplicable,
-				Options: optionArray,
+				Options: processedOptions,
 				CorrectAnswer: finalValue,
 				Message: message,
 				Tags: keywords,

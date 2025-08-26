@@ -100,7 +100,8 @@ export const PUT = async (event: RequestEvent) => {
             nodeId,
             optionId,
             data.Text,
-            data.Sequence
+            data.Sequence,
+            data.ProviderGivenCode
         );
 
         return ResponseHandler.success(response);

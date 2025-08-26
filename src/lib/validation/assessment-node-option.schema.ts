@@ -12,4 +12,8 @@ export const createOrUpdateSchema = z.object({
     Sequence: z
         .number()
         .optional(),
+
+    ProviderGivenCode: z
+        .string()
+        .optional(),
 });
