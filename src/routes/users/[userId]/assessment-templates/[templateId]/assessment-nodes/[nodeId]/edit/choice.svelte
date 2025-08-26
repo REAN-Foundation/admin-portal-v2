@@ -29,10 +29,18 @@
 			Text: '',
 			Sequence: optionArray.length + 1,
 			NodeId: nodeId,
+			ProviderGivenCode: '',
 			isEditing: true
 		};
 		optionArray = [...optionArray, newOption];
 	};
+
+	// Auto-update ProviderGivenCode when option text changes
+	function updateProviderCode(index) {
+		if (optionArray[index] && optionArray[index].Text) {
+			optionArray[index].ProviderGivenCode = optionArray[index].Text;
+		}
+	}
 
 	const saveOption = async (index, event) => {
 		event.preventDefault();
@@ -40,7 +48,8 @@
 
 		const optionModel: AssessmentNodeOptionUpdateModel = {
 			Text: option.Text,
-			Sequence: option.Sequence
+			Sequence: option.Sequence,
+			ProviderGivenCode: option.ProviderGivenCode
 		};
 
 		const validationResult = createOrUpdateSchema.safeParse(optionModel);
@@ -122,37 +131,40 @@
 
 <div class="dark:border-surface-700 my-2 flex flex-col gap-2 rounded border p-2">
 	{#each optionArray as v, i}
-		<div
-			role="group"
-			class="group flex items-center gap-2"
-			onmouseenter={() => (hoveredIndex = i)}
-			onmouseleave={() => (hoveredIndex = null)}
-		>
-			<input
-				type="text"
-				class="input"
-				name="options"
-				bind:value={optionArray[i].Text}
-				placeholder="Add option here..."
-				disabled={!v.isEditing ? true : false}
-			/>
-
-			{#if v.isEditing}
-				<button class="health-system-btn variant-soft-primary" onclick={(e) => saveOption(i, e)}>
-					<Icon icon="material-symbols:check" /> Save
-				</button>
-			{:else if hoveredIndex === i}
-				<button class="health-system-btn variant-soft-secondary" onclick={() => enableEditing(i)}>
-					<Icon icon="material-symbols:edit" />
-				</button>
-			{/if}
-
-			<button
-				class="health-system-btn variant-soft-secondary"
-				onclick={(e) => deleteOption(e, optionArray[i], i)}
+		<div class="flex flex-col gap-2">
+			<div
+				role="group"
+				class="group flex items-center gap-2"
+				onmouseenter={() => (hoveredIndex = i)}
+				onmouseleave={() => (hoveredIndex = null)}
 			>
-				<Icon icon="material-symbols:close-rounded" />
-			</button>
+				<input
+					type="text"
+					class="input"
+					name="options"
+					bind:value={optionArray[i].Text}
+					placeholder="Add option here..."
+					disabled={!v.isEditing ? true : false}
+					onblur={() => updateProviderCode(i)}
+				/>
+
+				{#if v.isEditing}
+					<button class="health-system-btn variant-soft-primary" onclick={(e) => saveOption(i, e)}>
+						<Icon icon="material-symbols:check" /> Save
+					</button>
+				{:else if hoveredIndex === i}
+					<button class="health-system-btn variant-soft-secondary" onclick={() => enableEditing(i)}>
+						<Icon icon="material-symbols:edit" />
+					</button>
+				{/if}
+
+				<button
+					class="health-system-btn variant-soft-secondary"
+					onclick={(e) => deleteOption(e, optionArray[i], i)}
+				>
+					<Icon icon="material-symbols:close-rounded" />
+				</button>
+			</div>
 		</div>
 	{/each}
 

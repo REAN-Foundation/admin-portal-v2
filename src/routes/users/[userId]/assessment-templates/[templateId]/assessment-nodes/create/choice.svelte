@@ -16,10 +16,18 @@
 		event.preventDefault();
 		addOptionField();
 	}
+	
 	const addOptionField = () => {
-		const newOption = { Text: '', Sequence: optionArray.length + 1 };
+		const newOption = { Text: '', Sequence: optionArray.length + 1, ProviderGivenCode: '' };
 		optionArray = [...optionArray, newOption];
 	};
+
+	// Auto-update ProviderGivenCode when option text changes
+	function updateProviderCode(index) {
+		if (optionArray[index] && optionArray[index].Text) {
+			optionArray[index].ProviderGivenCode = optionArray[index].Text;
+		}
+	}
 </script>
 
 <div class="dark:border-surface-700 my-2 flex flex-col gap-2 rounded border p-2">
@@ -31,6 +39,8 @@
 				name="options"
 				bind:value={optionArray[i].Text}
 				placeholder="Add option here..."
+				onblur={() => updateProviderCode(i)}
+				oninput={() => updateProviderCode(i)}
 			/>
 
 			<button
