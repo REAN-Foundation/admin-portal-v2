@@ -268,10 +268,12 @@ export const addOption = async (
 	nodeId: string,
 	text: string,
 	sequence?: number,
+	providerGivenCode?: string,
 ) => {
 	const body = {
 		Text: text,
 		Sequence: sequence,
+		ProviderGivenCode: providerGivenCode || text, // Always default to text if not provided
 	};
 	console.log('body----------', body);
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/options`;
@@ -292,10 +294,12 @@ export const updateOption = async (
 	optionId: string,
 	text: string,
 	sequence?: number,
+	providerGivenCode?: string,
 ) => {
 	const body = {
 		Text: text,
 		Sequence: sequence,
+		ProviderGivenCode: providerGivenCode || text, // Always default to text if not provided
 	};
 
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/options/${optionId}`;

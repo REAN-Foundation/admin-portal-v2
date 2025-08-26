@@ -37,6 +37,7 @@ export const POST = async (event: RequestEvent) => {
 			nodeId,
 			data.Text,
 			data.Sequence,
+			data.ProviderGivenCode,
 		);
 
 		return ResponseHandler.success(response);
