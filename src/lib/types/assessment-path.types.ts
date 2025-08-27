@@ -8,8 +8,6 @@ export interface AssessmentPathCreateModel {
 }
 
 export interface AssessmentPathUpdateModel {
-	PathId: string;
-	Options?: string;
 	MessageBeforeQuestion?: string;
 	IsExitPath?: boolean;
 	NextNode?: string;

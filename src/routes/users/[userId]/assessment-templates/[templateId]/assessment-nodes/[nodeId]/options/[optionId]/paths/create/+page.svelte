@@ -11,7 +11,6 @@
 
 	let { data }: { data: PageServerData } = $props();
 
-	// Form state
 	let optionText = $state(data.optionData?.Text || '');
 	let optionSequence = $state(data.optionData?.Sequence || 0);
 	$inspect('options',optionText);
@@ -33,7 +32,6 @@
 		}
 	});
 
-	// Get route parameters
 	const userId = page.params.userId;
 	const templateId = page.params.templateId;
 	const nodeId = page.params.nodeId;
@@ -42,27 +40,17 @@
 	console.log('option ID in create:', optionId);
 
 	const asssemsntPath = `/users/${userId}/assessment-templates`
-	const nodePath = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/view`;
 	const nodeViewPath = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/view`;
 	const createPath = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths/create`;
 	const viewPath = (pathId) => `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths/${pathId}/view`;
 
-	// Breadcrumb navigation
 	const breadCrumbs = [
 		{
 			name: 'Assessments',
 			path: asssemsntPath
 		},
-		// {
-		// 	name: 'Assessment Templates',
-		// 	path: `/users/${userId}/assessment-templates/${templateId}/view`
-		// },
 		{
-			name: 'Nodes',
-			path: nodePath
-		},
-		{
-			name: 'View Node',
+			name: 'Node',
 			path: nodeViewPath
 		},
 		{
@@ -91,8 +79,6 @@
 				isSubmitting = false;
 				return;
 			}
-
-			// Create path data
 			const pathData = {
 				TemplateId: templateId,
 				NodeId: nodeId,
@@ -103,7 +89,6 @@
 				// OptionSequence: optionSequence
 			};
 
-			// Call API to create path
 			const response = await fetch('/api/server/assessments/paths', {
 				method: 'POST',
 				headers: { 'content-type': 'application/json' },
@@ -115,7 +100,6 @@
 			console.log('result',result);
 
 			if (result.Status === 'success' && (result.HttpCode === 200 || result.HttpCode === 201)) {
-				// Get the path ID from the response
 				const pathId = result.Data?.NodePath?.id;
 				console.log('Path ID:', pathId);
 				console.log('Path ID:', result.Data);
@@ -123,7 +107,6 @@
 
 					console.log("optionSequence",optionSequence);
 					try {
-						// Call the conditions API with pathId and optionSequence
 						const conditionResponse = await fetch(`/api/server/assessments/paths/${pathId}/conditions`, {
 							method: 'POST',
 							headers: { 'content-type': 'application/json' },
@@ -142,7 +125,6 @@
 								HttpCode: 200,
 								Message: 'Path and condition created successfully'
 							});
-							// goto(`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths/${pathId}/view`);
 							goto(nodeViewPath);
 
 						} else {
@@ -151,7 +133,7 @@
 								Status: 'success',
 								Message: 'Path created successfully, but condition creation failed'
 							});
-							goto(`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths`);
+							goto(nodeViewPath);
 						}
 					} catch (conditionError) {
 						console.error('Error creating condition:', conditionError);
@@ -159,17 +141,16 @@
 							Status: 'success',
 							Message: 'Path created successfully, but condition creation failed'
 						});
-						goto(`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths`);
+						goto(nodeViewPath);
 					}
 				} else {
 					toastMessage({
 						Status: 'success',
 						Message: 'Path created successfully'
 					});
-					goto(`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths`);
+					goto(nodeViewPath);
 				}
 
-				// window.location.href = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/view`;
 			} else {
 				toastMessage({
 					Status: 'error',
@@ -217,7 +198,6 @@
 							placeholder="Enter option text here..."
 							disabled
 						/>
-						<!-- <p class="text-xs text-gray-500 mt-1">This field shows the selected option text and cannot be edited</p> -->
 						{#if errors?.options}
 							<p class="text-error">{errors.options}</p>
 						{/if}
@@ -308,17 +288,9 @@
 			</tbody>
 		</table>
 
-		<!-- Next Node Display Code (Handled internally) -->
 		<input type="hidden" id="nextNodeDisplayCode" bind:value={nextNodeDisplayCode} />
 
 		<div class="btn-container">
-			<!-- <Button
-				size="md"
-				type="button"
-				text="Cancel"
-				variant="secondary"
-				onclick={handleCancel}
-			/> -->
 			<Button
 				size="md"
 				type="submit"

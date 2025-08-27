@@ -40,11 +40,10 @@ export const updateAssessmentPath = async (
 	sessionId: string,
 	templateId: string,
 	nodeId: string,
-	optionId: string,
 	pathId: string,
 	pathData: AssessmentPathUpdateModel
 ) => {
-	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/options/${optionId}/paths/${pathId}`;
+	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/paths/${pathId}`;
 	const result = await put(sessionId, url, pathData, true, API_CLIENT_INTERNAL_KEY);
 
 	// Clear relevant cache
@@ -61,10 +60,9 @@ export const deleteAssessmentPath = async (
 	sessionId: string,
 	templateId: string,
 	nodeId: string,
-	optionId: string,
 	pathId: string
 ) => {
-	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/options/${optionId}/paths/${pathId}`;
+	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/paths/${pathId}`;
 	const result = await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
 
 	// Clear relevant cache
@@ -93,9 +91,9 @@ export const getAssessmentPathById = async (
 	sessionId: string,
 	templateId: string,
 	nodeId: string,
-	optionId: string,
 	pathId: string
 ) => {
+	console.log("pathId---------", pathId);
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/paths/${pathId}`;
 	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
 

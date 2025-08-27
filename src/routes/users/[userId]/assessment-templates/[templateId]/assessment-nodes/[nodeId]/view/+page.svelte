@@ -334,15 +334,38 @@
 							{#if queryType === 'Single Choice Selection'}
 								<div class="space-y-2">
 									{#each options as option, index}
+										{@const optionSequence = option.Sequence}
+										{@const existingPath = assessmentNode.Paths?.find(path => 
+											path.Condition?.SecondOperand?.Value === optionSequence
+										)}
 										<div class="flex items-center justify-between p-3 border rounded-lg bg-gray-50 dark:bg-gray-800">
-											<span class="font-medium">{index + 1}. {option.Text}</span>
-											<Button 
-												href={createPathRoute(option.id)}
-												text="Add Path" 
-												variant="secondary" 
-												iconBefore="mdi:plus" 
-												iconSize="sm"
-											/>
+											<span class="font-medium">{optionSequence}. {option.Text}</span>
+											<div class="flex items-center gap-2">
+												{#if existingPath}
+													<Button 
+														href={`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${option.id}/paths/${existingPath.id}/view`}
+														text="View Path" 
+														variant="secondary" 
+														iconBefore="mdi:eye" 
+														iconSize="sm"
+													/>
+													<Button 
+														href={`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${option.id}/paths/${existingPath.id}/edit`}
+														text="Edit Path" 
+														variant="primary" 
+														iconBefore="mdi:edit" 
+														iconSize="sm"
+													/>
+												{:else}
+													<Button 
+														href={createPathRoute(option.id)}
+														text="Add Path" 
+														variant="secondary" 
+														iconBefore="mdi:plus" 
+														iconSize="sm"
+													/>
+												{/if}
+											</div>
 										</div>
 									{/each}
 								</div>

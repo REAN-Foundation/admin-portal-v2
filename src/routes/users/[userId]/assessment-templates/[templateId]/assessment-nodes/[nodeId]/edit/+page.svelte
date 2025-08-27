@@ -253,14 +253,15 @@
 		</div>
 		<table class="w-full">
 			<tbody>
+				<!-- Basic Information -->
 				<tr class="tables-row">
-					<td class="table-label text-gray-500">Node Type <span class="text-red-600">*</span></td>
+					<td class="table-label">Node Type <span class="text-red-600">*</span></td>
 					<td class="table-data">
 						<input type="text" disabled bind:value={nodeType} class="grayout-input text-gray-500" />
 						<input type="hidden" name="nodeType" bind:value={nodeType} class="input text-gray-500" />
 					</td>
 				</tr>
-				<tr class="tables-row !border-b-secondary-100 dark:!border-b-surface-700 !border-b">
+				<tr class="tables-row">
 					<td class="table-label">Title <span class="text-red-600">*</span></td>
 					<td class="table-data">
 						<input
@@ -276,7 +277,7 @@
 						{/if}
 					</td>
 				</tr>
-				<tr class="tables-row !border-b-secondary-100 dark:!border-b-surface-700 !border-b">
+				<tr class="tables-row">
 					<td class="table-label align-top">Description</td>
 					<td class="table-data">
 						<textarea
@@ -291,20 +292,6 @@
 					</td>
 				</tr>
 				<tr class="tables-row">
-					<td class="table-label align-top">Raw Data</td>
-					<td class="table-data">
-						<textarea
-							name="rawData"
-							bind:value={rawData}
-							placeholder="Enter raw data here..."
-							class="input {errors?.rawData ? 'input-text-error' : ''}"
-						></textarea>
-						{#if errors?.RawData}
-							<p class="text-error">{errors?.RawData}</p>
-						{/if}
-					</td>
-				</tr>
-				<tr class="tables-row !border-b-secondary-100 dark:!border-b-surface-700 !border-b">
 					<td class="table-label">Sequence</td>
 					<td class="table-data">
 						<input
@@ -321,67 +308,18 @@
 						{/if}
 					</td>
 				</tr>
-				<tr class="tables-row !border-b-secondary-100 dark:!border-b-surface-700 !border-b">
-					<td class="table-label align-top">Tags</td>
-					<td class="table-data">
-						<InputChips bind:keywords name="keywords" id="keywords" />
-						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
-					</td>
-				</tr>
-				<tr class="tables-row">
-					<td class="table-label">Field Identifier</td>
-					<td class="table-data">
-						<div class="relative">
-						<select
-							name="fieldIdentifier"
-							bind:value={fieldIdentifier}
-							class="select {errors?.fieldIdentifier ? 'input-text-error' : ''}"
-						>
-							<option value="" disabled selected>Select field identifier here...</option>
-							{#each sortedIdentifiers as identifier}
-								<option value={identifier}>{toLabel(identifier)}</option>
-							{/each}
-						</select>
-						<div class="select-icon-container">
-							<Icon icon="mdi:chevron-down" class="select-icon" />
-						</div>
-					</div>
-						{#if errors?.FieldIdentifier}
-							<p class="text-error">{errors?.FieldIdentifier}</p>
-						{/if}
-					</td>
-				</tr>
-				<tr class="tables-row">
-					<td class="table-label">Field Identifier Unit</td>
-					<td class="table-data">
-						<input
-							type="text"
-							name="fieldIdentifierUnit"
-							bind:value={fieldIdentifierUnit}
-							placeholder="Enter field identifier unit here...."
-							class="input {errors?.fieldIdentifierUnit
-								? 'input-text-error'
-								: ''}"
-						/>
-						{#if errors?.FieldIdentifierUnit}
-							<p class="text-error">{errors?.FieldIdentifierUnit}</p>
-						{/if}
-					</td>
-				</tr>
+
+				<!-- Question-specific fields -->
 				{#if selectedNodeType === 'Question'}
-					<tr class=" ">
-						<td class="table-label align-top text-gray-500"
-							>Query Response Type <span class="text-red-600">*</span></td
-						>
+					<tr class="tables-row">
+						<td class="table-label align-top text-gray-500">Query Response Type <span class="text-red-600">*</span></td>
 						<td class="table-data">
 							<input type="hidden" name="queryType" bind:value={queryType} />
 							<select
 								id="mySelect"
 								name="queryType"
 								disabled
-								class="grayout-input {errors?.queryType
-									? 'input-text-error'
-									: ''} text-gray-500"
+								class="grayout-input {errors?.queryType ? 'input-text-error' : ''} text-gray-500"
 								placeholder="Select query type here..."
 								bind:value={queryType}
 							>
@@ -390,22 +328,19 @@
 						</td>
 					</tr>
 					{#if selectedQueryType === 'Single Choice Selection' || selectedQueryType === 'Multi Choice Selection'}
-						<tr>
+						<tr class="tables-row">
 							<td class="table-label align-top">Options</td>
 							<td class="table-data">
 								<Choice bind:optionArray />
 							</td>
 						</tr>
-
 						{#if selectedQueryType === 'Single Choice Selection'}
-							<tr class="">
+							<tr class="tables-row">
 								<td class="table-label">Correct Answer</td>
 								<td class="table-data">
 									<select
 										name="correctAnswer"
-										class="grayout-input {errors?.correctAnswer
-											? 'input-text-error'
-											: ''}"
+										class="grayout-input {errors?.correctAnswer ? 'input-text-error' : ''}"
 										bind:value={correctAnswer}
 									>
 										<option value="" disabled>Select correct answer</option>
@@ -419,8 +354,11 @@
 							</tr>
 						{/if}
 					{/if}
-				{:else if selectedNodeType === 'Message'}
-					<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
+				{/if}
+
+				<!-- Message-specific fields -->
+				{#if selectedNodeType === 'Message'}
+					<tr class="tables-row">
 						<td class="table-label">Message <span class="text-red-600">*</span></td>
 						<td class="table-data">
 							<textarea
@@ -428,15 +366,17 @@
 								required
 								placeholder="Enter message here..."
 								bind:value={message}
-								class="input w-full
-									{errors?.message ? 'border-error-300 text-error-500' : ''}"
+								class="input w-full {errors?.message ? 'border-error-300 text-error-500' : ''}"
 							></textarea>
 							{#if errors?.Message}
 								<p class="text-error">{errors?.Message}</p>
 							{/if}
 						</td>
 					</tr>
-				{:else}
+				{/if}
+
+				<!-- List Node specific fields -->
+				{#if selectedNodeType === 'List Node'}
 					<tr class="tables-row">
 						<td class="table-label">Serve List Node Children At Once</td>
 						<td class="table-data">
@@ -444,9 +384,7 @@
 								type="checkbox"
 								name="serveListNodeChildrenAtOnce"
 								bind:checked={serveListNodeChildrenAtOnce}
-								class=" {errors?.serveListNodeChildrenAtOnce
-									? 'input-text-error'
-									: ''}"
+								class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2 {errors?.serveListNodeChildrenAtOnce ? 'input-text-error' : ''}"
 							/>
 							{#if errors?.ServeListNodeChildrenAtOnce}
 								<p class="text-error">{errors?.ServeListNodeChildrenAtOnce}</p>
@@ -454,6 +392,131 @@
 						</td>
 					</tr>
 				{/if}
+
+				<!-- Configuration fields -->
+				<tr class="tables-row">
+					<td class="table-label">Required</td>
+					<td class="table-data">
+						<input
+							type="checkbox"
+							name="required"
+							bind:checked={required}
+							class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2 {errors?.required ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.Required}
+							<p class="text-error">{errors?.Required}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Scoring Applicable</td>
+					<td class="table-data">
+						<input
+							type="checkbox"
+							name="scoringApplicable"
+							bind:checked={scoringApplicable}
+							class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2 {errors?.scoringApplicable ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.ScoringApplicable}
+							<p class="text-error">{errors?.ScoringApplicable}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Resolution Score</td>
+					<td class="table-data">
+						<input
+							type="number"
+							name="resolutionScore"
+							bind:value={resolutionScore}
+							placeholder="Enter resolution score here..."
+							class="input {errors?.resolutionScore ? 'input-text-error' : ''}"
+							step="0.01"
+							min="0"
+						/>
+						{#if errors?.ResolutionScore}
+							<p class="text-error">{errors?.ResolutionScore}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Provider Assessment Code</td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="providerAssessmentCode"
+							bind:value={providerAssessmentCode}
+							placeholder="Enter provider assessment code here..."
+							class="input {errors?.providerAssessmentCode ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.ProviderAssessmentCode}
+							<p class="text-error">{errors?.ProviderAssessmentCode}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<!-- Field Identifier section -->
+				<tr class="tables-row">
+					<td class="table-label">Field Identifier</td>
+					<td class="table-data">
+						<div class="relative">
+							<select
+								name="fieldIdentifier"
+								bind:value={fieldIdentifier}
+								class="select {errors?.fieldIdentifier ? 'input-text-error' : ''}"
+							>
+								<option value="" disabled selected>Select field identifier here...</option>
+								{#each sortedIdentifiers as identifier}
+									<option value={identifier}>{toLabel(identifier)}</option>
+								{/each}
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
+						{#if errors?.FieldIdentifier}
+							<p class="text-error">{errors?.FieldIdentifier}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Field Identifier Unit</td>
+					<td class="table-data">
+						<input
+							type="text"
+							name="fieldIdentifierUnit"
+							bind:value={fieldIdentifierUnit}
+							placeholder="Enter field identifier unit here..."
+							class="input {errors?.fieldIdentifierUnit ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.FieldIdentifierUnit}
+							<p class="text-error">{errors?.FieldIdentifierUnit}</p>
+						{/if}
+					</td>
+				</tr>
+
+				<!-- Raw Data and Tags -->
+				<tr class="tables-row">
+					<td class="table-label align-top">Raw Data</td>
+					<td class="table-data">
+						<textarea
+							name="rawData"
+							bind:value={rawData}
+							placeholder="Enter raw data here..."
+							class="input {errors?.rawData ? 'input-text-error' : ''}"
+						></textarea>
+						{#if errors?.RawData}
+							<p class="text-error">{errors?.RawData}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label align-top">Tags</td>
+					<td class="table-data">
+						<InputChips bind:keywords name="keywords" id="keywords" />
+						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+					</td>
+				</tr>
 			</tbody>
 		</table>
 		<div class="btn-container">

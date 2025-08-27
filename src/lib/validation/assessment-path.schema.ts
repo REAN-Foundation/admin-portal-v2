@@ -39,19 +39,7 @@ export const createPathSchema = z.object({
 });
 
 export const updatePathSchema = z.object({
-	PathId: z
-		.string({
-			required_error: "Path ID is required.",
-			invalid_type_error: "Path ID must be a string."
-		})
-		.min(1, { message: "Path ID cannot be empty." }),
-
-	Options: z
-		.string()
-		.min(1, { message: "Options cannot be empty." })
-		.max(500, { message: "Options must be at most 500 characters." })
-		.optional(),
-
+	
 	MessageBeforeQuestion: z
 		.string()
 		.max(1000, { message: "Message before question must be at most 1000 characters." })

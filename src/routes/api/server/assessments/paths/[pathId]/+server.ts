@@ -54,15 +54,13 @@ export const PUT = async (event: RequestEvent) => {
 			return ResponseHandler.handleError(400, null, new Error("Path ID is required."));
 		}
 
-		// For now, we'll need to get the other IDs from query parameters
-		// In a real implementation, you might want to store these in the path data
 		const url = new URL(event.request.url);
 		const templateId = url.searchParams.get('templateId');
 		const nodeId = url.searchParams.get('nodeId');
-		const optionId = url.searchParams.get('optionId');
+		// const optionId = url.searchParams.get('optionId');
 
-		if (!templateId || !nodeId || !optionId) {
-			return ResponseHandler.handleError(400, null, new Error("Template ID, Node ID, and Option ID are required as query parameters."));
+		if (!templateId || !nodeId) {
+			return ResponseHandler.handleError(400, null, new Error("Template ID, Node ID are required as query parameters."));
 		}
 
 		const request = event.request;
@@ -89,7 +87,6 @@ export const PUT = async (event: RequestEvent) => {
 			sessionId,
 			templateId,
 			nodeId,
-			optionId,
 			pathId,
 			data
 		);
@@ -131,7 +128,6 @@ export const DELETE = async (event: RequestEvent) => {
 			sessionId,
 			templateId,
 			nodeId,
-			optionId,
 			pathId
 		);
 		
