@@ -22,7 +22,7 @@
 	// let retrivedAssessmentNodes = $derived(
 	// 	assessmentNodes.filter((node) => node.Title !== 'Assessment root node')
 	// );
-let retrivedAssessmentNodes = $derived(
+   let retrivedAssessmentNodes = $derived(
 		assessmentNodes
 	);
 	let openDeleteModal = $state(false);

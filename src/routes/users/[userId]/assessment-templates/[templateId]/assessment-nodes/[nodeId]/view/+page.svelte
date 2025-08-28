@@ -12,7 +12,7 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import Button from '$lib/components/button/button.svelte';
-
+	
 	////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
@@ -20,6 +20,9 @@
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
 	let isDeleting = $state(false);
+	let openDeletePathModal = $state(false);
+	let pathToBeDeleted = $state(null);
+	let isDeletingPath = $state(false);
 	let templateTitle = data.templateDetails.Title;
 	let assessmentNode = $derived(data.assessmentNode)
 	$inspect('Assesment node', assessmentNode);
@@ -36,6 +39,7 @@
 	let serveListNodeChildrenAtOnce = $derived(assessmentNode.ServeListNodeChildrenAtOnce ?? null);
 	let queryType = $derived(assessmentNode.QueryResponseType);
 	let options = $derived(assessmentNode.Options ?? []);
+	$inspect('options', options);
 	let childrenNodes = $derived(assessmentNode.Children ?? []);
 	let displayCode = $derived(assessmentNode.DisplayCode);
 	let sequence = $derived(assessmentNode.Sequence);
@@ -82,8 +86,6 @@
 	let fieldIdentifier = $derived(assessmentNode.FieldIdentifier !== null && assessmentNode.FieldIdentifier!== '' ? assessmentNode.FieldIdentifier : 'Not specified' );
 	let fieldIdentifierUnit = $derived(assessmentNode.FieldIdentifierUnit !== null && assessmentNode.FieldIdentifierUnit!== '' ? assessmentNode.FieldIdentifierUnit : 'Not specified' );
 
-	$inspect('childrenNodes', childrenNodes);
-	// Field identifier options for editing
 	const AssessmentFieldIdentifiers = [
 		'General:PersonalProfile:FirstName',
 		'General:PersonalProfile:LastName',
@@ -140,7 +142,7 @@
 		`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${id}/edit`;
 	const viewNodeRoute = (id) =>
 		`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${id}/view`;
-
+    const createPathRoute = (optionId) => `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths/create`
 	const breadCrumbs = [
 		{
 			name: 'Assessments',
@@ -165,6 +167,11 @@
 		idToBeDeleted = id;
 	};
 
+	const handleDeletePathClick = (path: any) => {
+		openDeletePathModal = true;
+		pathToBeDeleted = path;
+	};
+
 	const handleAssessmentNodeDelete = async (id) => {
 		id = idToBeDeleted;
 		const response = await fetch(
@@ -185,6 +192,41 @@
 			await invalidateAll();
 		} else {
 			toastMessage(res);
+		}
+	};
+
+	const handlePathDelete = async () => {
+		if (!pathToBeDeleted) return;
+		
+		isDeletingPath = true;
+		try {
+			const response = await fetch(
+				`/api/server/assessments/paths/${pathToBeDeleted.id}?templateId=${templateId}&nodeId=${nodeId}`,
+				{
+					method: 'DELETE',
+					headers: { 'content-type': 'application/json' }
+				}
+			);
+
+			const res = await response.json();
+
+			if (res.HttpCode === 200) {
+				toastMessage(res);
+				openDeletePathModal = false;
+				pathToBeDeleted = null;
+				await invalidateAll();
+			} else {
+				toastMessage(res);
+			}
+		} catch (error) {
+			console.error('Error deleting path:', error);
+			toastMessage({
+				Status: 'failure',
+				HttpCode: 500,
+				Message: 'Error deleting path'
+			});
+		} finally {
+			isDeletingPath = false;
 		}
 	};
 
@@ -330,11 +372,58 @@
 					<tr class="tables-row">
 						<td class="table-label align-top">Options</td>
 						<td class="table-data">
-							<ol class="ml-3 list-decimal">
-								{#each options as option}
-									<li>{option.Text}</li>
-								{/each}
-							</ol>
+							{#if queryType === 'Single Choice Selection'}
+								<div class="space-y-2">
+									{#each options as option, index}
+										{@const optionSequence = option.Sequence}
+										{@const existingPath = assessmentNode.Paths?.find(path => 
+											path.Condition?.SecondOperand?.Value === optionSequence
+										)}
+										<div class="flex items-center justify-between p-3 border rounded-lg bg-gray-50 dark:bg-gray-800">
+											<span class="font-medium">{optionSequence}. {option.Text}</span>
+											<div class="flex items-center gap-2">
+												{#if existingPath}
+													<Button 
+														href={`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${option.id}/paths/${existingPath.id}/view`}
+														text="View Path" 
+														variant="secondary" 
+														iconBefore="mdi:eye" 
+														iconSize="sm"
+													/>
+													<Button 
+														href={`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${option.id}/paths/${existingPath.id}/edit`}
+														text="Edit Path" 
+														variant="primary" 
+														iconBefore="mdi:edit" 
+														iconSize="sm"
+													/>
+													<Button 
+														onclick={() => handleDeletePathClick({...existingPath, optionId: option.id})}
+														text="Delete Path" 
+														variant="outline" 
+														iconBefore="mdi:delete" 
+														iconSize="sm"
+													/>
+												{:else}
+													<Button 
+														href={createPathRoute(option.id)}
+														text="Add Path" 
+														variant="secondary" 
+														iconBefore="mdi:plus" 
+														iconSize="sm"
+													/>
+												{/if}
+											</div>
+										</div>
+									{/each}
+								</div>
+							{:else}
+								<ol class="ml-3 list-decimal">
+									{#each options as option}
+										<li>{option.Text}</li>
+									{/each}
+								</ol>
+							{/if}
 						</td>
 					</tr>
 				{/if}
@@ -451,4 +540,13 @@
 	bind:isOpen={openDeleteModal}
 	title="Delete Assessment Node"
 	onConfirm={handleAssessmentNodeDelete}
+/>
+
+<Confirmation
+	bind:isOpen={openDeletePathModal}
+	title="Delete Path"
+	message="Are you sure you want to delete this path? This action cannot be undone."
+	onConfirm={handlePathDelete}
+	confirmText="Delete Path"
+	cancelText="Cancel"
 />

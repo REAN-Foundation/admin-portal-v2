@@ -317,6 +317,22 @@ export const updateOption = async (
 	return result;
 };
 
+export const getOption = async (
+	sessionId: string,
+	assessmentTemplateId: string,
+	nodeId: string,
+	optionId: string
+) => {
+	const url = BACKEND_API_URL + `/clinical/assessment-templates/${assessmentTemplateId}/nodes/${nodeId}/options/${optionId}`;
+	// const cacheKey = `session-${sessionId}:req-getOption-${optionId}`;
+	// if (await DashboardManager.has(cacheKey)) {
+	// 	return await DashboardManager.get(cacheKey);
+	// }
+	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	// await DashboardManager.set(cacheKey, result);
+	return result;
+};
+
 export const deleteOption = async (sessionId: string, templateId: string, nodeId: string, optionId: string) => {
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/options/${optionId}`;
 	const result = await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
