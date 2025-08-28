@@ -25,6 +25,8 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 		return {
 			pathData: pathResponse.Data?.NodePath,
 			optionData: optionResponse.Data?.Option,
+			optionId,
+			pathId,
 			sessionId,
 			message: pathResponse.Message,
 			title: 'View Assessment Path'

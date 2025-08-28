@@ -12,15 +12,21 @@
 	const userId = page.params.userId;
 	const templateId = page.params.templateId;
 	const nodeId = page.params.nodeId;
-	const optionId = page.params.optionId;
-	const pathId = page.params.pathId;
+	// const optionId = page.params.optionId;
+	// const pathId = page.params.pathId;
+	const optionId = $state(data.optionId);
+	const pathId = $state(data.pathId)
+
+	console.log('optionId',optionId )
+	console.log('pathId', pathId)
+
+	console.log("Page",page)
 
 	let pathData = $state(data.pathData);
-	let options = data.optionData.Text || 'N/A';
-	let messageBeforeQuestion = pathData.MessageBeforeQuestion || 'No message set';
+	let options = data.optionData.Text || 'Not Specified';
+	let messageBeforeQuestion = pathData.MessageBeforeQuestion ?? 'Not Specified';
 	let isExitPath = pathData.IsExitPath;
-	let nextNode = pathData.NextNode || 'N/A';
-	let nextNodeDisplayCode = pathData.NextNodeDisplayCode || 'N/A';
+	let nextNodeDisplayCode = pathData.NextNodeDisplayCode ?? 'Not Specified';
 
 	const assessmentPath = `/users/${userId}/assessment-templates`;
 	const templatePath = `/users/${userId}/assessment-templates/${templateId}/view`;
@@ -30,6 +36,7 @@
 	const editPath = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths/${pathId}/edit`;
 	const viewPath = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths/${pathId}/view`;
 
+	console.log("editpath", pathId)
 	const breadCrumbs = [
 		{
 			name: 'Assessments',
@@ -67,7 +74,7 @@
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
-					<td class="table-label">Options</td>
+					<td class="table-label">Option Text</td>
 					<td class="table-data">{options}</td>
 				</tr>
 				<tr class="tables-row">

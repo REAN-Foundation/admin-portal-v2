@@ -40,6 +40,8 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 			optionData: optionResponse.Data?.Option,
 			childNodes,
 			sessionId,
+			optionId,
+			pathId,
 			message: pathResponse.Message,
 			title: 'Edit Assessment Path'
 		};

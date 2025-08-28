@@ -6,7 +6,6 @@
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
 	import { goto } from '$app/navigation';
-	import path from 'path';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -20,7 +19,7 @@
 	let errors: Record<string, string> = $state({});
 	let isSubmitting = $state(false);
 	let optionText = $state(data.optionData?.Text || '')
-	let optionId = $state(data.optionData?.id);
+	// let optionId = $state(data.optionData?.id);
 	// let pathId = $state(data.pathData?.id);
 	console.log('data.optionData', data.optionData);
 	
@@ -50,7 +49,10 @@
 	const templateId = page.params.templateId;
 	const nodeId = page.params.nodeId;
 	// const optionId = page.params.optionId;
-	const pathId = page.params.pathId;
+	// const pathId = page.params.pathId;
+	const optionId = $state(data.optionId);
+	const pathId = $state(data.pathId)
+
 
 	const assessmentPath = `/users/${userId}/assessment-templates`;
 	const templatePath = `/users/${userId}/assessment-templates/${templateId}/view`;
