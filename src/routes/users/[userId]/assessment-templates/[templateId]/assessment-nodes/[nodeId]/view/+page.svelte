@@ -20,6 +20,9 @@
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
 	let isDeleting = $state(false);
+	let openDeletePathModal = $state(false);
+	let pathToBeDeleted = $state(null);
+	let isDeletingPath = $state(false);
 	let templateTitle = data.templateDetails.Title;
 	let assessmentNode = $derived(data.assessmentNode)
 	$inspect('Assesment node', assessmentNode);
@@ -83,8 +86,6 @@
 	let fieldIdentifier = $derived(assessmentNode.FieldIdentifier !== null && assessmentNode.FieldIdentifier!== '' ? assessmentNode.FieldIdentifier : 'Not specified' );
 	let fieldIdentifierUnit = $derived(assessmentNode.FieldIdentifierUnit !== null && assessmentNode.FieldIdentifierUnit!== '' ? assessmentNode.FieldIdentifierUnit : 'Not specified' );
 
-	$inspect('childrenNodes', childrenNodes);
-	// Field identifier options for editing
 	const AssessmentFieldIdentifiers = [
 		'General:PersonalProfile:FirstName',
 		'General:PersonalProfile:LastName',
@@ -166,6 +167,11 @@
 		idToBeDeleted = id;
 	};
 
+	const handleDeletePathClick = (path: any) => {
+		openDeletePathModal = true;
+		pathToBeDeleted = path;
+	};
+
 	const handleAssessmentNodeDelete = async (id) => {
 		id = idToBeDeleted;
 		const response = await fetch(
@@ -186,6 +192,41 @@
 			await invalidateAll();
 		} else {
 			toastMessage(res);
+		}
+	};
+
+	const handlePathDelete = async () => {
+		if (!pathToBeDeleted) return;
+		
+		isDeletingPath = true;
+		try {
+			const response = await fetch(
+				`/api/server/assessments/paths/${pathToBeDeleted.id}?templateId=${templateId}&nodeId=${nodeId}`,
+				{
+					method: 'DELETE',
+					headers: { 'content-type': 'application/json' }
+				}
+			);
+
+			const res = await response.json();
+
+			if (res.HttpCode === 200) {
+				toastMessage(res);
+				openDeletePathModal = false;
+				pathToBeDeleted = null;
+				await invalidateAll();
+			} else {
+				toastMessage(res);
+			}
+		} catch (error) {
+			console.error('Error deleting path:', error);
+			toastMessage({
+				Status: 'failure',
+				HttpCode: 500,
+				Message: 'Error deleting path'
+			});
+		} finally {
+			isDeletingPath = false;
 		}
 	};
 
@@ -356,6 +397,13 @@
 														iconBefore="mdi:edit" 
 														iconSize="sm"
 													/>
+													<Button 
+														onclick={() => handleDeletePathClick({...existingPath, optionId: option.id})}
+														text="Delete Path" 
+														variant="outline" 
+														iconBefore="mdi:delete" 
+														iconSize="sm"
+													/>
 												{:else}
 													<Button 
 														href={createPathRoute(option.id)}
@@ -492,4 +540,13 @@
 	bind:isOpen={openDeleteModal}
 	title="Delete Assessment Node"
 	onConfirm={handleAssessmentNodeDelete}
+/>
+
+<Confirmation
+	bind:isOpen={openDeletePathModal}
+	title="Delete Path"
+	message="Are you sure you want to delete this path? This action cannot be undone."
+	onConfirm={handlePathDelete}
+	confirmText="Delete Path"
+	cancelText="Cancel"
 />

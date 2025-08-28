@@ -19,8 +19,6 @@
 	let errors: Record<string, string> = $state({});
 	let isSubmitting = $state(false);
 	let optionText = $state(data.optionData?.Text || '')
-	// let optionId = $state(data.optionData?.id);
-	// let pathId = $state(data.pathData?.id);
 	console.log('data.optionData', data.optionData);
 	
 	$effect(() => {
@@ -30,7 +28,6 @@
 			nextNode = data.pathData.NextNode || '';
 			nextNodeId = data.pathData.NextNodeId || data.pathData.NextNode || '';
 			nextNodeDisplayCode = data.pathData.NextNodeDisplayCode || '';
-			// pathId = data.pathData.id
 		}
 	});
 
@@ -48,8 +45,6 @@
 	const userId = page.params.userId;
 	const templateId = page.params.templateId;
 	const nodeId = page.params.nodeId;
-	// const optionId = page.params.optionId;
-	// const pathId = page.params.pathId;
 	const optionId = $state(data.optionId);
 	const pathId = $state(data.pathId)
 

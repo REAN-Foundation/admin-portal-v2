@@ -14,14 +14,11 @@ export const createAssessmentPath = async (
 ) => {
 
 	const pathData = {
-		// TemplateId: templateId,
-		// NodeId: nodeId,
 		MessageBeforeQuestion: messageBeforeQuestion,
 		IsExitPath: isExitPath,
 		NextNodeId: nextNodeId,
 		NextNodeDisplayCode: nextNodeDisplayCode
 	};
-    console.log('pathData', pathData);
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/paths`;
 	console.log('url', url);
 	const result = await post(sessionId, url, pathData, true, API_CLIENT_INTERNAL_KEY);
