@@ -9,28 +9,19 @@
 
 	///////////////////////////////////////////////////////////////////////////
 
-	let { data }: { data: PageServerData } = $props();
+	let { data }: { data: PageServerData; form: any } = $props();
 
-	let messageBeforeQuestion = $state(data.pathData?.MessageBeforeQuestion);
-	let isExitPath = $state(data.pathData?.IsExitPath || false);
-	let nextNode = $state(data.pathData?.NextNode || '');
-	let nextNodeId = $state(data.pathData?.NextNodeId || data.pathData?.NextNode || '');
-	let nextNodeDisplayCode = $state(data.pathData?.NextNodeDisplayCode || '');
+	let messageBeforeQuestion = $state(data.pathData?.MessageBeforeQuestion ?? undefined);
+	let isExitPath = $state(data.pathData?.IsExitPath);
+	let nextNode = $state(data.pathData?.NextNodeId);
+	let nextNodeId = $state(data.pathData?.NextNodeId || data.pathData?.NextNode);
+	let nextNodeDisplayCode = $state(data.pathData?.NextNodeDisplayCode);
 	let errors: Record<string, string> = $state({});
 	let isSubmitting = $state(false);
-	let optionText = $state(data.optionData?.Text || '')
-	console.log('data.optionData', data.optionData);
-	
-	$effect(() => {
-		if (data.pathData) {
-			messageBeforeQuestion = data.pathData.MessageBeforeQuestion;
-			isExitPath = data.pathData.IsExitPath || false;
-			nextNode = data.pathData.NextNode || '';
-			nextNodeId = data.pathData.NextNodeId || data.pathData.NextNode || '';
-			nextNodeDisplayCode = data.pathData.NextNodeDisplayCode || '';
-		}
-	});
+	let optionText = $state(data.optionData?.Text)
 
+	let promise = $state();
+	
 	console.log('data.pathData', data.pathData);
 	$effect(() => {
 		if (nextNode && data.childNodes.length > 0) {
@@ -42,6 +33,15 @@
 		}
 	});
 
+	function handleReset() {
+		messageBeforeQuestion = data.pathData.MessageBeforeQuestion;
+		isExitPath = data.pathData.IsExitPath;
+		nextNode = data.pathData.NextNode;
+		nextNodeId = data.pathData.NextNodeId ;
+		nextNodeDisplayCode = data.pathData.NextNodeDisplayCode;
+		errors = {};
+	}
+
 	const userId = page.params.userId;
 	const templateId = page.params.templateId;
 	const nodeId = page.params.nodeId;
@@ -52,7 +52,6 @@
 	const assessmentPath = `/users/${userId}/assessment-templates`;
 	const templatePath = `/users/${userId}/assessment-templates/${templateId}/view`;
 	const nodePath = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/view`;
-	const optionPath = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/view`;
 	const viewPath = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths/${pathId}/view`;
 	const editPath = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${optionId}/paths/${pathId}/edit`;
 	const breadCrumbs = [
@@ -99,6 +98,7 @@
 				NextNode: nextNodeId,
 				NextNodeDisplayCode: nextNodeDisplayCode
 			};
+			console.log('pathData',pathData)
 
 			const response = await fetch(`/api/server/assessments/paths/${pathId}?templateId=${templateId}&nodeId=${nodeId}`, {
 				method: 'PUT',
@@ -146,7 +146,7 @@
 		</button>
 	</div>
 
-	<form onsubmit={handleSubmit} class="space-y-6">
+	<form onsubmit={(event) => (promise = handleSubmit(event))} class="space-y-6">
 		<table class="w-full">
 			<tbody>
 				<tr class="tables-row">
@@ -179,26 +179,15 @@
 				<tr class="tables-row">
 					<td class="table-label">Is Exit Path</td>
 					<td class="table-data">
-						<div class="flex items-center space-x-6">
-							<label class="flex items-center">
-								<input
-									type="radio"
-									bind:group={isExitPath}
-									value={true}
-									class="radio-input"
-								/>
-								<span class="ml-2 text-sm text-[var(--color-info)]">Yes</span>
-							</label>
-							<label class="flex items-center">
-								<input
-									type="radio"
-									bind:group={isExitPath}
-									value={false}
-									class="radio-input"
-								/>
-								<span class="ml-2 text-sm text-[var(--color-info)]">No</span>
-							</label>
-						</div>
+						<input
+							type="checkbox"
+							name="isExitPath"
+							class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2 {errors?.isExitPath ? 'input-text-error' : ''}"
+							bind:checked={isExitPath}
+						/>
+						{#if errors?.isExitPath}
+							<p class="text-error">{errors?.isExitPath}</p>
+						{/if}
 					</td>
 				</tr>
 				<tr class="tables-row">
@@ -249,13 +238,7 @@
 		<input type="hidden" id="nextNodeId" bind:value={nextNodeId} />
 
 		<div class="btn-container">
-			<Button
-				size="md"
-				type="button"
-				text="Cancel"
-				variant="secondary"
-				onclick={handleCancel}
-			/>
+			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
 			<Button
 				size="md"
 				type="submit"

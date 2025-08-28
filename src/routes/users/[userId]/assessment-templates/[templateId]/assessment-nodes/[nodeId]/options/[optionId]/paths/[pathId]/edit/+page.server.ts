@@ -36,7 +36,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	    const childNodes = allNodes.filter(node => node.ParentNodeId === nodeId);
 
 		return {
-			pathData: pathResponse.Data?.Path || pathResponse.Data,
+			pathData: pathResponse.Data?.NodePath,
 			optionData: optionResponse.Data?.Option,
 			childNodes,
 			sessionId,

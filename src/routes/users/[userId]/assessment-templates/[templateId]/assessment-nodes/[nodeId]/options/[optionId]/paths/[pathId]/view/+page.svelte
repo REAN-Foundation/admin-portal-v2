@@ -12,8 +12,6 @@
 	const userId = page.params.userId;
 	const templateId = page.params.templateId;
 	const nodeId = page.params.nodeId;
-	// const optionId = page.params.optionId;
-	// const pathId = page.params.pathId;
 	const optionId = $state(data.optionId);
 	const pathId = $state(data.pathId)
 
@@ -86,9 +84,7 @@
 				<tr class="tables-row">
 					<td class="table-label">Is Exit Path</td>
 					<td class="table-data">
-						<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {isExitPath ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
-							{isExitPath ? 'Yes' : 'No'}
-						</span>
+						{isExitPath }
 					</td>
 				</tr>
 				<tr class="tables-row">

@@ -65,7 +65,6 @@
 		isSubmitting = true;
 
 		try {
-			// Basic validation
 			if (data.childNodes.length === 0) {
 				errors.nextNode = 'No child nodes available. Please create child nodes first.';
 				isSubmitting = false;
@@ -221,6 +220,17 @@
 				<tr class="tables-row">
 					<td class="table-label">Is Exit Path</td>
 					<td class="table-data">
+						<input
+							type="checkbox"
+							name="isExitPath"
+							class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2 {errors?.isExitPath ? 'input-text-error' : ''}"
+							bind:checked={isExitPath}
+						/>
+						{#if errors?.isExitPath}
+							<p class="text-error">{errors?.isExitPath}</p>
+						{/if}
+					</td>
+					<!-- <td class="table-data">
 						<div class="flex items-center space-x-6">
 							<label class="flex items-center">
 															<input
@@ -241,7 +251,7 @@
 								<span class="ml-2 text-sm text-[var(--color-info)]">No</span>
 							</label>
 						</div>
-					</td>
+					</td> -->
 				</tr>
 				<tr class="tables-row">
 					<td class="table-label">Next Node <span class="text-red-700">*</span></td>
