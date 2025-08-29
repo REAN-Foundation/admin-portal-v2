@@ -188,6 +188,28 @@
 			const response = await res.json();
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				// If resolutionScore exists, call the API to add scoring condition
+				if (resolutionScore && resolutionScore > 0) {
+					try {
+						const nodeId = response?.Data?.AssessmentNode?.id;
+						if (nodeId) {
+							const scoringRes = await fetch(`/api/server/assessments/assessment-nodes/add-scoring-condition?templateId=${templateId}&nodeId=${nodeId}`, {
+								method: 'POST',
+								body: JSON.stringify({ ResolutionScore: resolutionScore }),
+								headers: { 'content-type': 'application/json' }
+							});
+							
+							const scoringResult = await scoringRes.json();
+							if (scoringResult.HttpCode !== 200 && scoringResult.HttpCode !== 201) {
+								console.error('Failed to add scoring condition:', scoringResult);
+							}
+						}
+					} catch (scoringError) {
+						console.error('Error adding scoring condition:', scoringError);
+						// Continue with the success flow even if scoring condition fails
+					}
+				}
+
 				toastMessage(response);
 				goto(`${assessmentNodeRoutes}/${response?.Data?.AssessmentNode?.id}/view`);
 				return;
