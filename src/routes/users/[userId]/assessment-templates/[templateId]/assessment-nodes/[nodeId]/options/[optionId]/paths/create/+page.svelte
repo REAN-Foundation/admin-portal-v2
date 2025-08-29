@@ -256,25 +256,36 @@
 				<tr class="tables-row">
 					<td class="table-label">Next Node <span class="text-red-700">*</span></td>
 					<td class="table-data">
-						<div class="relative">
-							<select
-								id="nextNode"
-								bind:value={nextNode}
-								disabled={data.childNodes.length === 0}
-								class="select {errors?.nextNode ? 'input-text-error' : ''}"
-							>
-								<option value="">
-									{data.childNodes.length === 0 ? 'No child nodes available' : 'Select next node'}
-								</option>
-								{#each data.childNodes as node}
-									<option value={node.id}>
-										{node.Title} - {node.DisplayCode || 'No Display Code'}
+						<div class="flex items-center space-x-3">
+							<div class="relative flex-1">
+								<select
+									id="nextNode"
+									bind:value={nextNode}
+									disabled={data.childNodes.length === 0}
+									class="select w-full {errors?.nextNode ? 'input-text-error' : ''}"
+								>
+									<option value="">
+										{data.childNodes.length === 0 ? 'No child nodes available' : 'Select next node'}
 									</option>
-								{/each}
-							</select>
-							<div class="select-icon-container">
-								<Icon icon="mdi:chevron-down" class="select-icon" />
+									{#each data.childNodes as node}
+										<option value={node.id}>
+											{node.Title} - {node.DisplayCode || 'No Display Code'}
+										</option>
+									{/each}
+								</select>
+								<div class="select-icon-container">
+									<Icon icon="mdi:chevron-down" class="select-icon" />
+								</div>
 							</div>
+						{#if data.childNodes.length > 0}
+							<Button
+								type="button"
+								onclick={() => window.location.href = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/create?parentNodeId=${nodeId}`}
+								text="Add Node"
+								variant="secondary"
+								size="sm"
+							/>
+						{/if}
 						</div>
 						{#if errors?.nextNode}
 							<p class="text-error">{errors.nextNode}</p>
