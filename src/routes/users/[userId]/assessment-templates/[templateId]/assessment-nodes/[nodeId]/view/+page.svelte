@@ -47,33 +47,6 @@
 	let tags = $derived(tags_.join(', '));
 	let correctAnswer = $derived(assessmentNode.CorrectAnswer ?? null);
 
-	let formatRawData = (data: any) => {
-		if (!data || data === '{}' || data === '' || data === null || data === undefined) {
-			return 'Not specified';
-		}
-
-		try {
-			if (typeof data === 'object') {
-				if (Object.keys(data).length === 0) {
-					return 'Not specified';
-				}
-				return JSON.stringify(data, null, 2);
-			}
-
-			if (typeof data === 'string') {
-				const parsed = JSON.parse(data);
-				if (Object.keys(parsed).length === 0) {
-					return 'Not specified';
-				}
-				return JSON.stringify(parsed, null, 2);
-			}
-
-			return 'Not specified';
-		} catch (error) {
-			return data || 'Not specified';
-		}
-	};
-
     let rawData = $state(
                         typeof data.assessmentNode.RawData === 'string'
                             ? data.assessmentNode.RawData
@@ -114,14 +87,17 @@
 		'Clinical:LabRecords:A1C'
 	];
 
-	const sortedIdentifiers = AssessmentFieldIdentifiers;
+	let model = $state(false);
+	const closeModal = async () => {
+		model = false;
+	};
 
 	function toLabel(identifier: string) {
 		const parts = identifier.split(':');
 		const lastPart = parts[parts.length - 1];
 		return lastPart.replace(/([a-z])([A-Z])/g, '$1 $2'); // adds space before capital letters
 	}
-	let resolutionScore = $state();
+	let resolutionScore = $state(0);
 
 	if (nodeType === 'Question') {
 		resolutionScore = assessmentNode.ScoringCondition?.ResolutionScore ?? 'Not specified';
@@ -230,16 +206,7 @@
 		}
 	};
 
-	let model = $state(false);
-
-	const openModal = async (event) => {
-		event.preventDefault();
-		event.stopPropagation();
-		model = true;
-	};
-	const closeModal = async () => {
-		model = false;
-	};
+	
 	const onUpdateScoringCondition = async (score: number) => {
 		resolutionScore = score;
 		console.log('resolutionScore', resolutionScore);
@@ -250,7 +217,7 @@
 		try {
 			event.preventDefault();
 			errors = {};
-			let scoringId = assessmentNode.ScoringCondition ?? undefined;
+			let scoringId = assessmentNode.ScoringCondition.id ?? undefined;
 
 			const scoringConditionUpdateModel = {
 				ScoringConditionId: scoringId,
@@ -296,11 +263,9 @@
 			toastMessage();
 		}
 	};
+
 </script>
 
-{#if model}
-	<UpdateScoringCondition {onUpdateScoringCondition} {closeModal} />
-{/if}
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
@@ -449,8 +414,19 @@
 					<tr class="tables-row">
 						<td class="table-label">Resolution Score</td>
 						<td class="table-data">
-							<div class="flex items-center">
+							<div class="flex items-center justify-between">
 								<span>{resolutionScore}</span>
+								<Tooltip text="Edit Score" forceShow={true}>
+									<button
+										class="health-system-btn group"
+										onclick={() => $showScoringConditionModal = true}
+									>
+										<Icon
+											icon="material-symbols:edit-outline"
+											class="health-system-icon"
+										/>
+									</button>
+								</Tooltip>
 							</div>
 						</td>
 					</tr>
@@ -550,3 +526,11 @@
 	confirmText="Delete Path"
 	cancelText="Cancel"
 />
+
+{#if $showScoringConditionModal}
+	<UpdateScoringCondition
+		onUpdateScoringCondition={onUpdateScoringCondition}
+		closeModal={() => $showScoringConditionModal = false}
+		initialScore={resolutionScore}
+	/>
+{/if}
