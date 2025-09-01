@@ -86,7 +86,11 @@ export const PUT = async (event: RequestEvent) => {
 			templateId,
 			nodeId,
 			pathId,
-			data
+			data.MessageBeforeQuestion,
+			data.IsExitPath,
+			data.NextNodeId,
+			data.DisplayCode,
+			data.ConditionId
 		);
 		
 		return ResponseHandler.success(response);

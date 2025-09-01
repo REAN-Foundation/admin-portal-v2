@@ -10,8 +10,9 @@ export interface AssessmentPathCreateModel {
 export interface AssessmentPathUpdateModel {
 	MessageBeforeQuestion?: string;
 	IsExitPath?: boolean;
-	NextNode?: string;
-	NextNodeDisplayCode?: string;
+	NextNodeId?: string;
+	DisplayCode?: string;
+	ConditionId?: string;
 }
 
 export interface AssessmentPath {
