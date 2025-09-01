@@ -49,13 +49,20 @@ export const updatePathSchema = z.object({
 		.boolean()
 		.optional(),
 
-	NextNode: z
+	NextNodeId: z
 		.string()
 		.min(1, { message: "Next Node cannot be empty." })
 		.optional(),
 
-	NextNodeDisplayCode: z
+	DisplayCode: z
 		.string()
-		.max(100, { message: "Next Node Display Code must be at most 100 characters." })
+		.max(100, { message: "Display Code must be at most 100 characters." })
+		.optional(),
+
+	ConditionId: z
+		.string({
+			required_error: "Condition is required."
+		})
+		.min(1, { message: "Condition id cannot be empty." })
 		.optional(),
 }); 

@@ -6,6 +6,7 @@
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
 	import { goto } from '$app/navigation';
+	import type { H } from 'vitest/dist/chunks/reporters.6vxQttCV.js';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -15,19 +16,22 @@
 	let isExitPath = $state(data.pathData?.IsExitPath);
 	let nextNode = $state(data.pathData?.NextNodeId);
 	let nextNodeId = $state(data.pathData?.NextNodeId || data.pathData?.NextNode);
-	let nextNodeDisplayCode = $state(data.pathData?.NextNodeDisplayCode);
+	let displayCode = $state(data.pathData?.DisplayCode);
 	let errors: Record<string, string> = $state({});
 	let isSubmitting = $state(false);
-	let optionText = $state(data.optionData?.Text)
+	let optionText = $state(data.optionData?.Text);
+
+	console.log('data.pathData', data.pathData?.ConditionId);
 
 	let promise = $state();
 	
 	console.log('data.pathData', data.pathData);
 	$effect(() => {
+		displayCode = data.pathData?.DisplayCode;
 		if (nextNode && data.childNodes.length > 0) {
 			const selectedNode = data.childNodes.find(node => node.id === nextNode);
 			if (selectedNode) {
-				nextNodeDisplayCode = selectedNode.DisplayCode || '';
+				// displayCode = selectedNode.DisplayCode || '';
 				nextNodeId = selectedNode.id;
 			}
 		}
@@ -38,7 +42,7 @@
 		isExitPath = data.pathData.IsExitPath;
 		nextNode = data.pathData.NextNode;
 		nextNodeId = data.pathData.NextNodeId ;
-		nextNodeDisplayCode = data.pathData.NextNodeDisplayCode;
+		displayCode = data.pathData.DisplayCode;
 		errors = {};
 	}
 
@@ -46,8 +50,7 @@
 	const templateId = page.params.templateId;
 	const nodeId = page.params.nodeId;
 	const optionId = $state(data.optionId);
-	const pathId = $state(data.pathId)
-
+	const pathId = $state(data.pathId);
 
 	const assessmentPath = `/users/${userId}/assessment-templates`;
 	const templatePath = `/users/${userId}/assessment-templates/${templateId}/view`;
@@ -92,13 +95,15 @@
 				isSubmitting = false;
 				return;
 			}
+			let conditionId = data.pathData?.ConditionId
 			const pathData = {
 				MessageBeforeQuestion: messageBeforeQuestion,
 				IsExitPath: isExitPath,
-				NextNode: nextNodeId,
-				NextNodeDisplayCode: nextNodeDisplayCode
+				NextNodeId: nextNodeId,
+				DisplayCode: displayCode,
+				ConditionId: conditionId
 			};
-			console.log('pathData',pathData)
+			console.log('pathData======',pathData)
 
 			const response = await fetch(`/api/server/assessments/paths/${pathId}?templateId=${templateId}&nodeId=${nodeId}`, {
 				method: 'PUT',
@@ -110,15 +115,12 @@
 
 			if (result.Status === 'success' && (result.HttpCode === 200 || result.HttpCode === 201)) {
 				toastMessage({
-					Status: 'success',
+					HttpCode: 200,
 					Message: 'Path updated successfully'
 				});
 				goto(viewPath);
 			} else {
-				toastMessage({
-					Status: 'error',
-					Message: result.Message || 'Failed to update path'
-				});
+				toastMessage({result});
 			}
 		} catch (error) {
 			console.error('Error updating path:', error);
@@ -234,7 +236,7 @@
 			</tbody>
 		</table>
 
-		<input type="hidden" id="nextNodeDisplayCode" bind:value={nextNodeDisplayCode} />
+		<input type="hidden" id="nextNodeDisplayCode" bind:value={displayCode} />
 		<input type="hidden" id="nextNodeId" bind:value={nextNodeId} />
 
 		<div class="btn-container">

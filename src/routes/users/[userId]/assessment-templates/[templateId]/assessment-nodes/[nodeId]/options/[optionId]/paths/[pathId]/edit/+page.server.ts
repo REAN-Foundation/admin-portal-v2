@@ -11,7 +11,6 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const nodeId = event.params.nodeId;
 	const optionId = event.params.optionId;
 	const pathId = event.params.pathId;
-
 	if (!sessionId) {
 		throw error(401, 'Access denied: Invalid session.');
 	}

@@ -1,7 +1,8 @@
 import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY } from '$env/static/private';
 import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 import { del, get, post, put } from '../common.reancare';
-import type { AssessmentPathUpdateModel } from '$lib/types/assessment-path.types';
+
+///////////////////////////////////////////////////////////////////////////////
 
 export const createAssessmentPath = async (
 	sessionId: string,
@@ -38,9 +39,20 @@ export const updateAssessmentPath = async (
 	templateId: string,
 	nodeId: string,
 	pathId: string,
-	pathData: AssessmentPathUpdateModel
+	messageBeforeQuestion: string | undefined,
+	isExitPath: boolean,
+	nextNodeId: string,
+	displayCode: string | undefined,
+	conditionId: string,
 ) => {
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes/${nodeId}/paths/${pathId}`;
+	const pathData = {
+		MessageBeforeQuestion: messageBeforeQuestion,
+		IsExitPath: isExitPath,
+		NextNodeId: nextNodeId,
+		DisplayCode: displayCode,
+		ConditionId: conditionId
+	};
 	const result = await put(sessionId, url, pathData, true, API_CLIENT_INTERNAL_KEY);
 
 	// Clear relevant cache
