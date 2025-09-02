@@ -28,6 +28,7 @@ export const createOrUpdateSchema = z.object({
     Description: z
         .string()
         .max(1024, { message: "Description must be at most 1024 characters." })
+        .nullable()
         .optional(),
 
     RawData: z
@@ -84,6 +85,7 @@ export const createOrUpdateSchema = z.object({
             required_error: "Message is required.",
             invalid_type_error: "Message must be a string."
         })
+        .nullable()
         .optional(),
 
     ServeListNodeChildrenAtOnce: z
@@ -136,12 +138,14 @@ export const createOrUpdateSchema = z.object({
 
     FieldIdentifier: z
         .string()
+        .nullable()
         // .min(1, { message: "FieldIdentifier cannot be empty." })
         // .max(128, { message: "FieldIdentifier must be at most 128 characters long." })
         .optional(),
 
     FieldIdentifierUnit: z
         .string()
+        .nullable()
         // .min(1, { message: "FieldIdentifierUnit cannot be empty." })
         // .max(128, { message: "FieldIdentifierUnit must be at most 128 characters long." })
         .optional(),

@@ -21,7 +21,7 @@
 	let nodeType = $state(data.assessmentNode.NodeType),
 		parentNodeId = $state(data.assessmentNode.ParentNodeId),
 		title = $state(data.assessmentNode.Title),
-		description = $state(data.assessmentNode.Description ?? undefined),
+		description = $state(data.assessmentNode.Description),
 		queryType = $state(data.assessmentNode.QueryResponseType ?? undefined),
 		options = $state(data.assessmentNode.Options ?? []),
 		message = $state(data.assessmentNode.Message ?? undefined),
@@ -34,8 +34,8 @@
 		providerAssessmentCode = $state(data.assessmentNode.ProviderAssessmentCode ?? undefined),
 		scoringApplicable = $state(data.assessmentNode.ScoringApplicable ?? false),
 		required = $state(data.assessmentNode.Required ?? false),
-		fieldIdentifier = $state(data.assessmentNode.FieldIdentifier ?? undefined),
-		fieldIdentifierUnit = $state(data.assessmentNode.FieldIdentifierUnit ?? undefined),
+		fieldIdentifier = $state(data.assessmentNode.FieldIdentifier),
+		fieldIdentifierUnit = $state(data.assessmentNode.FieldIdentifierUnit),
 		rawData = $state(
                         typeof data.assessmentNode.RawData === 'string'
                             ? data.assessmentNode.RawData
@@ -98,8 +98,8 @@
 		providerAssessmentCode = data.assessmentNode.ProviderAssessmentCode;
 		scoringApplicable = data.assessmentNode.ScoringApplicable;
 		required = data.assessmentNode.Required;
-		fieldIdentifier = data.assessmentNode.FieldIdentifier ?? null;
-		fieldIdentifierUnit = data.assessmentNode.FieldIdentifierUnit ?? null;
+		fieldIdentifier = data.assessmentNode.FieldIdentifier;
+		fieldIdentifierUnit = data.assessmentNode.FieldIdentifierUnit;
 		errors = {};
 	}
 
