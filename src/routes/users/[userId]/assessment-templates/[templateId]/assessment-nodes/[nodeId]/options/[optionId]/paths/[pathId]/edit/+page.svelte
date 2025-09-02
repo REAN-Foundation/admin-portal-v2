@@ -6,7 +6,6 @@
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
 	import { goto } from '$app/navigation';
-	import type { H } from 'vitest/dist/chunks/reporters.6vxQttCV.js';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -14,8 +13,7 @@
 
 	let messageBeforeQuestion = $state(data.pathData?.MessageBeforeQuestion ?? undefined);
 	let isExitPath = $state(data.pathData?.IsExitPath);
-	let nextNode = $state(data.pathData?.NextNodeId);
-	let nextNodeId = $state(data.pathData?.NextNodeId || data.pathData?.NextNode);
+	let nextNodeId = $state(data.pathData?.NextNodeId);
 	let displayCode = $state(data.pathData?.DisplayCode);
 	let errors: Record<string, string> = $state({});
 	let isSubmitting = $state(false);
@@ -28,8 +26,8 @@
 	console.log('data.pathData', data.pathData);
 	$effect(() => {
 		displayCode = data.pathData?.DisplayCode;
-		if (nextNode && data.childNodes.length > 0) {
-			const selectedNode = data.childNodes.find(node => node.id === nextNode);
+		if (nextNodeId && data.childNodes.length > 0) {
+			const selectedNode = data.childNodes.find(node => node.id === nextNodeId);
 			if (selectedNode) {
 				// displayCode = selectedNode.DisplayCode || '';
 				nextNodeId = selectedNode.id;
@@ -38,9 +36,8 @@
 	});
 
 	function handleReset() {
-		messageBeforeQuestion = data.pathData.MessageBeforeQuestion;
+		messageBeforeQuestion = data.pathData.MessageBeforeQuestion ?? undefined;
 		isExitPath = data.pathData.IsExitPath;
-		nextNode = data.pathData.NextNode;
 		nextNodeId = data.pathData.NextNodeId ;
 		displayCode = data.pathData.DisplayCode;
 		errors = {};
@@ -87,7 +84,7 @@
 				isSubmitting = false;
 				return;
 			}
-			if (!nextNode.trim()) {
+			if (!nextNodeId.trim()) {
 				errors.nextNode = 'Next Node is required';
 			}
 
@@ -198,9 +195,9 @@
 						<div class="relative">
 							<select
 								id="nextNode"
-								bind:value={nextNode}
+								bind:value={nextNodeId}
 								disabled={data.childNodes.length === 0}
-								class="select {errors?.nextNode ? 'input-text-error' : ''}"
+								class="select {errors?.nextNodeId ? 'input-text-error' : ''}"
 							>
 								<option value="">
 									{data.childNodes.length === 0 ? 'No child nodes available' : 'Select next node'}
@@ -215,8 +212,8 @@
 								<Icon icon="mdi:chevron-down" class="select-icon" />
 							</div>
 						</div>
-						{#if errors?.nextNode}
-							<p class="text-error">{errors.nextNode}</p>
+						{#if errors?.nextNodeId}
+							<p class="text-error">{errors.nextNodeId}</p>
 						{/if}
 						{#if data.childNodes.length === 0}
 							<div class="mt-3 space-y-3">
@@ -236,7 +233,7 @@
 			</tbody>
 		</table>
 
-		<input type="hidden" id="nextNodeDisplayCode" bind:value={displayCode} />
+		<input type="hidden" id="displayCode" bind:value={displayCode} />
 		<input type="hidden" id="nextNodeId" bind:value={nextNodeId} />
 
 		<div class="btn-container">
