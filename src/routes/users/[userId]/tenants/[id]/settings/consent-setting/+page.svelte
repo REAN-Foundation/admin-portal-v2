@@ -1,0 +1,323 @@
+<script lang="ts">
+	import Icon from '@iconify/svelte';
+	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
+	import type { ConsentSettings } from '$lib/types/tenant.settings.types';
+	import { ConsentSettingsSchema } from '$lib/validation/tenant.settings.schema';
+	import { languages } from '$lib/utils/language';
+	import MessageModal from './message.modal.svelte';
+	import { page } from '$app/state';
+	import Button from '$lib/components/button/button.svelte';
+
+	///////////////////////////////////////////////////////////////////////////
+
+	let { data, form } = $props();
+
+	const userId = page.params.userId;
+	const tenantId = page.params.id;
+	let tenantName = $state(data.tenantResponse?.Data?.Tenant?.Name || '');
+	let tenantCode = $state(data.tenantResponse?.Data?.Tenant?.Code || '');
+	let defualtLang = $state(data.consentSettings?.DefaultLanguage || 'English');
+	let consentSetting: ConsentSettings = $state(data.consentSettings);
+	let checkConsent = $state(data.chatbotSettings);
+	let edit = $state(false);
+	let promise = $state();
+	const tenantRoute = `/users/${userId}/tenants`;
+	let message = $state(data.consentSettings?.Messages || []);
+	let defaultLangCode = $state('');
+	let errors: Record<string, string> = $state({});
+	let showMessageModal = $state(false);
+	let isEditMessage = $state(false);
+	let editingMessageIndex: number | null = $state(null);
+	let modalMessage = $state({ LanguageCode: '', Content: '', WebsiteURL: '' });
+
+	const toggleEdit = async () => {
+		if (checkConsent) {
+			if (!edit) {
+				edit = true;
+				addToast({
+					message: 'Edit mode enabled.',
+					type: 'info',
+					timeout: 3000
+				});
+			} else {
+				addToast({
+					message: 'Edit mode disabled.',
+					type: 'info',
+					timeout: 3000
+				});
+				edit = false;
+			}
+		} else if (checkConsent === false) {
+			addToast({
+				message: 'This setting is disabled. Please update it from the main settings.',
+				type: 'warning',
+				timeout: 3000
+			});
+			return;
+		}
+	};
+
+	function deleteMessage(index: number) {
+		const defaultLangCode = languages.find((l) => l.name === defualtLang)?.code;
+		if (message[index].LanguageCode === defaultLangCode) {
+			addToast({
+				message: 'Cannot delete the message for the default language.',
+				type: 'warning',
+				timeout: 3000
+			});
+			return;
+		}
+		message.splice(index, 1);
+		addToast({
+			message: 'Message deleted successfully.',
+			type: 'success',
+			timeout: 3000
+		});
+	}
+
+	function onDefaultLangChange(event: Event) {
+		const selected = (event.target as HTMLSelectElement).value;
+		defualtLang = selected;
+		defaultLangCode = languages.find((l) => l.name === selected)?.code ?? '';
+	}
+
+	const handleSubmit = async (event: Event) => {
+		try {
+			event.preventDefault();
+			errors = {};
+
+			const defaultLangCode = languages.find((l) => l.name === defualtLang)?.code;
+			const hasDefaultLangMessage = message.some((msg) => msg.LanguageCode === defaultLangCode);
+			if (!hasDefaultLangMessage) {
+				addToast({
+					message: `A message for the default language (${defualtLang}) is required.`,
+					type: 'error',
+					timeout: 3000
+				});
+				return;
+			}
+
+			const consentSettingModel: ConsentSettings = {
+				TenantName: tenantName,
+				TenantCode: tenantCode,
+				DefaultLanguage: defualtLang,
+				Messages: message
+			};
+
+			console.log('Consent Setting Model:', consentSettingModel);
+			const validationResult = ConsentSettingsSchema.safeParse(consentSettingModel);
+			console.log('Validation Result:', validationResult);
+			if (!validationResult.success) {
+				errors = Object.fromEntries(
+					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				);
+				return;
+			}
+
+			const chatBotRes = await fetch(`/api/server/tenants/settings/${tenantId}/Consent`, {
+				method: 'PUT',
+				body: JSON.stringify(consentSettingModel),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			consentSetting = validationResult.data;
+
+			addToast({
+				message: 'Consent settings updated successfully.',
+				type: 'success',
+				timeout: 3000
+			});
+		} catch (error) {
+			toastMessage();
+		}
+	};
+
+	function openAddMessageModal() {
+		isEditMessage = false;
+		modalMessage = { LanguageCode: '', Content: '', WebsiteURL: '' };
+		showMessageModal = true;
+	}
+
+	function openEditMessageModal(index: number) {
+		isEditMessage = true;
+		editingMessageIndex = index;
+		modalMessage = { ...message[index] };
+		showMessageModal = true;
+	}
+
+	function handleSaveMessage(msg) {
+		if (isEditMessage && editingMessageIndex !== null) {
+			message[editingMessageIndex] = { ...msg };
+		} else {
+			message.push({ ...msg });
+		}
+	}
+</script>
+
+<div class="px-5 py-4">
+	<div class="mx-auto my-6 border border-[var(--color-outline)]">
+		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+			<div class="flex items-center justify-between !rounded-b-none border px-5 py-6 bg-[var(--color-primary)]">
+				<h1 class="text-xl text-[var(--color-info)]">Consent Settings</h1>
+				<div class="flex items-center gap-2 text-end">
+					<button
+						type="button"
+						class="table-btn variant-filled-secondary gap-1"
+						onclick={toggleEdit}
+					>
+						<Icon icon="material-symbols:edit-outline" />
+					</button>
+					<a
+						href={tenantRoute}
+						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+					>
+						<Icon icon="material-symbols:close-rounded" class="h-5" />
+					</a>
+				</div>
+			</div>
+			<div class="flex flex-col space-y-4 px-5 py-4">
+				<div class="my-4 flex flex-col md:flex-row md:items-center">
+					<label
+						class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+						for="tenantName">Tenant Name <span class="text-red-700">*</span></label
+					>
+					<input
+						type="text"
+						class="input-field w-[70%] {errors?.tenantName ? 'input-text-error' : ''}"
+						name="tenantName"
+						placeholder="Enter name here..."
+						bind:value={tenantName}
+						readOnly
+					/>
+					{#if errors?.Name}
+						<p class="text-error">{errors?.Name}</p>
+					{/if}
+				</div>
+				<div class="my-4 flex flex-col md:flex-row md:items-center">
+					<label
+						class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+						for="tenantCode">Tenant Code <span class="text-red-700">*</span></label
+					>
+					<input
+						type="text"
+						class="input-field w-[70%] {errors?.tenantCode ? 'input-text-error' : ''}"
+						name="tenantCode"
+						placeholder="Enter tenant code here..."
+						bind:value={tenantCode}
+						readOnly
+					/>
+					{#if errors?.TenantCode}
+						<p class="text-error">{errors?.TenantCode}</p>
+					{/if}
+				</div>
+				<div class="my-4 flex flex-col md:flex-row md:items-center">
+					<label
+						class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+						for="defaultLanguage">Default Language <span class="text-red-700">*</span></label
+					>
+					<select
+						class=" select w-[70%]"
+						name="defaultLanguage"
+						bind:value={defualtLang}
+						onchange={onDefaultLangChange}
+						disabled={!edit}
+					>
+						<option value="" disabled selected>Select a language</option>
+						{#each languages as lang}
+							<option value={lang.name}>{lang.name}</option>
+						{/each}
+					</select>
+					{#if errors?.DefaultLanguage}
+						<p class="text-error">{errors?.DefaultLanguage}</p>
+					{/if}
+				</div>
+				<div class="mt-4 flex flex-col md:flex-row md:items-center">
+					<div class="w-[30%]"></div>
+					<div class="flex w-[70%] justify-end">
+						<button
+							type="button"
+							class="health-system-btn variant-filled-secondary"
+							onclick={openAddMessageModal}
+							disabled={!edit}
+						>
+							Add Message +
+						</button>
+					</div>
+				</div>
+			</div>
+			{#if message.length > 0}
+				<div class="health-system-table-container my-4 shadow">
+					<table class="health-system-table w-full">
+						<thead>
+							<tr>
+								<th>Language </th>
+								<th>Content</th>
+								<th>Website URL</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each message as msg, index}
+								<tr>
+									<td
+										>{languages.find((l) => l.code === msg.LanguageCode)?.name ||
+											msg.LanguageCode}</td
+									>
+									<td>{msg.Content}</td>
+									<td>{msg.WebsiteURL}</td>
+									<td>
+										<div class="flex flex-row space-x-2">
+											<Icon
+												icon="material-symbols:edit-outline"
+												class="cursor-pointer {!edit ? 'cursor-not-allowed opacity-50' : ''}"
+												onclick={() => edit && openEditMessageModal(index)}
+											/>
+											<Icon
+												icon="material-symbols:delete-outline"
+												class="cursor-pointer text-red-600 {!edit ||
+												msg.LanguageCode === languages.find((l) => l.name === defualtLang)?.code
+													? 'cursor-not-allowed opacity-50'
+													: ''}"
+												onclick={() =>
+													edit &&
+													msg.LanguageCode !==
+														languages.find((l) => l.name === defualtLang)?.code &&
+													deleteMessage(index)}
+											/>
+										</div>
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			{/if}
+			<hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
+			<div class="button-container my-4">
+				{#await promise}
+					<button type="submit" class="table-btn variant-soft-secondary" disabled>
+						Submiting
+					</button>
+				{:then data}
+					<button type="submit" class="table-btn variant-soft-secondary" disabled={!edit}>
+						Submit
+					</button>
+				{/await}
+			</div>
+		</form>
+	</div>
+</div>
+<MessageModal
+	isOpen={showMessageModal}
+	onClose={() => {
+		showMessageModal = false;
+		editingMessageIndex = null;
+	}}
+	onSave={handleSaveMessage}
+	message={modalMessage}
+	isEdit={isEditMessage}
+	allMessages={message}
+	editingIndex={editingMessageIndex}
+/>

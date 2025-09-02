@@ -8,9 +8,17 @@
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"sourceMap": true,
-		"strict": true,
-		"moduleResolution": "bundler"
-	}
+		"strict": false,
+        "noImplicitAny": false,
+		"moduleResolution": "bundler",
+		"types": ["svelte", "vite/client"]
+	},
+	"include": [
+		".svelte-kit/ambient.d.ts",
+		".svelte-kit/types/**/$types.d.ts",
+	  "src/**/*.ts",
+		"src/**/*.svelte", "src/lib/types/.types copy.ts",
+	],
 	// Path aliases are handled by https://svelte.dev/docs/kit/configuration#alias
 	// except $lib which is handled by https://svelte.dev/docs/kit/configuration#files
 	//

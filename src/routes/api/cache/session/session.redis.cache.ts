@@ -1,0 +1,155 @@
+import { createClient, type RedisClientType } from 'redis';
+import { CACHE_HOST, CACHE_PASSWORD } from "$env/static/private";
+import type { Session } from '../session';
+import type { ICache } from '../cache.interface';
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+export class RedisSessionCache implements ICache<Session> {
+
+    private _client: RedisClientType| null = null;
+
+    private _expiry = 60 * 60 * 24; // 24 hours
+
+    // constructor() {
+    //     // Create a client and connect to redis 
+    //     try {
+    //         this._client = createClient({
+    //             url: CACHE_HOST,
+    //             password: CACHE_PASSWORD
+    //         });
+    //         (async () => {
+    //             if (this._client) await this._client.connect();
+    //             console.log('Connected to Redis.');
+    //         })();
+            
+    //     } catch (error) {
+    //         console.log('Error in connected to Redis.', error);
+    //     }
+        
+    // }
+
+    constructor() {
+        this._client = createClient({
+            url: CACHE_HOST,
+            password: CACHE_PASSWORD
+        });
+    
+        this.connectRedis();
+    }
+
+    set = async (key: string, value: Session): Promise<void> => {
+        try {
+            if (this._client) {
+                const exists = await this._client.exists(key);
+                if (exists === 1) {
+                    await this._client.del(key);
+                }
+                await this._client.set(key, JSON.stringify(value), {
+                    EX: this._expiry,// 24 hours
+                });
+            }
+        } catch (error) {
+            console.error('Error setting session in cache:', error);
+        }
+        
+    };
+
+    get = async (key: string): Promise<Session | undefined> => {
+        try {
+            if (this._client) {
+                const val = await this._client.get(key);
+                if (val) {
+                    const session = JSON.parse(val) as Session;
+                    return session;
+                }
+            }
+            return undefined;
+        } catch (error) {
+            console.error('Error getting session from cache:', error);
+            return undefined;
+        }
+        
+    };
+
+    has = async (key: string): Promise<boolean> => {
+        try {
+            if (this._client) {
+                const exists = await this._client.exists(key);
+                return exists === 1;
+            }
+            return false;
+        } catch (error) {
+            console.error('Error checking session in cache:', error);
+            return false;
+        }
+
+    };
+
+    delete = async (key: string): Promise<boolean> => {
+        try {
+            if (this._client) {
+                const exists = await this._client.exists(key);
+                if (exists === 1) {
+                    await this._client.del(key);
+                    return true;
+                }
+            }
+            return false;
+        } catch (error) {
+            console.error('Error deleting session cache:', error);
+            return false;
+        }
+
+    };
+
+    clear = async (): Promise<void> => {
+        try {
+            if (this._client) {
+                console.log('Clearing cache');
+                await this._client.flushAll();
+            }
+        } catch (error) {
+            console.error('Error clearing session cache:', error);
+        }
+        
+    };
+
+    findAndClear = async (searchPattern: string): Promise<string[]> => {
+        if (this._client) {
+            const keys = await this._client.keys(searchPattern);
+            if (keys.length > 0) {
+                await this._client.del(keys);
+            }
+            return keys;
+        }
+        return [];
+    }
+    
+    size = async (): Promise<number> => {
+        try {
+            if (this._client) {
+                console.log('Getting cache size');
+                return await this._client.dbSize();
+            }
+            return 0;
+        } catch (error) {
+            console.error('Error getting sessin cache size:', error);
+            return 0;
+        }
+        
+    };
+
+    private async connectRedis(): Promise<void> {
+        try {
+            if (this._client) {
+                await this._client.connect();
+                console.log('Connected to Redis.');
+            }
+        } catch (error) {
+            console.error('Error connecting to Redis:', error);
+            this._client = null;
+        }
+    }
+
+}

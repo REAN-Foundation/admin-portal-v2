@@ -1,0 +1,408 @@
+<script lang="ts">
+	import { page } from '$app/state';
+	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
+	import { Helper } from '$lib/utils/helper';
+	import Icon from '@iconify/svelte';
+	import type { PageServerData } from './$types';
+	import Tooltip from '$lib/components/tooltip.svelte';
+	import type { PaginationSettings } from '$lib/types/common.types';
+	import Confirmation from '$lib/components/confirmation.modal.svelte';
+	import { toastMessage } from '$lib/components/toast/toast.store';
+	import Pagination from '$lib/components/pagination/pagination.svelte';
+	import UploadModal from './upload.appointments.modal.svelte';
+	import { goto } from '$app/navigation';
+	import CancelModel from './cancel.appointment.modal.svelte';
+	import Button from '$lib/components/button/button.svelte';
+	import ScheduleExtractModal from './schedule.extract.modal.svelte';
+
+	//////////////////////////////////////////////////////////////////////////
+
+	let { data }: { data: PageServerData } = $props();
+
+	let debounceTimeout;
+	let isLoading = $state(false);
+	let appointmentRecords = $state(data.appointmentRecords.Items);
+	let totalUsers_ = $state(data.appointmentRecords.TotalUsers);
+	let repiedYesCount_ = $state(data.appointmentRecords.RepliedYes);
+	let repiedNoCount_ = $state(data.appointmentRecords.RepliedNo);
+	let notRepiedCount_ = $state(data.appointmentRecords.NotReplied);
+	let totalUsers = $derived(totalUsers_);
+	let repiedYesCount = $derived(repiedYesCount_);
+	let repiedNoCount = $derived(repiedNoCount_);
+	let notRepiedCount = $derived(notRepiedCount_);
+	let retrivedAppointmentRecords = $derived(appointmentRecords);
+	let followupSettings = data.settings;
+	console.log('followupSettings', followupSettings);
+
+	let searchKeyword = $state(undefined);
+	let reply = $state(undefined);
+	let appointmentDate = $state(undefined);
+	// let appointmentDate = $state(new Date().toISOString().split('T')[0]);
+	let promise = $state();
+	const userId = page.params.userId;
+	const statusReportRoute = `/users/${userId}/appointment-followup/summary-uploads`;
+	const cancelRoute = `/users/${userId}/appointment-followup/view-cancellation`;
+	const breadCrumbs = [{ name: 'Status Report', path: statusReportRoute }];
+	let date = $state(undefined);
+	let totalAppointmentRecordsCount = $state(data.appointmentRecords.TotalCount);
+	$inspect('totalAppointmentRecordsCount', totalAppointmentRecordsCount);
+	let isSortingName = $state(false);
+	let sortBy = $state('appointment_date');
+	let sortOrder = $state('ascending');
+	let source = $state(followupSettings?.Source);
+	let showUploadModal = $state(false);
+	let showCancelModel = $state(false);
+	let showScheduleExtractModel = $state(false);
+	let errors = $state(undefined);
+	let file = $state(undefined);
+
+	let paginationSettings: PaginationSettings = $state({
+		page: 0,
+		limit: 10,
+		size: totalAppointmentRecordsCount,
+		amounts: [10, 20, 30, 50]
+	});
+
+	async function searchAppointments(model) {
+		try {
+			let url = `/api/server/follow-up/search-appointments?`;
+			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
+			url += `&sortBy=${model.sortBy ?? sortBy}`;
+			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
+			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+			console.log('model', model);
+			if (model.appointmentDate) url += `&appointmentDate=${model.appointmentDate}`;
+			if (model.reply) url += `&repliedStatus=${model.reply}`;
+			console.log('model', model);
+			const res = await fetch(url, {
+				method: 'GET',
+				headers: { 'content-type': 'application/json' }
+			});
+			const searchResult = await res.json();
+			console.log('searchResult', searchResult);
+			totalAppointmentRecordsCount = searchResult.Data.TotalCount;
+			totalUsers_ = searchResult.Data.TotalUsers;
+			repiedYesCount_ = searchResult.Data.RepliedYes;
+			repiedNoCount_ = searchResult.Data.RepliedNo;
+			notRepiedCount_ = searchResult.Data.NotReplied;
+			paginationSettings.size = totalAppointmentRecordsCount;
+
+			appointmentRecords = searchResult.Data.Items.map((item, index) => ({
+				...item,
+				index: index + 1
+			}));
+			searchKeyword = model.appointmentDate;
+		} catch (err) {
+			console.error('Search failed:', err);
+		} finally {
+			isLoading = false;
+		}
+	}
+
+	function updateSearchField(name, value) {
+		if (name === 'appointmentDate') {
+			appointmentDate = value;
+		} else if (name === 'reply') {
+			reply = value;
+		}
+	}
+
+	async function onSearchInput(e) {
+		clearTimeout(debounceTimeout);
+		const { name, value } = e.target;
+
+		updateSearchField(name, value);
+		console.log('event', e.target);
+		debounceTimeout = setTimeout(() => {
+			paginationSettings.page = 0; // reset page when typing new search
+			searchAppointments({
+				appointmentDate,
+				reply,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortBy,
+				sortOrder
+			});
+		}, 400);
+	}
+
+	function sortTable(columnName) {
+		isSortingName = false;
+		sortOrder = sortOrder === 'ascending' ? 'descending' : 'ascending';
+		if (columnName === 'user_name') {
+			isSortingName = true;
+		}
+		sortBy = columnName;
+		searchAppointments({
+			appointmentDate: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortBy,
+			sortOrder
+		});
+	}
+
+	function onItemsPerPageChange() {
+		paginationSettings.page = 0;
+		searchAppointments({
+			appointmentDate: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
+	function onPageChange() {
+		searchAppointments({
+			appointmentDate: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: paginationSettings.page,
+			sortBy,
+			sortOrder
+		});
+	}
+
+	//  function getStatistics() {
+	// 	const statistics = [
+	// 		{
+	// 			label: "Total Users",
+	// 			value: totalUsers,
+	// 			description: "Count of users who have at least one scheduled appointment"
+	// 		},
+	// 			{
+	// 			label: "Replied Yes Count",
+	// 			value: repiedYesCount,
+	// 			description: "Number of users who replied with 'Yes'."
+	// 		},
+	// 		{
+	// 			label: "Replied No Count",
+	// 			value: repiedNoCount,
+	// 			description: "Number of users who replied with 'No'."
+	// 		},
+	// 		{
+	// 			label: "Not Replied Count",
+	// 			value: notRepiedCount,
+	// 			description: "Number of users who did not reply."
+	// 		}
+	// 	];
+	// 	return statistics
+	//  }
+</script>
+
+{#if source == "None"}
+	<h3 class="text-center">Currently this feature is not enabled! To enable this feature please update settings</h3>
+{:else}
+
+<BreadCrumbs crumbs={breadCrumbs} />
+
+<div class="mx-6 grid gap-4 md:grid-cols-3">
+	{#if source === 'File'}
+		<Button
+			text="Upload Appointment Schedules"
+			size="md"
+			variant="primary"
+			className="w-full"
+			onclick={() => (showUploadModal = true)}
+		/>
+	{:else if source === 'Api'} 
+		<Button
+			type="submit"
+			text="Extract Appointment Schedules"
+			size="md"
+			variant="primary"
+			className="w-full"
+			onclick={() => (showScheduleExtractModel = true)}
+		/>
+
+	{/if}
+
+	<Button
+		text="Cancel Appointments"
+		size="md"
+		variant="primary"
+		className="w-full"
+		onclick={() => (showCancelModel = true)}
+	/>
+
+	<Button
+		href={`/users/${userId}/appointment-followup/view-cancellation`}
+		text="View Cancellations"
+		size="md"
+		variant="primary"
+		className="w-full"
+	/>
+</div>
+
+<UploadModal showUploadModel={showUploadModal} onClose={() => (showUploadModal = false)} />
+<ScheduleExtractModal showScheduleExtractModel={showScheduleExtractModel} onClose={() => (showScheduleExtractModel = false)} />
+<CancelModel {showCancelModel} onClose={() => (showCancelModel = false)} />
+
+<!-- <div class="mt-4 mx-6 overflow-x-auto rounded-lg border border-[var(--color-outline)]">
+	<div class="mx-auto">
+		<table class="w-full table-fixed text-[var(--color-info)]">
+			<tbody>
+				{#each getStatistics() as stat}
+					<tr>
+						<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">{stat.label}</td>
+						<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">{stat.value}</td>
+						<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">{stat.description}</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+</div> -->
+<div class="px-6 py-4">
+	<div class="mx-auto">
+		<div class="health-system-table-container mb-6 shadow">
+			<div class="health-system-search-border p-4">
+				<div class="flex flex-col gap-4 md:flex-row">
+					<div class="relative w-auto grow pl-1.5">
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
+						<input
+							type="date"
+							name="appointmentDate"
+							placeholder="Search by appointment date"
+							bind:value={appointmentDate}
+							oninput={(event) => onSearchInput(event)}
+							class="health-system-input !pr-4 !pl-10"
+						/>
+						<!-- {#if appointmentDate}
+							<button
+								type="button"
+								onclick={() => {
+									appointmentDate = '';
+									onSearchInput({ target: { name: 'appointmentDate', value: '' } });
+								}}
+								class="close-btn"
+							>
+								<Icon icon="material-symbols:close" />
+							</button>
+						{/if} -->
+					</div>
+					<div class="relative w-auto grow">
+						<!-- <Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/> -->
+						<select
+							name="reply"
+							bind:value={reply}
+							oninput={(event) => onSearchInput(event)}
+							class="select"
+						>
+							<option value="" disabled selected>Filter by reply</option>
+							<option value="Yes">Yes</option>
+							<option value="No">No</option>
+							<option value="Not replied">Not Replied</option>
+						</select>
+						<div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+							<Icon icon="mdi:chevron-down" class="text-info h-5 w-5" />
+						</div>
+						<!-- {#if reply}
+							<button
+								type="button"
+								onclick={() => {
+									reply = '';
+									onSearchInput({ target: { name: 'reply', value: '' } });
+								}}
+								class="close-btn"
+							>
+								<Icon icon="material-symbols:close" />
+							</button>
+						{/if} -->
+					</div>
+				</div>
+			</div>
+			<div class="overflow-x-auto">
+				<table class="health-system-table min-w-full">
+					<thead>
+						<tr>
+							<th data-sort="index">Id</th>
+							<th>
+								<button onclick={() => sortTable('user_name')}>
+									User Name
+									{#if isSortingName}
+										{#if sortOrder === 'ascending'}
+											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
+										{:else}
+											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
+										{/if}
+									{/if}
+								</button>
+							</th>
+							<th>Location</th>
+							<!-- <th>EMRID</th> -->
+							<th>Phone </th>
+							<th>Status</th>
+							<th>Appointment Date</th>
+							<th>Appointment Time</th>
+							<th>Replied Status</th>
+							<th>Cancelled</th>
+							<!-- <th>Created Date</th> -->
+						</tr>
+					</thead>
+					<tbody class="">
+						{#if retrivedAppointmentRecords.length <= 0}
+							<tr>
+								<td colspan="6">{isLoading ? 'Loading...' : `No records found `}</td>
+							</tr>
+						{:else}
+							{#each retrivedAppointmentRecords as row, index}
+								<tr>
+									<td>
+										{paginationSettings.page * paginationSettings.limit + index + 1}
+									</td>
+									<td role="gridcell" aria-colindex={2} tabindex="0"
+										>{row.user_name ? row.user_name : 'Not Specified'}</td
+									>
+									<td role="gridcell" aria-colindex={3} tabindex="0"
+										>{row.location ? row.location : 'Not Specified'}</td
+									>
+									<!-- <td role="gridcell" aria-colindex={4} tabindex="0"
+										>{row.participant_code ? row.participant_code : 'Not Specified'}</td
+									> -->
+									<td role="gridcell" aria-colindex={5} tabindex="0"
+										>{row.phone_number ? row.phone_number : 'Not Specified'}</td
+									>
+									<td role="gridcell" aria-colindex={6} tabindex="0"
+										>{row.status ? row.status : 'Not Specified'}</td
+									>
+									<td role="gridcell" aria-colindex={7} tabindex="0"
+										>{row.appointment_date ? row.appointment_date : 'Not Specified'}</td
+									>
+									<td role="gridcell" aria-colindex={7} tabindex="0"
+										>{row.appointment_time ? row.appointment_time : 'Not Specified'}</td
+									>
+									<td role="gridcell" aria-colindex={8} tabindex="0"
+										>{row.replied_status ? row.replied_status : 'Not Specified'}</td
+									>
+									<!-- <td role="gridcell" aria-colindex={8} tabindex="0"
+										>{row.is_cancelled ? 'True' : 'False'}</td
+									> -->
+									<td class="flex items-center gap-2">
+										{#if row.is_cancelled}
+											<Icon icon="mdi:check-circle" class="text-green-500" />
+											<span class="lable">True</span>
+										{:else}
+											<Icon icon="mdi:close-circle" class="text-red-500" />
+											<span class="lable">False</span>
+										{/if}
+									</td>
+								</tr>
+							{/each}
+						{/if}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />
+
+{/if}
