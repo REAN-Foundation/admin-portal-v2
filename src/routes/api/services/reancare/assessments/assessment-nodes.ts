@@ -46,7 +46,6 @@ export const createAssessmentNode = async (
 		FieldIdentifier: fieldIdentifier ? fieldIdentifier : null,
 		FieldIdentifierUnit: fieldIdentifierUnit ? fieldIdentifierUnit : null
 	};
-
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${templateId}/nodes`;
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 
@@ -122,8 +121,8 @@ export const updateAssessmentNode = async (
 	resolutionScore?: number,
 	providerAssessmentCode?: string,
 	fieldIdentifier?: string,
-	fieldIdentifierUnit?: string
-
+	fieldIdentifierUnit?: string,
+	required?: boolean
 
 ) => {
 	const body = {
@@ -142,8 +141,8 @@ export const updateAssessmentNode = async (
 		ResolutionScore: resolutionScore ? resolutionScore : null,
 		ProviderAssessmentCode: providerAssessmentCode ? providerAssessmentCode : null,
 		FieldIdentifier: fieldIdentifier ? fieldIdentifier : null,
-		FieldIdentifierUnit: fieldIdentifierUnit ? fieldIdentifierUnit : null
-
+		FieldIdentifierUnit: fieldIdentifierUnit ? fieldIdentifierUnit : null,
+		Required: required ? required : false,
 
 	};
 	if (options && options.length > 0) {

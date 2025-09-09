@@ -109,7 +109,8 @@ export const PUT = async (event: RequestEvent) => {
             data.ResolutionScore,
             data.ProviderAssessmentCode,
             data.FieldIdentifier,
-            data.FieldIdentifierUnit
+            data.FieldIdentifierUnit,
+            data.Required
         );
 
         return ResponseHandler.success(response);
