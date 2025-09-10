@@ -11,6 +11,7 @@
 	import { createOrUpdateSchema } from '$lib/validation/assessment-node.schema';
 	import { page } from '$app/state';
 	import Button from '$lib/components/button/button.svelte';
+	import { onMount } from 'svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
@@ -47,13 +48,13 @@
 
 	let optionArray = $state([]);
 
-	const onSelectNodeType = (val) => {
-		selectedNodeType = val.target.value;
-		console.log('val', val.target.value);
+	const onSelectNodeType = (val: Event) => {
+		selectedNodeType = (val.target as HTMLSelectElement).value;
+		console.log('val', (val.target as HTMLSelectElement).value);
 	};
 
-	const onSelectQueryResponseType = (val) => {
-		selectedQueryType = val.target.value;
+	const onSelectQueryResponseType = (val: Event) => {
+		selectedQueryType = (val.target as HTMLSelectElement).value;
 	};
 
 	const userId = page.params.userId;
@@ -228,6 +229,11 @@
 	$effect(() => {
 		keywordsStr = keywords?.join(', ');
 	});
+
+	onMount(() => {
+		scoringApplicableCondition.set(data.templateData.ScoringApplicable);
+		console.log('scoringApplicableCondition set to:', data.templateData.ScoringApplicable);
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -277,7 +283,10 @@
 							name="parentNodeId"
 							class="select {errors?.parentNodeId ? 'input-text-error' : ''}"
 							placeholder="Select node type here..."
-							onchange={(val) => (parentNodeId = val.target.value)}
+							onchange={(val: Event) => {
+								const target = val.target as HTMLSelectElement;
+								parentNodeId = target.value;
+							}}
 							bind:value={parentNodeId}
 						>
 							{#each assessmentNodes as node}
