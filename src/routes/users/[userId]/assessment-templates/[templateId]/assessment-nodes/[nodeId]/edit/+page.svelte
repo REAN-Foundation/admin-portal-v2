@@ -277,6 +277,22 @@
 					</td>
 				</tr>
 				<tr class="tables-row !border-b-secondary-100 dark:!border-b-surface-700 !border-b">
+					<td class="table-label">Required</td>
+					<td class="table-data">
+						<input
+							type="checkbox"
+							name="required"
+							bind:checked={required}
+							class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2 {errors?.required
+								? 'input-text-error'
+								: ''}"
+						/>
+						{#if errors?.Required}
+							<p class="text-error">{errors?.Required}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row !border-b-secondary-100 dark:!border-b-surface-700 !border-b">
 					<td class="table-label align-top">Description</td>
 					<td class="table-data">
 						<textarea
@@ -456,6 +472,7 @@
 				{/if}
 			</tbody>
 		</table>
+		
 		<div class="btn-container">
 			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
 			{#await promise}

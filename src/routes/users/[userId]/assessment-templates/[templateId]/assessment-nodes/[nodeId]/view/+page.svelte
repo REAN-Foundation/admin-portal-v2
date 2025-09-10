@@ -291,6 +291,12 @@
 				<td class="table-data">{title}</td>
 			</tr>
 			<tr class="tables-row">
+				<td class="table-label">Required</td>
+				<td class="table-data">
+					{assessmentNode.Required ? 'True' : 'False'}
+				</td>
+			</tr>
+			<tr class="tables-row">
 				<td class="table-label">Description</td>
 				<td class="table-data">{description}</td>
 			</tr>
