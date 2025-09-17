@@ -19,6 +19,7 @@
 	let selectedPatientUserId = $state('');
 	let selectedPatientName = $state('');
 	let selectedPatientPhone = $state('');
+	let selectedPatientDisplay = $state('');
 	let selectedChannel = $state('WhatsApp');
 	let numberOfDays: number = $state();
 	let startHour: number = $state();
@@ -35,6 +36,13 @@
 		{ name: 'Create', path: createRoute }
 	];
 
+	const userSearchConfig = $derived({
+		placeholder: selectedChannel === 'Telegram' ? 'Search patients by username...' : 'Search patients by phone...',
+		searchField: selectedChannel === 'Telegram' ? 'name' : 'phone',
+		displayField: selectedChannel === 'Telegram' ? 'FirstName' : 'Phone',
+		valueField: 'id'
+	});
+
 	const handleCareplanSelect = (careplan: any) => {
 		if (careplan) {
 			selectedCareplanId = careplan.id;
@@ -49,14 +57,27 @@
 	const handlePatientSelect = (patient: any) => {
 		if (patient) {
 			selectedPatientUserId = patient.UserId;
-			// selectedPatientName = patient.Name;
-			selectedPatientPhone = patient.Phone;
+			if (selectedChannel === 'Telegram') {
+				selectedPatientName = patient.Username;
+				selectedPatientDisplay = patient.Username;
+			} else {
+				selectedPatientPhone = patient.Phone;
+				selectedPatientDisplay = patient.Phone;
+			}
 			console.log('selectedPatientPhone', selectedPatientPhone);
 		} else {
 			selectedPatientUserId = '';
 			selectedPatientName = '';
 			selectedPatientPhone = '';
+			selectedPatientDisplay = '';
 		}
+	};
+
+	const handleChannelChange = () => {
+		selectedPatientUserId = '';
+		selectedPatientName = '';
+		selectedPatientPhone = '';
+		selectedPatientDisplay = '';
 	};
 
 	const handleSubmit = async (event: Event) => {
@@ -158,30 +179,12 @@
 				</tr>
 
 				<tr class="tables-row">
-					<td class="table-label">User <span class="important-field">*</span></td>
-					<td class="table-data">
-						<SearchDropdown
-							placeholder="Search patients by phone..."
-							searchUrl="/api/server/patients/search"
-							searchField="phone"
-							displayField="Phone"
-							valueField="id"
-							bind:selectedValue={selectedPatientUserId}
-							bind:selectedDisplay={selectedPatientPhone}
-							onSelect={handlePatientSelect}
-						/>
-						{#if errors?.patient}
-							<p class="error-text">{errors.patient}</p>
-						{/if}
-					</td>
-				</tr>
-
-				<tr class="tables-row">
 					<td class="table-label">Channel <span class="important-field">*</span></td>
 					<td class="table-data">
 						<div class="relative">
 							<select
 								bind:value={selectedChannel}
+								onchange={handleChannelChange}
 								class="select"
 							>
 								<option value="">Select Channel</option>
@@ -192,6 +195,25 @@
 								<Icon icon="mdi:chevron-down" class="select-icon" />
 							</div>
 						</div>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">User <span class="important-field">*</span></td>
+					<td class="table-data">
+						<SearchDropdown
+							placeholder={userSearchConfig.placeholder}
+							searchUrl="/api/server/patients/search"
+							searchField={userSearchConfig.searchField}
+							displayField={userSearchConfig.displayField}
+							valueField={userSearchConfig.valueField}
+							bind:selectedValue={selectedPatientUserId}
+							bind:selectedDisplay={selectedPatientDisplay}
+							onSelect={handlePatientSelect}
+						/>
+						{#if errors?.patient}
+							<p class="error-text">{errors.patient}</p>
+						{/if}
 					</td>
 				</tr>
 
