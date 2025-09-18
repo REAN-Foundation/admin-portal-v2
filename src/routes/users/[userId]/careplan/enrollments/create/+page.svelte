@@ -8,6 +8,7 @@
 	import SearchDropdown from '$lib/components/search-dropdown.svelte';
 	import type { EnrollmentCreateModel } from '$lib/types/enrollment.types';
 	import { createSchema } from '$lib/validation/enrollment.schema';
+	import { languages } from '$lib/utils/language';
 
     //////////////////////////////////////////////////////////////////////////////
 
@@ -21,6 +22,7 @@
 	let selectedPatientPhone = $state('');
 	let selectedPatientDisplay = $state('');
 	let selectedChannel = $state('WhatsApp');
+	let selectedLanguage = $state('English');
 	let numberOfDays: number = $state();
 	let startHour: number = $state();
 	let startMinutes: number = $state();
@@ -101,6 +103,7 @@
 				PlanName: selectedCareplanName,
 				PlanCode: selectedCareplanCode,
 				Channel: selectedChannel,
+				Language: selectedLanguage,
 				NumberOfDays: numberOfDays,
 				StartHour: startHour,
 				StartMinutes: startMinutes,
@@ -195,6 +198,29 @@
 								<Icon icon="mdi:chevron-down" class="select-icon" />
 							</div>
 						</div>
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Language</td>
+					<td class="table-data">
+						<div class="relative">
+							<select
+								bind:value={selectedLanguage}
+								class="select"
+							>
+								<option value="">Select Language</option>
+								{#each languages as language}
+									<option value={language.name}>{language.name}</option>
+								{/each}
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
+						{#if errors?.Language}
+							<p class="error-text">{errors.Language}</p>
+						{/if}
 					</td>
 				</tr>
 

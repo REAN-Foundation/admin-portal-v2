@@ -2,10 +2,10 @@
 
 export const languages = [
 	{ name: 'English', code: 'en' },
-	{ name: 'Spanish', code: 'es' },
+	{name: 'Marathi', code:'mr'},
+	{ name: 'Hindi', code: 'hi' },
 	{ name: 'French', code: 'fr' },
 	{ name: 'German', code: 'de' },
-	{ name: 'Hindi', code: 'hi' },
 	{ name: 'Arabic', code: 'ar' },
 	{ name: 'Chinese', code: 'zh' },
 	{ name: 'Japanese', code: 'ja' },

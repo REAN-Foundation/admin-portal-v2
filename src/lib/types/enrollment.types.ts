@@ -3,6 +3,7 @@ export interface EnrollmentCreateModel {
     PlanName: string;
     PlanCode: string;
     Channel?: string;
+    Language?: string;
     NumberOfDays?: number;
     StartHour?: number;
     StartMinutes?: number;
