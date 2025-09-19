@@ -211,7 +211,7 @@
 							>
 								<option value="">Select Language</option>
 								{#each languages as language}
-									<option value={language.name}>{language.name}</option>
+									<option value={language.code}>{language.name}</option>
 								{/each}
 							</select>
 							<div class="select-icon-container">
