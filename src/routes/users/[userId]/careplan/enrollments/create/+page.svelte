@@ -22,7 +22,7 @@
 	let selectedPatientPhone = $state('');
 	let selectedPatientDisplay = $state('');
 	let selectedChannel = $state('WhatsApp');
-	let selectedLanguage = $state('English');
+	let selectedLanguage = $state('en');
 	let numberOfDays: number = $state();
 	let startHour: number = $state();
 	let startMinutes: number = $state();
