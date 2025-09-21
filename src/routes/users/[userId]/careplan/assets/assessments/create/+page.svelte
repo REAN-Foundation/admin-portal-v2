@@ -12,7 +12,7 @@
 	/////////////////////////////////////////////////////////////////////////////////////
 
 	let { data, form } = $props();
-	let errors: Record<string, string> = $state({});
+	let errors: Record<string, any> = $state({});
 	let promise = $state();
 	let name = $state(undefined);
 	let description = $state('');
@@ -21,6 +21,7 @@
 	let version = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
+	let metaDataInput = $state('');
 
 	let assessmentTemplates = data.assessmentTemplates ?? [];
 	console.log('assessmentTemplates', assessmentTemplates);
@@ -59,6 +60,26 @@
 				return;
 			}
 
+			let metaData = undefined;
+			if (metaDataInput && metaDataInput.trim() !== '') {
+				try {
+					metaData = JSON.parse(metaDataInput);
+					if (!metaData.Type || !metaData.TemplateName) {
+						errors = {
+							...errors,
+							'MetaData': 'MetaData must include Type and TemplateName fields'
+						};
+						return;
+					}
+				} catch (error) {
+					errors = {
+						...errors,
+						'MetaData': 'Invalid JSON format for MetaData'
+					};
+					return;
+				}
+			}
+
 			const assessmentCreateModel: AssessmentCreateModel = {
 				Name: name,
 				Description: description,
@@ -66,7 +87,8 @@
 				ReferenceTemplateCode: referenceTemplateCode,
 				Version: version,
 				Tags: keywords,
-				TenantId: tenantId
+				TenantId: tenantId,
+				MetaData: metaData
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentCreateModel);
@@ -145,7 +167,7 @@
 					<td class="table-data">
 						<textarea
 							name="description"
-							class="input resize-none {errors?.Description
+							class="input {errors?.Description
 								? 'border-error-300'
 								: 'border-primary-200'}"
 							bind:value={description}
@@ -203,6 +225,21 @@
 	</td>
 </tr>
 
+				<tr class="tables-row">
+					<td class="table-label">MetaData</td>
+					<td class="table-data">
+						<textarea
+							bind:value={metaDataInput}
+							class="input {errors?.MetaData ? 'border-error-300' : 'border-primary-200'}"
+							placeholder="Enter MetaData JSON object..."
+							name="metaDataInput"
+						></textarea>
+						{#if errors?.MetaData}
+							<p class="error-text">{errors?.MetaData}</p>
+						{/if}
+					</td>
+				</tr>
+
 <tr class="tables-row">
 					<td class="table-label">Tags</td>
 					<td class="table-data">
@@ -226,6 +263,7 @@
 						{/if}
 					</td>
 				</tr>
+				
 			</tbody>
 		</table>
 

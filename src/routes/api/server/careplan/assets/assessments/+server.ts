@@ -37,7 +37,8 @@ export const POST = async (event: RequestEvent) => {
             data.ReferenceTemplateCode,
             data.Tags, 
             data.Version ?? '',
-            data.TenantId,);
+            data.TenantId,
+            data.MetaData);
 
         return ResponseHandler.success(response);
     } catch (error) {
