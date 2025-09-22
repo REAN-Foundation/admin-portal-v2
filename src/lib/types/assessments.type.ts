@@ -1,4 +1,4 @@
-export interface MetaData {
+export interface Metadata {
     Type: string;
     TemplateName: string;
     TemplateLanguage?: string;
@@ -14,7 +14,7 @@ export interface AssessmentCreateModel {
     Tags?: string[];
     Version?: string;
     TenantId?: string;
-    MetaData?: MetaData;
+    Metadata?: Metadata;
 }
 
 export interface AssessmentUpdateModel {
@@ -25,5 +25,5 @@ export interface AssessmentUpdateModel {
     Tags?: string[];
     Version?: string;
     TenantId?: string;
-    MetaData?: MetaData;
+    Metadata?: Metadata;
 }

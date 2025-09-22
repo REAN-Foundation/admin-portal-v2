@@ -88,7 +88,7 @@
 				Version: version,
 				Tags: keywords,
 				TenantId: tenantId,
-				MetaData: metaData
+				Metadata: metaData
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentCreateModel);
@@ -226,16 +226,16 @@
 </tr>
 
 				<tr class="tables-row">
-					<td class="table-label">MetaData</td>
+					<td class="table-label">Metadata</td>
 					<td class="table-data">
 						<textarea
 							bind:value={metaDataInput}
-							class="input {errors?.MetaData ? 'border-error-300' : 'border-primary-200'}"
-							placeholder="Enter MetaData JSON object..."
+							class="input {errors?.Metadata ? 'border-error-300' : 'border-primary-200'}"
+							placeholder="Enter Metadata JSON object..."
 							name="metaDataInput"
 						></textarea>
-						{#if errors?.MetaData}
-							<p class="error-text">{errors?.MetaData}</p>
+						{#if errors?.Metadata}
+							<p class="error-text">{errors?.Metadata}</p>
 						{/if}
 					</td>
 				</tr>
