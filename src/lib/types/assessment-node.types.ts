@@ -5,7 +5,7 @@ export interface AssessmentNodeCreateModel {
     Description?: string;
     Sequence?: number;
     QueryType: string;
-    ResolutionScore: number;
+    Score: number;
     ProviderAssessmentCode: string;
     Message?: string;
     ServeListNodeChildrenAtOnce: boolean;
@@ -26,7 +26,7 @@ export interface AssessmentNodeUpdateModel {
     Description?: string;
     Sequence?: number;
     QueryType?: string;
-    ResolutionScore?: number;
+    Score?: number;
     ProviderAssessmentCode?: string;
     Message?: string;
     ServeListNodeChildrenAtOnce?: boolean;
