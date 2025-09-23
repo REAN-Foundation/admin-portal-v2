@@ -1,4 +1,5 @@
 import { CAREPLAN_BACKEND_API_URL } from '$env/static/private';
+import type { Metadata } from '$lib/types/assessments.type';
 import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 import { del, get, post, put } from '../common.careplan';
 
@@ -13,6 +14,7 @@ export const createAssessment = async (
     tags: string[],
     version: string,
     tenantId: string,
+    metadata?: Metadata,
 ) => {
     const body = {
         Name: name,
@@ -22,7 +24,8 @@ export const createAssessment = async (
         ReferenceTemplateCode: referenceTemplateCode,
         Tags: tags,
         Version: !version || version?.length === 0 ? 'V 1.0' : version,
-        TenantId: tenantId
+        TenantId: tenantId,
+        Metadata: metadata
     };
 
     const url = CAREPLAN_BACKEND_API_URL + '/assets/assessments';
@@ -62,7 +65,7 @@ export const searchAssessment = async (sessionId: string, searchParams) => {
 };
 
 export const updateAssessment = async (
-sessionId: string, assessmentId: string, name: string, description: string, template: string, referenceTemplateCode: string, tags: string[], version: string, tenantId: string) => {
+sessionId: string, assessmentId: string, name: string, description: string, template: string, referenceTemplateCode: string, tags: string[], version: string, tenantId: string, metadata?: Metadata) => {
     const body = {
         Name: name,
         Description: description,
@@ -71,6 +74,7 @@ sessionId: string, assessmentId: string, name: string, description: string, temp
         Tags: tags,
         TenantId: tenantId,
         Version: !version || version?.length === 0 ? 'V 1.0' : version,
+        Metadata: metadata
     };
 
     const url = CAREPLAN_BACKEND_API_URL + `/assets/assessments/${assessmentId}`;

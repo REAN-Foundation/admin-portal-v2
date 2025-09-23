@@ -1,3 +1,11 @@
+export interface Metadata {
+    Type: string;
+    TemplateName: string;
+    TemplateLanguage?: string;
+    FlowToken?: string;
+    FlowActionData?: Record<string, any>;
+}
+
 export interface AssessmentCreateModel {
     Name: string;
     Description?: string;
@@ -6,6 +14,7 @@ export interface AssessmentCreateModel {
     Tags?: string[];
     Version?: string;
     TenantId?: string;
+    Metadata?: Metadata;
 }
 
 export interface AssessmentUpdateModel {
@@ -16,4 +25,5 @@ export interface AssessmentUpdateModel {
     Tags?: string[];
     Version?: string;
     TenantId?: string;
+    Metadata?: Metadata;
 }

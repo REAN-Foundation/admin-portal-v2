@@ -19,8 +19,10 @@
 	let template = $state(data.assessment.Template);
 	let referenceTemplateCode = $state(data.assessment.ReferenceTemplateCode);
 	let version = $state(data.assessment.Version);
-	let keywords: string[] = $state([]);
+	let keywords: string[] = $state(data.assessment.Tags || []);
 	let keywordsStr = $state('');
+	let metaDataInput = $state(data.assessment.Metadata ? JSON.stringify(data.assessment.Metadata, null, 2): null);
+
 
 	const assessmentTemplates = data.assessmentTemplates || [];
 	const assessmentTemplate = assessmentTemplates.find(
@@ -53,6 +55,7 @@
 		referenceTemplateCode = data?.assessment?.TemplateCode;
 		version = data?.assessment?.Version;
 		keywords = data?.assessment?.Tags;
+		metaDataInput = data?.assessment?.Metadata ? JSON.stringify(data.assessment.Metadata, null, 2) : '';
 		errors = {};
 	};
 
@@ -74,6 +77,26 @@
 				return;
 			}
 
+			let metadata = undefined;
+			if (metaDataInput && metaDataInput.trim() !== '') {
+				try {
+					metadata = JSON.parse(metaDataInput);
+					if (!metadata.Type || !metadata.TemplateName) {
+						errors = {
+							...errors,
+							'MetaData': 'MetaData must include Type and TemplateName fields'
+						};
+						return;
+					}
+				} catch (error) {
+					errors = {
+						...errors,
+						'MetaData': 'Invalid JSON format for MetaData'
+					};
+					return;
+				}
+			}
+
 			const assessmentUpdateModel: AssessmentUpdateModel = {
 				Name: name,
 				Description: description,
@@ -81,7 +104,8 @@
 				ReferenceTemplateCode: referenceTemplateCode,
 				Version: version,
 				Tags: keywords,
-				TenantId: tenantId
+				TenantId: tenantId,
+				Metadata: metadata
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentUpdateModel);
@@ -228,6 +252,21 @@
 							{#if errors?.ReferenceTemplateCode}
 								<p class="error-text">{errors?.ReferenceTemplateCode}</p>
 							{/if}
+						{/if}
+					</td>
+				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Metadata</td>
+					<td class="table-data">
+						<textarea
+							bind:value={metaDataInput}
+							class="input {errors?.Metadata ? 'border-error-300' : 'border-primary-200'}"
+							placeholder="Enter Metadata JSON object..."
+							name="metaDataInput"
+						></textarea>
+						{#if errors?.Metadata}
+							<p class="error-text">{errors?.Metadata}</p>
 						{/if}
 					</td>
 				</tr>
