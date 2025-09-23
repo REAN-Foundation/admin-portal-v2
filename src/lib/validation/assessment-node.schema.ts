@@ -68,8 +68,8 @@ export const createOrUpdateSchema = z.object({
 
     ResolutionScore: z
         .number({
-            required_error: "ResolutionScore is required.",
-            invalid_type_error: "ResolutionScore must be a number."
+            required_error: "Score is required.",
+            invalid_type_error: "Score must be a number."
         })
         .optional(),
 

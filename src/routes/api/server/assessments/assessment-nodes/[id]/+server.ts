@@ -106,7 +106,7 @@ export const PUT = async (event: RequestEvent) => {
             data.CorrectAnswer,
             data.RawData,
             data.ScoringApplicable,
-            data.ResolutionScore,
+            data.Score,
             data.ProviderAssessmentCode,
             data.FieldIdentifier,
             data.FieldIdentifierUnit,

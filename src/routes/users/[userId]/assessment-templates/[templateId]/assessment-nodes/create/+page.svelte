@@ -149,7 +149,7 @@
 				Description: description,
 				Sequence: sequenceValue,
 				QueryType: selectedQueryType,
-				ResolutionScore: resolutionScore,
+				Score: resolutionScore,
 				ProviderAssessmentCode: providerAssessmentCode,
 				ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce,
 				ScoringApplicable: scoringApplicable,
@@ -162,6 +162,8 @@
 				FieldIdentifier: fieldIdentifier,
 				FieldIdentifierUnit: fieldIdentifierUnit
 			};
+
+			console.log('assessmentNodeCreateModel', assessmentNodeCreateModel);
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentNodeCreateModel);
 
@@ -187,30 +189,7 @@
 			});
 
 			const response = await res.json();
-
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
-				// If resolutionScore exists, call the API to add scoring condition
-				if (resolutionScore && resolutionScore > 0) {
-					try {
-						const nodeId = response?.Data?.AssessmentNode?.id;
-						if (nodeId) {
-							const scoringRes = await fetch(`/api/server/assessments/assessment-nodes/add-scoring-condition?templateId=${templateId}&nodeId=${nodeId}`, {
-								method: 'POST',
-								body: JSON.stringify({ ResolutionScore: resolutionScore }),
-								headers: { 'content-type': 'application/json' }
-							});
-							
-							const scoringResult = await scoringRes.json();
-							if (scoringResult.HttpCode !== 200 && scoringResult.HttpCode !== 201) {
-								console.error('Failed to add scoring condition:', scoringResult);
-							}
-						}
-					} catch (scoringError) {
-						console.error('Error adding scoring condition:', scoringError);
-						// Continue with the success flow even if scoring condition fails
-					}
-				}
-
 				toastMessage(response);
 				goto(`${assessmentNodeRoutes}/${response?.Data?.AssessmentNode?.id}/view`);
 				return;
@@ -221,6 +200,7 @@
 			} else {
 				toastMessage(response);
 			}
+		
 		} catch (error) {
 			toastMessage();
 		}
@@ -476,7 +456,7 @@
 								</tr>
 							{/if}
 							<tr class="tables-row">
-								<td class="table-label">Resolution Score</td>
+								<td class="table-label">Score</td>
 								<td class="table-data">
 									<input
 										type="number"
@@ -504,7 +484,7 @@
 							</tr>
 
 							<tr class="tables-row">
-								<td class="table-label">Resolution Score</td>
+								<td class="table-label">Score</td>
 								<td class="table-data">
 									<input
 										type="number"
