@@ -60,26 +60,27 @@
 				return;
 			}
 
-			let metaData = undefined;
+			let metadata = undefined;
 			if (metaDataInput && metaDataInput.trim() !== '') {
 				try {
-					metaData = JSON.parse(metaDataInput);
-					if (!metaData.Type || !metaData.TemplateName) {
+					metadata = JSON.parse(metaDataInput);
+					if (!metadata.Type || !metadata.TemplateName) {
 						errors = {
 							...errors,
-							'MetaData': 'MetaData must include Type and TemplateName fields'
+							'Metadata': 'Metadata must include Type and TemplateName fields'
 						};
 						return;
 					}
 				} catch (error) {
 					errors = {
 						...errors,
-						'MetaData': 'Invalid JSON format for MetaData'
+						'Metadata': 'Invalid JSON format for Metadata'
 					};
 					return;
 				}
 			}
 
+			console.log('Submitting form with metadata:', metadata);
 			const assessmentCreateModel: AssessmentCreateModel = {
 				Name: name,
 				Description: description,
@@ -88,7 +89,7 @@
 				Version: version,
 				Tags: keywords,
 				TenantId: tenantId,
-				Metadata: metaData
+				Metadata: metadata
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentCreateModel);

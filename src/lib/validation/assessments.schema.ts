@@ -61,5 +61,5 @@ export const createOrUpdateSchema = z.object({
 			required_error: 'TenantId is required.',
 			invalid_type_error: 'TenantId must be a string.'
 		}),
-    MetaData: metaDataSchema.optional()
+    Metadata: metaDataSchema.optional()
 });

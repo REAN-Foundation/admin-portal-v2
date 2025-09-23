@@ -84,19 +84,20 @@
 					if (!metadata.Type || !metadata.TemplateName) {
 						errors = {
 							...errors,
-							'MetaData': 'MetaData must include Type and TemplateName fields'
+							'Metadata': 'Metadata must include Type and TemplateName fields'
 						};
 						return;
 					}
 				} catch (error) {
 					errors = {
 						...errors,
-						'MetaData': 'Invalid JSON format for MetaData'
+						'Metadata': 'Invalid JSON format for Metadata'
 					};
 					return;
 				}
 			}
 
+			console.log('Submitting form with metadata:', metadata);
 			const assessmentUpdateModel: AssessmentUpdateModel = {
 				Name: name,
 				Description: description,
