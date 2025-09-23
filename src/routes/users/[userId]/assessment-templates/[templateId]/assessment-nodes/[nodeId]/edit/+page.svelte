@@ -10,6 +10,8 @@
 	import InputChips from '$lib/components/input-chips.svelte';
 	import { page } from '$app/state';
 	import Button from '$lib/components/button/button.svelte';
+	import { onMount } from 'svelte';
+	import { scoringApplicableCondition } from '$lib/store/general.store';
 
 	//////////////////////////////////////////////////////////////////////////////////////
 
@@ -17,6 +19,7 @@
 
 	let nodeTitle = data.assessmentNode.Title;
 	let templateTitle = data.templateData.Title;
+	console.log('templateTitle', data.templateData);
 
 	let nodeType = $state(data.assessmentNode.NodeType),
 		parentNodeId = $state(data.assessmentNode.ParentNodeId),
@@ -30,7 +33,7 @@
 		tags = $state(data.assessmentNode.Tags || []),
         correctAnswer = $state(data.assessmentNode.CorrectAnswer ?? null),
 		keywords: string[] = $state(data.assessmentNode.Tags || []),
-		resolutionScore = $state(data.assessmentNode.ResolutionScore ?? undefined),
+		resolutionScore = $state(data.assessmentNode.Score ?? undefined),
 		providerAssessmentCode = $state(data.assessmentNode.ProviderAssessmentCode ?? undefined),
 		scoringApplicable = $state(data.assessmentNode.ScoringApplicable ?? false),
 		required = $state(data.assessmentNode.Required ?? false),
@@ -83,6 +86,10 @@
 	let promise = $state();
 	let keywordsStr: string = $state('');
 
+	onMount(() => {
+		scoringApplicableCondition.set(data.templateData.ScoringApplicable);
+		console.log('scoringApplicableCondition set to:', data.templateData.ScoringApplicable);
+	});
 	function handleReset() {
 		nodeType = data.assessmentNode.NodeType;
 		title = data.assessmentNode.Title;
@@ -94,7 +101,7 @@
 		serveListNodeChildrenAtOnce = data.assessmentNode.ServeListNodeChildrenAtOnce ?? false;
 		tags = data.assessmentNode.Tags;
 		correctAnswer = data.assessmentNode.CorrectAnswer ?? null;
-		resolutionScore = data.assessmentNode.ResolutionScore;
+		resolutionScore = data.assessmentNode.Score;
 		providerAssessmentCode = data.assessmentNode.ProviderAssessmentCode;
 		scoringApplicable = data.assessmentNode.ScoringApplicable;
 		required = data.assessmentNode.Required;
@@ -185,7 +192,7 @@
 				Description: description,
 				Sequence: sequence,
 				QueryType: selectedNodeType === 'Question' ? selectedQueryType : undefined,
-				ResolutionScore: resolutionScore,
+				Score: resolutionScore,
 				ProviderAssessmentCode: providerAssessmentCode,
 				ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce,
 				ScoringApplicable: scoringApplicable,
@@ -433,6 +440,23 @@
 									</select>
 								</td>
 							</tr>
+						{#if $scoringApplicableCondition === true}
+							<tr class="tables-row">
+								<td class="table-label align-top">Score</td>
+								<td class="table-data">
+									<input
+										name="resolutionScore"
+										type="number"
+										bind:value={resolutionScore}
+										placeholder="Enter score here..."
+										class="input {errors?.resolutionScore ? 'input-text-error' : ''}"
+									/>
+									{#if errors?.ResolutionScore}
+										<p class="text-error">{errors?.ResolutionScore}</p>
+									{/if}
+								</td>
+						</tr>
+						{/if}
 						{/if}
 					{/if}
 				{:else if selectedNodeType === 'Message'}

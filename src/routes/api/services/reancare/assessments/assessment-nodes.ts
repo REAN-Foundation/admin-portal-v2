@@ -41,7 +41,7 @@ export const createAssessmentNode = async (
 		RawData: rawData ? JSON.parse(rawData) : null,
 		Required: required ? required : false,
 		ScoringApplicable: scoringApplicable ? scoringApplicable : false,
-		ResolutionScore: resolutionScore ? resolutionScore : null,
+		Score: resolutionScore ? resolutionScore : 0,
 		ProviderAssessmentCode: providerAssessmentCode ? providerAssessmentCode : null,
 		FieldIdentifier: fieldIdentifier ? fieldIdentifier : null,
 		FieldIdentifierUnit: fieldIdentifierUnit ? fieldIdentifierUnit : null
@@ -138,7 +138,7 @@ export const updateAssessmentNode = async (
 		CorrectAnswer: correctAnswer ? correctAnswer : null,
 		RawData: rawData ? JSON.parse(rawData) : null,
 		ScoringApplicable: scoringApplicable ? scoringApplicable : false,
-		ResolutionScore: resolutionScore ? resolutionScore : null,
+		Score: resolutionScore ? resolutionScore : 0,
 		ProviderAssessmentCode: providerAssessmentCode ? providerAssessmentCode : null,
 		FieldIdentifier: fieldIdentifier ? fieldIdentifier : null,
 		FieldIdentifierUnit: fieldIdentifierUnit ? fieldIdentifierUnit : null,

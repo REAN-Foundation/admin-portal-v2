@@ -44,7 +44,7 @@ export const POST = async (event: RequestEvent) => {
 			data.RawData,
 			data.Required,
 			data.ScoringApplicable,
-			data.ResolutionScore,
+			data.Score,
 			data.ProviderAssessmentCode,
 			data.FieldIdentifier,
 			data.FieldIdentifierUnit
