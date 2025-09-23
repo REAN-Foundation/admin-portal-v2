@@ -56,7 +56,7 @@
 			} else {
 				searchResults = [];
 			}
-			
+			console.log('Search results:', searchResults);
 		} catch (error) {
 			console.error('Search failed:', error);
 			searchResults = [];

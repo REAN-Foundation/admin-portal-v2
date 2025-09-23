@@ -27,6 +27,12 @@ export const createSchema = z.object({
 		})
 		.optional()
 		.default('WhatsApp'),
+	Language: z
+		.string({
+			invalid_type_error: 'Language must be a string.'
+		})
+		.optional()
+		.default('en'),
 	NumberOfDays: z
 		.number({
 			invalid_type_error: 'NumberOfDays must be a number.'
@@ -88,6 +94,11 @@ export const updateSchema = z.object({
 	channel: z
 		.string({
 			invalid_type_error: 'Channel must be a string.'
+		})
+		.optional(),
+	Language: z
+		.string({
+			invalid_type_error: 'Language must be a string.'
 		})
 		.optional()
 }); 
