@@ -21,6 +21,7 @@
 	let password = $state(undefined);
 	let username = $state(undefined);
 	let promise = $state();
+	let showPassword = $state(false);
 
 	data.title = 'Tenants Create';
 	const userId = page.params.userId;
@@ -31,6 +32,10 @@
 		{ name: 'Tenants', path: tenantRoute },
 		{ name: 'Create', path: createRoute }
 	];
+
+	function togglePasswordVisibility() {
+		showPassword = !showPassword;
+	}
 
 	const handleSubmit = async (event: Event) => {
 		try {
@@ -194,13 +199,26 @@
 						<tr class="tables-row">
 							<td class="table-label">Password <span class="text-red-600">*</span></td>
 							<td class="table-data">
-								<input
-									type="password"
-									bind:value={password}
-									class="input {errors?.password ? 'input-text-error' : ''}"
-									name="password"
-									placeholder="Enter password here..."
-								/>
+								<div class="relative">
+									<input
+										type={showPassword ? 'text' : 'password'}
+										bind:value={password}
+										class="input pr-10 {errors?.password ? 'input-text-error' : ''}"
+										name="password"
+										placeholder="Enter password here..."
+									/>
+									<button
+										type="button"
+										class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+										onclick={togglePasswordVisibility}
+									>
+										{#if showPassword}
+											<Icon icon="material-symbols:visibility-off" class="h-5 w-5" />
+										{:else}
+											<Icon icon="material-symbols:visibility" class="h-5 w-5" />
+										{/if}
+									</button>
+								</div>
 								{#if errors?.Password}
 									<p class="text-error">{errors?.Password}</p>
 								{/if}
