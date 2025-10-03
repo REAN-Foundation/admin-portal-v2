@@ -160,7 +160,7 @@
 					</td>
 				</tr>
 				<tr class="tables-row">
-					<td class="table-label">Contact Numberaaa <span class="text-red-700">*</span></td>
+					<td class="table-label">Contact Number <span class="text-red-700">*</span></td>
 					<td class="table-data">
 						<!-- <select name="countryCode" bind:value={splitPhoneNumber[0]} class="input !w-20">
 							<option>+1</option>
