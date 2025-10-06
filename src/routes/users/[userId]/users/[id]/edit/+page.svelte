@@ -22,7 +22,7 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 
-	let splitPhoneNumber = $derived(phone.split('-'));
+	let splitPhoneNumber = $derived(phone.includes('-') ? phone.split('-') : ['', phone]);
 	let selectedUserRoleId = $state(data.user.Role.id);
 
 	function handleReset() {
@@ -61,6 +61,7 @@
 	}
 
 	const handleSubmit = async (event: Event) => {
+		console.log('handleSubmit');
 		try {
 			event.preventDefault();
 			errors = {};
@@ -135,6 +136,7 @@
 							bind:value={firstName}
 							placeholder="Enter first name here..."
 							class="input {errors?.firstName ? 'input-text-error' : ''}"
+							required
 						/>
 						{#if errors?.FirstName}
 							<p class="text-error">{errors?.FirstName}</p>
@@ -150,6 +152,7 @@
 							bind:value={lastName}
 							placeholder="Enter last name here..."
 							class="input {errors?.lastName ? 'input-text-error' : ''}"
+							required
 						/>
 						{#if errors?.LastName}
 							<p class="text-error">{errors?.LastName}</p>
@@ -172,9 +175,9 @@
 							class="input {errors?.phone ? 'input-text-error' : ''}"
 						/> -->
 						<input
-							type="text"
+							type="tel"
 							name="phone"
-							pattern="[0-9]*"
+							pattern="[+]?[0-9\-]+"
 							bind:value={phone}
 							placeholder="Enter contact number here..."
 							class="grayout-input {errors?.phone ? 'input-text-error' : ''}"
@@ -193,6 +196,7 @@
 							bind:value={email}
 							placeholder="Enter email here..."
 							class="input {errors?.email ? 'input-text-error' : ''}"
+							required
 						/>
 						{#if errors?.Email}
 							<p class="text-error">{errors?.Email}</p>
