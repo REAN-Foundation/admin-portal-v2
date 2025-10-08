@@ -31,8 +31,12 @@
 		sequence = $state(data.assessmentNode.Sequence ?? undefined),
 		serveListNodeChildrenAtOnce = $state(data.assessmentNode.ServeListNodeChildrenAtOnce ?? false),
 		tags = $state(data.assessmentNode.Tags || []),
-        correctAnswer = $state(data.assessmentNode.CorrectAnswer ?? null),
-		keywords: string[] = $state(data.assessmentNode.Tags || []),
+		correctAnswer = $state(
+			data.assessmentNode.CorrectAnswer !== null && data.assessmentNode.CorrectAnswer !== undefined
+				? String(data.assessmentNode.CorrectAnswer)
+				: null
+		),
+		keywords = $state(data.assessmentNode.Tags || []),
 		resolutionScore = $state(data.assessmentNode.Score ?? undefined),
 		providerAssessmentCode = $state(data.assessmentNode.ProviderAssessmentCode ?? undefined),
 		scoringApplicable = $state(data.assessmentNode.ScoringApplicable ?? false),
@@ -40,14 +44,18 @@
 		fieldIdentifier = $state(data.assessmentNode.FieldIdentifier),
 		fieldIdentifierUnit = $state(data.assessmentNode.FieldIdentifierUnit),
 		rawData = $state(
-                        typeof data.assessmentNode.RawData === 'string'
-                            ? data.assessmentNode.RawData
-                            : data.assessmentNode.RawData
-                            ? JSON.stringify(data.assessmentNode.RawData, null, 2)
-                            : ''
-                        );
+			typeof data.assessmentNode.RawData === 'string'
+				? data.assessmentNode.RawData
+				: data.assessmentNode.RawData
+					? JSON.stringify(data.assessmentNode.RawData, null, 2)
+					: ''
+		);
 
 	let optionArray = $derived(options);
+
+	// Debug logging
+	console.log('Edit page - original correctAnswer:', data.assessmentNode.CorrectAnswer, 'type:', typeof data.assessmentNode.CorrectAnswer);
+	console.log('Edit page - processed correctAnswer:', correctAnswer, 'type:', typeof correctAnswer);
 
 	// Format rawData for editing, similar to view page
 	function formatRawDataEdit(data: any) {
@@ -80,7 +88,7 @@
 			: null
 	);
 
-	$inspect('selectedOption', selectedOption)
+	$inspect('selectedOption', selectedOption);
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
@@ -100,7 +108,9 @@
 		sequence = data.assessmentNode.Sequence;
 		serveListNodeChildrenAtOnce = data.assessmentNode.ServeListNodeChildrenAtOnce ?? false;
 		tags = data.assessmentNode.Tags;
-		correctAnswer = data.assessmentNode.CorrectAnswer ?? null;
+		correctAnswer = data.assessmentNode.CorrectAnswer !== null && data.assessmentNode.CorrectAnswer !== undefined
+			? String(data.assessmentNode.CorrectAnswer)
+			: null;
 		resolutionScore = data.assessmentNode.Score;
 		providerAssessmentCode = data.assessmentNode.ProviderAssessmentCode;
 		scoringApplicable = data.assessmentNode.ScoringApplicable;
@@ -264,7 +274,12 @@
 					<td class="table-label text-gray-500">Node Type <span class="text-red-600">*</span></td>
 					<td class="table-data">
 						<input type="text" disabled bind:value={nodeType} class="grayout-input text-gray-500" />
-						<input type="hidden" name="nodeType" bind:value={nodeType} class="input text-gray-500" />
+						<input
+							type="hidden"
+							name="nodeType"
+							bind:value={nodeType}
+							class="input text-gray-500"
+						/>
 					</td>
 				</tr>
 				<tr class="tables-row !border-b-secondary-100 dark:!border-b-surface-700 !border-b">
@@ -355,20 +370,20 @@
 					<td class="table-label">Field Identifier</td>
 					<td class="table-data">
 						<div class="relative">
-						<select
-							name="fieldIdentifier"
-							bind:value={fieldIdentifier}
-							class="select {errors?.fieldIdentifier ? 'input-text-error' : ''}"
-						>
-							<option value="" disabled selected>Select field identifier here...</option>
-							{#each sortedIdentifiers as identifier}
-								<option value={identifier}>{toLabel(identifier)}</option>
-							{/each}
-						</select>
-						<div class="select-icon-container">
-							<Icon icon="mdi:chevron-down" class="select-icon" />
+							<select
+								name="fieldIdentifier"
+								bind:value={fieldIdentifier}
+								class="select {errors?.fieldIdentifier ? 'input-text-error' : ''}"
+							>
+								<option value="" disabled selected>Select field identifier here...</option>
+								{#each sortedIdentifiers as identifier}
+									<option value={identifier}>{toLabel(identifier)}</option>
+								{/each}
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
 						</div>
-					</div>
 						{#if errors?.FieldIdentifier}
 							<p class="text-error">{errors?.FieldIdentifier}</p>
 						{/if}
@@ -382,9 +397,7 @@
 							name="fieldIdentifierUnit"
 							bind:value={fieldIdentifierUnit}
 							placeholder="Enter field identifier unit here...."
-							class="input {errors?.fieldIdentifierUnit
-								? 'input-text-error'
-								: ''}"
+							class="input {errors?.fieldIdentifierUnit ? 'input-text-error' : ''}"
 						/>
 						{#if errors?.FieldIdentifierUnit}
 							<p class="text-error">{errors?.FieldIdentifierUnit}</p>
@@ -402,9 +415,7 @@
 								id="mySelect"
 								name="queryType"
 								disabled
-								class="grayout-input {errors?.queryType
-									? 'input-text-error'
-									: ''} text-gray-500"
+								class="grayout-input {errors?.queryType ? 'input-text-error' : ''} text-gray-500"
 								placeholder="Select query type here..."
 								bind:value={queryType}
 							>
@@ -426,9 +437,7 @@
 								<td class="table-data">
 									<select
 										name="correctAnswer"
-										class="grayout-input {errors?.correctAnswer
-											? 'input-text-error'
-											: ''}"
+										class="grayout-input {errors?.correctAnswer ? 'input-text-error' : ''}"
 										bind:value={correctAnswer}
 									>
 										<option value="" disabled>Select correct answer</option>
@@ -440,23 +449,52 @@
 									</select>
 								</td>
 							</tr>
+							{#if $scoringApplicableCondition === true}
+								<tr class="tables-row">
+									<td class="table-label align-top">Score</td>
+									<td class="table-data">
+										<input
+											name="resolutionScore"
+											type="number"
+											bind:value={resolutionScore}
+											placeholder="Enter score here..."
+											class="input {errors?.resolutionScore ? 'input-text-error' : ''}"
+										/>
+										{#if errors?.ResolutionScore}
+											<p class="text-error">{errors?.ResolutionScore}</p>
+										{/if}
+									</td>
+								</tr>
+							{/if}
+						{/if}
+					{:else if selectedQueryType === 'Boolean'}
+						<tr class="tables-row">
+							<td class="table-label">Correct Answer</td>
+							<td class="table-data">
+								<select name="correctAnswer" class="input w-full" bind:value={correctAnswer}>
+									<option value="" disabled>Select correct answer</option>
+									<option value="true">true</option>
+									<option value="false">false</option>
+								</select>
+							</td>
+						</tr>
 						{#if $scoringApplicableCondition === true}
 							<tr class="tables-row">
-								<td class="table-label align-top">Score</td>
+								<td class="table-label">Score</td>
 								<td class="table-data">
 									<input
-										name="resolutionScore"
 										type="number"
+										name="resolutionScore"
+										placeholder="Enter resolution score here..."
+										min="1"
+										class="input w-full {errors?.resolutionScore ? 'input-text-error' : ''}"
 										bind:value={resolutionScore}
-										placeholder="Enter score here..."
-										class="input {errors?.resolutionScore ? 'input-text-error' : ''}"
 									/>
 									{#if errors?.ResolutionScore}
 										<p class="text-error">{errors?.ResolutionScore}</p>
 									{/if}
 								</td>
-						</tr>
-						{/if}
+							</tr>
 						{/if}
 					{/if}
 				{:else if selectedNodeType === 'Message'}
@@ -484,9 +522,7 @@
 								type="checkbox"
 								name="serveListNodeChildrenAtOnce"
 								bind:checked={serveListNodeChildrenAtOnce}
-								class=" {errors?.serveListNodeChildrenAtOnce
-									? 'input-text-error'
-									: ''}"
+								class=" {errors?.serveListNodeChildrenAtOnce ? 'input-text-error' : ''}"
 							/>
 							{#if errors?.ServeListNodeChildrenAtOnce}
 								<p class="text-error">{errors?.ServeListNodeChildrenAtOnce}</p>
@@ -496,7 +532,7 @@
 				{/if}
 			</tbody>
 		</table>
-		
+
 		<div class="btn-container">
 			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
 			{#await promise}
