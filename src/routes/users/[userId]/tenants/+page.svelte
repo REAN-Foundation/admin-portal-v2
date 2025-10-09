@@ -121,7 +121,7 @@
 			name: nameSearch,
 			code: codeSearch,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -138,7 +138,7 @@
 			name: nameSearch,
 			code: codeSearch,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -149,7 +149,7 @@
 			name: nameSearch,
 			code: codeSearch,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
@@ -174,7 +174,7 @@
 			name: nameSearch,
 			code: codeSearch,
 			itemsPerPage: paginationSettings.limit,
-			pageIndex: 0,
+			pageIndex: paginationSettings.page,
 			sortBy,
 			sortOrder
 		});
