@@ -43,7 +43,7 @@ export const createOrUpdateSchema = z.object({
 		.string({
 			invalid_type_error: 'UserName must be a string.'
 		})
-		.max(10, { message: 'UserName must be at most 10 characters long.' })
+		.max(256, { message: 'UserName must be at most 256 characters long.' })
 		.optional()
 		.refine(
 			val => val === undefined || val === null || val === '' || val.length >= 1,
