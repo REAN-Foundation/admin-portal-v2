@@ -132,7 +132,17 @@
 			event.preventDefault();
 			errors = {};
 
-			const finalValue = correctAnswer === '' ? undefined : correctAnswer;
+			let processedCorrectAnswer: string | number | boolean | null = correctAnswer;
+
+			if (selectedQueryType === 'Boolean') {
+				processedCorrectAnswer =
+					correctAnswer === 'true' ? true : correctAnswer === 'false' ? false : null;
+			} else if (selectedQueryType === 'Single Choice Selection') {
+				const parsed = parseInt(correctAnswer);
+				processedCorrectAnswer = isNaN(parsed) ? null : parsed;
+			} else {
+				processedCorrectAnswer = correctAnswer === '' ? undefined : correctAnswer;
+			}
 
 			const sequenceValue = sequence === '' ? undefined : sequence;
 
@@ -154,7 +164,7 @@
 				ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce,
 				ScoringApplicable: scoringApplicable,
 				Options: processedOptions,
-				CorrectAnswer: finalValue,
+				CorrectAnswer: processedCorrectAnswer,
 				Message: message,
 				Tags: keywords,
 				RawData: rawData,
@@ -477,8 +487,8 @@
 								<td class="table-data">
 									<select name="correctAnswer" class="input w-full" bind:value={correctAnswer}>
 										<option value="" disabled selected>Select correct answer</option>
-										<option value={true}>true</option>
-										<option value={false}>false</option>
+										<option value="true">true</option>
+										<option value="false">false</option>
 									</select>
 								</td>
 							</tr>

@@ -26,6 +26,7 @@
 	let templateTitle = data.templateDetails.Title;
 	let assessmentNode = $derived(data.assessmentNode)
 	console.log('data.assessmentNode', data.assessmentNode);
+	console.log('View page - correctAnswer:', data.assessmentNode.CorrectAnswer, 'type:', typeof data.assessmentNode.CorrectAnswer);
 	$inspect('Assesment node', assessmentNode);
 	let nodeType = $derived(assessmentNode.NodeType);
 	let title = $derived(assessmentNode.Title);
@@ -349,6 +350,26 @@
 										{/if}
 									{/each}
 								{/if}
+							{:else}
+								<span>Not specified</span>
+							{/if}
+						</td>
+					</tr>
+				{:else if queryType === 'Boolean'}
+					<tr class="tables-row">
+						<td class="table-label">Correct Answer</td>
+						<td class="table-data">
+							{#if correctAnswer !== null && correctAnswer !== undefined}
+								{(() => {
+									// Handle all possible boolean representations
+									if (correctAnswer === true || correctAnswer === 'true' || correctAnswer === 1 || correctAnswer === '1') {
+										return 'True';
+									} else if (correctAnswer === false || correctAnswer === 'false' || correctAnswer === 0 || correctAnswer === '0') {
+										return 'False';
+									} else {
+										return 'Invalid';
+									}
+								})()}
 							{:else}
 								<span>Not specified</span>
 							{/if}
