@@ -21,6 +21,12 @@
 
 	let userRoles = data.UserRoles;
 	console.log('userRoles', userRoles);
+	
+	// Get roles from localStorage for dropdown (has id and RoleName properties)
+	let localStorageRoles = $derived.by(() => {
+		const tmp = LocalStorageUtils.getItem('personRoles');
+		return JSON.parse(tmp || '[]');
+	});
 
 	let firstName = $state(undefined);
 	let lastName = $state(undefined);
@@ -45,11 +51,17 @@
 
 	function getRoleIdByRoleName(event) {
 		const selectedUserRole = event.target.value;
+		console.log('selectedUserRole', selectedUserRole);
 		const tmp = LocalStorageUtils.getItem('personRoles');
-		const personRoles = JSON.parse(tmp);
-		console.log('personRoles', personRoles);
+		const personRoles = JSON.parse(tmp || '[]');
+		console.log('personRoles from localStorage', personRoles);
+		
+		// Find the role in localStorage data using the RoleName property
 		const selectedRole = personRoles?.find((x) => x.RoleName === selectedUserRole);
+		console.log('selectedRole', selectedRole);
+		
 		if (selectedRole) {
+			// Use the actual id from localStorage
 			selectedUserRoleId = selectedRole.id;
 		}
 	}
@@ -70,10 +82,8 @@
 				SelectedUserRoleId: selectedUserRoleId
 			};
 
-			console.log('password', password);
-
 			const validationResult = createSchema.safeParse(usersCreateModel);
-			console.log(validationResult);
+			console.log('validationResult', validationResult);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -110,15 +120,15 @@
 	};
 
 	onMount(() => {
-		const defaultRole = userRoles?.find((r) => r.Title === 'System User');
+		// Get roles from localStorage (has id and RoleName properties)
+		const tmp = LocalStorageUtils.getItem('personRoles');
+		const personRoles = JSON.parse(tmp || '[]');
+		
+		const defaultRole = personRoles?.find((r) => r.RoleName === 'System user');
 		if (defaultRole) {
-			role = defaultRole.Value;
-			const tmp = LocalStorageUtils.getItem('personRoles');
-			const personRoles = JSON.parse(tmp || '[]');
-			const match = personRoles.find((x) => x.RoleName === defaultRole.Value);
-			if (match) {
-				selectedUserRoleId = match.id;
-			}
+			role = defaultRole.RoleName;
+			// Use the actual id from localStorage
+			selectedUserRoleId = defaultRole.id;
 		}
 	});
 </script>
@@ -214,8 +224,8 @@
 								onchange={getRoleIdByRoleName}
 								placeholder="Select role here..."
 							>
-								{#each userRoles as role}
-									<option value={role.Value}>{role.Title}</option>
+								{#each localStorageRoles as role}
+									<option value={role.RoleName}>{role.RoleName}</option>
 								{/each}
 							</select>
 							<div class="select-icon-container">
