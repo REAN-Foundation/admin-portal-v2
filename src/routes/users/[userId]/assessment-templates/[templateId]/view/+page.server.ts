@@ -9,7 +9,8 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 	const sessionId = event.cookies.get('sessionId');
     const assessmentTemplateId = event.params.templateId;
     const searchParams = {
-        templateId: assessmentTemplateId
+        templateId: assessmentTemplateId,
+        itemsPerPage: 200
     };
     const response = await getAssessmentTemplateById(sessionId, assessmentTemplateId);
     const _assessmentNodes = await searchAssessmentNodes(sessionId, searchParams);
