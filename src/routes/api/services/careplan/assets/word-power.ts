@@ -15,9 +15,9 @@ export const createWordPower = async (
 ) => {
 	const body = {
 		Name: name,
-		Description: description,
+		Description: description ? description : null,
 		AdditionalResources: additionalResources,
-		Tags: tags,
+		Tags: tags ? tags : null,
 		TenantId: tenantId,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
@@ -80,8 +80,8 @@ export const updateWordPower = async (
 ) => {
 	const body = {
 		Name: name,
-		Description: description,
-		Tags: tags,
+		Description: description ? description : null,
+		Tags: tags ? tags : null,
 		TenantId: tenantId,
 		AdditionalResources: additionalResources,
 		Version: !version || version.length === 0 ? 'V 1.0' : version

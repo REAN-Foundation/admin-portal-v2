@@ -15,13 +15,13 @@ export const createMeditation = async (
     tenantId: string
 ) => {
     const body = {
-        Name                  : name,
-        Description           : description,
-        MeditationType        : meditationType,
-        RecommendedDurationMin: recommendedDurationMin,
-        Tags                  : tags,
-        TenantId              : tenantId,
-        Version               : !version || version?.length === 0 ? 'V 1.0' : version
+        Name: name,
+        Description: description ? description : null,
+        MeditationType: meditationType ? meditationType : null,
+        RecommendedDurationMin: recommendedDurationMin ? recommendedDurationMin : null,
+        Tags: tags ? tags : null,
+        TenantId: tenantId,
+        Version: !version || version?.length === 0 ? 'V 1.0' : version
     };
 
     const url = CAREPLAN_BACKEND_API_URL + '/assets/meditations';
@@ -78,13 +78,13 @@ export const updateMeditation = async (
     tenantId: string
 ) => {
     const body = {
-        Name                  : name,
-        Description           : description,
-        MeditationType          : meditationType,
-        RecommendedDurationMin: recommendedDurationMin,
-        Tags                  : tags,
-        TenantId              : tenantId,
-        Version               : !version || version?.length === 0 ? 'V 1.0' : version
+        Name: name,
+        Description: description ? description : null,
+        MeditationType: meditationType ? meditationType : null,
+        RecommendedDurationMin: recommendedDurationMin ? recommendedDurationMin : null,
+        Tags: tags ? tags : null,
+        TenantId: tenantId,
+        Version: !version || version?.length === 0 ? 'V 1.0' : version
     };
 
     const url = CAREPLAN_BACKEND_API_URL + `/assets/meditations/${meditationId}`;
