@@ -449,7 +449,7 @@
 									</select>
 								</td>
 							</tr>
-							{#if $scoringApplicableCondition === true}
+							{#if $scoringApplicableCondition === true && selectedQueryType === 'Single Choice Selection'}
 								<tr class="tables-row">
 									<td class="table-label align-top">Score</td>
 									<td class="table-data">
@@ -478,7 +478,7 @@
 								</select>
 							</td>
 						</tr>
-						{#if $scoringApplicableCondition === true}
+						{#if $scoringApplicableCondition === true && selectedQueryType === 'Boolean'}
 							<tr class="tables-row">
 								<td class="table-label">Score</td>
 								<td class="table-data">
