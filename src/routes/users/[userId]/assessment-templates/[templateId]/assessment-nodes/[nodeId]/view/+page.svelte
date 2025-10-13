@@ -376,7 +376,7 @@
 						</td>
 					</tr>
 				{/if}
-				{#if $scoringApplicableCondition === true}
+				{#if $scoringApplicableCondition === true && (queryType === 'Boolean' || queryType === 'Single Choice Selection')}
 					<tr class="tables-row">
 						<td class="table-label">Score</td>
 						<td class="table-data">
