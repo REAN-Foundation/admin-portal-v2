@@ -268,25 +268,17 @@
 				<tr class="tables-row">
 					<td class="table-label">Profile Image</td>
 					<td class="table-data">
-						{#if imageUrl === undefined}
-							<input
-								name="fileinput"
-								type="file"
-								class="input"
-								placeholder="select Image"
-								onchange={async (e) => await onFileSelected(e)}
-							/>
-						{:else}
+						{#if imageUrl && imageUrl.trim() !== ''}
 							<Image cls="flex h-24 w-24 rounded-lg" source={imageUrl} w="24" h="24" />
-							<input
-								name="fileinput"
-								type="file"
-								class="input my-2"
-								bind:this={profileImage}
-								placeholder="Image"
-								onchange={async (e) => await onFileSelected(e)}
-							/>
 						{/if}
+						<input
+							name="fileinput"
+							type="file"
+							class="input {imageUrl && imageUrl.trim() !== '' ? 'my-2' : ''}"
+							bind:this={profileImage}
+							placeholder="Select Image"
+							onchange={async (e) => await onFileSelected(e)}
+						/>
 						<input type="hidden" name="imageResourceId" value={imageResourceId} />
 						{#if errors?.UploadFile}
 							<p class="text-error">{errors?.UploadFile}</p>
