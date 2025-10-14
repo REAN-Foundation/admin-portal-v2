@@ -39,7 +39,6 @@
 	let endDate = $state(undefined);
 
 	let totalCarePlanCount = $state(data.enrollments.TotalCount);
-	$inspect('totalCarePlanCount', totalCarePlanCount);
 
 	let isSortingName = $state(false);
 	let sortBy = $state('StartDate');
@@ -139,10 +138,10 @@
 			if (field === 'startDate') startDate = keyword;
 			if (field === 'endDate') endDate = keyword;
 			searchEnrollments({
-				carePlan: searchKeyword,
-				displayId,
-				startDate,
-				endDate,
+				carePlan: field === 'carePlan' ? keyword : carePlan,
+				displayId: field === 'displayId' ? keyword : displayId,
+				startDate: field === 'startDate' ? keyword : startDate,
+				endDate: field === 'endDate' ? keyword : endDate,
 				itemsPerPage: paginationSettings.limit,
 				pageIndex: 0,
 				sortBy,
@@ -160,7 +159,7 @@
 		sortBy = columnName;
 
 		searchEnrollments({
-			carePlan: searchKeyword,
+			carePlan,
 			displayId,
 			startDate,
 			endDate,
@@ -174,7 +173,7 @@
 	function onItemsPerPageChange() {
 		paginationSettings.page = 0;
 		searchEnrollments({
-			carePlan: searchKeyword,
+			carePlan,
 			displayId,
 			startDate,
 			endDate,
@@ -187,7 +186,7 @@
 
 	function onPageChange() {
 		searchEnrollments({
-			carePlan: searchKeyword,
+			carePlan,
 			displayId,
 			startDate,
 			endDate,
@@ -261,56 +260,50 @@
 						{/if}
 					</div>
 
-					<div class="relative flex flex-row items-center pr-1.5">
-						<label class="pr-2">Start date</label>
-						<div class="relative w-auto grow">
-							<input
-								type="date"
-								name="startDate"
-								placeholder="Search by start date"
-								bind:value={startDate}
-								oninput={(event) => onSearchInput(event, 'startDate')}
-								class="table-input-field pr-4 pl-10"
-							/>
-							{#if startDate}
+					<div class="relative w-auto grow">
+						<input
+							type="date"
+							name="startDate"
+							placeholder="Search by start date"
+							bind:value={startDate}
+							oninput={(event) => onSearchInput(event, 'startDate')}
+							class="table-input-field !pr-10 !pl-4 placeholder:text-gray-400"
+						/>
+						{#if startDate}
 							<button
 								type="button"
 								onclick={() => {
 									startDate = '';
-									onSearchInput({ target: { name: 'name', value: '' } }, 'startDate');
+									onSearchInput({ target: { name: 'startDate', value: '' } }, 'startDate');
 								}}
 								class="close-btn"
 							>
-								<!-- <Icon icon="material-symbols:close" /> -->
+								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
-						</div>
 					</div>
 
-					<div class="relative flex flex-row items-center pr-1.5">
-						<label class="pr-2">End date</label>
-						<div class="relative w-auto grow">
-							<input
-								type="date"
-								name="endDate"
-								placeholder="Search by end date"
-								bind:value={endDate}
-								oninput={(event) => onSearchInput(event, 'endDate')}
-								class="table-input-field pr-4 pl-10"
-							/>
-							{#if endDate}
+					<div class="relative w-auto grow">
+						<input
+							type="date"
+							name="endDate"
+							placeholder="Search by end date"
+							bind:value={endDate}
+							oninput={(event) => onSearchInput(event, 'endDate')}
+							class="table-input-field !pr-10 !pl-4 placeholder:text-gray-400"
+						/>
+						{#if endDate}
 							<button
 								type="button"
 								onclick={() => {
 									endDate = '';
-									onSearchInput({ target: { name: 'name', value: '' } }, 'endDate');
+									onSearchInput({ target: { name: 'endDate', value: '' } }, 'endDate');
 								}}
 								class="close-btn"
 							>
-								<!-- <Icon icon="material-symbols:close" /> -->
+								<Icon icon="material-symbols:close" />
 							</button>
 						{/if}
-						</div>
 					</div>
 
 					<Button href={createRoute} text="Create Enrollment" variant="primary" />
@@ -321,8 +314,8 @@
 				<table class="table-c min-w-full">
 					<thead>
 						<tr>
-							<th>Id</th>
-							<th>
+							<th class="w-[5%]">Id</th>
+							<th class="w-[25%]">
 								<button onclick={() => sortTable('Participant')}>
 									Participant
 									{#if sortBy === 'Participant'}
@@ -334,7 +327,7 @@
 									{/if}
 								</button>
 							</th>
-							<th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('EnrollmentCode')}>
 									Enrollment Code
 									{#if sortBy === 'EnrollmentCode'}
@@ -346,7 +339,7 @@
 									{/if}
 								</button>
 							</th>
-							<th>
+							<th class="w-[20%]">
 								<button onclick={() => sortTable('Careplan')}>
 									Careplan
 									{#if sortBy === 'Careplan'}
@@ -358,22 +351,24 @@
 									{/if}
 								</button>
 							</th>
-							<th>Start Date</th>
-							<th>End Date</th>
+							<th class="w-[15%]">Start Date</th>
+							<th class="w-[15%]">End Date</th>
 						</tr>
 					</thead>
 					<tbody>
 						{#if retrivedEnrollments.length <= 0}
-							<tr>
-								<td class="text-center" colspan="7"
+							<tr class="text-center">
+								<td class="text-center" colspan="6"
 									>{isLoading ? 'Loading...' : 'No records found'}</td
 								>
 							</tr>
 						{:else}
 							{#each retrivedEnrollments as enrollment, index}
 								<tr>
-									<td>{paginationSettings.page * paginationSettings.limit + index + 1}</td>
 									<td>
+										{paginationSettings.page * paginationSettings.limit + index + 1}
+									</td>
+									<td role="gridcell" aria-colindex={2} tabindex="0">
 										<Tooltip text={enrollment.ParticipantId || 'Not specified'}>
 											<a href={viewRoute(enrollment.id)}>
 												Participant -
@@ -383,12 +378,20 @@
 											</a>
 										</Tooltip>
 									</td>
-									<td>{enrollment.DisplayId}</td>
-									<td>{enrollment.Careplan.Name}</td>
-									<td>
+									<td role="gridcell" aria-colindex={3} tabindex="0">
+										<Tooltip text={enrollment.DisplayId || 'Not specified'}>
+											{enrollment.DisplayId || 'Not specified'}
+										</Tooltip>
+									</td>
+									<td role="gridcell" aria-colindex={4} tabindex="0">
+										<Tooltip text={enrollment.Careplan.Name || 'Not specified'}>
+											{enrollment.Careplan.Name || 'Not specified'}
+										</Tooltip>
+									</td>
+									<td role="gridcell" aria-colindex={5} tabindex="0">
 										{TimeHelper.formatDateToReadable(enrollment.StartDate, LocaleIdentifier.EN_US)}
 									</td>
-									<td>
+									<td role="gridcell" aria-colindex={6} tabindex="0">
 										{TimeHelper.formatDateToReadable(enrollment.EndDate, LocaleIdentifier.EN_US)}
 									</td>
 								</tr>

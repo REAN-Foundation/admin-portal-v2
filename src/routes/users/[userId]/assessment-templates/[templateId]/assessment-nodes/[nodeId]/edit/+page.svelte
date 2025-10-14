@@ -498,7 +498,7 @@
 						{/if}
 					{/if}
 				{:else if selectedNodeType === 'Message'}
-					<tr class="!border-b-secondary-100 dark:!border-b-surface-700 !border-b">
+					<tr class="tables-row !border-b-secondary-100 dark:!border-b-surface-700 !border-b">
 						<td class="table-label">Message <span class="text-red-600">*</span></td>
 						<td class="table-data">
 							<textarea
