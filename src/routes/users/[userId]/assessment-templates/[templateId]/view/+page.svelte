@@ -7,6 +7,7 @@
 	import type { PageServerData } from './$types';
 	import TreeView from '$lib/components/tree-view.svelte';
 	import Button from '$lib/components/button/button.svelte';
+	import { toastMessage } from '$lib/components/toast/toast.store';
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -58,6 +59,41 @@
 		{ name: 'Assessments', path: assessmentsRoutes },
 		{ name: 'View', path: viewRoute }
 	];
+
+	let isExporting = $state(false);
+
+	const handleExport = async () => {
+		try {
+			isExporting = true;
+			const response = await fetch(`/api/server/assessments/assessment-templates/${templateId}/export`, {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
+
+			const result = await response.json();
+			
+			if (result.HttpCode === 200 || result.HttpCode === 201) {
+				toastMessage(result);
+				// Handle file download if the response contains file data
+				if (result.Data && result.Data.fileUrl) {
+					window.open(result.Data.fileUrl, '_blank');
+				}
+			} else {
+				toastMessage(result);
+			}
+		} catch (error) {
+			console.error('Export failed:', error);
+			toastMessage({
+				Status: 'failure',
+				HttpCode: 500,
+				Message: 'Export failed. Please try again.'
+			});
+		} finally {
+			isExporting = false;
+		}
+	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -127,6 +163,15 @@
 	</table>
 	<div class="btn-container">
 		<Button href={nodeRoute} text="Add node" variant="primary" />
+
+		<Button 
+			onclick={handleExport} 
+			text={isExporting ? "Exporting..." : "Export"} 
+			variant="primary" 
+			iconBefore="mdi:download" 
+			iconSize="md"
+			disabled={isExporting}
+		></Button>
 
 		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
 		></Button>

@@ -56,6 +56,8 @@ export const get_ = async (url: string, authorizeUser: boolean = false, sessionI
 		const response = await res.json();
 		const message = response.Message;
 
+		console.log('get_ response', response);
+
 		if (!res.ok) {
 			if (res.status === 500) {
 				throw error(500, { message: res.statusText });
