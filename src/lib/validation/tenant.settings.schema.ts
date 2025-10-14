@@ -376,11 +376,26 @@ export const ConsentSettingsSchema = z.object({
         .optional(),
 });
 
+export const MarketingMaterialSettingsSchema = z.object({
+    TenantId: z.string().optional(),
+    TenantName: z.string().optional(),
+    TenantCode: z.string().optional(),
+    Logo: z.string().optional(),
+    Title: z.string().optional(),
+    Subtitle: z.string().optional(),
+    ProblemIntro: z.string().optional(),
+    BotIntro: z.string().optional(),
+    Features: z.array(z.string()).optional(),
+    Conclusion: z.string().optional(),
+    QrCode: z.string().nullable().optional(),
+});
+
 export const TenantSettingsSchema = z.object({
     Common: CommonSettingsSchema.required(),
     Followup: FollowupSettingsSchema.required(),
     ChatBot: ChatBotSettingsSchema.required(),
     Forms: FormsSettingsSchema.required(),
     Consent: ConsentSettingsSchema.optional(),
+    MarketingMaterial: MarketingMaterialSettingsSchema.optional(),
 });
 

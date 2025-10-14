@@ -1,5 +1,8 @@
 import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY } from '$env/static/private';
-import { get, put } from './common.reancare';
+import { get, put, del, post } from './common.reancare';
+import axios from 'axios';
+import FormData from 'form-data';
+import * as fs from 'fs';
 
 ////////////////////////////////////////////////////////////////
 
@@ -52,10 +55,52 @@ export const updateTenantSettings = async (
 	sessionId: string,
 	tenantId: string,
 	settings: any,
+	type?: string
 ) => {
 	console.log('updateTenantSettings() get called....');
 	const body = settings;
 	console.log("settings update...", JSON.stringify(settings, null, 2));
-	const url = baseUrl + `/${tenantId}`;
+	const url = type ? baseUrl + `/${tenantId}/types/${type}` : baseUrl + `/${tenantId}`;
 	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+};
+
+export const deleteTenantSettings = async (
+	sessionId: string,
+	tenantId: string,
+	type: string
+) => {
+	const url = baseUrl + `/${tenantId}/types/${type}`;
+	return await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+};
+
+export const uploadMarketingMaterialLogo = async (
+	sessionId: string,
+	tenantId: string,
+	file: File
+) => {
+	const url = baseUrl + `/${tenantId}/MarketingMaterial/logo`;
+	const formData = new FormData();
+	formData.append('file', file);
+
+	return await post(sessionId, url, formData, true, API_CLIENT_INTERNAL_KEY);
+};
+
+export const uploadMarketingMaterialQrCode = async (
+	sessionId: string,
+	tenantId: string,
+	file: File
+) => {
+	const url = baseUrl + `/${tenantId}/MarketingMaterial/qrcode`;
+	const formData = new FormData();
+	formData.append('file', file);
+
+	return await post(sessionId, url, formData, true, API_CLIENT_INTERNAL_KEY);
+};
+
+export const exportMarketingMaterialSettings = async (
+	sessionId: string,
+	tenantId: string
+) => {
+	const url = baseUrl + `/${tenantId}/MarketingMaterial/export`;
+	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
 };

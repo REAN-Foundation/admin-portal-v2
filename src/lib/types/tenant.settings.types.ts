@@ -12,7 +12,8 @@ export enum TenantSettingsTypes {
 	Followup = 'Followup',
 	ChatBot = 'ChatBot',
 	Forms = 'Forms',
-	Consent = 'Consent'
+	Consent = 'Consent',
+	MarketingMaterial = 'MarketingMaterial'
 }
 
 export enum WeekDay {
@@ -30,7 +31,8 @@ export const TenantSettingsTypesList = [
 	TenantSettingsTypes.Followup,
 	TenantSettingsTypes.ChatBot,
 	TenantSettingsTypes.Forms,
-	TenantSettingsTypes.Consent
+	TenantSettingsTypes.Consent,
+	TenantSettingsTypes.MarketingMaterial
 ];
 
 export interface UserInterfaces {
@@ -283,6 +285,7 @@ export interface TenantSettingsDomainModel {
 	ChatBot?: ChatBotSettings;
 	Forms?: FormsSettings;
 	Consent?: ConsentSettings;
+	MarketingMaterial?: MarketingMaterialSettings;
 }
 
 export interface TenantSettingsDto extends TenantSettingsDomainModel {
@@ -296,6 +299,26 @@ export interface FaviconUploadModel {
 }
 
 export interface LogoUploadModel {
+	UploadFile: File;
+	FileName: string;
+	FileType: string;
+}
+
+export interface MarketingMaterialSettings {
+	TenantId?: string;
+	TenantName?: string;
+	TenantCode?: string;
+	Logo?: string;
+	Title?: string;
+	Subtitle?: string;
+	ProblemIntro?: string;
+	BotIntro?: string;
+	Features?: string[];
+	Conclusion?: string;
+	QrCode?: string | null;
+}
+
+export interface MarketingMaterialUploadModel {
 	UploadFile: File;
 	FileName: string;
 	FileType: string;

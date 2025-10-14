@@ -31,6 +31,7 @@
 	let formSettingsLink = `${tenantRoute}/${tenantId}/settings/forms-setting`;
 	let followupSettingsLink = `${tenantRoute}/${tenantId}/settings/followup-setting`;
 	let concentSettingsLink = `${tenantRoute}/${tenantId}/settings/consent-setting`;
+	let marketingMaterialSettingsLink = `${tenantRoute}/${tenantId}/settings/marketing-material-setting`;
 
 </script>
 
@@ -91,6 +92,17 @@
 			>
 				<Icon icon="material-symbols:featured-play-list-outline-rounded" class="h-5 w-5 shrink-0" />
 				Follow-up
+			</a>
+
+			<!-- Row 3 -->
+			<a
+				class="btn {page.url.pathname === marketingMaterialSettingsLink
+					? 'variant-filled-secondary'
+					: 'variant-soft-secondary'} flex items-center justify-center gap-2 whitespace-nowrap"
+				href={marketingMaterialSettingsLink}
+			>
+				<Icon icon="material-symbols:campaign-outline" class="h-5 w-5 shrink-0" />
+				Marketing material
 			</a>
 		</div>
 	</div>
