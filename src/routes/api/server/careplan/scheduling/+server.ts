@@ -27,7 +27,7 @@ export const POST = async (event: RequestEvent) => {
             });
         }
 
-        const response = await createCarePlanActivity(sessionId, data.AssetType, data.AssetId, carePlanId, data.ScheduleDay, data.TimeSlot);
+        const response = await createCarePlanActivity(sessionId, data.AssetType, data.AssetId, carePlanId, data.ScheduleDay, data.TimeSlot, data.Sequence);
 
         return ResponseHandler.success(response);
     } catch (error) {
