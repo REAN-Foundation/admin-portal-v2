@@ -7,6 +7,7 @@ import {
 } from '../../../../../../../api/services/reancare/assessments/assessment-nodes';
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import { getAssessmentTemplateById } from '../../../../../../../api/services/reancare/assessments/assessment-templates';
+import { MAX_ITEMS_PER_PAGE } from '$lib/components/utils/helper';
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -17,7 +18,8 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     const templateId = event.params.templateId;
     const assessmentNodeId = event.params.nodeId;
     const searchParams = {
-        templateId: templateId
+        templateId: templateId,
+        itemsPerPage: MAX_ITEMS_PER_PAGE
     };
     const _queryResponseTypes = await getQueryResponseTypes(sessionId);
     const _assessmentNodes = await searchAssessmentNodes(sessionId, searchParams);

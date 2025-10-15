@@ -5,6 +5,7 @@ import {
     searchAssessmentNodes
 } from '../../../../../../api/services/reancare/assessments/assessment-nodes';
 import { getAssessmentTemplateById } from '../../../../../../api/services/reancare/assessments/assessment-templates';
+import { MAX_ITEMS_PER_PAGE } from '$lib/components/utils/helper';
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -12,7 +13,9 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
     const sessionId = event.cookies.get('sessionId');
     const templateId = event.params.templateId;
     const searchParams = {
-        templateId: templateId
+        templateId: templateId,
+        itemsPerPage: MAX_ITEMS_PER_PAGE
+        
     };
     const _queryResponseTypes = await getQueryResponseTypes(sessionId);
     const response = await searchAssessmentNodes(sessionId, searchParams);
