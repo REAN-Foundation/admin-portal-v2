@@ -177,6 +177,12 @@
 							{#if assessmentType !== 'Custom'}
 								<option>Custom</option>
 							{/if}
+                            {#if assessmentType !== 'User Registration'}
+								<option>User Registration</option>
+							{/if}
+                            {#if assessmentType !== 'Clinical'}
+                            <option>Clinical</option>
+							{/if}
 						</select>
 						<div class="select-icon-container">
 							<Icon icon="mdi:chevron-down" class="select-icon" />

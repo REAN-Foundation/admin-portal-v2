@@ -27,6 +27,7 @@
 								<th class="text-start">Asset Type</th>
 								<th class="text-start">Code</th>
 								<th class="text-start">Time Slot</th>
+								<th class="text-start">Sequence</th>
 								<th class="w-20 text-center">Actions</th>
 							</tr>
 						</thead>
@@ -37,6 +38,7 @@
 									<td>{activity.AssetType}</td>
 									<td>{activity.Code}</td>
 									<td>{activity.TimeSlot}</td>
+									<td>{activity.Sequence || 'Not specified'}</td>
 									<td>
 										<div class="flex">
 											<Tooltip text="Edit" forceShow={true}>
