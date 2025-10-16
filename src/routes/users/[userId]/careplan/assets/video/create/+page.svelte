@@ -37,8 +37,7 @@
 			path: assetRoute
 		},
 		{
-			name: 'Video',
-			path: createRoute
+			name: 'Video'
 		},
 		{
 			name: 'Create',
