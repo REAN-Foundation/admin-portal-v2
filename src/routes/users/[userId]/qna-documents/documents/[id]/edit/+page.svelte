@@ -455,7 +455,7 @@
 								bind:value={chunkingStrategy}
 								placeholder="Select type here..."
 							>
-								<option>Recursive Structure Aaware Splitting</option>
+								<option>Recursive Structure Aware Splitting</option>
 								<option>Structure Aware Splitting</option>
 								<option>Content Aware Splitting</option>
 								<option>NPL chunking</option>
