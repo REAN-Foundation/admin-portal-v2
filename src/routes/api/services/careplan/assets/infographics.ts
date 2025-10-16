@@ -14,12 +14,12 @@ export const createInfographics = async (
 	tenantId: string
 ) => {
 	const body = {
-		Name        : name,
-		Description : description,
-		Url         : pathUrl,
-		Tags        : tags,
-		TenantId    : tenantId,
-		Version     : !version || version?.length === 0 ? 'V 1.0' : version
+		Name: name,
+		Description: description ? description : null,
+		Url: pathUrl,
+		Tags: tags ? tags : null,
+		TenantId: tenantId,
+		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
 
 	const url = CAREPLAN_BACKEND_API_URL + '/assets/infographics';
@@ -75,12 +75,12 @@ export const updateInfographics = async (
 	tenantId: string
 ) => {
 	const body = {
-		Name        : name,
-		Description : description,
-		Url         : pathUrl,
-		Tags        : tags,
-		TenantId    : tenantId,
-		Version     : !version || version?.length === 0 ? 'V 1.0' : version
+		Name: name,
+		Description: description ? description : null,
+		Url: pathUrl ? pathUrl : null,
+		Tags: tags ? tags : null,
+		TenantId: tenantId,
+		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
 
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/infographics/${infographicsId}`;

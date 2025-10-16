@@ -14,12 +14,12 @@ export const createAudio = async (
 	tenantId: string,
 ) => {
 	const body = {
-		Name       : name,
-		Transcript : transcript,
-		Url        : pathUrl,
-		Tags       : tags,
-		TenantId   : tenantId,
-		Version    : !version || version?.length === 0 ? 'V 1.0' : version
+		Name: name,
+		Transcript: transcript ? transcript : null,
+		Url: pathUrl ? pathUrl : null,
+		Tags: tags ? tags : null,
+		TenantId: tenantId,
+		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
 
 	const url = CAREPLAN_BACKEND_API_URL + '/assets/audio';
@@ -75,12 +75,12 @@ export const updateAudio = async (
 	tenantId: string
 ) => {
 	const body = {
-		Name       : name,
-		Transcript : transcript,
-		Url        : pathUrl,
-		Tags       : tags,
-		TenantId   : tenantId,
-		Version    : !version || version?.length === 0 ? 'V 1.0' : version
+		Name: name,
+		Transcript: transcript ? transcript : null,
+		Url: pathUrl ? pathUrl : null,
+		Tags: tags ? tags : null,
+		TenantId: tenantId,
+		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
 
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/audio/${audioId}`;

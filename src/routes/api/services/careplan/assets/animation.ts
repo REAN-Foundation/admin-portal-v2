@@ -15,9 +15,9 @@ export const createAnimation = async (
 ) => {
 	const body = {
 		Name: name,
-		Transcript: transcript,
-		Url: pathUrl,
-		Tags: tags,
+		Transcript: transcript ? transcript : null,
+		Url: pathUrl ? pathUrl : null,
+		Tags: tags ? tags : null,
 		TenantId: tenantId,
 		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
@@ -79,9 +79,9 @@ export const updateAnimation = async (
 ) => {
 	const body = {
 		Name: name,
-		Transcript: transcript,
-		Url: pathUrl,
-		Tags: tags,
+		Transcript: transcript ? transcript : null,
+		Url: pathUrl ? pathUrl : null,
+		Tags: tags ? tags : null,
 		Version: !version || version?.length === 0 ? 'V 1.0' : version,
 		TenantId: tenantId,
 	};

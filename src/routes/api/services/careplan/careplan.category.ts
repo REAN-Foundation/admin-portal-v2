@@ -13,7 +13,7 @@ export const createCareplanCategory = async (
 ) => {
     const body = {
         Type: type,
-        Description: description,
+        Description: description?description:null,
         TenantId: tenantId
     }
     const url = CAREPLAN_BACKEND_API_URL + '/careplan-categories';
@@ -72,7 +72,7 @@ export const updateCareplanCategory = async (
 ) => {
     const body = {
         Type: type,
-        Description: description,
+        Description: description?description:null,
     }
     const url = CAREPLAN_BACKEND_API_URL + `/careplan-categories/${categoryId}`;
     const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);

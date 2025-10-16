@@ -15,9 +15,9 @@ export const createArticle = async (
 ) => {
 	const body = {
 		Name: name,
-		Summary: summary,
-		Url: pathUrl,
-		Tags: tags,
+		Summary: summary ? summary : null,
+		Url: pathUrl ? pathUrl : null,
+		Tags: tags ? tags : null,
 		TenantId: tenantId,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
@@ -79,9 +79,9 @@ export const updateArticle = async (
 ) => {
 	const body = {
 		Name: name,
-		Summary: summary,
-		Url: pathUrl,
-		Tags: tags,
+		Summary: summary ? summary : null,
+		Url: pathUrl ? pathUrl : null,
+		Tags: tags ? tags : null,
 		TenantId: tenantId,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};

@@ -14,8 +14,8 @@ export const createReflection = async (
 ) => {
 	const body = {
 		Name: name,
-		Description: description,
-		Tags: tags,
+		Description: description ? description : null,
+		Tags: tags ? tags : null,
 		Version: !version || version.length === 0 ? 'V 1.0' : version,
 		TenantId: tenantId,
 	};
@@ -78,8 +78,8 @@ export const updateReflection = async (
 ) => {
 	const body = {
 		Name: name,
-		Description: description,
-		Tags: tags,
+		Description: description ? description : null,
+		Tags: tags ? tags : null,
 		Version: !version || version.length === 0 ? 'V 1.0' : version,
 		TenantId: tenantId,
 	};

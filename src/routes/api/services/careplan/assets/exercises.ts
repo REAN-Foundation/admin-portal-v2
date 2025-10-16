@@ -16,14 +16,14 @@ export const createExercise = async (
 	tenantId: string
 ) => {
 	const body = {
-		Name                  : name,
-		Description           : description,
-		ExerciseType          : exerciseType,
-		IntensityLevel        : intensityLevel,
-		RecommendedDurationMin: recommendedDurationMin,
-		Tags                  : tags,
-		TenantId              : tenantId,
-		Version               : !version || version?.length === 0 ? 'V 1.0' : version
+		Name: name,
+		Description: description ? description : null,
+		ExerciseType: exerciseType ? exerciseType : null,
+		IntensityLevel: intensityLevel ? intensityLevel : null,
+		RecommendedDurationMin: recommendedDurationMin ? recommendedDurationMin : null,
+		Tags: tags ? tags : null,
+		TenantId: tenantId,
+		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
 
 	const url = CAREPLAN_BACKEND_API_URL + '/assets/exercises';
@@ -81,14 +81,14 @@ export const updateExercise = async (
 	tenantId: string
 ) => {
 	const body = {
-		Name                  : name,
-		Description           : description,
-		ExerciseType          : exerciseType,
-		IntensityLevel        : intensityLevel,
-		RecommendedDurationMin: recommendedDurationMin,
-		Tags                  : tags,
-		TenantId              : tenantId,
-		Version               : !version || version?.length === 0 ? 'V 1.0' : version
+		Name: name,
+		Description: description ? description : null,
+		ExerciseType: exerciseType ? exerciseType : null,
+		IntensityLevel: intensityLevel ? intensityLevel : null,
+		RecommendedDurationMin: recommendedDurationMin ? recommendedDurationMin : null,
+		Tags: tags ? tags : null,
+		TenantId: tenantId,
+		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
 
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/exercises/${exerciseId}`;

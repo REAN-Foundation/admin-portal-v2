@@ -17,15 +17,15 @@ export const createMessage = async (
 	templateVariables?: { [key: string]: any }
 ) => {
 	const body = {
-		Name              : name,
-		Description       : description,
-		MessageType       : messageType,
-		TemplateName      : templateName,
-		TemplateVariables : templateVariables || {},
-		Url               : pathUrl,
-		Tags              : tags,
-		TenantId          : tenantId,
-		Version           : !version || version?.length === 0 ? 'V 1.0' : version
+		Name: name,
+		Description: description ? description : null,
+		MessageType: messageType ? messageType : null,
+		TemplateName: templateName ? templateName : null,
+		TemplateVariables: templateVariables || {},
+		Url: pathUrl ? pathUrl : null,
+		Tags: tags ? tags : null,
+		TenantId: tenantId,
+		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
 
 	const url = CAREPLAN_BACKEND_API_URL + '/assets/messages';
@@ -84,15 +84,15 @@ export const updateMessage = async (
 	templateVariables?: { [key: string]: any }
 ) => {
 	const body = {
-		Name              : name,
-		Description       : description ? description : '',
-		MessageType       : messageType,
-		TemplateName      : templateName,
-		TemplateVariables : templateVariables ? templateVariables : {},
-		Url               : pathUrl,
-		Tags              : tags,
-		TenantId          : tenantId,
-		Version           : !version || version?.length === 0 ? 'V 1.0' : version
+		Name: name,
+		Description: description ? description : null,
+		MessageType: messageType ? messageType : null,
+		TemplateName: templateName ? templateName : null,
+		TemplateVariables: templateVariables ? templateVariables : {},
+		Url: pathUrl ? pathUrl : null,
+		Tags: tags ? tags : null,
+		TenantId: tenantId,
+		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
 
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/messages/${messageId}`;

@@ -32,7 +32,7 @@ export const createCareplan = async (
 		OwnerUserId: ownerUserId,
 		TenantId: tenantId,
 		Description: description ? description : null,
-		Tags: tags,
+		Tags: tags ? tags : null,
 		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
 
