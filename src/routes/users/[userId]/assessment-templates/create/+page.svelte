@@ -152,6 +152,8 @@
 							<option>Survey</option>
 							<option>Protocol</option>
 							<option>Custom</option>
+                            <option>User Registration</option>
+                            <option>Clinical</option>
 							
 						</select>
 						<div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">

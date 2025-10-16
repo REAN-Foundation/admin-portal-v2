@@ -16,10 +16,10 @@ export const createVideo = async (
 ) => {
 	const body = {
 		Name: name,
-		Transcript: transcript,
-		Url: pathUrl,
+		Transcript: transcript ? transcript : null,
+		Url: pathUrl ? pathUrl : null,
 		OwnerUserId: userId,
-		Tags: tags,
+		Tags: tags ? tags : null,
 		TenantId: tenantId,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
@@ -83,9 +83,9 @@ export const updateVideo = async (
 ) => {
 	const body = {
 		Name: name,
-		Transcript: transcript,
-		Url: pathUrl,
-		Tags: tags,
+		Transcript: transcript ? transcript : null,
+		Url: pathUrl ? pathUrl : null,
+		Tags: tags ? tags : null,
 		TenantId: tenantId,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};

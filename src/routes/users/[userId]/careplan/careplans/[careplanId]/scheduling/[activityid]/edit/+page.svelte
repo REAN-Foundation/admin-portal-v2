@@ -36,12 +36,14 @@
 	let timeSlot = $state(data.careplanActivitiy.TimeSlot);
 	let day = $state(data.careplanActivitiy.Day);
 	let assetType = $state(data.careplanActivitiy.AssetType);
+	let sequence = $state(data.careplanActivitiy.Sequence || '');
 
 	function handleReset() {
 		assetType = data.careplanActivitiy.AssetType;
 		assetId = data.careplanActivitiy.AssetId;
 		timeSlot = data.careplanActivitiy.TimeSlot;
 		day = data.careplanActivitiy.Day;
+		sequence = data.careplanActivitiy.Sequence || '';
 		errors = {};
 	}
 
@@ -87,13 +89,14 @@
 		'Word power': 'word-power'
 	};
 
-	let selectedAssetType = assetType;
+	let selectedAssetType = $state(assetType);
 
 	const onSelectAssetType = async (e) => {
-		selectedAssetType = e.currentTarget.value;
+		const newAssetType = e.currentTarget.value;
+		selectedAssetType = newAssetType;
 		await searchAssets({
 			sessionId: data.sessionId,
-			selectedAssetType
+			selectedAssetType: newAssetType
 		});
 	};
 
@@ -126,7 +129,8 @@
 				AssetType: assetType,
 				AssetId: assetId,
 				ScheduleDay: day,
-				TimeSlot: timeSlot
+				TimeSlot: timeSlot,
+				Sequence: sequence && sequence !== '' ? Number(sequence) : undefined
 			};
 
 			const validationResult = createOrUpdatSchedulingeSchema.safeParse(
@@ -261,6 +265,24 @@
 						{/if}
 					</td>
 				</tr>
+
+				<tr class="tables-row">
+					<td class="table-label">Sequence</td>
+					<td class="table-data">
+						<input
+							type="number"
+							min="1"
+							name="sequence"
+							bind:value={sequence}
+							placeholder="Enter sequence number..."
+							class="input {errors?.Sequence ? 'input-text-error' : ''}"
+						/>
+						{#if errors?.Sequence}
+							<p class="error-text">{errors?.Sequence}</p>
+						{/if}
+					</td>
+				</tr>
+
 			</tbody>
 		</table>
 

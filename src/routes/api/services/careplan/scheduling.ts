@@ -10,7 +10,8 @@ export const createCarePlanActivity = async (
 	assetId_: string,
 	careplanId: string,
 	day: number,
-	timeSlot: string
+	timeSlot: string,
+	sequence?: number
 ) => {
 	const url = CAREPLAN_BACKEND_API_URL + '/careplan-activities';
 	const body = {
@@ -18,7 +19,8 @@ export const createCarePlanActivity = async (
 		AssetId: assetId_,
 		CareplanId: careplanId,
 		Day: day,
-		TimeSlot: timeSlot
+		TimeSlot: timeSlot,
+		...(sequence !== undefined && sequence !== null && { Sequence: sequence })
 	};
 	const result = await post(sessionId, url, body, true);
 
@@ -77,7 +79,8 @@ export const updateCarePlanActivity = async (
 	assetId_: string,
 	careplanId: string,
 	day: number,
-	timeSlot: string
+	timeSlot: string,
+	sequence?: number
 ) => {
 	const url = CAREPLAN_BACKEND_API_URL + `/careplan-activities/${careplanActivityId}`;
 	const body = {
@@ -85,7 +88,8 @@ export const updateCarePlanActivity = async (
 		AssetId: assetId_,
 		CareplanId: careplanId,
 		Day: day,
-		TimeSlot: timeSlot
+		TimeSlot: timeSlot,
+		...(sequence !== undefined && sequence !== null && { Sequence: sequence })
 	};
 	const result = await put(sessionId, url, body, true);
 

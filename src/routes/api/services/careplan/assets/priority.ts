@@ -14,8 +14,8 @@ export const createPriority = async (
 ) => {
 	const body = {
 		Name: name,
-		Description: description,
-		Tags: tags,
+		Description: description ? description : null,
+		Tags: tags ? tags : null,
 		TenantId: tenantId,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
@@ -78,8 +78,8 @@ export const updatePriority = async (
 ) => {
 	const body = {
 		Name: name,
-		Description: description,
-		Tags: tags,
+		Description: description ? description : null,
+		Tags: tags ? tags : null,
 		TenantId: tenantId,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
