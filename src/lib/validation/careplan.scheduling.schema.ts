@@ -21,7 +21,12 @@ export const createOrUpdatSchedulingeSchema = z.object({
 		{
 			required_error: 'TimeSlot is required.',
 			invalid_type_error: 'TimeSlot must be a string.'
-		})
+		}),
+	Sequence: z.union([
+		z.coerce.number().min(1, { message: 'Sequence must be at least 1.' }),
+		z.literal(''),
+		z.undefined()
+	]).optional()
 
 });
 

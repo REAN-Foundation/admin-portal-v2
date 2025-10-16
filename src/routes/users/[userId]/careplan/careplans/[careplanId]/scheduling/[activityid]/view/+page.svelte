@@ -21,6 +21,7 @@
 	let name = $state(data.careplanActivity.Asset.Name);
 	let timeslot = $state(data.careplanActivity.TimeSlot);
 	let day = $state(data.careplanActivity.Day);
+	let sequence = $state(data.careplanActivity.Sequence);
 
 	const breadCrumbs = [
 		{
@@ -64,6 +65,10 @@
 			<tr class="tables-row">
 				<td class="table-label">Time Slot</td>
 				<td class="table-data">{timeslot}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Sequence</td>
+				<td class="table-data">{sequence || 'Not specified'}</td>
 			</tr>
 		</tbody>
 	</table>

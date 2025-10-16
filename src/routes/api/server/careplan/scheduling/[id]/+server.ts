@@ -105,7 +105,8 @@ export const PUT = async (event: RequestEvent) => {
 			data.AssetId,
 			careplanId,
 			data.ScheduleDay,
-			data.TimeSlot
+			data.TimeSlot,
+			data.Sequence
 		);
 
 		return ResponseHandler.success(response);
