@@ -47,6 +47,13 @@
 	let disabled = $state(true);
 	let edit = $state(false);
 
+	// Ensure Features array is always initialized
+	$effect(() => {
+		if (!marketingMaterialSetting.Features) {
+			marketingMaterialSetting.Features = [];
+		}
+	});
+
 	const handleEditClick = async () => {
 		disabled = !disabled;
 		edit = !edit;
@@ -164,10 +171,16 @@
 
 	const addFeature = () => {
 		if (newFeature.trim()) {
+			// Ensure Features array exists
+			if (!marketingMaterialSetting.Features) {
+				marketingMaterialSetting.Features = [];
+			}
 			marketingMaterialSetting.Features = [
-				...(marketingMaterialSetting.Features || []),
+				...marketingMaterialSetting.Features,
 				newFeature.trim()
 			];
+			console.log('Added feature:', newFeature.trim());
+			console.log('Current features:', marketingMaterialSetting.Features);
 			newFeature = '';
 		}
 	};
@@ -175,6 +188,8 @@
 	const removeFeature = (index: number) => {
 		marketingMaterialSetting.Features =
 			marketingMaterialSetting.Features?.filter((_, i) => i !== index) || [];
+		console.log('Removed feature at index:', index);
+		console.log('Current features:', marketingMaterialSetting.Features);
 	};
 
 	const handleSubmit = async (event: Event) => {
@@ -337,29 +352,6 @@
 				<table class="table-c">
 					<thead> </thead>
 					<tbody>
-						<!-- Logo -->
-						<tr>
-							<td>
-								<label for="logo-upload" class="text-sm font-medium text-[var(--color-info)]"
-									>Logo</label
-								>
-							</td>
-							<td>
-								<input
-									id="logo-upload"
-									type="file"
-									accept="image/*"
-									onchange={handleLogoUpload}
-									{disabled}
-									class="input-field"
-								/>
-								{#if logoUrl}
-									<div class="mt-2">
-										<img src={logoUrl} alt="Logo" class="h-16 w-16 object-contain" />
-									</div>
-								{/if}
-							</td>
-						</tr>
 
 						<!-- Title -->
 						<tr>
@@ -427,6 +419,30 @@
 							</td>
 						</tr>
 
+												<!-- Logo -->
+						<tr>
+							<td>
+								<label for="logo-upload" class="text-sm font-medium text-[var(--color-info)]"
+									>Logo</label
+								>
+							</td>
+							<td>
+								<input
+									id="logo-upload"
+									type="file"
+									accept="image/*"
+									onchange={handleLogoUpload}
+									{disabled}
+									class="input-field"
+								/>
+								{#if logoUrl}
+									<div class="mt-2">
+										<img src={logoUrl} alt="Logo" class="h-16 w-16 object-contain" />
+									</div>
+								{/if}
+							</td>
+						</tr>
+
 						<!-- Features -->
 						<tr>
 							<td>
@@ -472,6 +488,8 @@
 												</div>
 											{/each}
 										</div>
+									{:else}
+										<div class="text-sm text-gray-500 italic">No features added yet</div>
 									{/if}
 								</div>
 							</td>
