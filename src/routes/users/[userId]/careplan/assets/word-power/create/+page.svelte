@@ -37,8 +37,7 @@
 			path: assetRoute
 		},
 		{
-			name: 'Word power',
-			path: createRoute
+			name: 'Word power'
 		},
 		{
 			name: 'Create',
