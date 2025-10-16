@@ -376,6 +376,18 @@ export const ConsentSettingsSchema = z.object({
         .optional(),
 });
 
+const FeatureSchema = z.object({
+    Logo: z.string().optional(),
+    Title: z.string({
+        required_error: "Feature title is required",
+        invalid_type_error: "Feature title must be a string",
+    }),
+    Description: z.string({
+        required_error: "Feature description is required",
+        invalid_type_error: "Feature description must be a string",
+    }),
+});
+
 export const MarketingMaterialSettingsSchema = z.object({
     TenantId: z.string().optional(),
     TenantName: z.string().optional(),
@@ -385,7 +397,7 @@ export const MarketingMaterialSettingsSchema = z.object({
     Subtitle: z.string().optional(),
     ProblemIntro: z.string().optional(),
     BotIntro: z.string().optional(),
-    Features: z.array(z.string()).optional(),
+    Features: z.array(FeatureSchema).optional(),
     Conclusion: z.string().optional(),
     QrCode: z.string().nullable().optional(),
 });

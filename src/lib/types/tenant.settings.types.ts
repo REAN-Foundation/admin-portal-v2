@@ -304,6 +304,12 @@ export interface LogoUploadModel {
 	FileType: string;
 }
 
+export interface Feature {
+	Logo?: string;
+	Title: string;
+	Description: string;
+}
+
 export interface MarketingMaterialSettings {
 	TenantId?: string;
 	TenantName?: string;
@@ -313,7 +319,7 @@ export interface MarketingMaterialSettings {
 	Subtitle?: string;
 	ProblemIntro?: string;
 	BotIntro?: string;
-	Features?: string[];
+	Features?: Feature[];
 	Conclusion?: string;
 	QrCode?: string | null;
 }
