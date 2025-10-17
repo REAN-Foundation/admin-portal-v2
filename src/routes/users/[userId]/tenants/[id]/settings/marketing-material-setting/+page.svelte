@@ -6,7 +6,8 @@
 	import type {
 		MarketingMaterialSettings,
 		MarketingMaterialUploadModel,
-		Feature
+		Feature,
+		Benefit
 	} from '$lib/types/tenant.settings.types.js';
 	import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema.js';
 
@@ -26,6 +27,51 @@
 		TenantId: tenantId,
 		TenantName: tenantName,
 		TenantCode: tenantCode,
+
+		// Branding & Logos
+		PrimaryLogo: data.marketingMaterialSettings?.PrimaryLogo || '',
+		SecondaryLogo: data.marketingMaterialSettings?.SecondaryLogo || '',
+		ReanLogo: data.marketingMaterialSettings?.ReanLogo || '',
+
+		// Color Scheme
+		PrimaryColor: data.marketingMaterialSettings?.PrimaryColor || '#E53935',
+		SecondaryColor: data.marketingMaterialSettings?.SecondaryColor || '#25D366',
+		AccentColor: data.marketingMaterialSettings?.AccentColor || '#00ACC1',
+		BackgroundLight: data.marketingMaterialSettings?.BackgroundLight || '#FFF3E0',
+		TextDark: data.marketingMaterialSettings?.TextDark || '#333333',
+		TextLight: data.marketingMaterialSettings?.TextLight || '#666666',
+
+		// Hero Section (Page 1)
+		HeroMainTitle: data.marketingMaterialSettings?.HeroMainTitle || '',
+		HeroSubtitle: data.marketingMaterialSettings?.HeroSubtitle || '',
+		HeroImage: data.marketingMaterialSettings?.HeroImage || '',
+		ChatQuestion: data.marketingMaterialSettings?.ChatQuestion || '',
+		ChatAnswer: data.marketingMaterialSettings?.ChatAnswer || '',
+
+		// Main Description
+		DescriptionHeading: data.marketingMaterialSettings?.DescriptionHeading || '',
+		IntroParagraph: data.marketingMaterialSettings?.IntroParagraph || '',
+		FeaturesParagraph: data.marketingMaterialSettings?.FeaturesParagraph || '',
+
+		// Benefits (Page 2)
+		BenefitsHeading: data.marketingMaterialSettings?.BenefitsHeading || 'Benefits to you',
+		Benefits: data.marketingMaterialSettings?.Benefits || [],
+
+		// Target Audience
+		TargetHeading: data.marketingMaterialSettings?.TargetHeading || 'Who should use this?',
+		TargetParagraph1: data.marketingMaterialSettings?.TargetParagraph1 || '',
+		TargetParagraph2: data.marketingMaterialSettings?.TargetParagraph2 || '',
+		PhoneMockup: data.marketingMaterialSettings?.PhoneMockup || '',
+		MockupQuestion: data.marketingMaterialSettings?.MockupQuestion || '',
+		MockupAnswer: data.marketingMaterialSettings?.MockupAnswer || '',
+
+		// Call to Action
+		CtaHeading: data.marketingMaterialSettings?.CtaHeading || 'Register by messaging us on',
+		WhatsappNumber: data.marketingMaterialSettings?.WhatsappNumber || '',
+		QrCodeData: data.marketingMaterialSettings?.QrCodeData || '',
+		QrInstruction: data.marketingMaterialSettings?.QrInstruction || '',
+
+		// Legacy fields (keeping for backward compatibility)
 		Logo: data.marketingMaterialSettings?.Logo || '',
 		Title: data.marketingMaterialSettings?.Title || '',
 		Subtitle: data.marketingMaterialSettings?.Subtitle || '',
@@ -36,29 +82,43 @@
 		QrCode: data.marketingMaterialSettings?.QrCode || null
 	});
 
-	let logoUrl = $derived(marketingMaterialSetting.Logo || '');
-	let logoUrlResult = $state('');
-	let fileName = $state('');
-	let logoName = $state('');
+	// File upload states
+	let primaryLogoUrl = $derived(marketingMaterialSetting.PrimaryLogo || '');
+	let secondaryLogoUrl = $derived(marketingMaterialSetting.SecondaryLogo || '');
+	let reanLogoUrl = $derived(marketingMaterialSetting.ReanLogo || '');
+	let heroImageUrl = $derived(marketingMaterialSetting.HeroImage || '');
+	let phoneMockupUrl = $derived(marketingMaterialSetting.PhoneMockup || '');
 	let qrCodeUrl = $derived(marketingMaterialSetting.QrCode || '');
-	let qrCodeUrlResult = $state('');
-	let qrCodeName = $state('');
-	let newFeature: Feature = $state({
-		Logo: '',
+
+	let newBenefit: Benefit = $state({
+		Icon: '',
 		Title: '',
 		Description: ''
 	});
 
 	let disabled = $state(true);
 	let edit = $state(false);
-	let editingFeatureIndex = $state(-1);
+	let editingBenefitIndex = $state(-1);
+	let activeSections = $state(new Set([]));
 
-	// Ensure Features array is always initialized
+	// Ensure arrays are always initialized
 	$effect(() => {
 		if (!marketingMaterialSetting.Features) {
 			marketingMaterialSetting.Features = [];
 		}
+		if (!marketingMaterialSetting.Benefits) {
+			marketingMaterialSetting.Benefits = [];
+		}
 	});
+
+	const toggleSection = (sectionId: string) => {
+		if (activeSections.has(sectionId)) {
+			activeSections.delete(sectionId);
+		} else {
+			activeSections.add(sectionId);
+		}
+		activeSections = new Set(activeSections);
+	};
 
 	const handleEditClick = async () => {
 		if (!edit) {
@@ -79,7 +139,7 @@
 		disabled = !disabled;
 	};
 
-	const handleLogoUpload = async (event: Event) => {
+	const handleFileUpload = async (event: Event, uploadType: string) => {
 		const target = event.target as HTMLInputElement;
 		const file = target.files?.[0];
 
@@ -104,11 +164,10 @@
 
 		const formData = new FormData();
 		formData.append('file', file);
-		logoName = file.name;
 
 		try {
 			const response = await fetch(
-				`/api/server/tenants/settings/${tenantId}/MarketingMaterial/logo`,
+				`/api/server/tenants/settings/${tenantId}/MarketingMaterial/${uploadType}`,
 				{
 					method: 'POST',
 					body: formData
@@ -117,79 +176,45 @@
 
 			const result = await response.json();
 			if (result.HttpCode === 200 || result.HttpCode === 201) {
-				logoUrlResult = result.Data.Url;
-				marketingMaterialSetting.Logo = result.Data.Url;
-				logoUrl = result.Data.Url;
-				toastMessage(result);
-			} else {
-				toastMessage(result);
-			}
-		} catch (error) {
-			console.error('Logo upload failed:', error);
-			toastMessage({
-				Status: 'failure',
-				HttpCode: 500,
-				Message: 'Logo upload failed. Please try again.'
-			});
-		}
-	};
-
-	const handleQrCodeUpload = async (event: Event) => {
-		const target = event.target as HTMLInputElement;
-		const file = target.files?.[0];
-
-		if (!file) return;
-
-		const uploadModel: MarketingMaterialUploadModel = {
-			UploadFile: file,
-			FileName: file.name,
-			FileType: file.type
-		};
-
-		const validationResult = imageUploadSchema.safeParse(uploadModel);
-		if (!validationResult.success) {
-			errors = Object.fromEntries(
-				Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-					key,
-					val?.[0] || 'This field is required'
-				])
-			);
-			return;
-		}
-
-		const formData = new FormData();
-		formData.append('file', file);
-		qrCodeName = file.name;
-
-		try {
-			const response = await fetch(
-				`/api/server/tenants/settings/${tenantId}/MarketingMaterial/qrcode`,
-				{
-					method: 'POST',
-					body: formData
+				// Update the appropriate field based on upload type
+				switch (uploadType) {
+					case 'primary-logo':
+						marketingMaterialSetting.PrimaryLogo = result.Data.Url;
+						break;
+					case 'secondary-logo':
+						marketingMaterialSetting.SecondaryLogo = result.Data.Url;
+						break;
+					case 'rean-logo':
+						marketingMaterialSetting.ReanLogo = result.Data.Url;
+						break;
+					case 'hero-image':
+						marketingMaterialSetting.HeroImage = result.Data.Url;
+						break;
+					case 'phone-mockup':
+						marketingMaterialSetting.PhoneMockup = result.Data.Url;
+						break;
+					case 'qrcode':
+						marketingMaterialSetting.QrCode = result.Data.Url;
+						break;
+					case 'feature-logo':
+						// This will be handled by the specific benefit upload function
+						return result.Data.Url;
 				}
-			);
-
-			const result = await response.json();
-			if (result.HttpCode === 200 || result.HttpCode === 201) {
-				qrCodeUrlResult = result.Data.Url;
-				marketingMaterialSetting.QrCode = result.Data.Url;
-				qrCodeUrl = result.Data.Url;
 				toastMessage(result);
 			} else {
 				toastMessage(result);
 			}
 		} catch (error) {
-			console.error('QR Code upload failed:', error);
+			console.error(`${uploadType} upload failed:`, error);
 			toastMessage({
 				Status: 'failure',
 				HttpCode: 500,
-				Message: 'QR Code upload failed. Please try again.'
+				Message: `${uploadType} upload failed. Please try again.`
 			});
 		}
 	};
 
-	const handleNewFeatureLogoUpload = async (event: Event) => {
+	const handleBenefitIconUpload = async (event: Event) => {
 		const target = event.target as HTMLInputElement;
 		const file = target.files?.[0];
 
@@ -226,147 +251,95 @@
 
 			const result = await response.json();
 			if (result.HttpCode === 200 || result.HttpCode === 201) {
-				newFeature.Logo = result.Data.Url;
+				newBenefit.Icon = result.Data.Url;
 				toastMessage(result);
 			} else {
 				toastMessage(result);
 			}
 		} catch (error) {
-			console.error('Feature logo upload failed:', error);
+			console.error('Benefit icon upload failed:', error);
 			toastMessage({
 				Status: 'failure',
 				HttpCode: 500,
-				Message: 'Feature logo upload failed. Please try again.'
+				Message: 'Benefit icon upload failed. Please try again.'
 			});
 		}
 	};
 
-	const handleFeatureLogoUpload = async (event: Event, featureIndex: number) => {
-		const target = event.target as HTMLInputElement;
-		const file = target.files?.[0];
-
-		if (!file) return;
-
-		const uploadModel: MarketingMaterialUploadModel = {
-			UploadFile: file,
-			FileName: file.name,
-			FileType: file.type
-		};
-
-		const validationResult = imageUploadSchema.safeParse(uploadModel);
-		if (!validationResult.success) {
-			errors = Object.fromEntries(
-				Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-					key,
-					val?.[0] || 'This field is required'
-				])
-			);
-			return;
-		}
-
-		const formData = new FormData();
-		formData.append('file', file);
-
-		try {
-			const response = await fetch(
-				`/api/server/tenants/settings/${tenantId}/MarketingMaterial/feature-logo`,
-				{
-					method: 'POST',
-					body: formData
-				}
-			);
-
-			const result = await response.json();
-			if (result.HttpCode === 200 || result.HttpCode === 201) {
-				// Update the specific feature's logo
-				if (marketingMaterialSetting.Features && marketingMaterialSetting.Features[featureIndex]) {
-					marketingMaterialSetting.Features[featureIndex].Logo = result.Data.Url;
-				}
-				toastMessage(result);
-			} else {
-				toastMessage(result);
+	const addBenefit = () => {
+		if (newBenefit.Title.trim() && newBenefit.Description.trim()) {
+			// Ensure Benefits array exists
+			if (!marketingMaterialSetting.Benefits) {
+				marketingMaterialSetting.Benefits = [];
 			}
-		} catch (error) {
-			console.error('Feature logo upload failed:', error);
-			toastMessage({
-				Status: 'failure',
-				HttpCode: 500,
-				Message: 'Feature logo upload failed. Please try again.'
-			});
-		}
-	};
-
-	const addFeature = () => {
-		if (newFeature.Title.trim() && newFeature.Description.trim()) {
-			// Ensure Features array exists
-			if (!marketingMaterialSetting.Features) {
-				marketingMaterialSetting.Features = [];
-			}
-			marketingMaterialSetting.Features = [
-				...marketingMaterialSetting.Features,
+			marketingMaterialSetting.Benefits = [
+				...marketingMaterialSetting.Benefits,
 				{
-					Logo: newFeature.Logo || '',
-					Title: newFeature.Title.trim(),
-					Description: newFeature.Description.trim()
+					Icon: newBenefit.Icon || '',
+					Title: newBenefit.Title.trim(),
+					Description: newBenefit.Description.trim()
 				}
 			];
-			console.log('Added feature:', newFeature);
-			console.log('Current features:', marketingMaterialSetting.Features);
-			newFeature = {
-				Logo: '',
+			console.log('Added benefit:', newBenefit);
+			console.log('Current benefits:', marketingMaterialSetting.Benefits);
+			newBenefit = {
+				Icon: '',
 				Title: '',
 				Description: ''
 			};
 		}
 	};
 
-	const removeFeature = (index: number) => {
-		marketingMaterialSetting.Features =
-			marketingMaterialSetting.Features?.filter((_, i) => i !== index) || [];
-		console.log('Removed feature at index:', index);
-		console.log('Current features:', marketingMaterialSetting.Features);
+	const removeBenefit = (index: number) => {
+		marketingMaterialSetting.Benefits =
+			marketingMaterialSetting.Benefits?.filter((_, i) => i !== index) || [];
+		console.log('Removed benefit at index:', index);
+		console.log('Current benefits:', marketingMaterialSetting.Benefits);
 	};
 
-	const editFeature = (index: number) => {
-		if (marketingMaterialSetting.Features && marketingMaterialSetting.Features[index]) {
-			const feature = marketingMaterialSetting.Features[index];
-			newFeature = {
-				Logo: feature.Logo || '',
-				Title: feature.Title,
-				Description: feature.Description
+	const editBenefit = (index: number) => {
+		if (marketingMaterialSetting.Benefits && marketingMaterialSetting.Benefits[index]) {
+			const benefit = marketingMaterialSetting.Benefits[index];
+			newBenefit = {
+				Icon: benefit.Icon || '',
+				Title: benefit.Title,
+				Description: benefit.Description
 			};
-			editingFeatureIndex = index;
+			editingBenefitIndex = index;
 		}
 	};
 
-	const updateFeature = () => {
-		if (editingFeatureIndex >= 0 && newFeature.Title.trim() && newFeature.Description.trim()) {
-			if (marketingMaterialSetting.Features && marketingMaterialSetting.Features[editingFeatureIndex]) {
-				marketingMaterialSetting.Features[editingFeatureIndex] = {
-					Logo: newFeature.Logo || '',
-					Title: newFeature.Title.trim(),
-					Description: newFeature.Description.trim()
+	const updateBenefit = () => {
+		if (editingBenefitIndex >= 0 && newBenefit.Title.trim() && newBenefit.Description.trim()) {
+			if (
+				marketingMaterialSetting.Benefits &&
+				marketingMaterialSetting.Benefits[editingBenefitIndex]
+			) {
+				marketingMaterialSetting.Benefits[editingBenefitIndex] = {
+					Icon: newBenefit.Icon || '',
+					Title: newBenefit.Title.trim(),
+					Description: newBenefit.Description.trim()
 				};
-				console.log('Updated feature at index:', editingFeatureIndex);
-				console.log('Current features:', marketingMaterialSetting.Features);
+				console.log('Updated benefit at index:', editingBenefitIndex);
+				console.log('Current benefits:', marketingMaterialSetting.Benefits);
 			}
 			// Reset form
-			newFeature = {
-				Logo: '',
+			newBenefit = {
+				Icon: '',
 				Title: '',
 				Description: ''
 			};
-			editingFeatureIndex = -1;
+			editingBenefitIndex = -1;
 		}
 	};
 
-	const cancelEdit = () => {
-		newFeature = {
-			Logo: '',
+	const cancelBenefitEdit = () => {
+		newBenefit = {
+			Icon: '',
 			Title: '',
 			Description: ''
 		};
-		editingFeatureIndex = -1;
+		editingBenefitIndex = -1;
 	};
 
 	const handleSubmit = async (event: Event) => {
@@ -468,6 +441,51 @@
 					TenantId: tenantId,
 					TenantName: tenantName,
 					TenantCode: tenantCode,
+
+					// Branding & Logos
+					PrimaryLogo: '',
+					SecondaryLogo: '',
+					ReanLogo: '',
+
+					// Color Scheme
+					PrimaryColor: '#E53935',
+					SecondaryColor: '#25D366',
+					AccentColor: '#00ACC1',
+					BackgroundLight: '#FFF3E0',
+					TextDark: '#333333',
+					TextLight: '#666666',
+
+					// Hero Section (Page 1)
+					HeroMainTitle: '',
+					HeroSubtitle: '',
+					HeroImage: '',
+					ChatQuestion: '',
+					ChatAnswer: '',
+
+					// Main Description
+					DescriptionHeading: '',
+					IntroParagraph: '',
+					FeaturesParagraph: '',
+
+					// Benefits (Page 2)
+					BenefitsHeading: 'Benefits to you',
+					Benefits: [],
+
+					// Target Audience
+					TargetHeading: 'Who should use this?',
+					TargetParagraph1: '',
+					TargetParagraph2: '',
+					PhoneMockup: '',
+					MockupQuestion: '',
+					MockupAnswer: '',
+
+					// Call to Action
+					CtaHeading: 'Register by messaging us on',
+					WhatsappNumber: '',
+					QrCodeData: '',
+					QrInstruction: '',
+
+					// Legacy fields
 					Logo: '',
 					Title: '',
 					Subtitle: '',
@@ -477,8 +495,6 @@
 					Conclusion: '',
 					QrCode: null
 				};
-				logoUrl = '';
-				qrCodeUrl = null;
 			} else {
 				toastMessage(result);
 			}
@@ -499,7 +515,7 @@
 			<div
 				class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6"
 			>
-				<h1 class="text-xl text-[var(--color-info)]">Marketing Material</h1>
+				<h1 class=" text-xl text-[var(--color-info)]">Marketing Material</h1>
 				<div class="flex items-center gap-2 text-end">
 					<button
 						type="button"
@@ -520,325 +536,908 @@
 						href={tenantRoute}
 						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
 					>
-						<Icon icon="material-symbols:close-rounded" class="h-5" />
+						<Icon icon="material-symbols:close-rounded" class=" h-5" />
 					</a>
 				</div>
 			</div>
 
-			<div class="flex flex-col space-y-4">
-				<table class="table-c">
-					<thead> </thead>
-					<tbody>
+			<div class="flex flex-col space-y-4 px-4 py-4">
+				<!-- Branding & Logos Section -->
+				<div
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${
+						activeSections.has('branding') ? 'border-hover ' : ''
+					} `}
+				>
+					<button
+						type="button"
+						onclick={() => toggleSection('branding')}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+	transition-all duration-100 ease-in-out  ${
+		activeSections.has('branding')
+			? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+			: `border-hover rounded bg-[var(--color-secondary)]`
+	} 
+	`}
+					>
+						<div class="flex flex-1 items-center gap-2">
+							<Icon icon="material-symbols:palette" class="hidden h-5 w-5 md:block" />
+							<div class=" text-start">
+								<p class="text-md font-medium">Branding & Logos</p>
+								<p class=" text-sm">Upload and manage your brand logos</p>
+							</div>
+						</div>
+						<span
+							class="transition-transform duration-300"
+							class:rotate-90={activeSections.has('branding')}
+						>
+							<Icon
+								icon="icon-park-outline:down"
+								rotate={35}
+								width={16}
+								height={16}
+								class="h-5 w-5"
+							/>
+						</span>
+					</button>
 
-						<!-- Title -->
-						<tr>
-							<td>
-								<label for="title-input" class="text-sm font-medium text-[var(--color-info)]"
-									>Title</label
-								>
-							</td>
-							<td>
-								<input
-									id="title-input"
-									type="text"
-									bind:value={marketingMaterialSetting.Title}
-									placeholder="Enter Title here"
-									{disabled}
-									class="input-field"
-								/>
-								{#if errors?.Title}
-									<p class="text-error">{errors.Title}</p>
-								{/if}
-							</td>
-						</tr>
-
-						<!-- Subtitle -->
-						<tr>
-							<td>
-								<label for="subtitle-input" class="text-sm font-medium text-[var(--color-info)]"
-									>Subtitle</label
-								>
-							</td>
-							<td>
-								<input
-									id="subtitle-input"
-									type="text"
-									bind:value={marketingMaterialSetting.Subtitle}
-									placeholder="Enter Subtitle"
-									{disabled}
-									class="input-field"
-								/>
-								{#if errors?.Subtitle}
-									<p class="text-error">{errors.Subtitle}</p>
-								{/if}
-							</td>
-						</tr>
-
-						<!-- Bot Introduction -->
-						<tr>
-							<td>
-								<label for="bot-intro-input" class="text-sm font-medium text-[var(--color-info)]"
-									>Bot Description</label
-								>
-							</td>
-							<td>
-								<textarea
-									id="bot-intro-input"
-									bind:value={marketingMaterialSetting.BotIntro}
-									placeholder="Enter bot introduction"
-									{disabled}
-									rows="4"
-									class="input-field"
-								></textarea>
-								{#if errors?.BotIntro}
-									<p class="text-error">{errors.BotIntro}</p>
-								{/if}
-							</td>
-						</tr>
-
-												<!-- Logo -->
-						<tr>
-							<td>
-								<label for="logo-upload" class="text-sm font-medium text-[var(--color-info)]"
-									>Logo</label
-								>
-							</td>
-							<td>
-								<input
-									id="logo-upload"
-									type="file"
-									accept="image/*"
-									onchange={handleLogoUpload}
-									{disabled}
-									class="input-field"
-								/>
-								{#if logoUrl}
-									<div class="mt-2">
-										<img src={logoUrl} alt="Logo" class="h-16 w-16 object-contain" />
+					{#if activeSections.has('branding')}
+						<div class="space-y-4 p-6">
+							<div class="space-y-6">
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]">Primary Logo</label>
+									<div class="relative">
+										<input
+											type="file"
+											accept="image/*"
+											onchange={(e) => handleFileUpload(e, 'primary-logo')}
+											{disabled}
+											class="w-full cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-3 transition-colors hover:border-[var(--color-primary)]"
+										/>
+										<div
+											class="pointer-events-none absolute inset-0 flex items-center justify-center"
+										>
+											<span class="text-sm text-gray-500">📁 Choose Primary Logo</span>
+										</div>
 									</div>
-								{/if}
-							</td>
-						</tr>
-
-						<!-- Features -->
-						<tr>
-							<td>
-								<label for="features-section" class="text-sm font-medium text-[var(--color-info)]"
-									>Features</label
-								>
-							</td>
-							<td>
-								<div id="features-section" class="space-y-4">
-									<!-- Add/Edit Feature Form - Only show when in edit mode -->
-									{#if edit}
-									<div class="border border-[var(--color-outline)] rounded-lg p-4 space-y-3">
-										<h4 class="text-sm font-medium text-[var(--color-info)]">
-											{editingFeatureIndex >= 0 ? 'Edit Feature' : 'Add New Feature'}
-										</h4>
-										
-										<!-- Feature Logo Upload -->
-										<div class="space-y-1">
-											<label for="feature-logo-upload" class="text-xs text-[var(--color-info)]">
-												Feature Logo (Optional)
-											</label>
-											<input
-												id="feature-logo-upload"
-												type="file"
-												accept="image/*"
-												onchange={handleNewFeatureLogoUpload}
-												{disabled}
-												class="input-field"
+									<p class="text-xs text-gray-500">Positioned at top-left</p>
+									{#if primaryLogoUrl}
+										<div class="mt-2">
+											<img
+												src={primaryLogoUrl}
+												alt="Primary Logo"
+												class="h-16 w-16 object-contain"
 											/>
-											{#if newFeature.Logo}
+										</div>
+									{/if}
+								</div>
+
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]">Secondary Logo</label>
+									<div class="relative">
+										<input
+											type="file"
+											accept="image/*"
+											onchange={(e) => handleFileUpload(e, 'secondary-logo')}
+											{disabled}
+											class="w-full cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-3 transition-colors hover:border-[var(--color-primary)]"
+										/>
+										<div
+											class="pointer-events-none absolute inset-0 flex items-center justify-center"
+										>
+											<span class="text-sm text-gray-500">📁 Choose Secondary Logo</span>
+										</div>
+									</div>
+									<p class="text-xs text-gray-500">Positioned at top-center</p>
+									{#if secondaryLogoUrl}
+										<div class="mt-2">
+											<img
+												src={secondaryLogoUrl}
+												alt="Secondary Logo"
+												class="h-16 w-16 object-contain"
+											/>
+										</div>
+									{/if}
+								</div>
+							</div>
+						</div>
+					{/if}
+				</div>
+
+				<!-- Color Scheme Section -->
+				<div
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${
+						activeSections.has('colors') ? 'border-hover ' : ''
+					} `}
+				>
+					<button
+						type="button"
+						onclick={() => toggleSection('colors')}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+	transition-all duration-100 ease-in-out  ${
+		activeSections.has('colors')
+			? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+			: `border-hover rounded bg-[var(--color-secondary)]`
+	} 
+	`}
+					>
+						<div class="flex flex-1 items-center gap-2">
+							<Icon icon="material-symbols:palette" class="hidden h-5 w-5 md:block" />
+							<div class=" text-start">
+								<p class="text-md font-medium">Color Scheme</p>
+								<p class=" text-sm">Configure your brand colors</p>
+							</div>
+						</div>
+						<span
+							class="transition-transform duration-300"
+							class:rotate-90={activeSections.has('colors')}
+						>
+							<Icon
+								icon="icon-park-outline:down"
+								rotate={35}
+								width={16}
+								height={16}
+								class="h-5 w-5"
+							/>
+						</span>
+					</button>
+
+					{#if activeSections.has('colors')}
+						<div class="space-y-4 p-6">
+							<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]">Primary Color</label>
+									<div class="flex items-center gap-2">
+										<input
+											type="color"
+											bind:value={marketingMaterialSetting.PrimaryColor}
+											{disabled}
+											class="h-12 w-16 cursor-pointer border-none"
+										/>
+										<input
+											type="text"
+											bind:value={marketingMaterialSetting.PrimaryColor}
+											{disabled}
+											class="flex-1 rounded border border-gray-300 p-2"
+											readonly
+										/>
+									</div>
+								</div>
+
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]">Secondary Color</label
+									>
+									<div class="flex items-center gap-2">
+										<input
+											type="color"
+											bind:value={marketingMaterialSetting.SecondaryColor}
+											{disabled}
+											class="h-12 w-16 cursor-pointer border-none"
+										/>
+										<input
+											type="text"
+											bind:value={marketingMaterialSetting.SecondaryColor}
+											{disabled}
+											class="flex-1 rounded border border-gray-300 p-2"
+											readonly
+										/>
+									</div>
+								</div>
+
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]">Accent Color</label>
+									<div class="flex items-center gap-2">
+										<input
+											type="color"
+											bind:value={marketingMaterialSetting.AccentColor}
+											{disabled}
+											class="h-12 w-16 cursor-pointer border-none"
+										/>
+										<input
+											type="text"
+											bind:value={marketingMaterialSetting.AccentColor}
+											{disabled}
+											class="flex-1 rounded border border-gray-300 p-2"
+											readonly
+										/>
+									</div>
+								</div>
+
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]"
+										>Background Light</label
+									>
+									<div class="flex items-center gap-2">
+										<input
+											type="color"
+											bind:value={marketingMaterialSetting.BackgroundLight}
+											{disabled}
+											class="h-12 w-16 cursor-pointer border-none"
+										/>
+										<input
+											type="text"
+											bind:value={marketingMaterialSetting.BackgroundLight}
+											{disabled}
+											class="flex-1 rounded border border-gray-300 p-2"
+											readonly
+										/>
+									</div>
+								</div>
+
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]">Text Dark</label>
+									<div class="flex items-center gap-2">
+										<input
+											type="color"
+											bind:value={marketingMaterialSetting.TextDark}
+											{disabled}
+											class="h-12 w-16 cursor-pointer border-none"
+										/>
+										<input
+											type="text"
+											bind:value={marketingMaterialSetting.TextDark}
+											{disabled}
+											class="flex-1 rounded border border-gray-300 p-2"
+											readonly
+										/>
+									</div>
+								</div>
+
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]">Text Light</label>
+									<div class="flex items-center gap-2">
+										<input
+											type="color"
+											bind:value={marketingMaterialSetting.TextLight}
+											{disabled}
+											class="h-12 w-16 cursor-pointer border-none"
+										/>
+										<input
+											type="text"
+											bind:value={marketingMaterialSetting.TextLight}
+											{disabled}
+											class="flex-1 rounded border border-gray-300 p-2"
+											readonly
+										/>
+									</div>
+								</div>
+							</div>
+						</div>
+					{/if}
+				</div>
+
+				<!-- Hero Section -->
+				<div
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${
+						activeSections.has('hero') ? 'border-hover ' : ''
+					} `}
+				>
+					<button
+						type="button"
+						onclick={() => toggleSection('hero')}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+	transition-all duration-100 ease-in-out  ${
+		activeSections.has('hero')
+			? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+			: `border-hover rounded bg-[var(--color-secondary)]`
+	} 
+	`}
+					>
+						<div class="flex flex-1 items-center gap-2">
+							<Icon icon="material-symbols:star" class="hidden h-5 w-5 md:block" />
+							<div class=" text-start">
+								<p class="text-md font-medium">Hero Section (Page 1)</p>
+								<p class=" text-sm">Main title, subtitle and hero image</p>
+							</div>
+						</div>
+						<span
+							class="transition-transform duration-300"
+							class:rotate-90={activeSections.has('hero')}
+						>
+							<Icon
+								icon="icon-park-outline:down"
+								rotate={35}
+								width={16}
+								height={16}
+								class="h-5 w-5"
+							/>
+						</span>
+					</button>
+
+					{#if activeSections.has('hero')}
+						<div class="space-y-4 p-6">
+							<div class="space-y-6">
+								<!-- Main Title -->
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]">Main Title *</label>
+									<input
+										type="text"
+										bind:value={marketingMaterialSetting.HeroMainTitle}
+										placeholder="Enter main title"
+										{disabled}
+										class="w-full rounded-lg border border-gray-300 p-3 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
+									/>
+									{#if errors?.HeroMainTitle}
+										<p class="mt-1 text-sm text-red-500">{errors.HeroMainTitle}</p>
+									{/if}
+								</div>
+
+								<!-- Subtitle -->
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]">Subtitle</label>
+									<textarea
+										bind:value={marketingMaterialSetting.HeroSubtitle}
+										placeholder="Enter subtitle"
+										{disabled}
+										rows="3"
+										class="w-full rounded-lg border border-gray-300 p-3 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
+									></textarea>
+								</div>
+
+								<!-- Hero Image -->
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]">Hero Image</label>
+									<div class="relative">
+										<input
+											type="file"
+											accept="image/*"
+											onchange={(e) => handleFileUpload(e, 'hero-image')}
+											{disabled}
+											class="w-full cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-3 transition-colors hover:border-[var(--color-primary)]"
+										/>
+										<div
+											class="pointer-events-none absolute inset-0 flex items-center justify-center"
+										>
+											<span class="text-sm text-gray-500">📁 Choose Hero Image</span>
+										</div>
+									</div>
+									{#if heroImageUrl}
+										<div class="mt-2">
+											<img
+												src={heroImageUrl}
+												alt="Hero Image"
+												class="h-32 w-full rounded-lg object-cover"
+											/>
+										</div>
+									{/if}
+								</div>
+							</div>
+						</div>
+					{/if}
+				</div>
+
+				<!-- Main Description Section -->
+				<div
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${
+						activeSections.has('description') ? 'border-hover ' : ''
+					} `}
+				>
+					<button
+						type="button"
+						onclick={() => toggleSection('description')}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+	transition-all duration-100 ease-in-out  ${
+		activeSections.has('description')
+			? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+			: `border-hover rounded bg-[var(--color-secondary)]`
+	} 
+	`}
+					>
+						<div class="flex flex-1 items-center gap-2">
+							<Icon icon="material-symbols:description" class="hidden h-5 w-5 md:block" />
+							<div class=" text-start">
+								<p class="text-md font-medium">Main Description</p>
+								<p class=" text-sm">Content and features description</p>
+							</div>
+						</div>
+						<span
+							class="transition-transform duration-300"
+							class:rotate-90={activeSections.has('description')}
+						>
+							<Icon
+								icon="icon-park-outline:down"
+								rotate={35}
+								width={16}
+								height={16}
+								class="h-5 w-5"
+							/>
+						</span>
+					</button>
+
+					{#if activeSections.has('description')}
+						<div class="space-y-4 p-6">
+							<div class="space-y-6">
+								<!-- Description Heading -->
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]"
+										>Description Heading *</label
+									>
+									<input
+										type="text"
+										bind:value={marketingMaterialSetting.DescriptionHeading}
+										placeholder="Enter description heading"
+										{disabled}
+										class="w-full rounded-lg border border-gray-300 p-3 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
+									/>
+									{#if errors?.DescriptionHeading}
+										<p class="mt-1 text-sm text-red-500">{errors.DescriptionHeading}</p>
+									{/if}
+								</div>
+
+								<!-- Introduction Paragraph -->
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]"
+										>Introduction Paragraph</label
+									>
+									<textarea
+										bind:value={marketingMaterialSetting.IntroParagraph}
+										placeholder="Enter introduction paragraph"
+										{disabled}
+										rows="3"
+										class="w-full rounded-lg border border-gray-300 p-3 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
+									></textarea>
+								</div>
+
+								<!-- Features Paragraph -->
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]"
+										>Features Paragraph</label
+									>
+									<textarea
+										bind:value={marketingMaterialSetting.FeaturesParagraph}
+										placeholder="Enter features paragraph"
+										{disabled}
+										rows="3"
+										class="w-full rounded-lg border border-gray-300 p-3 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
+									></textarea>
+								</div>
+							</div>
+						</div>
+					{/if}
+				</div>
+
+				<!-- Benefits Section -->
+				<div
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${
+						activeSections.has('benefits') ? 'border-hover ' : ''
+					} `}
+				>
+					<button
+						type="button"
+						onclick={() => toggleSection('benefits')}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+	                               transition-all duration-100 ease-in-out  ${
+																		activeSections.has('benefits')
+																			? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+																			: `border-hover rounded bg-[var(--color-secondary)]`
+																	} 
+	                               `}
+					>
+						<div class="flex flex-1 items-center gap-2">
+							<Icon icon="material-symbols:star" class="hidden h-5 w-5 md:block" />
+							<div class=" text-start">
+								<p class="text-md font-medium">Benefits (Page 2)</p>
+								<p class=" text-sm">Key benefits and features list</p>
+							</div>
+						</div>
+						<span
+							class="transition-transform duration-300"
+							class:rotate-90={activeSections.has('benefits')}
+						>
+							<Icon
+								icon="icon-park-outline:down"
+								rotate={35}
+								width={16}
+								height={16}
+								class="h-5 w-5"
+							/>
+						</span>
+					</button>
+
+					{#if activeSections.has('benefits')}
+						<div class="space-y-4 p-6">
+							<div class="space-y-6">
+								<!-- Benefits Heading -->
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]"
+										>Benefits Section Heading</label
+									>
+									<input
+										type="text"
+										bind:value={marketingMaterialSetting.BenefitsHeading}
+										placeholder="Benefits to you"
+										{disabled}
+										class="w-full rounded-lg border border-gray-300 p-3 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
+									/>
+								</div>
+
+								<!-- Add/Edit Benefit Form -->
+								{#if edit}
+									<div class="space-y-3 rounded-lg border border-gray-300 bg-gray-50 p-4">
+										<h4 class="text-sm font-medium text-[var(--color-info)]">
+											{editingBenefitIndex >= 0 ? 'Edit Benefit' : 'Add New Benefit'}
+										</h4>
+
+										<!-- Benefit Icon Upload -->
+										<div class="space-y-1">
+											<label class="text-xs text-[var(--color-info)]">Icon Image</label>
+											<div class="relative">
+												<input
+													type="file"
+													accept="image/*"
+													onchange={handleBenefitIconUpload}
+													{disabled}
+													class="w-full cursor-pointer rounded border-2 border-dashed border-gray-300 p-2 transition-colors hover:border-[var(--color-primary)]"
+												/>
+												<div
+													class="pointer-events-none absolute inset-0 flex items-center justify-center"
+												>
+													<span class="text-xs text-gray-500">📁 Choose Icon</span>
+												</div>
+											</div>
+											{#if newBenefit.Icon}
 												<div class="mt-2">
-													<img src={newFeature.Logo} alt="Feature Logo Preview" class="h-12 w-12 object-contain" />
+													<img
+														src={newBenefit.Icon}
+														alt="Benefit Icon Preview"
+														class="h-12 w-12 object-contain"
+													/>
 												</div>
 											{/if}
 										</div>
 
-										<!-- Feature Title -->
+										<!-- Benefit Title -->
 										<div class="space-y-1">
-											<label for="feature-title-input" class="text-xs text-[var(--color-info)]">
-												Feature Title *
-											</label>
+											<label class="text-xs text-[var(--color-info)]">Title</label>
 											<input
-												id="feature-title-input"
 												type="text"
-												bind:value={newFeature.Title}
-												placeholder="Enter feature title"
+												bind:value={newBenefit.Title}
+												placeholder="Enter benefit title"
 												{disabled}
-												class="input-field"
+												class="w-full rounded border border-gray-300 p-2 focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/20"
 											/>
 										</div>
 
-										<!-- Feature Description -->
+										<!-- Benefit Description -->
 										<div class="space-y-1">
-											<label for="feature-description-input" class="text-xs text-[var(--color-info)]">
-												Feature Description *
-											</label>
+											<label class="text-xs text-[var(--color-info)]">Description</label>
 											<textarea
-												id="feature-description-input"
-												bind:value={newFeature.Description}
-												placeholder="Enter feature description"
+												bind:value={newBenefit.Description}
+												placeholder="Enter benefit description"
 												{disabled}
 												rows="3"
-												class="input-field"
+												class="w-full rounded border border-gray-300 p-2 focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/20"
 											></textarea>
 										</div>
 
 										<!-- Add/Update/Cancel Buttons -->
 										<div class="flex justify-end gap-2">
-											{#if editingFeatureIndex >= 0}
+											{#if editingBenefitIndex >= 0}
 												<button
 													type="button"
-													onclick={cancelEdit}
+													onclick={cancelBenefitEdit}
 													{disabled}
-													class="table-btn variant-outline-secondary"
+													class="rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-100"
 												>
 													Cancel
 												</button>
 												<button
 													type="button"
-													onclick={updateFeature}
+													onclick={updateBenefit}
 													{disabled}
-													class="table-btn variant-filled-secondary"
+													class="rounded bg-[var(--color-primary)] px-3 py-1 text-sm text-white hover:bg-[var(--color-primary)]/80"
 												>
-													Update Feature
+													Update Benefit
 												</button>
 											{:else}
 												<button
 													type="button"
-													onclick={addFeature}
+													onclick={addBenefit}
 													{disabled}
-													class="table-btn variant-filled-secondary"
+													class="rounded bg-green-600 px-3 py-1 text-sm text-white hover:bg-green-700"
 												>
-													Add Feature
+													+ Add Benefit
 												</button>
 											{/if}
 										</div>
 									</div>
-									{:else}
-										<div class="text-center py-4 text-slate-500 text-sm">
-											<Icon icon="material-symbols:edit" class="h-8 w-8 mx-auto mb-2 opacity-50" />
-											<p>Click "Edit" to add or modify features</p>
-											{#if marketingMaterialSetting.Features && marketingMaterialSetting.Features.length > 0}
-												<p class="text-xs mt-1 opacity-75">
-													{marketingMaterialSetting.Features.length} feature{marketingMaterialSetting.Features.length !== 1 ? 's' : ''} configured
-												</p>
-											{/if}
-										</div>
-									{/if}
+								{/if}
 
-									<!-- Existing Features List -->
-									{#if marketingMaterialSetting.Features && marketingMaterialSetting.Features.length > 0}
-										<div class="space-y-3">
-											<h4 class="text-sm font-medium text-[var(--color-info)]">Current Features</h4>
-											{#each marketingMaterialSetting.Features as feature, index}
-												<div class="border border-[var(--color-outline)] rounded-lg p-4 space-y-3">
-													<div class="flex items-start justify-between">
-														<div class="flex-1 space-y-2">
-															<!-- Feature Logo Display -->
-															{#if feature.Logo}
-																<div class="flex items-center gap-2">
-																	<img src={feature.Logo} alt="Feature Logo" class="h-8 w-8 object-contain" />
-																	<span class="text-xs text-gray-500">Feature Logo</span>
-																</div>
-															{/if}
-
-															<!-- Feature Title -->
-															<div>
-																<span class="text-xs text-[var(--color-info)] font-medium">Title</span>
-																<p class="text-sm font-medium">{feature.Title}</p>
-															</div>
-
-															<!-- Feature Description -->
-															<div>
-																<span class="text-xs text-[var(--color-info)] font-medium">Description</span>
-																<p class="text-sm text-gray-700">{feature.Description}</p>
-															</div>
-														</div>
-
-														<!-- Action Buttons -->
-														{#if !disabled}
-															<div class="flex gap-1">
-																<button
-																	type="button"
-																	onclick={() => editFeature(index)}
-																	class="text-blue-600 hover:text-blue-800 p-1"
-																	title="Edit feature"
-																>
-																	<Icon icon="material-symbols:edit" class="h-5 w-5" />
-																</button>
-																<button
-																	type="button"
-																	onclick={() => removeFeature(index)}
-																	class="text-red-600 hover:text-red-800 p-1"
-																	title="Remove feature"
-																>
-																	<Icon icon="material-symbols:close" class="h-5 w-5" />
-																</button>
+								<!-- Existing Benefits List -->
+								{#if marketingMaterialSetting.Benefits && marketingMaterialSetting.Benefits.length > 0}
+									<div class="space-y-3">
+										<h4 class="text-sm font-medium text-[var(--color-info)]">Current Benefits</h4>
+										{#each marketingMaterialSetting.Benefits as benefit, index}
+											<div class="space-y-3 rounded-lg border border-gray-300 bg-gray-50 p-4">
+												<div class="flex items-start justify-between">
+													<div class="flex-1 space-y-2">
+														<!-- Benefit Icon Display -->
+														{#if benefit.Icon}
+															<div class="flex items-center gap-2">
+																<img
+																	src={benefit.Icon}
+																	alt="Benefit Icon"
+																	class="h-8 w-8 object-contain"
+																/>
+																<span class="text-xs text-gray-500">Benefit Icon</span>
 															</div>
 														{/if}
+
+														<!-- Benefit Title -->
+														<div>
+															<span class="text-xs font-medium text-[var(--color-info)]">Title</span
+															>
+															<p class="text-sm font-medium">{benefit.Title}</p>
+														</div>
+
+														<!-- Benefit Description -->
+														<div>
+															<span class="text-xs font-medium text-[var(--color-info)]"
+																>Description</span
+															>
+															<p class="text-sm text-gray-700">{benefit.Description}</p>
+														</div>
 													</div>
+
+													<!-- Action Buttons -->
+													{#if !disabled}
+														<div class="flex gap-1">
+															<button
+																type="button"
+																onclick={() => editBenefit(index)}
+																class="p-1 text-blue-600 hover:text-blue-800"
+																title="Edit benefit"
+															>
+																<Icon icon="material-symbols:edit" class="h-5 w-5" />
+															</button>
+															<button
+																type="button"
+																onclick={() => removeBenefit(index)}
+																class="p-1 text-red-600 hover:text-red-800"
+																title="Remove benefit"
+															>
+																<Icon icon="material-symbols:close" class="h-5 w-5" />
+															</button>
+														</div>
+													{/if}
 												</div>
-											{/each}
+											</div>
+										{/each}
+									</div>
+								{:else}
+									<div class="py-4 text-center text-sm text-gray-500 italic">
+										No benefits added yet. Add your first benefit above.
+									</div>
+								{/if}
+							</div>
+						</div>
+					{/if}
+				</div>
+
+				<!-- Target Audience Section -->
+				<div
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${
+						activeSections.has('target') ? 'border-hover ' : ''
+					} `}
+				>
+					<button
+						type="button"
+						onclick={() => toggleSection('target')}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+	transition-all duration-100 ease-in-out  ${
+		activeSections.has('target')
+			? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+			: `border-hover rounded bg-[var(--color-secondary)]`
+	} 
+	`}
+					>
+						<div class="flex flex-1 items-center gap-2">
+							<Icon icon="material-symbols:target" class="hidden h-5 w-5 md:block" />
+							<div class=" text-start">
+								<p class="text-md font-medium">Target Audience</p>
+								<p class=" text-sm">Define your target users and use cases</p>
+							</div>
+						</div>
+						<span
+							class="transition-transform duration-300"
+							class:rotate-90={activeSections.has('target')}
+						>
+							<Icon
+								icon="icon-park-outline:down"
+								rotate={35}
+								width={16}
+								height={16}
+								class="h-5 w-5"
+							/>
+						</span>
+					</button>
+
+					{#if activeSections.has('target')}
+						<div class="space-y-4 p-6">
+							<div class="space-y-6">
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]">Section Heading</label
+									>
+									<input
+										type="text"
+										bind:value={marketingMaterialSetting.TargetHeading}
+										placeholder="Who should use this?"
+										{disabled}
+										class="w-full rounded-lg border border-gray-300 p-3 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
+									/>
+								</div>
+
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]">Paragraph 1</label>
+									<textarea
+										bind:value={marketingMaterialSetting.TargetParagraph1}
+										placeholder="Enter first paragraph"
+										{disabled}
+										rows="3"
+										class="w-full rounded-lg border border-gray-300 p-3 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
+									></textarea>
+								</div>
+
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]">Paragraph 2</label>
+									<textarea
+										bind:value={marketingMaterialSetting.TargetParagraph2}
+										placeholder="Enter second paragraph"
+										{disabled}
+										rows="3"
+										class="w-full rounded-lg border border-gray-300 p-3 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
+									></textarea>
+								</div>
+
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]"
+										>Phone Mockup Screenshot</label
+									>
+									<div class="relative">
+										<input
+											type="file"
+											accept="image/*"
+											onchange={(e) => handleFileUpload(e, 'phone-mockup')}
+											{disabled}
+											class="w-full cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-3 transition-colors hover:border-[var(--color-primary)]"
+										/>
+										<div
+											class="pointer-events-none absolute inset-0 flex items-center justify-center"
+										>
+											<span class="text-sm text-gray-500">📁 Choose Phone Mockup Image</span>
 										</div>
-									{:else}
-										<div class="text-sm text-gray-500 italic text-center py-4">
-											No features added yet. Add your first feature above.
+									</div>
+									{#if phoneMockupUrl}
+										<div class="mt-2">
+											<img
+												src={phoneMockupUrl}
+												alt="Phone Mockup"
+												class="h-32 w-auto rounded-lg object-contain"
+											/>
 										</div>
 									{/if}
 								</div>
-							</td>
-						</tr>
+							</div>
+						</div>
+					{/if}
+				</div>
 
-						<!-- Conclusion -->
-						<tr>
-							<td>
-								<label for="conclusion-input" class="text-sm font-medium text-[var(--color-info)]"
-									>Conclusion</label
-								>
-							</td>
-							<td>
-								<textarea
-									id="conclusion-input"
-									bind:value={marketingMaterialSetting.Conclusion}
-									placeholder="Enter conclusion"
-									{disabled}
-									rows="4"
-									class="input-field"
-								></textarea>
-								{#if errors?.Conclusion}
-									<p class="text-error">{errors.Conclusion}</p>
-								{/if}
-							</td>
-						</tr>
+				<!-- Call to Action Section -->
+				<div
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${
+						activeSections.has('cta') ? 'border-hover ' : ''
+					} `}
+				>
+					<button
+						type="button"
+						onclick={() => toggleSection('cta')}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+	transition-all duration-100 ease-in-out  ${
+		activeSections.has('cta')
+			? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+			: `border-hover rounded bg-[var(--color-secondary)]`
+	} 
+	`}
+					>
+						<div class="flex flex-1 items-center gap-2">
+							<Icon icon="material-symbols:call" class="hidden h-5 w-5 md:block" />
+							<div class=" text-start">
+								<p class="text-md font-medium">Call to Action</p>
+								<p class=" text-sm">Contact information and QR code</p>
+							</div>
+						</div>
+						<span
+							class="transition-transform duration-300"
+							class:rotate-90={activeSections.has('cta')}
+						>
+							<Icon
+								icon="icon-park-outline:down"
+								rotate={35}
+								width={16}
+								height={16}
+								class="h-5 w-5"
+							/>
+						</span>
+					</button>
 
-						<!-- QR Code -->
-						<tr>
-							<td>
-								<label for="qrcode-upload" class="text-sm font-medium text-[var(--color-info)]"
-									>QR Code</label
-								>
-							</td>
-							<td>
-								<input
-									id="qrcode-upload"
-									type="file"
-									accept="image/*"
-									onchange={handleQrCodeUpload}
-									{disabled}
-									class="input-field"
-								/>
-								{#if qrCodeUrl}
-									<div class="mt-2">
-										<img src={qrCodeUrl} alt="QR Code" class="h-16 w-16 object-contain" />
+					{#if activeSections.has('cta')}
+						<div class="space-y-4 p-6">
+							<div class="space-y-6">
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]">CTA Heading</label>
+									<input
+										type="text"
+										bind:value={marketingMaterialSetting.CtaHeading}
+										placeholder="Register by messaging us on"
+										{disabled}
+										class="w-full rounded-lg border border-gray-300 p-3 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
+									/>
+								</div>
+
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]"
+										>Phone Number (WhatsApp)</label
+									>
+									<input
+										type="tel"
+										bind:value={marketingMaterialSetting.WhatsappNumber}
+										placeholder="Enter WhatsApp number"
+										{disabled}
+										class="w-full rounded-lg border border-gray-300 p-3 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
+									/>
+								</div>
+
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]"
+										>QR Code URL/Data</label
+									>
+									<input
+										type="text"
+										bind:value={marketingMaterialSetting.QrCodeData}
+										placeholder="https://wa.me/..."
+										{disabled}
+										class="w-full rounded-lg border border-gray-300 p-3 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
+									/>
+								</div>
+
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]"
+										>QR Code Instruction Text</label
+									>
+									<textarea
+										bind:value={marketingMaterialSetting.QrInstruction}
+										placeholder="Enter QR code instruction text"
+										{disabled}
+										rows="3"
+										class="w-full rounded-lg border border-gray-300 p-3 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
+									></textarea>
+								</div>
+
+								<div class="space-y-2">
+									<label class="text-sm font-medium text-[var(--color-info)]">QR Code Image</label>
+									<div class="relative">
+										<input
+											type="file"
+											accept="image/*"
+											onchange={(e) => handleFileUpload(e, 'qrcode')}
+											{disabled}
+											class="w-full cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-3 transition-colors hover:border-[var(--color-primary)]"
+										/>
+										<div
+											class="pointer-events-none absolute inset-0 flex items-center justify-center"
+										>
+											<span class="text-sm text-gray-500">📁 Choose QR Code Image</span>
+										</div>
 									</div>
-								{/if}
-							</td>
-						</tr>
-					</tbody>
-				</table>
+									{#if qrCodeUrl}
+										<div class="mt-2">
+											<img src={qrCodeUrl} alt="QR Code" class="h-16 w-16 object-contain" />
+										</div>
+									{/if}
+								</div>
+							</div>
+						</div>
+					{/if}
+				</div>
 			</div>
 
 			<hr class="border-[0.5px] border-t border-[var(--color-outline)]" />
@@ -846,7 +1445,7 @@
 			<div class="button-container my-4">
 				{#await promise}
 					<button type="submit" class="table-btn variant-soft-secondary" disabled>
-						Submitting
+						Submiting
 					</button>
 				{:then data}
 					<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>

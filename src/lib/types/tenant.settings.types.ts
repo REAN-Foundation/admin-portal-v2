@@ -314,6 +314,51 @@ export interface MarketingMaterialSettings {
 	TenantId?: string;
 	TenantName?: string;
 	TenantCode?: string;
+
+	// Branding & Logos
+	PrimaryLogo?: string;
+	SecondaryLogo?: string;
+	ReanLogo?: string;
+
+	// Color Scheme
+	PrimaryColor?: string;
+	SecondaryColor?: string;
+	AccentColor?: string;
+	BackgroundLight?: string;
+	TextDark?: string;
+	TextLight?: string;
+
+	// Hero Section (Page 1)
+	HeroMainTitle?: string;
+	HeroSubtitle?: string;
+	HeroImage?: string;
+	ChatQuestion?: string;
+	ChatAnswer?: string;
+
+	// Main Description
+	DescriptionHeading?: string;
+	IntroParagraph?: string;
+	FeaturesParagraph?: string;
+
+	// Benefits (Page 2)
+	BenefitsHeading?: string;
+	Benefits?: Benefit[];
+
+	// Target Audience
+	TargetHeading?: string;
+	TargetParagraph1?: string;
+	TargetParagraph2?: string;
+	PhoneMockup?: string;
+	MockupQuestion?: string;
+	MockupAnswer?: string;
+
+	// Call to Action
+	CtaHeading?: string;
+	WhatsappNumber?: string;
+	QrCodeData?: string;
+	QrInstruction?: string;
+
+	// Legacy fields (keeping for backward compatibility)
 	Logo?: string;
 	Title?: string;
 	Subtitle?: string;
@@ -322,6 +367,12 @@ export interface MarketingMaterialSettings {
 	Features?: Feature[];
 	Conclusion?: string;
 	QrCode?: string | null;
+}
+
+export interface Benefit {
+	Icon?: string;
+	Title: string;
+	Description: string;
 }
 
 export interface MarketingMaterialUploadModel {
