@@ -30,7 +30,8 @@
 	let assetId = $state(undefined),
 		assetType = $state(undefined),
 		day = $state(undefined),
-		timeSlot = $state(undefined);
+		timeSlot = $state(undefined),
+		sequence = $state(undefined);
 	let isDeleting = $state(false);
 	let idToBeDeleted = $state(null);
 
@@ -207,7 +208,8 @@
 				AssetType: assetType,
 				AssetId: assetId,
 				ScheduleDay: day,
-				TimeSlot: timeSlot
+				TimeSlot: timeSlot,
+				Sequence: sequence && sequence !== '' ? Number(sequence) : undefined
 			};
 			const validationResult = createOrUpdatSchedulingeSchema.safeParse(careplanSchedulCreateModel);
 
@@ -387,6 +389,24 @@
 							{/if}
 						</td>
 					</tr>
+
+					<tr class="tables-row">
+						<td class="table-label">Sequence</td>
+						<td class="table-data">
+							<input
+								type="number"
+								name="sequence"
+								min="1"
+								bind:value={sequence}
+								placeholder="Enter sequence number..."
+								class="input {errors?.Sequence ? 'input-text-error' : ''}"
+							/>
+							{#if errors?.Sequence}
+								<p class="error-text">{errors?.Sequence}</p>
+							{/if}
+						</td>
+					</tr>
+
 				</tbody>
 			</table>
 

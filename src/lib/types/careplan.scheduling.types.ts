@@ -3,6 +3,7 @@ export interface CarePlanSchedulingCreateModel {
     AssetId: string;
     ScheduleDay: number;
     TimeSlot: string;
+    Sequence?: number;
 }
 
 export interface CarePlanSchedulingUpdateModel {
@@ -10,4 +11,5 @@ export interface CarePlanSchedulingUpdateModel {
     AssetId?: string;
     ScheduleDay?: number;
     TimeSlot?: string;
+    Sequence?: number;
 }

@@ -13,11 +13,11 @@ export const createGoals = async (
 	tenantId: string
 ) => {
 	const body = {
-		Name     : name,
-		Description: description,
-		Tags     : tags,
-		TenantId : tenantId,
-		Version  : !version || version?.length === 0 ? 'V 1.0' : version
+		Name: name,
+		Description: description ? description : null,
+		Tags: tags ? tags : null,
+		TenantId: tenantId,
+		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
 
 	const url = CAREPLAN_BACKEND_API_URL + '/assets/goals';
@@ -72,11 +72,11 @@ export const updateGoals = async (
 	tenantId: string
 ) => {
 	const body = {
-		Name     : name,
-		Description: description,
-		Tags     : tags,
-		TenantId : tenantId,
-		Version  : !version || version?.length === 0 ? 'V 1.0' : version
+		Name: name,
+		Description: description ? description : null,
+		Tags: tags ? tags : null,
+		TenantId: tenantId,
+		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
 
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/goals/${goalsId}`;
