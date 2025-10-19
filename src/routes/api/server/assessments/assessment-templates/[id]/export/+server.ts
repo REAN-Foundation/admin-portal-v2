@@ -3,8 +3,6 @@ import { uuidSchema } from "$lib/validation/common.schema";
 import type { RequestEvent } from "@sveltejs/kit";
 import { exportAssessmentTemplate } from "../../../../../services/reancare/assessments/assessment-templates";
 
-///////////////////////////////////////////////////////////////////////////////
-
 export const GET = async (event: RequestEvent) => {
 	try {
 		const sessionId = event.locals?.sessionUser?.sessionId;
@@ -21,10 +19,19 @@ export const GET = async (event: RequestEvent) => {
 		}
 
 		const id = event.params.id;
+		const exportedData = await exportAssessmentTemplate(sessionId, id);
 
-		const response = await exportAssessmentTemplate(sessionId, id);
+		// Convert the data to a JSON string
+		const jsonString = JSON.stringify(exportedData, null, 2);
 
-		return ResponseHandler.success(response);
+		// Create a Response with correct headers for download
+		return new Response(jsonString, {
+			status: 200,
+			headers: {
+				"Content-Type": "application/json",
+				"Content-Disposition": `attachment; filename="assessment-template-${id}.json"`,
+			},
+		});
 	} catch (error) {
 		console.error("Error exporting assessment template:", error);
 		return ResponseHandler.handleError(500, null, error);
