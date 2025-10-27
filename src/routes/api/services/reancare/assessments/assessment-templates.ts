@@ -174,3 +174,9 @@ export const deleteAssessmentTemplate = async (sessionId: string, assessmentTemp
 
 	return result;
 };
+
+export const exportAssessmentTemplate = async (sessionId: string, assessmentTemplateId: string) => {
+	const url = BACKEND_API_URL + `/clinical/assessment-templates/${assessmentTemplateId}/export`;
+	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	return result;
+};
