@@ -26,7 +26,10 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let chatBotSetting = $state({
-		ChatBot: data.chatbotSettings
+		ChatBot: {
+			...data.chatbotSettings,
+			Timezone: data.chatbotSettings?.Timezone ?? '+05:30'
+		}
 	});
 	let consentSetting: ConsentSettings = $state(data.consentSettings || {});
 	let showCancelModel = $state(false);
@@ -218,17 +221,22 @@
 				Feedback: chatBotSetting.ChatBot.Feedback,
 				AppointmentFollowup: chatBotSetting.ChatBot.AppointmentFollowup,
 				ConversationHistory: chatBotSetting.ChatBot.ConversationHistory,
-				Emojis: chatBotSetting.ChatBot.Emojis
+				Emojis: chatBotSetting.ChatBot.Emojis,
+				BasicAssessment: chatBotSetting.ChatBot.BasicAssessment,
+				BasicCarePlan: chatBotSetting.ChatBot.BasicCarePlan,
+				Timezone: chatBotSetting.ChatBot.Timezone ?? '+05:30'
 			};
 
 			const chatBotValidation = ChatBotSettingsSchema.safeParse(chatbotCreateModel);
 			if (!chatBotValidation.success) {
+				console.log('Validation failed:', chatBotValidation.error.flatten().fieldErrors);
 				errors = Object.fromEntries(
 					Object.entries(chatBotValidation.error.flatten().fieldErrors).map(([key, val]) => [
 						key,
 						val?.[0] || 'This field is required'
 					])
 				);
+				console.log('Errors object:', errors);
 				return;
 			}
 
@@ -362,6 +370,21 @@
 			Name: 'Emojis',
 			IconPath: 'mdi:emoticon-happy-outline',
 			Description: 'Use emojis in chatbot responses.'
+		},
+		BasicAssessment: {
+			Name: 'Basic Assessment',
+			IconPath: 'mdi:clipboard-check-outline',
+			Description: 'Enable basic health assessment functionality.'
+		},
+		BasicCarePlan: {
+			Name: 'Basic Care Plan',
+			IconPath: 'mdi:medical-bag-outline',
+			Description: 'Enable basic care plan functionality.'
+		},
+		Timezone: {
+			Name: 'Timezone',
+			IconPath: 'mdi:clock-outline',
+			Description: 'Set the timezone offset for the chatbot.'
 		}
 	} as const;
 
@@ -475,6 +498,7 @@
 					chatBotUISettings={chatBotSettings}
 					{onLogoSelected}
 					{logoName}
+					{errors}
 				/>
 			</div>
 			<!-- <hr class="border-[0.5px] border-t border-[var(--color-outline)]" /> -->
