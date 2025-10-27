@@ -247,38 +247,31 @@ export const deleteUser = async (sessionId: string, usreId: string) => {
 
 export const getUserRoleList = async (userRole: string) => {
 	// All available roles in the system
-	const allRoles = [
-		{ Title: 'System Admin', Value: 'System admin' },
-		{ Title: 'System User', Value: 'System user' },
-		{ Title: 'Patient', Value: 'Patient' },
-		{ Title: 'Doctor', Value: 'Doctor' },
-		{ Title: 'Lab User', Value: 'Lab user' },
-		{ Title: 'Pharmacy User', Value: 'Pharmacy user' },
-		{ Title: 'Nurse', Value: 'Nurse' },
-		{ Title: 'Ambulance Service User', Value: 'Ambulance service user' },
-		{ Title: 'Social Health Worker', Value: 'Social health worker' },
-		{ Title: 'Patient Family Member', Value: 'Patient family member' },
-		{ Title: 'Patient Friend', Value: 'Patient friend' },
-		{ Title: 'Donor', Value: 'Donor' },
-		{ Title: 'Volunteer', Value: 'Volunteer' },
-		{ Title: 'Tenant Admin', Value: 'Tenant admin' },
-		{ Title: 'Tenant User', Value: 'Tenant user' }
-	];
-
-	if (userRole === 'System admin' || userRole === 'System user') {
-		// System admin and System user can create all roles
-		return allRoles;
+	if (userRole === 'System admin') {
+		return [
+			{
+				Title: 'System User',
+				Value: 'System user'
+			},
+			{
+				Title: 'Tenant User',
+				Value: 'Tenant user'
+			},
+			{
+				Title: 'Tenant Admin',
+				Value: 'Tenant admin'
+			}
+		];
 	}
 
 	if (userRole === 'Tenant admin') {
-		// Tenant admin can create all roles except System admin and System user
-		return allRoles.filter(role =>
-			role.Value !== 'System admin' && role.Value !== 'System user' && role.Value !== 'Tenant admin'
-		);
+		return [
+			{
+				Title: 'Tenant User',
+				Value: 'Tenant user'
+			}
+		];
 	}
-
-	// For other roles, return empty array (they shouldn't be able to create users)
-	return [];
 };
 
 export const addPermissionMatrix = async (
