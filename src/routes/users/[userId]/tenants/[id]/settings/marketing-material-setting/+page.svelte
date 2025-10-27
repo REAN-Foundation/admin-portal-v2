@@ -85,10 +85,18 @@
 	// File upload states
 	let primaryLogoUrl = $derived(marketingMaterialSetting.PrimaryLogo || '');
 	let secondaryLogoUrl = $derived(marketingMaterialSetting.SecondaryLogo || '');
-	let reanLogoUrl = $derived(marketingMaterialSetting.ReanLogo || '');
+	// let reanLogoUrl = $derived(marketingMaterialSetting.ReanLogo || '');
 	let heroImageUrl = $derived(marketingMaterialSetting.HeroImage || '');
 	let phoneMockupUrl = $derived(marketingMaterialSetting.PhoneMockup || '');
 	let qrCodeUrl = $derived(marketingMaterialSetting.QrCode || '');
+
+	// File name states for display
+	let primaryLogoFileName = $state('');
+	let secondaryLogoFileName = $state('');
+	let heroImageFileName = $state('');
+	let phoneMockupFileName = $state('');
+	let qrCodeFileName = $state('');
+	let benefitIconFileName = $state('');
 
 	let newBenefit: Benefit = $state({
 		Icon: '',
@@ -100,6 +108,7 @@
 	let edit = $state(false);
 	let editingBenefitIndex = $state(-1);
 	let activeSections = $state(new Set([]));
+	let benefitCount = $state(0);
 
 	// Ensure arrays are always initialized
 	$effect(() => {
@@ -108,6 +117,11 @@
 		}
 		if (!marketingMaterialSetting.Benefits) {
 			marketingMaterialSetting.Benefits = [];
+		}
+
+		// Add initial benefits if none exist (similar to reference file)
+		if (marketingMaterialSetting.Benefits.length === 0) {
+			marketingMaterialSetting.Benefits = [{ Icon: '', Title: '', Description: '' }];
 		}
 	});
 
@@ -144,6 +158,25 @@
 		const file = target.files?.[0];
 
 		if (!file) return;
+
+		// Set file name for display
+		switch (uploadType) {
+			case 'primary-logo':
+				primaryLogoFileName = file.name;
+				break;
+			case 'secondary-logo':
+				secondaryLogoFileName = file.name;
+				break;
+			case 'hero-image':
+				heroImageFileName = file.name;
+				break;
+			case 'phone-mockup':
+				phoneMockupFileName = file.name;
+				break;
+			case 'qrcode':
+				qrCodeFileName = file.name;
+				break;
+		}
 
 		const uploadModel: MarketingMaterialUploadModel = {
 			UploadFile: file,
@@ -220,6 +253,9 @@
 
 		if (!file) return;
 
+		// Set file name for display
+		benefitIconFileName = file.name;
+
 		const uploadModel: MarketingMaterialUploadModel = {
 			UploadFile: file,
 			FileName: file.name,
@@ -266,28 +302,110 @@
 		}
 	};
 
-	const addBenefit = () => {
-		if (newBenefit.Title.trim() && newBenefit.Description.trim()) {
-			// Ensure Benefits array exists
+	const handleBenefitIconUploadForIndex = async (event: Event, index: number) => {
+		const target = event.target as HTMLInputElement;
+		const file = target.files?.[0];
+
+		if (!file) return;
+
+		const uploadModel: MarketingMaterialUploadModel = {
+			UploadFile: file,
+			FileName: file.name,
+			FileType: file.type
+		};
+
+		const validationResult = imageUploadSchema.safeParse(uploadModel);
+		if (!validationResult.success) {
+			errors = Object.fromEntries(
+				Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+					key,
+					val?.[0] || 'This field is required'
+				])
+			);
+			return;
+		}
+
+		const formData = new FormData();
+		formData.append('file', file);
+
+		try {
+			const response = await fetch(
+				`/api/server/tenants/settings/${tenantId}/MarketingMaterial/feature-logo`,
+				{
+					method: 'POST',
+					body: formData
+				}
+			);
+
+			const result = await response.json();
+			if (result.HttpCode === 200 || result.HttpCode === 201) {
+				// Update the specific benefit at the given index
+				if (marketingMaterialSetting.Benefits && marketingMaterialSetting.Benefits[index]) {
+					marketingMaterialSetting.Benefits[index].Icon = result.Data.Url;
+				}
+				toastMessage(result);
+			} else {
+				toastMessage(result);
+			}
+		} catch (error) {
+			console.error('Benefit icon upload failed:', error);
+			toastMessage({
+				Status: 'failure',
+				HttpCode: 500,
+				Message: 'Benefit icon upload failed. Please try again.'
+			});
+		}
+	};
+
+	const addBenefitCard = () => {
+		benefitCount++;
+		const benefitCard = {
+			id: benefitCount,
+			icon: '',
+			title: '',
+			description: ''
+		};
+
+		// Add to benefits array
 			if (!marketingMaterialSetting.Benefits) {
 				marketingMaterialSetting.Benefits = [];
 			}
 			marketingMaterialSetting.Benefits = [
 				...marketingMaterialSetting.Benefits,
 				{
-					Icon: newBenefit.Icon || '',
-					Title: newBenefit.Title.trim(),
-					Description: newBenefit.Description.trim()
-				}
-			];
-			console.log('Added benefit:', newBenefit);
-			console.log('Current benefits:', marketingMaterialSetting.Benefits);
-			newBenefit = {
 				Icon: '',
 				Title: '',
 				Description: ''
-			};
+			}
+		];
+	};
+
+	const removeBenefitCard = (index: number) => {
+		marketingMaterialSetting.Benefits =
+			marketingMaterialSetting.Benefits?.filter((_, i) => i !== index) || [];
+	};
+
+	const addBenefit = () => {
+		// Ensure Benefits array exists
+		if (!marketingMaterialSetting.Benefits) {
+			marketingMaterialSetting.Benefits = [];
 		}
+
+		// Enable edit mode when adding benefits
+		disabled = false;
+		edit = true;
+
+		// Add a new empty benefit
+		marketingMaterialSetting.Benefits = [
+			...marketingMaterialSetting.Benefits,
+			{
+				Icon: '',
+				Title: '',
+				Description: ''
+		}
+		];
+
+		console.log('Added benefit. Total benefits:', marketingMaterialSetting.Benefits.length);
 	};
 
 	const removeBenefit = (index: number) => {
@@ -560,9 +678,9 @@
 	`}
 					>
 						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:palette" class="hidden h-5 w-5 md:block" />
+							<Icon icon="material-symbols:diamond-outline" class="hidden h-5 w-5 md:block" />
 							<div class=" text-start">
-								<p class="text-md font-medium">Branding & Logos</p>
+								<p class="text-md font-medium">Logos</p>
 								<p class=" text-sm">Upload and manage your brand logos</p>
 							</div>
 						</div>
@@ -584,20 +702,27 @@
 						<div class="space-y-4 p-6">
 							<div class="space-y-6">
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]">Primary Logo</label>
-									<div class="relative">
+									<label for="primary-logo" class="text-sm font-medium text-[var(--color-info)]">Primary Logo</label>
+									<div class="flex w-full gap-3">
+										<label class="table-btn variant-filled-secondary">
+											Select File
 										<input
+												id="primary-logo"
 											type="file"
+												class="hidden"
 											accept="image/*"
 											onchange={(e) => handleFileUpload(e, 'primary-logo')}
 											{disabled}
-											class="w-full cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-3 transition-colors hover:border-[var(--color-primary)]"
+											/>
+										</label>
+										<input
+											type="text"
+											class="input-field w-[70%]"
+											placeholder="No file selected..."
+											readonly
+											{disabled}
+											value={primaryLogoFileName}
 										/>
-										<div
-											class="pointer-events-none absolute inset-0 flex items-center justify-center"
-										>
-											<span class="text-sm text-gray-500">📁 Choose Primary Logo</span>
-										</div>
 									</div>
 									<p class="text-xs text-gray-500">Positioned at top-left</p>
 									{#if primaryLogoUrl}
@@ -612,20 +737,27 @@
 								</div>
 
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]">Secondary Logo</label>
-									<div class="relative">
+									<label for="secondary-logo" class="text-sm font-medium text-[var(--color-info)]">Secondary Logo</label>
+									<div class="flex w-full gap-3">
+										<label class="table-btn variant-filled-secondary">
+											Select File
 										<input
+												id="secondary-logo"
 											type="file"
+												class="hidden"
 											accept="image/*"
 											onchange={(e) => handleFileUpload(e, 'secondary-logo')}
 											{disabled}
-											class="w-full cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-3 transition-colors hover:border-[var(--color-primary)]"
+											/>
+										</label>
+										<input
+											type="text"
+											class="input-field w-[70%]"
+											placeholder="No file selected..."
+											readonly
+											{disabled}
+											value={secondaryLogoFileName}
 										/>
-										<div
-											class="pointer-events-none absolute inset-0 flex items-center justify-center"
-										>
-											<span class="text-sm text-gray-500">📁 Choose Secondary Logo</span>
-										</div>
 									</div>
 									<p class="text-xs text-gray-500">Positioned at top-center</p>
 									{#if secondaryLogoUrl}
@@ -661,7 +793,7 @@
 	`}
 					>
 						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:palette" class="hidden h-5 w-5 md:block" />
+							<Icon icon="material-symbols:palette-outline" class="hidden h-5 w-5 md:block" />
 							<div class=" text-start">
 								<p class="text-md font-medium">Color Scheme</p>
 								<p class=" text-sm">Configure your brand colors</p>
@@ -685,9 +817,10 @@
 						<div class="space-y-4 p-6">
 							<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]">Primary Color</label>
+									<label for="primary-color" class="text-sm font-medium text-[var(--color-info)]">Primary Color</label>
 									<div class="flex items-center gap-2">
 										<input
+											id="primary-color"
 											type="color"
 											bind:value={marketingMaterialSetting.PrimaryColor}
 											{disabled}
@@ -704,10 +837,11 @@
 								</div>
 
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]">Secondary Color</label
+									<label for="secondary-color" class="text-sm font-medium text-[var(--color-info)]">Secondary Color</label
 									>
 									<div class="flex items-center gap-2">
 										<input
+											id="secondary-color"
 											type="color"
 											bind:value={marketingMaterialSetting.SecondaryColor}
 											{disabled}
@@ -724,9 +858,10 @@
 								</div>
 
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]">Accent Color</label>
+									<label for="accent-color" class="text-sm font-medium text-[var(--color-info)]">Accent Color</label>
 									<div class="flex items-center gap-2">
 										<input
+											id="accent-color"
 											type="color"
 											bind:value={marketingMaterialSetting.AccentColor}
 											{disabled}
@@ -743,11 +878,12 @@
 								</div>
 
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]"
+									<label for="background-light" class="text-sm font-medium text-[var(--color-info)]"
 										>Background Light</label
 									>
 									<div class="flex items-center gap-2">
 										<input
+											id="background-light"
 											type="color"
 											bind:value={marketingMaterialSetting.BackgroundLight}
 											{disabled}
@@ -764,9 +900,10 @@
 								</div>
 
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]">Text Dark</label>
+									<label for="text-dark" class="text-sm font-medium text-[var(--color-info)]">Text Dark</label>
 									<div class="flex items-center gap-2">
 										<input
+											id="text-dark"
 											type="color"
 											bind:value={marketingMaterialSetting.TextDark}
 											{disabled}
@@ -783,9 +920,10 @@
 								</div>
 
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]">Text Light</label>
+									<label for="text-light" class="text-sm font-medium text-[var(--color-info)]">Text Light</label>
 									<div class="flex items-center gap-2">
 										<input
+											id="text-light"
 											type="color"
 											bind:value={marketingMaterialSetting.TextLight}
 											{disabled}
@@ -823,9 +961,9 @@
 	`}
 					>
 						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:star" class="hidden h-5 w-5 md:block" />
+							<Icon icon="material-symbols:home-outline" class="hidden h-5 w-5 md:block" />
 							<div class=" text-start">
-								<p class="text-md font-medium">Hero Section (Page 1)</p>
+								<p class="text-md font-medium">Hero Section</p>
 								<p class=" text-sm">Main title, subtitle and hero image</p>
 							</div>
 						</div>
@@ -848,8 +986,9 @@
 							<div class="space-y-6">
 								<!-- Main Title -->
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]">Main Title *</label>
+									<label for="main-title" class="text-sm font-medium text-[var(--color-info)]">Main Title *</label>
 									<input
+										id="main-title"
 										type="text"
 										bind:value={marketingMaterialSetting.HeroMainTitle}
 										placeholder="Enter main title"
@@ -863,8 +1002,9 @@
 
 								<!-- Subtitle -->
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]">Subtitle</label>
+									<label for="subtitle" class="text-sm font-medium text-[var(--color-info)]">Subtitle</label>
 									<textarea
+										id="subtitle"
 										bind:value={marketingMaterialSetting.HeroSubtitle}
 										placeholder="Enter subtitle"
 										{disabled}
@@ -875,26 +1015,33 @@
 
 								<!-- Hero Image -->
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]">Hero Image</label>
-									<div class="relative">
+									<label for="hero-image" class="text-sm font-medium text-[var(--color-info)]">Hero Image</label>
+									<div class="flex w-full gap-3">
+										<label class="table-btn variant-filled-secondary">
+											Select File
 										<input
+												id="hero-image"
 											type="file"
+												class="hidden"
 											accept="image/*"
 											onchange={(e) => handleFileUpload(e, 'hero-image')}
 											{disabled}
-											class="w-full cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-3 transition-colors hover:border-[var(--color-primary)]"
+											/>
+										</label>
+										<input
+											type="text"
+											class="input-field w-[70%]"
+											placeholder="No file selected..."
+											readonly
+											{disabled}
+											value={heroImageFileName}
 										/>
-										<div
-											class="pointer-events-none absolute inset-0 flex items-center justify-center"
-										>
-											<span class="text-sm text-gray-500">📁 Choose Hero Image</span>
-										</div>
 									</div>
 									{#if heroImageUrl}
 										<div class="mt-2">
 											<img
 												src={heroImageUrl}
-												alt="Hero Image"
+												alt=""
 												class="h-32 w-full rounded-lg object-cover"
 											/>
 										</div>
@@ -923,7 +1070,7 @@
 	`}
 					>
 						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:description" class="hidden h-5 w-5 md:block" />
+							<Icon icon="material-symbols:description-outline" class="hidden h-5 w-5 md:block" />
 							<div class=" text-start">
 								<p class="text-md font-medium">Main Description</p>
 								<p class=" text-sm">Content and features description</p>
@@ -948,10 +1095,11 @@
 							<div class="space-y-6">
 								<!-- Description Heading -->
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]"
+									<label for="description-heading" class="text-sm font-medium text-[var(--color-info)]"
 										>Description Heading *</label
 									>
 									<input
+										id="description-heading"
 										type="text"
 										bind:value={marketingMaterialSetting.DescriptionHeading}
 										placeholder="Enter description heading"
@@ -965,10 +1113,11 @@
 
 								<!-- Introduction Paragraph -->
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]"
+									<label for="intro-paragraph" class="text-sm font-medium text-[var(--color-info)]"
 										>Introduction Paragraph</label
 									>
 									<textarea
+										id="intro-paragraph"
 										bind:value={marketingMaterialSetting.IntroParagraph}
 										placeholder="Enter introduction paragraph"
 										{disabled}
@@ -979,10 +1128,11 @@
 
 								<!-- Features Paragraph -->
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]"
+									<label for="features-paragraph" class="text-sm font-medium text-[var(--color-info)]"
 										>Features Paragraph</label
 									>
 									<textarea
+										id="features-paragraph"
 										bind:value={marketingMaterialSetting.FeaturesParagraph}
 										placeholder="Enter features paragraph"
 										{disabled}
@@ -997,25 +1147,24 @@
 
 				<!-- Benefits Section -->
 				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] !p-0 py-2 transition-colors duration-200 ${
 						activeSections.has('benefits') ? 'border-hover ' : ''
 					} `}
 				>
 					<button
 						type="button"
 						onclick={() => toggleSection('benefits')}
-						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
-	                               transition-all duration-100 ease-in-out  ${
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 transition-all duration-100 ease-in-out  ${
 																		activeSections.has('benefits')
-																			? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+								? 'rounded-b-none bg-[var(--color-primary)]'
 																			: `border-hover rounded bg-[var(--color-secondary)]`
 																	} 
 	                               `}
 					>
 						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:star" class="hidden h-5 w-5 md:block" />
+							<Icon icon="material-symbols:check-circle-outline" class="hidden h-5 w-5 md:block" />
 							<div class=" text-start">
-								<p class="text-md font-medium">Benefits (Page 2)</p>
+								<p class="text-md font-medium">Benefits</p>
 								<p class=" text-sm">Key benefits and features list</p>
 							</div>
 						</div>
@@ -1038,10 +1187,11 @@
 							<div class="space-y-6">
 								<!-- Benefits Heading -->
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]"
+									<label for="benefits-heading" class="text-sm font-medium text-[var(--color-info)]"
 										>Benefits Section Heading</label
 									>
 									<input
+										id="benefits-heading"
 										type="text"
 										bind:value={marketingMaterialSetting.BenefitsHeading}
 										placeholder="Benefits to you"
@@ -1050,34 +1200,59 @@
 									/>
 								</div>
 
-								<!-- Add/Edit Benefit Form -->
-								{#if edit}
-									<div class="space-y-3 rounded-lg border border-gray-300 bg-gray-50 p-4">
-										<h4 class="text-sm font-medium text-[var(--color-info)]">
-											{editingBenefitIndex >= 0 ? 'Edit Benefit' : 'Add New Benefit'}
+								<!-- Benefits Container -->
+								<div id="benefitsContainer" class="space-y-3">
+									{#if marketingMaterialSetting.Benefits && marketingMaterialSetting.Benefits.length > 0}
+										{#each marketingMaterialSetting.Benefits as benefit, index}
+											<div
+												class="repeater-section relative rounded-lg border border-dashed border-gray-300 bg-gray-50 p-4"
+											>
+												<div class="repeater-header mb-4 flex items-center justify-between">
+													<h4 class="text-sm font-medium  text-[var(--color-info)]">
+														Benefit #{index + 1}
 										</h4>
+													{#if !disabled}
+														<button
+															type="button"
+															class="rounded bg-red-500 px-2 py-1 text-xs text-white transition-colors hover:bg-red-600"
+															onclick={() => removeBenefitCard(index)}
+														>
+															Remove
+														</button>
+													{/if}
+												</div>
 
+												<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 										<!-- Benefit Icon Upload -->
 										<div class="space-y-1">
-											<label class="text-xs text-[var(--color-info)]">Icon Image</label>
-											<div class="relative">
+														<label for="benefit-icon-{index}" class="text-xs font-medium text-[var(--color-info)]"
+															>Icon Image</label
+														>
+														<div class="flex w-full gap-2">
+															<label class="table-btn variant-filled-secondary text-xs">
+																Select File
 												<input
+																	id="benefit-icon-{index}"
 													type="file"
+																	class="hidden"
 													accept="image/*"
-													onchange={handleBenefitIconUpload}
+																	onchange={(e) => handleBenefitIconUploadForIndex(e, index)}
 													{disabled}
-													class="w-full cursor-pointer rounded border-2 border-dashed border-gray-300 p-2 transition-colors hover:border-[var(--color-primary)]"
-												/>
-												<div
-													class="pointer-events-none absolute inset-0 flex items-center justify-center"
-												>
-													<span class="text-xs text-gray-500">📁 Choose Icon</span>
+																/>
+															</label>
+															<input
+																type="text"
+																class="input-field w-[70%] text-xs"
+																placeholder="No file selected..."
+																readonly
+																{disabled}
+																value={benefitIconFileName}
+															/>
 												</div>
-											</div>
-											{#if newBenefit.Icon}
+														{#if benefit.Icon}
 												<div class="mt-2">
 													<img
-														src={newBenefit.Icon}
+																	src={benefit.Icon}
 														alt="Benefit Icon Preview"
 														class="h-12 w-12 object-contain"
 													/>
@@ -1087,127 +1262,53 @@
 
 										<!-- Benefit Title -->
 										<div class="space-y-1">
-											<label class="text-xs text-[var(--color-info)]">Title</label>
+														<label for="benefit-title-{index}" class="text-xs font-medium text-[var(--color-info)]">Title</label
+														>
 											<input
+															id="benefit-title-{index}"
 												type="text"
-												bind:value={newBenefit.Title}
+															bind:value={benefit.Title}
 												placeholder="Enter benefit title"
 												{disabled}
 												class="w-full rounded border border-gray-300 p-2 focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/20"
 											/>
+													</div>
 										</div>
 
 										<!-- Benefit Description -->
-										<div class="space-y-1">
-											<label class="text-xs text-[var(--color-info)]">Description</label>
+												<div class="mt-4 space-y-1">
+													<label for="benefit-description-{index}" class="text-xs font-medium text-[var(--color-info)]"
+														>Description</label
+													>
 											<textarea
-												bind:value={newBenefit.Description}
+														id="benefit-description-{index}"
+														bind:value={benefit.Description}
 												placeholder="Enter benefit description"
 												{disabled}
 												rows="3"
 												class="w-full rounded border border-gray-300 p-2 focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/20"
 											></textarea>
 										</div>
-
-										<!-- Add/Update/Cancel Buttons -->
-										<div class="flex justify-end gap-2">
-											{#if editingBenefitIndex >= 0}
-												<button
-													type="button"
-													onclick={cancelBenefitEdit}
-													{disabled}
-													class="rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-100"
-												>
-													Cancel
-												</button>
-												<button
-													type="button"
-													onclick={updateBenefit}
-													{disabled}
-													class="rounded bg-[var(--color-primary)] px-3 py-1 text-sm text-white hover:bg-[var(--color-primary)]/80"
-												>
-													Update Benefit
-												</button>
-											{:else}
-												<button
-													type="button"
-													onclick={addBenefit}
-													{disabled}
-													class="rounded bg-green-600 px-3 py-1 text-sm text-white hover:bg-green-700"
-												>
-													+ Add Benefit
-												</button>
-											{/if}
-										</div>
-									</div>
-								{/if}
-
-								<!-- Existing Benefits List -->
-								{#if marketingMaterialSetting.Benefits && marketingMaterialSetting.Benefits.length > 0}
-									<div class="space-y-3">
-										<h4 class="text-sm font-medium text-[var(--color-info)]">Current Benefits</h4>
-										{#each marketingMaterialSetting.Benefits as benefit, index}
-											<div class="space-y-3 rounded-lg border border-gray-300 bg-gray-50 p-4">
-												<div class="flex items-start justify-between">
-													<div class="flex-1 space-y-2">
-														<!-- Benefit Icon Display -->
-														{#if benefit.Icon}
-															<div class="flex items-center gap-2">
-																<img
-																	src={benefit.Icon}
-																	alt="Benefit Icon"
-																	class="h-8 w-8 object-contain"
-																/>
-																<span class="text-xs text-gray-500">Benefit Icon</span>
-															</div>
-														{/if}
-
-														<!-- Benefit Title -->
-														<div>
-															<span class="text-xs font-medium text-[var(--color-info)]">Title</span
-															>
-															<p class="text-sm font-medium">{benefit.Title}</p>
-														</div>
-
-														<!-- Benefit Description -->
-														<div>
-															<span class="text-xs font-medium text-[var(--color-info)]"
-																>Description</span
-															>
-															<p class="text-sm text-gray-700">{benefit.Description}</p>
-														</div>
-													</div>
-
-													<!-- Action Buttons -->
-													{#if !disabled}
-														<div class="flex gap-1">
-															<button
-																type="button"
-																onclick={() => editBenefit(index)}
-																class="p-1 text-blue-600 hover:text-blue-800"
-																title="Edit benefit"
-															>
-																<Icon icon="material-symbols:edit" class="h-5 w-5" />
-															</button>
-															<button
-																type="button"
-																onclick={() => removeBenefit(index)}
-																class="p-1 text-red-600 hover:text-red-800"
-																title="Remove benefit"
-															>
-																<Icon icon="material-symbols:close" class="h-5 w-5" />
-															</button>
-														</div>
-													{/if}
-												</div>
 											</div>
 										{/each}
-									</div>
-								{:else}
-									<div class="py-4 text-center text-sm text-gray-500 italic">
-										No benefits added yet. Add your first benefit above.
+											{:else}
+										<div
+											class="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 py-8 text-center text-gray-500 italic"
+										>
+											<p class="text-sm">No benefits added yet.</p>
+											<p class="mt-1 text-xs">Click "Add Benefit" below to get started.</p>
 									</div>
 								{/if}
+															</div>
+
+								<!-- Add Benefit Button -->
+															<button
+																type="button"
+									class="btn btn-success btn-add mt-4 rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700 disabled:opacity-50"
+									onclick={addBenefit}
+								>
+									+ Add Benefit
+															</button>
 							</div>
 						</div>
 					{/if}
@@ -1231,7 +1332,7 @@
 	`}
 					>
 						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:target" class="hidden h-5 w-5 md:block" />
+							<Icon icon="material-symbols:group-outline" class="hidden h-5 w-5 md:block" />
 							<div class=" text-start">
 								<p class="text-md font-medium">Target Audience</p>
 								<p class=" text-sm">Define your target users and use cases</p>
@@ -1255,9 +1356,10 @@
 						<div class="space-y-4 p-6">
 							<div class="space-y-6">
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]">Section Heading</label
+									<label for="target-heading" class="text-sm font-medium text-[var(--color-info)]">Section Heading</label
 									>
 									<input
+										id="target-heading"
 										type="text"
 										bind:value={marketingMaterialSetting.TargetHeading}
 										placeholder="Who should use this?"
@@ -1267,8 +1369,9 @@
 								</div>
 
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]">Paragraph 1</label>
+									<label for="target-paragraph-1" class="text-sm font-medium text-[var(--color-info)]">Paragraph 1</label>
 									<textarea
+										id="target-paragraph-1"
 										bind:value={marketingMaterialSetting.TargetParagraph1}
 										placeholder="Enter first paragraph"
 										{disabled}
@@ -1278,8 +1381,9 @@
 								</div>
 
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]">Paragraph 2</label>
+									<label for="target-paragraph-2" class="text-sm font-medium text-[var(--color-info)]">Paragraph 2</label>
 									<textarea
+										id="target-paragraph-2"
 										bind:value={marketingMaterialSetting.TargetParagraph2}
 										placeholder="Enter second paragraph"
 										{disabled}
@@ -1289,22 +1393,29 @@
 								</div>
 
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]"
+									<label for="phone-mockup" class="text-sm font-medium text-[var(--color-info)]"
 										>Phone Mockup Screenshot</label
 									>
-									<div class="relative">
+									<div class="flex w-full gap-3">
+										<label class="table-btn variant-filled-secondary">
+											Select File
 										<input
+												id="phone-mockup"
 											type="file"
+												class="hidden"
 											accept="image/*"
 											onchange={(e) => handleFileUpload(e, 'phone-mockup')}
 											{disabled}
-											class="w-full cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-3 transition-colors hover:border-[var(--color-primary)]"
+											/>
+										</label>
+										<input
+											type="text"
+											class="input-field w-[70%]"
+											placeholder="No file selected..."
+											readonly
+											{disabled}
+											value={phoneMockupFileName}
 										/>
-										<div
-											class="pointer-events-none absolute inset-0 flex items-center justify-center"
-										>
-											<span class="text-sm text-gray-500">📁 Choose Phone Mockup Image</span>
-										</div>
 									</div>
 									{#if phoneMockupUrl}
 										<div class="mt-2">
@@ -1339,7 +1450,7 @@
 	`}
 					>
 						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:call" class="hidden h-5 w-5 md:block" />
+							<Icon icon="material-symbols:call-outline" class="hidden h-5 w-5 md:block" />
 							<div class=" text-start">
 								<p class="text-md font-medium">Call to Action</p>
 								<p class=" text-sm">Contact information and QR code</p>
@@ -1363,8 +1474,9 @@
 						<div class="space-y-4 p-6">
 							<div class="space-y-6">
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]">CTA Heading</label>
+									<label for="cta-heading" class="text-sm font-medium text-[var(--color-info)]">CTA Heading</label>
 									<input
+										id="cta-heading"
 										type="text"
 										bind:value={marketingMaterialSetting.CtaHeading}
 										placeholder="Register by messaging us on"
@@ -1374,10 +1486,11 @@
 								</div>
 
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]"
+									<label for="whatsapp-number" class="text-sm font-medium text-[var(--color-info)]"
 										>Phone Number (WhatsApp)</label
 									>
 									<input
+										id="whatsapp-number"
 										type="tel"
 										bind:value={marketingMaterialSetting.WhatsappNumber}
 										placeholder="Enter WhatsApp number"
@@ -1387,10 +1500,11 @@
 								</div>
 
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]"
+									<label for="qr-code-data" class="text-sm font-medium text-[var(--color-info)]"
 										>QR Code URL/Data</label
 									>
 									<input
+										id="qr-code-data"
 										type="text"
 										bind:value={marketingMaterialSetting.QrCodeData}
 										placeholder="https://wa.me/..."
@@ -1400,10 +1514,11 @@
 								</div>
 
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]"
+									<label for="qr-instruction" class="text-sm font-medium text-[var(--color-info)]"
 										>QR Code Instruction Text</label
 									>
 									<textarea
+										id="qr-instruction"
 										bind:value={marketingMaterialSetting.QrInstruction}
 										placeholder="Enter QR code instruction text"
 										{disabled}
@@ -1413,20 +1528,27 @@
 								</div>
 
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-[var(--color-info)]">QR Code Image</label>
-									<div class="relative">
+									<label for="qr-code-image" class="text-sm font-medium text-[var(--color-info)]">QR Code Image</label>
+									<div class="flex w-full gap-3">
+										<label class="table-btn variant-filled-secondary">
+											Select File
 										<input
+												id="qr-code-image"
 											type="file"
+												class="hidden"
 											accept="image/*"
 											onchange={(e) => handleFileUpload(e, 'qrcode')}
 											{disabled}
-											class="w-full cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-3 transition-colors hover:border-[var(--color-primary)]"
+											/>
+										</label>
+										<input
+											type="text"
+											class="input-field w-[70%]"
+											placeholder="No file selected..."
+											readonly
+											{disabled}
+											value={qrCodeFileName}
 										/>
-										<div
-											class="pointer-events-none absolute inset-0 flex items-center justify-center"
-										>
-											<span class="text-sm text-gray-500">📁 Choose QR Code Image</span>
-										</div>
 									</div>
 									{#if qrCodeUrl}
 										<div class="mt-2">
