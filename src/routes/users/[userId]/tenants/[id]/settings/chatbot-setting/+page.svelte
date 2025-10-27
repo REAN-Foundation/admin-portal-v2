@@ -28,7 +28,7 @@
 	let chatBotSetting = $state({
 		ChatBot: {
 			...data.chatbotSettings,
-			Timezone: data.chatbotSettings?.Timezone ?? '+05:30'
+			Timezone: data.chatbotSettings?.Timezone || '+05:30'
 		}
 	});
 	let consentSetting: ConsentSettings = $state(data.consentSettings || {});
@@ -224,7 +224,7 @@
 				Emojis: chatBotSetting.ChatBot.Emojis,
 				BasicAssessment: chatBotSetting.ChatBot.BasicAssessment,
 				BasicCarePlan: chatBotSetting.ChatBot.BasicCarePlan,
-				Timezone: chatBotSetting.ChatBot.Timezone ?? '+05:30'
+				Timezone: chatBotSetting.ChatBot.Timezone || '+05:30'
 			};
 
 			const chatBotValidation = ChatBotSettingsSchema.safeParse(chatbotCreateModel);
