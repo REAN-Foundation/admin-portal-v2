@@ -272,6 +272,8 @@ export const getUserRoleList = async (userRole: string) => {
 			}
 		];
 	}
+	
+	return [];
 };
 
 export const addPermissionMatrix = async (
