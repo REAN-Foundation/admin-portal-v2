@@ -1,31 +1,27 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
-	import { LocalStorageUtils } from '$lib/utils/local.storage.utils';
 	import PasswordInput from '$lib/components/input/password.input.svelte';
-	import { toastMessage } from '$lib/components/toast/toast.store.js';
+	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
-	import type { UserCreateModel } from '$lib/types/user.types.js';
-	import { createSchema } from '$lib/validation/user.schemas.js';
+	import type { UserCreateModel } from '$lib/types/user.types';
+	import { createSchema } from '$lib/validation/user.schemas';
 	import Button from '$lib/components/button/button.svelte';
 	import type { PageServerData } from './$types';
 	import { onMount } from 'svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	// export let form;
-	// export let data: PageServerData;
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let userRoles = data.UserRoles;
-	console.log('userRoles', userRoles);
-	
-	// Get roles from localStorage for dropdown (has id and RoleName properties)
-	let localStorageRoles = $derived.by(() => {
-		const tmp = LocalStorageUtils.getItem('personRoles');
-		return JSON.parse(tmp || '[]');
+
+	let availableRoles = $derived.by(() => {
+		return userRoles.map((role) => ({
+			id: role.Value,
+			RoleName: role.Value
+		}));
 	});
 
 	let firstName = $state(undefined);
@@ -51,17 +47,10 @@
 
 	function getRoleIdByRoleName(event) {
 		const selectedUserRole = event.target.value;
-		console.log('selectedUserRole', selectedUserRole);
-		const tmp = LocalStorageUtils.getItem('personRoles');
-		const personRoles = JSON.parse(tmp || '[]');
-		console.log('personRoles from localStorage', personRoles);
-		
-		// Find the role in localStorage data using the RoleName property
-		const selectedRole = personRoles?.find((x) => x.RoleName === selectedUserRole);
-		console.log('selectedRole', selectedRole);
-		
+
+		const selectedRole = availableRoles?.find((x) => x.RoleName === selectedUserRole);
+
 		if (selectedRole) {
-			// Use the actual id from localStorage
 			selectedUserRoleId = selectedRole.id;
 		}
 	}
@@ -83,7 +72,6 @@
 			};
 
 			const validationResult = createSchema.safeParse(usersCreateModel);
-			console.log('validationResult', validationResult);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -120,14 +108,9 @@
 	};
 
 	onMount(() => {
-		// Get roles from localStorage (has id and RoleName properties)
-		const tmp = LocalStorageUtils.getItem('personRoles');
-		const personRoles = JSON.parse(tmp || '[]');
-		
-		const defaultRole = personRoles?.find((r) => r.RoleName === 'System user');
-		if (defaultRole) {
+		if (availableRoles && availableRoles.length > 0) {
+			const defaultRole = availableRoles[0];
 			role = defaultRole.RoleName;
-			// Use the actual id from localStorage
 			selectedUserRoleId = defaultRole.id;
 		}
 	});
@@ -177,7 +160,7 @@
 				</tr>
 				<tr class="tables-row">
 					<td class="table-label">Contact Number <span class="text-red-700">*</span></td>
-					<td class="table-data ">
+					<td class="table-data">
 						<div class="flex gap-2">
 							<select name="countryCode" bind:value={countryCode} class="input !w-20">
 								<option>+1</option>
@@ -192,7 +175,7 @@
 								class="input {errors?.phone ? 'input-text-error' : ''}"
 							/>
 						</div>
-						
+
 						{#if errors?.Phone}
 							<p class="text-error">{errors?.Phone}</p>
 						{/if}
@@ -216,22 +199,29 @@
 				<tr class="tables-row">
 					<td class="table-label">Role <span class="text-red-700">*</span></td>
 					<td class="table-data">
-						<div class="relative">
-							<select
-								name="role"
-								bind:value={role}
-								class="select"
-								onchange={getRoleIdByRoleName}
-								placeholder="Select role here..."
-							>
-								{#each localStorageRoles as role}
-									<option value={role.RoleName}>{role.RoleName}</option>
-								{/each}
-							</select>
-							<div class="select-icon-container">
-								<Icon icon="mdi:chevron-down" class="select-icon" />
+						{#if availableRoles.length === 0}
+							<div class="rounded border border-red-300 bg-red-50 p-3 text-red-600">
+								<Icon icon="material-symbols:warning" class="mr-2 inline" />
+								You don't have permission to create users with any roles.
 							</div>
-						</div>
+						{:else}
+							<div class="relative">
+								<select
+									name="role"
+									bind:value={role}
+									class="select"
+									onchange={getRoleIdByRoleName}
+									placeholder="Select role here..."
+								>
+									{#each availableRoles as role}
+										<option value={role.RoleName}>{role.RoleName}</option>
+									{/each}
+								</select>
+								<div class="select-icon-container">
+									<Icon icon="mdi:chevron-down" class="select-icon" />
+								</div>
+							</div>
+						{/if}
 						<input type="hidden" name="selectedUserRoleId" bind:value={selectedUserRoleId} />
 					</td>
 				</tr>
@@ -255,7 +245,13 @@
 			{#await promise}
 				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
 			{:then data}
-				<Button size="md" type="submit" text="Submit" variant="primary" />
+				<Button
+					size="md"
+					type="submit"
+					text="Submit"
+					variant="primary"
+					disabled={availableRoles.length === 0}
+				/>
 			{/await}
 		</div>
 	</form>

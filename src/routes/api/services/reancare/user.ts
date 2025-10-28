@@ -246,6 +246,7 @@ export const deleteUser = async (sessionId: string, usreId: string) => {
 };
 
 export const getUserRoleList = async (userRole: string) => {
+	// All available roles in the system
 	if (userRole === 'System admin') {
 		return [
 			{
@@ -262,6 +263,7 @@ export const getUserRoleList = async (userRole: string) => {
 			}
 		];
 	}
+
 	if (userRole === 'Tenant admin') {
 		return [
 			{
@@ -270,7 +272,7 @@ export const getUserRoleList = async (userRole: string) => {
 			}
 		];
 	}
-
+	
 	return [];
 };
 
