@@ -228,6 +228,24 @@ export const ChatBotSettingsSchema = z.object({
         required_error: "Emojis is required",
         invalid_type_error: "Emojis must be a boolean",
     }),
+    BasicAssessment: z.boolean({
+        required_error: "Basic Assessment is required",
+        invalid_type_error: "Basic Assessment must be a boolean",
+    }),
+    BasicCarePlan: z.boolean({
+        required_error: "Basic Care Plan is required",
+        invalid_type_error: "Basic Care Plan must be a boolean",
+    }),
+    Timezone: z.string()
+        .optional()
+        .nullable()
+        .refine((val) => {
+            if (!val) return true;
+            const offsetRegex = /^[+-]([01]\d|2[0-3]):([0-5]\d)$/;
+            return offsetRegex.test(val);
+        }, {
+            message: "Timezone must be in offset format like '+05:30' or '-05:00'"
+        }),
 });
 
 // Followup settings schema
