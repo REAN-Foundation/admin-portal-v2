@@ -200,17 +200,17 @@ export const Options: FeatureOptions[] = [
     //..................................
   {
         Name: 'Bot-Content',
-        Enabled: true
+        Enabled: false
     }, {
         Name: 'Prompt-Template',
-        Enabled: true
+        Enabled: false
     }, {
         Name: 'Prompts',
         Enabled: false
     },
 	{
         Name: 'QNA-Documents',
-        Enabled: true
+        Enabled: false
     }
    	//........................
 
