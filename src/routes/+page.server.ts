@@ -1,7 +1,6 @@
 import { fail } from '@sveltejs/kit';
 import z from 'zod';
 import type { Actions, RequestEvent } from '@sveltejs/kit';
-// import { redirect } from 'sveltekit-flash-message';
 import { loginAsUser } from './api/services/reancare/user';
 import { CookieUtils } from '$lib/helper/cookie.utils';
 import { redirect } from 'sveltekit-flash-message/server';
@@ -10,13 +9,13 @@ import type { PersonRole } from '$lib/types/domain.models';
 import { getUserRoles } from './api/services/reancare/types';
 import { UserRoles } from '$lib/system.types';
 import { getPersonRolesForEmail, getPersonRolesForPhone } from './api/services/person';
-import { errorMessage,successMessage } from '$lib/utils/message.utils';
+import { errorMessage, successMessage } from '$lib/utils/message.utils';
 import { SessionManager } from './api/cache/session/session.manager';
 import type { Session } from './api/cache/session';
 
 /////////////////////////////////////////////////////////////
 
-export const load: PageServerLoad = async (event: RequestEvent) => {
+export const load: PageServerLoad = async () => {
 	try {
 		let roles: PersonRole[] = await getUserRoles();
 		if (!roles || roles.length === 0) {
@@ -26,7 +25,7 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 			message: 'Common data successfully retrieved!',
 			roles
 		};
-	} catch (error) {
+	} catch {
 		console.error(`Error retrieving data :`);
 		throw redirect(303, '/');
 	}
@@ -52,11 +51,8 @@ export const actions: Actions = {
 
 		let phone;
 		const allRoles: PersonRole[] = await getUserRoles();
-		// console.log('allRoled', allRoles);
-
 		let availableRoles: PersonRole[] = [];
 		let filteredRoles: PersonRole[] = [];
-
 		let loginRoleId = null;
 
 		if (result?.phone && result.countryCode) {
@@ -71,7 +67,7 @@ export const actions: Actions = {
 
 		if (availableRoles.length > 0) {
 			filteredRoles = availableRoles.filter(
-				(x: any) => x.RoleName !== 'Doctor'
+				(x: PersonRole) => x.RoleName !== 'Doctor'
 				&& x.RoleName !== 'Patient'
 			);
 			if (filteredRoles.length > 0) {
@@ -98,9 +94,6 @@ export const actions: Actions = {
 			}
 		}
 
-		console.log('available roles', availableRoles);
-		console.log('filtered roles', loginRoleId);
-
 		if (filteredRoles.length == 0) {
 			throw redirect(303, '/', errorMessage('Invalid user!'), event);
 		}
@@ -115,23 +108,12 @@ export const actions: Actions = {
 		if (response.Status == 'failure' || response.HttpCode !== 200) {
 			const errors = [
 				{
-					field: '',
-					message: response.Message
+					field: 'general',
+					message: response.Message || 'Invalid username or password'
 				}
 			];
 			return fail(400, { error: true, errors });
 		}
-
-		// if (!response.Data.User.Role || !response.Data.User.Role.RoleName) {
-		// 	throw redirect(303, '/', errorMessage('Permission Denied!'), event);
-		// }
-		// if (
-		// 	!['System admin', 'System user', 'Tenant admin', 'Tenant user'].includes(
-		// 		response.Data.User.Role.RoleName
-		// 	)
-		// ) {
-		// 	throw redirect(303, '/', errorMessage('Permission Denied!'), event);
-		// }
 
 		const user = response.Data.User;
 		user.SessionId = response.Data.SessionId;

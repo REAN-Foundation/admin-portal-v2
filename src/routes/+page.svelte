@@ -11,17 +11,12 @@
 	import type { PersonRole } from '$lib/types/domain.models.js';
 	import { LocalStorageUtils } from '$lib/utils/local.storage.utils.js';
 	import type { PageServerData } from './$types';
-
-	let loginType = $state('username');
-
-	let showPassword = $state(false);
-
-	function togglePasswordVisibility() {
-		showPassword = !showPassword;
-	}
+	import { enhance } from '$app/forms';
+	import { toastMessage } from '$lib/components/toast/toast.store';
 
 	let { data }: { data: PageServerData } = $props();
-	// console.log(data.roles);
+	let loginType = $state('username');
+	let showPassword = $state(false);
 
 	let roles: PersonRole[] = data.roles;
 	const logoImageSource = getPublicLogoImageSource();
@@ -35,9 +30,7 @@
 
 	if (browser) {
 		const tmp: any = LocalStorageUtils.getItem('personRoles');
-
 		personRoles = JSON.parse(tmp);
-
 		LocalStorageUtils.removeItem('prevUrl');
 	}
 
@@ -70,7 +63,26 @@
 
 <div class="form-container flex flex-col items-center justify-center">
 	<img class="ct-image mt-7 mb-7 w-36" alt="logo" src={logoImageSource} />
-	<form method="post" action="?/login" class="card mb-10 p-8">
+	<form method="post" action="?/login" class="card mb-10 p-8" use:enhance={() => {
+		return async ({ result, update }) => {
+			if (result.type === 'failure') {
+				// Show toast message with the error from server
+				const errorMessage = result.data?.errors?.[0]?.message || 'Login failed. Please check your credentials.';
+				toastMessage({
+					Status: 'failure',
+					HttpCode: 400,
+					Message: errorMessage
+				});
+				
+				// Prevent page update to avoid redirect
+				update({ reset: false });
+				return;
+			}
+			
+			// For success, allow normal behavior
+			update({ reset: false });
+		};
+	}}>
 		<h2 class="mb-4 text-center text-xl">Sign In</h2>
 
 		<div class="mb-4 flex items-center gap-6">
@@ -145,7 +157,7 @@
 					name="phone"
 					class="input"
 					placeholder="Enter your mobile number"
-					
+					required
 				/>
 			</div>
 		{/if}
@@ -166,7 +178,6 @@
 				onclick={() => (showPassword = !showPassword)}
 				tabindex="-1"
 			>
-				<!-- <Icon icon={showPassword ? 'mdi:eye-off' : 'mdi:eye'} class="h-4 w-4" /> -->
 				<Icon
 					icon={showPassword
 						? 'material-symbols:visibility-outline'
