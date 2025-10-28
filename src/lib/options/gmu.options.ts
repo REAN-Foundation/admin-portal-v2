@@ -30,7 +30,11 @@ export const Options: FeatureOptions[] = [
         Name: 'Users',
         Enabled: false
     },
-    //..............................
+    {
+        Name: 'Marketing-Material',
+        Enabled: false
+    },
+    //.............................. 
     {
         Name: 'Analysis',
         Enabled: false
