@@ -246,20 +246,23 @@ export const deleteUser = async (sessionId: string, usreId: string) => {
 };
 
 export const getUserRoleList = async (userRole: string) => {
-	// All available roles in the system
+	// All available roles in the system with their IDs
 	if (userRole === 'System admin') {
 		return [
 			{
 				Title: 'System User',
-				Value: 'System user'
+				Value: 'System user',
+				RoleId: 2
 			},
 			{
 				Title: 'Tenant User',
-				Value: 'Tenant user'
+				Value: 'Tenant user',
+				RoleId: 15
 			},
 			{
 				Title: 'Tenant Admin',
-				Value: 'Tenant admin'
+				Value: 'Tenant admin',
+				RoleId: 14
 			}
 		];
 	}
@@ -268,12 +271,24 @@ export const getUserRoleList = async (userRole: string) => {
 		return [
 			{
 				Title: 'Tenant User',
-				Value: 'Tenant user'
+				Value: 'Tenant user',
+				RoleId: 15
 			}
 		];
 	}
 	
 	return [];
+};
+
+export const getRoleIdByRoleName = (roleName: string): number | null => {
+	const roleMapping = {
+		'System admin': 1,
+		'System user': 2,
+		'Tenant admin': 14,
+		'Tenant user': 15
+	};
+
+	return roleMapping[roleName] || null;
 };
 
 export const addPermissionMatrix = async (

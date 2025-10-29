@@ -19,8 +19,9 @@
 
 	let availableRoles = $derived.by(() => {
 		return userRoles.map((role) => ({
-			id: role.Value,
-			RoleName: role.Value
+			id: role.RoleId,
+			RoleName: role.Value,
+			Title: role.Title
 		}));
 	});
 
@@ -37,6 +38,24 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 
+	// Reactive statement to update role ID when role changes or when availableRoles loads
+	$effect(() => {
+		if (availableRoles && availableRoles.length > 0) {
+			// If no role is selected yet, set the first one as default
+			if (!role) {
+				const defaultRole = availableRoles[0];
+				role = defaultRole.RoleName;
+				selectedUserRoleId = defaultRole.id;
+			} else {
+				// Find the selected role and update the ID
+				const selectedRole = availableRoles.find((x) => x.RoleName === role);
+				if (selectedRole && selectedUserRoleId !== selectedRole.id) {
+					selectedUserRoleId = selectedRole.id;
+				}
+			}
+		}
+	});
+
 	const createRoute = `/users/${userId}/users/create`;
 	const userRoute = `/users/${userId}/users`;
 
@@ -47,11 +66,10 @@
 
 	function getRoleIdByRoleName(event) {
 		const selectedUserRole = event.target.value;
-
 		const selectedRole = availableRoles?.find((x) => x.RoleName === selectedUserRole);
-
 		if (selectedRole) {
 			selectedUserRoleId = selectedRole.id;
+			role = selectedUserRole;
 		}
 	}
 
@@ -107,13 +125,7 @@
 		}
 	};
 
-	onMount(() => {
-		if (availableRoles && availableRoles.length > 0) {
-			const defaultRole = availableRoles[0];
-			role = defaultRole.RoleName;
-			selectedUserRoleId = defaultRole.id;
-		}
-	});
+
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -231,11 +243,11 @@
 						<PasswordInput bind:password />
 						{#if errors?.Password}
 							<p class="text-error">{errors?.Password}</p>
-						{:else}
+						<!-- {:else}
 							<p class="text-error">
 								The password should be at least 8 characters long and must contain at least 1
 								capital letter, 1 small letter, 1 digit, and 1 special character.
-							</p>
+							</p> -->
 						{/if}
 					</td>
 				</tr>

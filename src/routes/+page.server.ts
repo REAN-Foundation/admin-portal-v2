@@ -1,4 +1,4 @@
-// import type { ServerLoadEvent } from '@sveltejs/kit';
+
 import { redirect } from 'sveltekit-flash-message/server';
 import type { PageServerLoad } from './$types';
 import type { PersonRole } from '$lib/types/domain.models';

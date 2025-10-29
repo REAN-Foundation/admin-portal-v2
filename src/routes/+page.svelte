@@ -20,10 +20,6 @@
 	let isLoading = $state(false);
 	let errors: Record<string, string> = $state({});
 
-	function togglePasswordVisibility() {
-		showPassword = !showPassword;
-	}
-
 	let { data }: { data: PageServerData } = $props();
 
 	let roles: PersonRole[] = data.roles;
