@@ -59,7 +59,7 @@ export const createOrUpdateSchema = z.object({
 				!val ||
 				(
 					val.length >= 8 &&
-					/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/.test(val)
+					/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#_])[A-Za-z\d@$!%*?&#_]+$/.test(val)
 				),
 			{
 				message:

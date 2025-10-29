@@ -32,7 +32,7 @@ export const createSchema = z.object({
 	}),
 	Password: z
 		.string()
-		.regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/, {
+		.regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#_])[A-Za-z\d@$!%*?&#_]+$/, {
 			message:
 				'The password should be at least 8 characters long and must contain at least 1 capital letter, 1 small letter, 1 digit, and 1 special character.'
 		})
@@ -82,7 +82,7 @@ export const changePasswordSchema = z
 		OldPassword: z.string().min(1, 'Old password is required'),
 		NewPassword: z
 			.string()
-			.regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/, {
+			.regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#_])[A-Za-z\d@$!%*?&#_]+$/, {
 				message:
 					'Password should contain at least 1 capital letter, 1 small letter, 1 digit, and 1 special character.'
 			})
@@ -91,7 +91,7 @@ export const changePasswordSchema = z
 			}),
 		ConfirmNewPassword: z
 			.string()
-			.regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/, {
+			.regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#_])[A-Za-z\d@$!%*?&#_]+$/, {
 				message:
 					'Password should contain at least 1 capital letter, 1 small letter, 1 digit, and 1 special character.'
 			})

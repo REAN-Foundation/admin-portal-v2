@@ -21,6 +21,7 @@
 	let debounceTimeout;
 	let isLoading = $state(false);
 	let users = $state(data.users.Items);
+	const currentUserId = data.currentUserId; // Get current user ID from server
 	const tmp = LocalStorageUtils.getItem('personRoles');
 	const personRoles = JSON.parse(tmp);
 	let retrivedUsers = $derived(
@@ -159,6 +160,15 @@
 	}
 
 	const handleDeleteClick = (id: string) => {
+		// Prevent deleting yourself
+		if (id === currentUserId) {
+			toastMessage({
+				Message: "You cannot delete yourself",
+				HttpCode: 400,
+				Status: "failure"
+			});
+			return;
+		}
 		openDeleteModal = true;
 		idToBeDeleted = id;
 	};
@@ -369,7 +379,8 @@
 												icon="material-symbols:delete-outline-rounded"
 												iconSize="sm"
 												color="red"
-												tooltip="Delete"
+												tooltip={row.id === currentUserId ? "Cannot delete yourself" : "Delete"}
+												disabled={row.id === currentUserId}
 											/>
 										</div>
 									</td>
