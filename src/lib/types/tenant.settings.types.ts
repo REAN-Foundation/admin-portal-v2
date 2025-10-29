@@ -286,10 +286,23 @@ export interface TenantSettingsDomainModel {
 	ChatBot?: ChatBotSettings;
 	Forms?: FormsSettings;
 	Consent?: ConsentSettings;
+	CustomSettings?: CustomSettings;
+}
+
+export interface CustomSetting {
+	Name: string;
+	Description: string;
+	DataType: 'string' | 'number' | 'boolean' | 'object' | 'array';
+	Value: any;
+}
+
+export interface CustomSettings {
+	[key: string]: CustomSetting;
 }
 
 export interface TenantSettingsDto extends TenantSettingsDomainModel {
 	TenantId?: string;
+	CustomSettings?: CustomSettings;
 }
 
 export interface FaviconUploadModel {
