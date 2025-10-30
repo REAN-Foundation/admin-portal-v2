@@ -80,16 +80,7 @@
 		viewEditMode = 'edit';
 	}
 
-	// Check for existing secrets when dialog opens
 	async function checkExistingSecrets() {
-		// const schemaRes = await fetch(`/api/server/tenants/${tenantId}/schema`, {
-		// 	method: 'POST',
-		// 	headers: { 'content-type': 'application/json' },
-		// 	body: JSON.stringify({ tenantCode })
-		// });
-		// const schemaResponse = await schemaRes.json();
-		// console.log('This is schemaResponse', schemaResponse);
-
 		isCheckingSecrets = true;
 		try {
 			const res = await fetch(`/api/server/tenants/${tenantId}/secret`, {
@@ -138,7 +129,7 @@
 			return { ok: false };
 		}
 	}
-	
+
 	async function createSecrets() {
 		isPublishing = true;
 		try {
@@ -240,7 +231,7 @@
 					<div class="relative flex-1 rounded border border-[var(--color-info)]">
 						<div class="absolute top-1 right-3 text-xs text-[var(--color-info)]">JSON</div>
 						<textarea
-						class="h-full w-full resize-none border-0 p-4 font-mono text-sm focus:outline-none bg-[var(--color-primary)] text-[var(--color-info)] placeholder:text-[var(--color-info)]"
+							class="h-full w-full resize-none border-0 bg-[var(--color-primary)] p-4 font-mono text-sm text-[var(--color-info)] placeholder:text-[var(--color-info)] focus:outline-none"
 							placeholder="JSON Validator"
 							bind:value={jsonInput}
 							oninput={handleJSONInput}
