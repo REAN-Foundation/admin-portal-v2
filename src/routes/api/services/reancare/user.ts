@@ -246,37 +246,31 @@ export const deleteUser = async (sessionId: string, usreId: string) => {
 };
 
 export const getUserRoleList = async (userRole: string) => {
-	// All available roles in the system with their IDs
 	if (userRole === 'System admin') {
 		return [
 			{
 				Title: 'System User',
-				Value: 'System user',
-				RoleId: 2
+				Value: 'System user'
 			},
 			{
 				Title: 'Tenant User',
-				Value: 'Tenant user',
-				RoleId: 15
+				Value: 'Tenant user'
 			},
 			{
 				Title: 'Tenant Admin',
-				Value: 'Tenant admin',
-				RoleId: 14
+				Value: 'Tenant admin'
 			}
 		];
 	}
-
 	if (userRole === 'Tenant admin') {
 		return [
 			{
 				Title: 'Tenant User',
-				Value: 'Tenant user',
-				RoleId: 15
+				Value: 'Tenant user'
 			}
 		];
 	}
-	
+
 	return [];
 };
 

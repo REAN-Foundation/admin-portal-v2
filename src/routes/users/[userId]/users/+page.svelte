@@ -81,7 +81,7 @@
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-			url += `&roleIds=${model.roleIds ?? selectedRoles}`;
+			// url += `&roleIds=${model.roleIds ?? selectedRoles}`;
 
 			if (phone) url += `&phone=${phone}`;
 			if (email) url += `&email=${email}`;
