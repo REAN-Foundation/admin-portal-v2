@@ -101,6 +101,12 @@ export const createTenantSchema = async (
 	if (environment === 'development') {
 		environment = 'dev';
 	}
+	if(environment === 'production') {
+		environment = 'prod';
+	}
+	if (environment === 'uat') {
+		environment = 'uat';
+	}
 	const code = tenantCode.toLowerCase();
 	const SchemaName = `${code}_${environment}`;
 	const body = {
