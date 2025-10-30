@@ -154,7 +154,10 @@
 			Value: parsedValue
 		};
 
-		customSettings[newSettingKey] = newSetting;
+		customSettings = { ...customSettings, [newSettingKey]: newSetting };
+		if (newSettingDataType === 'array' || newSettingDataType === 'object') {
+			editValues[newSettingKey] = JSON.stringify(parsedValue ?? null, null, 2);
+		}
 		resetNewSettingForm();
 		showAddForm = false;
 		addToast({
@@ -176,8 +179,6 @@
 	const handleSave = async (event: Event) => {
 		try {
 			event.preventDefault();
-			
-			// Convert editValues back to actual array/object values before saving
 			const settingsToSave = { ...customSettings };
 			Object.keys(editValues).forEach(key => {
 				const setting = settingsToSave[key];
