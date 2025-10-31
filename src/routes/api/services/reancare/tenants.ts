@@ -14,7 +14,7 @@ export const createTenant = async (
 	username: string,
 	password: string
 ) => {
-    const body = getTenantCreateModel(name, description, code, phone, email, username, password);
+	const body = getTenantCreateModel(name, description, code, phone, email, username, password);
 
 	if (Helper.isPhone(phone)) {
 		body.Phone = Helper.sanitizePhone(phone);
@@ -77,7 +77,7 @@ export const deleteTenant = async (sessionId: string, tenantId: string) => {
 };
 
 export const createBotSecret = async (sessionId: string, tenantId: string, body: any) => {
-	const url = BACKEND_API_URL + `/tenants/${tenantId}/settings/secret/create-bot-secret`;
+	const url = BACKEND_API_URL + `/tenants/${tenantId}/settings/secret/create-secret`;
 	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 };
 
@@ -97,11 +97,21 @@ export const createTenantSchema = async (
 	tenantId: string,
 	tenantCode: string,
 ) => {
+	let environment = NODE_ENV;
+	if (environment === 'development') {
+		environment = 'dev';
+	}
+	if(environment === 'production') {
+		environment = 'prod';
+	}
+	if (environment === 'uat') {
+		environment = 'uat';
+	}
 	const code = tenantCode.toLowerCase();
-	const SchemaName = `${code}_${NODE_ENV}`;
+	const SchemaName = `${code}_${environment}`;
 	const body = {
 		SchemaName,
-		Environment: NODE_ENV
+		Environment: environment
 	};
 	const url = BACKEND_API_URL + `/tenants/${tenantId}/settings/database/create-bot-schema`;
 
