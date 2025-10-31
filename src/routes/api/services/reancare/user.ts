@@ -274,17 +274,6 @@ export const getUserRoleList = async (userRole: string) => {
 	return [];
 };
 
-export const getRoleIdByRoleName = (roleName: string): number | null => {
-	const roleMapping = {
-		'System admin': 1,
-		'System user': 2,
-		'Tenant admin': 14,
-		'Tenant user': 15
-	};
-
-	return roleMapping[roleName] || null;
-};
-
 export const addPermissionMatrix = async (
 	sessionId: string,
 	userRoleList: any[],
