@@ -31,24 +31,6 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 
-	// Reactive statement to update role ID when role changes or when availableRoles loads
-	// $effect(() => {
-	// 	if (availableRoles && availableRoles.length > 0) {
-	// 		// If no role is selected yet, set the first one as default
-	// 		if (!role) {
-	// 			const defaultRole = availableRoles[0];
-	// 			role = defaultRole.RoleName;
-	// 			selectedUserRoleId = defaultRole.id;
-	// 		} else {
-	// 			// Find the selected role and update the ID
-	// 			const selectedRole = availableRoles.find((x) => x.RoleName === role);
-	// 			if (selectedRole && selectedUserRoleId !== selectedRole.id) {
-	// 				selectedUserRoleId = selectedRole.id;
-	// 			}
-	// 		}
-	// 	}
-	// });
-
 	function getRoleIdByRoleName(event) {
 		const selectedUserRole = event.target.value;
 		const tmp = LocalStorageUtils.getItem('personRoles');
@@ -67,15 +49,6 @@
 		{ name: 'Users', path: userRoute },
 		{ name: 'Create', path: createRoute }
 	];
-
-	// function getRoleIdByRoleName(event) {
-	// 	const selectedUserRole = event.target.value;
-	// 	const selectedRole = availableRoles?.find((x) => x.RoleName === selectedUserRole);
-	// 	if (selectedRole) {
-	// 		selectedUserRoleId = selectedRole.id;
-	// 		role = selectedUserRole;
-	// 	}
-	// }
 
 	const handleSubmit = async (event: Event) => {
 		try {
