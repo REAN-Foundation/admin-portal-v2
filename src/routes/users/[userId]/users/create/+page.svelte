@@ -31,16 +31,26 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 
-	function getRoleIdByRoleName(event) {
-		const selectedUserRole = event.target.value;
+	function getRoleIdByRoleName(roleName) {
+		if (!roleName) return;
 		const tmp = LocalStorageUtils.getItem('personRoles');
-		const personRoles = JSON.parse(tmp);
-		console.log('personRoles', personRoles);
-		const selectedRole = personRoles?.find((x) => x.RoleName === selectedUserRole);
+		const personRoles = JSON.parse(tmp || '[]');
+		const selectedRole = personRoles?.find((x) => x.RoleName === roleName);
 		if (selectedRole) {
 			selectedUserRoleId = selectedRole.id;
+		} else {
+			selectedUserRoleId = undefined;
 		}
 	}
+
+	// Reactively update selectedUserRoleId when role changes
+	$effect(() => {
+		if (role) {
+			getRoleIdByRoleName(role);
+		}
+	});
+
+	$inspect('role', selectedUserRoleId);
 
 	const createRoute = `/users/${userId}/users/create`;
 	const userRoute = `/users/${userId}/users`;
@@ -206,11 +216,10 @@
 							name="role"
 							bind:value={role}
 							class="input"
-							onchange={getRoleIdByRoleName}
 							placeholder="Select role here..."
 						>
-							{#each userRoles as role}
-								<option value={role.Value}>{role.Title}</option>
+							{#each userRoles as roleOption}
+								<option value={roleOption.Value}>{roleOption.Title}</option>
 							{/each}
 						</select>
 						<input type="hidden" name="selectedUserRoleId" bind:value={selectedUserRoleId} />
