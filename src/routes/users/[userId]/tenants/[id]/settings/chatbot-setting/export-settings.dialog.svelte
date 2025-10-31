@@ -107,7 +107,7 @@
 	async function createBotSchema() {
 		try {
 			if (!tenantCode || String(tenantCode).trim().length === 0) {
-				toastMessage({ Status: 'failure', HttpCode: 400, Message: 'tenantCode is required' });
+				toastMessage({ Status: 'failure', HttpCode: 400, Message: 'Tenant code is required' });
 				return { ok: false };
 			}
 			const schemaRes = await fetch(`/api/server/tenants/${tenantId}/schema`, {
