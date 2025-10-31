@@ -502,15 +502,15 @@
 							{/if}
 
 							{#if followUpSettingUpdateModel.Source === 'Api'}
-								<tr class="bg-gray-100">
-									<td class="">
+								<tr class="bg-[var(--color-accent)]">
+									<td>
 										<label for="source" class="text-sm font-semibold text-[var(--color-info)]"
 											>Authentication Endpoint</label
 										>
 									</td>
 									<td>
 										<button
-											class="flex w-full items-center justify-between"
+											class="flex w-full items-center justify-between text-[var(--color-info)]"
 											type="button"
 											onclick={() => toggleTab('auth')}
 										>
@@ -553,7 +553,7 @@
 									</tr>
 									<tr>
 										<td>
-											<label for="baseUrl" class="text-[var(--color-info)]">API Base URL </label>
+										<label for="baseUrl" class="text-[var(--color-info)]">API Base URL </label>
 										</td>
 										<td>
 											<input
@@ -668,7 +668,7 @@
 									</tr>
 								{/if}
 
-								<tr class="cursor-pointer bg-gray-100">
+								<tr class="cursor-pointer bg-[var(--color-accent)]">
 									<td>
 										<label for="fetchconfig" class="text-sm font-semibold text-[var(--color-info)]"
 											>API Fetch Configuration</label
@@ -676,7 +676,7 @@
 									</td>
 									<td>
 										<button
-											class="flex w-full items-center justify-between"
+											class="flex w-full items-center justify-between text-[var(--color-info)]"
 											type="button"
 											onclick={() => toggleTab('fetch')}
 										>
@@ -832,15 +832,15 @@
 									</tr>
 								{/if}
 
-								<tr class="cursor-pointer bg-gray-100">
-									<td class=" py-5">
+								<tr class="cursor-pointer bg-[var(--color-accent)]">
+									<td class="py-5">
 										<label for="Token" class="font-semibold text-[var(--color-info)]">
 											Token Injection</label
 										>
 									</td>
 									<td>
 										<button
-											class="flex w-full items-center justify-between"
+											class="flex w-full items-center justify-between text-[var(--color-info)]"
 											type="button"
 											onclick={() => toggleTab('token')}
 										>
