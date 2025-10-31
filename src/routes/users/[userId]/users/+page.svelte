@@ -81,7 +81,7 @@
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-			// url += `&roleIds=${model.roleIds ?? selectedRoles}`;
+			url += `&roleIds=${model.roleIds ?? selectedRoles}`;
 
 			if (phone) url += `&phone=${phone}`;
 			if (email) url += `&email=${email}`;
@@ -163,9 +163,9 @@
 		// Prevent deleting yourself
 		if (id === currentUserId) {
 			toastMessage({
-				Message: "You cannot delete yourself",
+				Message: 'You cannot delete yourself',
 				HttpCode: 400,
-				Status: "failure"
+				Status: 'failure'
 			});
 			return;
 		}
@@ -379,7 +379,7 @@
 												icon="material-symbols:delete-outline-rounded"
 												iconSize="sm"
 												color="red"
-												tooltip={row.id === currentUserId ? "Cannot delete yourself" : "Delete"}
+												tooltip={row.id === currentUserId ? 'Cannot delete yourself' : 'Delete'}
 												disabled={row.id === currentUserId}
 											/>
 										</div>
