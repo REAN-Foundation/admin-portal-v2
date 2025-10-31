@@ -18,14 +18,6 @@
 
 	let userRoles = data.UserRoles;
 
-	// let availableRoles = $derived.by(() => {
-	// 	return userRoles.map((role) => ({
-	// 		// id: role.RoleId,
-	// 		RoleName: role.Value,
-	// 		Title: role.Title
-	// 	}));
-	// });
-
 	let firstName = $state(undefined);
 	let lastName = $state(undefined);
 	let role = $state(undefined);
