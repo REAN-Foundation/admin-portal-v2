@@ -10,20 +10,13 @@
 	import Button from '$lib/components/button/button.svelte';
 	import type { PageServerData } from './$types';
 	import { onMount } from 'svelte';
+	import { LocalStorageUtils } from '$lib/utils/local.storage.utils';
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let userRoles = data.UserRoles;
-
-	let availableRoles = $derived.by(() => {
-		return userRoles.map((role) => ({
-			id: role.RoleId,
-			RoleName: role.Value,
-			Title: role.Title
-		}));
-	});
 
 	let firstName = $state(undefined);
 	let lastName = $state(undefined);
@@ -38,23 +31,26 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 
-	// Reactive statement to update role ID when role changes or when availableRoles loads
+	function getRoleIdByRoleName(roleName) {
+		if (!roleName) return;
+		const tmp = LocalStorageUtils.getItem('personRoles');
+		const personRoles = JSON.parse(tmp || '[]');
+		const selectedRole = personRoles?.find((x) => x.RoleName === roleName);
+		if (selectedRole) {
+			selectedUserRoleId = selectedRole.id;
+		} else {
+			selectedUserRoleId = undefined;
+		}
+	}
+
+	// Reactively update selectedUserRoleId when role changes
 	$effect(() => {
-		if (availableRoles && availableRoles.length > 0) {
-			// If no role is selected yet, set the first one as default
-			if (!role) {
-				const defaultRole = availableRoles[0];
-				role = defaultRole.RoleName;
-				selectedUserRoleId = defaultRole.id;
-			} else {
-				// Find the selected role and update the ID
-				const selectedRole = availableRoles.find((x) => x.RoleName === role);
-				if (selectedRole && selectedUserRoleId !== selectedRole.id) {
-					selectedUserRoleId = selectedRole.id;
-				}
-			}
+		if (role) {
+			getRoleIdByRoleName(role);
 		}
 	});
+
+	$inspect('role', selectedUserRoleId);
 
 	const createRoute = `/users/${userId}/users/create`;
 	const userRoute = `/users/${userId}/users`;
@@ -63,15 +59,6 @@
 		{ name: 'Users', path: userRoute },
 		{ name: 'Create', path: createRoute }
 	];
-
-	function getRoleIdByRoleName(event) {
-		const selectedUserRole = event.target.value;
-		const selectedRole = availableRoles?.find((x) => x.RoleName === selectedUserRole);
-		if (selectedRole) {
-			selectedUserRoleId = selectedRole.id;
-			role = selectedUserRole;
-		}
-	}
 
 	const handleSubmit = async (event: Event) => {
 		try {
@@ -89,7 +76,11 @@
 				SelectedUserRoleId: selectedUserRoleId
 			};
 
+			console.log('usersCreateModel', usersCreateModel);
+
 			const validationResult = createSchema.safeParse(usersCreateModel);
+
+			console.log('validationResult', validationResult);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -124,8 +115,18 @@
 			toastMessage();
 		}
 	};
-
-
+	onMount(() => {
+		const defaultRole = userRoles?.find((r) => r.Title === 'System User');
+		if (defaultRole) {
+			role = defaultRole.Value;
+			const tmp = LocalStorageUtils.getItem('personRoles');
+			const personRoles = JSON.parse(tmp || '[]');
+			const match = personRoles.find((x) => x.RoleName === defaultRole.Value);
+			if (match) {
+				selectedUserRoleId = match.id;
+			}
+		}
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -210,30 +211,17 @@
 				</tr>
 				<tr class="tables-row">
 					<td class="table-label">Role <span class="text-red-700">*</span></td>
-					<td class="table-data">
-						{#if availableRoles.length === 0}
-							<div class="rounded border border-red-300 bg-red-50 p-3 text-red-600">
-								<Icon icon="material-symbols:warning" class="mr-2 inline" />
-								You don't have permission to create users with any roles.
-							</div>
-						{:else}
-							<div class="relative">
-								<select
-									name="role"
-									bind:value={role}
-									class="select"
-									onchange={getRoleIdByRoleName}
-									placeholder="Select role here..."
-								>
-									{#each availableRoles as role}
-										<option value={role.RoleName}>{role.RoleName}</option>
-									{/each}
-								</select>
-								<div class="select-icon-container">
-									<Icon icon="mdi:chevron-down" class="select-icon" />
-								</div>
-							</div>
-						{/if}
+					<td>
+						<select
+							name="role"
+							bind:value={role}
+							class="input"
+							placeholder="Select role here..."
+						>
+							{#each userRoles as roleOption}
+								<option value={roleOption.Value}>{roleOption.Title}</option>
+							{/each}
+						</select>
 						<input type="hidden" name="selectedUserRoleId" bind:value={selectedUserRoleId} />
 					</td>
 				</tr>
@@ -243,7 +231,7 @@
 						<PasswordInput bind:password />
 						{#if errors?.Password}
 							<p class="text-error">{errors?.Password}</p>
-						<!-- {:else}
+							<!-- {:else}
 							<p class="text-error">
 								The password should be at least 8 characters long and must contain at least 1
 								capital letter, 1 small letter, 1 digit, and 1 special character.
@@ -253,17 +241,11 @@
 				</tr>
 			</tbody>
 		</table>
-		<div class="btn-container">
+		<div class="btn-container mr-5 mb-2">
 			{#await promise}
 				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
 			{:then data}
-				<Button
-					size="md"
-					type="submit"
-					text="Submit"
-					variant="primary"
-					disabled={availableRoles.length === 0}
-				/>
+				<Button size="md" type="submit" text="Submit" variant="primary" />
 			{/await}
 		</div>
 	</form>

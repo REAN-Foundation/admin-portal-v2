@@ -163,9 +163,9 @@
 		// Prevent deleting yourself
 		if (id === currentUserId) {
 			toastMessage({
-				Message: "You cannot delete yourself",
+				Message: 'You cannot delete yourself',
 				HttpCode: 400,
-				Status: "failure"
+				Status: 'failure'
 			});
 			return;
 		}
@@ -379,7 +379,7 @@
 												icon="material-symbols:delete-outline-rounded"
 												iconSize="sm"
 												color="red"
-												tooltip={row.id === currentUserId ? "Cannot delete yourself" : "Delete"}
+												tooltip={row.id === currentUserId ? 'Cannot delete yourself' : 'Delete'}
 												disabled={row.id === currentUserId}
 											/>
 										</div>
