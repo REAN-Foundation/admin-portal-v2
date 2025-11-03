@@ -179,6 +179,7 @@
 							name="phone"
 							pattern="[+]?[0-9\-]+"
 							bind:value={phone}
+							disabled
 							placeholder="Enter contact number here..."
 							class="grayout-input {errors?.phone ? 'input-text-error' : ''}"
 						/>
@@ -210,6 +211,7 @@
 							<input
 							type="text"
 							name="roleId"
+							disabled
 							bind:value={role}
 							class="grayout-input {errors?.role ? 'input-text-error' : ''}"
 							/>
