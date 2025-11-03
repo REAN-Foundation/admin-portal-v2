@@ -831,11 +831,7 @@ tr {
 }
 
 .table-c tbody tr:hover {
-	@apply bg-gray-50;
-}
-
-.table-c tbody tr:hover td {
-	@apply text-black;
+	@apply bg-gray-50 text-black;
 }
 
 .table-c tbody tr:hover .table-btn {
@@ -844,29 +840,6 @@ tr {
 
 .table-c tbody td {
 	@apply border-b-1 border-[var(--color-outline)] px-5 py-2 text-sm;
-	color: var(--color-info);
-}
-
-.table-c tbody td label,
-.table-c tbody td span:not([class*="text-red"]):not([class*="text-error"]),
-.table-c tbody td div:not([class*="text-red"]):not([class*="text-error"]) {
-	color: var(--color-info);
-}
-
-.table-c tbody tr:hover td {
-	color: #000000;
-}
-
-.table-c tbody tr:hover td label,
-.table-c tbody tr:hover td span:not([class*="text-red"]):not([class*="text-error"]),
-.table-c tbody tr:hover td div:not([class*="text-red"]):not([class*="text-error"]) {
-	color: #000000;
-}
-
-.table-c tbody tr:hover td input[type="text"],
-.table-c tbody tr:hover td select,
-.table-c tbody tr:hover td textarea {
-	color: #000000;
 }
 
 .table-btn {
