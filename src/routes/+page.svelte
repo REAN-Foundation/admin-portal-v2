@@ -14,7 +14,10 @@
 	import { loginSchema } from '$lib/validation/login.schema';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
+	import { tick } from 'svelte';
 
+	///////////////////////////////////////////////////////////////////////////
+	
 	let loginType = $state('username');
 	let showPassword = $state(false);
 	let isLoading = $state(false);
@@ -110,13 +113,15 @@
 			const result = await response.json();
 
 			if (result.success) {
+				await goto(result.data.redirectUrl);
+				await tick(); // Wait for the new page to render
 				toastMessage({
 					Message: result.message,
 					HttpCode: 200,
 					Status: 'success'
 				});
 				// Redirect to the user's home page
-				goto(result.data.redirectUrl);
+				
 			} else {
 				toastMessage({
 					Message: result.message,

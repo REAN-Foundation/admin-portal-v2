@@ -299,6 +299,7 @@
 	title="Delete Health System"
 	onConfirm={handleHealthSystemDelete}
 	id={idToBeDeleted}
+	message="Deleting Health System will also delete associated Hospital"
 />
 
 <Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />

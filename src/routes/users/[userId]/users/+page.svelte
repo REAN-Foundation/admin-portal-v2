@@ -360,11 +360,13 @@
 									<td>
 										<div class="flex justify-end">
 											<Button
-												href={editRoute(row.id)}
+												href={row.IsPermitted ? editRoute(row.id) : null}
+												disabled={!row.IsPermitted}
 												variant="icon"
 												icon="material-symbols:edit-outline"
 												iconSize="sm"
-												tooltip="Edit"
+												color={row.IsPermitted ? null : '#808b96'}
+												tooltip={row.IsPermitted ? 'Edit' : 'Permission denied'}
 											/>
 											<Button
 												href={viewRoute(row.id)}
@@ -374,13 +376,13 @@
 												tooltip="View"
 											/>
 											<Button
+											    disabled= {userId === row.id || !row.IsPermitted}
 												onclick={() => handleDeleteClick(row.id)}
 												variant="icon"
 												icon="material-symbols:delete-outline-rounded"
 												iconSize="sm"
 												color="red"
-												tooltip={row.id === currentUserId ? 'Cannot delete yourself' : 'Delete'}
-												disabled={row.id === currentUserId}
+												tooltip={userId === row.id || !row.IsPermitted  ? 'Permission denied' : 'Delete'}
 											/>
 										</div>
 									</td>
