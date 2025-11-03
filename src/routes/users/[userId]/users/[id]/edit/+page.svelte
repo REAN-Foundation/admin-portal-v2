@@ -180,7 +180,7 @@
 							pattern="[+]?[0-9\-]+"
 							bind:value={phone}
 							placeholder="Enter contact number here..."
-							class="grayout-input {errors?.phone ? 'input-text-error' : ''}"
+							class="input {errors?.phone ? 'input-text-error' : ''}"
 						/>
 						{#if errors?.Phone}
 							<p class="text-error">{errors?.Phone}</p>
@@ -210,6 +210,7 @@
 							<input
 							type="text"
 							name="roleId"
+							disabled
 							bind:value={role}
 							class="grayout-input {errors?.role ? 'input-text-error' : ''}"
 							/>
