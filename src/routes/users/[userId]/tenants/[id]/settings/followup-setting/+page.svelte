@@ -365,65 +365,45 @@
 					</a>
 				</div>
 			</div>
-			<div class="flex flex-col space-y-4">
-				<table class="table-c">
-					<thead>
-					</thead>
+			<div class="flex flex-col space-y-4 px-4 py-4">
+				<table class="w-full">
 					<tbody>
-						<tr>
-							<td
-								><label for="source" class="flex items-center space-x-2 text-[var(--color-info)]">
-									<span class="text-sm ">Source</span>
-								</label></td
-							>
-
-							{#if isFollowupEnabled && edit}
-								<td>
+						<tr class="tables-row">
+							<td class="table-label">Source <span class="text-red-700">*</span></td>
+							<td class="table-data">
+								<div class="relative">
 									<select
 										bind:value={followUpSettingUpdateModel.Source}
-										class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+										class="select"
+										disabled={!isFollowupEnabled || !edit}
 									>
 										<option value="None" selected>None</option>
 										<option value="File">Files</option>
 										<option value="Api">API</option>
 									</select>
-									{#if errors?.Source}
-										<p class="text-error">{errors?.Source}</p>
-									{/if}
-								</td>
-							{:else}
-								<td>
-									<select
-										bind:value={followUpSettingUpdateModel.Source}
-										class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-										disabled={!edit}
-									>
-										<option value="None" selected>None</option>
-										<option value="File">Files</option>
-										<option value="Api">API</option>
-									</select>
-									{#if errors?.Source}
-										<p class="text-error">{errors?.Source}</p>
-									{/if}
-								</td>
-							{/if}
+									<div class="select-icon-container">
+										<Icon icon="mdi:chevron-down" class="select-icon" />
+									</div>
+								</div>
+								{#if errors?.Source}
+									<p class="text-error">{errors?.Source}</p>
+								{/if}
+							</td>
 						</tr>
 						{#if followUpSettingUpdateModel.Source === 'File' || followUpSettingUpdateModel.Source === 'Api'}
 							{#if followUpSettingUpdateModel.Source === 'File'}
-								<tr>
-									<td>
-										<label for="format" class="text-sm text-[var(--color-info)]"
-											>Column Format
-											<span class="text-red-700">*</span>
-										</label>
+								<tr class="tables-row">
+									<td class="table-label">
+										Column Format
+										<span class="text-red-700">*</span>
 									</td>
-									<td>
+									<td class="table-data">
 										<textarea
 											cols="30"
 											rows="6"
 											bind:value={followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat}
 											placeholder="Column format in JSON format"
-											class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+											class="input"
 											oninput={validateJSON}
 											disabled={!edit}
 										></textarea>
@@ -433,54 +413,49 @@
 												{jsonError || errors?.FileUploadSettings?.FileColumnFormat}
 											</p>
 										{/if}
-										<!-- {#if errors?.FileUploadSettings.FileColumnFormat}
-												<p class="text-error">{FileUploadSettings.FileColumnFormat}</p>
-											{/if} -->
 									</td>
 								</tr>
 
-								<tr>
-									<td>
-										<label for="fileType" class="text-[var(--color-info)]"
-											>File Type <span class="text-red-700">*</span></label
-										>
+								<tr class="tables-row">
+									<td class="table-label">
+										File Type <span class="text-red-700">*</span>
 									</td>
-									<td>
-										<select
-											bind:value={followUpSettingUpdateModel.FileUploadSettings.FileType}
-											class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-											disabled={!edit}
-										>
-											<option value="" disabled selected>Select file type</option>
-											<option value="csv">CSV</option>
-											<option value="json">JSON</option>
-											<option value="xlsx">Excel</option>
-											<option value="xml">XML</option>
-											<option value="txt">Text</option>
-											<option value="pdf">PDF</option>
-										</select>
-										<!-- {#if errors?.FileUploadSettings}
-												<p class="text-error">{errors?.FileUploadSettings}</p>
-											{/if} -->
+									<td class="table-data">
+										<div class="relative">
+											<select
+												bind:value={followUpSettingUpdateModel.FileUploadSettings.FileType}
+												class="select"
+												disabled={!edit}
+											>
+												<option value="" disabled selected>Select file type</option>
+												<option value="csv">CSV</option>
+												<option value="json">JSON</option>
+												<option value="xlsx">Excel</option>
+												<option value="xml">XML</option>
+												<option value="txt">Text</option>
+												<option value="pdf">PDF</option>
+											</select>
+											<div class="select-icon-container">
+												<Icon icon="mdi:chevron-down" class="select-icon" />
+											</div>
+										</div>
 										{#if errors?.FileUploadSettings?.FileType}
 											<p class="text-error">{errors.FileUploadSettings.FileType}</p>
 										{/if}
 									</td>
 								</tr>
-								<tr>
-									<td>
-										<label for="Schedule" class="text-[var(--color-info)]">
-											Reminder Schedules <span class="text-red-700">*</span></label
-										>
+								<tr class="tables-row">
+									<td class="table-label">
+										Reminder Schedules <span class="text-red-700">*</span>
 									</td>
-									<td>
+									<td class="table-data">
 										<button
 											onclick={(event) => {
 												event.preventDefault();
 												showReminderModal = edit;
 											}}
 											disabled={!edit}
-											class="table-btn variant-filled-secondary gap-1 text-[var(--color-info)]"
+											class="table-btn variant-filled-secondary gap-1"
 										>
 											Add Schedule
 										</button>
@@ -502,15 +477,13 @@
 							{/if}
 
 							{#if followUpSettingUpdateModel.Source === 'Api'}
-								<tr class="bg-[var(--color-accent)]">
-									<td>
-										<label for="source" class="text-sm font-semibold text-[var(--color-info)]"
-											>Authentication Endpoint</label
-										>
+								<tr class="tables-row bg-[var(--color-accent)]">
+									<td class="table-label">
+										<span class="text-sm font-semibold">Authentication Endpoint</span>
 									</td>
-									<td>
+									<td class="table-data">
 										<button
-											class="flex w-full items-center justify-between text-[var(--color-info)]"
+											class="flex w-full items-center justify-between cursor-pointer"
 											type="button"
 											onclick={() => toggleTab('auth')}
 										>
@@ -525,41 +498,38 @@
 								</tr>
 
 								{#if openTab === 'auth'}
-									<tr>
-										<td>
-											<!-- <div class="space-y-2">
-										<div class="flex flex-row"> -->
-											<label for="method" class="text-[var(--color-info)]"> API Config Method </label>
-											<!-- </div> -->
-										</td>
-
-										<td>
-											<select
-												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Method}
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-												disabled={!edit}
-											>
-												<option value="" disabled selected>Select Method</option>
-												<option value="GET">GET</option>
-												<option value="POST">POST</option>
-												<option value="PUT">PUT</option>
-												<option value="DELETE">DELETE</option>
-												<option value="PATCH">PATCH</option>
-											</select>
+									<tr class="tables-row">
+										<td class="table-label">API Config Method</td>
+										<td class="table-data">
+											<div class="relative">
+												<select
+													bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Method}
+													class="select"
+													disabled={!edit}
+												>
+													<option value="" disabled selected>Select Method</option>
+													<option value="GET">GET</option>
+													<option value="POST">POST</option>
+													<option value="PUT">PUT</option>
+													<option value="DELETE">DELETE</option>
+													<option value="PATCH">PATCH</option>
+												</select>
+												<div class="select-icon-container">
+													<Icon icon="mdi:chevron-down" class="select-icon" />
+												</div>
+											</div>
 											{#if errors?.ApiIntegrationSettings?.Auth?.Method}
 												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.Method}</p>
 											{/if}
 										</td>
 									</tr>
-									<tr>
-										<td>
-										<label for="baseUrl" class="text-[var(--color-info)]">API Base URL </label>
-										</td>
-										<td>
+									<tr class="tables-row">
+										<td class="table-label">API Base URL</td>
+										<td class="table-data">
 											<input
 												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Url}
 												placeholder="Base URL"
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+												class="input"
 												disabled={!edit}
 											/>
 											{#if errors?.ApiIntegrationSettings?.Auth?.Url}
@@ -568,31 +538,23 @@
 										</td>
 									</tr>
 
-									<tr>
-										<td>
-											<!-- <div class="flex flex-row"> -->
-											<label for="requestBody" class="text-[var(--color-info)]"> Request Body </label>
-										</td>
-										<td>
+									<tr class="tables-row">
+										<td class="table-label">Request Body</td>
+										<td class="table-data">
 											<input
 												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Body}
 												placeholder="Request Body"
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+												class="input"
 												disabled={!edit}
 											/>
 											{#if errors?.ApiIntegrationSettings?.Auth?.Body}
 												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.Body}</p>
 											{/if}
 										</td>
-										<!-- </div> -->
 									</tr>
-									<tr>
-										<td>
-											<label for="queryParams" class="text-[var(--color-info)]"
-												>Request Query Params</label
-											>
-										</td>
-										<td>
+									<tr class="tables-row">
+										<td class="table-label">Request Query Params</td>
+										<td class="table-data">
 											<FollowUpSettings
 												bind:model={
 													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams
@@ -607,11 +569,9 @@
 										</td>
 									</tr>
 
-									<tr>
-										<td>
-											<label for="headers" class="text-[var(--color-info)]">Auth Query Headers</label>
-										</td>
-										<td>
+									<tr class="tables-row">
+										<td class="table-label">Auth Query Headers</td>
+										<td class="table-data">
 											<FollowUpSettings
 												bind:model={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Headers}
 												disabled={!edit}
@@ -622,15 +582,13 @@
 										</td>
 									</tr>
 
-									<tr>
-										<td>
-											<label for="tokenPath" class="text-[var(--color-info)]">Token Path </label>
-										</td>
-										<td>
+									<tr class="tables-row">
+										<td class="table-label">Token Path</td>
+										<td class="table-data">
 											<input
 												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenPath}
 												placeholder="Token path (e.g. data.token)"
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+												class="input"
 												disabled={!edit}
 											/>
 											{#if errors?.ApiIntegrationSettings?.Auth?.TokenPath}
@@ -639,26 +597,27 @@
 										</td>
 									</tr>
 
-									<tr>
-										<td>
-											<label for="Responsetype" class="text-[var(--color-info)]">
-												Response Type
-											</label>
-										</td>
-										<td>
-											<select
-												bind:value={
-													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.ResponseType
-												}
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-												disabled={!edit}
-											>
-												<option value="" disabled selected>Select Response type</option>
-												<option value="json">JSON</option>
-												<option value="text">Text</option>
-												<option value="form">Form</option>
-												<option value="xml">XML</option>
-											</select>
+									<tr class="tables-row">
+										<td class="table-label">Response Type</td>
+										<td class="table-data">
+											<div class="relative">
+												<select
+													bind:value={
+														followUpSettingUpdateModel.ApiIntegrationSettings.Auth.ResponseType
+													}
+													class="select"
+													disabled={!edit}
+												>
+													<option value="" disabled selected>Select Response type</option>
+													<option value="json">JSON</option>
+													<option value="text">Text</option>
+													<option value="form">Form</option>
+													<option value="xml">XML</option>
+												</select>
+												<div class="select-icon-container">
+													<Icon icon="mdi:chevron-down" class="select-icon" />
+												</div>
+											</div>
 											{#if errors?.ApiIntegrationSettings?.Auth?.ResponseType}
 												<p class="text-error">
 													{errors?.ApiIntegrationSettings?.Auth?.ResponseType}
@@ -668,15 +627,13 @@
 									</tr>
 								{/if}
 
-								<tr class="cursor-pointer bg-[var(--color-accent)]">
-									<td>
-										<label for="fetchconfig" class="text-sm font-semibold text-[var(--color-info)]"
-											>API Fetch Configuration</label
-										>
+								<tr class="tables-row bg-[var(--color-accent)]">
+									<td class="table-label">
+										<span class="text-sm font-semibold">API Fetch Configuration</span>
 									</td>
-									<td>
+									<td class="table-data">
 										<button
-											class="flex w-full items-center justify-between text-[var(--color-info)]"
+											class="flex w-full items-center justify-between cursor-pointer"
 											type="button"
 											onclick={() => toggleTab('fetch')}
 										>
@@ -691,41 +648,42 @@
 								</tr>
 
 								{#if openTab === 'fetch'}
-									<tr>
-										<td>
-											<label for="method text-[var(--color-info)]" class="text-[var(--color-info)]"
-												>API Config Method <span class="text-red-700">*</span></label
-											>
+									<tr class="tables-row">
+										<td class="table-label">
+											API Config Method <span class="text-red-700">*</span>
 										</td>
-										<td>
-											<select
-												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Method}
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-												disabled={!edit}
-											>
-												<option value="" disabled selected>Select Fecth Method</option>
-												<option value="GET">GET</option>
-												<option value="POST">POST</option>
-												<option value="PUT">PUT</option>
-												<option value="DELETE">DELETE</option>
-												<option value="PATCH">PATCH</option>
-											</select>
+										<td class="table-data">
+											<div class="relative">
+												<select
+													bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Method}
+													class="select"
+													disabled={!edit}
+												>
+													<option value="" disabled selected>Select Fetch Method</option>
+													<option value="GET">GET</option>
+													<option value="POST">POST</option>
+													<option value="PUT">PUT</option>
+													<option value="DELETE">DELETE</option>
+													<option value="PATCH">PATCH</option>
+												</select>
+												<div class="select-icon-container">
+													<Icon icon="mdi:chevron-down" class="select-icon" />
+												</div>
+											</div>
 											{#if errors?.ApiIntegrationSettings?.Fetch?.Method}
 												<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.Method}</p>
 											{/if}
 										</td>
 									</tr>
-									<tr>
-										<td>
-											<label for="url" class="text-[var(--color-info)]">
-												URL <span class="text-red-700">*</span></label
-											>
+									<tr class="tables-row">
+										<td class="table-label">
+											URL <span class="text-red-700">*</span>
 										</td>
-										<td>
+										<td class="table-data">
 											<input
 												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Url}
 												placeholder="Base URL"
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+												class="input"
 												disabled={!edit}
 											/>
 											{#if errors?.ApiIntegrationSettings?.Fetch?.Url}
@@ -733,13 +691,9 @@
 											{/if}
 										</td>
 									</tr>
-									<tr>
-										<td>
-											<label for="queryParams" class="text-[var(--color-info)]"
-												>Request Query Params</label
-											>
-										</td>
-										<td>
+									<tr class="tables-row">
+										<td class="table-label">Request Query Params</td>
+										<td class="table-data">
 											<FollowUpSettings
 												bind:model={
 													followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.QueryParams
@@ -753,15 +707,13 @@
 											{/if}
 										</td>
 									</tr>
-									<tr>
-										<td>
-											<label for="body" class="text-[var(--color-info)]"> Request Body</label>
-										</td>
-										<td>
+									<tr class="tables-row">
+										<td class="table-label">Request Body</td>
+										<td class="table-data">
 											<input
 												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Body}
 												placeholder="Request Body"
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+												class="input"
 												disabled={!edit}
 											/>
 											{#if errors?.ApiIntegrationSettings?.Fetch?.Body}
@@ -769,11 +721,9 @@
 											{/if}
 										</td>
 									</tr>
-									<tr>
-										<td>
-											<label for="headers" class="text-[var(--color-info)]">Query Headers </label>
-										</td>
-										<td>
+									<tr class="tables-row">
+										<td class="table-label">Query Headers</td>
+										<td class="table-data">
 											<FollowUpSettings
 												bind:model={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Headers}
 												disabled={!edit}
@@ -783,24 +733,27 @@
 											{/if}
 										</td>
 									</tr>
-									<tr>
-										<td>
-											<label for="requestType" class="text-[var(--color-info)]"> Response Type</label>
-										</td>
-										<td>
-											<select
-												bind:value={
-													followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseType
-												}
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-												disabled={!edit}
-											>
-												<option value="" disabled selected>Select Response type</option>
-												<option value="json">JSON</option>
-												<option value="text">Text</option>
-												<option value="form">Form</option>
-												<option value="xml">XML</option>
-											</select>
+									<tr class="tables-row">
+										<td class="table-label">Response Type</td>
+										<td class="table-data">
+											<div class="relative">
+												<select
+													bind:value={
+														followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseType
+													}
+													class="select"
+													disabled={!edit}
+												>
+													<option value="" disabled selected>Select Response type</option>
+													<option value="json">JSON</option>
+													<option value="text">Text</option>
+													<option value="form">Form</option>
+													<option value="xml">XML</option>
+												</select>
+												<div class="select-icon-container">
+													<Icon icon="mdi:chevron-down" class="select-icon" />
+												</div>
+											</div>
 											{#if errors?.ApiIntegrationSettings?.Fetch?.ResponseType}
 												<p class="text-error">
 													{errors?.ApiIntegrationSettings?.Fetch?.ResponseType}
@@ -808,20 +761,16 @@
 											{/if}
 										</td>
 									</tr>
-									<tr>
-										<td>
-											<label for="responseField" class="text-[var(--color-info)]">
-												Response Field</label
-											>
-										</td>
-										<td>
+									<tr class="tables-row">
+										<td class="table-label">Response Field</td>
+										<td class="table-data">
 											<input
 												bind:value={
 													followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseField
 												}
 												disabled={!edit}
 												placeholder="response field"
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+												class="input"
 											/>
 											{#if errors?.ApiIntegrationSettings?.Fetch?.ResponseField}
 												<p class="text-error">
@@ -832,15 +781,13 @@
 									</tr>
 								{/if}
 
-								<tr class="cursor-pointer bg-[var(--color-accent)]">
-									<td class="py-5">
-										<label for="Token" class="font-semibold text-[var(--color-info)]">
-											Token Injection</label
-										>
+								<tr class="tables-row bg-[var(--color-accent)]">
+									<td class="table-label">
+										<span class="font-semibold">Token Injection</span>
 									</td>
-									<td>
+									<td class="table-data">
 										<button
-											class="flex w-full items-center justify-between text-[var(--color-info)]"
+											class="flex w-full items-center justify-between cursor-pointer"
 											type="button"
 											onclick={() => toggleTab('token')}
 										>
@@ -854,47 +801,39 @@
 									</td>
 								</tr>
 								{#if openTab === 'token'}
-									<tr>
-										<td>
-											<label for="tokenLocation" class="text-[var(--color-info)]"
-												>Location <span class="text-red-700"></span></label
-											>
-										</td>
-										<td>
-											<select
-												bind:value={
-													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection
-														.Location
-												}
-												disabled={!edit}
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-											>
-												<option value="" disabled={!edit} selected>Select Location</option>
-												<option value="header">Header</option>
-												<option value="query">Query</option>
-												<option value="body">Body</option>
-											</select>
-											<!-- {#if errors?.ApiIntegrationSettings?.Auth.TokenInjection.Location}
-													<p class="text-error">
-														{errors.ApiIntegrationSettings.Auth.TokenInjection.Location}
-													</p>
-												{/if} -->
+									<tr class="tables-row">
+										<td class="table-label">Location</td>
+										<td class="table-data">
+											<div class="relative">
+												<select
+													bind:value={
+														followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection
+															.Location
+													}
+													disabled={!edit}
+													class="select"
+												>
+													<option value="" disabled={!edit} selected>Select Location</option>
+													<option value="header">Header</option>
+													<option value="query">Query</option>
+													<option value="body">Body</option>
+												</select>
+												<div class="select-icon-container">
+													<Icon icon="mdi:chevron-down" class="select-icon" />
+												</div>
+											</div>
 										</td>
 									</tr>
-									<tr>
-										<td>
-											<label for="tokenKey" class="text-[var(--color-info)]">
-												Key <span class="text-red-700"></span></label
-											>
-										</td>
-										<td>
+									<tr class="tables-row">
+										<td class="table-label">Key</td>
+										<td class="table-data">
 											<input
 												bind:value={
 													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Key
 												}
 												disabled={!edit}
 												placeholder="Token key"
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+												class="input"
 											/>
 											{#if errors?.ApiIntegrationSettings?.Auth?.TokenInjection?.Key}
 												<p class="text-error">
@@ -903,18 +842,16 @@
 											{/if}
 										</td>
 									</tr>
-									<tr>
-										<td>
-											<label for="tokenPrefix" class="text-[var(--color-info)]"> Prefix </label>
-										</td>
-										<td>
+									<tr class="tables-row">
+										<td class="table-label">Prefix</td>
+										<td class="table-data">
 											<input
 												bind:value={
 													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Prefix
 												}
 												disabled={!edit}
-												placeholder="Token prefix "
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+												placeholder="Token prefix"
+												class="input"
 											/>
 											{#if errors?.ApiIntegrationSettings?.Auth?.TokenInjection?.Prefix}
 												<p class="text-error">
@@ -925,45 +862,45 @@
 									</tr>
 								{/if}
 
-								<tr>
-									<td>
-										<label for="source" class="text-[var(--color-info)]"
-											>Schedule Frequency <span class="text-red-700">*</span></label
-										>
+								<tr class="tables-row">
+									<td class="table-label">
+										Schedule Frequency <span class="text-red-700">*</span>
 									</td>
-									<td>
-										<div class="space-y-2">
+									<td class="table-data">
+										<div class="relative">
 											<select
 												bind:value={
 													followUpSettingUpdateModel.ApiIntegrationSettings.ScheduleFrequency
 												}
 												disabled={!edit}
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+												class="select"
 											>
 												<option value="" disabled selected>Select Schedule Frequency</option>
 												<option value="daily">Daily</option>
 												<option value="weekly">Weekly</option>
 												<option value="monthly">Monthly</option>
 											</select>
-											{#if errors?.ApiIntegrationSettings?.ScheduleFrequency}
-												<p class="text-error">{errors.ApiIntegrationSettings?.ScheduleFrequency}</p>
-											{/if}
+											<div class="select-icon-container">
+												<Icon icon="mdi:chevron-down" class="select-icon" />
+											</div>
 										</div>
+										{#if errors?.ApiIntegrationSettings?.ScheduleFrequency}
+											<p class="text-error">{errors.ApiIntegrationSettings?.ScheduleFrequency}</p>
+										{/if}
 									</td>
 								</tr>
-								<tr>
-									<td>
-										<label for="schedule" class="text-[var(--color-info)]">
-											Reminder Schedules <span class="text-red-700">*</span>
-										</label>
+								<tr class="tables-row">
+									<td class="table-label">
+										Reminder Schedules <span class="text-red-700">*</span>
 									</td>
-									<td>
+									<td class="table-data">
 										<button
 											onclick={(event) => {
 												event.preventDefault();
 												showReminderModal = edit;
 											}}
-											class="table-btn variant-filled-secondary gap-1 text-[var(--color-info)]"
+											disabled={!edit}
+											class="table-btn variant-filled-secondary gap-1"
 										>
 											Add Schedule
 										</button>
@@ -989,11 +926,11 @@
 			<hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
 			<div class="button-container my-4">
 				{#await promise}
-					<button type="submit" class="table-btn variant-filled-secondary gap-1 text-[var(--color-info)]" disabled>
-						Submiting
+					<button type="submit" class="table-btn variant-soft-secondary" disabled>
+						Submitting
 					</button>
 				{:then data}
-					<button type="submit" class="table-btn variant-filled-secondary gap-1 text-[var(--color-info)]"> Submit </button>
+					<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
 				{/await}
 			</div>
 		</form>

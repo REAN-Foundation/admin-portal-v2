@@ -5,14 +5,14 @@
 </script>
 
 {#each reminderSchedule as schedule, i}
-	<tr>
-		<td>
+	<tr class="tables-row">
+		<td class="table-label">
 			<div class="flex border-b pb-1 text-sm last:border-none">
 				<span class="px-2">{i + 1}</span>
 				<span class="justify-left">{schedule.Type}</span>
 			</div>
 		</td>
-		<td class="flex items-center justify-between gap-2 text-sm">
+		<td class="table-data flex items-center justify-between gap-2 text-sm">
 			{#if schedule.TimeOfDay}
 				{schedule.TimeOfDay}
 			{:else if schedule.OffsetValue}
