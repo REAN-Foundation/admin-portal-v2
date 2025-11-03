@@ -176,8 +176,8 @@
 					<td class="table-data">
 						<div class="flex gap-2">
 							<select name="countryCode" bind:value={countryCode} class="input !w-20">
-								<option>+1</option>
-								<option>+91</option>
+								<option value="+1">+1</option>
+								<option value="+91">+91</option>
 							</select>
 							<input
 								type="text"

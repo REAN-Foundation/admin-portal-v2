@@ -110,13 +110,14 @@
 			const result = await response.json();
 
 			if (result.success) {
+				goto(result.data.redirectUrl);
 				toastMessage({
 					Message: result.message,
 					HttpCode: 200,
 					Status: 'success'
 				});
 				// Redirect to the user's home page
-				goto(result.data.redirectUrl);
+				
 			} else {
 				toastMessage({
 					Message: result.message,
