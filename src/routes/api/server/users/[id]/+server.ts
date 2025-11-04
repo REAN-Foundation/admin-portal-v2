@@ -1,6 +1,4 @@
-import { errorMessage, successMessage } from '$lib/utils/message.utils';
 import type { RequestEvent } from '@sveltejs/kit';
-import { redirect } from 'sveltekit-flash-message/server';
 import { deleteUser, getUserById, updateUser } from '../../../services/reancare/user';
 import { ResponseHandler } from '$lib/utils/response.handler';
 import { uuidSchema } from '$lib/validation/common.schema';
@@ -86,6 +84,8 @@ export const PUT = async (event: RequestEvent) => {
 		const defaultTimeZone = data.CountryCode === '+1' ? '-05:00' : '+05:30';
 		const currentTimeZone = data.CountryCode === '+1' ? '-05:00' : '+05:30';
 
+		const phone = data.CountryCode + '-' + data.Phone;
+
 		console.log('data', data);
 		const validationResult = updateSchema.safeParse(data);
 		if (!validationResult.success) {
@@ -107,7 +107,7 @@ export const PUT = async (event: RequestEvent) => {
 			userId,
 			data.FirstName,
 			data.LastName,
-			data.Phone,
+			phone,
 			data.Email,
 			data.SelectedUserRoleId,
 			defaultTimeZone,

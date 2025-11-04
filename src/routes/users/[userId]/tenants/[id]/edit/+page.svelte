@@ -161,10 +161,11 @@
 					<td class="table-label">Contact Number <span class="text-red-600">*</span></td>
 					<td class="table-data">
 						<input
+						   disabled
 							type="text"
 							name="phone"
 							placeholder="Enter contact number here..."
-							class="input {errors?.phone ? 'input-text-error' : ''}"
+							class="grayout-input {errors?.phone ? 'input-text-error' : ''}"
 							bind:value={phone}
 						/>
 						{#if errors?.Phone}
