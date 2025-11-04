@@ -40,6 +40,7 @@ export const POST = async (event: RequestEvent) => {
 			data.PlanName,
 			data.PlanCode,
 			data.Channel,
+			data.Language,
 			data.NumberOfDays,
 			data.StartHour,
 			data.StartMinutes,

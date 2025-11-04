@@ -15,9 +15,9 @@ export const createAppointment = async (
 ) => {
 	const body = {
 		Name: name,
-		Description: description,
-		AppointmentType: appointmentType,
-		Tags: tags,
+		Description: description ? description : null,
+		AppointmentType: appointmentType ? appointmentType : null,
+		Tags: tags ? tags : null,
 		TenantId: tenantId,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
@@ -79,9 +79,9 @@ export const updateAppointment = async (
 ) => {
 	const body = {
 		Name: name,
-		Description: description,
-		AppointmentType: appointmentType,
-		Tags: tags,
+		Description: description ? description : null,
+		AppointmentType: appointmentType ? appointmentType : null,
+		Tags: tags ? tags : null,
 		TenantId: tenantId,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};

@@ -25,6 +25,8 @@
 	let isDeletingPath = $state(false);
 	let templateTitle = data.templateDetails.Title;
 	let assessmentNode = $derived(data.assessmentNode)
+	console.log('data.assessmentNode', data.assessmentNode);
+	console.log('View page - correctAnswer:', data.assessmentNode.CorrectAnswer, 'type:', typeof data.assessmentNode.CorrectAnswer);
 	$inspect('Assesment node', assessmentNode);
 	let nodeType = $derived(assessmentNode.NodeType);
 	let title = $derived(assessmentNode.Title);
@@ -46,6 +48,7 @@
 	let tags_ = $derived(Array.isArray(assessmentNode?.Tags) ? assessmentNode.Tags : []);
 	let tags = $derived(tags_.join(', '));
 	let correctAnswer = $derived(assessmentNode.CorrectAnswer ?? null);
+	let resolutionScore = $derived(assessmentNode.Score ?? 'Not specified');
 
     let rawData = $state(
                         typeof data.assessmentNode.RawData === 'string'
@@ -66,6 +69,8 @@
 		'General:PersonalProfile:Age',
 		'General:PersonalProfile:DateOfBirth',
 		'General:PersonalProfile:Gender',
+        'General:PersonalProfile:Phone',
+        'General:PersonalProfile:EMRId',
 		'Clinical:HealthProfile:BloodGroup',
 		'Clinical:HealthProfile:Ethnicity',
 		'Clinical:HealthProfile:Race',
@@ -96,11 +101,6 @@
 		const parts = identifier.split(':');
 		const lastPart = parts[parts.length - 1];
 		return lastPart.replace(/([a-z])([A-Z])/g, '$1 $2'); // adds space before capital letters
-	}
-	let resolutionScore = $state(0);
-
-	if (nodeType === 'Question') {
-		resolutionScore = assessmentNode.ScoringCondition?.ResolutionScore ?? 'Not specified';
 	}
 
 	scoringApplicableCondition.set(data.templateDetails.ScoringApplicable);
@@ -206,64 +206,6 @@
 		}
 	};
 
-	
-	const onUpdateScoringCondition = async (score: number) => {
-		resolutionScore = score;
-		console.log('resolutionScore', resolutionScore);
-		handleSubmit(event);
-	};
-
-	const handleSubmit = async (event: Event) => {
-		try {
-			event.preventDefault();
-			errors = {};
-			let scoringId = assessmentNode.ScoringCondition.id ?? undefined;
-
-			const scoringConditionUpdateModel = {
-				ScoringConditionId: scoringId,
-				ResolutionScore: resolutionScore
-			};
-
-			const validationResult = createOrUpdateSchema.safeParse(scoringConditionUpdateModel);
-			console.log('validationResult', validationResult);
-
-			if (!validationResult.success) {
-				errors = Object.fromEntries(
-					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
-						key,
-						val?.[0] || 'This field is required'
-					])
-				);
-				return;
-			}
-
-			const res = await fetch(
-				`/api/server/assessments/assessment-nodes/update-scoring-condition?templateId=${templateId}&nodeId=${nodeId}`,
-				{
-					method: 'PUT',
-					body: JSON.stringify(scoringConditionUpdateModel),
-					headers: { 'content-type': 'application/json' }
-				}
-			);
-
-			const response = await res.json();
-
-			console.log('response', response);
-			if (response.HttpCode === 201 || response.HttpCode === 200) {
-				toastMessage(response);
-
-				return;
-			}
-			if (response.Errors) {
-				errors = response?.Errors || {};
-			} else {
-				toastMessage(response);
-			}
-		} catch (error) {
-			toastMessage();
-		}
-	};
-
 </script>
 
 
@@ -289,6 +231,12 @@
 			<tr class="tables-row">
 				<td class="table-label">Title</td>
 				<td class="table-data">{title}</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Required</td>
+				<td class="table-data">
+					{assessmentNode.Required ? 'True' : 'False'}
+				</td>
 			</tr>
 			<tr class="tables-row">
 				<td class="table-label">Description</td>
@@ -409,24 +357,33 @@
 							{/if}
 						</td>
 					</tr>
-				{/if}
-				{#if $scoringApplicableCondition === true}
+				{:else if queryType === 'Boolean'}
 					<tr class="tables-row">
-						<td class="table-label">Resolution Score</td>
+						<td class="table-label">Correct Answer</td>
+						<td class="table-data">
+							{#if correctAnswer !== null && correctAnswer !== undefined}
+								{(() => {
+									// Handle all possible boolean representations
+									if (correctAnswer === true || correctAnswer === 'true' || correctAnswer === 1 || correctAnswer === '1') {
+										return 'True';
+									} else if (correctAnswer === false || correctAnswer === 'false' || correctAnswer === 0 || correctAnswer === '0') {
+										return 'False';
+									} else {
+										return 'Invalid';
+									}
+								})()}
+							{:else}
+								<span>Not specified</span>
+							{/if}
+						</td>
+					</tr>
+				{/if}
+				{#if $scoringApplicableCondition === true && (queryType === 'Boolean' || queryType === 'Single Choice Selection')}
+					<tr class="tables-row">
+						<td class="table-label">Score</td>
 						<td class="table-data">
 							<div class="flex items-center justify-between">
 								<span>{resolutionScore}</span>
-								<Tooltip text="Edit Score" forceShow={true}>
-									<button
-										class="health-system-btn group"
-										onclick={() => $showScoringConditionModal = true}
-									>
-										<Icon
-											icon="material-symbols:edit-outline"
-											class="health-system-icon"
-										/>
-									</button>
-								</Tooltip>
 							</div>
 						</td>
 					</tr>
@@ -526,11 +483,3 @@
 	confirmText="Delete Path"
 	cancelText="Cancel"
 />
-
-{#if $showScoringConditionModal}
-	<UpdateScoringCondition
-		onUpdateScoringCondition={onUpdateScoringCondition}
-		closeModal={() => $showScoringConditionModal = false}
-		initialScore={resolutionScore}
-	/>
-{/if}

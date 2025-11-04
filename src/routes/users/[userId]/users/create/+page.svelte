@@ -1,26 +1,22 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
-	import { LocalStorageUtils } from '$lib/utils/local.storage.utils';
 	import PasswordInput from '$lib/components/input/password.input.svelte';
-	import { toastMessage } from '$lib/components/toast/toast.store.js';
+	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
-	import type { UserCreateModel } from '$lib/types/user.types.js';
-	import { createSchema } from '$lib/validation/user.schemas.js';
+	import type { UserCreateModel } from '$lib/types/user.types';
+	import { createSchema } from '$lib/validation/user.schemas';
 	import Button from '$lib/components/button/button.svelte';
 	import type { PageServerData } from './$types';
 	import { onMount } from 'svelte';
+	import { LocalStorageUtils } from '$lib/utils/local.storage.utils';
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	// export let form;
-	// export let data: PageServerData;
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let userRoles = data.UserRoles;
-	console.log('userRoles', userRoles);
 
 	let firstName = $state(undefined);
 	let lastName = $state(undefined);
@@ -35,6 +31,27 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 
+	function getRoleIdByRoleName(roleName) {
+		if (!roleName) return;
+		const tmp = LocalStorageUtils.getItem('personRoles');
+		const personRoles = JSON.parse(tmp || '[]');
+		const selectedRole = personRoles?.find((x) => x.RoleName === roleName);
+		if (selectedRole) {
+			selectedUserRoleId = selectedRole.id;
+		} else {
+			selectedUserRoleId = undefined;
+		}
+	}
+
+	// Reactively update selectedUserRoleId when role changes
+	$effect(() => {
+		if (role) {
+			getRoleIdByRoleName(role);
+		}
+	});
+
+	$inspect('role', selectedUserRoleId);
+
 	const createRoute = `/users/${userId}/users/create`;
 	const userRoute = `/users/${userId}/users`;
 
@@ -42,17 +59,6 @@
 		{ name: 'Users', path: userRoute },
 		{ name: 'Create', path: createRoute }
 	];
-
-	function getRoleIdByRoleName(event) {
-		const selectedUserRole = event.target.value;
-		const tmp = LocalStorageUtils.getItem('personRoles');
-		const personRoles = JSON.parse(tmp);
-		console.log('personRoles', personRoles);
-		const selectedRole = personRoles?.find((x) => x.RoleName === selectedUserRole);
-		if (selectedRole) {
-			selectedUserRoleId = selectedRole.id;
-		}
-	}
 
 	const handleSubmit = async (event: Event) => {
 		try {
@@ -70,10 +76,11 @@
 				SelectedUserRoleId: selectedUserRoleId
 			};
 
-			console.log('password', password);
+			console.log('usersCreateModel', usersCreateModel);
 
 			const validationResult = createSchema.safeParse(usersCreateModel);
-			console.log(validationResult);
+
+			console.log('validationResult', validationResult);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -108,7 +115,6 @@
 			toastMessage();
 		}
 	};
-
 	onMount(() => {
 		const defaultRole = userRoles?.find((r) => r.Title === 'System User');
 		if (defaultRole) {
@@ -167,11 +173,11 @@
 				</tr>
 				<tr class="tables-row">
 					<td class="table-label">Contact Number <span class="text-red-700">*</span></td>
-					<td class="table-data ">
+					<td class="table-data">
 						<div class="flex gap-2">
 							<select name="countryCode" bind:value={countryCode} class="input !w-20">
-								<option>+1</option>
-								<option>+91</option>
+								<option value="+1">+1</option>
+								<option value="+91">+91</option>
 							</select>
 							<input
 								type="text"
@@ -182,7 +188,7 @@
 								class="input {errors?.phone ? 'input-text-error' : ''}"
 							/>
 						</div>
-						
+
 						{#if errors?.Phone}
 							<p class="text-error">{errors?.Phone}</p>
 						{/if}
@@ -205,23 +211,17 @@
 				</tr>
 				<tr class="tables-row">
 					<td class="table-label">Role <span class="text-red-700">*</span></td>
-					<td class="table-data">
-						<div class="relative">
-							<select
-								name="role"
-								bind:value={role}
-								class="select"
-								onchange={getRoleIdByRoleName}
-								placeholder="Select role here..."
-							>
-								{#each userRoles as role}
-									<option value={role.Value}>{role.Title}</option>
-								{/each}
-							</select>
-							<div class="select-icon-container">
-								<Icon icon="mdi:chevron-down" class="select-icon" />
-							</div>
-						</div>
+					<td>
+						<select
+							name="role"
+							bind:value={role}
+							class="input"
+							placeholder="Select role here..."
+						>
+							{#each userRoles as roleOption}
+								<option value={roleOption.Value}>{roleOption.Title}</option>
+							{/each}
+						</select>
 						<input type="hidden" name="selectedUserRoleId" bind:value={selectedUserRoleId} />
 					</td>
 				</tr>
@@ -231,17 +231,17 @@
 						<PasswordInput bind:password />
 						{#if errors?.Password}
 							<p class="text-error">{errors?.Password}</p>
-						{:else}
+							<!-- {:else}
 							<p class="text-error">
 								The password should be at least 8 characters long and must contain at least 1
 								capital letter, 1 small letter, 1 digit, and 1 special character.
-							</p>
+							</p> -->
 						{/if}
 					</td>
 				</tr>
 			</tbody>
 		</table>
-		<div class="btn-container">
+		<div class="btn-container mr-5 mb-2">
 			{#await promise}
 				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
 			{:then data}

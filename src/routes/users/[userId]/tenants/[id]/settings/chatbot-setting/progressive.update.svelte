@@ -17,10 +17,10 @@
 		fileName,
 		chatBotUISettings,
 		onLogoSelected,
-		logoName
+		logoName,
+		errors = {}
 	} = $props();
 
-	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let openTab: string | null = $state(null);
 	let progressPercent = $derived(((currentSection + 1) / 3) * 100);
@@ -175,6 +175,23 @@
 			</select>
 			{#if errors?.DefaultLanguage}
 				<p class="text-error">{errors?.DefaultLanguage}</p>
+			{/if}
+		</div>
+
+		<div class="my-4 flex flex-col md:flex-row md:items-center">
+			<label for="timezone" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+				>Timezone</label
+			>
+			<input
+				type="text"
+				class="input-field w-[70%]"
+				name="timezone"
+				placeholder="Enter timezone offset (e.g., +05:30, -05:00)..."
+				bind:value={chatBotSetting.ChatBot.Timezone}
+				disabled={!edit}
+			/>
+			{#if errors?.Timezone}
+				<p class="text-error">{errors?.Timezone}</p>
 			{/if}
 		</div>
 	{:else if currentSection === 1}

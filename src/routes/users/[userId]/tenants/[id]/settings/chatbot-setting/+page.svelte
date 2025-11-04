@@ -15,35 +15,30 @@
 
 	///////////////////////////////////////////////////////////////////////
 
-	let { data, form } = $props();
+	let { data } = $props();
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
 	const tenantCode = $state(data.tenantCode);
-	const tenantName = $state(data.tenantName);
 	const tenantRoute = `/users/${userId}/tenants`;
 	const formData = new FormData();
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let chatBotSetting = $state({
-		ChatBot: data.chatbotSettings
+		ChatBot: {
+			...data.chatbotSettings,
+			Timezone: data.chatbotSettings?.Timezone || '+05:30'
+		}
 	});
-	let consentSetting: ConsentSettings = $state(data.consentSettings || {});
 	let showCancelModel = $state(false);
 	let showExportDialog = $state(false);
 	let isCreatingSecret = $state(false);
-
 	let faviconUrl = chatBotSetting.ChatBot.Favicon;
 	let logoUrl = chatBotSetting.ChatBot.OrganizationLogo;
-	let logoUrlResult = $state('');
-	let faviconUrlResult = $state('');
-
-	// let disabled = $state(data.commonSettings.UserInterfaces.ChatBot);
 	let disabled = $state(data.isChatBotEnabled);
 	let edit = $state(false);
 	let fileName = $state('');
 	let logoName = $state('');
-
 	const totalSteps = 3;
 	let currentSection = $state(0);
 
@@ -131,10 +126,8 @@
 		event.preventDefault();
 		errors = {};
 
-		// let isConsentSaved = false;
 		let isFaviconUploaded = false;
 		let isLogoUploaded = false;
-		// let isChatBotSaved = false;
 
 		try {
 			if (!edit) {
@@ -186,7 +179,7 @@
 					return;
 				}
 			} else {
-				isFaviconUploaded = true; // no file, but treat as passed
+				isFaviconUploaded = true;
 			}
 
 			// ----------------------------- CHATBOT SETTINGS -----------------------------
@@ -218,17 +211,22 @@
 				Feedback: chatBotSetting.ChatBot.Feedback,
 				AppointmentFollowup: chatBotSetting.ChatBot.AppointmentFollowup,
 				ConversationHistory: chatBotSetting.ChatBot.ConversationHistory,
-				Emojis: chatBotSetting.ChatBot.Emojis
+				Emojis: chatBotSetting.ChatBot.Emojis,
+				BasicAssessment: chatBotSetting.ChatBot.BasicAssessment,
+				BasicCarePlan: chatBotSetting.ChatBot.BasicCarePlan,
+				Timezone: chatBotSetting.ChatBot.Timezone || '+05:30'
 			};
 
 			const chatBotValidation = ChatBotSettingsSchema.safeParse(chatbotCreateModel);
 			if (!chatBotValidation.success) {
+				console.log('Validation failed:', chatBotValidation.error.flatten().fieldErrors);
 				errors = Object.fromEntries(
 					Object.entries(chatBotValidation.error.flatten().fieldErrors).map(([key, val]) => [
 						key,
 						val?.[0] || 'This field is required'
 					])
 				);
+				console.log('Errors object:', errors);
 				return;
 			}
 
@@ -248,13 +246,6 @@
 				return;
 			}
 
-			// ----------------------------- FINAL TOAST -----------------------------
-			// if (isFaviconUploaded && isChatBotSaved) {
-			// 	console.log('All settings saved successfully.');
-			// 	//
-			// 	toastMessage(chatBotJson);
-			// 	edit = true;
-			// }
 		} catch (err) {
 			console.error('Submit Error:', err);
 			addToast({ message: 'Unexpected error occurred.', type: 'error', timeout: 3000 });
@@ -362,6 +353,21 @@
 			Name: 'Emojis',
 			IconPath: 'mdi:emoticon-happy-outline',
 			Description: 'Use emojis in chatbot responses.'
+		},
+		BasicAssessment: {
+			Name: 'Basic Assessment',
+			IconPath: 'mdi:clipboard-check-outline',
+			Description: 'Enable basic health assessment functionality.'
+		},
+		BasicCarePlan: {
+			Name: 'Basic Care Plan',
+			IconPath: 'mdi:medical-bag-outline',
+			Description: 'Enable basic care plan functionality.'
+		},
+		Timezone: {
+			Name: 'Timezone',
+			IconPath: 'mdi:clock-outline',
+			Description: 'Set the timezone offset for the chatbot.'
 		}
 	} as const;
 
@@ -376,13 +382,6 @@
 			}
 		);
 	}
-
-	$effect(() => {
-		// if (edit === false && chatBotSetting.ChatBot.Consent === true && previousConsent === false) {
-		// 	showCancelModel = true;
-		// }
-		// previousConsent = chatBotSetting.ChatBot.Consent;
-	});
 
 	async function getBotSecret() {
 		showExportDialog = true;
@@ -475,6 +474,7 @@
 					chatBotUISettings={chatBotSettings}
 					{onLogoSelected}
 					{logoName}
+					{errors}
 				/>
 			</div>
 			<!-- <hr class="border-[0.5px] border-t border-[var(--color-outline)]" /> -->

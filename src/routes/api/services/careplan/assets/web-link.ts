@@ -15,9 +15,9 @@ export const createWebLink = async (
 ) => {
 	const body = {
 		Name: name,
-		Description: description,
-		Url: pathUrl,
-		Tags: tags,
+		Description: description ? description : null,
+		Url: pathUrl ? pathUrl : null,
+		Tags: tags ? tags : null,
 		TenantId: tenantId,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};
@@ -80,9 +80,9 @@ export const updateWebLink = async (
 ) => {
 	const body = {
 		Name: name,
-		Description: description,
-		Url: pathUrl,
-		Tags: tags,
+		Description: description ? description : null,
+		Url: pathUrl ? pathUrl : null,
+		Tags: tags ? tags : null,
 		TenantId: tenantId,
 		Version: !version || version.length === 0 ? 'V 1.0' : version
 	};

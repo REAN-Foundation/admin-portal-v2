@@ -157,6 +157,9 @@ export interface ChatBotSettings {
 	AppointmentFollowup: boolean;
 	ConversationHistory: boolean;
 	Emojis: boolean;
+	BasicAssessment: boolean;
+	BasicCarePlan: boolean;
+	Timezone?: string;
 }
 
 export enum FollowupSource {

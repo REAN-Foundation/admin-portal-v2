@@ -36,7 +36,7 @@
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
-		{ name: 'Message', path: createRoute },
+		{ name: 'Message' },
 		{ name: 'Create', path: createRoute }
 	];
 

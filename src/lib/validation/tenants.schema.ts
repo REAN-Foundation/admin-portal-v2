@@ -43,7 +43,7 @@ export const createOrUpdateSchema = z.object({
 		.string({
 			invalid_type_error: 'UserName must be a string.'
 		})
-		.max(10, { message: 'UserName must be at most 10 characters long.' })
+		.max(32, { message: 'UserName must be at most 32 characters long.' })
 		.optional()
 		.refine(
 			val => val === undefined || val === null || val === '' || val.length >= 1,
@@ -59,7 +59,7 @@ export const createOrUpdateSchema = z.object({
 				!val ||
 				(
 					val.length >= 8 &&
-					/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/.test(val)
+					/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#_])[A-Za-z\d@$!%*?&#_]+$/.test(val)
 				),
 			{
 				message:

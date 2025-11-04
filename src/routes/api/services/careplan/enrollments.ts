@@ -53,6 +53,7 @@ export const createEnrollment = async (
     planCode: string,
     planName: string,
     channel: string = 'WhatsApp',
+    language: string = 'en',
     numberOfDays: number = 1,
     startHour: number = 9,
     startMinutes: number = 0,
@@ -73,6 +74,7 @@ export const createEnrollment = async (
         PlanCode : planCode,
         PlanName : planName,
         Channel : channel,
+        Language : language,
         IsTest : true,
         ScheduleConfig :{
             NumberOfDays: numberOfDays,
@@ -84,7 +86,7 @@ export const createEnrollment = async (
  
     };
     
-    console.log('body', body);
+    console.log('Enrollment body', body);
     console.log('url', url);
     const result = await post(sessionId, url, body, true);
 

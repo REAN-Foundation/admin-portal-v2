@@ -80,16 +80,7 @@
 		viewEditMode = 'edit';
 	}
 
-	// Check for existing secrets when dialog opens
 	async function checkExistingSecrets() {
-		// const schemaRes = await fetch(`/api/server/tenants/${tenantId}/schema`, {
-		// 	method: 'POST',
-		// 	headers: { 'content-type': 'application/json' },
-		// 	body: JSON.stringify({ tenantCode })
-		// });
-		// const schemaResponse = await schemaRes.json();
-		// console.log('This is schemaResponse', schemaResponse);
-
 		isCheckingSecrets = true;
 		try {
 			const res = await fetch(`/api/server/tenants/${tenantId}/secret`, {
@@ -115,36 +106,38 @@
 
 	async function createBotSchema() {
 		try {
+			if (!tenantCode || String(tenantCode).trim().length === 0) {
+				toastMessage({ Status: 'failure', HttpCode: 400, Message: 'Tenant code is required' });
+				return { ok: false };
+			}
 			const schemaRes = await fetch(`/api/server/tenants/${tenantId}/schema`, {
 				method: 'POST',
 				headers: { 'content-type': 'application/json' },
 				body: JSON.stringify({ tenantCode })
 			});
 			const schemaResponse = await schemaRes.json();
-			console.log('This is schemaResponse', schemaResponse);
+			if (
+				!schemaRes.ok ||
+				!(schemaResponse?.HttpCode === 200 || schemaResponse?.HttpCode === 201)
+			) {
+				toastMessage(schemaResponse);
+				return { ok: false, data: schemaResponse };
+			}
+			return { ok: true, data: schemaResponse };
 		} catch (err) {
-			console.log('Error creating bot schema', err);
-			// toastMessage('Error creating bot schema');
-		} finally {
-			isPublishing = true;
+			toastMessage({ Status: 'failure', HttpCode: 500, Message: 'Error creating bot schema' });
+			return { ok: false };
 		}
 	}
+
 	async function createSecrets() {
 		isPublishing = true;
 		try {
-			await createBotSchema();
-			// First, create schema
-			// const schemaRes = await fetch(`/api/server/tenants/${tenantId}/schema`, {
-			// 	method: 'POST',
-			// 	headers: { 'content-type': 'application/json' },
-			// 	body: JSON.stringify({ tenantCode })
-			// });
-			// const schemaResponse = await schemaRes.json();
-			// if (!schemaRes.ok) {
-			// 	toastMessage(schemaResponse);
-			// 	isPublishing = false;
-			// 	return;
-			// }
+			const schemaResult = await createBotSchema();
+			if (!schemaResult?.ok) {
+				isPublishing = false;
+				return;
+			}
 
 			// Then, create secrets
 			const res = await fetch(`/api/server/tenants/${tenantId}/secret`, {
@@ -204,7 +197,7 @@
 
 			{#if isCheckingSecrets}
 				<div class="flex h-full items-center justify-center">
-					<p>Checking existing secrets...</p>
+					<p class="text-[var(--color-info)]">Checking existing secrets...</p>
 				</div>
 			{:else if !hasSecrets}
 				<div>
@@ -221,13 +214,13 @@
 				<div class="flex flex-1 flex-col gap-4">
 					<div class="mb-2 flex gap-2">
 						<button
-							class="rounded border variant-filled-secondary px-4 py-1 text-[var(--color-info)] 0 disabled:opacity-60"
+							class="variant-filled-secondary 0 rounded border px-4 py-1 text-[var(--color-info)] disabled:opacity-60"
 							disabled={isFetchingSecret || viewEditMode === 'view'}
 						>
 							{isFetchingSecret ? 'Loading...' : 'View'}
 						</button>
 						<button
-							class="rounded border variant-filled-secondary px-4 py-1 text-[var(--color-info)]  disabled:opacity-60"
+							class="variant-filled-secondary rounded border px-4 py-1 text-[var(--color-info)] disabled:opacity-60"
 							onclick={handleEditMode}
 							disabled={viewEditMode === 'edit'}
 						>
@@ -235,10 +228,10 @@
 						</button>
 					</div>
 					<!-- JSON Box -->
-					<div class="relative flex-1 rounded border border-blue-300">
+					<div class="relative flex-1 rounded border border-[var(--color-info)]">
 						<div class="absolute top-1 right-3 text-xs text-[var(--color-info)]">JSON</div>
 						<textarea
-							class="h-full w-full resize-none border-0 p-4 font-mono text-sm focus:outline-none"
+							class="h-full w-full resize-none border-0 bg-[var(--color-primary)] p-4 font-mono text-sm text-[var(--color-info)] placeholder:text-[var(--color-info)] focus:outline-none"
 							placeholder="JSON Validator"
 							bind:value={jsonInput}
 							oninput={handleJSONInput}
@@ -249,7 +242,7 @@
 						{/if}
 					</div>
 					<button
-						class="mt-2 w-64 self-end rounded variant-filled-secondary px-4 py-2 text-[var(--color-info)] shadow "
+						class="variant-filled-secondary mt-2 w-64 self-end rounded px-4 py-2 text-[var(--color-info)] shadow"
 						onclick={publish}
 						disabled={isPublishing}
 					>

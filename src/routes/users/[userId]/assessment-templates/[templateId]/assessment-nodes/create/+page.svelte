@@ -11,6 +11,7 @@
 	import { createOrUpdateSchema } from '$lib/validation/assessment-node.schema';
 	import { page } from '$app/state';
 	import Button from '$lib/components/button/button.svelte';
+	import { onMount } from 'svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
@@ -47,13 +48,13 @@
 
 	let optionArray = $state([]);
 
-	const onSelectNodeType = (val) => {
-		selectedNodeType = val.target.value;
-		console.log('val', val.target.value);
+	const onSelectNodeType = (val: Event) => {
+		selectedNodeType = (val.target as HTMLSelectElement).value;
+		console.log('val', (val.target as HTMLSelectElement).value);
 	};
 
-	const onSelectQueryResponseType = (val) => {
-		selectedQueryType = val.target.value;
+	const onSelectQueryResponseType = (val: Event) => {
+		selectedQueryType = (val.target as HTMLSelectElement).value;
 	};
 
 	const userId = page.params.userId;
@@ -89,6 +90,8 @@
 		'General:PersonalProfile:Age',
 		'General:PersonalProfile:DateOfBirth',
 		'General:PersonalProfile:Gender',
+        'General:PersonalProfile:Phone',
+        'General:PersonalProfile:EMRId',
 		'Clinical:HealthProfile:BloodGroup',
 		'Clinical:HealthProfile:Ethnicity',
 		'Clinical:HealthProfile:Race',
@@ -131,7 +134,17 @@
 			event.preventDefault();
 			errors = {};
 
-			const finalValue = correctAnswer === '' ? undefined : correctAnswer;
+			let processedCorrectAnswer: string | number | boolean | null = correctAnswer;
+
+			if (selectedQueryType === 'Boolean') {
+				processedCorrectAnswer =
+					correctAnswer === 'true' ? true : correctAnswer === 'false' ? false : null;
+			} else if (selectedQueryType === 'Single Choice Selection') {
+				const parsed = parseInt(correctAnswer);
+				processedCorrectAnswer = isNaN(parsed) ? null : parsed;
+			} else {
+				processedCorrectAnswer = correctAnswer === '' ? undefined : correctAnswer;
+			}
 
 			const sequenceValue = sequence === '' ? undefined : sequence;
 
@@ -148,12 +161,12 @@
 				Description: description,
 				Sequence: sequenceValue,
 				QueryType: selectedQueryType,
-				ResolutionScore: resolutionScore,
+				Score: resolutionScore,
 				ProviderAssessmentCode: providerAssessmentCode,
 				ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce,
 				ScoringApplicable: scoringApplicable,
 				Options: processedOptions,
-				CorrectAnswer: finalValue,
+				CorrectAnswer: processedCorrectAnswer,
 				Message: message,
 				Tags: keywords,
 				RawData: rawData,
@@ -161,6 +174,8 @@
 				FieldIdentifier: fieldIdentifier,
 				FieldIdentifierUnit: fieldIdentifierUnit
 			};
+
+			console.log('assessmentNodeCreateModel', assessmentNodeCreateModel);
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentNodeCreateModel);
 
@@ -186,30 +201,7 @@
 			});
 
 			const response = await res.json();
-
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
-				// If resolutionScore exists, call the API to add scoring condition
-				if (resolutionScore && resolutionScore > 0) {
-					try {
-						const nodeId = response?.Data?.AssessmentNode?.id;
-						if (nodeId) {
-							const scoringRes = await fetch(`/api/server/assessments/assessment-nodes/add-scoring-condition?templateId=${templateId}&nodeId=${nodeId}`, {
-								method: 'POST',
-								body: JSON.stringify({ ResolutionScore: resolutionScore }),
-								headers: { 'content-type': 'application/json' }
-							});
-							
-							const scoringResult = await scoringRes.json();
-							if (scoringResult.HttpCode !== 200 && scoringResult.HttpCode !== 201) {
-								console.error('Failed to add scoring condition:', scoringResult);
-							}
-						}
-					} catch (scoringError) {
-						console.error('Error adding scoring condition:', scoringError);
-						// Continue with the success flow even if scoring condition fails
-					}
-				}
-
 				toastMessage(response);
 				goto(`${assessmentNodeRoutes}/${response?.Data?.AssessmentNode?.id}/view`);
 				return;
@@ -220,6 +212,7 @@
 			} else {
 				toastMessage(response);
 			}
+		
 		} catch (error) {
 			toastMessage();
 		}
@@ -227,6 +220,11 @@
 
 	$effect(() => {
 		keywordsStr = keywords?.join(', ');
+	});
+
+	onMount(() => {
+		scoringApplicableCondition.set(data.templateData.ScoringApplicable);
+		console.log('scoringApplicableCondition set to:', data.templateData.ScoringApplicable);
 	});
 </script>
 
@@ -277,7 +275,10 @@
 							name="parentNodeId"
 							class="select {errors?.parentNodeId ? 'input-text-error' : ''}"
 							placeholder="Select node type here..."
-							onchange={(val) => (parentNodeId = val.target.value)}
+							onchange={(val: Event) => {
+								const target = val.target as HTMLSelectElement;
+								parentNodeId = target.value;
+							}}
 							bind:value={parentNodeId}
 						>
 							{#each assessmentNodes as node}
@@ -467,7 +468,7 @@
 								</tr>
 							{/if}
 							<tr class="tables-row">
-								<td class="table-label">Resolution Score</td>
+								<td class="table-label">Score</td>
 								<td class="table-data">
 									<input
 										type="number"
@@ -488,14 +489,14 @@
 								<td class="table-data">
 									<select name="correctAnswer" class="input w-full" bind:value={correctAnswer}>
 										<option value="" disabled selected>Select correct answer</option>
-										<option value={true}>true</option>
-										<option value={false}>false</option>
+										<option value="true">true</option>
+										<option value="false">false</option>
 									</select>
 								</td>
 							</tr>
 
 							<tr class="tables-row">
-								<td class="table-label">Resolution Score</td>
+								<td class="table-label">Score</td>
 								<td class="table-data">
 									<input
 										type="number"

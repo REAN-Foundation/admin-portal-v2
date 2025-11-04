@@ -19,12 +19,7 @@
 	let debounceTimeout;
 	let isLoading = $state(false);
 	let assessmentNodes = $state(data.assessmentNodes.Items);
-	// let retrivedAssessmentNodes = $derived(
-	// 	assessmentNodes.filter((node) => node.Title !== 'Assessment root node')
-	// );
-   let retrivedAssessmentNodes = $derived(
-		assessmentNodes
-	);
+	let retrivedAssessmentNodes = $derived(assessmentNodes);
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
 	let isDeleting = $state(false);
@@ -343,11 +338,17 @@
 
 									<td role="gridcell" aria-colindex={2} tabindex="0">
 										<Tooltip text={row.Name || 'Not specified'}>
-											<a href={viewRoute(row.id)}>
-												{row.Title !== null && row.Title !== ''
-													? Helper.truncateText(row.Title, 50)
-													: 'Not specified'}
-											</a>
+											{#if row.Title === 'Assessment root node'}
+												<span class="text-gray-500 cursor-default">
+													{Helper.truncateText(row.Title, 50)}
+												</span>
+											{:else}
+												<a href={viewRoute(row.id)}>
+													{row.Title !== null && row.Title !== ''
+														? Helper.truncateText(row.Title, 50)
+														: 'Not specified'}
+												</a>
+											{/if}
 										</Tooltip>
 									</td>
 									<td role="gridcell" aria-colindex={3} tabindex="0">
@@ -372,7 +373,8 @@
 												variant="icon"
 												icon="icon-park-outline:preview-open"
 												iconSize="sm"
-												tooltip="View"
+												tooltip={row.Title === 'Assessment root node' ? "Root node can't be viewed" : "View"}
+												disabled={row.Title === 'Assessment root node'}
 											/>
 											<Button
 												onclick={() => handleDeleteClick(row.id)}

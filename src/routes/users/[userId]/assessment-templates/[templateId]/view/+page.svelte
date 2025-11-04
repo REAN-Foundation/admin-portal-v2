@@ -7,6 +7,7 @@
 	import type { PageServerData } from './$types';
 	import TreeView from '$lib/components/tree-view.svelte';
 	import Button from '$lib/components/button/button.svelte';
+	import { toastMessage } from '$lib/components/toast/toast.store';
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -58,6 +59,59 @@
 		{ name: 'Assessments', path: assessmentsRoutes },
 		{ name: 'View', path: viewRoute }
 	];
+
+	let isExporting = $state(false);
+
+const handleExport = async () => {
+	try {
+		isExporting = true;
+
+		const response = await fetch(
+			`/api/server/assessments/assessment-templates/${templateId}/export`,
+			{
+				method: 'GET'
+			}
+		);
+
+		if (!response.ok) {
+			throw new Error(`Export failed: ${response.status}`);
+		}
+
+		// get the filename from headers if available
+		const contentDisposition = response.headers.get('Content-Disposition');
+		const match = contentDisposition?.match(/filename="?([^"]+)"?/);
+		const filename = match ? match[1] : `assessment-template-${templateId}.json`;
+
+		// convert response into a blob
+		const blob = await response.blob();
+
+		// create a temporary URL and trigger download
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = filename;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+
+		toastMessage({
+			Status: 'success',
+			HttpCode: 200,
+			Message: 'Template exported successfully!'
+		});
+	} catch (error) {
+		console.error('Export failed:', error);
+		toastMessage({
+			Status: 'failure',
+			HttpCode: 500,
+			Message: 'Export failed. Please try again.'
+		});
+	} finally {
+		isExporting = false;
+	}
+};
+
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -127,6 +181,15 @@
 	</table>
 	<div class="btn-container">
 		<Button href={nodeRoute} text="Add node" variant="primary" />
+
+		<Button 
+			onclick={handleExport} 
+			text={isExporting ? "Exporting..." : "Export"} 
+			variant="primary" 
+			iconBefore="mdi:download" 
+			iconSize="md"
+			disabled={isExporting}
+		></Button>
 
 		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
 		></Button>

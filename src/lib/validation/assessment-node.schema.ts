@@ -68,8 +68,8 @@ export const createOrUpdateSchema = z.object({
 
     ResolutionScore: z
         .number({
-            required_error: "ResolutionScore is required.",
-            invalid_type_error: "ResolutionScore must be a number."
+            required_error: "Score is required.",
+            invalid_type_error: "Score must be a number."
         })
         .optional(),
 
@@ -148,5 +148,12 @@ export const createOrUpdateSchema = z.object({
         .nullable()
         // .min(1, { message: "FieldIdentifierUnit cannot be empty." })
         // .max(128, { message: "FieldIdentifierUnit must be at most 128 characters long." })
+        .optional(),
+
+    Required: z
+        .boolean({
+            required_error: "Required field must be selected.",
+            invalid_type_error: "Required must be a boolean."
+        })
         .optional(),
 });

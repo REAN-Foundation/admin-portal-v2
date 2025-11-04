@@ -12,7 +12,7 @@
 	/////////////////////////////////////////////////////////////////////////////////////
 
 	let { data, form } = $props();
-	let errors: Record<string, string> = $state({});
+	let errors: Record<string, any> = $state({});
 	let promise = $state();
 	let name = $state(undefined);
 	let description = $state('');
@@ -21,6 +21,7 @@
 	let version = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
+	let metaDataInput = $state('');
 
 	let assessmentTemplates = data.assessmentTemplates ?? [];
 	console.log('assessmentTemplates', assessmentTemplates);
@@ -38,7 +39,7 @@
 
 	const breadCrumbs = [
 		{ name: 'Assets', path: assetRoute },
-		{ name: 'Assessment', path: createOrUpdateSchema },
+		{ name: 'Assessment' },
 		{ name: 'Create', path: createRoute }
 	];
 
@@ -59,6 +60,27 @@
 				return;
 			}
 
+			let metadata = undefined;
+			if (metaDataInput && metaDataInput.trim() !== '') {
+				try {
+					metadata = JSON.parse(metaDataInput);
+					if (!metadata.Type || !metadata.TemplateName) {
+						errors = {
+							...errors,
+							'Metadata': 'Metadata must include Type and TemplateName fields'
+						};
+						return;
+					}
+				} catch (error) {
+					errors = {
+						...errors,
+						'Metadata': 'Invalid JSON format for Metadata'
+					};
+					return;
+				}
+			}
+
+			console.log('Submitting form with metadata:', metadata);
 			const assessmentCreateModel: AssessmentCreateModel = {
 				Name: name,
 				Description: description,
@@ -66,7 +88,8 @@
 				ReferenceTemplateCode: referenceTemplateCode,
 				Version: version,
 				Tags: keywords,
-				TenantId: tenantId
+				TenantId: tenantId,
+				Metadata: metadata
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentCreateModel);
@@ -145,7 +168,7 @@
 					<td class="table-data">
 						<textarea
 							name="description"
-							class="input resize-none {errors?.Description
+							class="input {errors?.Description
 								? 'border-error-300'
 								: 'border-primary-200'}"
 							bind:value={description}
@@ -203,6 +226,21 @@
 	</td>
 </tr>
 
+				<tr class="tables-row">
+					<td class="table-label">Metadata</td>
+					<td class="table-data">
+						<textarea
+							bind:value={metaDataInput}
+							class="input {errors?.Metadata ? 'border-error-300' : 'border-primary-200'}"
+							placeholder="Enter Metadata JSON object..."
+							name="metaDataInput"
+						></textarea>
+						{#if errors?.Metadata}
+							<p class="error-text">{errors?.Metadata}</p>
+						{/if}
+					</td>
+				</tr>
+
 <tr class="tables-row">
 					<td class="table-label">Tags</td>
 					<td class="table-data">
@@ -226,6 +264,7 @@
 						{/if}
 					</td>
 				</tr>
+				
 			</tbody>
 		</table>
 

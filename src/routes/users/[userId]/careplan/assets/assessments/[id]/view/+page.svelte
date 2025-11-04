@@ -28,6 +28,7 @@
 	let tags_ = assessment.Tags;
 	let tags = tags_.join(', ');
 	let version = assessment.Version;
+	let metaData = assessment.Metadata;
 
 	const assessmentTemplates = data.assessmentTemplates || [];
 
@@ -89,6 +90,16 @@
     		<td class="table-data">
         		{assessmentTemplate.length > 0 ? assessmentTemplate[0].Title : templateCode || "Not specified"}
     		</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label">Metadata</td>
+				<td class="table-data">
+					{#if metaData}
+						<span >{JSON.stringify(metaData, null, 2)}</span>
+					{:else}
+						<span>Not specified</span>
+					{/if}
+				</td>
 			</tr>
 			<tr class="tables-row">
 				<td class="table-label">Tags</td>
