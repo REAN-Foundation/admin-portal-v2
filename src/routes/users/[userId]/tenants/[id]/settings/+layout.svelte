@@ -21,7 +21,9 @@
 		'chatbot-setting': 'Chat Bot',
 		'consent-setting': 'Consent',
 		'followup-setting': 'Follow-up',
-		'forms-setting': 'Forms'
+		'forms-setting': 'Forms',
+		'custom-settings':'Custom'
+
 	};
 
 	// Build breadcrumbs dynamically based on current route
