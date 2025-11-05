@@ -77,6 +77,79 @@
 		newSettingValue = '';
 	};
 
+	const parseAndValidateValue = (
+		value: string,
+		dataType: CustomSettingDataType,
+		settingKey?: string
+	): any => {
+		try {
+			switch (dataType) {
+				case CustomSettingDataType.Number:
+					const numberValue = parseFloat(value);
+					if (isNaN(numberValue)) {
+						const errorMessage = settingKey 
+							? `${settingKey}: Invalid number format`
+							: 'Invalid number format';
+						addToast({
+							message: errorMessage,
+							type: 'error',
+							timeout: 3000
+						});
+						throw new Error('Invalid number format');
+					}
+					return numberValue;
+
+				case CustomSettingDataType.Boolean:
+					return value.toLowerCase() === 'true';
+
+				case CustomSettingDataType.Object:
+					const objectValue = JSON.parse(value);
+					if (Array.isArray(objectValue)) {
+						const errorMessage = settingKey
+							? `${settingKey}: Object type expects a JSON object, not an array`
+							: 'Object type expects a JSON object, not an array';
+						addToast({
+							message: errorMessage,
+							type: 'error',
+							timeout: 3000
+						});
+						throw new Error('Invalid object format');
+					}
+					return objectValue;
+
+				case CustomSettingDataType.Array:
+					const arrayValue = JSON.parse(value);
+					if (!Array.isArray(arrayValue)) {
+						const errorMessage = settingKey
+							? `${settingKey}: Array type expects a JSON array, not an object`
+							: 'Array type expects a JSON array, not an object';
+						addToast({
+							message: errorMessage,
+							type: 'error',
+							timeout: 3000
+						});
+						throw new Error('Invalid array format');
+					}
+					return arrayValue;
+
+				default:
+					return value;
+			}
+		} catch (error) {
+			if (error instanceof SyntaxError) {
+				const errorMessage = settingKey
+					? `Invalid JSON format for ${settingKey}. Please fix before saving.`
+					: 'Invalid JSON format for object/array';
+				addToast({
+					message: errorMessage,
+					type: 'error',
+					timeout: 3000
+				});
+			}
+			throw error;
+		}
+	};
+
 	const handleAddSetting = () => {
 		if (!newSettingKey || !newSettingName) {
 			addToast({
@@ -96,55 +169,10 @@
 			return;
 		}
 
-		let parsedValue: any = newSettingValue;
-		
+		let parsedValue: any;
 		try {
-			switch (newSettingDataType) {
-				case CustomSettingDataType.Number:
-					parsedValue = parseFloat(newSettingValue);
-					if (isNaN(parsedValue)) {
-						addToast({
-							message: 'Invalid number format',
-							type: 'error',
-							timeout: 3000
-						});
-						return;
-					}
-					break;
-				case CustomSettingDataType.Boolean:
-					parsedValue = newSettingValue.toLowerCase() === 'true';
-					break;
-				case CustomSettingDataType.Object:
-					parsedValue = JSON.parse(newSettingValue);
-					if (Array.isArray(parsedValue)) {
-						addToast({
-							message: 'Object type expects a JSON object, not an array',
-							type: 'error',
-							timeout: 3000
-						});
-						return;
-					}
-					break;
-				case CustomSettingDataType.Array:
-					parsedValue = JSON.parse(newSettingValue);
-					if (!Array.isArray(parsedValue)) {
-						addToast({
-							message: 'Array type expects a JSON array, not an object',
-							type: 'error',
-							timeout: 3000
-						});
-						return;
-					}
-					break;
-				default:
-					parsedValue = newSettingValue;
-			}
+			parsedValue = parseAndValidateValue(newSettingValue, newSettingDataType);
 		} catch (error) {
-			addToast({
-				message: 'Invalid JSON format for object/array',
-				type: 'error',
-				timeout: 3000
-			});
 			return;
 		}
 
@@ -177,45 +205,25 @@
 		});
 	};
 
-	const handleSave = async (event: Event) => {
+	const parseAndValidateEditValues = (settingsToSave: CustomSettings) => {
+		Object.keys(editValues).forEach(key => {
+			const setting = settingsToSave[key];
+			if (setting && (setting.DataType === CustomSettingDataType.Array || setting.DataType === CustomSettingDataType.Object)) {
+				try {
+					const parsed = parseAndValidateValue(editValues[key], setting.DataType, key);
+					setting.Value = parsed;
+				} catch (error) {
+					throw error;
+				}
+			}
+		});
+	};
+
+	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
 			const settingsToSave = { ...customSettings };
-			Object.keys(editValues).forEach(key => {
-				const setting = settingsToSave[key];
-				if (setting && (setting.DataType === CustomSettingDataType.Array || setting.DataType === CustomSettingDataType.Object)) {
-					try {
-						const parsed = JSON.parse(editValues[key]);
-						// Validate that array type has an array, object type has an object
-						if (setting.DataType === CustomSettingDataType.Array && !Array.isArray(parsed)) {
-							addToast({
-								message: `${key}: Array type expects a JSON array, not an object`,
-								type: 'error',
-								timeout: 3000
-							});
-							throw new Error('Invalid array format');
-						}
-						if (setting.DataType === CustomSettingDataType.Object && Array.isArray(parsed)) {
-							addToast({
-								message: `${key}: Object type expects a JSON object, not an array`,
-								type: 'error',
-								timeout: 3000
-							});
-							throw new Error('Invalid object format');
-						}
-						setting.Value = parsed;
-					} catch (error) {
-						if (error instanceof SyntaxError) {
-							addToast({
-								message: `Invalid JSON format for ${key}. Please fix before saving.`,
-								type: 'error',
-								timeout: 3000
-							});
-						}
-						throw error;
-					}
-				}
-			});
+			parseAndValidateEditValues(settingsToSave);
 			
 			const response = await fetch(`/api/server/tenants/settings/${tenantId}/CustomSettings`, {
 				method: 'PUT',
@@ -227,7 +235,7 @@
 
 			if (response.ok) {
 				addToast({
-					message: 'Custom settings saved successfully',
+					message: 'Custom settings updated successfully',
 					type: 'success',
 					timeout: 3000
 				});
@@ -250,19 +258,6 @@
 			});
 		}
 	};
-
-	const getValueDisplay = (setting: CustomSetting) => {
-		switch (setting.DataType) {
-			case CustomSettingDataType.Boolean:
-				return setting.Value ? 'true' : 'false';
-			case CustomSettingDataType.Object:
-			case CustomSettingDataType.Array:
-				return JSON.stringify(setting.Value, null, 2);
-			default:
-				return String(setting.Value);
-		}
-	};
-
 	const getInputType = (dataType: CustomSettingDataType) => {
 		switch (dataType) {
 			case CustomSettingDataType.Number:
@@ -277,7 +272,7 @@
 
 <div class="px-5 py-4">
 	<div class="mx-auto my-6 border border-[var(--color-outline)]">
-		<form onsubmit={async (event) => (promise = handleSave(event))}>
+		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 			<!-- Heading -->
 			<div class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6">
 				<h1 class="text-xl text-[var(--color-info)]">Custom Settings</h1>
