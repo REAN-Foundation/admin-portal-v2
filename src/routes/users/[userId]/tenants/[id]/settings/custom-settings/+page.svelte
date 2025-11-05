@@ -3,6 +3,7 @@
 	import Icon from '@iconify/svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import type { CustomSettings, CustomSetting } from '$lib/types/tenant.settings.types.js';
+	import { CustomSettingDataType } from '$lib/types/tenant.settings.types.js';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -17,22 +18,22 @@
 	let newSettingKey = $state('');
 	let newSettingName = $state('');
 	let newSettingDescription = $state('');
-	let newSettingDataType = $state<'string' | 'number' | 'boolean' | 'object' | 'array'>('string');
+	let newSettingDataType = $state<CustomSettingDataType>(CustomSettingDataType.String);
 	let newSettingValue = $state('');
 	let showAddForm = $state(false);
 	// Store stringified versions of array/object values for editing
 	let editValues: Record<string, string> = $state({});
 
 	const dataTypeOptions = [
-		{ value: 'string', label: 'String' },
-		{ value: 'number', label: 'Number' },
-		{ value: 'boolean', label: 'Boolean' },
-		{ value: 'object', label: 'Object' },
-		{ value: 'array', label: 'Array' }
+		{ value: CustomSettingDataType.String, label: 'String' },
+		{ value: CustomSettingDataType.Number, label: 'Number' },
+		{ value: CustomSettingDataType.Boolean, label: 'Boolean' },
+		{ value: CustomSettingDataType.Object, label: 'Object' },
+		{ value: CustomSettingDataType.Array, label: 'Array' }
 	];
 
 	const getEditValue = (key: string, setting: CustomSetting): string => {
-		if (setting.DataType === 'array' || setting.DataType === 'object') {
+		if (setting.DataType === CustomSettingDataType.Array || setting.DataType === CustomSettingDataType.Object) {
 			if (!editValues[key]) {
 				editValues[key] = JSON.stringify(setting.Value ?? null, null, 2);
 			}
@@ -52,7 +53,7 @@
 			// Initialize edit values by converting arrays/objects to JSON strings
 			Object.keys(customSettings).forEach(key => {
 				const setting = customSettings[key];
-				if (setting.DataType === 'array' || setting.DataType === 'object') {
+				if (setting.DataType === CustomSettingDataType.Array || setting.DataType === CustomSettingDataType.Object) {
 					editValues[key] = JSON.stringify(setting.Value ?? null, null, 2);
 				}
 			});
@@ -72,7 +73,7 @@
 		newSettingKey = '';
 		newSettingName = '';
 		newSettingDescription = '';
-		newSettingDataType = 'string';
+		newSettingDataType = CustomSettingDataType.String;
 		newSettingValue = '';
 	};
 
@@ -99,7 +100,7 @@
 		
 		try {
 			switch (newSettingDataType) {
-				case 'number':
+				case CustomSettingDataType.Number:
 					parsedValue = parseFloat(newSettingValue);
 					if (isNaN(parsedValue)) {
 						addToast({
@@ -110,10 +111,10 @@
 						return;
 					}
 					break;
-				case 'boolean':
+				case CustomSettingDataType.Boolean:
 					parsedValue = newSettingValue.toLowerCase() === 'true';
 					break;
-				case 'object':
+				case CustomSettingDataType.Object:
 					parsedValue = JSON.parse(newSettingValue);
 					if (Array.isArray(parsedValue)) {
 						addToast({
@@ -124,7 +125,7 @@
 						return;
 					}
 					break;
-				case 'array':
+				case CustomSettingDataType.Array:
 					parsedValue = JSON.parse(newSettingValue);
 					if (!Array.isArray(parsedValue)) {
 						addToast({
@@ -155,7 +156,7 @@
 		};
 
 		customSettings = { ...customSettings, [newSettingKey]: newSetting };
-		if (newSettingDataType === 'array' || newSettingDataType === 'object') {
+		if (newSettingDataType === CustomSettingDataType.Array || newSettingDataType === CustomSettingDataType.Object) {
 			editValues[newSettingKey] = JSON.stringify(parsedValue ?? null, null, 2);
 		}
 		resetNewSettingForm();
@@ -182,11 +183,11 @@
 			const settingsToSave = { ...customSettings };
 			Object.keys(editValues).forEach(key => {
 				const setting = settingsToSave[key];
-				if (setting && (setting.DataType === 'array' || setting.DataType === 'object')) {
+				if (setting && (setting.DataType === CustomSettingDataType.Array || setting.DataType === CustomSettingDataType.Object)) {
 					try {
 						const parsed = JSON.parse(editValues[key]);
 						// Validate that array type has an array, object type has an object
-						if (setting.DataType === 'array' && !Array.isArray(parsed)) {
+						if (setting.DataType === CustomSettingDataType.Array && !Array.isArray(parsed)) {
 							addToast({
 								message: `${key}: Array type expects a JSON array, not an object`,
 								type: 'error',
@@ -194,7 +195,7 @@
 							});
 							throw new Error('Invalid array format');
 						}
-						if (setting.DataType === 'object' && Array.isArray(parsed)) {
+						if (setting.DataType === CustomSettingDataType.Object && Array.isArray(parsed)) {
 							addToast({
 								message: `${key}: Object type expects a JSON object, not an array`,
 								type: 'error',
@@ -252,21 +253,21 @@
 
 	const getValueDisplay = (setting: CustomSetting) => {
 		switch (setting.DataType) {
-			case 'boolean':
+			case CustomSettingDataType.Boolean:
 				return setting.Value ? 'true' : 'false';
-			case 'object':
-			case 'array':
+			case CustomSettingDataType.Object:
+			case CustomSettingDataType.Array:
 				return JSON.stringify(setting.Value, null, 2);
 			default:
 				return String(setting.Value);
 		}
 	};
 
-	const getInputType = (dataType: string) => {
+	const getInputType = (dataType: CustomSettingDataType) => {
 		switch (dataType) {
-			case 'number':
+			case CustomSettingDataType.Number:
 				return 'number';
-			case 'boolean':
+			case CustomSettingDataType.Boolean:
 				return 'checkbox';
 			default:
 				return 'text';
@@ -367,7 +368,7 @@
 								<label for="settingValue" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]">
 									Value <span class="text-red-700">*</span>
 								</label>
-								{#if newSettingDataType === 'boolean'}
+								{#if newSettingDataType === CustomSettingDataType.Boolean}
 									<select
 										id="settingValue"
 										class="select w-[70%]"
@@ -376,13 +377,13 @@
 										<option value="true">True</option>
 										<option value="false">False</option>
 									</select>
-								{:else if newSettingDataType === 'object' || newSettingDataType === 'array'}
+								{:else if newSettingDataType === CustomSettingDataType.Object || newSettingDataType === CustomSettingDataType.Array}
 									<!-- <div class="w-[70%]"> -->
 										<textarea
 											id="settingValue"
 											class="input-field w-[70%]"
 											rows="6"
-											placeholder={newSettingDataType === 'array' 
+											placeholder={newSettingDataType === CustomSettingDataType.Array 
 												? 'Enter array in JSON format, e.g.:\n["item1", "item2", "item3"]\nor:\n[1, 2, 3]' 
 												: 'Enter object in JSON format, e.g.:\n{"key1": "value1",\n "key2": "value2"}'}
 											bind:value={newSettingValue}
@@ -449,7 +450,7 @@
 										{setting.DataType}
 										</td>
 										<td>
-											{#if setting.DataType === 'boolean'}
+											{#if setting.DataType === CustomSettingDataType.Boolean}
 												<select
 													class="select"
 													bind:value={setting.Value}
@@ -458,14 +459,14 @@
 													<option value={true}>True</option>
 													<option value={false}>False</option>
 												</select>
-											{:else if setting.DataType === 'object' || setting.DataType === 'array'}
+											{:else if setting.DataType === CustomSettingDataType.Object || setting.DataType === CustomSettingDataType.Array}
 												{#if isEditing}
 													{@const editValue = getEditValue(key, setting)}
 													<textarea
 														class="input-field font-mono text-sm"
 														rows="6"
 														bind:value={editValues[key]}
-														placeholder={setting.DataType === 'array' 
+														placeholder={setting.DataType === CustomSettingDataType.Array 
 															? 'Enter array in JSON format, e.g.: ["item1", "item2"]' 
 															: 'Enter object in JSON format, e.g.: {"key": "value"}'}
 													></textarea>
@@ -475,7 +476,7 @@
 														rows="6"
 														value={JSON.stringify(setting.Value ?? null, null, 2)}
 														disabled
-														placeholder={setting.DataType === 'array' 
+														placeholder={setting.DataType === CustomSettingDataType.Array 
 															? 'Enter array in JSON format, e.g.: ["item1", "item2"]' 
 															: 'Enter object in JSON format, e.g.: {"key": "value"}'}
 													></textarea>

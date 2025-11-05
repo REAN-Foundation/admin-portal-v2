@@ -289,10 +289,18 @@ export interface TenantSettingsDomainModel {
 	CustomSettings?: CustomSettings;
 }
 
+export enum CustomSettingDataType {
+	String = 'string',
+	Number = 'number',
+	Boolean = 'boolean',
+	Object = 'object',
+	Array = 'array'
+}
+
 export interface CustomSetting {
 	Name: string;
 	Description: string;
-	DataType: 'string' | 'number' | 'boolean' | 'object' | 'array';
+	DataType: CustomSettingDataType;
 	Value: any;
 }
 
