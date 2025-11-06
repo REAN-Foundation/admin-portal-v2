@@ -202,6 +202,7 @@
 		try {
 			event.preventDefault();
 			errors = {};
+			isRefreshing = true;
 			console.log('Inside the refresh')
 			const res = await fetch('/api/server/documents/refresh', {
 				method: 'POST',
@@ -213,6 +214,7 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
+				isRefreshing = false;
 				return;
 			}
 
@@ -223,6 +225,8 @@
 			}
 		} catch (error) {
 			toastMessage();
+		} finally {
+			isRefreshing = false;
 		}
 	};
 
@@ -231,6 +235,7 @@
 		try {
 			event.preventDefault();
 			errors = {};
+			isPublishing = true;
 
 			const res = await fetch(`/api/server/documents/publish`, {
 				method: 'POST',
@@ -243,6 +248,7 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
+				isPublishing = false;
 				return;
 			}
 
@@ -253,6 +259,8 @@
 			}
 		} catch (error) {
 			toastMessage();
+		} finally {
+			isPublishing = false;
 		}
 	};
 
@@ -318,18 +326,18 @@
 						{/if}
 					</div>
 					<Button
-						text="Refresh"
+						text={isRefreshing ? "Refreshing..." : "Refresh"}
 						variant="secondary"
 						iconBefore="material-symbols:refresh"
 						onclick={handleRefresh}
-						
+						disabled={isRefreshing}
 					/>
 					<Button
-						text="Publish"
+						text={isPublishing ? "Publishing..." : "Publish"}
 						variant="secondary"
 						iconBefore="material-symbols:publish"
 						onclick={handlePublish}
-						
+						disabled={isPublishing}
 					/>
 					<Button href={createRoute} text="Add New" variant="primary" />
 				</div>
