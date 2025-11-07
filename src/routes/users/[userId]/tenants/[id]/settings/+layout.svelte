@@ -21,7 +21,9 @@
 		'chatbot-setting': 'Chat Bot',
 		'consent-setting': 'Consent',
 		'followup-setting': 'Follow-up',
-		'forms-setting': 'Forms'
+		'forms-setting': 'Forms',
+		'custom-settings':'Custom'
+
 	};
 
 	// Build breadcrumbs dynamically based on current route
@@ -62,6 +64,7 @@
 	let formSettingsLink = `${tenantRoute}/${tenantId}/settings/forms-setting`;
 	let followupSettingsLink = `${tenantRoute}/${tenantId}/settings/followup-setting`;
 	let concentSettingsLink = `${tenantRoute}/${tenantId}/settings/consent-setting`;
+	let customSettingsLink = `${tenantRoute}/${tenantId}/settings/custom-settings`;
 
 </script>
 
@@ -122,6 +125,16 @@
 			>
 				<Icon icon="material-symbols:featured-play-list-outline-rounded" class="h-5 w-5 shrink-0" />
 				Follow-up
+			</a>
+
+			<a
+				class="btn {page.url.pathname === customSettingsLink
+					? 'variant-filled-secondary'
+					: 'variant-soft-secondary'} flex items-center justify-center gap-2 whitespace-nowrap"
+				href={customSettingsLink}
+			>
+				<Icon icon="material-symbols:settings-outline" class="h-5 w-5 shrink-0" />
+				Custom
 			</a>
 		</div>
 	</div>

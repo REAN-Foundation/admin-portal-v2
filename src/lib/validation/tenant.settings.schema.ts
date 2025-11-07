@@ -394,11 +394,30 @@ export const ConsentSettingsSchema = z.object({
         .optional(),
 });
 
+export const CustomSettingSchema = z.object({
+    Name: z.string({
+        required_error: "Name is required",
+        invalid_type_error: "Name must be a string",
+    }),
+    Description: z.string({
+        required_error: "Description is required",
+        invalid_type_error: "Description must be a string",
+    }).optional(),
+    DataType: z.enum(['string', 'number', 'boolean', 'object', 'array'], {
+        required_error: "DataType is required",
+        invalid_type_error: "DataType must be one of: string, number, boolean, object, array",
+    }),
+    Value: z.any(),
+});
+
+export const CustomSettingsSchema = z.record(CustomSettingSchema);
+
 export const TenantSettingsSchema = z.object({
     Common: CommonSettingsSchema.required(),
     Followup: FollowupSettingsSchema.required(),
     ChatBot: ChatBotSettingsSchema.required(),
     Forms: FormsSettingsSchema.required(),
     Consent: ConsentSettingsSchema.optional(),
+    CustomSettings: CustomSettingsSchema.optional(),
 });
 
