@@ -381,30 +381,7 @@
 					</td>
 				</tr>
 				{#if selectedNodeType === 'Question'}
-					<tr class="tables-row">
-						<td class="table-label align-top"
-							>Query Response Type <span class=" text-red-600">*</span></td
-						>
-						<td class="table-data">
-							<div class="relative">
-							<select
-								id="mySelect"
-								name="queryType"
-								class="select{errors?.queryType ? 'input-text-error' : ''}"
-								placeholder="Select query type here..."
-								onchange={(val) => onSelectQueryResponseType(val)}
-							>
-								{#each queryResponseTypes as responseType}
-									<option value={responseType}>{responseType}</option>
-								{/each}
-							</select>
-							<div class="select-icon-container">
-								<Icon icon="mdi:chevron-down" class="select-icon" />
-							</div>
-						</div>
-						</td>
-					</tr>
-					<tr class="tables-row">
+						<tr class="tables-row">
 						<td class="table-label">Field Identifier</td>
 						<td class="table-data">
 							<div class="relative">
@@ -446,6 +423,30 @@
 							{/if}
 						</td>
 					</tr>
+					<tr class="tables-row">
+						<td class="table-label align-top"
+							>Query Response Type <span class=" text-red-600">*</span></td
+						>
+						<td class="table-data">
+							<div class="relative">
+							<select
+								id="mySelect"
+								name="queryType"
+								class="select{errors?.queryType ? 'input-text-error' : ''}"
+								placeholder="Select query type here..."
+								onchange={(val) => onSelectQueryResponseType(val)}
+							>
+								{#each queryResponseTypes as responseType}
+									<option value={responseType}>{responseType}</option>
+								{/each}
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
+						</td>
+					</tr>
+			
 					{#if $scoringApplicableCondition === true}
 						{#if selectedQueryType === 'Single Choice Selection' || selectedQueryType === 'Multi Choice Selection'}
 							<tr class="tables-row">
