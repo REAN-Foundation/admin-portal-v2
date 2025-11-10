@@ -27,3 +27,35 @@ export interface AssessmentUpdateModel {
     TenantId?: string;
     Metadata?: Metadata;
 }
+
+export interface AssessmentNodeOption {
+    DisplayCode: string;
+    ProviderGivenCode: string;
+    Text: string;
+    Sequence: number;
+  }
+  
+  export interface AssessmentNode {
+    DisplayCode: string;
+    NodeType: string;
+    ProviderGivenId?: string;
+    ProviderGivenCode?: string;
+    Title: string;
+    Description?: string | null;
+    Sequence?: number;
+    QueryResponseType?: string;
+    Options?: AssessmentNodeOption[];
+    ChildrenNodeDisplayCodes?: string[];
+  }
+  
+  export interface AssessmentTemplate {
+    DisplayCode: string;
+    Version: string;
+    Type: string;
+    Title: string;
+    Provider: string;
+    ProviderAssessmentCode?: string;
+    RootNodeDisplayCode?: string;
+    Nodes: AssessmentNode[];
+  }
+  
