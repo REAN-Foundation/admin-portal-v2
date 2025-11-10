@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { getTenantSettings } from '../../../../../../api/services/reancare/tenant-settings';
+import { getMarketingMaterialByTenantId } from '../../../../../../api/services/reancare/tenant-settings';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const sessionId = locals?.sessionUser?.sessionId;
@@ -12,18 +12,21 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const userId = params.userId;
 
 	try {
-		// Get all tenant settings
-		const allSettings = await getTenantSettings(sessionId, tenantId);
-		
+		// Get marketing material settings by tenant id
+		const marketingMaterial = await getMarketingMaterialByTenantId(sessionId, tenantId);
+
+		if (marketingMaterial.Status === 'failure' || marketingMaterial.HttpCode !== 200) {
+			throw error(marketingMaterial.HttpCode, marketingMaterial.Message);
+		}
+
+		console.log('marketingMaterialSettings', marketingMaterial.Data);
 		return {
-			marketingMaterialSettings: allSettings?.Data?.MarketingMaterial || {},
-			tenantCode: allSettings?.Data?.Common?.TenantCode || '',
-			tenantName: allSettings?.Data?.Common?.TenantName || '',
+			marketingMaterial: marketingMaterial.Data || {},
 			userId,
 			tenantId
 		};
 	} catch (err) {
-		console.error('Error loading marketing material settings:', err);
-		throw error(500, 'Failed to load marketing material settings');
+		console.error('Error loading marketing material:', err);
+		throw error(500, 'Failed to load marketing material');
 	}
 };

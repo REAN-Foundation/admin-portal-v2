@@ -1,8 +1,5 @@
 import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY } from '$env/static/private';
 import { get, put, del, post } from './common.reancare';
-import axios from 'axios';
-import FormData from 'form-data';
-import * as fs from 'fs';
 
 ////////////////////////////////////////////////////////////////
 
@@ -73,106 +70,124 @@ export const deleteTenantSettings = async (
 	return await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
 };
 
-export const uploadMarketingMaterialLogo = async (
-	sessionId: string,
-	tenantId: string,
-	file: File
-) => {
-	const url = baseUrl + `/${tenantId}/MarketingMaterial/logo`;
-	const formData = new FormData();
-	formData.append('file', file);
 
-	return await post(sessionId, url, formData, true, API_CLIENT_INTERNAL_KEY);
-};
-
-export const uploadMarketingMaterialQrCode = async (
-	sessionId: string,
-	tenantId: string,
-	file: File
-) => {
-	const url = baseUrl + `/${tenantId}/MarketingMaterial/qrcode`;
-	const formData = new FormData();
-	formData.append('file', file);
-
-	return await post(sessionId, url, formData, true, API_CLIENT_INTERNAL_KEY);
-};
-
-export const uploadMarketingMaterialFeatureLogo = async (
-	sessionId: string,
-	tenantId: string,
-	file: File
-) => {
-	const url = baseUrl + `/${tenantId}/MarketingMaterial/feature-logo`;
-	const formData = new FormData();
-	formData.append('file', file);
-
-	return await post(sessionId, url, formData, true, API_CLIENT_INTERNAL_KEY);
-};
-
-export const uploadMarketingMaterialPrimaryLogo = async (
-	sessionId: string,
-	tenantId: string,
-	file: File
-) => {
-	const url = baseUrl + `/${tenantId}/MarketingMaterial/primary-logo`;
-	const formData = new FormData();
-	formData.append('file', file);
-
-	return await post(sessionId, url, formData, true, API_CLIENT_INTERNAL_KEY);
-};
-
-export const uploadMarketingMaterialSecondaryLogo = async (
-	sessionId: string,
-	tenantId: string,
-	file: File
-) => {
-	const url = baseUrl + `/${tenantId}/MarketingMaterial/secondary-logo`;
-	const formData = new FormData();
-	formData.append('file', file);
-
-	return await post(sessionId, url, formData, true, API_CLIENT_INTERNAL_KEY);
-};
-
-export const uploadMarketingMaterialReanLogo = async (
-	sessionId: string,
-	tenantId: string,
-	file: File
-) => {
-	const url = baseUrl + `/${tenantId}/MarketingMaterial/rean-logo`;
-	const formData = new FormData();
-	formData.append('file', file);
-
-	return await post(sessionId, url, formData, true, API_CLIENT_INTERNAL_KEY);
-};
-
-export const uploadMarketingMaterialHeroImage = async (
-	sessionId: string,
-	tenantId: string,
-	file: File
-) => {
-	const url = baseUrl + `/${tenantId}/MarketingMaterial/hero-image`;
-	const formData = new FormData();
-	formData.append('file', file);
-
-	return await post(sessionId, url, formData, true, API_CLIENT_INTERNAL_KEY);
-};
-
-export const uploadMarketingMaterialPhoneMockup = async (
-	sessionId: string,
-	tenantId: string,
-	file: File
-) => {
-	const url = baseUrl + `/${tenantId}/MarketingMaterial/phone-mockup`;
-	const formData = new FormData();
-	formData.append('file', file);
-
-	return await post(sessionId, url, formData, true, API_CLIENT_INTERNAL_KEY);
-};
-
-export const exportMarketingMaterialSettings = async (
+export const getMarketingMaterialByTenantId = async (
 	sessionId: string,
 	tenantId: string
 ) => {
-	const url = baseUrl + `/${tenantId}/MarketingMaterial/export`;
+	const url = baseUrl + `/tenant-settings-marketing/${tenantId}`;
 	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
-};
+}
+
+export const createMarketingMaterialByTenantId = async (
+	sessionId: string,
+	tenantId: string,
+	settings: any
+) => {
+	const url = baseUrl + `/tenant-settings-marketing/${tenantId}`;
+	return await post(sessionId, url, settings, true, API_CLIENT_INTERNAL_KEY);
+}
+
+// export const uploadMarketingMaterialLogo = async (
+// 	sessionId: string,
+// 	tenantId: string,
+// 	file: File
+// ) => {
+// 	const url = baseUrl + `/${tenantId}/MarketingMaterial/logo`;
+// 	const formData = new FormData();
+// 	formData.append('file', file);
+
+// 	return await post(sessionId, url, formData, true, API_CLIENT_INTERNAL_KEY);
+// };
+
+// export const uploadMarketingMaterialQrCode = async (
+// 	sessionId: string,
+// 	tenantId: string,
+// 	file: File
+// ) => {
+// 	const url = baseUrl + `/${tenantId}/MarketingMaterial/qrcode`;
+// 	const formData = new FormData();
+// 	formData.append('file', file);
+
+// 	return await post(sessionId, url, formData, true, API_CLIENT_INTERNAL_KEY);
+// };
+
+// export const uploadMarketingMaterialFeatureLogo = async (
+// 	sessionId: string,
+// 	tenantId: string,
+// 	file: File
+// ) => {
+// 	const url = baseUrl + `/${tenantId}/MarketingMaterial/feature-logo`;
+// 	const formData = new FormData();
+// 	formData.append('file', file);
+
+// 	return await post(sessionId, url, formData, true, API_CLIENT_INTERNAL_KEY);
+// };
+
+// export const uploadMarketingMaterialPrimaryLogo = async (
+// 	sessionId: string,
+// 	tenantId: string,
+// 	file: File
+// ) => {
+// 	const url = baseUrl + `/${tenantId}/MarketingMaterial/primary-logo`;
+// 	const formData = new FormData();
+// 	formData.append('file', file);
+
+// 	return await post(sessionId, url, formData, true, API_CLIENT_INTERNAL_KEY);
+// };
+
+// export const uploadMarketingMaterialSecondaryLogo = async (
+// 	sessionId: string,
+// 	tenantId: string,
+// 	file: File
+// ) => {
+// 	const url = baseUrl + `/${tenantId}/MarketingMaterial/secondary-logo`;
+// 	const formData = new FormData();
+// 	formData.append('file', file);
+
+// 	return await post(sessionId, url, formData, true, API_CLIENT_INTERNAL_KEY);
+// };
+
+// export const uploadMarketingMaterialReanLogo = async (
+// 	sessionId: string,
+// 	tenantId: string,
+// 	file: File
+// ) => {
+// 	const url = baseUrl + `/${tenantId}/MarketingMaterial/rean-logo`;
+// 	const formData = new FormData();
+// 	formData.append('file', file);
+
+// 	return await post(sessionId, url, formData, true, API_CLIENT_INTERNAL_KEY);
+// };
+
+// export const uploadMarketingMaterialHeroImage = async (
+// 	sessionId: string,
+// 	tenantId: string,
+// 	file: File
+// ) => {
+// 	const url = baseUrl + `/${tenantId}/MarketingMaterial/hero-image`;
+// 	const formData = new FormData();
+// 	formData.append('file', file);
+
+// 	return await post(sessionId, url, formData, true, API_CLIENT_INTERNAL_KEY);
+// };
+
+// export const uploadMarketingMaterialPhoneMockup = async (
+// 	sessionId: string,
+// 	tenantId: string,
+// 	file: File
+// ) => {
+// 	const url = baseUrl + `/${tenantId}/MarketingMaterial/phone-mockup`;
+// 	const formData = new FormData();
+// 	formData.append('file', file);
+
+// 	return await post(sessionId, url, formData, true, API_CLIENT_INTERNAL_KEY);
+// };
+
+// export const exportMarketingMaterialSettings = async (
+// 	sessionId: string,
+// 	tenantId: string
+// ) => {
+// 	const url = baseUrl + `/${tenantId}/MarketingMaterial/export`;
+// 	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+// };
