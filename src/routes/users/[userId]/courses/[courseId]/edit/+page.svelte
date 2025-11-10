@@ -202,7 +202,7 @@
 				<tr class="tables-row">
 					<td class="table-label">Image</td>
 					<td class="table-data">
-						{#if imageUrl === 'undefined'}
+						{#if imageUrl == undefined || imageUrl == null}
 							<input
 								name="fileinput"
 								type="file"
@@ -212,7 +212,7 @@
 								onchange={async (e) => await onFileSelected(e)}
 							/>
 						{:else}
-							<Image cls="flex h-24 w-24 rounded-lg" source={imageUrl} w="24" h="24" />
+							<Image cls="flex h-24 w-24 rounded-lg mb-2" source={imageUrl} w="24" h="24" />
 							<input
 								name="fileinput"
 								type="file"
