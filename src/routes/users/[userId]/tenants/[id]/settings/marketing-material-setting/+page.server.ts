@@ -13,7 +13,10 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	try {
 		// Get marketing material settings by tenant id
+		console.log("This is server")
 		const marketingMaterial = await getMarketingMaterialByTenantId(sessionId, tenantId);
+
+		console.log("marketingMaterial for this tenant", marketingMaterial)
 
 		if (marketingMaterial.Status === 'failure' || marketingMaterial.HttpCode !== 200) {
 			throw error(marketingMaterial.HttpCode, marketingMaterial.Message);

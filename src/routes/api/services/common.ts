@@ -48,6 +48,8 @@ export const get_ = async (url: string, authorizeUser: boolean = false, sessionI
 	try {
 		const headers = await setHeaders(authorizeUser, sessionId);
 
+		console.log(url,"urlllllll")
+
 		const res = await fetch(url, {
 			method: 'GET',
 			headers

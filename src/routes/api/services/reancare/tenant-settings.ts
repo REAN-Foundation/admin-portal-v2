@@ -75,7 +75,7 @@ export const getMarketingMaterialByTenantId = async (
 	sessionId: string,
 	tenantId: string
 ) => {
-	const url = baseUrl + `/tenant-settings-marketing/${tenantId}`;
+	const url = BACKEND_API_URL + `/tenant-settings-marketing/${tenantId}`;
 	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
 }
 
