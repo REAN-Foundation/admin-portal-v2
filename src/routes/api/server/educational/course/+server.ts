@@ -31,7 +31,7 @@ export const POST = async (event: RequestEvent) => {
             sessionId,
             data.Name,
             data.Description,
-            data.Image,
+            data.ImageResourceId,
             data.DurationInDays
         );
 

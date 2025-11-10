@@ -14,7 +14,7 @@ export const createCourse = async (
 	const body = {
 		Name: name,
 		Description: description || null,
-		ImageResourceId: imageResourceId || null,
+		ImageUrl: imageResourceId || null,
 		DurationInDays: durationInDays || null
 	};
 	const url = BACKEND_API_URL + '/educational/courses';
