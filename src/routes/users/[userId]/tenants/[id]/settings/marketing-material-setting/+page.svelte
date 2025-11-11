@@ -612,14 +612,42 @@
 										class="text-sm font-medium text-[var(--color-info)]"
 										>Heading Font</label
 									>
-									<input
-										type="text"
+									<select
 										id="styling-heading-font"
 										bind:value={Styling.headingFont}
 										{disabled}
-										placeholder="'Poppins', sans-serif"
 										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-									/>
+									>
+										<option value="">Select a font</option>
+										<option value="'Poppins', sans-serif">Poppins</option>
+										<option value="'Inter', sans-serif">Inter</option>
+										<option value="'Roboto', sans-serif">Roboto</option>
+										<option value="'Open Sans', sans-serif">Open Sans</option>
+										<option value="'Lato', sans-serif">Lato</option>
+										<option value="'Montserrat', sans-serif">Montserrat</option>
+										<option value="'Raleway', sans-serif">Raleway</option>
+										<option value="'Nunito', sans-serif">Nunito</option>
+										<option value="'Playfair Display', serif">Playfair Display</option>
+										<option value="'Merriweather', serif">Merriweather</option>
+										<option value="'Lora', serif">Lora</option>
+										<option value="'PT Serif', serif">PT Serif</option>
+										<option value="'Roboto Slab', serif">Roboto Slab</option>
+										<option value="'Source Sans Pro', sans-serif">Source Sans Pro</option>
+										<option value="'Ubuntu', sans-serif">Ubuntu</option>
+										<option value="'Oswald', sans-serif">Oswald</option>
+										<option value="'Fira Sans', sans-serif">Fira Sans</option>
+										<option value="'Crimson Text', serif">Crimson Text</option>
+										<option value="'Libre Baskerville', serif">Libre Baskerville</option>
+									</select>
+									{#if Styling.headingFont && !['', "'Poppins', sans-serif", "'Inter', sans-serif", "'Roboto', sans-serif", "'Open Sans', sans-serif", "'Lato', sans-serif", "'Montserrat', sans-serif", "'Raleway', sans-serif", "'Nunito', sans-serif", "'Playfair Display', serif", "'Merriweather', serif", "'Lora', serif", "'PT Serif', serif", "'Roboto Slab', serif", "'Source Sans Pro', sans-serif", "'Ubuntu', sans-serif", "'Oswald', sans-serif", "'Fira Sans', sans-serif", "'Crimson Text', serif", "'Libre Baskerville', serif"].includes(Styling.headingFont)}
+										<input
+											type="text"
+											bind:value={Styling.headingFont}
+											{disabled}
+											placeholder="Custom font (e.g., 'Custom Font', sans-serif)"
+											class="mt-2 w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										/>
+									{/if}
 								</div>
 								<div class="space-y-2">
 									<label
@@ -627,14 +655,42 @@
 										class="text-sm font-medium text-[var(--color-info)]"
 										>Body Font</label
 									>
-									<input
-										type="text"
+									<select
 										id="styling-body-font"
 										bind:value={Styling.bodyFont}
 										{disabled}
-										placeholder="'Inter', sans-serif"
 										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-									/>
+									>
+										<option value="">Select a font</option>
+										<option value="'Poppins', sans-serif">Poppins</option>
+										<option value="'Inter', sans-serif">Inter</option>
+										<option value="'Roboto', sans-serif">Roboto</option>
+										<option value="'Open Sans', sans-serif">Open Sans</option>
+										<option value="'Lato', sans-serif">Lato</option>
+										<option value="'Montserrat', sans-serif">Montserrat</option>
+										<option value="'Raleway', sans-serif">Raleway</option>
+										<option value="'Nunito', sans-serif">Nunito</option>
+										<option value="'Playfair Display', serif">Playfair Display</option>
+										<option value="'Merriweather', serif">Merriweather</option>
+										<option value="'Lora', serif">Lora</option>
+										<option value="'PT Serif', serif">PT Serif</option>
+										<option value="'Roboto Slab', serif">Roboto Slab</option>
+										<option value="'Source Sans Pro', sans-serif">Source Sans Pro</option>
+										<option value="'Ubuntu', sans-serif">Ubuntu</option>
+										<option value="'Oswald', sans-serif">Oswald</option>
+										<option value="'Fira Sans', sans-serif">Fira Sans</option>
+										<option value="'Crimson Text', serif">Crimson Text</option>
+										<option value="'Libre Baskerville', serif">Libre Baskerville</option>
+									</select>
+									{#if Styling.bodyFont && !['', "'Poppins', sans-serif", "'Inter', sans-serif", "'Roboto', sans-serif", "'Open Sans', sans-serif", "'Lato', sans-serif", "'Montserrat', sans-serif", "'Raleway', sans-serif", "'Nunito', sans-serif", "'Playfair Display', serif", "'Merriweather', serif", "'Lora', serif", "'PT Serif', serif", "'Roboto Slab', serif", "'Source Sans Pro', sans-serif", "'Ubuntu', sans-serif", "'Oswald', sans-serif", "'Fira Sans', sans-serif", "'Crimson Text', serif", "'Libre Baskerville', serif"].includes(Styling.bodyFont)}
+										<input
+											type="text"
+											bind:value={Styling.bodyFont}
+											{disabled}
+											placeholder="Custom font (e.g., 'Custom Font', sans-serif)"
+											class="mt-2 w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										/>
+									{/if}
 								</div>
 							</div>
 						</div>
@@ -685,14 +741,33 @@
 										class="text-sm font-medium text-[var(--color-info)]"
 										>Page Width</label
 									>
-									<input
-										type="text"
+									<select
 										id="styling-page-width"
 										bind:value={Styling.pageWidth}
 										{disabled}
-										placeholder="210mm"
 										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-									/>
+									>
+										<option value="">Select page width</option>
+										<option value="148mm">A6 (148mm)</option>
+										<option value="210mm">A5 (210mm)</option>
+										<option value="297mm">A4 (297mm)</option>
+										<option value="420mm">A3 (420mm)</option>
+										<option value="216mm">Letter (216mm)</option>
+										<option value="279mm">Legal (279mm)</option>
+										<option value="200mm">Custom 200mm</option>
+										<option value="250mm">Custom 250mm</option>
+										<option value="300mm">Custom 300mm</option>
+										<option value="350mm">Custom 350mm</option>
+									</select>
+									{#if Styling.pageWidth && !['', '148mm', '210mm', '297mm', '420mm', '216mm', '279mm', '200mm', '250mm', '300mm', '350mm'].includes(Styling.pageWidth)}
+										<input
+											type="text"
+											bind:value={Styling.pageWidth}
+											{disabled}
+											placeholder="Custom width (e.g., 180mm)"
+											class="mt-2 w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										/>
+									{/if}
 								</div>
 								<div class="space-y-2">
 									<label
@@ -700,14 +775,33 @@
 										class="text-sm font-medium text-[var(--color-info)]"
 										>Page Height</label
 									>
-									<input
-										type="text"
+									<select
 										id="styling-page-height"
 										bind:value={Styling.pageHeight}
 										{disabled}
-										placeholder="297mm"
 										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-									/>
+									>
+										<option value="">Select page height</option>
+										<option value="105mm">A6 (105mm)</option>
+										<option value="148mm">A5 (148mm)</option>
+										<option value="210mm">A4 (210mm)</option>
+										<option value="297mm">A3 (297mm)</option>
+										<option value="279mm">Letter (279mm)</option>
+										<option value="356mm">Legal (356mm)</option>
+										<option value="250mm">Custom 250mm</option>
+										<option value="300mm">Custom 300mm</option>
+										<option value="350mm">Custom 350mm</option>
+										<option value="400mm">Custom 400mm</option>
+									</select>
+									{#if Styling.pageHeight && !['', '105mm', '148mm', '210mm', '297mm', '279mm', '356mm', '250mm', '300mm', '350mm', '400mm'].includes(Styling.pageHeight)}
+										<input
+											type="text"
+											bind:value={Styling.pageHeight}
+											{disabled}
+											placeholder="Custom height (e.g., 240mm)"
+											class="mt-2 w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										/>
+									{/if}
 								</div>
 								<div class="space-y-2">
 									<label
@@ -715,14 +809,33 @@
 										class="text-sm font-medium text-[var(--color-info)]"
 										>UI Width</label
 									>
-									<input
-										type="text"
+									<select
 										id="styling-ui-width"
 										bind:value={Styling.userInterfaceWidth}
 										{disabled}
-										placeholder="260px"
 										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-									/>
+									>
+										<option value="">Select UI width</option>
+										<option value="200px">200px</option>
+										<option value="240px">240px</option>
+										<option value="260px">260px</option>
+										<option value="280px">280px</option>
+										<option value="300px">300px</option>
+										<option value="320px">320px</option>
+										<option value="350px">350px</option>
+										<option value="400px">400px</option>
+										<option value="450px">450px</option>
+										<option value="500px">500px</option>
+									</select>
+									{#if Styling.userInterfaceWidth && !['', '200px', '240px', '260px', '280px', '300px', '320px', '350px', '400px', '450px', '500px'].includes(Styling.userInterfaceWidth)}
+										<input
+											type="text"
+											bind:value={Styling.userInterfaceWidth}
+											{disabled}
+											placeholder="Custom width (e.g., 270px)"
+											class="mt-2 w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										/>
+									{/if}
 								</div>
 								<div class="space-y-2">
 									<label
@@ -730,14 +843,33 @@
 										class="text-sm font-medium text-[var(--color-info)]"
 										>Interaction Width</label
 									>
-									<input
-										type="text"
+									<select
 										id="styling-interaction-width"
 										bind:value={Styling.userInteractionWidth}
 										{disabled}
-										placeholder="250px"
 										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-									/>
+									>
+										<option value="">Select interaction width</option>
+										<option value="200px">200px</option>
+										<option value="220px">220px</option>
+										<option value="250px">250px</option>
+										<option value="270px">270px</option>
+										<option value="300px">300px</option>
+										<option value="320px">320px</option>
+										<option value="350px">350px</option>
+										<option value="380px">380px</option>
+										<option value="400px">400px</option>
+										<option value="450px">450px</option>
+									</select>
+									{#if Styling.userInteractionWidth && !['', '200px', '220px', '250px', '270px', '300px', '320px', '350px', '380px', '400px', '450px'].includes(Styling.userInteractionWidth)}
+										<input
+											type="text"
+											bind:value={Styling.userInteractionWidth}
+											{disabled}
+											placeholder="Custom width (e.g., 230px)"
+											class="mt-2 w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										/>
+									{/if}
 								</div>
 								<div class="space-y-2">
 									<label
@@ -745,14 +877,31 @@
 										class="text-sm font-medium text-[var(--color-info)]"
 										>QR Size</label
 									>
-									<input
-										type="text"
+									<select
 										id="styling-qr-size"
 										bind:value={Styling.qrSize}
 										{disabled}
-										placeholder="120px"
 										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-									/>
+									>
+										<option value="">Select QR size</option>
+										<option value="80px">80px (Small)</option>
+										<option value="100px">100px</option>
+										<option value="120px">120px (Medium)</option>
+										<option value="150px">150px</option>
+										<option value="180px">180px</option>
+										<option value="200px">200px (Large)</option>
+										<option value="250px">250px</option>
+										<option value="300px">300px (Extra Large)</option>
+									</select>
+									{#if Styling.qrSize && !['', '80px', '100px', '120px', '150px', '180px', '200px', '250px', '300px'].includes(Styling.qrSize)}
+										<input
+											type="text"
+											bind:value={Styling.qrSize}
+											{disabled}
+											placeholder="Custom size (e.g., 140px)"
+											class="mt-2 w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										/>
+									{/if}
 								</div>
 							</div>
 						</div>
