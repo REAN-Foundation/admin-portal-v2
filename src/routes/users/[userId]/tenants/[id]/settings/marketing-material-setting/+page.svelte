@@ -583,7 +583,7 @@
 						}`}
 					>
 						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:format-size-outline" class="h-5 w-5" />
+							<Icon icon="material-symbols:font-download" class="h-5 w-5" />
 							<div class="text-start">
 								<p class="text-md font-medium">Fonts</p>
 								<p class="text-sm">Heading and body font families</p>
@@ -774,7 +774,7 @@
 						}`}
 					>
 						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:title-outline" class="h-5 w-5" />
+							<Icon icon="material-symbols:text-fields" class="h-5 w-5" />
 							<div class="text-start">
 								<p class="text-md font-medium">Header</p>
 								<p class="text-sm">Main title and subtitle</p>
@@ -1396,7 +1396,7 @@
 						}`}
 					>
 						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:qr-code-2-outline" class="hidden h-5 w-5 md:block" />
+							<Icon icon="material-symbols:qr-code-scanner" class="h-5 w-5" />
 							<div class="text-start">
 								<p class="text-md font-medium">QR Code</p>
 								<p class="text-sm">QR code resource ID, WhatsApp number and URL</p>
