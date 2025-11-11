@@ -2,7 +2,7 @@ import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY } from '$env/static/private';
 import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 import { del, get, post, put } from '../common.reancare';
 
-////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 export const createCourse = async (
 	sessionId: string,
@@ -13,9 +13,9 @@ export const createCourse = async (
 ) => {
 	const body = {
 		Name: name,
-		Description: description || null,
-		ImageUrl: imageResourceId || null,
-		DurationInDays: durationInDays || null
+		Description: description ?? null,
+		ImageUrl: imageResourceId ?? null,
+		DurationInDays: durationInDays ?? null
 	};
 	const url = BACKEND_API_URL + '/educational/courses';
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
@@ -80,9 +80,9 @@ export const updateCourse = async (
 	const body = {
 		courseId,
 		Name: name,
-		Description: description || null,
-		ImageResourceId: imageResourceId || null,
-		DurationInDays: durationInDays || null
+		Description: description ?? null,
+		ImageUrl: imageResourceId ?? null,
+		DurationInDays: durationInDays ?? null
 	};
 	const url = BACKEND_API_URL + `/educational/courses/${courseId}`;
 	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);

@@ -90,7 +90,7 @@ export const PUT = async (event: RequestEvent) => {
             courseId,
             data.Name,
             data.Description,
-            data.ImageUrl,
+            data.ImageResourceId,
             data.DurationInDays
         );
 

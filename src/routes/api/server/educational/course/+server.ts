@@ -4,6 +4,8 @@ import type { CourseCreateModel } from "$lib/types/educational/course";
 import { createOrUpdateSchema } from "$lib/validation/educational/course.schema";
 import { createCourse } from "$routes/api/services/reancare/educational/course";
 
+///////////////////////////////////////////////////////////////////////////////
+
 export const POST = async (event: RequestEvent) => {
     try {
         console.log("Inside course server POST endpoints");

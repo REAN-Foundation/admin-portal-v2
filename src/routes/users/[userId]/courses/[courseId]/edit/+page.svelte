@@ -23,6 +23,7 @@
 	let durationInDays = $state(data.course.DurationInDays?.toString());
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
+	let previewUrl = $state<string | undefined>(undefined);
 
 	const userId = page.params.userId;
 	var courseId = page.params.courseId;
@@ -46,12 +47,17 @@
 		courseName = data?.course?.Name;
 		description = data?.course?.Description;
 		imageUrl = data?.course?.ImageUrl;
+		imageResourceId = data?.course?.ImageResourceId;
 		durationInDays = data?.course?.DurationInDays?.toString();
 		errors = {};
+		if (previewUrl) {
+			URL.revokeObjectURL(previewUrl);
+			previewUrl = undefined;
+		}
 	};
 
 	let fileName = $state('');
-	let formData = new FormData();
+	const formData = new FormData();
 
 	const onFileSelected = async (e) => {
 		const input = e.target as HTMLInputElement;
@@ -78,8 +84,15 @@
 			return;
 		}
 
-		// Clear and recreate formData to avoid duplicate entries
-		formData = new FormData();
+		if (previewUrl) {
+			URL.revokeObjectURL(previewUrl);
+		}
+
+		previewUrl = URL.createObjectURL(file);
+		imageUrl = previewUrl;
+
+		formData.delete('file');
+		formData.delete('filename');
 		formData.append('file', file);
 		formData.append('filename', file.name);
 	};
@@ -105,12 +118,9 @@
 						errorMessage.Colour = 'text-success-500';
 					}
 					console.log("imageResourceId...",imageResourceId);
-					// Clear formData after successful upload to prevent duplicate uploads
-					formData = new FormData();
 				} else {
 					errorMessage.Text = fileJson.Message;
 					errorMessage.Colour = 'text-error-500';
-					return;
 				}
 			}
 
@@ -142,6 +152,10 @@
 			const response = await res.json();
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				if (previewUrl) {
+					URL.revokeObjectURL(previewUrl);
+					previewUrl = undefined;
+				}
 				toastMessage(response);
 				goto(`${coursesRoute}/${response?.Data?.Course?.id}/view`);
 				return;
@@ -155,6 +169,14 @@
 			toastMessage();
 		}
 	};
+
+	$effect(() => {
+		return () => {
+			if (previewUrl) {
+				URL.revokeObjectURL(previewUrl);
+			}
+		};
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -216,6 +238,7 @@
 							<input
 								name="fileinput"
 								type="file"
+								accept="image/*"
 								class="input"
 								bind:this={courseImage}
 								placeholder="Image"

@@ -6,7 +6,7 @@
 	import type { PageServerData } from './$types';
 	import Button from '$lib/components/button/button.svelte';
 
-	////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////
 
 	const userId = page.params.userId;
 	var courseId = page.params.courseId;

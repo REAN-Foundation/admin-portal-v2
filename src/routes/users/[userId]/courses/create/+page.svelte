@@ -11,18 +11,17 @@
 
 	///////////////////////////////////////////////////////////////////////////
 
-	let { data, form } = $props();
+	let { data } = $props();
 
 	let errors: Record<string, string> = $state({});
 	let courseName = $state(undefined);
 	let description = $state(undefined);
-	let image = $state(undefined);
 	let durationInDays = $state(undefined);
 	let promise = $state();
 	let imageResourceId = $state(undefined);
-
+	let fileName = $state('');
+	let formData = new FormData();
 	let courseImage;
-
 	let errorMessage = {
 		Text: 'Max file upload size 150 KB',
 		Colour: 'border-b-surface-700'
@@ -38,9 +37,6 @@
 		{ name: 'Create', path: createRoute }
 	];
 
-	let fileName = $state('');
-	let formData = new FormData();
-	
 	const onFileSelected = async (e) => {
 		const input = e.target as HTMLInputElement;
 		const file = input.files?.[0];
@@ -66,7 +62,6 @@
 			return;
 		}
 
-		// Clear and recreate formData to avoid duplicate entries
 		formData = new FormData();
 		formData.append('file', file);
 		formData.append('filename', file.name);
@@ -93,8 +88,6 @@
 						errorMessage.Text = 'File uploaded successfully';
 						errorMessage.Colour = 'text-success-500';
 					}
-					console.log("imageResourceId...",imageResourceId);
-					// Clear formData after successful upload to prevent duplicate uploads
 					formData = new FormData();
 				} else {
 					errorMessage.Text = fileJson.Message;
@@ -102,7 +95,6 @@
 					return;
 				}
 			}
-
 
 			const courseCreateModel: CourseCreateModel = {
 				Name: courseName,
@@ -136,7 +128,7 @@
 				goto(`${coursesRoute}/${response?.Data?.Course?.id}/view`);
 				return;
 			}
-			console.log("RESPONSE:", response)
+			
 			if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
