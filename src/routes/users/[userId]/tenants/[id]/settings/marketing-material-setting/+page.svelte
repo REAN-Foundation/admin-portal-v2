@@ -637,7 +637,7 @@
 											</label>
 											<input
 												type="text"
-												value={logoFileNames[index] || Logos[index] || ''}
+												value={logoFileNames[index] || (Logos[index] ? 'Image uploaded' : '')}
 												readonly
 												{disabled}
 												class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
@@ -648,8 +648,12 @@
 											<div class="mt-2">
 												<img
 													src={getImageUrl(Logos[index])}
-													alt=""
+													alt="Logo {index + 1}"
 													class="h-24 w-24 rounded border border-[var(--color-outline)] object-cover"
+													onerror={(e) => {
+														console.error('Failed to load logo:', Logos[index]);
+														(e.target as HTMLImageElement).style.display = 'none';
+													}}
 												/>
 											</div>
 										{/if}
@@ -910,7 +914,7 @@
 														<input
 															type="text"
 															id="benefit-icon-{index}"
-															value={benefitIconFileNames[index] || benefit.icon || ''}
+															value={benefitIconFileNames[index] || (benefit.icon ? 'Image uploaded' : '')}
 															readonly
 															{disabled}
 															class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
@@ -923,6 +927,10 @@
 																src={getImageUrl(benefit.icon)}
 																alt="Benefit Icon"
 																class="h-20 w-20 rounded border border-[var(--color-outline)] object-cover"
+																onerror={(e) => {
+																	console.error('Failed to load benefit icon:', benefit.icon);
+																	(e.target as HTMLImageElement).style.display = 'none';
+																}}
 															/>
 														</div>
 													{/if}
@@ -1615,7 +1623,7 @@
 									<input
 										type="text"
 										id="image-title-image"
-										value={titleImageFileName || Images.titleImage || ''}
+										value={titleImageFileName || (Images.titleImage ? 'Image uploaded' : '')}
 										readonly
 										{disabled}
 										class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
@@ -1626,8 +1634,12 @@
 									<div class="mt-2">
 										<img
 											src={getImageUrl(Images.titleImage)}
-											alt=""
+											alt="Title"
 											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
+											onerror={(e) => {
+												console.error('Failed to load title image:', Images.titleImage);
+												(e.target as HTMLImageElement).style.display = 'none';
+											}}
 										/>
 									</div>
 								{/if}
@@ -1653,7 +1665,7 @@
 									<input
 										type="text"
 										id="image-user-interface-image"
-										value={userInterfaceImageFileName || Images.userInterfaceImage || ''}
+										value={userInterfaceImageFileName || (Images.userInterfaceImage ? 'Image uploaded' : '')}
 										readonly
 										{disabled}
 										class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
@@ -1664,8 +1676,12 @@
 									<div class="mt-2">
 										<img
 											src={getImageUrl(Images.userInterfaceImage)}
-											alt=""
+											alt="User Interface"
 											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
+											onerror={(e) => {
+												console.error('Failed to load user interface image:', Images.userInterfaceImage);
+												(e.target as HTMLImageElement).style.display = 'none';
+											}}
 										/>
 									</div>
 								{/if}
@@ -1735,7 +1751,7 @@
 									<input
 										type="text"
 										id="qrcode-resource-id"
-										value={qrCodeFileName || QRcode.resourceId || ''}
+										value={qrCodeFileName || (QRcode.resourceId ? 'Image uploaded' : '')}
 										readonly
 										{disabled}
 										class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
@@ -1746,8 +1762,12 @@
 									<div class="mt-2">
 										<img
 											src={getImageUrl(QRcode.resourceId)}
-											alt=""
+											alt="QR Code"
 											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
+											onerror={(e) => {
+												console.error('Failed to load QR code image:', QRcode.resourceId);
+												(e.target as HTMLImageElement).style.display = 'none';
+											}}
 										/>
 									</div>
 								{/if}
