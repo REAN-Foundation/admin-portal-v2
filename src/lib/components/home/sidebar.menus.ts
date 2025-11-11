@@ -581,15 +581,6 @@ function addAdministrationMenus(
 	};
 	menuList.push(userManagementMenu);
 
-	const marketingMaterialMenu: SidebarMenu = {
-		name: 'Marketing-Material',
-		title: 'Marketing Material',
-		icon: 'material-symbols:campaign-outline',
-		link: `/users/${userId}/tenants/${tenantSettings?.TenantId || 'default'}/settings/marketing-material-setting`,
-		children: []
-	};
-	menuList.push(marketingMaterialMenu);
-
 	const administration_: SidebarMenu = getMenu(menuList, 'Administration');
 	const clients: SidebarMenu = getMenu(menuList, 'Clients');
 	const tenants: SidebarMenu = getMenu(menuList, 'Tenants');
@@ -597,14 +588,12 @@ function addAdministrationMenus(
 	const personRole: SidebarMenu = getMenu(menuList, 'Person-Role');
 	const userManagement: SidebarMenu = getMenu(menuList, 'User-Managment');
 	const users: SidebarMenu = getMenu(menuList, 'Users');
-	const marketingMaterial: SidebarMenu = getMenu(menuList, 'Marketing-Material');
 
 	administration_?.children.push(clients);
 	administration_?.children.push(tenants);
 	administration_?.children.push(personRole);
 	administration_?.children.push(userManagement);
 	administration_?.children.push(users);
-	administration_?.children.push(marketingMaterial);
 
 	console.log('Children under tenants after push:', tenants.children);
 
