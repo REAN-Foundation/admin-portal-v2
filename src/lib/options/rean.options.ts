@@ -114,11 +114,11 @@ export const Options: FeatureOptions[] = [
 	},
 	{
 		Name: 'Courses',
-		Enabled: false
+		Enabled: true
 	},
 	{
 		Name: 'Learning-Journeys',
-		Enabled: false
+		Enabled: true
 	},
 	{
 		Name: 'Knowledge-Nuggets',
