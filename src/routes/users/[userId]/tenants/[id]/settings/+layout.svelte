@@ -71,7 +71,7 @@
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="flex w-full flex-col px-5">
+<div class="flex w-full flex-col px-2">
 	<div class="w-full md:flex md:items-center md:space-x-4">
 		<div
 			class="grid w-full grid-cols-2 gap-2 text-center md:grid md:grid-cols-3 md:space-x-4 xl:flex xl:w-full"
@@ -136,7 +136,7 @@
 				href={marketingMaterialSettingsLink}
 			>
 				<Icon icon="material-symbols:campaign-outline" class="h-5 w-5 shrink-0" />
-				Marketing material
+				Marketing
 			</a>
 			<a
 				class="btn {page.url.pathname === customSettingsLink

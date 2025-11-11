@@ -490,7 +490,357 @@
 			</div>
 
 			<div class="flex flex-col space-y-4 px-4 py-4">
-				<!-- Colors Section -->
+			
+				<div
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('logos') ? 'border-hover' : ''}`}
+				>
+					<button
+						type="button"
+						onclick={() => toggleSection('logos')}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+						transition-all duration-100 ease-in-out ${
+							activeSections.has('logos')
+								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+								: 'border-hover rounded bg-[var(--color-secondary)]'
+						}`}
+					>
+						<div class="flex flex-1 items-center gap-2">
+							<Icon icon="material-symbols:workspace-premium-outline" class="hidden h-5 w-5 md:block" />
+							<div class="text-start">
+								<p class="text-md font-medium">Logos</p>
+								<p class="text-sm">Logo resource IDs array</p>
+							</div>
+						</div>
+						<span
+							class="transition-transform duration-300"
+							class:rotate-90={activeSections.has('logos')}
+						>
+							<Icon
+								icon="icon-park-outline:down"
+								rotate={35}
+								width={16}
+								height={16}
+								class="h-5 w-5"
+							/>
+						</span>
+					</button>
+
+					{#if activeSections.has('logos')}
+						<div class="space-y-4 p-6">
+							{#each Logos as logo, index}
+								<div
+									class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4"
+								>
+									<div class="mb-4 flex items-center justify-between">
+										<h4 class="text-sm font-medium text-[var(--color-info)]">
+											Logo #{index + 1}
+										</h4>
+										{#if !disabled}
+											<button
+												type="button"
+												onclick={() => removeLogo(index)}
+												class="rounded-md border border-red-300 bg-red-50 px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-100"
+											>
+												Remove
+											</button>
+										{/if}
+									</div>
+									<div class="flex w-full gap-3">
+										<label class="table-btn variant-filled-secondary" for="logo-upload-{index}">
+											Select File
+											<input
+												type="file"
+												id="logo-upload-{index}"
+												accept="image/*"
+												class="hidden"
+												disabled={disabled}
+												onchange={async (e) => await onLogoSelected(e, index)}
+											/>
+										</label>
+										<input
+											type="text"
+											value={logoFileNames[index] || Logos[index] || ''}
+											readonly
+											{disabled}
+											class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+											placeholder="No file selected..."
+										/>
+									</div>
+									{#if Logos[index]}
+										<div class="mt-2">
+											<img
+												src={getImageUrl(Logos[index])}
+												alt=""
+												class="h-24 w-24 rounded border border-[var(--color-outline)] object-cover"
+											/>
+										</div>
+									{/if}
+								</div>
+							{/each}
+
+							<button
+								type="button"
+								onclick={addLogo}
+								{disabled}
+								class="inline-flex items-center gap-1 rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-3 py-1.5 text-sm font-medium text-[var(--color-info)] hover:bg-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+							>
+								<Icon icon="material-symbols:add" class="h-4 w-4" />
+								Add Logo
+							</button>
+						</div>
+					{/if}
+				</div>
+
+
+				<div
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('header') ? 'border-hover' : ''}`}
+				>
+					<button
+						type="button"
+						onclick={() => toggleSection('header')}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+						transition-all duration-100 ease-in-out ${
+							activeSections.has('header')
+								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+								: 'border-hover rounded bg-[var(--color-secondary)]'
+						}`}
+					>
+						<div class="flex flex-1 items-center gap-2">
+							<Icon icon="material-symbols:text-fields" class="h-5 w-5" />
+							<div class="text-start">
+								<p class="text-md font-medium">Header</p>
+								<p class="text-sm">Main title and subtitle</p>
+							</div>
+						</div>
+						<span
+							class="transition-transform duration-300"
+							class:rotate-90={activeSections.has('header')}
+						>
+							<Icon
+								icon="icon-park-outline:down"
+								rotate={35}
+								width={16}
+								height={16}
+								class="h-5 w-5"
+							/>
+						</span>
+					</button>
+
+					{#if activeSections.has('header')}
+						<div class="space-y-4 p-6">
+							<div class="space-y-2">
+								<label
+									for="content-main-title"
+									class="text-sm font-medium text-[var(--color-info)]"
+									>Main Title</label
+								>
+								<input
+									type="text"
+									id="content-main-title"
+									bind:value={Content.header.mainTitle}
+									{disabled}
+									placeholder="Enter main title"
+									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+								/>
+							</div>
+							<div class="space-y-2">
+								<label
+									for="content-subtitle"
+									class="text-sm font-medium text-[var(--color-info)]"
+									>Subtitle</label
+								>
+								<input
+									type="text"
+									id="content-subtitle"
+									bind:value={Content.header.subtitle}
+									{disabled}
+									placeholder="Enter subtitle"
+									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+								/>
+							</div>
+						</div>
+					{/if}
+				</div>
+
+							
+				<div
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('introduction') ? 'border-hover' : ''}`}
+				>
+					<button
+						type="button"
+						onclick={() => toggleSection('introduction')}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+						transition-all duration-100 ease-in-out ${
+							activeSections.has('introduction')
+								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+								: 'border-hover rounded bg-[var(--color-secondary)]'
+						}`}
+					>
+						<div class="flex flex-1 items-center gap-2">
+							<Icon icon="material-symbols:description-outline" class="hidden h-5 w-5 md:block" />
+							<div class="text-start">
+								<p class="text-md font-medium">Introduction</p>
+								<p class="text-sm">Introduction paragraph and problem statement</p>
+							</div>
+						</div>
+						<span
+							class="transition-transform duration-300"
+							class:rotate-90={activeSections.has('introduction')}
+						>
+							<Icon
+								icon="icon-park-outline:down"
+								rotate={35}
+								width={16}
+								height={16}
+								class="h-5 w-5"
+							/>
+						</span>
+					</button>
+
+					{#if activeSections.has('introduction')}
+						<div class="space-y-4 p-6">
+							<div class="space-y-2">
+								<label
+									for="content-intro-paragraph"
+									class="text-sm font-medium text-[var(--color-info)]"
+									>Introduction Paragraph</label
+								>
+								<textarea
+									id="content-intro-paragraph"
+									rows="3"
+									bind:value={Content.introduction.introParagraph}
+									{disabled}
+									placeholder="Enter introduction paragraph"
+									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+								></textarea>
+							</div>
+							<div class="space-y-2">
+								<label
+									for="content-problem-statement"
+									class="text-sm font-medium text-[var(--color-info)]"
+									>Problem Statement</label
+								>
+								<textarea
+									id="content-problem-statement"
+									rows="3"
+									bind:value={Content.introduction.problemStatement}
+									{disabled}
+									placeholder="Enter problem statement"
+									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+								></textarea>
+							</div>
+						</div>
+					{/if}
+				</div>
+
+				
+				<div
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('benefits') ? 'border-hover' : ''}`}
+				>
+					<button
+						type="button"
+						onclick={() => toggleSection('benefits')}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+						transition-all duration-100 ease-in-out ${
+							activeSections.has('benefits')
+								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+								: 'border-hover rounded bg-[var(--color-secondary)]'
+						}`}
+					>
+						<div class="flex flex-1 items-center gap-2">
+							<Icon icon="material-symbols:star-outline" class="hidden h-5 w-5 md:block" />
+							<div class="text-start">
+								<p class="text-md font-medium">Benefits</p>
+								<p class="text-sm">Benefits title and items list</p>
+							</div>
+						</div>
+						<span
+							class="transition-transform duration-300"
+							class:rotate-90={activeSections.has('benefits')}
+						>
+							<Icon
+								icon="icon-park-outline:down"
+								rotate={35}
+								width={16}
+								height={16}
+								class="h-5 w-5"
+							/>
+						</span>
+					</button>
+
+					{#if activeSections.has('benefits')}
+						<div class="space-y-4 p-6">
+							<div class="space-y-2">
+								<label
+									for="content-benefits-title"
+									class="text-sm font-medium text-[var(--color-info)]"
+									>Benefits Title</label
+								>
+								<input
+									type="text"
+									id="content-benefits-title"
+									bind:value={Content.benefits.title}
+									{disabled}
+									placeholder="Key Benefits"
+									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+								/>
+							</div>
+
+							
+							<div class="space-y-4">
+								{#each Content.benefits.items as benefit, index}
+									<div
+										class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4"
+									>
+										<div class="mb-4 flex items-center justify-between">
+											<h4 class="text-sm font-medium text-[var(--color-info)]">
+												Benefit #{index + 1}
+											</h4>
+											{#if !disabled}
+												<button
+													type="button"
+													onclick={() => removeBenefit(index)}
+													class="rounded-md border border-red-300 bg-red-50 px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-100"
+												>
+													Remove
+												</button>
+											{/if}
+										</div>
+										<div class="space-y-2">
+											<label
+												for="benefit-{index}"
+												class="text-sm font-medium text-[var(--color-info)]"
+												>Benefit Text</label
+											>
+											<textarea
+												id="benefit-{index}"
+												rows="3"
+												bind:value={Content.benefits.items[index]}
+												{disabled}
+												placeholder="Enter benefit description (e.g., Access personalized health recommendations and care plans)"
+												class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+											></textarea>
+										</div>
+									</div>
+								{/each}
+
+								<button
+									type="button"
+									onclick={addBenefit}
+									{disabled}
+									class="inline-flex items-center gap-1 rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-3 py-1.5 text-sm font-medium text-[var(--color-info)] hover:bg-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+								>
+									<Icon icon="material-symbols:add" class="h-4 w-4" />
+									Add Benefit
+								</button>
+							</div>
+						</div>
+					{/if}
+				</div>
+
+				
+				
+
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('colors') ? 'border-hover' : ''}`}
 				>
@@ -568,7 +918,7 @@
 					{/if}
 				</div>
 
-				<!-- Fonts Section -->
+				
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('fonts') ? 'border-hover' : ''}`}
 				>
@@ -697,7 +1047,7 @@
 					{/if}
 				</div>
 
-				<!-- Sizes Section -->
+			
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('sizes') ? 'border-hover' : ''}`}
 				>
@@ -908,254 +1258,10 @@
 					{/if}
 				</div>
 
-				<!-- Header Section -->
-				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('header') ? 'border-hover' : ''}`}
-				>
-					<button
-						type="button"
-						onclick={() => toggleSection('header')}
-						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
-						transition-all duration-100 ease-in-out ${
-							activeSections.has('header')
-								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
-								: 'border-hover rounded bg-[var(--color-secondary)]'
-						}`}
-					>
-						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:text-fields" class="h-5 w-5" />
-							<div class="text-start">
-								<p class="text-md font-medium">Header</p>
-								<p class="text-sm">Main title and subtitle</p>
-							</div>
-						</div>
-						<span
-							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('header')}
-						>
-							<Icon
-								icon="icon-park-outline:down"
-								rotate={35}
-								width={16}
-								height={16}
-								class="h-5 w-5"
-							/>
-						</span>
-					</button>
+				
+				
 
-					{#if activeSections.has('header')}
-						<div class="space-y-4 p-6">
-							<div class="space-y-2">
-								<label
-									for="content-main-title"
-									class="text-sm font-medium text-[var(--color-info)]"
-									>Main Title</label
-								>
-								<input
-									type="text"
-									id="content-main-title"
-									bind:value={Content.header.mainTitle}
-									{disabled}
-									placeholder="Enter main title"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-								/>
-							</div>
-							<div class="space-y-2">
-								<label
-									for="content-subtitle"
-									class="text-sm font-medium text-[var(--color-info)]"
-									>Subtitle</label
-								>
-								<input
-									type="text"
-									id="content-subtitle"
-									bind:value={Content.header.subtitle}
-									{disabled}
-									placeholder="Enter subtitle"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-								/>
-							</div>
-						</div>
-					{/if}
-				</div>
 
-				<!-- Introduction Section -->
-				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('introduction') ? 'border-hover' : ''}`}
-				>
-					<button
-						type="button"
-						onclick={() => toggleSection('introduction')}
-						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
-						transition-all duration-100 ease-in-out ${
-							activeSections.has('introduction')
-								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
-								: 'border-hover rounded bg-[var(--color-secondary)]'
-						}`}
-					>
-						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:description-outline" class="hidden h-5 w-5 md:block" />
-							<div class="text-start">
-								<p class="text-md font-medium">Introduction</p>
-								<p class="text-sm">Introduction paragraph and problem statement</p>
-							</div>
-						</div>
-						<span
-							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('introduction')}
-						>
-							<Icon
-								icon="icon-park-outline:down"
-								rotate={35}
-								width={16}
-								height={16}
-								class="h-5 w-5"
-							/>
-						</span>
-					</button>
-
-					{#if activeSections.has('introduction')}
-						<div class="space-y-4 p-6">
-							<div class="space-y-2">
-								<label
-									for="content-intro-paragraph"
-									class="text-sm font-medium text-[var(--color-info)]"
-									>Introduction Paragraph</label
-								>
-								<textarea
-									id="content-intro-paragraph"
-									rows="3"
-									bind:value={Content.introduction.introParagraph}
-									{disabled}
-									placeholder="Enter introduction paragraph"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-								></textarea>
-							</div>
-							<div class="space-y-2">
-								<label
-									for="content-problem-statement"
-									class="text-sm font-medium text-[var(--color-info)]"
-									>Problem Statement</label
-								>
-								<textarea
-									id="content-problem-statement"
-									rows="3"
-									bind:value={Content.introduction.problemStatement}
-									{disabled}
-									placeholder="Enter problem statement"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-								></textarea>
-							</div>
-						</div>
-					{/if}
-				</div>
-
-				<!-- Benefits Section -->
-				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('benefits') ? 'border-hover' : ''}`}
-				>
-					<button
-						type="button"
-						onclick={() => toggleSection('benefits')}
-						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
-						transition-all duration-100 ease-in-out ${
-							activeSections.has('benefits')
-								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
-								: 'border-hover rounded bg-[var(--color-secondary)]'
-						}`}
-					>
-						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:star-outline" class="hidden h-5 w-5 md:block" />
-							<div class="text-start">
-								<p class="text-md font-medium">Benefits</p>
-								<p class="text-sm">Benefits title and items list</p>
-							</div>
-						</div>
-						<span
-							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('benefits')}
-						>
-							<Icon
-								icon="icon-park-outline:down"
-								rotate={35}
-								width={16}
-								height={16}
-								class="h-5 w-5"
-							/>
-						</span>
-					</button>
-
-					{#if activeSections.has('benefits')}
-						<div class="space-y-4 p-6">
-							<div class="space-y-2">
-								<label
-									for="content-benefits-title"
-									class="text-sm font-medium text-[var(--color-info)]"
-									>Benefits Title</label
-								>
-								<input
-									type="text"
-									id="content-benefits-title"
-									bind:value={Content.benefits.title}
-									{disabled}
-									placeholder="Key Benefits"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-								/>
-							</div>
-
-							<!-- Benefits Items -->
-							<div class="space-y-4">
-								{#each Content.benefits.items as benefit, index}
-									<div
-										class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4"
-									>
-										<div class="mb-4 flex items-center justify-between">
-											<h4 class="text-sm font-medium text-[var(--color-info)]">
-												Benefit #{index + 1}
-											</h4>
-											{#if !disabled}
-												<button
-													type="button"
-													onclick={() => removeBenefit(index)}
-													class="rounded-md border border-red-300 bg-red-50 px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-100"
-												>
-													Remove
-												</button>
-											{/if}
-										</div>
-										<div class="space-y-2">
-											<label
-												for="benefit-{index}"
-												class="text-sm font-medium text-[var(--color-info)]"
-												>Benefit Text</label
-											>
-											<textarea
-												id="benefit-{index}"
-												rows="3"
-												bind:value={Content.benefits.items[index]}
-												{disabled}
-												placeholder="Enter benefit description (e.g., Access personalized health recommendations and care plans)"
-												class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-											></textarea>
-										</div>
-									</div>
-								{/each}
-
-								<button
-									type="button"
-									onclick={addBenefit}
-									{disabled}
-									class="inline-flex items-center gap-1 rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-3 py-1.5 text-sm font-medium text-[var(--color-info)] hover:bg-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50"
-								>
-									<Icon icon="material-symbols:add" class="h-4 w-4" />
-									Add Benefit
-								</button>
-							</div>
-						</div>
-					{/if}
-				</div>
-
-				<!-- User Interface Section -->
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('userInterface') ? 'border-hover' : ''}`}
 				>
@@ -1226,7 +1332,7 @@
 					{/if}
 				</div>
 
-				<!-- Footer Section -->
+				
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('footer') ? 'border-hover' : ''}`}
 				>
@@ -1312,7 +1418,7 @@
 					{/if}
 				</div>
 
-				<!-- Images Section -->
+				
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('images') ? 'border-hover' : ''}`}
 				>
@@ -1429,108 +1535,10 @@
 					{/if}
 				</div>
 
-				<!-- Logos Section -->
-				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('logos') ? 'border-hover' : ''}`}
-				>
-					<button
-						type="button"
-						onclick={() => toggleSection('logos')}
-						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
-						transition-all duration-100 ease-in-out ${
-							activeSections.has('logos')
-								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
-								: 'border-hover rounded bg-[var(--color-secondary)]'
-						}`}
-					>
-						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:workspace-premium-outline" class="hidden h-5 w-5 md:block" />
-							<div class="text-start">
-								<p class="text-md font-medium">Logos</p>
-								<p class="text-sm">Logo resource IDs array</p>
-							</div>
-						</div>
-						<span
-							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('logos')}
-						>
-							<Icon
-								icon="icon-park-outline:down"
-								rotate={35}
-								width={16}
-								height={16}
-								class="h-5 w-5"
-							/>
-						</span>
-					</button>
+			
+				
 
-					{#if activeSections.has('logos')}
-						<div class="space-y-4 p-6">
-							{#each Logos as logo, index}
-								<div
-									class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4"
-								>
-									<div class="mb-4 flex items-center justify-between">
-										<h4 class="text-sm font-medium text-[var(--color-info)]">
-											Logo #{index + 1}
-										</h4>
-										{#if !disabled}
-											<button
-												type="button"
-												onclick={() => removeLogo(index)}
-												class="rounded-md border border-red-300 bg-red-50 px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-100"
-											>
-												Remove
-											</button>
-										{/if}
-									</div>
-									<div class="flex w-full gap-3">
-										<label class="table-btn variant-filled-secondary" for="logo-upload-{index}">
-											Select File
-											<input
-												type="file"
-												id="logo-upload-{index}"
-												accept="image/*"
-												class="hidden"
-												disabled={disabled}
-												onchange={async (e) => await onLogoSelected(e, index)}
-											/>
-										</label>
-										<input
-											type="text"
-											value={logoFileNames[index] || Logos[index] || ''}
-											readonly
-											{disabled}
-											class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-											placeholder="No file selected..."
-										/>
-									</div>
-									{#if Logos[index]}
-										<div class="mt-2">
-											<img
-												src={getImageUrl(Logos[index])}
-												alt=""
-												class="h-24 w-24 rounded border border-[var(--color-outline)] object-cover"
-											/>
-										</div>
-									{/if}
-								</div>
-							{/each}
-
-							<button
-								type="button"
-								onclick={addLogo}
-								{disabled}
-								class="inline-flex items-center gap-1 rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-3 py-1.5 text-sm font-medium text-[var(--color-info)] hover:bg-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50"
-							>
-								<Icon icon="material-symbols:add" class="h-4 w-4" />
-								Add Logo
-							</button>
-						</div>
-					{/if}
-				</div>
-
-				<!-- QR Code Section -->
+				
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('qrcode') ? 'border-hover' : ''}`}
 				>
@@ -1653,4 +1661,5 @@
 			</div>
 		</form>
 	</div>
-</div>
+</div> 
+
