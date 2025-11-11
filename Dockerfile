@@ -1,4 +1,4 @@
-FROM node:18.20-alpine3.20 AS builder
+FROM node:24-alpine3.22 AS builder
 
 WORKDIR /app
 COPY . .
@@ -9,7 +9,7 @@ RUN npm run build
 
 #######################################
 
-FROM node:18.20-alpine3.20
+FROM node:24-alpine3.22
 
 RUN apk add bash
 RUN apk add --no-cache \

@@ -11,19 +11,20 @@
 	import type { PersonRole } from '$lib/types/domain.models.js';
 	import { LocalStorageUtils } from '$lib/utils/local.storage.utils.js';
 	import type { PageServerData } from './$types';
-
+	import { loginSchema } from '$lib/validation/login.schema';
+	import { toastMessage } from '$lib/components/toast/toast.store';
+	import { goto } from '$app/navigation';
+	import { tick } from 'svelte';
+	
+	///////////////////////////////////////////////////////////////////////////
+	
 	let loginType = $state('username');
-
 	let showPassword = $state(false);
-
-	function togglePasswordVisibility() {
-		showPassword = !showPassword;
-	}
-
+	let isLoading = $state(false);
+	let errors: Record<string, string> = $state({});
 	let { data }: { data: PageServerData } = $props();
-	// console.log(data.roles);
-
-	let roles: PersonRole[] = data.roles;
+	let roles: PersonRole[] = data.roles;	
+	
 	const logoImageSource = getPublicLogoImageSource();
 	const footerText = `© ${new Date().getFullYear()} ${getPublicFooterText()}`;
 	const footerLink = getPublicFooterLink();
@@ -35,11 +36,80 @@
 
 	if (browser) {
 		const tmp: any = LocalStorageUtils.getItem('personRoles');
-
 		personRoles = JSON.parse(tmp);
-
 		LocalStorageUtils.removeItem('prevUrl');
 	}
+
+	// Handle form submission
+	const handleSubmit = async (event: Event) => {
+		try {
+		event.preventDefault();
+		isLoading = true;
+		errors = {};
+
+		const formData = new FormData(event.target as HTMLFormElement);
+		const loginData = {
+			username: formData.get('username') as string || undefined,
+			password: formData.get('password') as string,
+			email: formData.get('email') as string || undefined,
+			phone: formData.get('phone') as string || undefined,
+			countryCode: formData.get('countryCode') as string || undefined,
+			loginType: loginType
+		};
+
+		// Validate the form data
+		const validationResult = loginSchema.safeParse(loginData);
+		if (!validationResult.success) {
+			const validationErrors: Record<string, string> = {};
+			validationResult.error.errors.forEach((error) => {
+				const field = error.path[0] as string;
+				validationErrors[field] = error.message;
+			});
+			errors = validationErrors;
+			isLoading = false;
+			return;
+		}
+			const response = await fetch('/api/server/login', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(loginData)
+			});
+
+			const result = await response.json();
+
+			if (result.success) {
+				await goto(result.data.redirectUrl);
+				await tick();
+				toastMessage({
+					Message: result.message,
+					HttpCode: 200,
+					Status: 'success'
+				});
+	
+			} else {
+				toastMessage({
+					Message: result.message,
+					HttpCode: response.status,
+					Status: 'failure'
+				});
+				isLoading = false
+				// Handle validation errors
+				if (result.errors) {
+					const validationErrors: Record<string, string> = {};
+					result.errors.forEach((error: any) => {
+						validationErrors[error.field] = error.message;
+					});
+					errors = validationErrors;
+				}
+			}
+		
+		} catch (error) {
+			toastMessage();
+		}
+	};
+	
 
 	let maxHeight = '80vh';
 	if (browser) {
@@ -70,7 +140,7 @@
 
 <div class="form-container flex flex-col items-center justify-center">
 	<img class="ct-image mt-7 mb-7 w-36" alt="logo" src={logoImageSource} />
-	<form method="post" action="?/login" class="card mb-10 p-8">
+	<form onsubmit={handleSubmit} class="card mb-10 p-8">
 		<h2 class="mb-4 text-center text-xl">Sign In</h2>
 
 		<div class="mb-4 flex items-center gap-6">
@@ -118,6 +188,9 @@
 				placeholder="Enter your username"
 				required
 			/>
+			{#if errors.username}
+				<p class="text-red-500 text-sm mt-1">{errors.username}</p>
+			{/if}
 		{/if}
 
 		{#if loginType === 'email'}
@@ -130,6 +203,9 @@
 				placeholder="Enter your email"
 				required
 			/>
+			{#if errors.email}
+				<p class="text-red-500 text-sm mt-1">{errors.email}</p>
+			{/if}
 		{/if}
 
 		{#if loginType === 'phone'}
@@ -145,9 +221,12 @@
 					name="phone"
 					class="input"
 					placeholder="Enter your mobile number"
-					
+					required
 				/>
 			</div>
+			{#if errors.phone || errors.countryCode}
+				<p class="text-red-500 text-sm mt-1">{errors.phone || errors.countryCode}</p>
+			{/if}
 		{/if}
 
 		<label for="password" class="label">Password</label>
@@ -166,7 +245,6 @@
 				onclick={() => (showPassword = !showPassword)}
 				tabindex="-1"
 			>
-				<!-- <Icon icon={showPassword ? 'mdi:eye-off' : 'mdi:eye'} class="h-4 w-4" /> -->
 				<Icon
 					icon={showPassword
 						? 'material-symbols:visibility-outline'
@@ -175,11 +253,22 @@
 				/>
 			</button>
 		</div>
+		{#if errors.password}
+			<p class="text-red-500 text-sm mt-1">{errors.password}</p>
+		{/if}
 
 		<div class="mt-4 flex justify-between">
 			<a href="/forgot-password" class="link">Forgot Password?</a>
 		</div>
-
-		<button type="submit" class="btn mt-4">Login</button>
+		<button type="submit" class="btn mt-4" disabled={isLoading}>
+			{#if isLoading}
+				<span class="flex items-center gap-2">
+					<Icon icon="material-symbols:refresh" class="h-4 w-4 animate-spin" />
+					Logging in...
+				</span>
+			{:else}
+				Login
+			{/if}
+		</button>
 	</form>
 </div>

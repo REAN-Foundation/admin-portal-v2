@@ -2,13 +2,14 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getTenantSettingsByType } from '$routes/api/services/reancare/tenant-settings';
+import { getTenantById } from '$routes/api/services/reancare/tenants';
 
 ////////////////////////////////////////////////////////////////////////////
 
 export const load: PageServerLoad = async (event: RequestEvent) => {
     const sessionId = event.cookies.get('sessionId') as string;
     const tenantId = event.params.id as string;
-    const tenantCode = event.locals?.sessionUser?.tenantCode;
+    const defaultTenantCode = event.locals?.sessionUser?.tenantCode;
     const tenantName = event.locals?.sessionUser?.tenantName;
 
     let chatbotSettings = undefined;
@@ -38,9 +39,18 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
     if (commonSettingResponse.Data.TenantSettings) {
         commonSettings = commonSettingResponse.Data.TenantSettings;
     }
+    let tenantCode = '';
+    const tenantInfo = await getTenantById(sessionId, tenantId);
+    if (tenantInfo.Status === 'failure' || tenantInfo.HttpCode !== 200) {
+        throw error(tenantInfo.HttpCode, tenantInfo.Message);
+    }
+    if (tenantInfo.Data.Tenant) {
+        tenantCode = tenantInfo.Data.Tenant.Code;
+    }
 
     const isChatBotEnabled = commonSettings?.UserInterfaces?.ChatBot;
     return {
+        defaultTenantCode,
         tenantCode,
         tenantName,
         sessionId,

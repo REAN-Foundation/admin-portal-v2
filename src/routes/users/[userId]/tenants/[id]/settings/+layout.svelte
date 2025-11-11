@@ -15,16 +15,49 @@
 	const viewRoute = `/users/${userId}/tenants/${tenantId}/settings`;
 	const tenantRoute = `/users/${userId}/tenants`;
 
-	const breadCrumbs = [
-		{
-			name: 'Tenants',
-			path: tenantRoute
-		},
-		{
-			name: 'Settings',
-			path: viewRoute
+	// Map setting route names to display names
+	const settingNameMap = {
+		'common-setting': 'Common',
+		'chatbot-setting': 'Chat Bot',
+		'consent-setting': 'Consent',
+		'followup-setting': 'Follow-up',
+		'forms-setting': 'Forms',
+		'custom-settings':'Custom'
+
+	};
+
+	// Build breadcrumbs dynamically based on current route
+	const breadCrumbs = $derived.by(() => {
+		const currentPath = page.url.pathname;
+		const settingsPathPrefix = `/users/${userId}/tenants/${tenantId}/settings/`;
+		
+		let currentSetting = null;
+		if (currentPath.startsWith(settingsPathPrefix) && currentPath !== settingsPathPrefix) {
+			const pathAfterSettings = currentPath.replace(settingsPathPrefix, '').split('/')[0];
+			if (settingNameMap[pathAfterSettings]) {
+				currentSetting = settingNameMap[pathAfterSettings];
+			}
 		}
-	];
+
+		return [
+			{
+				name: 'Tenants',
+				path: tenantRoute
+			},
+			{
+				name: 'Main Settings',
+				path: viewRoute
+			},
+			...(currentSetting
+				? [
+						{
+							name: currentSetting,
+							path: currentPath
+						}
+					]
+				: [])
+		];
+	});
 
 	let basicSettingsLink = `${tenantRoute}/${tenantId}/settings/common-setting`;
 	let chatBotSettingsLink = `${tenantRoute}/${tenantId}/settings/chatbot-setting`;
@@ -32,6 +65,7 @@
 	let followupSettingsLink = `${tenantRoute}/${tenantId}/settings/followup-setting`;
 	let concentSettingsLink = `${tenantRoute}/${tenantId}/settings/consent-setting`;
 	let marketingMaterialSettingsLink = `${tenantRoute}/${tenantId}/settings/marketing-material-setting`;
+	let customSettingsLink = `${tenantRoute}/${tenantId}/settings/custom-settings`;
 
 </script>
 
@@ -103,6 +137,15 @@
 			>
 				<Icon icon="material-symbols:campaign-outline" class="h-5 w-5 shrink-0" />
 				Marketing material
+			</a>
+			<a
+				class="btn {page.url.pathname === customSettingsLink
+					? 'variant-filled-secondary'
+					: 'variant-soft-secondary'} flex items-center justify-center gap-2 whitespace-nowrap"
+				href={customSettingsLink}
+			>
+				<Icon icon="material-symbols:settings-outline" class="h-5 w-5 shrink-0" />
+				Custom
 			</a>
 		</div>
 	</div>

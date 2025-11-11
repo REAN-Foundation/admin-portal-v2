@@ -60,6 +60,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 		sessionId,
 		message: response.Message,
 		selectedRoles,
+		currentUserId: userId, // Pass current user ID to client
 		title: 'Administration-Users'
 	};
 };

@@ -21,6 +21,7 @@
 	let debounceTimeout;
 	let isLoading = $state(false);
 	let users = $state(data.users.Items);
+	const currentUserId = data.currentUserId; // Get current user ID from server
 	const tmp = LocalStorageUtils.getItem('personRoles');
 	const personRoles = JSON.parse(tmp);
 	let retrivedUsers = $derived(
@@ -159,6 +160,15 @@
 	}
 
 	const handleDeleteClick = (id: string) => {
+		// Prevent deleting yourself
+		if (id === currentUserId) {
+			toastMessage({
+				Message: 'You cannot delete yourself',
+				HttpCode: 400,
+				Status: 'failure'
+			});
+			return;
+		}
 		openDeleteModal = true;
 		idToBeDeleted = id;
 	};
@@ -350,11 +360,13 @@
 									<td>
 										<div class="flex justify-end">
 											<Button
-												href={editRoute(row.id)}
+												href={row.IsPermitted ? editRoute(row.id) : null}
+												disabled={!row.IsPermitted}
 												variant="icon"
 												icon="material-symbols:edit-outline"
 												iconSize="sm"
-												tooltip="Edit"
+												color={row.IsPermitted ? null : '#808b96'}
+												tooltip={row.IsPermitted ? 'Edit' : 'Permission denied'}
 											/>
 											<Button
 												href={viewRoute(row.id)}
@@ -364,12 +376,13 @@
 												tooltip="View"
 											/>
 											<Button
+											    disabled= {userId === row.id || !row.IsPermitted}
 												onclick={() => handleDeleteClick(row.id)}
 												variant="icon"
 												icon="material-symbols:delete-outline-rounded"
 												iconSize="sm"
 												color="red"
-												tooltip="Delete"
+												tooltip={userId === row.id || !row.IsPermitted  ? 'Permission denied' : 'Delete'}
 											/>
 										</div>
 									</td>

@@ -1,5 +1,5 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
-import { ChatBotSettingsSchema, CommonSettingsSchema, ConsentSettingsSchema, FollowupSettingsSchema, FormsSettingsSchema, tenantSettingTypeSchema } from "$lib/validation/tenant.settings.schema";
+import { ChatBotSettingsSchema, CommonSettingsSchema, ConsentSettingsSchema, CustomSettingsSchema, FollowupSettingsSchema, FormsSettingsSchema, tenantSettingTypeSchema } from "$lib/validation/tenant.settings.schema";
 import { getTenantSettingsByType, updateTenantSettingsByType } from "$routes/api/services/reancare/tenant-settings";
 import type { RequestEvent } from "@sveltejs/kit";
 
@@ -93,5 +93,8 @@ const validateRequestData = (data: any, type: string) => {
             return FormsSettingsSchema.safeParse(data);
         case 'Consent':
             return ConsentSettingsSchema.safeParse(data);
+        case 'CustomSettings':
+            return CustomSettingsSchema.safeParse(data);
+
     }
 }
