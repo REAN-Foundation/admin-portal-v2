@@ -22,9 +22,13 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			throw error(marketingMaterial.HttpCode, marketingMaterial.Message);
 		}
 
-		console.log('marketingMaterialSettings', marketingMaterial.Data);
+		// Extract TenantMarketingSettings from the response structure
+		// Backend returns: { Data: { TenantMarketingSettings: { Styling, Content, ... } } }
+		const tenantMarketingSettings = marketingMaterial.Data?.TenantMarketingSettings || {};
+
+		console.log('marketingMaterialSettings', tenantMarketingSettings);
 		return {
-			marketingMaterial: marketingMaterial.Data || {},
+			marketingMaterial: tenantMarketingSettings,
 			userId,
 			tenantId
 		};
