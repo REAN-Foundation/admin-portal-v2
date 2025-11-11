@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
+	import Image from '$lib/components/image.svelte';
 	import { createOrUpdateSchema } from '$lib/validation/educational/course.schema.js';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
 	import type { CourseCreateModel, CourseImageUploadModel } from '$lib/types/educational/course.js';
@@ -20,8 +21,9 @@
 	let promise = $state();
 	let imageResourceId = $state(undefined);
 	let fileName = $state('');
-	let formData = new FormData();
+	const formData = new FormData();
 	let courseImage;
+	let previewUrl = $state<string | undefined>(undefined);
 	let errorMessage = {
 		Text: 'Max file upload size 150 KB',
 		Colour: 'border-b-surface-700'
@@ -62,7 +64,14 @@
 			return;
 		}
 
-		formData = new FormData();
+		if (previewUrl) {
+			URL.revokeObjectURL(previewUrl);
+		}
+
+		previewUrl = URL.createObjectURL(file);
+
+		formData.delete('file');
+		formData.delete('filename');
 		formData.append('file', file);
 		formData.append('filename', file.name);
 	};
@@ -88,7 +97,6 @@
 						errorMessage.Text = 'File uploaded successfully';
 						errorMessage.Colour = 'text-success-500';
 					}
-					formData = new FormData();
 				} else {
 					errorMessage.Text = fileJson.Message;
 					errorMessage.Colour = 'text-error-500';
@@ -124,6 +132,10 @@
 			const response = await res.json();
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				if (previewUrl) {
+					URL.revokeObjectURL(previewUrl);
+					previewUrl = undefined;
+				}
 				toastMessage(response);
 				goto(`${coursesRoute}/${response?.Data?.Course?.id}/view`);
 				return;
@@ -138,6 +150,14 @@
 			toastMessage();
 		}
 	};
+
+	$effect(() => {
+		return () => {
+			if (previewUrl) {
+				URL.revokeObjectURL(previewUrl);
+			}
+		};
+	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -186,9 +206,13 @@
 				<tr class="tables-row">
 					<td class="table-label">Image</td>
 					<td class="table-data">
+						{#if previewUrl}
+							<Image cls="flex h-24 w-24 rounded-lg mb-2" source={previewUrl} w="24" h="24" />
+						{/if}
 						<input
 							name="fileinput"
 							type="file"
+							accept="image/*"
 							class="input"
 							placeholder="Image"
 							bind:this={courseImage}
