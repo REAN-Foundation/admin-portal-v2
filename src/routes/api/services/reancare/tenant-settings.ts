@@ -84,8 +84,17 @@ export const createMarketingMaterialByTenantId = async (
 	tenantId: string,
 	settings: any
 ) => {
-	const url = baseUrl + `/tenant-settings-marketing/${tenantId}`;
+	const url = BACKEND_API_URL + `/tenant-settings-marketing/${tenantId}`;
 	return await post(sessionId, url, settings, true, API_CLIENT_INTERNAL_KEY);
+}
+
+export const updateMarketingMaterialByTenantId = async (
+	sessionId: string,
+	tenantId: string,
+	settings: any
+) => {
+	const url = BACKEND_API_URL + `/tenant-settings-marketing/${tenantId}`;
+	return await put(sessionId, url, settings, true, API_CLIENT_INTERNAL_KEY);
 }
 
 // export const uploadMarketingMaterialLogo = async (

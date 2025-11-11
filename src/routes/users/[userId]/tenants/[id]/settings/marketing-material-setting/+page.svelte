@@ -133,9 +133,9 @@
 			};
 
 			// Determine if this is a create (POST) or update (PUT) operation
-			const method = hasExistingData ? 'PUT' : 'POST';
+			const method = 'POST';
 
-			const res = await fetch(`/api/server/tenants/settings/${tenantId}/MarketingMaterial`, {
+			const res = await fetch(`/api/server/tenants/settings/${tenantId}/marketing-material`, {
 				method: method,
 				body: JSON.stringify(payload),
 				headers: { 'content-type': 'application/json' }
@@ -285,7 +285,7 @@
 						}`}
 					>
 						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:format-size-outline" class="hidden h-5 w-5 md:block" />
+							<Icon icon="material-symbols:format-size-outline" class="h-5 w-5" />
 							<div class="text-start">
 								<p class="text-md font-medium">Fonts</p>
 								<p class="text-sm">Heading and body font families</p>
@@ -469,7 +469,7 @@
 						}`}
 					>
 						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:title-outline" class="hidden h-5 w-5 md:block" />
+							<Icon icon="material-symbols:title-outline" class="h-5 w-5" />
 							<div class="text-start">
 								<p class="text-md font-medium">Header</p>
 								<p class="text-sm">Main title and subtitle</p>

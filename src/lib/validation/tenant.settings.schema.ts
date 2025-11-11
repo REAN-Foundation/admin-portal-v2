@@ -477,6 +477,63 @@ export const MarketingMaterialSettingsSchema = z.object({
     QrCode: z.string().nullable().optional(),
 });
 
+// New Marketing Material Schema with Styling and Content structure
+const MarketingMaterialStylingSchema = z.object({
+    primary: z.string().optional(),
+    secondary: z.string().optional(),
+    accent: z.string().optional(),
+    lightBg: z.string().optional(),
+    panel: z.string().optional(),
+    muted: z.string().optional(),
+    text: z.string().optional(),
+    headingFont: z.string().optional(),
+    bodyFont: z.string().optional(),
+    pageWidth: z.string().optional(),
+    pageHeight: z.string().optional(),
+    userInterfaceWidth: z.string().optional(),
+    userInteractionWidth: z.string().optional(),
+    qrSize: z.string().optional(),
+});
+
+// Benefit items can be either strings or objects with icon, title, description
+const MarketingMaterialBenefitItemSchema = z.union([
+    z.string(),
+    z.object({
+        icon: z.string().optional(),
+        title: z.string().optional(),
+        description: z.string().optional(),
+    })
+]);
+
+const MarketingMaterialContentSchema = z.object({
+    header: z.object({
+        mainTitle: z.string().optional(),
+        subtitle: z.string().optional(),
+    }).optional(),
+    introduction: z.object({
+        introParagraph: z.string().optional(),
+        problemStatement: z.string().optional(),
+    }).optional(),
+    benefits: z.object({
+        title: z.string().optional(),
+        items: z.array(MarketingMaterialBenefitItemSchema).optional(),
+    }).optional(),
+    userInterface: z.object({
+        heading: z.string().optional(),
+        paragraph: z.string().optional(),
+    }).optional(),
+    footer: z.object({
+        ctaHeading: z.string().optional(),
+        ctaDescription: z.string().optional(),
+        qrInstruction: z.string().optional(),
+    }).optional(),
+});
+
+export const MarketingMaterialRequestSchema = z.object({
+    Styling: MarketingMaterialStylingSchema.optional(),
+    Content: MarketingMaterialContentSchema.optional(),
+});
+
 export const TenantSettingsSchema = z.object({
     Common: CommonSettingsSchema.required(),
     Followup: FollowupSettingsSchema.required(),
