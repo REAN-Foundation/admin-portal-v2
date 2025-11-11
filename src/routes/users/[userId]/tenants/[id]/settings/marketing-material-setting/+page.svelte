@@ -72,6 +72,34 @@
 		}
 	});
 
+	// Images state
+	let Images = $state({
+		titleImage: data.marketingMaterial?.Images?.titleImage ?? '',
+		userInterfaceImage: data.marketingMaterial?.Images?.userInterfaceImage ?? ''
+	});
+
+	// Logos state (array of resource IDs)
+	let Logos = $state<string[]>(data.marketingMaterial?.Logos ?? []);
+
+	// QRcode state
+	let QRcode = $state({
+		resourceId: data.marketingMaterial?.QRcode?.resourceId ?? '',
+		whatsappNumber: data.marketingMaterial?.QRcode?.whatsappNumber ?? '',
+		url: data.marketingMaterial?.QRcode?.url ?? ''
+	});
+
+	// File name tracking for UI display
+	let titleImageFileName = $state('');
+	let userInterfaceImageFileName = $state('');
+	let qrCodeFileName = $state('');
+	let logoFileNames = $state<string[]>([]);
+
+	// Helper function to get image URL from resource ID
+	const getImageUrl = (resourceId: string) => {
+		if (!resourceId) return null;
+		return `/api/server/file-resources/${resourceId}/download?disposition=inline`;
+	};
+
 	let disabled = $state(true);
 	let edit = $state(false);
 	let activeSections = $state(new Set([]));
@@ -91,6 +119,186 @@
 
 	const removeBenefit = (index: number) => {
 		Content.benefits.items = Content.benefits.items.filter((_, i) => i !== index);
+	};
+
+	const addLogo = () => {
+		Logos = [...Logos, ''];
+		logoFileNames = [...logoFileNames, ''];
+	};
+
+	const removeLogo = (index: number) => {
+		Logos = Logos.filter((_, i) => i !== index);
+		logoFileNames = logoFileNames.filter((_, i) => i !== index);
+	};
+
+	// File selection handler for images
+	const onImageSelected = async (
+		e: Event,
+		imageType: 'titleImage' | 'userInterfaceImage'
+	) => {
+		const input = e.target as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) return;
+
+		if (imageType === 'titleImage') {
+			titleImageFileName = file.name;
+		} else {
+			userInterfaceImageFileName = file.name;
+		}
+
+		// Upload immediately
+		await uploadImage(file, imageType);
+	};
+
+	// File upload function for images
+	const uploadImage = async (file: File, imageType: 'titleImage' | 'userInterfaceImage') => {
+		try {
+			const formData = new FormData();
+			formData.append('file', file);
+
+			const res = await fetch(`/api/server/file-resources/upload/reancare`, {
+				method: 'POST',
+				body: formData
+			});
+
+			const response = await res.json();
+			if (response.Status === 'success' && response.HttpCode === 201) {
+				const resourceId = response.Data?.FileResources?.[0]?.id || response.Data?.id;
+				if (resourceId) {
+					Images[imageType] = resourceId;
+					addToast({
+						message: 'Image uploaded successfully.',
+						type: 'success',
+						timeout: 3000
+					});
+					return resourceId;
+				}
+			} else {
+				addToast({
+					message: response.Message || 'Image upload failed.',
+					type: 'error',
+					timeout: 3000
+				});
+			}
+		} catch (error) {
+			console.error('Error uploading image:', error);
+			addToast({
+				message: 'Failed to upload image. Please try again.',
+				type: 'error',
+				timeout: 3000
+			});
+		}
+		return null;
+	};
+
+	// File selection handler for logos
+	const onLogoSelected = async (e: Event, logoIndex: number) => {
+		const input = e.target as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) return;
+
+		// Update file name array
+		if (!logoFileNames[logoIndex]) {
+			logoFileNames = [...logoFileNames];
+		}
+		logoFileNames[logoIndex] = file.name;
+		logoFileNames = [...logoFileNames];
+
+		// Upload immediately
+		await uploadLogo(file, logoIndex);
+	};
+
+	// File upload function for logos
+	const uploadLogo = async (file: File, logoIndex: number) => {
+		try {
+			const formData = new FormData();
+			formData.append('file', file);
+
+			const res = await fetch(`/api/server/file-resources/upload/reancare`, {
+				method: 'POST',
+				body: formData
+			});
+
+			const response = await res.json();
+			if (response.Status === 'success' && response.HttpCode === 201) {
+				const resourceId = response.Data?.FileResources?.[0]?.id || response.Data?.id;
+				if (resourceId) {
+					Logos[logoIndex] = resourceId;
+					addToast({
+						message: 'Logo uploaded successfully.',
+						type: 'success',
+						timeout: 3000
+					});
+					return resourceId;
+				}
+			} else {
+				addToast({
+					message: response.Message || 'Logo upload failed.',
+					type: 'error',
+					timeout: 3000
+				});
+			}
+		} catch (error) {
+			console.error('Error uploading logo:', error);
+			addToast({
+				message: 'Failed to upload logo. Please try again.',
+				type: 'error',
+				timeout: 3000
+			});
+		}
+		return null;
+	};
+
+	// File selection handler for QR code
+	const onQRCodeSelected = async (e: Event) => {
+		const input = e.target as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) return;
+
+		qrCodeFileName = file.name;
+		// Upload immediately
+		await uploadQRCode(file);
+	};
+
+	// File upload function for QR code
+	const uploadQRCode = async (file: File) => {
+		try {
+			const formData = new FormData();
+			formData.append('file', file);
+
+			const res = await fetch(`/api/server/file-resources/upload/reancare`, {
+				method: 'POST',
+				body: formData
+			});
+
+			const response = await res.json();
+			if (response.Status === 'success' && response.HttpCode === 201) {
+				const resourceId = response.Data?.FileResources?.[0]?.id || response.Data?.id;
+				if (resourceId) {
+					QRcode.resourceId = resourceId;
+					addToast({
+						message: 'QR code uploaded successfully.',
+						type: 'success',
+						timeout: 3000
+					});
+					return resourceId;
+				}
+			} else {
+				addToast({
+					message: response.Message || 'QR code upload failed.',
+					type: 'error',
+					timeout: 3000
+				});
+			}
+		} catch (error) {
+			console.error('Error uploading QR code:', error);
+			addToast({
+				message: 'Failed to upload QR code. Please try again.',
+				type: 'error',
+				timeout: 3000
+			});
+		}
+		return null;
 	};
 
 	const handleEditClick = async () => {
@@ -129,7 +337,10 @@
 			// Build payload in the requested nested format
 			const payload = {
 				Styling,
-				Content
+				Content,
+				Images,
+				Logos: Logos.filter((logo) => logo && logo.trim() !== ''),
+				QRcode
 			};
 
 			// Determine if this is a create (POST) or update (PUT) operation
@@ -879,6 +1090,339 @@
 									bind:value={Content.footer.qrInstruction}
 									{disabled}
 									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+								/>
+							</div>
+						</div>
+					{/if}
+				</div>
+
+				<!-- Images Section -->
+				<div
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('images') ? 'border-hover' : ''}`}
+				>
+					<button
+						type="button"
+						onclick={() => toggleSection('images')}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+						transition-all duration-100 ease-in-out ${
+							activeSections.has('images')
+								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+								: 'border-hover rounded bg-[var(--color-secondary)]'
+						}`}
+					>
+						<div class="flex flex-1 items-center gap-2">
+							<Icon icon="material-symbols:image-outline" class="hidden h-5 w-5 md:block" />
+							<div class="text-start">
+								<p class="text-md font-medium">Images</p>
+								<p class="text-sm">Title image and user interface image</p>
+							</div>
+						</div>
+						<span
+							class="transition-transform duration-300"
+							class:rotate-90={activeSections.has('images')}
+						>
+							<Icon
+								icon="icon-park-outline:down"
+								rotate={35}
+								width={16}
+								height={16}
+								class="h-5 w-5"
+							/>
+						</span>
+					</button>
+
+					{#if activeSections.has('images')}
+						<div class="space-y-4 p-6">
+							<div class="space-y-2">
+								<label
+									for="image-title-image"
+									class="text-sm font-medium text-[var(--color-info)]"
+									>Title Image</label
+								>
+								<div class="flex w-full gap-3">
+									<label class="table-btn variant-filled-secondary" for="title-image-upload">
+										Select File
+										<input
+											type="file"
+											id="title-image-upload"
+											accept="image/*"
+											class="hidden"
+											disabled={disabled}
+											onchange={async (e) => await onImageSelected(e, 'titleImage')}
+										/>
+									</label>
+									<input
+										type="text"
+										id="image-title-image"
+										value={titleImageFileName || Images.titleImage || ''}
+										readonly
+										{disabled}
+										class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										placeholder="No file selected..."
+									/>
+								</div>
+								{#if Images.titleImage}
+									<div class="mt-2">
+										<img
+											src={getImageUrl(Images.titleImage)}
+											alt=""
+											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
+										/>
+									</div>
+								{/if}
+							</div>
+							<div class="space-y-2">
+								<label
+									for="image-user-interface-image"
+									class="text-sm font-medium text-[var(--color-info)]"
+									>User Interface Image</label
+								>
+								<div class="flex w-full gap-3">
+									<label class="table-btn variant-filled-secondary" for="user-interface-image-upload">
+										Select File
+										<input
+											type="file"
+											id="user-interface-image-upload"
+											accept="image/*"
+											class="hidden"
+											disabled={disabled}
+											onchange={async (e) => await onImageSelected(e, 'userInterfaceImage')}
+										/>
+									</label>
+									<input
+										type="text"
+										id="image-user-interface-image"
+										value={userInterfaceImageFileName || Images.userInterfaceImage || ''}
+										readonly
+										{disabled}
+										class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										placeholder="No file selected..."
+									/>
+								</div>
+								{#if Images.userInterfaceImage}
+									<div class="mt-2">
+										<img
+											src={getImageUrl(Images.userInterfaceImage)}
+											alt=""
+											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
+										/>
+									</div>
+								{/if}
+							</div>
+						</div>
+					{/if}
+				</div>
+
+				<!-- Logos Section -->
+				<div
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('logos') ? 'border-hover' : ''}`}
+				>
+					<button
+						type="button"
+						onclick={() => toggleSection('logos')}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+						transition-all duration-100 ease-in-out ${
+							activeSections.has('logos')
+								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+								: 'border-hover rounded bg-[var(--color-secondary)]'
+						}`}
+					>
+						<div class="flex flex-1 items-center gap-2">
+							<Icon icon="material-symbols:workspace-premium-outline" class="hidden h-5 w-5 md:block" />
+							<div class="text-start">
+								<p class="text-md font-medium">Logos</p>
+								<p class="text-sm">Logo resource IDs array</p>
+							</div>
+						</div>
+						<span
+							class="transition-transform duration-300"
+							class:rotate-90={activeSections.has('logos')}
+						>
+							<Icon
+								icon="icon-park-outline:down"
+								rotate={35}
+								width={16}
+								height={16}
+								class="h-5 w-5"
+							/>
+						</span>
+					</button>
+
+					{#if activeSections.has('logos')}
+						<div class="space-y-4 p-6">
+							{#if Logos.length === 0}
+								<div class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 text-center text-sm text-[var(--color-info)]">
+									No logos added yet. Click "Add Logo" to create one.
+								</div>
+							{:else}
+									{#each Logos as logo, index}
+									<div
+										class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4"
+									>
+										<div class="mb-4 flex items-center justify-between">
+											<h4 class="text-sm font-medium text-[var(--color-info)]">
+												Logo #{index + 1}
+											</h4>
+											{#if !disabled}
+												<button
+													type="button"
+													onclick={() => removeLogo(index)}
+													class="rounded-md border border-red-300 bg-red-50 px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-100"
+												>
+													Remove
+												</button>
+											{/if}
+										</div>
+										<div class="flex w-full gap-3">
+											<label class="table-btn variant-filled-secondary" for="logo-upload-{index}">
+												Select File
+												<input
+													type="file"
+													id="logo-upload-{index}"
+													accept="image/*"
+													class="hidden"
+													disabled={disabled}
+													onchange={async (e) => await onLogoSelected(e, index)}
+												/>
+											</label>
+											<input
+												type="text"
+												value={logoFileNames[index] || Logos[index] || ''}
+												readonly
+												{disabled}
+												class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+												placeholder="No file selected..."
+											/>
+										</div>
+										{#if Logos[index]}
+											<div class="mt-2">
+												<img
+													src={getImageUrl(Logos[index])}
+													alt=""
+													class="h-24 w-24 rounded border border-[var(--color-outline)] object-cover"
+												/>
+											</div>
+										{/if}
+									</div>
+								{/each}
+							{/if}
+
+							{#if !disabled}
+								<button
+									type="button"
+									onclick={addLogo}
+									class="w-full rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-4 py-2 text-sm font-medium text-[var(--color-info)] hover:bg-[var(--color-primary)]"
+								>
+									+ Add Logo
+								</button>
+							{/if}
+						</div>
+					{/if}
+				</div>
+
+				<!-- QR Code Section -->
+				<div
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('qrcode') ? 'border-hover' : ''}`}
+				>
+					<button
+						type="button"
+						onclick={() => toggleSection('qrcode')}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+						transition-all duration-100 ease-in-out ${
+							activeSections.has('qrcode')
+								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+								: 'border-hover rounded bg-[var(--color-secondary)]'
+						}`}
+					>
+						<div class="flex flex-1 items-center gap-2">
+							<Icon icon="material-symbols:qr-code-2-outline" class="hidden h-5 w-5 md:block" />
+							<div class="text-start">
+								<p class="text-md font-medium">QR Code</p>
+								<p class="text-sm">QR code resource ID, WhatsApp number and URL</p>
+							</div>
+						</div>
+						<span
+							class="transition-transform duration-300"
+							class:rotate-90={activeSections.has('qrcode')}
+						>
+							<Icon
+								icon="icon-park-outline:down"
+								rotate={35}
+								width={16}
+								height={16}
+								class="h-5 w-5"
+							/>
+						</span>
+					</button>
+
+					{#if activeSections.has('qrcode')}
+						<div class="space-y-4 p-6">
+							<div class="space-y-2">
+								<label
+									for="qrcode-resource-id"
+									class="text-sm font-medium text-[var(--color-info)]"
+									>QR Code Image</label
+								>
+								<div class="flex w-full gap-3">
+									<label class="table-btn variant-filled-secondary" for="qrcode-upload">
+										Select File
+										<input
+											type="file"
+											id="qrcode-upload"
+											accept="image/*"
+											class="hidden"
+											disabled={disabled}
+											onchange={async (e) => await onQRCodeSelected(e)}
+										/>
+									</label>
+									<input
+										type="text"
+										id="qrcode-resource-id"
+										value={qrCodeFileName || QRcode.resourceId || ''}
+										readonly
+										{disabled}
+										class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										placeholder="No file selected..."
+									/>
+								</div>
+								{#if QRcode.resourceId}
+									<div class="mt-2">
+										<img
+											src={getImageUrl(QRcode.resourceId)}
+											alt=""
+											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
+										/>
+									</div>
+								{/if}
+							</div>
+							<div class="space-y-2">
+								<label
+									for="qrcode-whatsapp-number"
+									class="text-sm font-medium text-[var(--color-info)]"
+									>WhatsApp Number</label
+								>
+								<input
+									type="text"
+									id="qrcode-whatsapp-number"
+									bind:value={QRcode.whatsappNumber}
+									{disabled}
+									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+									placeholder="+91-1234567890"
+								/>
+							</div>
+							<div class="space-y-2">
+								<label
+									for="qrcode-url"
+									class="text-sm font-medium text-[var(--color-info)]"
+									>URL</label
+								>
+								<input
+									type="text"
+									id="qrcode-url"
+									bind:value={QRcode.url}
+									{disabled}
+									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+									placeholder="https://wa.me/911234567890"
 								/>
 							</div>
 						</div>

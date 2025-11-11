@@ -529,9 +529,23 @@ const MarketingMaterialContentSchema = z.object({
     }).optional(),
 });
 
+const MarketingMaterialImagesSchema = z.object({
+    titleImage: z.string().optional(),
+    userInterfaceImage: z.string().optional(),
+});
+
+const MarketingMaterialQRcodeSchema = z.object({
+    resourceId: z.string().optional(),
+    whatsappNumber: z.string().optional(),
+    url: z.string().optional(),
+});
+
 export const MarketingMaterialRequestSchema = z.object({
     Styling: MarketingMaterialStylingSchema.optional(),
     Content: MarketingMaterialContentSchema.optional(),
+    Images: MarketingMaterialImagesSchema.optional(),
+    Logos: z.array(z.string()).optional(),
+    QRcode: MarketingMaterialQRcodeSchema.optional(),
 });
 
 export const TenantSettingsSchema = z.object({
