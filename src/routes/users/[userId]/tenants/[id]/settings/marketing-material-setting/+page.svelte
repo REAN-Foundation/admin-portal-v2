@@ -71,7 +71,7 @@
 					},
 					benefits: {
 						title: '',
-						items: []
+						items: [] // Will be objects with { icon, title, description }
 					},
 					userInterface: {
 						heading: '',
@@ -95,12 +95,16 @@
 					benefits: {
 						title: data.marketingMaterial?.Content?.benefits?.title ?? '',
 						items: (data.marketingMaterial?.Content?.benefits?.items ?? []).map((item) => {
-							// Backend expects array of strings, so convert any object format to string
+							// Handle both string (legacy) and object formats
 							if (typeof item === 'string') {
-								return item;
+								return { icon: '', title: item, description: '' };
 							}
-							// If it's an object, use title or description as the string value
-							return item?.title || item?.description || '';
+							// If it's already an object, use it
+							return {
+								icon: item?.icon ?? '',
+								title: item?.title ?? '',
+								description: item?.description ?? ''
+							};
 						})
 					},
 					userInterface: {
@@ -151,6 +155,9 @@
 	let userInterfaceImageFileName = $state('');
 	let qrCodeFileName = $state('');
 	let logoFileNames = $state<string[]>([]);
+	let benefitIconFileNames = $state<string[]>(
+		isEmpty ? [] : (data.marketingMaterial?.Content?.benefits?.items ?? []).map(() => '')
+	);
 
 	// Helper function to get image URL from resource ID
 	const getImageUrl = (resourceId: string) => {
@@ -172,11 +179,13 @@
 	};
 
 	const addBenefit = () => {
-		Content.benefits.items = [...Content.benefits.items, ''];
+		Content.benefits.items = [...Content.benefits.items, { icon: '', title: '', description: '' }];
+		benefitIconFileNames = [...benefitIconFileNames, ''];
 	};
 
 	const removeBenefit = (index: number) => {
 		Content.benefits.items = Content.benefits.items.filter((_, i) => i !== index);
+		benefitIconFileNames = benefitIconFileNames.filter((_, i) => i !== index);
 	};
 
 	const addLogo = () => {
@@ -242,6 +251,64 @@
 			console.error('Error uploading image:', error);
 			addToast({
 				message: 'Failed to upload image. Please try again.',
+				type: 'error',
+				timeout: 3000
+			});
+		}
+		return null;
+	};
+
+	// File selection handler for benefit icons
+	const onBenefitIconSelected = async (e: Event, benefitIndex: number) => {
+		const input = e.target as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) return;
+
+		// Update file name array
+		if (!benefitIconFileNames[benefitIndex]) {
+			benefitIconFileNames = [...benefitIconFileNames];
+		}
+		benefitIconFileNames[benefitIndex] = file.name;
+		benefitIconFileNames = [...benefitIconFileNames];
+
+		// Upload immediately
+		await uploadBenefitIcon(file, benefitIndex);
+	};
+
+	// File upload function for benefit icons
+	const uploadBenefitIcon = async (file: File, benefitIndex: number) => {
+		try {
+			const formData = new FormData();
+			formData.append('file', file);
+
+			const res = await fetch(`/api/server/file-resources/upload/reancare`, {
+				method: 'POST',
+				body: formData
+			});
+
+			const response = await res.json();
+			if (response.Status === 'success' && response.HttpCode === 201) {
+				const resourceId = response.Data?.FileResources?.[0]?.id || response.Data?.id;
+				if (resourceId) {
+					Content.benefits.items[benefitIndex].icon = resourceId;
+					addToast({
+						message: 'Benefit icon uploaded successfully.',
+						type: 'success',
+						timeout: 3000
+					});
+					return resourceId;
+				}
+			} else {
+				addToast({
+					message: response.Message || 'Benefit icon upload failed.',
+					type: 'error',
+					timeout: 3000
+				});
+			}
+		} catch (error) {
+			console.error('Error uploading benefit icon:', error);
+			addToast({
+				message: 'Failed to upload benefit icon. Please try again.',
 				type: 'error',
 				timeout: 3000
 			});
@@ -420,7 +487,17 @@
 					...Content,
 					benefits: {
 						...Content.benefits,
-						items: Content.benefits.items.filter((item) => item && item.trim() !== '')
+						// Convert benefit objects to strings (backend expects array of strings)
+						// Use title as the string value, fallback to description if title is empty
+						items: Content.benefits.items
+							.map((item) => {
+								if (typeof item === 'string') {
+									return item;
+								}
+								// Use title as the string value, or description if title is empty
+								return item?.title?.trim() || item?.description?.trim() || '';
+							})
+							.filter((item) => item && item.trim() !== '')
 					}
 				},
 				Images: Object.keys(filteredImages).length > 0 ? filteredImages : undefined,
@@ -526,67 +603,70 @@
 					</button>
 
 					{#if activeSections.has('logos')}
-						<div class="space-y-4 p-6">
-							{#each Logos as logo, index}
-								<div
-									class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4"
-								>
-									<div class="mb-4 flex items-center justify-between">
-										<h4 class="text-sm font-medium text-[var(--color-info)]">
-											Logo #{index + 1}
-										</h4>
-										{#if !disabled}
-											<button
-												type="button"
-												onclick={() => removeLogo(index)}
-												class="rounded-md border border-red-300 bg-red-50 px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-100"
-											>
-												Remove
-											</button>
-										{/if}
-									</div>
-									<div class="flex w-full gap-3">
-										<label class="table-btn variant-filled-secondary" for="logo-upload-{index}">
-											Select File
+						<div class="p-6">
+							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+								{#each Logos as logo, index}
+									<div
+										class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4"
+									>
+										<div class="mb-4 flex items-center justify-between">
+											<h4 class="text-sm font-medium text-[var(--color-info)]">
+												Logo #{index + 1}
+											</h4>
+											{#if !disabled}
+												<button
+													type="button"
+													onclick={() => removeLogo(index)}
+													class="min-w-[100px] rounded-md border border-red-300 bg-red-50 px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-100"
+												>
+													Remove
+												</button>
+											{/if}
+										</div>
+										<div class="flex w-full gap-3">
+											<label class="table-btn variant-filled-secondary min-w-[120px] justify-center" for="logo-upload-{index}">
+												Select File
+												<input
+													type="file"
+													id="logo-upload-{index}"
+													accept="image/*"
+													class="hidden"
+													disabled={disabled}
+													onchange={async (e) => await onLogoSelected(e, index)}
+												/>
+											</label>
 											<input
-												type="file"
-												id="logo-upload-{index}"
-												accept="image/*"
-												class="hidden"
-												disabled={disabled}
-												onchange={async (e) => await onLogoSelected(e, index)}
-											/>
-										</label>
-										<input
-											type="text"
-											value={logoFileNames[index] || Logos[index] || ''}
-											readonly
-											{disabled}
-											class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-											placeholder="No file selected..."
-										/>
-									</div>
-									{#if Logos[index]}
-										<div class="mt-2">
-											<img
-												src={getImageUrl(Logos[index])}
-												alt=""
-												class="h-24 w-24 rounded border border-[var(--color-outline)] object-cover"
+												type="text"
+												value={logoFileNames[index] || Logos[index] || ''}
+												readonly
+												{disabled}
+												class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+												placeholder="No file selected..."
 											/>
 										</div>
-									{/if}
-								</div>
-							{/each}
-
-							<button
-								type="button"
-								onclick={addLogo}
-								{disabled}
-								class="inline-flex items-center gap-1 rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-3 py-1.5 text-sm font-medium text-[var(--color-info)] hover:bg-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50"
-							>
-								<Icon icon="material-symbols:add" class="h-4 w-4" />
-								Add Logo
-							</button>
+										{#if Logos[index]}
+											<div class="mt-2">
+												<img
+													src={getImageUrl(Logos[index])}
+													alt=""
+													class="h-24 w-24 rounded border border-[var(--color-outline)] object-cover"
+												/>
+											</div>
+										{/if}
+									</div>
+								{/each}
+							</div>
+							<div class="mt-4">
+								<button
+									type="button"
+									onclick={addLogo}
+									{disabled}
+									class="min-w-[140px] inline-flex items-center justify-center gap-1 rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-3 py-1.5 text-sm font-medium text-[var(--color-info)] hover:bg-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+								>
+									<Icon icon="material-symbols:add" class="h-4 w-4" />
+									Add Logo
+								</button>
+							</div>
 						</div>
 					{/if}
 				</div>
@@ -800,26 +880,85 @@
 												<button
 													type="button"
 													onclick={() => removeBenefit(index)}
-													class="rounded-md border border-red-300 bg-red-50 px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-100"
+													class="min-w-[100px] rounded-md border border-red-300 bg-red-50 px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-100"
 												>
 													Remove
 												</button>
 											{/if}
 										</div>
-										<div class="space-y-2">
-											<label
-												for="benefit-{index}"
-												class="text-sm font-medium text-[var(--color-info)]"
-												>Benefit Text</label
-											>
-											<textarea
-												id="benefit-{index}"
-												rows="3"
-												bind:value={Content.benefits.items[index]}
-												{disabled}
-												placeholder="Enter benefit description (e.g., Access personalized health recommendations and care plans)"
-												class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-											></textarea>
+										<div class="space-y-4">
+											<!-- First Row: Icon and Title -->
+											<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+												<div class="space-y-2">
+													<label
+														for="benefit-icon-{index}"
+														class="text-sm font-medium text-[var(--color-info)]"
+														>Icon</label
+													>
+													<div class="flex w-full gap-3">
+														<label class="table-btn variant-filled-secondary min-w-[120px] justify-center" for="benefit-icon-upload-{index}">
+															Select File
+															<input
+																type="file"
+																id="benefit-icon-upload-{index}"
+																accept="image/*"
+																class="hidden"
+																disabled={disabled}
+																onchange={async (e) => await onBenefitIconSelected(e, index)}
+															/>
+														</label>
+														<input
+															type="text"
+															id="benefit-icon-{index}"
+															value={benefitIconFileNames[index] || benefit.icon || ''}
+															readonly
+															{disabled}
+															class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+															placeholder="No file selected..."
+														/>
+													</div>
+													{#if benefit.icon}
+														<div class="mt-2">
+															<img
+																src={getImageUrl(benefit.icon)}
+																alt="Benefit Icon"
+																class="h-20 w-20 rounded border border-[var(--color-outline)] object-cover"
+															/>
+														</div>
+													{/if}
+												</div>
+												<div class="space-y-2">
+													<label
+														for="benefit-title-{index}"
+														class="text-sm font-medium text-[var(--color-info)]"
+														>Title</label
+													>
+													<input
+														type="text"
+														id="benefit-title-{index}"
+														bind:value={benefit.title}
+														{disabled}
+														placeholder="Enter benefit title (required)"
+														class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+													/>
+												</div>
+											</div>
+											<!-- Second Row: Description -->
+											<div class="space-y-2">
+												<label
+													for="benefit-description-{index}"
+													class="text-sm font-medium text-[var(--color-info)]"
+													>Description</label
+												>
+												<textarea
+													id="benefit-description-{index}"
+													rows="3"
+													bind:value={benefit.description}
+													{disabled}
+													placeholder="Enter benefit description (required)"
+													class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+												></textarea>
+											</div>
 										</div>
 									</div>
 								{/each}
@@ -828,7 +967,7 @@
 									type="button"
 									onclick={addBenefit}
 									{disabled}
-									class="inline-flex items-center gap-1 rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-3 py-1.5 text-sm font-medium text-[var(--color-info)] hover:bg-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+									class="min-w-[140px] inline-flex items-center justify-center gap-1 rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-3 py-1.5 text-sm font-medium text-[var(--color-info)] hover:bg-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50"
 								>
 									<Icon icon="material-symbols:add" class="h-4 w-4" />
 									Add Benefit
