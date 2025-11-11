@@ -12,23 +12,28 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const userId = params.userId;
 
 	try {
-		// Get marketing material settings by tenant id
-		console.log("This is server")
 		const marketingMaterial = await getMarketingMaterialByTenantId(sessionId, tenantId);
-
-		console.log("marketingMaterial for this tenant", marketingMaterial)
 
 		if (marketingMaterial.Status === 'failure' || marketingMaterial.HttpCode !== 200) {
 			throw error(marketingMaterial.HttpCode, marketingMaterial.Message);
 		}
 
-		// Extract TenantMarketingSettings from the response structure
-		// Backend returns: { Data: { TenantMarketingSettings: { Styling, Content, ... } } }
-		const tenantMarketingSettings = marketingMaterial.Data?.TenantMarketingSettings || {};
+		const tenantMarketingSettings = marketingMaterial.Data?.TenantMarketingSettings;
 
+		// Check if data is empty/null
+		const isEmpty = !tenantMarketingSettings ||
+			tenantMarketingSettings === null ||
+			(Object.keys(tenantMarketingSettings).length === 0 &&
+				!tenantMarketingSettings.Styling &&
+				!tenantMarketingSettings.Content);
+
+		console.log('marketingMaterial for this tenant', marketingMaterial);
 		console.log('marketingMaterialSettings', tenantMarketingSettings);
+		console.log('isEmpty:', isEmpty);
+
 		return {
-			marketingMaterial: tenantMarketingSettings,
+			marketingMaterial: tenantMarketingSettings || null,
+			isEmpty,
 			userId,
 			tenantId
 		};

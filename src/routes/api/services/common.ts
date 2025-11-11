@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { error } from '@sveltejs/kit';
-import { API_CLIENT_INTERNAL_KEY, BACKEND_API_URL } from '$env/static/private';
+import { API_CLIENT_INTERNAL_KEY } from '$env/static/private';
 import { SessionManager } from '../cache/session/session.manager';
 
 /////////////////////////////////////////////////////////////////////////////
@@ -47,8 +47,6 @@ export const post_ = async (
 export const get_ = async (url: string, authorizeUser: boolean = false, sessionId?: string) => {
 	try {
 		const headers = await setHeaders(authorizeUser, sessionId);
-
-		console.log(url,"urlllllll")
 
 		const res = await fetch(url, {
 			method: 'GET',
@@ -144,7 +142,7 @@ export const delete_ = async (url: string, authorizeUser: boolean = false, sessi
 	}
 };
 
-const setHeaders = async (authorizeUser: boolean, sessionId?: string, isFormData = false) => {
+const setHeaders = async (authorizeUser: boolean, sessionId?: string) => {
 	try {
 		const headers = {
 			'x-api-key': API_CLIENT_INTERNAL_KEY

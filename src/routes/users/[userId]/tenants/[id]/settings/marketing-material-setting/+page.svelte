@@ -12,81 +12,139 @@
 	let promise = $state();
 
 	// Check if marketing material already exists (for create vs update)
-	const hasExistingData =
+	const hasExistingData = !data.isEmpty && 
 		data.marketingMaterial &&
 		(Object.keys(data.marketingMaterial).length > 0 ||
 			data.marketingMaterial.Styling ||
 			data.marketingMaterial.Content);
 
-	// New nested structures for Styling and Content
-	let Styling = $state({
-		primary: data.marketingMaterial?.Styling?.primary ?? '#1a472a',
-		secondary: data.marketingMaterial?.Styling?.secondary ?? '#2d5f3f',
-		accent: data.marketingMaterial?.Styling?.accent ?? '#25D366',
-		lightBg: data.marketingMaterial?.Styling?.lightBg ?? '#f1f8f4',
-		panel: data.marketingMaterial?.Styling?.panel ?? '#ffffff',
-		muted: data.marketingMaterial?.Styling?.muted ?? '#555',
-		text: data.marketingMaterial?.Styling?.text ?? '#222',
-		headingFont: data.marketingMaterial?.Styling?.headingFont ?? "'Poppins', sans-serif",
-		bodyFont: data.marketingMaterial?.Styling?.bodyFont ?? "'Inter', sans-serif",
-		pageWidth: data.marketingMaterial?.Styling?.pageWidth ?? '210mm',
-		pageHeight: data.marketingMaterial?.Styling?.pageHeight ?? '297mm',
-		userInterfaceWidth: data.marketingMaterial?.Styling?.userInterfaceWidth ?? '260px',
-		userInteractionWidth: data.marketingMaterial?.Styling?.userInteractionWidth ?? '250px',
-		qrSize: data.marketingMaterial?.Styling?.qrSize ?? '120px'
-	});
+	// Initialize fields as empty if data is empty, otherwise populate with existing data
+	const isEmpty = data.isEmpty || !data.marketingMaterial;
 
-	let Content = $state({
-		header: {
-			mainTitle: data.marketingMaterial?.Content?.header?.mainTitle ?? '',
-			subtitle: data.marketingMaterial?.Content?.header?.subtitle ?? ''
-		},
-		introduction: {
-			introParagraph: data.marketingMaterial?.Content?.introduction?.introParagraph ?? '',
-			problemStatement: data.marketingMaterial?.Content?.introduction?.problemStatement ?? ''
-		},
-		benefits: {
-			title: data.marketingMaterial?.Content?.benefits?.title ?? 'Key Benefits',
-			items: (data.marketingMaterial?.Content?.benefits?.items ?? []).map((item) => {
-				// Handle both string (legacy) and object formats
-				if (typeof item === 'string') {
-					return { icon: '', title: item, description: '' };
+	// New nested structures for Styling and Content
+	let Styling = $state(
+		isEmpty
+			? {
+					primary: '',
+					secondary: '',
+					accent: '',
+					lightBg: '',
+					panel: '',
+					muted: '',
+					text: '',
+					headingFont: '',
+					bodyFont: '',
+					pageWidth: '',
+					pageHeight: '',
+					userInterfaceWidth: '',
+					userInteractionWidth: '',
+					qrSize: ''
 				}
-				return {
-					icon: item?.icon ?? '',
-					title: item?.title ?? '',
-					description: item?.description ?? ''
-				};
-			})
-		},
-		userInterface: {
-			heading:
-				data.marketingMaterial?.Content?.userInterface?.heading ??
-				'Who Can Benefit from This Program',
-			paragraph: data.marketingMaterial?.Content?.userInterface?.paragraph ?? ''
-		},
-		footer: {
-			ctaHeading: data.marketingMaterial?.Content?.footer?.ctaHeading ?? 'Get Started Today',
-			ctaDescription: data.marketingMaterial?.Content?.footer?.ctaDescription ?? '',
-			qrInstruction: data.marketingMaterial?.Content?.footer?.qrInstruction ?? 'Scan to get started'
-		}
-	});
+			: {
+					primary: data.marketingMaterial?.Styling?.primary ?? '',
+					secondary: data.marketingMaterial?.Styling?.secondary ?? '',
+					accent: data.marketingMaterial?.Styling?.accent ?? '',
+					lightBg: data.marketingMaterial?.Styling?.lightBg ?? '',
+					panel: data.marketingMaterial?.Styling?.panel ?? '',
+					muted: data.marketingMaterial?.Styling?.muted ?? '',
+					text: data.marketingMaterial?.Styling?.text ?? '',
+					headingFont: data.marketingMaterial?.Styling?.headingFont ?? '',
+					bodyFont: data.marketingMaterial?.Styling?.bodyFont ?? '',
+					pageWidth: data.marketingMaterial?.Styling?.pageWidth ?? '',
+					pageHeight: data.marketingMaterial?.Styling?.pageHeight ?? '',
+					userInterfaceWidth: data.marketingMaterial?.Styling?.userInterfaceWidth ?? '',
+					userInteractionWidth: data.marketingMaterial?.Styling?.userInteractionWidth ?? '',
+					qrSize: data.marketingMaterial?.Styling?.qrSize ?? ''
+				}
+	);
+
+	let Content = $state(
+		isEmpty
+			? {
+					header: {
+						mainTitle: '',
+						subtitle: ''
+					},
+					introduction: {
+						introParagraph: '',
+						problemStatement: ''
+					},
+					benefits: {
+						title: '',
+						items: []
+					},
+					userInterface: {
+						heading: '',
+						paragraph: ''
+					},
+					footer: {
+						ctaHeading: '',
+						ctaDescription: '',
+						qrInstruction: ''
+					}
+				}
+			: {
+					header: {
+						mainTitle: data.marketingMaterial?.Content?.header?.mainTitle ?? '',
+						subtitle: data.marketingMaterial?.Content?.header?.subtitle ?? ''
+					},
+					introduction: {
+						introParagraph: data.marketingMaterial?.Content?.introduction?.introParagraph ?? '',
+						problemStatement: data.marketingMaterial?.Content?.introduction?.problemStatement ?? ''
+					},
+					benefits: {
+						title: data.marketingMaterial?.Content?.benefits?.title ?? '',
+						items: (data.marketingMaterial?.Content?.benefits?.items ?? []).map((item) => {
+							// Backend expects array of strings, so convert any object format to string
+							if (typeof item === 'string') {
+								return item;
+							}
+							// If it's an object, use title or description as the string value
+							return item?.title || item?.description || '';
+						})
+					},
+					userInterface: {
+						heading: data.marketingMaterial?.Content?.userInterface?.heading ?? '',
+						paragraph: data.marketingMaterial?.Content?.userInterface?.paragraph ?? ''
+					},
+					footer: {
+						ctaHeading: data.marketingMaterial?.Content?.footer?.ctaHeading ?? '',
+						ctaDescription: data.marketingMaterial?.Content?.footer?.ctaDescription ?? '',
+						qrInstruction: data.marketingMaterial?.Content?.footer?.qrInstruction ?? ''
+					}
+				}
+	);
 
 	// Images state
-	let Images = $state({
-		titleImage: data.marketingMaterial?.Images?.titleImage ?? '',
-		userInterfaceImage: data.marketingMaterial?.Images?.userInterfaceImage ?? ''
-	});
+	let Images = $state(
+		isEmpty
+			? {
+					titleImage: '',
+					userInterfaceImage: ''
+				}
+			: {
+					titleImage: data.marketingMaterial?.Images?.titleImage ?? '',
+					userInterfaceImage: data.marketingMaterial?.Images?.userInterfaceImage ?? ''
+				}
+	);
 
 	// Logos state (array of resource IDs)
-	let Logos = $state<string[]>(data.marketingMaterial?.Logos ?? []);
+	let Logos = $state<string[]>(isEmpty ? [] : (data.marketingMaterial?.Logos ?? []));
 
 	// QRcode state
-	let QRcode = $state({
-		resourceId: data.marketingMaterial?.QRcode?.resourceId ?? '',
-		whatsappNumber: data.marketingMaterial?.QRcode?.whatsappNumber ?? '',
-		url: data.marketingMaterial?.QRcode?.url ?? ''
-	});
+	let QRcode = $state(
+		isEmpty
+			? {
+					resourceId: '',
+					whatsappNumber: '',
+					url: ''
+				}
+			: {
+					resourceId: data.marketingMaterial?.QRcode?.resourceId ?? '',
+					whatsappNumber: data.marketingMaterial?.QRcode?.whatsappNumber ?? '',
+					url: data.marketingMaterial?.QRcode?.url ?? ''
+				}
+	);
 
 	// File name tracking for UI display
 	let titleImageFileName = $state('');
@@ -114,7 +172,7 @@
 	};
 
 	const addBenefit = () => {
-		Content.benefits.items = [...Content.benefits.items, { icon: '', title: '', description: '' }];
+		Content.benefits.items = [...Content.benefits.items, ''];
 	};
 
 	const removeBenefit = (index: number) => {
@@ -335,16 +393,44 @@
 			errors = {};
 
 			// Build payload in the requested nested format
+			// Filter out empty image fields - backend requires non-empty resource ID strings
+			const filteredImages: Record<string, string> = {};
+			if (Images.titleImage && Images.titleImage.trim() !== '') {
+				filteredImages.titleImage = Images.titleImage;
+			}
+			if (Images.userInterfaceImage && Images.userInterfaceImage.trim() !== '') {
+				filteredImages.userInterfaceImage = Images.userInterfaceImage;
+			}
+
+			// Filter out empty QRcode fields
+			const filteredQRcode: Record<string, string> = {};
+			if (QRcode.resourceId && QRcode.resourceId.trim() !== '') {
+				filteredQRcode.resourceId = QRcode.resourceId;
+			}
+			if (QRcode.whatsappNumber && QRcode.whatsappNumber.trim() !== '') {
+				filteredQRcode.whatsappNumber = QRcode.whatsappNumber;
+			}
+			if (QRcode.url && QRcode.url.trim() !== '') {
+				filteredQRcode.url = QRcode.url;
+			}
+
 			const payload = {
 				Styling,
-				Content,
-				Images,
+				Content: {
+					...Content,
+					benefits: {
+						...Content.benefits,
+						items: Content.benefits.items.filter((item) => item && item.trim() !== '')
+					}
+				},
+				Images: Object.keys(filteredImages).length > 0 ? filteredImages : undefined,
 				Logos: Logos.filter((logo) => logo && logo.trim() !== ''),
-				QRcode
+				QRcode: Object.keys(filteredQRcode).length > 0 ? filteredQRcode : undefined
 			};
 
 			// Determine if this is a create (POST) or update (PUT) operation
-			const method = 'POST';
+			// Use POST if data is empty, PUT if data exists
+			const method = isEmpty ? 'POST' : 'PUT';
 
 			const res = await fetch(`/api/server/tenants/settings/${tenantId}/marketing-material`, {
 				method: method,
@@ -366,13 +452,13 @@
 			}
 		} catch (error) {
 			console.error(
-				`Error ${hasExistingData ? 'updating' : 'creating'} marketing material:`,
+				`Error ${isEmpty ? 'creating' : 'updating'} marketing material:`,
 				error
 			);
 			toastMessage({
 				Status: 'failure',
 				HttpCode: 500,
-				Message: `Failed to ${hasExistingData ? 'update' : 'create'} marketing material. Please try again.`
+				Message: `Failed to ${isEmpty ? 'create' : 'update'} marketing material. Please try again.`
 			});
 		}
 	};
@@ -470,6 +556,7 @@
 												id="styling-{c.key}-text"
 												bind:value={Styling[c.key]}
 												{disabled}
+												placeholder="#1a472a"
 												class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 												readonly
 											/>
@@ -530,6 +617,7 @@
 										id="styling-heading-font"
 										bind:value={Styling.headingFont}
 										{disabled}
+										placeholder="'Poppins', sans-serif"
 										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 									/>
 								</div>
@@ -544,6 +632,7 @@
 										id="styling-body-font"
 										bind:value={Styling.bodyFont}
 										{disabled}
+										placeholder="'Inter', sans-serif"
 										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 									/>
 								</div>
@@ -601,6 +690,7 @@
 										id="styling-page-width"
 										bind:value={Styling.pageWidth}
 										{disabled}
+										placeholder="210mm"
 										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 									/>
 								</div>
@@ -615,6 +705,7 @@
 										id="styling-page-height"
 										bind:value={Styling.pageHeight}
 										{disabled}
+										placeholder="297mm"
 										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 									/>
 								</div>
@@ -629,6 +720,7 @@
 										id="styling-ui-width"
 										bind:value={Styling.userInterfaceWidth}
 										{disabled}
+										placeholder="260px"
 										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 									/>
 								</div>
@@ -643,6 +735,7 @@
 										id="styling-interaction-width"
 										bind:value={Styling.userInteractionWidth}
 										{disabled}
+										placeholder="250px"
 										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 									/>
 								</div>
@@ -657,6 +750,7 @@
 										id="styling-qr-size"
 										bind:value={Styling.qrSize}
 										{disabled}
+										placeholder="120px"
 										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 									/>
 								</div>
@@ -713,6 +807,7 @@
 									id="content-main-title"
 									bind:value={Content.header.mainTitle}
 									{disabled}
+									placeholder="Enter main title"
 									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 								/>
 							</div>
@@ -727,6 +822,7 @@
 									id="content-subtitle"
 									bind:value={Content.header.subtitle}
 									{disabled}
+									placeholder="Enter subtitle"
 									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 								/>
 							</div>
@@ -782,6 +878,7 @@
 									rows="3"
 									bind:value={Content.introduction.introParagraph}
 									{disabled}
+									placeholder="Enter introduction paragraph"
 									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 								></textarea>
 							</div>
@@ -796,6 +893,7 @@
 									rows="3"
 									bind:value={Content.introduction.problemStatement}
 									{disabled}
+									placeholder="Enter problem statement"
 									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 								></textarea>
 							</div>
@@ -851,93 +949,57 @@
 									id="content-benefits-title"
 									bind:value={Content.benefits.title}
 									{disabled}
+									placeholder="Key Benefits"
 									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 								/>
 							</div>
 
 							<!-- Benefits Items -->
 							<div class="space-y-4">
-								{#if Content.benefits.items.length === 0}
-									<div class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 text-center text-sm text-[var(--color-info)]">
-										No benefits added yet. Click "Add Benefit" to create one.
-									</div>
-								{:else}
-									{#each Content.benefits.items as benefit, index}
-										<div
-											class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4"
-										>
-											<div class="mb-4 flex items-center justify-between">
-												<h4 class="text-sm font-medium text-[var(--color-info)]">
-													Benefit #{index + 1}
-												</h4>
-												{#if !disabled}
-													<button
-														type="button"
-														onclick={() => removeBenefit(index)}
-														class="rounded-md border border-red-300 bg-red-50 px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-100"
-													>
-														Remove
-													</button>
-												{/if}
-											</div>
-											<div class="space-y-4">
-												<div class="space-y-2">
-													<label
-														for="benefit-icon-{index}"
-														class="text-sm font-medium text-[var(--color-info)]"
-														>Icon URL</label
-													>
-													<input
-														type="text"
-														id="benefit-icon-{index}"
-														bind:value={benefit.icon}
-														{disabled}
-														class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-														placeholder="Icon image URL"
-													/>
-												</div>
-												<div class="space-y-2">
-													<label
-														for="benefit-title-{index}"
-														class="text-sm font-medium text-[var(--color-info)]"
-														>Title</label
-													>
-													<input
-														type="text"
-														id="benefit-title-{index}"
-														bind:value={benefit.title}
-														{disabled}
-														class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-														placeholder="Benefit title"
-													/>
-												</div>
-												<div class="space-y-2">
-													<label
-														for="benefit-description-{index}"
-														class="text-sm font-medium text-[var(--color-info)]"
-														>Description</label
-													>
-													<textarea
-														id="benefit-description-{index}"
-														rows="3"
-														bind:value={benefit.description}
-														{disabled}
-														class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-														placeholder="Benefit description"
-													></textarea>
-												</div>
-											</div>
+								{#each Content.benefits.items as benefit, index}
+									<div
+										class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4"
+									>
+										<div class="mb-4 flex items-center justify-between">
+											<h4 class="text-sm font-medium text-[var(--color-info)]">
+												Benefit #{index + 1}
+											</h4>
+											{#if !disabled}
+												<button
+													type="button"
+													onclick={() => removeBenefit(index)}
+													class="rounded-md border border-red-300 bg-red-50 px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-100"
+												>
+													Remove
+												</button>
+											{/if}
 										</div>
-									{/each}
-								{/if}
+										<div class="space-y-2">
+											<label
+												for="benefit-{index}"
+												class="text-sm font-medium text-[var(--color-info)]"
+												>Benefit Text</label
+											>
+											<textarea
+												id="benefit-{index}"
+												rows="3"
+												bind:value={Content.benefits.items[index]}
+												{disabled}
+												placeholder="Enter benefit description (e.g., Access personalized health recommendations and care plans)"
+												class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+											></textarea>
+										</div>
+									</div>
+								{/each}
 
 								<button
 									type="button"
 									onclick={addBenefit}
 									{disabled}
-									class="w-full rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-4 py-2 text-sm font-medium text-[var(--color-info)] hover:bg-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+									class="inline-flex items-center gap-1 rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-3 py-1.5 text-sm font-medium text-[var(--color-info)] hover:bg-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50"
 								>
-									+ Add Benefit
+									<Icon icon="material-symbols:add" class="h-4 w-4" />
+									Add Benefit
 								</button>
 							</div>
 						</div>
@@ -992,6 +1054,7 @@
 									id="content-ui-heading"
 									bind:value={Content.userInterface.heading}
 									{disabled}
+									placeholder="Who Can Benefit from This Program"
 									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 								/>
 							</div>
@@ -1006,6 +1069,7 @@
 									rows="3"
 									bind:value={Content.userInterface.paragraph}
 									{disabled}
+									placeholder="Enter user interface paragraph"
 									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 								></textarea>
 							</div>
@@ -1061,6 +1125,7 @@
 									id="content-cta-heading"
 									bind:value={Content.footer.ctaHeading}
 									{disabled}
+									placeholder="Get Started Today"
 									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 								/>
 							</div>
@@ -1075,6 +1140,7 @@
 									rows="3"
 									bind:value={Content.footer.ctaDescription}
 									{disabled}
+									placeholder="Enter CTA description"
 									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 								></textarea>
 							</div>
@@ -1089,6 +1155,7 @@
 									id="content-qr-instruction"
 									bind:value={Content.footer.qrInstruction}
 									{disabled}
+									placeholder="Scan to get started"
 									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 								/>
 							</div>
@@ -1250,72 +1317,66 @@
 
 					{#if activeSections.has('logos')}
 						<div class="space-y-4 p-6">
-							{#if Logos.length === 0}
-								<div class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 text-center text-sm text-[var(--color-info)]">
-									No logos added yet. Click "Add Logo" to create one.
-								</div>
-							{:else}
-									{#each Logos as logo, index}
-									<div
-										class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4"
-									>
-										<div class="mb-4 flex items-center justify-between">
-											<h4 class="text-sm font-medium text-[var(--color-info)]">
-												Logo #{index + 1}
-											</h4>
-											{#if !disabled}
-												<button
-													type="button"
-													onclick={() => removeLogo(index)}
-													class="rounded-md border border-red-300 bg-red-50 px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-100"
-												>
-													Remove
-												</button>
-											{/if}
-										</div>
-										<div class="flex w-full gap-3">
-											<label class="table-btn variant-filled-secondary" for="logo-upload-{index}">
-												Select File
-												<input
-													type="file"
-													id="logo-upload-{index}"
-													accept="image/*"
-													class="hidden"
-													disabled={disabled}
-													onchange={async (e) => await onLogoSelected(e, index)}
-												/>
-											</label>
-											<input
-												type="text"
-												value={logoFileNames[index] || Logos[index] || ''}
-												readonly
-												{disabled}
-												class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-												placeholder="No file selected..."
-											/>
-										</div>
-										{#if Logos[index]}
-											<div class="mt-2">
-												<img
-													src={getImageUrl(Logos[index])}
-													alt=""
-													class="h-24 w-24 rounded border border-[var(--color-outline)] object-cover"
-												/>
-											</div>
+							{#each Logos as logo, index}
+								<div
+									class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4"
+								>
+									<div class="mb-4 flex items-center justify-between">
+										<h4 class="text-sm font-medium text-[var(--color-info)]">
+											Logo #{index + 1}
+										</h4>
+										{#if !disabled}
+											<button
+												type="button"
+												onclick={() => removeLogo(index)}
+												class="rounded-md border border-red-300 bg-red-50 px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-100"
+											>
+												Remove
+											</button>
 										{/if}
 									</div>
-								{/each}
-							{/if}
+									<div class="flex w-full gap-3">
+										<label class="table-btn variant-filled-secondary" for="logo-upload-{index}">
+											Select File
+											<input
+												type="file"
+												id="logo-upload-{index}"
+												accept="image/*"
+												class="hidden"
+												disabled={disabled}
+												onchange={async (e) => await onLogoSelected(e, index)}
+											/>
+										</label>
+										<input
+											type="text"
+											value={logoFileNames[index] || Logos[index] || ''}
+											readonly
+											{disabled}
+											class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+											placeholder="No file selected..."
+										/>
+									</div>
+									{#if Logos[index]}
+										<div class="mt-2">
+											<img
+												src={getImageUrl(Logos[index])}
+												alt=""
+												class="h-24 w-24 rounded border border-[var(--color-outline)] object-cover"
+											/>
+										</div>
+									{/if}
+								</div>
+							{/each}
 
-							{#if !disabled}
-								<button
-									type="button"
-									onclick={addLogo}
-									class="w-full rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-4 py-2 text-sm font-medium text-[var(--color-info)] hover:bg-[var(--color-primary)]"
-								>
-									+ Add Logo
-								</button>
-							{/if}
+							<button
+								type="button"
+								onclick={addLogo}
+								{disabled}
+								class="inline-flex items-center gap-1 rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-3 py-1.5 text-sm font-medium text-[var(--color-info)] hover:bg-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+							>
+								<Icon icon="material-symbols:add" class="h-4 w-4" />
+								Add Logo
+							</button>
 						</div>
 					{/if}
 				</div>
@@ -1406,8 +1467,8 @@
 									id="qrcode-whatsapp-number"
 									bind:value={QRcode.whatsappNumber}
 									{disabled}
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 									placeholder="+91-1234567890"
+									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 								/>
 							</div>
 							<div class="space-y-2">
@@ -1421,8 +1482,8 @@
 									id="qrcode-url"
 									bind:value={QRcode.url}
 									{disabled}
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 									placeholder="https://wa.me/911234567890"
+									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 								/>
 							</div>
 						</div>
