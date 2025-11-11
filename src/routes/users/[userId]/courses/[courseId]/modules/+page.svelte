@@ -18,49 +18,59 @@
 
 	let debounceTimeout;
 	let isLoading = $state(false);
-	let courses = $state(data.courses?.Items || []);
-	let retrivedCourses = $derived(courses);
+	let modules = $state(data.modules?.Items || []);
+	let retrivedModules = $derived(modules);
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
 	let isDeleting = $state(false);
 	let searchKeyword = $state(undefined);
 
 	const userId = page.params.userId;
-	const courseRoute = `/users/${userId}/courses`;
-	const editRoute = (courseId) => `/users/${userId}/courses/${courseId}/edit`;
-	const viewRoute = (courseId) => `/users/${userId}/courses/${courseId}/view`;
-	const modulesRoute = (courseId) => `/users/${userId}/courses/${courseId}/modules`;
-	const createRoute = `/users/${userId}/courses/create`;
+	const courseId = page.params.courseId;
+	const moduleRoute = `/users/${userId}/courses/${courseId}/modules`;
+	const editRoute = (moduleId) => `/users/${userId}/courses/${courseId}/modules/${moduleId}/edit`;
+	const viewRoute = (moduleId) => `/users/${userId}/courses/${courseId}/modules/${moduleId}/view`;
+	const createRoute = `/users/${userId}/courses/${courseId}/modules/create`;
+	const coursesRoute = `/users/${userId}/courses`;
 
-	const breadCrumbs = [{ name: 'Courses', path: courseRoute }];
+	const courseViewRoute = `/users/${userId}/courses/${courseId}/view`;
+	const breadCrumbs = [
+		{ name: 'Courses', path: courseViewRoute },
+		{ name: 'Modules', path: moduleRoute }
+	];
 
-	let courseName = $state(undefined);
+	let moduleName = $state(undefined);
+	let durationInMins = $state(undefined);
 
-	let totalCoursesCount = $state(data.courses?.TotalCount || 0);
+	let totalModulesCount = $state(data.modules?.TotalCount || 0);
+	$inspect('totalModulesCount', totalModulesCount);
 	let isSortingName = $state(false);
 	let sortBy = $state('Name');
 	let sortOrder = $state('ascending');
 	let paginationSettings: PaginationSettings = $state({
 		page: 0,
 		limit: 10,
-		size: data.courses?.TotalCount || 0,
+		size: data.modules?.TotalCount || 0,
 		amounts: [10, 20, 30, 50]
 	});
 
-	// Update pagination size when totalCoursesCount changes
+	$inspect('retrivedModules', modules);
+
+	// Update pagination size when totalModulesCount changes
 	$effect(() => {
-		paginationSettings.size = totalCoursesCount;
+		paginationSettings.size = totalModulesCount;
 	});
 
-	async function searchCourse(model) {
+	async function searchModule(model) {
 		try {
 			isLoading = true;
-			let url = `/api/server/educational/course/search?`;
+			let url = `/api/server/educational/modules/search?`;
 			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
-			if (model.courseName) url += `&name=${model.courseName}`;
+			if (model.moduleName) url += `&name=${model.moduleName}`;
+			if (model.durationInMins) url += `&durationInMins=${model.durationInMins}`;
 
 			const res = await fetch(url, {
 				method: 'GET',
@@ -68,15 +78,15 @@
 			});
 			const searchResult = await res.json();
 			console.log('searchResult', searchResult);
-			const courseData = searchResult.Data.Courses;
-			totalCoursesCount = courseData.TotalCount;
-			paginationSettings.size = totalCoursesCount;
+			const courseModules = searchResult.Data.CourseModules;
+			totalModulesCount = courseModules.TotalCount;
+			paginationSettings.size = totalModulesCount;
 
-			courses = courseData.Items.map((item, index) => ({
+			modules = courseModules.Items.map((item, index) => ({
 				...item,
 				index: index + 1
 			}));
-			searchKeyword = model.courseName;
+			searchKeyword = model.moduleName;
 		} catch (err) {
 			console.error('Search failed:', err);
 		} finally {
@@ -89,8 +99,25 @@
 		let searchKeyword = e.target.value;
 		debounceTimeout = setTimeout(() => {
 			paginationSettings.page = 0; // reset page when typing new search
-			searchCourse({
-				courseName: searchKeyword,
+			searchModule({
+				moduleName: searchKeyword,
+				durationInMins: durationInMins,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: 0,
+				sortBy,
+				sortOrder
+			});
+		}, 400);
+	}
+
+	async function onDurationInput(e) {
+		clearTimeout(debounceTimeout);
+		let durationValue = e.target.value;
+		debounceTimeout = setTimeout(() => {
+			paginationSettings.page = 0; // reset page when typing new search
+			searchModule({
+				moduleName: searchKeyword,
+				durationInMins: durationValue ? parseFloat(durationValue) : undefined,
 				itemsPerPage: paginationSettings.limit,
 				pageIndex: 0,
 				sortBy,
@@ -106,8 +133,9 @@
 			isSortingName = true;
 		}
 		sortBy = columnName;
-		searchCourse({
-			courseName: searchKeyword,
+		searchModule({
+			moduleName: searchKeyword,
+			durationInMins: durationInMins,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -121,9 +149,10 @@
 	};
 
 	function onItemsPerPageChange() {
-		paginationSettings.page = 0; // reset to first page
-		searchCourse({
-			courseName: searchKeyword,
+		paginationSettings.page = 0; 
+		searchModule({
+			moduleName: searchKeyword,
+			durationInMins: durationInMins,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: 0,
 			sortBy,
@@ -132,8 +161,9 @@
 	}
 
 	function onPageChange() {
-		searchCourse({
-			courseName: searchKeyword,
+		searchModule({
+			moduleName: searchKeyword,
+			durationInMins: durationInMins,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -141,9 +171,9 @@
 		});
 	}
 
-	const handleCourseDelete = async (id) => {
-		console.log('Inside handleCourseDelete', id);
-		const response = await fetch(`/api/server/educational/course/${id}`, {
+	const handleModuleDelete = async (id) => {
+		console.log('Inside handleModuleDelete', id);
+		const response = await fetch(`/api/server/educational/modules/${id}`, {
 			method: 'DELETE',
 			headers: { 'content-type': 'application/json' }
 		});
@@ -156,8 +186,9 @@
 		} else {
 			toastMessage(res);
 		}
-		searchCourse({
-			courseName: searchKeyword,
+		searchModule({
+			moduleName: searchKeyword,
+			durationInMins: durationInMins,
 			itemsPerPage: paginationSettings.limit,
 			pageIndex: paginationSettings.page,
 			sortBy,
@@ -173,26 +204,48 @@
 		<div class="table-container shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="flex-1">
-						<div class="relative pr-1.5">
+					<div class="flex-1 flex gap-2">
+						<div class="relative pr-1.5 flex-1">
 							<Icon
 								icon="heroicons:magnifying-glass"
 								class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
 							/>
 							<input
-								name="courseName"
+								name="moduleName"
 								type="text"
-								bind:value={courseName}
+								bind:value={moduleName}
 								oninput={(event) => onSearchInput(event)}
 								placeholder="Search by name"
 								class="table-input-field !pr-4 !pl-10"
 							/>
-							{#if courseName}
+							{#if moduleName}
 								<button
 									type="button"
 									onclick={() => {
-										courseName = '';
+										moduleName = '';
 										onSearchInput({ target: { name: 'name', value: '' } });
+									}}
+									class="close-btn"
+								>
+									<Icon icon="material-symbols:close" />
+								</button>
+							{/if}
+						</div>
+						<div class="relative pr-1.5 flex-1">
+							<input
+								name="durationInMins"
+								type="number"
+								bind:value={durationInMins}
+								oninput={(event) => onDurationInput(event)}
+								placeholder="Search by duration (minutes)"
+								class="table-input-field !pr-4"
+							/>
+							{#if durationInMins}
+								<button
+									type="button"
+									onclick={() => {
+										durationInMins = undefined;
+										onDurationInput({ target: { value: '' } });
 									}}
 									class="close-btn"
 								>
@@ -220,19 +273,19 @@
 									{/if}
 								</button>
 							</th>
-							<th class="w-[20%]">Description</th>
-							<th class="w-[15%]">Duration (Days)</th>
+							<th class="w-[25%]">Description</th>
+							<th class="w-[15%]">Duration (Mins)</th>
 							<th class="w-[15%]">Created</th>
 							<th class="w-[23%]"></th>
 						</tr>
 					</thead>
 					<tbody>
-						{#if retrivedCourses.length <= 0}
+						{#if retrivedModules.length <= 0}
 							<tr class="text-center">
-								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
+								<td colspan="7">{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}
-							{#each retrivedCourses as row, index}
+							{#each retrivedModules as row, index}
 								<tr>
 									<td>
 										{paginationSettings.page * paginationSettings.limit + index + 1}
@@ -240,7 +293,7 @@
 
 									<td>
 										<Tooltip text={row.Name || 'Not specified'}>
-											<a href={modulesRoute(row.id)} class="hover:underline">
+											<a href={viewRoute(row.id)}>
 												{row.Name !== null && row.Name !== ''
 													? Helper.truncateText(row.Name, 50)
 													: 'Not specified'}
@@ -255,8 +308,8 @@
 										</Tooltip>
 									</td>
 									<td>
-										{row.DurationInDays !== null && row.DurationInDays !== undefined
-											? row.DurationInDays
+										{row.DurationInMins !== null && row.DurationInMins !== undefined
+											? row.DurationInMins
 											: 'Not specified'}
 									</td>
 									<td role="gridcell" aria-colindex={5} tabindex="0">
@@ -301,10 +354,11 @@
 
 <Confirmation
 	bind:isOpen={openDeleteModal}
-	title="Delete Course"
-	onConfirm={handleCourseDelete}
+	title="Delete Module"
+	onConfirm={handleModuleDelete}
 	id={idToBeDeleted}
-	message="Are you sure you want to delete this course?"
+	message="Are you sure you want to delete this module?"
 />
 
 <Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />
+

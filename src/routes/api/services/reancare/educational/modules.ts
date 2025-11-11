@@ -1,0 +1,140 @@
+import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY } from '$env/static/private';
+import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
+import { del, get, post, put } from '../common.reancare';
+
+///////////////////////////////////////////////////////////////////////////////
+
+export const createModule = async (
+	sessionId: string,
+	name: string,
+	description?: string,
+	durationInMins?: number,
+	imageUrl?: string,
+	sequence?: number
+) => {
+	const body: any = {
+		Name: name
+	};
+	
+	if (description !== undefined && description !== null) {
+		body.Description = description;
+	}
+	if (durationInMins !== undefined && durationInMins !== null) {
+		body.DurationInMins = durationInMins;
+	}
+	if (imageUrl !== undefined && imageUrl !== null) {
+		body.ImageUrl = imageUrl;
+	}
+	if (sequence !== undefined && sequence !== null) {
+		body.Sequence = sequence;
+	}
+	const url = BACKEND_API_URL + '/educational/course-modules';
+	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+
+	const findAndClearKeys = [`session-${sessionId}:req-searchModules`];
+	await DashboardManager.findAndClear(findAndClearKeys);
+
+	return result;
+};
+
+export const getModuleById = async (sessionId: string, id: string) => {
+	const url = BACKEND_API_URL + `/educational/course-modules/${id}`;
+	console.log("URL*****", url);
+
+	const cacheKey = `session-${sessionId}:req-getModuleById-${id}`;
+
+	if (await DashboardManager.has(cacheKey)) {
+		return await DashboardManager.get(cacheKey);
+	}
+
+	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	await DashboardManager.set(cacheKey, result);
+	return result;
+};
+
+export const searchModules = async (sessionId: string, searchParams?) => {
+	let searchString = '';
+	if (searchParams) {
+		const keys = Object.keys(searchParams);
+		if (keys.length > 0) {
+			searchString = '?';
+			const params = [];
+			for (const key of keys) {
+				if (searchParams[key] !== undefined && searchParams[key] !== null && searchParams[key] !== '') {
+					const param = `${key}=${searchParams[key]}`;
+					params.push(param);
+				}
+			}
+			searchString += params.join('&');
+		}
+	}
+	const url = BACKEND_API_URL + `/educational/course-modules/search${searchString}`;
+	
+	console.log('searchModules - searchParams:', searchParams);
+	console.log('searchModules - constructed URL:', url);
+
+	const cacheKey = `session-${sessionId}:req-searchModules:${searchString}`;
+	if (await DashboardManager.has(cacheKey)) {
+		console.log('searchModules - using cached result');
+		return await DashboardManager.get(cacheKey);
+	}
+
+	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	console.log('searchModules - response:', JSON.stringify(result, null, 2));
+	await DashboardManager.set(cacheKey, result);
+	return result;
+};
+
+export const updateModule = async (
+	sessionId: string,
+	moduleId: string,
+	name: string,
+	description?: string,
+	durationInMins?: number,
+	imageUrl?: string,
+	sequence?: number
+) => {
+	const body: any = {
+		moduleId,
+		Name: name
+	};
+	
+	if (description !== undefined && description !== null) {
+		body.Description = description;
+	}
+	if (durationInMins !== undefined && durationInMins !== null) {
+		body.DurationInMins = durationInMins;
+	}
+	if (imageUrl !== undefined && imageUrl !== null) {
+		body.ImageUrl = imageUrl;
+	}
+	if (sequence !== undefined && sequence !== null) {
+		body.Sequence = sequence;
+	}
+	const url = BACKEND_API_URL + `/educational/course-modules/${moduleId}`;
+	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+
+	const keysToBeDeleted = [`session-${sessionId}:req-getModuleById-${moduleId}`,];
+	await DashboardManager.deleteMany(keysToBeDeleted);
+
+	const findAndClearKeys = [`session-${sessionId}:req-searchModules`,];
+	await DashboardManager.findAndClear(findAndClearKeys);
+
+	return result;
+};
+
+export const deleteModule = async (sessionId: string, id: string) => {
+	const url = BACKEND_API_URL + `/educational/course-modules/${id}`;
+	const result = await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+
+	const keysToBeDeleted = [`session-${sessionId}:req-getModuleById-${id}`,];
+	await DashboardManager.deleteMany(keysToBeDeleted);
+
+	const findAndClearKeys = [
+		`session-${sessionId}:req-searchModules`
+	];
+	await DashboardManager.findAndClear(findAndClearKeys);
+
+	return result;
+};
+
