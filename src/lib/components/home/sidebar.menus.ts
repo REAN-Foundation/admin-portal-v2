@@ -202,12 +202,6 @@ const hasRolePermission = (menuName: string, userRole: string) => {
 		}
 		return false;
 	}
-	if (menuName === 'Marketing-Material') {
-		if (userRole === 'System admin' || userRole === 'Tenant admin') {
-			return true;
-		}
-		return false;
-	}
 	if (menuName === 'Administration') {
 		if (userRole === 'System admin' || userRole === 'Tenant admin') {
 			return true;
