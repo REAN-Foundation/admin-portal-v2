@@ -110,8 +110,17 @@
 					benefits: {
 						title: data.marketingMaterial?.Content?.benefits?.title ?? '',
 						items: (data.marketingMaterial?.Content?.benefits?.items ?? []).map((item) => {
-							// Handle both string (legacy) and object formats
+							// Handle string format (from backend)
 							if (typeof item === 'string') {
+								// Check if string contains ":" separator (Title: Description format)
+								const colonIndex = item.indexOf(':');
+								if (colonIndex > 0) {
+									// Split into title and description
+									const title = item.substring(0, colonIndex).trim();
+									const description = item.substring(colonIndex + 1).trim();
+									return { title, description };
+								}
+								// If no colon, treat entire string as title
 								return { title: item, description: '' };
 							}
 							// If it's already an object, use it (without icon)
@@ -426,7 +435,14 @@
 							if (typeof item === 'string') {
 								return item;
 							}
-							return item?.title?.trim() || item?.description?.trim() || '';
+							// Combine title and description, prioritizing description
+							const title = item?.title?.trim() || '';
+							const description = item?.description?.trim() || '';
+							// If both exist, combine them; otherwise use whichever is available
+							if (title && description) {
+								return `${title}: ${description}`;
+							}
+							return description || title || '';
 						})
 					}
 				},

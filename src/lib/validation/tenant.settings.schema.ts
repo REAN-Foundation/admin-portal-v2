@@ -394,30 +394,6 @@ export const ConsentSettingsSchema = z.object({
         .optional(),
 });
 
-const FeatureSchema = z.object({
-    Logo: z.string().optional(),
-    Title: z.string({
-        required_error: "Feature title is required",
-        invalid_type_error: "Feature title must be a string",
-    }),
-    Description: z.string({
-        required_error: "Feature description is required",
-        invalid_type_error: "Feature description must be a string",
-    }),
-});
-
-const BenefitSchema = z.object({
-    Icon: z.string().optional(),
-    Title: z.string({
-        required_error: "Benefit title is required",
-        invalid_type_error: "Benefit title must be a string",
-    }),
-    Description: z.string({
-        required_error: "Benefit description is required",
-        invalid_type_error: "Benefit description must be a string",
-    }),
-});
-
 const MarketingMaterialStylingSchema = z.object({
     primary: z.string().optional(),
     secondary: z.string().optional(),
