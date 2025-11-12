@@ -64,14 +64,13 @@
 	let formSettingsLink = `${tenantRoute}/${tenantId}/settings/forms-setting`;
 	let followupSettingsLink = `${tenantRoute}/${tenantId}/settings/followup-setting`;
 	let concentSettingsLink = `${tenantRoute}/${tenantId}/settings/consent-setting`;
-	let marketingMaterialSettingsLink = `${tenantRoute}/${tenantId}/settings/marketing-material-setting`;
 	let customSettingsLink = `${tenantRoute}/${tenantId}/settings/custom-settings`;
 
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
-<div class="flex w-full flex-col px-2">
+<div class="flex w-full flex-col px-5">
 	<div class="w-full md:flex md:items-center md:space-x-4">
 		<div
 			class="grid w-full grid-cols-2 gap-2 text-center md:grid md:grid-cols-3 md:space-x-4 xl:flex xl:w-full"
@@ -129,15 +128,6 @@
 			</a>
 
 			<!-- Row 3 -->
-			<a
-				class="btn {page.url.pathname === marketingMaterialSettingsLink
-					? 'variant-filled-secondary'
-					: 'variant-soft-secondary'} flex items-center justify-center gap-2 whitespace-nowrap"
-				href={marketingMaterialSettingsLink}
-			>
-				<Icon icon="material-symbols:campaign-outline" class="h-5 w-5 shrink-0" />
-				Marketing
-			</a>
 			<a
 				class="btn {page.url.pathname === customSettingsLink
 					? 'variant-filled-secondary'
