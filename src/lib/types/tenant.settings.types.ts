@@ -403,3 +403,87 @@ export interface MarketingMaterialUploadModel {
 	FileName: string;
 	FileType: string;
 }
+
+// New Marketing Material Types with Styling and Content structure
+export interface MarketingMaterialStyling {
+	primary?: string;
+	secondary?: string;
+	accent?: string;
+	lightBg?: string;
+	panel?: string;
+	muted?: string;
+	text?: string;
+	headingFont?: string;
+	bodyFont?: string;
+	pageWidth?: string;
+	pageHeight?: string;
+	userInterfaceWidth?: string;
+	userInteractionWidth?: string;
+	qrSize?: string;
+}
+
+export interface MarketingMaterialContentHeader {
+	mainTitle?: string;
+	subtitle?: string;
+}
+
+export interface MarketingMaterialContentIntroduction {
+	introParagraph?: string;
+	problemStatement?: string;
+}
+
+export interface MarketingMaterialBenefitItem {
+	title?: string;
+	description?: string;
+}
+
+export interface MarketingMaterialContentBenefits {
+	title?: string;
+	items?: (string | MarketingMaterialBenefitItem)[];
+}
+
+export interface MarketingMaterialContentUserInterface {
+	heading?: string;
+	paragraph?: string;
+}
+
+export interface MarketingMaterialContentFooter {
+	ctaHeading?: string;
+	ctaDescription?: string;
+	qrInstruction?: string;
+}
+
+export interface MarketingMaterialContent {
+	header?: MarketingMaterialContentHeader;
+	introduction?: MarketingMaterialContentIntroduction;
+	benefits?: MarketingMaterialContentBenefits;
+	userInterface?: MarketingMaterialContentUserInterface;
+	footer?: MarketingMaterialContentFooter;
+}
+
+export interface MarketingMaterialImages {
+	titleImage?: string;
+	userInterfaceImage?: string;
+}
+
+export interface MarketingMaterialQRcode {
+	resourceId?: string;
+	whatsappNumber?: string;
+	url?: string;
+}
+
+export interface MarketingMaterialCreateModel {
+	Styling?: MarketingMaterialStyling;
+	Content?: MarketingMaterialContent;
+	Images?: MarketingMaterialImages;
+	Logos?: string[];
+	QRcode?: MarketingMaterialQRcode;
+}
+
+export interface MarketingMaterialUpdateModel {
+	Styling?: MarketingMaterialStyling;
+	Content?: MarketingMaterialContent;
+	Images?: MarketingMaterialImages;
+	Logos?: string[];
+	QRcode?: MarketingMaterialQRcode;
+}

@@ -2,6 +2,7 @@ import { ResponseHandler } from '$lib/utils/response.handler';
 import { uuidSchema } from '$lib/validation/common.schema';
 import { MarketingMaterialRequestSchema } from '$lib/validation/tenant.settings.schema';
 import type { RequestEvent } from '@sveltejs/kit';
+import type { MarketingMaterialCreateModel, MarketingMaterialUpdateModel } from '$lib/types/tenant.settings.types';
 import {
 	createMarketingMaterialByTenantId,
 	getMarketingMaterialByTenantId,
@@ -53,14 +54,10 @@ export const POST = async (event: RequestEvent) => {
 
 		const tenantId = event.params.id;
 		const request = event.request;
-		const data = await request.json();
+		const data: MarketingMaterialCreateModel = await request.json();
 
-		console.log('Marketing Material POST (CREATE) data:', JSON.stringify(data, null, 2));
-
-		// Validate the request data
 		const validationResult = MarketingMaterialRequestSchema.safeParse(data);
 		if (!validationResult.success) {
-			console.error('Validation errors:', validationResult.error.flatten().fieldErrors);
 			return ResponseHandler.success({
 				Status: 'failure',
 				HttpCode: 400,
@@ -74,12 +71,8 @@ export const POST = async (event: RequestEvent) => {
 			});
 		}
 
-		// Create marketing material
 		const response = await createMarketingMaterialByTenantId(sessionId, tenantId, data);
 
-		console.log('Marketing Material POST response:', JSON.stringify(response, null, 2));
-
-		// Return success response
 		return ResponseHandler.success(response);
 	} catch (error) {
 		console.error('Error creating marketing material:', error);
@@ -104,9 +97,7 @@ export const PUT = async (event: RequestEvent) => {
 
 		const tenantId = event.params.id;
 		const request = event.request;
-		const data = await request.json();
-
-		console.log('Marketing Material PUT data:', JSON.stringify(data, null, 2));
+		const data: MarketingMaterialUpdateModel = await request.json();
 
 		const validationResult = MarketingMaterialRequestSchema.safeParse(data);
 		if (!validationResult.success) {

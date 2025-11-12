@@ -3,6 +3,8 @@
 	import Icon from '@iconify/svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
+	import { MarketingMaterialRequestSchema } from '$lib/validation/tenant.settings.schema';
+	import type { MarketingMaterialCreateModel, MarketingMaterialUpdateModel } from '$lib/types/tenant.settings.types';
 
 	let { data } = $props();
 
@@ -110,11 +112,10 @@
 						items: (data.marketingMaterial?.Content?.benefits?.items ?? []).map((item) => {
 							// Handle both string (legacy) and object formats
 							if (typeof item === 'string') {
-								return { icon: '', title: item, description: '' };
+								return { title: item, description: '' };
 							}
-							// If it's already an object, use it
+							// If it's already an object, use it (without icon)
 							return {
-								icon: item?.icon ?? '',
 								title: item?.title ?? '',
 								description: item?.description ?? ''
 							};
@@ -145,8 +146,16 @@
 				}
 	);
 
-	// Logos state (array of resource IDs)
-	let Logos = $state<string[]>(isEmpty ? [] : (data.marketingMaterial?.Logos ?? []));
+	// Logos state (array of resource IDs, always 3)
+	const initializeLogos = () => {
+		const logos = isEmpty ? [] : (data.marketingMaterial?.Logos ?? []).slice(0, 3);
+		// Always ensure we have exactly 3 slots
+		while (logos.length < 3) {
+			logos.push('');
+		}
+		return logos;
+	};
+	let Logos = $state<string[]>(initializeLogos());
 
 	// QRcode state
 	let QRcode = $state(
@@ -167,10 +176,7 @@
 	let titleImageFileName = $state('');
 	let userInterfaceImageFileName = $state('');
 	let qrCodeFileName = $state('');
-	let logoFileNames = $state<string[]>([]);
-	let benefitIconFileNames = $state<string[]>(
-		isEmpty ? [] : (data.marketingMaterial?.Content?.benefits?.items ?? []).map(() => '')
-	);
+	let logoFileNames = $state<string[]>(['', '', '']);
 
 	// Helper function to get image URL from resource ID
 	const getImageUrl = (resourceId: string) => {
@@ -192,23 +198,19 @@
 	};
 
 	const addBenefit = () => {
-		Content.benefits.items = [...Content.benefits.items, { icon: '', title: '', description: '' }];
-		benefitIconFileNames = [...benefitIconFileNames, ''];
+		Content.benefits.items = [...Content.benefits.items, { title: '', description: '' }];
 	};
 
 	const removeBenefit = (index: number) => {
 		Content.benefits.items = Content.benefits.items.filter((_, i) => i !== index);
-		benefitIconFileNames = benefitIconFileNames.filter((_, i) => i !== index);
-	};
-
-	const addLogo = () => {
-		Logos = [...Logos, ''];
-		logoFileNames = [...logoFileNames, ''];
 	};
 
 	const removeLogo = (index: number) => {
-		Logos = Logos.filter((_, i) => i !== index);
-		logoFileNames = logoFileNames.filter((_, i) => i !== index);
+		// Clear the logo instead of removing the slot
+		Logos[index] = '';
+		logoFileNames[index] = '';
+		Logos = [...Logos];
+		logoFileNames = [...logoFileNames];
 	};
 
 	// File selection handler for images
@@ -264,70 +266,6 @@
 			console.error('Error uploading image:', error);
 			addToast({
 				message: 'Failed to upload image. Please try again.',
-				type: 'error',
-				timeout: 3000
-			});
-		}
-		return null;
-	};
-
-	// File selection handler for benefit icons
-	const onBenefitIconSelected = async (e: Event, benefitIndex: number) => {
-		const input = e.target as HTMLInputElement;
-		const file = input.files?.[0];
-		if (!file) return;
-
-		// Update file name array
-		if (!benefitIconFileNames[benefitIndex]) {
-			benefitIconFileNames = [...benefitIconFileNames];
-		}
-		benefitIconFileNames[benefitIndex] = file.name;
-		benefitIconFileNames = [...benefitIconFileNames];
-
-		// Upload immediately
-		await uploadBenefitIcon(file, benefitIndex);
-	};
-
-	// File upload function for benefit icons
-	const uploadBenefitIcon = async (file: File, benefitIndex: number) => {
-		try {
-			const formData = new FormData();
-			formData.append('file', file);
-
-			const res = await fetch(`/api/server/file-resources/upload/reancare`, {
-				method: 'POST',
-				body: formData
-			});
-
-			const response = await res.json();
-			if (response.Status === 'success' && response.HttpCode === 201) {
-				const resourceId = response.Data?.FileResources?.[0]?.id || response.Data?.id;
-				if (resourceId) {
-					// Create a new array to trigger reactivity
-					const updatedItems = [...Content.benefits.items];
-					updatedItems[benefitIndex] = {
-						...updatedItems[benefitIndex],
-						icon: resourceId
-					};
-					Content.benefits.items = updatedItems;
-					addToast({
-						message: 'Benefit icon uploaded successfully.',
-						type: 'success',
-						timeout: 3000
-					});
-					return resourceId;
-				}
-			} else {
-				addToast({
-					message: response.Message || 'Benefit icon upload failed.',
-					type: 'error',
-					timeout: 3000
-				});
-			}
-		} catch (error) {
-			console.error('Error uploading benefit icon:', error);
-			addToast({
-				message: 'Failed to upload benefit icon. Please try again.',
 				type: 'error',
 				timeout: 3000
 			});
@@ -465,8 +403,8 @@
 	};
 
 	const handleSubmit = async (event: Event) => {
-		event.preventDefault();
 		try {
+			event.preventDefault();
 			if (disabled) {
 				addToast({
 					message: 'Nothing to edit !',
@@ -478,84 +416,63 @@
 
 			errors = {};
 
-			// Build payload in the requested nested format
-			// Filter out empty image fields - backend requires non-empty resource ID strings
-			const filteredImages: Record<string, string> = {};
-			if (Images.titleImage && Images.titleImage.trim() !== '') {
-				filteredImages.titleImage = Images.titleImage;
-			}
-			if (Images.userInterfaceImage && Images.userInterfaceImage.trim() !== '') {
-				filteredImages.userInterfaceImage = Images.userInterfaceImage;
-			}
-
-			// Filter out empty QRcode fields
-			const filteredQRcode: Record<string, string> = {};
-			if (QRcode.resourceId && QRcode.resourceId.trim() !== '') {
-				filteredQRcode.resourceId = QRcode.resourceId;
-			}
-			if (QRcode.whatsappNumber && QRcode.whatsappNumber.trim() !== '') {
-				filteredQRcode.whatsappNumber = QRcode.whatsappNumber;
-			}
-			if (QRcode.url && QRcode.url.trim() !== '') {
-				filteredQRcode.url = QRcode.url;
-			}
-
-			const payload = {
+			const marketingMaterialModel: MarketingMaterialCreateModel | MarketingMaterialUpdateModel = {
 				Styling,
 				Content: {
 					...Content,
 					benefits: {
 						...Content.benefits,
-						// Convert benefit objects to strings (backend expects array of strings)
-						// Use title as the string value, fallback to description if title is empty
-						items: Content.benefits.items
-							.map((item) => {
-								if (typeof item === 'string') {
-									return item;
-								}
-								// Use title as the string value, or description if title is empty
-								return item?.title?.trim() || item?.description?.trim() || '';
-							})
-							.filter((item) => item && item.trim() !== '')
+						items: Content.benefits.items.map((item) => {
+							if (typeof item === 'string') {
+								return item;
+							}
+							return item?.title?.trim() || item?.description?.trim() || '';
+						})
 					}
 				},
-				Images: Object.keys(filteredImages).length > 0 ? filteredImages : undefined,
+				Images,
 				Logos: Logos.filter((logo) => logo && logo.trim() !== ''),
-				QRcode: Object.keys(filteredQRcode).length > 0 ? filteredQRcode : undefined
+				QRcode
 			};
 
+			// Client-side validation
+			const validationResult = MarketingMaterialRequestSchema.safeParse(marketingMaterialModel);
+
+			if (!validationResult.success) {
+				errors = Object.fromEntries(
+					Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				);
+				return;
+			}
+
 			// Determine if this is a create (POST) or update (PUT) operation
-			// Use POST if data is empty, PUT if data exists
 			const method = isEmpty ? 'POST' : 'PUT';
 
 			const res = await fetch(`/api/server/tenants/settings/${tenantId}/marketing-material`, {
 				method: method,
-				body: JSON.stringify(payload),
+				body: JSON.stringify(marketingMaterialModel),
 				headers: { 'content-type': 'application/json' }
 			});
 
 			const response = await res.json();
+
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				edit = false;
 				disabled = true;
 				return;
 			}
+
 			if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
 				toastMessage(response);
 			}
 		} catch (error) {
-			console.error(
-				`Error ${isEmpty ? 'creating' : 'updating'} marketing material:`,
-				error
-			);
-			toastMessage({
-				Status: 'failure',
-				HttpCode: 500,
-				Message: `Failed to ${isEmpty ? 'create' : 'update'} marketing material. Please try again.`
-			});
+			toastMessage();
 		}
 	};
 </script>
@@ -563,7 +480,7 @@
 <BreadCrumbs crumbs={breadCrumbs} />
 
 <div class="px-5 py-4">
-	<div class="mx-auto my-6 border border-[var(--color-outline)]">
+	<div class="mx-auto my-2 border border-[var(--color-outline)]">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 			<div
 				class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6"
@@ -588,7 +505,7 @@
 			</div>
 
 			<div class="flex flex-col space-y-4 px-4 py-4">
-			
+				<!-- Logos Section -->
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('logos') ? 'border-hover' : ''}`}
 				>
@@ -606,7 +523,7 @@
 							<Icon icon="material-symbols:workspace-premium-outline" class="hidden h-5 w-5 md:block" />
 							<div class="text-start">
 								<p class="text-md font-medium">Logos</p>
-								<p class="text-sm">Logo resource IDs array</p>
+								<p class="text-sm">Upload 3 logos</p>
 							</div>
 						</div>
 						<span
@@ -681,21 +598,9 @@
 									</div>
 								{/each}
 							</div>
-							<div class="mt-4">
-								<button
-									type="button"
-									onclick={addLogo}
-									{disabled}
-									class="min-w-[140px] inline-flex items-center justify-center gap-1 rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-3 py-1.5 text-sm font-medium text-[var(--color-info)] hover:bg-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50"
-								>
-									<Icon icon="material-symbols:add" class="h-4 w-4" />
-									Add Logo
-								</button>
-							</div>
 						</div>
 					{/if}
 				</div>
-
 
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('header') ? 'border-hover' : ''}`}
@@ -737,7 +642,7 @@
 								<label
 									for="content-main-title"
 									class="text-sm font-medium text-[var(--color-info)]"
-									>Main Title</label
+									>Main Title <span class="text-red-700">*</span></label
 								>
 								<input
 									type="text"
@@ -808,7 +713,7 @@
 								<label
 									for="content-intro-paragraph"
 									class="text-sm font-medium text-[var(--color-info)]"
-									>Introduction Paragraph</label
+									>Introduction Paragraph <span class="text-red-700">*</span></label
 								>
 								<textarea
 									id="content-intro-paragraph"
@@ -912,67 +817,21 @@
 											{/if}
 										</div>
 										<div class="space-y-4">
-											<!-- First Row: Icon and Title -->
-											<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-												<div class="space-y-2">
-													<label
-														for="benefit-icon-{index}"
-														class="text-sm font-medium text-[var(--color-info)]"
-														>Icon</label
-													>
-													<div class="flex w-full gap-3">
-														<label class="table-btn variant-filled-secondary min-w-[120px] justify-center" for="benefit-icon-upload-{index}">
-															Select File
-															<input
-																type="file"
-																id="benefit-icon-upload-{index}"
-																accept="image/*"
-																class="hidden"
-																disabled={disabled}
-																onchange={async (e) => await onBenefitIconSelected(e, index)}
-															/>
-														</label>
-														<input
-															type="text"
-															id="benefit-icon-{index}"
-															value={benefitIconFileNames[index] || (benefit.icon ? 'Image uploaded' : '')}
-															readonly
-															{disabled}
-															class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-															placeholder="No file selected..."
-														/>
-													</div>
-													{#if benefit.icon}
-														<div class="mt-2">
-															<img
-																src={getImageUrl(benefit.icon)}
-																alt="Benefit Icon"
-																class="h-20 w-20 rounded border border-[var(--color-outline)] object-cover"
-																onerror={(e) => {
-																	console.error('Failed to load benefit icon:', benefit.icon);
-																	(e.target as HTMLImageElement).style.display = 'none';
-																}}
-															/>
-														</div>
-													{/if}
-												</div>
-												<div class="space-y-2">
-													<label
-														for="benefit-title-{index}"
-														class="text-sm font-medium text-[var(--color-info)]"
-														>Title</label
-													>
-													<input
-														type="text"
-														id="benefit-title-{index}"
-														bind:value={benefit.title}
-														{disabled}
-														placeholder="Enter benefit title (required)"
-														class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-													/>
-												</div>
+											<div class="space-y-2">
+												<label
+													for="benefit-title-{index}"
+													class="text-sm font-medium text-[var(--color-info)]"
+													>Title</label
+												>
+												<input
+													type="text"
+													id="benefit-title-{index}"
+													bind:value={benefit.title}
+													{disabled}
+													placeholder="Enter benefit title (required)"
+													class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+												/>
 											</div>
-											<!-- Second Row: Description -->
 											<div class="space-y-2">
 												<label
 													for="benefit-description-{index}"
@@ -1266,16 +1125,16 @@
 										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 									>
 										<option value="">Select page width</option>
-										<option value="148mm">A6 (148mm)</option>
-										<option value="210mm">A5 (210mm)</option>
+										<option value="148mm" disabled>A6 (148mm)</option>
+										<option value="210mm" disabled>A5 (210mm)</option>
 										<option value="297mm">A4 (297mm)</option>
-										<option value="420mm">A3 (420mm)</option>
-										<option value="216mm">Letter (216mm)</option>
-										<option value="279mm">Legal (279mm)</option>
-										<option value="200mm">Custom 200mm</option>
-										<option value="250mm">Custom 250mm</option>
-										<option value="300mm">Custom 300mm</option>
-										<option value="350mm">Custom 350mm</option>
+										<option value="420mm" disabled>A3 (420mm)</option>
+										<option value="216mm" disabled>Letter (216mm)</option>
+										<option value="279mm" disabled>Legal (279mm)</option>
+										<option value="200mm" disabled>Custom 200mm</option>
+										<option value="250mm" disabled>Custom 250mm</option>
+										<option value="300mm" disabled>Custom 300mm</option>
+										<option value="350mm" disabled>Custom 350mm</option>
 									</select>
 									{#if Styling.pageWidth && !['', '148mm', '210mm', '297mm', '420mm', '216mm', '279mm', '200mm', '250mm', '300mm', '350mm'].includes(Styling.pageWidth)}
 										<input
@@ -1300,16 +1159,16 @@
 										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 									>
 										<option value="">Select page height</option>
-										<option value="105mm">A6 (105mm)</option>
-										<option value="148mm">A5 (148mm)</option>
+										<option value="105mm" disabled>A6 (105mm)</option>
+										<option value="148mm" disabled>A5 (148mm)</option>
 										<option value="210mm">A4 (210mm)</option>
-										<option value="297mm">A3 (297mm)</option>
-										<option value="279mm">Letter (279mm)</option>
-										<option value="356mm">Legal (356mm)</option>
-										<option value="250mm">Custom 250mm</option>
-										<option value="300mm">Custom 300mm</option>
-										<option value="350mm">Custom 350mm</option>
-										<option value="400mm">Custom 400mm</option>
+										<option value="297mm" disabled>A3 (297mm)</option>
+										<option value="279mm" disabled>Letter (279mm)</option>
+										<option value="356mm" disabled>Legal (356mm)</option>
+										<option value="250mm" disabled>Custom 250mm</option>
+										<option value="300mm" disabled>Custom 300mm</option>
+										<option value="350mm" disabled>Custom 350mm</option>
+										<option value="400mm" disabled>Custom 400mm</option>
 									</select>
 									{#if Styling.pageHeight && !['', '105mm', '148mm', '210mm', '297mm', '279mm', '356mm', '250mm', '300mm', '350mm', '400mm'].includes(Styling.pageHeight)}
 										<input
@@ -1470,7 +1329,7 @@
 								<label
 									for="content-ui-heading"
 									class="text-sm font-medium text-[var(--color-info)]"
-									>UI Heading</label
+									>UI Heading <span class="text-red-700">*</span></label
 								>
 								<input
 									type="text"

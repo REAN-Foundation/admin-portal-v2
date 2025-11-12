@@ -418,66 +418,6 @@ const BenefitSchema = z.object({
     }),
 });
 
-export const MarketingMaterialSettingsSchema = z.object({
-    TenantId: z.string().optional(),
-    TenantName: z.string().optional(),
-    TenantCode: z.string().optional(),
-
-    // Branding & Logos
-    PrimaryLogo: z.string().optional(),
-    SecondaryLogo: z.string().optional(),
-    ReanLogo: z.string().optional(),
-
-    // Color Scheme
-    PrimaryColor: z.string().optional(),
-    SecondaryColor: z.string().optional(),
-    AccentColor: z.string().optional(),
-    BackgroundLight: z.string().optional(),
-    TextDark: z.string().optional(),
-    TextLight: z.string().optional(),
-
-    // Hero Section (Page 1)
-    HeroMainTitle: z.string().optional(),
-    HeroSubtitle: z.string().optional(),
-    HeroImage: z.string().optional(),
-    ChatQuestion: z.string().optional(),
-    ChatAnswer: z.string().optional(),
-
-    // Main Description
-    DescriptionHeading: z.string().optional(),
-    IntroParagraph: z.string().optional(),
-    FeaturesParagraph: z.string().optional(),
-
-    // Benefits (Page 2)
-    BenefitsHeading: z.string().optional(),
-    Benefits: z.array(BenefitSchema).optional(),
-
-    // Target Audience
-    TargetHeading: z.string().optional(),
-    TargetParagraph1: z.string().optional(),
-    TargetParagraph2: z.string().optional(),
-    PhoneMockup: z.string().optional(),
-    MockupQuestion: z.string().optional(),
-    MockupAnswer: z.string().optional(),
-
-    // Call to Action
-    CtaHeading: z.string().optional(),
-    WhatsappNumber: z.string().optional(),
-    QrCodeData: z.string().optional(),
-    QrInstruction: z.string().optional(),
-
-    // Legacy fields (keeping for backward compatibility)
-    Logo: z.string().optional(),
-    Title: z.string().optional(),
-    Subtitle: z.string().optional(),
-    ProblemIntro: z.string().optional(),
-    BotIntro: z.string().optional(),
-    Features: z.array(FeatureSchema).optional(),
-    Conclusion: z.string().optional(),
-    QrCode: z.string().nullable().optional(),
-});
-
-// New Marketing Material Schema with Styling and Content structure
 const MarketingMaterialStylingSchema = z.object({
     primary: z.string().optional(),
     secondary: z.string().optional(),
@@ -495,11 +435,9 @@ const MarketingMaterialStylingSchema = z.object({
     qrSize: z.string().optional(),
 });
 
-// Benefit items can be either strings or objects with icon, title, description
 const MarketingMaterialBenefitItemSchema = z.union([
     z.string(),
     z.object({
-        icon: z.string().optional(),
         title: z.string().optional(),
         description: z.string().optional(),
     })
@@ -571,7 +509,6 @@ export const TenantSettingsSchema = z.object({
     ChatBot: ChatBotSettingsSchema.required(),
     Forms: FormsSettingsSchema.required(),
     Consent: ConsentSettingsSchema.optional(),
-    MarketingMaterial: MarketingMaterialSettingsSchema.optional(),
     CustomSettings: CustomSettingsSchema.optional(),
 });
 
