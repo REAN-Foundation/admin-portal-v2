@@ -4,6 +4,7 @@ export interface ModuleCreateModel {
 	DurationInMins?: number;
 	ImageUrl?: string;
 	Sequence?: number;
+	CourseId?: string;
 }
 
 export interface ModuleUpdateModel {

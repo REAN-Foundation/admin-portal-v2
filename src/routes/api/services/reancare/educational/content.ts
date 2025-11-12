@@ -36,6 +36,7 @@ export const createContent = async (
 	if (durationInMins !== undefined && durationInMins !== null) {
 		body.DurationInMins = durationInMins;
 	}
+	
 	const url = BACKEND_API_URL + '/educational/course-contents';
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 
@@ -119,6 +120,7 @@ export const updateContent = async (
 	if (durationInMins !== undefined && durationInMins !== null) {
 		body.DurationInMins = durationInMins;
 	}
+	
 	const url = BACKEND_API_URL + `/educational/course-contents/${contentId}`;
 	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 

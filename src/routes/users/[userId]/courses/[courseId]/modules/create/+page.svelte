@@ -113,7 +113,8 @@
 				Description: description,
 				DurationInMins: durationInMins ? parseFloat(durationInMins) : undefined,
 				ImageUrl: imageResourceId,
-				Sequence: sequence ? parseFloat(sequence) : undefined
+				Sequence: sequence ? parseFloat(sequence) : undefined,
+				CourseId: courseId // Include courseId from URL params
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(moduleCreateModel);

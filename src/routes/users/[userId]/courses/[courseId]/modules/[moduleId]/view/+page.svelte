@@ -28,7 +28,7 @@
 	const breadCrumbs = [
 		{
 			name: 'Courses',
-			path: `courseRoute`
+			path: courseRoute
 		},
 		{
 			name: 'Modules',

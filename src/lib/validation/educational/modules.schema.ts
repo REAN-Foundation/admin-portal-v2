@@ -27,6 +27,10 @@ export const createOrUpdateSchema = z.object({
 			invalid_type_error: 'Sequence must be a number.'
 		})
 		.positive({ message: 'Sequence must be a positive number.' })
+		.optional(),
+	CourseId: z
+		.string()
+		.min(1, { message: 'CourseId cannot be empty.' })
 		.optional()
 });
 

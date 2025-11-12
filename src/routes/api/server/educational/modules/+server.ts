@@ -35,7 +35,8 @@ export const POST = async (event: RequestEvent) => {
             data.Description,
             data.DurationInMins,
             data.ImageUrl,
-            data.Sequence
+            data.Sequence,
+            data.CourseId
         );
 
         return ResponseHandler.success(response);

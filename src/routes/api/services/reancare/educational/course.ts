@@ -28,7 +28,6 @@ export const createCourse = async (
 
 export const getCourseById = async (sessionId: string, id: string) => {
 	const url = BACKEND_API_URL + `/educational/courses/${id}`;
-	console.log("URL*****", url);
 
 	const cacheKey = `session-${sessionId}:req-getCourseById-${id}`;
 

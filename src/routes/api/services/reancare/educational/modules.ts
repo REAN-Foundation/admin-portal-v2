@@ -10,7 +10,8 @@ export const createModule = async (
 	description?: string,
 	durationInMins?: number,
 	imageUrl?: string,
-	sequence?: number
+	sequence?: number,
+	courseId?: string
 ) => {
 	const body: any = {
 		Name: name
@@ -28,6 +29,9 @@ export const createModule = async (
 	if (sequence !== undefined && sequence !== null) {
 		body.Sequence = sequence;
 	}
+	if (courseId !== undefined && courseId !== null) {
+		body.CourseId = courseId;
+	}
 	const url = BACKEND_API_URL + '/educational/course-modules';
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 
@@ -39,7 +43,6 @@ export const createModule = async (
 
 export const getModuleById = async (sessionId: string, id: string) => {
 	const url = BACKEND_API_URL + `/educational/course-modules/${id}`;
-	console.log("URL*****", url);
 
 	const cacheKey = `session-${sessionId}:req-getModuleById-${id}`;
 
@@ -60,7 +63,7 @@ export const searchModules = async (sessionId: string, searchParams?) => {
 			searchString = '?';
 			const params = [];
 			for (const key of keys) {
-				if (searchParams[key] !== undefined && searchParams[key] !== null && searchParams[key] !== '') {
+				if (searchParams[key]) {
 					const param = `${key}=${searchParams[key]}`;
 					params.push(param);
 				}
@@ -69,18 +72,13 @@ export const searchModules = async (sessionId: string, searchParams?) => {
 		}
 	}
 	const url = BACKEND_API_URL + `/educational/course-modules/search${searchString}`;
-	
-	console.log('searchModules - searchParams:', searchParams);
-	console.log('searchModules - constructed URL:', url);
 
 	const cacheKey = `session-${sessionId}:req-searchModules:${searchString}`;
 	if (await DashboardManager.has(cacheKey)) {
-		console.log('searchModules - using cached result');
 		return await DashboardManager.get(cacheKey);
 	}
 
 	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
-	console.log('searchModules - response:', JSON.stringify(result, null, 2));
 	await DashboardManager.set(cacheKey, result);
 	return result;
 };

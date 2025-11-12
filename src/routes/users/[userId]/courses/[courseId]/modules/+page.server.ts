@@ -8,13 +8,17 @@ import { searchModules } from '$routes/api/services/reancare/educational/modules
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
 	event.depends('app:module');
+	const courseId = event.params.courseId;
+	
     const searchFilters = createSearchFilters(event, {
         orderBy: "Name",
         order: "ascending",
-        itemsPerPage: 10
+        itemsPerPage: 100, // Fetch more items initially
+        courseId: courseId // Add courseId to filter
     });
     
     console.log('Search Parameters:', searchFilters);
+    console.log('CourseId from params:', courseId);
     const response = await searchModules(sessionId, searchFilters);
 
     const modules = response?.Data?.CourseModules || [];

@@ -69,6 +69,7 @@
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+			url += `&courseId=${courseId}`; // Add courseId to filter modules by course
 			if (model.moduleName) url += `&name=${model.moduleName}`;
 			if (model.durationInMins) url += `&durationInMins=${model.durationInMins}`;
 
