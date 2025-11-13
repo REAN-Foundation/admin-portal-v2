@@ -4,9 +4,16 @@
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import { MarketingMaterialRequestSchema } from '$lib/validation/tenant.settings.schema';
-	import type { MarketingMaterialCreateModel, MarketingMaterialUpdateModel } from '$lib/types/tenant.settings.types';
+	import type {
+		MarketingMaterialCreateModel,
+		MarketingMaterialUpdateModel
+	} from '$lib/types/tenant.settings.types';
+	import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema.js';
+	import type { FaviconUploadModel, LogoUploadModel } from '$lib/types/tenant.settings.types.js';
 
 	let { data } = $props();
+
+	console.log('Here is data', data);
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
@@ -27,7 +34,8 @@
 	let promise = $state();
 
 	// Check if marketing material already exists (for create vs update)
-	const hasExistingData = !data.isEmpty && 
+	const hasExistingData =
+		!data.isEmpty &&
 		data.marketingMaterial &&
 		(Object.keys(data.marketingMaterial).length > 0 ||
 			data.marketingMaterial.Styling ||
@@ -181,16 +189,36 @@
 				}
 	);
 
+	// Store original resource IDs to detect changes (after all state is initialized)
+	// const originalImages = {
+	// 	titleImage: Images.titleImage,
+	// 	userInterfaceImage: Images.userInterfaceImage
+	// };
+	// const originalLogos = [...Logos];
+	// const originalQRCode = QRcode.resourceId;
+
 	// File name tracking for UI display
 	let titleImageFileName = $state('');
 	let userInterfaceImageFileName = $state('');
 	let qrCodeFileName = $state('');
 	let logoFileNames = $state<string[]>(['', '', '']);
 
-	// Helper function to get image URL from resource ID
+	// Preview URLs for selected files
+	// let titleImagePreview = $state<string | null>(null);
+	// let userInterfaceImagePreview = $state<string | null>(null);
+	// let qrCodePreview = $state<string | null>(null);
+	// let logoPreviews = $state<(string | null)[]>([null, null, null]);
+
+	// Store files before upload (matching symptoms pattern)
+	let titleImageFile: File | null = null;
+	let userInterfaceImageFile: File | null = null;
+	let logoFiles: (File | null)[] = [null, null, null];
+	let qrCodeFile: File | null = null;
+
+	// Helper function to get image URL from resource ID (using correct server endpoint)
 	const getImageUrl = (resourceId: string) => {
 		if (!resourceId) return null;
-		return `/api/server/file-resources/${resourceId}/download?disposition=inline`;
+		return `/api/server/file-resources/download/${resourceId}`;
 	};
 
 	let disabled = $state(true);
@@ -215,71 +243,62 @@
 	};
 
 	const removeLogo = (index: number) => {
+		// Clean up preview URL
+		// if (logoPreviews[index]) {
+		// 	URL.revokeObjectURL(logoPreviews[index]!);
+		// 	logoPreviews[index] = null;
+		// 	logoPreviews = [...logoPreviews];
+		// }
 		// Clear the logo instead of removing the slot
 		Logos[index] = '';
 		logoFileNames[index] = '';
 		Logos = [...Logos];
 		logoFileNames = [...logoFileNames];
+		// Clear file
+		logoFiles[index] = null;
 	};
 
 	// File selection handler for images
-	const onImageSelected = async (
-		e: Event,
-		imageType: 'titleImage' | 'userInterfaceImage'
-	) => {
+	const onImageSelected = async (e: Event, imageType: 'titleImage' | 'userInterfaceImage') => {
 		const input = e.target as HTMLInputElement;
 		const file = input.files?.[0];
 		if (!file) return;
 
+		const fileCreateModel: FaviconUploadModel = {
+			UploadFile: file,
+			FileName: file.name,
+			FileType: file.type
+		};
+
+		const fileValidationResult = imageUploadSchema.safeParse(fileCreateModel);
+
+		if (!fileValidationResult.success) {
+			errors = Object.fromEntries(
+				Object.entries(fileValidationResult.error.flatten().fieldErrors).map(([key, val]) => [
+					key,
+					val?.[0] || 'This field is required'
+				])
+			);
+			return;
+		}
+
 		if (imageType === 'titleImage') {
+			// Clean up previous preview URL
+			// if (titleImagePreview) {
+			// 	URL.revokeObjectURL(titleImagePreview);
+			// }
 			titleImageFileName = file.name;
+			// titleImagePreview = URL.createObjectURL(file);
+			titleImageFile = file;
 		} else {
+			// Clean up previous preview URL
+			// if (userInterfaceImagePreview) {
+			// 	URL.revokeObjectURL(userInterfaceImagePreview);
+			// }
 			userInterfaceImageFileName = file.name;
+			// userInterfaceImagePreview = URL.createObjectURL(file);
+			userInterfaceImageFile = file;
 		}
-
-		// Upload immediately
-		await uploadImage(file, imageType);
-	};
-
-	// File upload function for images
-	const uploadImage = async (file: File, imageType: 'titleImage' | 'userInterfaceImage') => {
-		try {
-			const formData = new FormData();
-			formData.append('file', file);
-
-			const res = await fetch(`/api/server/file-resources/upload/reancare`, {
-				method: 'POST',
-				body: formData
-			});
-
-			const response = await res.json();
-			if (response.Status === 'success' && response.HttpCode === 201) {
-				const resourceId = response.Data?.FileResources?.[0]?.id || response.Data?.id;
-				if (resourceId) {
-					Images[imageType] = resourceId;
-					addToast({
-						message: 'Image uploaded successfully.',
-						type: 'success',
-						timeout: 3000
-					});
-					return resourceId;
-				}
-			} else {
-				addToast({
-					message: response.Message || 'Image upload failed.',
-					type: 'error',
-					timeout: 3000
-				});
-			}
-		} catch (error) {
-			console.error('Error uploading image:', error);
-			addToast({
-				message: 'Failed to upload image. Please try again.',
-				type: 'error',
-				timeout: 3000
-			});
-		}
-		return null;
 	};
 
 	// File selection handler for logos
@@ -288,6 +307,29 @@
 		const file = input.files?.[0];
 		if (!file) return;
 
+		const fileCreateModel: LogoUploadModel = {
+			UploadFile: file,
+			FileName: file.name,
+			FileType: file.type
+		};
+
+		const fileValidationResult = imageUploadSchema.safeParse(fileCreateModel);
+
+		if (!fileValidationResult.success) {
+			errors = Object.fromEntries(
+				Object.entries(fileValidationResult.error.flatten().fieldErrors).map(([key, val]) => [
+					key,
+					val?.[0] || 'This field is required'
+				])
+			);
+			return;
+		}
+
+		// Clean up previous preview URL
+		// if (logoPreviews[logoIndex]) {
+		// 	URL.revokeObjectURL(logoPreviews[logoIndex]!);
+		// }
+
 		// Update file name array
 		if (!logoFileNames[logoIndex]) {
 			logoFileNames = [...logoFileNames];
@@ -295,49 +337,12 @@
 		logoFileNames[logoIndex] = file.name;
 		logoFileNames = [...logoFileNames];
 
-		// Upload immediately
-		await uploadLogo(file, logoIndex);
-	};
+		// Create preview URL
+		// logoPreviews[logoIndex] = URL.createObjectURL(file);
+		// logoPreviews = [...logoPreviews];
 
-	// File upload function for logos
-	const uploadLogo = async (file: File, logoIndex: number) => {
-		try {
-			const formData = new FormData();
-			formData.append('file', file);
-
-			const res = await fetch(`/api/server/file-resources/upload/reancare`, {
-				method: 'POST',
-				body: formData
-			});
-
-			const response = await res.json();
-			if (response.Status === 'success' && response.HttpCode === 201) {
-				const resourceId = response.Data?.FileResources?.[0]?.id || response.Data?.id;
-				if (resourceId) {
-					Logos[logoIndex] = resourceId;
-					addToast({
-						message: 'Logo uploaded successfully.',
-						type: 'success',
-						timeout: 3000
-					});
-					return resourceId;
-				}
-			} else {
-				addToast({
-					message: response.Message || 'Logo upload failed.',
-					type: 'error',
-					timeout: 3000
-				});
-			}
-		} catch (error) {
-			console.error('Error uploading logo:', error);
-			addToast({
-				message: 'Failed to upload logo. Please try again.',
-				type: 'error',
-				timeout: 3000
-			});
-		}
-		return null;
+		// Store file
+		logoFiles[logoIndex] = file;
 	};
 
 	// File selection handler for QR code
@@ -346,50 +351,32 @@
 		const file = input.files?.[0];
 		if (!file) return;
 
-		qrCodeFileName = file.name;
-		// Upload immediately
-		await uploadQRCode(file);
-	};
+		const fileCreateModel: FaviconUploadModel = {
+			UploadFile: file,
+			FileName: file.name,
+			FileType: file.type
+		};
 
-	// File upload function for QR code
-	const uploadQRCode = async (file: File) => {
-		try {
-			const formData = new FormData();
-			formData.append('file', file);
+		const fileValidationResult = imageUploadSchema.safeParse(fileCreateModel);
 
-			const res = await fetch(`/api/server/file-resources/upload/reancare`, {
-				method: 'POST',
-				body: formData
-			});
-
-			const response = await res.json();
-			if (response.Status === 'success' && response.HttpCode === 201) {
-				const resourceId = response.Data?.FileResources?.[0]?.id || response.Data?.id;
-				if (resourceId) {
-					QRcode.resourceId = resourceId;
-					addToast({
-						message: 'QR code uploaded successfully.',
-						type: 'success',
-						timeout: 3000
-					});
-					return resourceId;
-				}
-			} else {
-				addToast({
-					message: response.Message || 'QR code upload failed.',
-					type: 'error',
-					timeout: 3000
-				});
-			}
-		} catch (error) {
-			console.error('Error uploading QR code:', error);
-			addToast({
-				message: 'Failed to upload QR code. Please try again.',
-				type: 'error',
-				timeout: 3000
-			});
+		if (!fileValidationResult.success) {
+			errors = Object.fromEntries(
+				Object.entries(fileValidationResult.error.flatten().fieldErrors).map(([key, val]) => [
+					key,
+					val?.[0] || 'This field is required'
+				])
+			);
+			return;
 		}
-		return null;
+
+		// Clean up previous preview URL
+		// if (qrCodePreview) {
+		// 	URL.revokeObjectURL(qrCodePreview);
+		// }
+
+		qrCodeFileName = file.name;
+		// qrCodePreview = URL.createObjectURL(file);
+		qrCodeFile = file;
 	};
 
 	const handleEditClick = async () => {
@@ -413,8 +400,10 @@
 
 	const handleDownload = async () => {
 		try {
-			const res = await fetch(`/api/server/tenants/settings/${tenantId}/marketing-material/download`);
-			
+			const res = await fetch(
+				`/api/server/tenants/settings/${tenantId}/marketing-material/download`
+			);
+
 			if (!res.ok) {
 				let errorMessage = 'Download failed';
 				try {
@@ -435,7 +424,7 @@
 			const url = window.URL.createObjectURL(blob);
 			const a = document.createElement('a');
 			a.href = url;
-			
+
 			// Get filename from Content-Disposition header or use default
 			const contentDisposition = res.headers.get('content-disposition');
 			let filename = `marketing-material-${tenantId}.pdf`;
@@ -445,7 +434,7 @@
 					filename = filenameMatch[1].replace(/['"]/g, '');
 				}
 			}
-			
+
 			a.download = filename;
 			document.body.appendChild(a);
 			a.click();
@@ -467,6 +456,63 @@
 		}
 	};
 
+	// Helper function to upload a single file
+	const uploadFile = async (file: File, fileType: string): Promise<string | null> => {
+		try {
+			const uploadFormData = new FormData();
+			uploadFormData.append('file', file);
+			uploadFormData.append('filename', file.name);
+
+			const fileRes = await fetch(`/api/server/file-resources/upload/reancare`, {
+				method: 'POST',
+				body: uploadFormData
+			});
+
+			if (!fileRes.ok) {
+				throw new Error(`Upload failed with status ${fileRes.status}`);
+			}
+
+			let fileJson;
+			try {
+				fileJson = await fileRes.json();
+			} catch (jsonError) {
+				throw new Error('Invalid response from server');
+			}
+
+			// Check for connection errors in response
+			if (
+				fileJson.Message &&
+				(fileJson.Message.includes('ECONNRESET') || fileJson.Message.includes('ECONNREFUSED'))
+			) {
+				throw new Error('Connection error. Please check your network connection and try again.');
+			}
+
+			if (fileJson.Status === 'success' && fileJson.HttpCode === 201) {
+				const resourceId = fileJson.Data.FileResources[0].id;
+				if (resourceId) {
+					return resourceId;
+				} else {
+					throw new Error(`${fileType} upload failed: No resource ID returned`);
+				}
+			} else {
+				throw new Error(fileJson.Message || `${fileType} upload failed`);
+			}
+		} catch (error) {
+			console.error(`Error uploading ${fileType}:`, error);
+			const errorStr = error instanceof Error ? error.message : String(error);
+			const errorMessage =
+				errorStr.includes('ECONNRESET') || errorStr.includes('ECONNREFUSED')
+					? 'Connection was reset. Please check your network and try again.'
+					: errorStr.includes('fetch') ||
+						  errorStr.includes('network') ||
+						  errorStr.includes('Failed to fetch')
+						? 'Network error. Please check your connection and try again.'
+						: `${fileType} upload failed. Please try again.`;
+			addToast({ message: errorMessage, type: 'error', timeout: 5000 });
+			return null;
+		}
+	};
+
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
@@ -480,6 +526,43 @@
 			}
 
 			errors = {};
+
+			// Step 1: Upload all files that have changed or are new
+			// Upload title image if it's new or changed
+			if (titleImageFile) {
+				const resourceId = await uploadFile(titleImageFile, 'Title image');
+				if (!resourceId) return; // Error already shown in uploadFile
+				Images.titleImage = resourceId;
+				titleImageFile = null;
+			}
+
+			// Upload user interface image if it's new or changed
+			if (userInterfaceImageFile) {
+				const resourceId = await uploadFile(userInterfaceImageFile, 'User interface image');
+				if (!resourceId) return;
+				Images.userInterfaceImage = resourceId;
+				userInterfaceImageFile = null;
+			}
+
+			// Upload logos that are new or changed
+			for (let i = 0; i < 3; i++) {
+				if (logoFiles[i]) {
+					const resourceId = await uploadFile(logoFiles[i]!, `Logo ${i + 1}`);
+					if (!resourceId) return;
+					Logos[i] = resourceId;
+					logoFiles[i] = null;
+				}
+			}
+
+			// Upload QR code if it's new or changed
+			if (qrCodeFile) {
+				const resourceId = await uploadFile(qrCodeFile, 'QR code');
+				if (!resourceId) return;
+				QRcode.resourceId = resourceId;
+				qrCodeFile = null;
+			}
+
+			// Step 2: Now submit the form with all resource IDs (after all files are uploaded)
 
 			const marketingMaterialModel: MarketingMaterialCreateModel | MarketingMaterialUpdateModel = {
 				Styling,
@@ -523,28 +606,71 @@
 			// Determine if this is a create (POST) or update (PUT) operation
 			const method = isEmpty ? 'POST' : 'PUT';
 
-			const res = await fetch(`/api/server/tenants/settings/${tenantId}/marketing-material`, {
-				method: method,
-				body: JSON.stringify(marketingMaterialModel),
-				headers: { 'content-type': 'application/json' }
-			});
+			try {
+				const res = await fetch(`/api/server/tenants/settings/${tenantId}/marketing-material`, {
+					method: method,
+					body: JSON.stringify(marketingMaterialModel),
+					headers: { 'content-type': 'application/json' }
+				});
 
-			const response = await res.json();
+				if (!res.ok) {
+					throw new Error(`Request failed with status ${res.status}`);
+				}
 
-			if (response.HttpCode === 201 || response.HttpCode === 200) {
-				toastMessage(response);
-				edit = false;
-				disabled = true;
+				let response;
+				try {
+					response = await res.json();
+				} catch (jsonError) {
+					throw new Error('Invalid response from server');
+				}
+
+				// Check if response contains error message
+				if (
+					response.Message &&
+					(response.Message.includes('ECONNRESET') || response.Message.includes('ECONNREFUSED'))
+				) {
+					addToast({
+						message: 'Connection error. Please check your network connection and try again.',
+						type: 'error',
+						timeout: 5000
+					});
+					return;
+				}
+
+				if (response.HttpCode === 201 || response.HttpCode === 200) {
+					toastMessage(response);
+					edit = false;
+					disabled = true;
+					return;
+				}
+
+				if (response.Errors) {
+					errors = response?.Errors || {};
+				} else {
+					toastMessage(response);
+				}
+			} catch (fetchError) {
+				console.error('Error submitting form:', fetchError);
+				const errorStr = fetchError instanceof Error ? fetchError.message : String(fetchError);
+				const errorMessage =
+					errorStr.includes('ECONNRESET') || errorStr.includes('ECONNREFUSED')
+						? 'Connection error. Please check your network connection and try again.'
+						: errorStr.includes('fetch') ||
+							  errorStr.includes('network') ||
+							  errorStr.includes('Failed to fetch')
+							? 'Network error. Please check your connection and try again.'
+							: 'Failed to submit. Please try again.';
+				addToast({ message: errorMessage, type: 'error', timeout: 5000 });
 				return;
 			}
-
-			if (response.Errors) {
-				errors = response?.Errors || {};
-			} else {
-				toastMessage(response);
-			}
 		} catch (error) {
-			toastMessage();
+			console.error('Unexpected error in handleSubmit:', error);
+			const errorStr = error instanceof Error ? error.message : String(error);
+			const errorMessage =
+				errorStr.includes('ECONNRESET') || errorStr.includes('ECONNREFUSED')
+					? 'Connection was reset. Please check your network and try again.'
+					: 'An unexpected error occurred. Please try again.';
+			addToast({ message: errorMessage, type: 'error', timeout: 5000 });
 		}
 	};
 </script>
@@ -600,7 +726,10 @@
 						}`}
 					>
 						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:workspace-premium-outline" class="hidden h-5 w-5 md:block" />
+							<Icon
+								icon="material-symbols:workspace-premium-outline"
+								class="hidden h-5 w-5 md:block"
+							/>
 							<div class="text-start">
 								<p class="text-md font-medium">Logos</p>
 								<p class="text-sm">Upload 3 logos</p>
@@ -655,13 +784,13 @@
 														id="logo-upload-{index}"
 														accept="image/*"
 														class="hidden"
-														disabled={disabled}
+														{disabled}
 														onchange={async (e) => await onLogoSelected(e, index)}
 													/>
 												</label>
 												<input
 													type="text"
-													value={logoFileNames[index] || (Logos[index] ? 'Image uploaded' : '')}
+													value={logoFileNames[index] || ''}
 													readonly
 													{disabled}
 													class="input-field flex-1"
@@ -669,10 +798,11 @@
 												/>
 											</div>
 										</div>
-										{#if Logos[index]}
+										{#if Logos[index] && (data.marketingMaterial?.LogoUrls?.[index] || getImageUrl(Logos[index]))}
 											<div class="mt-2">
 												<img
-													src={getImageUrl(Logos[index])}
+													src={data.marketingMaterial?.LogoUrls?.[index] ||
+														getImageUrl(Logos[index])}
 													alt="Logo {index + 1}"
 													class="h-24 w-24 rounded border border-[var(--color-outline)] object-cover"
 													onerror={(e) => {
@@ -759,7 +889,6 @@
 					{/if}
 				</div>
 
-							
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('introduction') ? 'border-hover' : ''}`}
 				>
@@ -830,7 +959,6 @@
 					{/if}
 				</div>
 
-				
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('benefits') ? 'border-hover' : ''}`}
 				>
@@ -883,7 +1011,6 @@
 								/>
 							</div>
 
-							
 							<div class="space-y-4">
 								{#each Content.benefits.items as benefit, index}
 									<div
@@ -942,7 +1069,7 @@
 									type="button"
 									onclick={addBenefit}
 									{disabled}
-									class="min-w-[140px] inline-flex items-center justify-center gap-1 rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-3 py-1.5 text-sm font-medium text-[var(--color-info)] hover:bg-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+									class="inline-flex min-w-[140px] items-center justify-center gap-1 rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-3 py-1.5 text-sm font-medium text-[var(--color-info)] hover:bg-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50"
 								>
 									<Icon icon="material-symbols:add" class="h-4 w-4" />
 									Add Benefit
@@ -952,8 +1079,6 @@
 					{/if}
 				</div>
 
-				
-				
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('userInterface') ? 'border-hover' : ''}`}
 				>
@@ -1024,7 +1149,6 @@
 					{/if}
 				</div>
 
-				
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('footer') ? 'border-hover' : ''}`}
 				>
@@ -1039,7 +1163,10 @@
 						}`}
 					>
 						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:call-to-action-outline" class="hidden h-5 w-5 md:block" />
+							<Icon
+								icon="material-symbols:call-to-action-outline"
+								class="hidden h-5 w-5 md:block"
+							/>
 							<div class="text-start">
 								<p class="text-md font-medium">Footer</p>
 								<p class="text-sm">CTA heading, description and QR instruction</p>
@@ -1110,7 +1237,6 @@
 					{/if}
 				</div>
 
-				
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('images') ? 'border-hover' : ''}`}
 				>
@@ -1161,24 +1287,25 @@
 											id="title-image-upload"
 											accept="image/*"
 											class="hidden"
-											disabled={disabled}
+											{disabled}
 											onchange={async (e) => await onImageSelected(e, 'titleImage')}
 										/>
 									</label>
 									<input
 										type="text"
 										id="image-title-image"
-										value={titleImageFileName || (Images.titleImage ? 'Image uploaded' : '')}
+										value={titleImageFileName || ''}
 										readonly
 										{disabled}
 										class="input-field flex-1"
 										placeholder="No file selected..."
 									/>
 								</div>
-								{#if Images.titleImage}
+								{#if Images.titleImage && (data.marketingMaterial?.Images?.titleImageUrl || getImageUrl(Images.titleImage))}
 									<div class="mt-2">
 										<img
-											src={getImageUrl(Images.titleImage)}
+											src={data.marketingMaterial?.Images?.titleImageUrl ||
+												getImageUrl(Images.titleImage)}
 											alt="Title"
 											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
 											onerror={(e) => {
@@ -1196,35 +1323,42 @@
 									>User Interface Image</label
 								>
 								<div class="flex w-[70%] gap-3">
-									<label class="table-btn variant-filled-secondary" for="user-interface-image-upload">
+									<label
+										class="table-btn variant-filled-secondary"
+										for="user-interface-image-upload"
+									>
 										Select File
 										<input
 											type="file"
 											id="user-interface-image-upload"
 											accept="image/*"
 											class="hidden"
-											disabled={disabled}
+											{disabled}
 											onchange={async (e) => await onImageSelected(e, 'userInterfaceImage')}
 										/>
 									</label>
 									<input
 										type="text"
 										id="image-user-interface-image"
-										value={userInterfaceImageFileName || (Images.userInterfaceImage ? 'Image uploaded' : '')}
+										value={userInterfaceImageFileName || ''}
 										readonly
 										{disabled}
 										class="input-field flex-1"
 										placeholder="No file selected..."
 									/>
 								</div>
-								{#if Images.userInterfaceImage}
+								{#if Images.userInterfaceImage && (data.marketingMaterial?.Images?.userInterfaceImageUrl || getImageUrl(Images.userInterfaceImage))}
 									<div class="mt-2">
 										<img
-											src={getImageUrl(Images.userInterfaceImage)}
+											src={data.marketingMaterial?.Images?.userInterfaceImageUrl ||
+												getImageUrl(Images.userInterfaceImage)}
 											alt="User Interface"
 											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
 											onerror={(e) => {
-												console.error('Failed to load user interface image:', Images.userInterfaceImage);
+												console.error(
+													'Failed to load user interface image:',
+													Images.userInterfaceImage
+												);
 												(e.target as HTMLImageElement).style.display = 'none';
 											}}
 										/>
@@ -1235,10 +1369,6 @@
 					{/if}
 				</div>
 
-			
-				
-
-				
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('qrcode') ? 'border-hover' : ''}`}
 				>
@@ -1289,24 +1419,25 @@
 											id="qrcode-upload"
 											accept="image/*"
 											class="hidden"
-											disabled={disabled}
+											{disabled}
 											onchange={async (e) => await onQRCodeSelected(e)}
 										/>
 									</label>
 									<input
 										type="text"
 										id="qrcode-resource-id"
-										value={qrCodeFileName || (QRcode.resourceId ? 'Image uploaded' : '')}
+										value={qrCodeFileName || ''}
 										readonly
 										{disabled}
 										class="input-field flex-1"
 										placeholder="No file selected..."
 									/>
 								</div>
-								{#if QRcode.resourceId}
+								{#if QRcode.resourceId && (data.marketingMaterial?.QRcode?.imageUrl || getImageUrl(QRcode.resourceId))}
 									<div class="mt-2">
 										<img
-											src={getImageUrl(QRcode.resourceId)}
+											src={data.marketingMaterial?.QRcode?.imageUrl ||
+												getImageUrl(QRcode.resourceId)}
 											alt="QR Code"
 											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
 											onerror={(e) => {
@@ -1335,8 +1466,7 @@
 							<div class="my-4 flex flex-col md:flex-row md:items-center">
 								<label
 									for="qrcode-url"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
-									>URL</label
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]">URL</label
 								>
 								<input
 									type="text"
@@ -1351,7 +1481,7 @@
 					{/if}
 				</div>
 
-								<div
+				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('colors') ? 'border-hover' : ''}`}
 				>
 					<button
@@ -1388,28 +1518,20 @@
 					{#if activeSections.has('colors')}
 						<div class="space-y-4 p-6">
 							<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-								{#each [
-									{ key: 'primary', label: 'Primary' },
-									{ key: 'secondary', label: 'Secondary' },
-									{ key: 'accent', label: 'Accent' },
-									{ key: 'lightBg', label: 'Light Background' },
-									{ key: 'panel', label: 'Panel' },
-									{ key: 'muted', label: 'Muted Text' },
-									{ key: 'text', label: 'Body Text' }
-								] as c}
+								{#each [{ key: 'primary', label: 'Primary' }, { key: 'secondary', label: 'Secondary' }, { key: 'accent', label: 'Accent' }, { key: 'lightBg', label: 'Light Background' }, { key: 'panel', label: 'Panel' }, { key: 'muted', label: 'Muted Text' }, { key: 'text', label: 'Body Text' }] as c}
 									<div class="my-2 flex flex-col md:flex-row md:items-center">
 										<label
 											for="styling-{c.key}-color"
 											class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 											>{c.label} Color</label
 										>
-										<div class="flex items-center gap-2 w-[70%]">
+										<div class="flex w-[70%] items-center gap-2">
 											<input
 												type="color"
 												id="styling-{c.key}-color"
 												bind:value={Styling[c.key]}
 												{disabled}
-												class="h-12 w-16 cursor-pointer border-none rounded"
+												class="h-12 w-16 cursor-pointer rounded border-none"
 											/>
 											<input
 												type="text"
@@ -1428,7 +1550,6 @@
 					{/if}
 				</div>
 
-				
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('fonts') ? 'border-hover' : ''}`}
 				>
@@ -1505,7 +1626,7 @@
 											bind:value={Styling.headingFont}
 											{disabled}
 											placeholder="Custom font (e.g., 'Custom Font', sans-serif)"
-											class="mt-2 input-field w-[70%]"
+											class="input-field mt-2 w-[70%]"
 										/>
 									{/if}
 								</div>
@@ -1548,7 +1669,7 @@
 											bind:value={Styling.bodyFont}
 											{disabled}
 											placeholder="Custom font (e.g., 'Custom Font', sans-serif)"
-											class="mt-2 input-field w-[70%]"
+											class="input-field mt-2 w-[70%]"
 										/>
 									{/if}
 								</div>
@@ -1557,7 +1678,6 @@
 					{/if}
 				</div>
 
-			
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('sizes') ? 'border-hover' : ''}`}
 				>
@@ -1625,7 +1745,7 @@
 											bind:value={Styling.pageWidth}
 											{disabled}
 											placeholder="Custom width (e.g., 180mm)"
-											class="mt-2 input-field w-[70%]"
+											class="input-field mt-2 w-[70%]"
 										/>
 									{/if}
 								</div>
@@ -1659,7 +1779,7 @@
 											bind:value={Styling.pageHeight}
 											{disabled}
 											placeholder="Custom height (e.g., 240mm)"
-											class="mt-2 input-field w-[70%]"
+											class="input-field mt-2 w-[70%]"
 										/>
 									{/if}
 								</div>
@@ -1693,7 +1813,7 @@
 											bind:value={Styling.userInterfaceWidth}
 											{disabled}
 											placeholder="Custom width (e.g., 270px)"
-											class="mt-2 input-field w-[70%]"
+											class="input-field mt-2 w-[70%]"
 										/>
 									{/if}
 								</div>
@@ -1727,7 +1847,7 @@
 											bind:value={Styling.userInteractionWidth}
 											{disabled}
 											placeholder="Custom width (e.g., 230px)"
-											class="mt-2 input-field w-[70%]"
+											class="input-field mt-2 w-[70%]"
 										/>
 									{/if}
 								</div>
@@ -1759,7 +1879,7 @@
 											bind:value={Styling.qrSize}
 											{disabled}
 											placeholder="Custom size (e.g., 140px)"
-											class="mt-2 input-field w-[70%]"
+											class="input-field mt-2 w-[70%]"
 										/>
 									{/if}
 								</div>
@@ -1767,9 +1887,6 @@
 						</div>
 					{/if}
 				</div>
-
-				
-				
 			</div>
 
 			<hr class="border-[0.5px] border-t border-[var(--color-outline)]" />
@@ -1785,5 +1902,4 @@
 			</div>
 		</form>
 	</div>
-</div> 
-
+</div>
