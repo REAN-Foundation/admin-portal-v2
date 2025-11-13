@@ -1,6 +1,8 @@
 import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY } from '$env/static/private';
 import { get, put, del, post } from './common.reancare';
 import type { MarketingMaterialCreateModel, MarketingMaterialUpdateModel } from '$lib/types/tenant.settings.types';
+import { SessionManager } from '$routes/api/cache/session/session.manager';
+import { error } from '@sveltejs/kit';
 
 ////////////////////////////////////////////////////////////////
 
@@ -232,6 +234,55 @@ export const updateMarketingMaterialByTenantId = async (
 
 	const url = BACKEND_API_URL + `/tenant-settings-marketing/${tenantId}`;
 	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+}
+
+export const downloadMarketingMaterialByTenantId = async (
+	sessionId: string,
+	tenantId: string
+) => {
+	const url = BACKEND_API_URL + `/tenant-settings-marketing/${tenantId}/download`;
+	const session = await SessionManager.getSession(sessionId);
+	const accessToken = session.accessToken;
+
+	const headers: Record<string, string> = {};
+	headers['x-api-key'] = API_CLIENT_INTERNAL_KEY;
+	headers['Authorization'] = `Bearer ${accessToken}`;
+	headers['public'] = 'true';
+
+	const res = await fetch(url, {
+		method: 'GET',
+		headers
+	});
+
+	const data = await res.arrayBuffer();
+
+	if (data && res.ok) {
+		const responseHeaders = res.headers;
+		const contentType = responseHeaders.get('content-type') || 'application/octet-stream';
+		
+		let filename = `marketing-material-${tenantId}-${Date.now()}.pdf`;
+		
+		const disposition = responseHeaders.get('content-disposition');
+		if (disposition) {
+			const filenameMatch = disposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+			if (filenameMatch && filenameMatch[1]) {
+				filename = filenameMatch[1].replace(/['"]/g, '');
+			}
+		}
+
+		return {
+			success: true,
+			Data: {
+				Buffer: data,
+				FileName: filename,
+				MimeType: contentType
+			}
+		};
+	} else {
+		const response = await res.json();
+		console.log(`Download response message: ${response.Message}`);
+		throw error(response.HttpCode || 500, response.Message || 'Download failed');
+	}
 }
 
 // export const uploadMarketingMaterialLogo = async (

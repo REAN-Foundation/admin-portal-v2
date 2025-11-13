@@ -411,6 +411,62 @@
 		disabled = !disabled;
 	};
 
+	const handleDownload = async () => {
+		try {
+			const res = await fetch(`/api/server/tenants/settings/${tenantId}/marketing-material/download`);
+			
+			if (!res.ok) {
+				let errorMessage = 'Download failed';
+				try {
+					const errorData = await res.json();
+					errorMessage = errorData.Message || errorMessage;
+				} catch {
+					errorMessage = `Download failed with status ${res.status}`;
+				}
+				addToast({
+					message: errorMessage,
+					type: 'error',
+					timeout: 3000
+				});
+				return;
+			}
+
+			const blob = await res.blob();
+			const url = window.URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			
+			// Get filename from Content-Disposition header or use default
+			const contentDisposition = res.headers.get('content-disposition');
+			let filename = `marketing-material-${tenantId}.pdf`;
+			if (contentDisposition) {
+				const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+				if (filenameMatch && filenameMatch[1]) {
+					filename = filenameMatch[1].replace(/['"]/g, '');
+				}
+			}
+			
+			a.download = filename;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			window.URL.revokeObjectURL(url);
+
+			addToast({
+				message: 'Download started successfully.',
+				type: 'success',
+				timeout: 3000
+			});
+		} catch (error) {
+			console.error('Error downloading marketing material:', error);
+			addToast({
+				message: 'Failed to download marketing material. Please try again.',
+				type: 'error',
+				timeout: 3000
+			});
+		}
+	};
+
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
@@ -503,6 +559,14 @@
 			>
 				<h1 class="text-xl text-[var(--color-info)]">Marketing Material</h1>
 				<div class="flex items-center gap-2 text-end">
+					<button
+						type="button"
+						class="table-btn variant-filled-secondary gap-1"
+						onclick={handleDownload}
+					>
+						<Icon icon="material-symbols:download-outline" />
+						Download
+					</button>
 					<button
 						type="button"
 						class="table-btn variant-filled-secondary gap-1"
@@ -654,10 +718,10 @@
 
 					{#if activeSections.has('header')}
 						<div class="space-y-4 p-6">
-							<div class="space-y-2">
+							<div class="my-2 flex flex-col md:flex-row md:items-center">
 								<label
 									for="content-main-title"
-									class="text-sm font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 									>Main Title <span class="text-red-700">*</span></label
 								>
 								<input
@@ -666,13 +730,13 @@
 									bind:value={Content.header.mainTitle}
 									{disabled}
 									placeholder="Enter main title"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+									class="input-field w-[70%]"
 								/>
 							</div>
-							<div class="space-y-2">
+							<div class="my-4 flex flex-col md:flex-row md:items-center">
 								<label
 									for="content-subtitle"
-									class="text-sm font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 									>Subtitle</label
 								>
 								<input
@@ -681,7 +745,7 @@
 									bind:value={Content.header.subtitle}
 									{disabled}
 									placeholder="Enter subtitle"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+									class="input-field w-[70%]"
 								/>
 							</div>
 						</div>
@@ -725,10 +789,10 @@
 
 					{#if activeSections.has('introduction')}
 						<div class="space-y-4 p-6">
-							<div class="space-y-2">
+							<div class="my-2 flex flex-col md:flex-row md:items-center">
 								<label
 									for="content-intro-paragraph"
-									class="text-sm font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 									>Introduction Paragraph <span class="text-red-700">*</span></label
 								>
 								<textarea
@@ -737,13 +801,13 @@
 									bind:value={Content.introduction.introParagraph}
 									{disabled}
 									placeholder="Enter introduction paragraph"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+									class="input-field w-[70%]"
 								></textarea>
 							</div>
-							<div class="space-y-2">
+							<div class="my-4 flex flex-col md:flex-row md:items-center">
 								<label
 									for="content-problem-statement"
-									class="text-sm font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 									>Problem Statement</label
 								>
 								<textarea
@@ -752,7 +816,7 @@
 									bind:value={Content.introduction.problemStatement}
 									{disabled}
 									placeholder="Enter problem statement"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+									class="input-field w-[70%]"
 								></textarea>
 							</div>
 						</div>
@@ -796,10 +860,10 @@
 
 					{#if activeSections.has('benefits')}
 						<div class="space-y-4 p-6">
-							<div class="space-y-2">
+							<div class="my-2 flex flex-col md:flex-row md:items-center">
 								<label
 									for="content-benefits-title"
-									class="text-sm font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 									>Benefits Title</label
 								>
 								<input
@@ -808,7 +872,7 @@
 									bind:value={Content.benefits.title}
 									{disabled}
 									placeholder="Key Benefits"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+									class="input-field w-[70%]"
 								/>
 							</div>
 
@@ -833,10 +897,10 @@
 											{/if}
 										</div>
 										<div class="space-y-4">
-											<div class="space-y-2">
+											<div class="my-2 flex flex-col md:flex-row md:items-center">
 												<label
 													for="benefit-title-{index}"
-													class="text-sm font-medium text-[var(--color-info)]"
+													class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 													>Title</label
 												>
 												<input
@@ -845,13 +909,13 @@
 													bind:value={benefit.title}
 													{disabled}
 													placeholder="Enter benefit title (required)"
-													class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+													class="input-field w-[70%]"
 												/>
 											</div>
-											<div class="space-y-2">
+											<div class="my-4 flex flex-col md:flex-row md:items-center">
 												<label
 													for="benefit-description-{index}"
-													class="text-sm font-medium text-[var(--color-info)]"
+													class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 													>Description</label
 												>
 												<textarea
@@ -860,7 +924,7 @@
 													bind:value={benefit.description}
 													{disabled}
 													placeholder="Enter benefit description (required)"
-													class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+													class="input-field w-[70%]"
 												></textarea>
 											</div>
 										</div>
@@ -883,8 +947,404 @@
 
 				
 				
-
 				<div
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('userInterface') ? 'border-hover' : ''}`}
+				>
+					<button
+						type="button"
+						onclick={() => toggleSection('userInterface')}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+						transition-all duration-100 ease-in-out ${
+							activeSections.has('userInterface')
+								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+								: 'border-hover rounded bg-[var(--color-secondary)]'
+						}`}
+					>
+						<div class="flex flex-1 items-center gap-2">
+							<Icon icon="material-symbols:phone-android-outline" class="hidden h-5 w-5 md:block" />
+							<div class="text-start">
+								<p class="text-md font-medium">User Interface</p>
+								<p class="text-sm">UI heading and paragraph text</p>
+							</div>
+						</div>
+						<span
+							class="transition-transform duration-300"
+							class:rotate-90={activeSections.has('userInterface')}
+						>
+							<Icon
+								icon="icon-park-outline:down"
+								rotate={35}
+								width={16}
+								height={16}
+								class="h-5 w-5"
+							/>
+						</span>
+					</button>
+
+					{#if activeSections.has('userInterface')}
+						<div class="space-y-4 p-6">
+							<div class="my-2 flex flex-col md:flex-row md:items-center">
+								<label
+									for="content-ui-heading"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									>UI Heading <span class="text-red-700">*</span></label
+								>
+								<input
+									type="text"
+									id="content-ui-heading"
+									bind:value={Content.userInterface.heading}
+									{disabled}
+									placeholder="Who Can Benefit from This Program"
+									class="input-field w-[70%]"
+								/>
+							</div>
+							<div class="my-4 flex flex-col md:flex-row md:items-center">
+								<label
+									for="content-ui-paragraph"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									>UI Paragraph</label
+								>
+								<textarea
+									id="content-ui-paragraph"
+									rows="3"
+									bind:value={Content.userInterface.paragraph}
+									{disabled}
+									placeholder="Enter user interface paragraph"
+									class="input-field w-[70%]"
+								></textarea>
+							</div>
+						</div>
+					{/if}
+				</div>
+
+				
+				<div
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('footer') ? 'border-hover' : ''}`}
+				>
+					<button
+						type="button"
+						onclick={() => toggleSection('footer')}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+						transition-all duration-100 ease-in-out ${
+							activeSections.has('footer')
+								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+								: 'border-hover rounded bg-[var(--color-secondary)]'
+						}`}
+					>
+						<div class="flex flex-1 items-center gap-2">
+							<Icon icon="material-symbols:call-to-action-outline" class="hidden h-5 w-5 md:block" />
+							<div class="text-start">
+								<p class="text-md font-medium">Footer</p>
+								<p class="text-sm">CTA heading, description and QR instruction</p>
+							</div>
+						</div>
+						<span
+							class="transition-transform duration-300"
+							class:rotate-90={activeSections.has('footer')}
+						>
+							<Icon
+								icon="icon-park-outline:down"
+								rotate={35}
+								width={16}
+								height={16}
+								class="h-5 w-5"
+							/>
+						</span>
+					</button>
+
+					{#if activeSections.has('footer')}
+						<div class="space-y-4 p-6">
+							<div class="my-2 flex flex-col md:flex-row md:items-center">
+								<label
+									for="content-cta-heading"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									>CTA Heading</label
+								>
+								<input
+									type="text"
+									id="content-cta-heading"
+									bind:value={Content.footer.ctaHeading}
+									{disabled}
+									placeholder="Get Started Today"
+									class="input-field w-[70%]"
+								/>
+							</div>
+							<div class="my-4 flex flex-col md:flex-row md:items-center">
+								<label
+									for="content-cta-description"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									>CTA Description</label
+								>
+								<textarea
+									id="content-cta-description"
+									rows="3"
+									bind:value={Content.footer.ctaDescription}
+									{disabled}
+									placeholder="Enter CTA description"
+									class="input-field w-[70%]"
+								></textarea>
+							</div>
+							<div class="my-4 flex flex-col md:flex-row md:items-center">
+								<label
+									for="content-qr-instruction"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									>QR Instruction</label
+								>
+								<input
+									type="text"
+									id="content-qr-instruction"
+									bind:value={Content.footer.qrInstruction}
+									{disabled}
+									placeholder="Scan to get started"
+									class="input-field w-[70%]"
+								/>
+							</div>
+						</div>
+					{/if}
+				</div>
+
+				
+				<div
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('images') ? 'border-hover' : ''}`}
+				>
+					<button
+						type="button"
+						onclick={() => toggleSection('images')}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+						transition-all duration-100 ease-in-out ${
+							activeSections.has('images')
+								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+								: 'border-hover rounded bg-[var(--color-secondary)]'
+						}`}
+					>
+						<div class="flex flex-1 items-center gap-2">
+							<Icon icon="material-symbols:image-outline" class="hidden h-5 w-5 md:block" />
+							<div class="text-start">
+								<p class="text-md font-medium">Images</p>
+								<p class="text-sm">Title image and user interface image</p>
+							</div>
+						</div>
+						<span
+							class="transition-transform duration-300"
+							class:rotate-90={activeSections.has('images')}
+						>
+							<Icon
+								icon="icon-park-outline:down"
+								rotate={35}
+								width={16}
+								height={16}
+								class="h-5 w-5"
+							/>
+						</span>
+					</button>
+
+					{#if activeSections.has('images')}
+						<div class="space-y-4 p-6">
+							<div class="my-2 flex flex-col md:flex-row md:items-center">
+								<label
+									for="image-title-image"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									>Title Image</label
+								>
+								<div class="flex w-[100%] gap-3">
+									<label class="table-btn variant-filled-secondary" for="title-image-upload">
+										Select File
+										<input
+											type="file"
+											id="title-image-upload"
+											accept="image/*"
+											class="hidden"
+											disabled={disabled}
+											onchange={async (e) => await onImageSelected(e, 'titleImage')}
+										/>
+									</label>
+									<input
+										type="text"
+										id="image-title-image"
+										value={titleImageFileName || (Images.titleImage ? 'Image uploaded' : '')}
+										readonly
+										{disabled}
+										class="input-field w-[70%]"
+										placeholder="No file selected..."
+									/>
+								</div>
+								{#if Images.titleImage}
+									<div class="mt-2">
+										<img
+											src={getImageUrl(Images.titleImage)}
+											alt="Title"
+											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
+											onerror={(e) => {
+												console.error('Failed to load title image:', Images.titleImage);
+												(e.target as HTMLImageElement).style.display = 'none';
+											}}
+										/>
+									</div>
+								{/if}
+							</div>
+							<div class="my-4 flex flex-col md:flex-row md:items-center">
+								<label
+									for="image-user-interface-image"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									>User Interface Image</label
+								>
+								<div class="flex w-[100%] gap-3">
+									<label class="table-btn variant-filled-secondary" for="user-interface-image-upload">
+										Select File
+										<input
+											type="file"
+											id="user-interface-image-upload"
+											accept="image/*"
+											class="hidden"
+											disabled={disabled}
+											onchange={async (e) => await onImageSelected(e, 'userInterfaceImage')}
+										/>
+									</label>
+									<input
+										type="text"
+										id="image-user-interface-image"
+										value={userInterfaceImageFileName || (Images.userInterfaceImage ? 'Image uploaded' : '')}
+										readonly
+										{disabled}
+										class="input-field w-[70%]"
+										placeholder="No file selected..."
+									/>
+								</div>
+								{#if Images.userInterfaceImage}
+									<div class="mt-2">
+										<img
+											src={getImageUrl(Images.userInterfaceImage)}
+											alt="User Interface"
+											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
+											onerror={(e) => {
+												console.error('Failed to load user interface image:', Images.userInterfaceImage);
+												(e.target as HTMLImageElement).style.display = 'none';
+											}}
+										/>
+									</div>
+								{/if}
+							</div>
+						</div>
+					{/if}
+				</div>
+
+			
+				
+
+				
+				<div
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('qrcode') ? 'border-hover' : ''}`}
+				>
+					<button
+						type="button"
+						onclick={() => toggleSection('qrcode')}
+						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
+						transition-all duration-100 ease-in-out ${
+							activeSections.has('qrcode')
+								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
+								: 'border-hover rounded bg-[var(--color-secondary)]'
+						}`}
+					>
+						<div class="flex flex-1 items-center gap-2">
+							<Icon icon="material-symbols:qr-code-scanner" class="h-5 w-5" />
+							<div class="text-start">
+								<p class="text-md font-medium">QR Code</p>
+								<p class="text-sm">QR code resource ID, WhatsApp number and URL</p>
+							</div>
+						</div>
+						<span
+							class="transition-transform duration-300"
+							class:rotate-90={activeSections.has('qrcode')}
+						>
+							<Icon
+								icon="icon-park-outline:down"
+								rotate={35}
+								width={16}
+								height={16}
+								class="h-5 w-5"
+							/>
+						</span>
+					</button>
+
+					{#if activeSections.has('qrcode')}
+						<div class="space-y-4 p-6">
+							<div class="space-y-2">
+								<label
+									for="qrcode-resource-id"
+									class="text-sm font-medium text-[var(--color-info)]"
+									>QR Code Image</label
+								>
+								<div class="flex w-full gap-3">
+									<label class="table-btn variant-filled-secondary" for="qrcode-upload">
+										Select File
+										<input
+											type="file"
+											id="qrcode-upload"
+											accept="image/*"
+											class="hidden"
+											disabled={disabled}
+											onchange={async (e) => await onQRCodeSelected(e)}
+										/>
+									</label>
+									<input
+										type="text"
+										id="qrcode-resource-id"
+										value={qrCodeFileName || (QRcode.resourceId ? 'Image uploaded' : '')}
+										readonly
+										{disabled}
+										class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										placeholder="No file selected..."
+									/>
+								</div>
+								{#if QRcode.resourceId}
+									<div class="mt-2">
+										<img
+											src={getImageUrl(QRcode.resourceId)}
+											alt="QR Code"
+											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
+											onerror={(e) => {
+												console.error('Failed to load QR code image:', QRcode.resourceId);
+												(e.target as HTMLImageElement).style.display = 'none';
+											}}
+										/>
+									</div>
+								{/if}
+							</div>
+							<div class="space-y-2">
+								<label
+									for="qrcode-whatsapp-number"
+									class="text-sm font-medium text-[var(--color-info)]"
+									>WhatsApp Number</label
+								>
+								<input
+									type="text"
+									id="qrcode-whatsapp-number"
+									bind:value={QRcode.whatsappNumber}
+									{disabled}
+									placeholder="+91-1234567890"
+									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+								/>
+							</div>
+							<div class="space-y-2">
+								<label
+									for="qrcode-url"
+									class="text-sm font-medium text-[var(--color-info)]"
+									>URL</label
+								>
+								<input
+									type="text"
+									id="qrcode-url"
+									bind:value={QRcode.url}
+									{disabled}
+									placeholder="https://wa.me/911234567890"
+									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+								/>
+							</div>
+						</div>
+					{/if}
+				</div>
+
+								<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('colors') ? 'border-hover' : ''}`}
 				>
 					<button
@@ -1303,404 +1763,6 @@
 
 				
 				
-
-
-				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('userInterface') ? 'border-hover' : ''}`}
-				>
-					<button
-						type="button"
-						onclick={() => toggleSection('userInterface')}
-						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
-						transition-all duration-100 ease-in-out ${
-							activeSections.has('userInterface')
-								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
-								: 'border-hover rounded bg-[var(--color-secondary)]'
-						}`}
-					>
-						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:phone-android-outline" class="hidden h-5 w-5 md:block" />
-							<div class="text-start">
-								<p class="text-md font-medium">User Interface</p>
-								<p class="text-sm">UI heading and paragraph text</p>
-							</div>
-						</div>
-						<span
-							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('userInterface')}
-						>
-							<Icon
-								icon="icon-park-outline:down"
-								rotate={35}
-								width={16}
-								height={16}
-								class="h-5 w-5"
-							/>
-						</span>
-					</button>
-
-					{#if activeSections.has('userInterface')}
-						<div class="space-y-4 p-6">
-							<div class="space-y-2">
-								<label
-									for="content-ui-heading"
-									class="text-sm font-medium text-[var(--color-info)]"
-									>UI Heading <span class="text-red-700">*</span></label
-								>
-								<input
-									type="text"
-									id="content-ui-heading"
-									bind:value={Content.userInterface.heading}
-									{disabled}
-									placeholder="Who Can Benefit from This Program"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-								/>
-							</div>
-							<div class="space-y-2">
-								<label
-									for="content-ui-paragraph"
-									class="text-sm font-medium text-[var(--color-info)]"
-									>UI Paragraph</label
-								>
-								<textarea
-									id="content-ui-paragraph"
-									rows="3"
-									bind:value={Content.userInterface.paragraph}
-									{disabled}
-									placeholder="Enter user interface paragraph"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-								></textarea>
-							</div>
-						</div>
-					{/if}
-				</div>
-
-				
-				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('footer') ? 'border-hover' : ''}`}
-				>
-					<button
-						type="button"
-						onclick={() => toggleSection('footer')}
-						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
-						transition-all duration-100 ease-in-out ${
-							activeSections.has('footer')
-								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
-								: 'border-hover rounded bg-[var(--color-secondary)]'
-						}`}
-					>
-						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:call-to-action-outline" class="hidden h-5 w-5 md:block" />
-							<div class="text-start">
-								<p class="text-md font-medium">Footer</p>
-								<p class="text-sm">CTA heading, description and QR instruction</p>
-							</div>
-						</div>
-						<span
-							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('footer')}
-						>
-							<Icon
-								icon="icon-park-outline:down"
-								rotate={35}
-								width={16}
-								height={16}
-								class="h-5 w-5"
-							/>
-						</span>
-					</button>
-
-					{#if activeSections.has('footer')}
-						<div class="space-y-4 p-6">
-							<div class="space-y-2">
-								<label
-									for="content-cta-heading"
-									class="text-sm font-medium text-[var(--color-info)]"
-									>CTA Heading</label
-								>
-								<input
-									type="text"
-									id="content-cta-heading"
-									bind:value={Content.footer.ctaHeading}
-									{disabled}
-									placeholder="Get Started Today"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-								/>
-							</div>
-							<div class="space-y-2">
-								<label
-									for="content-cta-description"
-									class="text-sm font-medium text-[var(--color-info)]"
-									>CTA Description</label
-								>
-								<textarea
-									id="content-cta-description"
-									rows="3"
-									bind:value={Content.footer.ctaDescription}
-									{disabled}
-									placeholder="Enter CTA description"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-								></textarea>
-							</div>
-							<div class="space-y-2">
-								<label
-									for="content-qr-instruction"
-									class="text-sm font-medium text-[var(--color-info)]"
-									>QR Instruction</label
-								>
-								<input
-									type="text"
-									id="content-qr-instruction"
-									bind:value={Content.footer.qrInstruction}
-									{disabled}
-									placeholder="Scan to get started"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-								/>
-							</div>
-						</div>
-					{/if}
-				</div>
-
-				
-				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('images') ? 'border-hover' : ''}`}
-				>
-					<button
-						type="button"
-						onclick={() => toggleSection('images')}
-						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
-						transition-all duration-100 ease-in-out ${
-							activeSections.has('images')
-								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
-								: 'border-hover rounded bg-[var(--color-secondary)]'
-						}`}
-					>
-						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:image-outline" class="hidden h-5 w-5 md:block" />
-							<div class="text-start">
-								<p class="text-md font-medium">Images</p>
-								<p class="text-sm">Title image and user interface image</p>
-							</div>
-						</div>
-						<span
-							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('images')}
-						>
-							<Icon
-								icon="icon-park-outline:down"
-								rotate={35}
-								width={16}
-								height={16}
-								class="h-5 w-5"
-							/>
-						</span>
-					</button>
-
-					{#if activeSections.has('images')}
-						<div class="space-y-4 p-6">
-							<div class="space-y-2">
-								<label
-									for="image-title-image"
-									class="text-sm font-medium text-[var(--color-info)]"
-									>Title Image</label
-								>
-								<div class="flex w-full gap-3">
-									<label class="table-btn variant-filled-secondary" for="title-image-upload">
-										Select File
-										<input
-											type="file"
-											id="title-image-upload"
-											accept="image/*"
-											class="hidden"
-											disabled={disabled}
-											onchange={async (e) => await onImageSelected(e, 'titleImage')}
-										/>
-									</label>
-									<input
-										type="text"
-										id="image-title-image"
-										value={titleImageFileName || (Images.titleImage ? 'Image uploaded' : '')}
-										readonly
-										{disabled}
-										class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-										placeholder="No file selected..."
-									/>
-								</div>
-								{#if Images.titleImage}
-									<div class="mt-2">
-										<img
-											src={getImageUrl(Images.titleImage)}
-											alt="Title"
-											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
-											onerror={(e) => {
-												console.error('Failed to load title image:', Images.titleImage);
-												(e.target as HTMLImageElement).style.display = 'none';
-											}}
-										/>
-									</div>
-								{/if}
-							</div>
-							<div class="space-y-2">
-								<label
-									for="image-user-interface-image"
-									class="text-sm font-medium text-[var(--color-info)]"
-									>User Interface Image</label
-								>
-								<div class="flex w-full gap-3">
-									<label class="table-btn variant-filled-secondary" for="user-interface-image-upload">
-										Select File
-										<input
-											type="file"
-											id="user-interface-image-upload"
-											accept="image/*"
-											class="hidden"
-											disabled={disabled}
-											onchange={async (e) => await onImageSelected(e, 'userInterfaceImage')}
-										/>
-									</label>
-									<input
-										type="text"
-										id="image-user-interface-image"
-										value={userInterfaceImageFileName || (Images.userInterfaceImage ? 'Image uploaded' : '')}
-										readonly
-										{disabled}
-										class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-										placeholder="No file selected..."
-									/>
-								</div>
-								{#if Images.userInterfaceImage}
-									<div class="mt-2">
-										<img
-											src={getImageUrl(Images.userInterfaceImage)}
-											alt="User Interface"
-											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
-											onerror={(e) => {
-												console.error('Failed to load user interface image:', Images.userInterfaceImage);
-												(e.target as HTMLImageElement).style.display = 'none';
-											}}
-										/>
-									</div>
-								{/if}
-							</div>
-						</div>
-					{/if}
-				</div>
-
-			
-				
-
-				
-				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('qrcode') ? 'border-hover' : ''}`}
-				>
-					<button
-						type="button"
-						onclick={() => toggleSection('qrcode')}
-						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
-						transition-all duration-100 ease-in-out ${
-							activeSections.has('qrcode')
-								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
-								: 'border-hover rounded bg-[var(--color-secondary)]'
-						}`}
-					>
-						<div class="flex flex-1 items-center gap-2">
-							<Icon icon="material-symbols:qr-code-scanner" class="h-5 w-5" />
-							<div class="text-start">
-								<p class="text-md font-medium">QR Code</p>
-								<p class="text-sm">QR code resource ID, WhatsApp number and URL</p>
-							</div>
-						</div>
-						<span
-							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('qrcode')}
-						>
-							<Icon
-								icon="icon-park-outline:down"
-								rotate={35}
-								width={16}
-								height={16}
-								class="h-5 w-5"
-							/>
-						</span>
-					</button>
-
-					{#if activeSections.has('qrcode')}
-						<div class="space-y-4 p-6">
-							<div class="space-y-2">
-								<label
-									for="qrcode-resource-id"
-									class="text-sm font-medium text-[var(--color-info)]"
-									>QR Code Image</label
-								>
-								<div class="flex w-full gap-3">
-									<label class="table-btn variant-filled-secondary" for="qrcode-upload">
-										Select File
-										<input
-											type="file"
-											id="qrcode-upload"
-											accept="image/*"
-											class="hidden"
-											disabled={disabled}
-											onchange={async (e) => await onQRCodeSelected(e)}
-										/>
-									</label>
-									<input
-										type="text"
-										id="qrcode-resource-id"
-										value={qrCodeFileName || (QRcode.resourceId ? 'Image uploaded' : '')}
-										readonly
-										{disabled}
-										class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-										placeholder="No file selected..."
-									/>
-								</div>
-								{#if QRcode.resourceId}
-									<div class="mt-2">
-										<img
-											src={getImageUrl(QRcode.resourceId)}
-											alt="QR Code"
-											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
-											onerror={(e) => {
-												console.error('Failed to load QR code image:', QRcode.resourceId);
-												(e.target as HTMLImageElement).style.display = 'none';
-											}}
-										/>
-									</div>
-								{/if}
-							</div>
-							<div class="space-y-2">
-								<label
-									for="qrcode-whatsapp-number"
-									class="text-sm font-medium text-[var(--color-info)]"
-									>WhatsApp Number</label
-								>
-								<input
-									type="text"
-									id="qrcode-whatsapp-number"
-									bind:value={QRcode.whatsappNumber}
-									{disabled}
-									placeholder="+91-1234567890"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-								/>
-							</div>
-							<div class="space-y-2">
-								<label
-									for="qrcode-url"
-									class="text-sm font-medium text-[var(--color-info)]"
-									>URL</label
-								>
-								<input
-									type="text"
-									id="qrcode-url"
-									bind:value={QRcode.url}
-									{disabled}
-									placeholder="https://wa.me/911234567890"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-								/>
-							</div>
-						</div>
-					{/if}
-				</div>
 			</div>
 
 			<hr class="border-[0.5px] border-t border-[var(--color-outline)]" />
