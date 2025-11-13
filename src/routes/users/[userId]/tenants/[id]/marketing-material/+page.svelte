@@ -622,7 +622,7 @@
 
 					{#if activeSections.has('logos')}
 						<div class="p-6">
-							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+							<div class="flex flex-col gap-4">
 								{#each Logos as logo, index}
 									<div
 										class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4"
@@ -641,26 +641,33 @@
 												</button>
 											{/if}
 										</div>
-										<div class="flex w-full gap-3">
-											<label class="table-btn variant-filled-secondary min-w-[120px] justify-center" for="logo-upload-{index}">
-												Select File
+										<div class="my-2 flex flex-col md:flex-row md:items-center">
+											<label
+												for="logo-upload-{index}"
+												class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+												>Logo File</label
+											>
+											<div class="flex w-[70%] gap-3">
+												<label class="table-btn variant-filled-secondary" for="logo-upload-{index}">
+													Select File
+													<input
+														type="file"
+														id="logo-upload-{index}"
+														accept="image/*"
+														class="hidden"
+														disabled={disabled}
+														onchange={async (e) => await onLogoSelected(e, index)}
+													/>
+												</label>
 												<input
-													type="file"
-													id="logo-upload-{index}"
-													accept="image/*"
-													class="hidden"
-													disabled={disabled}
-													onchange={async (e) => await onLogoSelected(e, index)}
+													type="text"
+													value={logoFileNames[index] || (Logos[index] ? 'Image uploaded' : '')}
+													readonly
+													{disabled}
+													class="input-field flex-1"
+													placeholder="No file selected..."
 												/>
-											</label>
-											<input
-												type="text"
-												value={logoFileNames[index] || (Logos[index] ? 'Image uploaded' : '')}
-												readonly
-												{disabled}
-												class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
-												placeholder="No file selected..."
-											/>
+											</div>
 										</div>
 										{#if Logos[index]}
 											<div class="mt-2">
@@ -1146,7 +1153,7 @@
 									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 									>Title Image</label
 								>
-								<div class="flex w-[100%] gap-3">
+								<div class="flex w-[70%] gap-3">
 									<label class="table-btn variant-filled-secondary" for="title-image-upload">
 										Select File
 										<input
@@ -1164,7 +1171,7 @@
 										value={titleImageFileName || (Images.titleImage ? 'Image uploaded' : '')}
 										readonly
 										{disabled}
-										class="input-field w-[70%]"
+										class="input-field flex-1"
 										placeholder="No file selected..."
 									/>
 								</div>
@@ -1188,7 +1195,7 @@
 									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 									>User Interface Image</label
 								>
-								<div class="flex w-[100%] gap-3">
+								<div class="flex w-[70%] gap-3">
 									<label class="table-btn variant-filled-secondary" for="user-interface-image-upload">
 										Select File
 										<input
@@ -1206,7 +1213,7 @@
 										value={userInterfaceImageFileName || (Images.userInterfaceImage ? 'Image uploaded' : '')}
 										readonly
 										{disabled}
-										class="input-field w-[70%]"
+										class="input-field flex-1"
 										placeholder="No file selected..."
 									/>
 								</div>
@@ -1268,13 +1275,13 @@
 
 					{#if activeSections.has('qrcode')}
 						<div class="space-y-4 p-6">
-							<div class="space-y-2">
+							<div class="my-2 flex flex-col md:flex-row md:items-center">
 								<label
 									for="qrcode-resource-id"
-									class="text-sm font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 									>QR Code Image</label
 								>
-								<div class="flex w-full gap-3">
+								<div class="flex w-[70%] gap-3">
 									<label class="table-btn variant-filled-secondary" for="qrcode-upload">
 										Select File
 										<input
@@ -1292,7 +1299,7 @@
 										value={qrCodeFileName || (QRcode.resourceId ? 'Image uploaded' : '')}
 										readonly
 										{disabled}
-										class="flex-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										class="input-field flex-1"
 										placeholder="No file selected..."
 									/>
 								</div>
@@ -1310,10 +1317,10 @@
 									</div>
 								{/if}
 							</div>
-							<div class="space-y-2">
+							<div class="my-4 flex flex-col md:flex-row md:items-center">
 								<label
 									for="qrcode-whatsapp-number"
-									class="text-sm font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 									>WhatsApp Number</label
 								>
 								<input
@@ -1322,13 +1329,13 @@
 									bind:value={QRcode.whatsappNumber}
 									{disabled}
 									placeholder="+91-1234567890"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+									class="input-field w-[70%]"
 								/>
 							</div>
-							<div class="space-y-2">
+							<div class="my-4 flex flex-col md:flex-row md:items-center">
 								<label
 									for="qrcode-url"
-									class="text-sm font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 									>URL</label
 								>
 								<input
@@ -1337,7 +1344,7 @@
 									bind:value={QRcode.url}
 									{disabled}
 									placeholder="https://wa.me/911234567890"
-									class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+									class="input-field w-[70%]"
 								/>
 							</div>
 						</div>
@@ -1390,13 +1397,13 @@
 									{ key: 'muted', label: 'Muted Text' },
 									{ key: 'text', label: 'Body Text' }
 								] as c}
-									<div class="space-y-2">
+									<div class="my-2 flex flex-col md:flex-row md:items-center">
 										<label
 											for="styling-{c.key}-color"
-											class="text-sm font-medium text-[var(--color-info)]"
+											class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 											>{c.label} Color</label
 										>
-										<div class="flex items-center gap-2">
+										<div class="flex items-center gap-2 w-[70%]">
 											<input
 												type="color"
 												id="styling-{c.key}-color"
@@ -1459,17 +1466,17 @@
 					{#if activeSections.has('fonts')}
 						<div class="space-y-4 p-6">
 							<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-								<div class="space-y-2">
+								<div class="my-2 flex flex-col md:flex-row md:items-center">
 									<label
 										for="styling-heading-font"
-										class="text-sm font-medium text-[var(--color-info)]"
+										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 										>Heading Font</label
 									>
 									<select
 										id="styling-heading-font"
 										bind:value={Styling.headingFont}
 										{disabled}
-										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										class="select input-field w-[70%]"
 									>
 										<option value="">Select a font</option>
 										<option value="'Poppins', sans-serif">Poppins</option>
@@ -1498,21 +1505,21 @@
 											bind:value={Styling.headingFont}
 											{disabled}
 											placeholder="Custom font (e.g., 'Custom Font', sans-serif)"
-											class="mt-2 w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+											class="mt-2 input-field w-[70%]"
 										/>
 									{/if}
 								</div>
-								<div class="space-y-2">
+								<div class="my-2 flex flex-col md:flex-row md:items-center">
 									<label
 										for="styling-body-font"
-										class="text-sm font-medium text-[var(--color-info)]"
+										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 										>Body Font</label
 									>
 									<select
 										id="styling-body-font"
 										bind:value={Styling.bodyFont}
 										{disabled}
-										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										class="select input-field w-[70%]"
 									>
 										<option value="">Select a font</option>
 										<option value="'Poppins', sans-serif">Poppins</option>
@@ -1541,7 +1548,7 @@
 											bind:value={Styling.bodyFont}
 											{disabled}
 											placeholder="Custom font (e.g., 'Custom Font', sans-serif)"
-											class="mt-2 w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+											class="mt-2 input-field w-[70%]"
 										/>
 									{/if}
 								</div>
@@ -1588,17 +1595,17 @@
 					{#if activeSections.has('sizes')}
 						<div class="space-y-4 p-6">
 							<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-								<div class="space-y-2">
+								<div class="my-2 flex flex-col md:flex-row md:items-center">
 									<label
 										for="styling-page-width"
-										class="text-sm font-medium text-[var(--color-info)]"
+										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 										>Page Width</label
 									>
 									<select
 										id="styling-page-width"
 										bind:value={Styling.pageWidth}
 										{disabled}
-										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										class="select input-field w-[70%]"
 									>
 										<option value="">Select page width</option>
 										<option value="148mm" disabled>A6 (148mm)</option>
@@ -1618,21 +1625,21 @@
 											bind:value={Styling.pageWidth}
 											{disabled}
 											placeholder="Custom width (e.g., 180mm)"
-											class="mt-2 w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+											class="mt-2 input-field w-[70%]"
 										/>
 									{/if}
 								</div>
-								<div class="space-y-2">
+								<div class="my-2 flex flex-col md:flex-row md:items-center">
 									<label
 										for="styling-page-height"
-										class="text-sm font-medium text-[var(--color-info)]"
+										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 										>Page Height</label
 									>
 									<select
 										id="styling-page-height"
 										bind:value={Styling.pageHeight}
 										{disabled}
-										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										class="select input-field w-[70%]"
 									>
 										<option value="">Select page height</option>
 										<option value="105mm" disabled>A6 (105mm)</option>
@@ -1652,21 +1659,21 @@
 											bind:value={Styling.pageHeight}
 											{disabled}
 											placeholder="Custom height (e.g., 240mm)"
-											class="mt-2 w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+											class="mt-2 input-field w-[70%]"
 										/>
 									{/if}
 								</div>
-								<div class="space-y-2">
+								<div class="my-2 flex flex-col md:flex-row md:items-center">
 									<label
 										for="styling-ui-width"
-										class="text-sm font-medium text-[var(--color-info)]"
+										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 										>UI Width</label
 									>
 									<select
 										id="styling-ui-width"
 										bind:value={Styling.userInterfaceWidth}
 										{disabled}
-										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										class="select input-field w-[70%]"
 									>
 										<option value="">Select UI width</option>
 										<option value="200px">200px</option>
@@ -1686,21 +1693,21 @@
 											bind:value={Styling.userInterfaceWidth}
 											{disabled}
 											placeholder="Custom width (e.g., 270px)"
-											class="mt-2 w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+											class="mt-2 input-field w-[70%]"
 										/>
 									{/if}
 								</div>
-								<div class="space-y-2">
+								<div class="my-2 flex flex-col md:flex-row md:items-center">
 									<label
 										for="styling-interaction-width"
-										class="text-sm font-medium text-[var(--color-info)]"
+										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 										>Interaction Width</label
 									>
 									<select
 										id="styling-interaction-width"
 										bind:value={Styling.userInteractionWidth}
 										{disabled}
-										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										class="select input-field w-[70%]"
 									>
 										<option value="">Select interaction width</option>
 										<option value="200px">200px</option>
@@ -1720,21 +1727,21 @@
 											bind:value={Styling.userInteractionWidth}
 											{disabled}
 											placeholder="Custom width (e.g., 230px)"
-											class="mt-2 w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+											class="mt-2 input-field w-[70%]"
 										/>
 									{/if}
 								</div>
-								<div class="space-y-2">
+								<div class="my-2 flex flex-col md:flex-row md:items-center">
 									<label
 										for="styling-qr-size"
-										class="text-sm font-medium text-[var(--color-info)]"
+										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 										>QR Size</label
 									>
 									<select
 										id="styling-qr-size"
 										bind:value={Styling.qrSize}
 										{disabled}
-										class="w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+										class="select input-field w-[70%]"
 									>
 										<option value="">Select QR size</option>
 										<option value="80px">80px (Small)</option>
@@ -1752,7 +1759,7 @@
 											bind:value={Styling.qrSize}
 											{disabled}
 											placeholder="Custom size (e.g., 140px)"
-											class="mt-2 w-full rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
+											class="mt-2 input-field w-[70%]"
 										/>
 									{/if}
 								</div>
