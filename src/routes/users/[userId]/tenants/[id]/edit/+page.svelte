@@ -178,10 +178,11 @@
 					<td class="table-label">Email <span class="text-red-600">*</span></td>
 					<td class="table-data">
 						<input
+						    disabled
 							type="email"
 							name="email"
 							placeholder="Enter email here..."
-							class="input {errors?.email ? 'input-text-error' : ''}"
+							class="grayout-input {errors?.email ? 'input-text-error' : ''}"
 							bind:value={email}
 						/>
 						{#if errors?.Email}
