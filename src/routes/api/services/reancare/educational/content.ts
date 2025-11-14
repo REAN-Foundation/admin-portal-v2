@@ -15,28 +15,16 @@ export const createContent = async (
 	imageUrl?: string,
 	durationInMins?: number
 ) => {
-	const body: any = {
+	const body = {
 		ModuleId: moduleId,
 		Title: title,
-		ContentType: contentType
+		ContentType: contentType,
+		Description: description ?? null,
+		Sequence: sequence ?? null,
+		ResourceLink: resourceLink ?? null,
+		ImageUrl: imageUrl ?? null,
+		DurationInMins: durationInMins ?? null
 	};
-	
-	if (description !== undefined && description !== null) {
-		body.Description = description;
-	}
-	if (sequence !== undefined && sequence !== null) {
-		body.Sequence = sequence;
-	}
-	if (resourceLink !== undefined && resourceLink !== null) {
-		body.ResourceLink = resourceLink;
-	}
-	if (imageUrl !== undefined && imageUrl !== null) {
-		body.ImageUrl = imageUrl;
-	}
-	if (durationInMins !== undefined && durationInMins !== null) {
-		body.DurationInMins = durationInMins;
-	}
-	
 	const url = BACKEND_API_URL + '/educational/course-contents';
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 
@@ -99,28 +87,16 @@ export const updateContent = async (
 	imageUrl?: string,
 	durationInMins?: number
 ) => {
-	const body: any = {
+	const body = {
 		contentId,
 		Title: title,
-		ContentType: contentType
+		ContentType: contentType,
+		Description: description ?? null,
+		Sequence: sequence ?? null,
+		ResourceLink: resourceLink ?? null,
+		ImageUrl: imageUrl ?? null,
+		DurationInMins: durationInMins ?? null
 	};
-	
-	if (description !== undefined && description !== null) {
-		body.Description = description;
-	}
-	if (sequence !== undefined && sequence !== null) {
-		body.Sequence = sequence;
-	}
-	if (resourceLink !== undefined && resourceLink !== null) {
-		body.ResourceLink = resourceLink;
-	}
-	if (imageUrl !== undefined && imageUrl !== null) {
-		body.ImageUrl = imageUrl;
-	}
-	if (durationInMins !== undefined && durationInMins !== null) {
-		body.DurationInMins = durationInMins;
-	}
-	
 	const url = BACKEND_API_URL + `/educational/course-contents/${contentId}`;
 	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 

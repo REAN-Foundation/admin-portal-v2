@@ -30,6 +30,8 @@
 	let isDeleting = $state(false);
 	let openModuleDeleteModal = $state(false);
 	let moduleToBeDeleted = $state<{ moduleId: string; courseId: string } | null>(null);
+	let openContentDeleteModal = $state(false);
+	let contentToBeDeleted = $state<{ contentId: string; moduleId: string } | null>(null);
 	let searchKeyword = $state(undefined);
 	
 	// State for managing expanded courses and their modules
@@ -41,6 +43,9 @@
 	let expandedModules = $state<Record<string, boolean>>({});
 	let moduleContents = $state<Record<string, any[]>>({});
 	let loadingContents = $state<Record<string, boolean>>({});
+	
+	// State for managing selected content IDs per module
+	let selectedContentIds = $state<Record<string, string | null>>({});
 
 	const userId = page.params.userId;
 	const courseRoute = `/users/${userId}/courses`;
@@ -197,63 +202,79 @@
 			// Expand
 			expandedCourses = { ...expandedCourses, [courseId]: true };
 			
-			// Check if modules are already in the course object (nested from API)
-			const course = courses.find(c => c.id === courseId);
-			const nestedModules = course?.Modules || course?.modules || [];
-			
-			if (nestedModules && nestedModules.length > 0) {
-				// Use nested modules from course object (old API behavior)
-				courseModules = { ...courseModules, [courseId]: nestedModules };
-			} else if (!courseModules[courseId] && !loadingModules[courseId]) {
-				// Fetch modules separately if not nested and not already loaded
+			// Always fetch fresh modules to ensure newly added modules are displayed
+			// Fetch modules if not currently loading
+			if (!loadingModules[courseId]) {
 				await fetchCourseModules(courseId);
 			}
 		}
 	};
 	
-	// Fetch modules for a specific course
+	// Fetch modules for a specific course - fetch all modules across all pages
 	const fetchCourseModules = async (courseId: string) => {
 		try {
 			loadingModules = { ...loadingModules, [courseId]: true };
-			let url = `/api/server/educational/modules/search?`;
-			url += `itemsPerPage=100`; // Get all modules
-			url += `&pageIndex=0`;
-			url += `&sortBy=Name`;
-			url += `&sortOrder=ascending`;
-			url += `&courseId=${courseId}`; // Add courseId to filter modules by course
+			let allModules: any[] = [];
+			let pageIndex = 0;
+			let hasMore = true;
+			const itemsPerPage = 100;
+			
+			// Fetch all pages of modules
+			while (hasMore) {
+				let url = `/api/server/educational/modules/search?`;
+				url += `itemsPerPage=${itemsPerPage}`;
+				url += `&pageIndex=${pageIndex}`;
+				url += `&sortBy=Name`;
+				url += `&sortOrder=ascending`;
+				url += `&courseId=${courseId}`;
 
-			const res = await fetch(url, {
-				method: 'GET',
-				headers: { 'content-type': 'application/json' },
-				credentials: 'include'
-			});
-			
-			if (!res.ok) {
-				const errorText = await res.text();
-				console.error('HTTP error response:', res.status, errorText);
-				throw new Error(`HTTP error! status: ${res.status}`);
-			}
-			
-			const searchResult = await res.json();
-			let modulesList = [];
-			
-			// Match the exact pattern from modules page: searchResult.Data.CourseModules
-			if (searchResult.Data && searchResult.Data.CourseModules) {
-				const courseModulesData = searchResult.Data.CourseModules;
+				const res = await fetch(url, {
+					method: 'GET',
+					headers: { 'content-type': 'application/json' },
+					credentials: 'include'
+				});
 				
-				// Check for Items array (standard structure)
-				if (courseModulesData.Items && Array.isArray(courseModulesData.Items)) {
-					modulesList = courseModulesData.Items;
+				if (!res.ok) {
+					const errorText = await res.text();
+					console.error('HTTP error response:', res.status, errorText);
+					throw new Error(`HTTP error! status: ${res.status}`);
 				}
-				// If CourseModules is directly an array
-				else if (Array.isArray(courseModulesData)) {
-					modulesList = courseModulesData;
+				
+				const searchResult = await res.json();
+				let modulesList: any[] = [];
+				
+				// Match the exact pattern from modules page: searchResult.Data.CourseModules
+				if (searchResult.Data && searchResult.Data.CourseModules) {
+					const courseModulesData = searchResult.Data.CourseModules;
+					
+					// Check for Items array (standard structure)
+					if (courseModulesData.Items && Array.isArray(courseModulesData.Items)) {
+						modulesList = courseModulesData.Items;
+						// Check if there are more pages
+						const totalCount = courseModulesData.TotalCount || 0;
+						const currentCount = allModules.length + modulesList.length;
+						hasMore = currentCount < totalCount && modulesList.length === itemsPerPage;
+					}
+					// If CourseModules is directly an array
+					else if (Array.isArray(courseModulesData)) {
+						modulesList = courseModulesData;
+						hasMore = modulesList.length === itemsPerPage;
+					}
+				}
+				
+				allModules = [...allModules, ...modulesList];
+				
+				// If we got fewer items than requested, we've reached the end
+				if (modulesList.length < itemsPerPage) {
+					hasMore = false;
+				} else {
+					pageIndex++;
 				}
 			}
 			
 			// Update state reactively - store all modules for this course
 			// Ensure each module has the courseId for content navigation
-			const modulesWithCourseId = modulesList.map(module => ({
+			const modulesWithCourseId = allModules.map(module => ({
 				...module,
 				CourseId: courseId
 			}));
@@ -279,9 +300,62 @@
 		return `/users/${userId}/courses/${courseId}/modules/${moduleId}/edit`;
 	};
 	
+	const moduleCreateRoute = (courseId: string) => {
+		return `/users/${userId}/courses/${courseId}/modules/create`;
+	};
+	
 	// Content view route helper
 	const contentViewRoute = (courseId: string, moduleId: string, contentId: string) => {
 		return `/users/${userId}/courses/${courseId}/modules/${moduleId}/contents/${contentId}/view`;
+	};
+	
+	// Content edit route helper
+	const contentEditRoute = (courseId: string, moduleId: string, contentId: string) => {
+		return `/users/${userId}/courses/${courseId}/modules/${moduleId}/contents/${contentId}/edit`;
+	};
+	
+	// Content create route helper
+	const contentCreateRoute = (courseId: string, moduleId: string) => {
+		return `/users/${userId}/courses/${courseId}/modules/${moduleId}/contents/create`;
+	};
+	
+	// Content delete handler
+	const handleContentDeleteClick = (contentId: string) => {
+		// Find which module this content belongs to
+		let moduleId = null;
+		for (const [modId, contents] of Object.entries(moduleContents)) {
+			if (contents.some(c => c.id === contentId)) {
+				moduleId = modId;
+				break;
+			}
+		}
+		if (moduleId) {
+			openContentDeleteModal = true;
+			contentToBeDeleted = { contentId, moduleId };
+		}
+	};
+	
+	const handleContentDelete = async (data: { contentId: string; moduleId: string }) => {
+		const { contentId, moduleId } = data;
+		console.log('Deleting content:', contentId);
+		const response = await fetch(`/api/server/educational/content/${contentId}`, {
+			method: 'DELETE',
+			headers: { 'content-type': 'application/json' }
+		});
+
+		const res = await response.json();
+		console.log('Delete content response:', res);
+		if (res.HttpCode === 200) {
+			toastMessage(res);
+			// Refresh contents for the module
+			if (moduleContents[moduleId]) {
+				await fetchModuleContents(moduleId);
+			}
+		} else {
+			toastMessage(res);
+		}
+		openContentDeleteModal = false;
+		contentToBeDeleted = null;
 	};
 	
 	// Module delete handler
@@ -465,6 +539,7 @@
 							</tr>
 						{:else}
 							{#each retrivedCourses as row, index}
+								{@const moduleCount = (courseModules[row.id] || row.Modules || row.modules || []).length}
 								<tr>
 									<td>
 										{paginationSettings.page * paginationSettings.limit + index + 1}
@@ -506,7 +581,15 @@
 									</td>
 
 									<td>
-										<div class="flex justify-end">
+										<div class="flex items-center justify-end gap-2">
+											<span class="text-gray-700 text-sm">Modules ({moduleCount})</span>
+											<Button
+												href={moduleCreateRoute(row.id)}
+												variant="icon"
+												icon="material-symbols:add"
+												iconSize="sm"
+												tooltip="Add New Module"
+											/>
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"
@@ -554,6 +637,10 @@
 													bind:loadingContents
 													onModuleExpand={(moduleId, event) => toggleModuleContents(moduleId, row.id, event)}
 													contentView={contentViewRoute}
+													contentEdit={contentEditRoute}
+													contentCreate={contentCreateRoute}
+													onContentDelete={handleContentDeleteClick}
+													bind:selectedContentIds
 												/>
 											{:else}
 												<div class="text-gray-500 italic">No modules found for this course</div>
@@ -584,6 +671,14 @@
 	onConfirm={handleModuleDelete}
 	id={moduleToBeDeleted}
 	message="Are you sure you want to delete this module?"
+/>
+
+<Confirmation
+	bind:isOpen={openContentDeleteModal}
+	title="Delete Content"
+	onConfirm={handleContentDelete}
+	id={contentToBeDeleted}
+	message="Are you sure you want to delete this content?"
 />
 
 <Pagination bind:paginationSettings {onItemsPerPageChange} {onPageChange} />

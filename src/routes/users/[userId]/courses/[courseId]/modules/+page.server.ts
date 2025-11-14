@@ -13,8 +13,8 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     const searchFilters = createSearchFilters(event, {
         orderBy: "Name",
         order: "ascending",
-        itemsPerPage: 100, // Fetch more items initially
-        courseId: courseId // Add courseId to filter
+        itemsPerPage: 100,
+        courseId: courseId
     });
     
     console.log('Search Parameters:', searchFilters);

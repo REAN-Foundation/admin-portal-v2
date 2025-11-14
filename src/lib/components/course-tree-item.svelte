@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Self from './course-tree-item.svelte';
-	import ContentTreeView from './content-tree-view.svelte';
+	import ContentTable from './content-table.svelte';
 	import Icon from '@iconify/svelte';
 	import Button from '$lib/components/button/button.svelte';
 	
@@ -13,7 +13,11 @@
 		moduleContents = $bindable({}),
 		loadingContents = $bindable({}),
 		onModuleExpand,
-		contentView
+		contentView,
+		contentEdit,
+		contentCreate,
+		onContentDelete,
+		selectedContentIds = $bindable({})
 	} = $props<{
 		node: {
 			id: string;
@@ -32,11 +36,16 @@
 		loadingContents?: Record<string, boolean>;
 		onModuleExpand?: (moduleId: string, event: Event) => void;
 		contentView?: (courseId: string, moduleId: string, contentId: string) => string;
+		contentEdit?: (courseId: string, moduleId: string, contentId: string) => string;
+		contentCreate?: (courseId: string, moduleId: string) => string;
+		onContentDelete?: (contentId: string) => void;
+		selectedContentIds?: Record<string, string | null>;
 	}>();
 	
 	const isExpanded = $derived(expandedModules[node.id] || false);
 	const contents = $derived(moduleContents[node.id] || []);
 	const isLoading = $derived(loadingContents[node.id] || false);
+	const contentCount = $derived(contents.length);
 	
 	// Debug logging
 	$effect(() => {
@@ -74,15 +83,16 @@
 			}
 		}
 	};
+	
 </script>
 
 <div class="tree-connector pl-4">
-	<div class="flex items-center justify-between gap-2 text-[var(--color-info)] hover:text-blue-600 group">
+	<div class="flex items-center justify-between gap-2 text-[var(--color-info)] group">
 		<div class="flex items-center gap-2 flex-1">
 			<button
 				type="button"
 				onclick={handleModuleClick}
-				class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-secondary)] text-sm text-[var(--color-info)] hover:bg-[var(--color-active)]"
+				class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-secondary)] text-sm text-[var(--color-info)]"
 			>
 				{#if isExpanded}
 					<Icon icon="mdi:chevron-down" class="text-xs" />
@@ -96,12 +106,23 @@
 			<button
 				type="button"
 				onclick={handleModuleNameClick}
-				class="hover:underline cursor-pointer text-left"
+				class="cursor-pointer text-left"
 			>
 				{node.Sequence ? `${node.Sequence}-` : ''}{node.Name}
 			</button>
 		</div>
-		<div class="flex items-center justify-end">
+		<div class="flex items-center justify-end gap-2">
+			<span class="text-gray-700 text-sm">Contents ({contentCount})</span>
+			{#if contentCreate}
+				{@const courseId = node.CourseId || ''}
+				<Button
+					href={contentCreate(courseId, node.id)}
+					variant="icon"
+					icon="material-symbols:add"
+					iconSize="sm"
+					tooltip="Add New Content"
+				/>
+			{/if}
 			{#if moduleEdit}
 				<Button
 					href={moduleEdit(node.id)}
@@ -138,18 +159,13 @@
 					<span class="text-sm">Loading contents...</span>
 				</div>
 			{:else if contents && contents.length > 0}
-				{#if contentView}
-					{@const courseId = node.CourseId || ''}
-					<ContentTreeView 
-						contents={contents} 
-						contentView={(contentId) => contentView(courseId, node.id, contentId)} 
-					/>
-				{:else}
-					<ContentTreeView 
-						contents={contents} 
-						contentView={(contentId) => `/contents/${contentId}/view`} 
-					/>
-				{/if}
+				{@const courseId = node.CourseId || ''}
+				<ContentTable 
+					contents={contents}
+					onContentEdit={contentEdit ? (contentId) => contentEdit(courseId, node.id, contentId) : undefined}
+					onContentView={contentView ? (contentId) => contentView(courseId, node.id, contentId) : undefined}
+					onContentDelete={onContentDelete}
+				/>
 			{:else}
 				<div class="text-gray-500 italic pl-4 text-sm">No contents found</div>
 			{/if}
@@ -168,6 +184,10 @@
 					bind:loadingContents
 					{onModuleExpand}
 					{contentView}
+					{contentEdit}
+					{contentCreate}
+					{onContentDelete}
+					bind:selectedContentIds
 				/>
 			{/each}
 		</div>

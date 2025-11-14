@@ -10,7 +10,11 @@
 		moduleContents = $bindable({}),
 		loadingContents = $bindable({}),
 		onModuleExpand,
-		contentView
+		contentView,
+		contentEdit,
+		contentCreate,
+		onContentDelete,
+		selectedContentIds = $bindable({})
 	} = $props<{
 		modules: Array<{
 			id: string;
@@ -30,10 +34,14 @@
 		loadingContents?: Record<string, boolean>;
 		onModuleExpand?: (moduleId: string, event: Event) => void;
 		contentView?: (courseId: string, moduleId: string, contentId: string) => string;
+		contentEdit?: (courseId: string, moduleId: string, contentId: string) => string;
+		contentCreate?: (courseId: string, moduleId: string) => string;
+		onContentDelete?: (contentId: string) => void;
+		selectedContentIds?: Record<string, string | null>;
 	}>();
 </script>
 
-<div class="space-y-2 pl-4 hover:text-black">
+<div class="space-y-2 pl-4">
 	{#if modules && modules.length > 0}
 		{#each modules as module}
 			<CourseTreeItem 
@@ -46,6 +54,10 @@
 				bind:loadingContents
 				{onModuleExpand}
 				{contentView}
+				{contentEdit}
+				{contentCreate}
+				{onContentDelete}
+				bind:selectedContentIds
 			/>
 		{/each}
 	{:else}
