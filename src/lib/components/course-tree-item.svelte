@@ -12,6 +12,7 @@
 		expandedModules = $bindable({}),
 		moduleContents = $bindable({}),
 		loadingContents = $bindable({}),
+		moduleContentCounts = $bindable({}),
 		onModuleExpand,
 		contentView,
 		contentEdit,
@@ -34,6 +35,7 @@
 		expandedModules?: Record<string, boolean>;
 		moduleContents?: Record<string, any[]>;
 		loadingContents?: Record<string, boolean>;
+		moduleContentCounts?: Record<string, number>;
 		onModuleExpand?: (moduleId: string, event: Event) => void;
 		contentView?: (courseId: string, moduleId: string, contentId: string) => string;
 		contentEdit?: (courseId: string, moduleId: string, contentId: string) => string;
@@ -43,9 +45,17 @@
 	}>();
 	
 	const isExpanded = $derived(expandedModules[node.id] || false);
-	const contents = $derived(moduleContents[node.id] || []);
+	const contents = $derived(moduleContents[node.id]);
 	const isLoading = $derived(loadingContents[node.id] || false);
-	const contentCount = $derived(contents.length);
+	const cachedCount = $derived(moduleContentCounts[node.id]);
+	// Use fetched contents count if contents have been fetched, otherwise fall back to cached count or node's ContentCount property
+	const contentCount = $derived(
+		contents !== undefined
+			? contents.length
+			: (cachedCount !== undefined
+				? cachedCount
+				: (node.ContentCount ?? node.ContentsCount ?? node.contentCount ?? node.contentsCount ?? 0))
+	);
 	
 	// Debug logging
 	$effect(() => {
@@ -87,7 +97,7 @@
 </script>
 
 <div class="tree-connector pl-4">
-	<div class="flex items-center justify-between gap-2 text-[var(--color-info)] group">
+	<div class="flex items-center justify-between gap-2 text-[var(--color-info)]">
 		<div class="flex items-center gap-2 flex-1">
 			<button
 				type="button"
@@ -158,7 +168,7 @@
 					<Icon icon="svg-spinners:ring-resize" class="inline" width="16" />
 					<span class="text-sm">Loading contents...</span>
 				</div>
-			{:else if contents && contents.length > 0}
+			{:else if contents !== undefined && contents.length > 0}
 				{@const courseId = node.CourseId || ''}
 				<ContentTable 
 					contents={contents}
@@ -182,6 +192,7 @@
 					bind:expandedModules
 					bind:moduleContents
 					bind:loadingContents
+					bind:moduleContentCounts
 					{onModuleExpand}
 					{contentView}
 					{contentEdit}

@@ -38,11 +38,13 @@
 	let expandedCourses = $state<Record<string, boolean>>({});
 	let courseModules = $state<Record<string, any[]>>({});
 	let loadingModules = $state<Record<string, boolean>>({});
+	let courseModuleCounts = $state<Record<string, number>>({});
 	
 	// State for managing expanded modules and their contents
 	let expandedModules = $state<Record<string, boolean>>({});
 	let moduleContents = $state<Record<string, any[]>>({});
 	let loadingContents = $state<Record<string, boolean>>({});
+	let moduleContentCounts = $state<Record<string, number>>({});
 	
 	// State for managing selected content IDs per module
 	let selectedContentIds = $state<Record<string, string | null>>({});
@@ -72,6 +74,32 @@
 	// Update pagination size when totalCoursesCount changes
 	$effect(() => {
 		paginationSettings.size = totalCoursesCount;
+	});
+
+	// Fetch counts for courses and modules on initial load and when modules are loaded
+	$effect(() => {
+		// Fetch module counts for all courses
+		if (retrivedCourses.length > 0) {
+			retrivedCourses.forEach(course => {
+				// Only fetch if we don't have the count yet and modules haven't been fetched
+				if (!courseModuleCounts[course.id] && !courseModules[course.id]) {
+					fetchCourseModuleCount(course.id);
+				}
+			});
+		}
+
+		// Fetch content counts for all modules when they are loaded
+		Object.keys(courseModules).forEach(courseId => {
+			const modules = courseModules[courseId];
+			if (modules && modules.length > 0) {
+				modules.forEach(module => {
+					// Only fetch if we don't have the count yet and contents haven't been fetched
+					if (!moduleContentCounts[module.id] && !moduleContents[module.id]) {
+						fetchModuleContentCount(module.id);
+					}
+				});
+			}
+		});
 	});
 
 	async function searchCourse(model) {
@@ -210,6 +238,35 @@
 		}
 	};
 	
+	// Fetch module count for a course (lightweight call to get just the count)
+	const fetchCourseModuleCount = async (courseId: string) => {
+		try {
+			let url = `/api/server/educational/modules/search?`;
+			url += `itemsPerPage=1`;
+			url += `&pageIndex=0`;
+			url += `&sortBy=Name`;
+			url += `&sortOrder=ascending`;
+			url += `&courseId=${courseId}`;
+
+			const res = await fetch(url, {
+				method: 'GET',
+				headers: { 'content-type': 'application/json' },
+				credentials: 'include'
+			});
+			
+			if (res.ok) {
+				const searchResult = await res.json();
+				if (searchResult.Data && searchResult.Data.CourseModules) {
+					const courseModulesData = searchResult.Data.CourseModules;
+					const totalCount = courseModulesData.TotalCount || 0;
+					courseModuleCounts = { ...courseModuleCounts, [courseId]: totalCount };
+				}
+			}
+		} catch (err) {
+			console.error('Failed to fetch module count:', err);
+		}
+	};
+
 	// Fetch modules for a specific course - fetch all modules across all pages
 	const fetchCourseModules = async (courseId: string) => {
 		try {
@@ -279,6 +336,8 @@
 				CourseId: courseId
 			}));
 			courseModules = { ...courseModules, [courseId]: modulesWithCourseId };
+			// Update the count as well
+			courseModuleCounts = { ...courseModuleCounts, [courseId]: allModules.length };
 		} catch (err) {
 			console.error('Failed to fetch modules:', err);
 			courseModules = { ...courseModules, [courseId]: [] };
@@ -406,6 +465,45 @@
 		}
 	};
 	
+	// Fetch content count for a module (lightweight call to get just the count)
+	const fetchModuleContentCount = async (moduleId: string) => {
+		try {
+			let url = `/api/server/educational/content/search?`;
+			url += `itemsPerPage=1`;
+			url += `&pageIndex=0`;
+			url += `&sortBy=Title`;
+			url += `&sortOrder=ascending`;
+			url += `&moduleId=${moduleId}`;
+
+			const res = await fetch(url, {
+				method: 'GET',
+				headers: { 'content-type': 'application/json' },
+				credentials: 'include'
+			});
+			
+			if (res.ok) {
+				const searchResult = await res.json();
+				let totalCount = 0;
+				
+				// Handle both CourseContents and Contents response structures
+				if (searchResult.Data) {
+					const contentsData = searchResult.Data.CourseContents || searchResult.Data.Contents;
+					if (contentsData) {
+						if (contentsData.TotalCount !== undefined) {
+							totalCount = contentsData.TotalCount;
+						} else if (Array.isArray(contentsData)) {
+							totalCount = contentsData.length;
+						}
+					}
+				}
+				
+				moduleContentCounts = { ...moduleContentCounts, [moduleId]: totalCount };
+			}
+		} catch (err) {
+			console.error('Failed to fetch content count:', err);
+		}
+	};
+
 	// Fetch contents for a specific module
 	const fetchModuleContents = async (moduleId: string) => {
 		try {
@@ -459,6 +557,8 @@
 			
 			// Update state reactively - store all contents for this module
 			moduleContents = { ...moduleContents, [moduleId]: contentsList };
+			// Update the count as well
+			moduleContentCounts = { ...moduleContentCounts, [moduleId]: contentsList.length };
 		} catch (err) {
 			console.error('Failed to fetch contents:', err);
 			moduleContents = { ...moduleContents, [moduleId]: [] };
@@ -539,7 +639,13 @@
 							</tr>
 						{:else}
 							{#each retrivedCourses as row, index}
-								{@const moduleCount = (courseModules[row.id] || row.Modules || row.modules || []).length}
+								{@const fetchedModules = courseModules[row.id]}
+								{@const cachedCount = courseModuleCounts[row.id]}
+								{@const moduleCount = fetchedModules !== undefined
+									? fetchedModules.length
+									: (cachedCount !== undefined
+										? cachedCount
+										: (row.ModuleCount ?? row.ModulesCount ?? row.moduleCount ?? row.modulesCount ?? row.TotalModules ?? row.totalModules ?? (row.Modules?.length ?? row.modules?.length ?? 0)))}
 								<tr>
 									<td>
 										{paginationSettings.page * paginationSettings.limit + index + 1}
@@ -620,7 +726,7 @@
 									{@const hasModules = courseModulesList && courseModulesList.length > 0}
 									{@const isLoading = loadingModules[row.id]}
 									<tr>
-										<td colspan="6" class="bg-gray-50 p-4">
+										<td colspan="6" class="bg-gray-50 p-4" style="position: relative; overflow: visible;">
 											{#if isLoading}
 												<div class="flex items-center gap-2 text-gray-500">
 													<Icon icon="svg-spinners:ring-resize" class="inline" width="20" />
@@ -635,6 +741,7 @@
 													bind:expandedModules
 													bind:moduleContents
 													bind:loadingContents
+													bind:moduleContentCounts
 													onModuleExpand={(moduleId, event) => toggleModuleContents(moduleId, row.id, event)}
 													contentView={contentViewRoute}
 													contentEdit={contentEditRoute}

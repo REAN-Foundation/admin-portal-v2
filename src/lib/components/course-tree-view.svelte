@@ -9,6 +9,7 @@
 		expandedModules = $bindable({}),
 		moduleContents = $bindable({}),
 		loadingContents = $bindable({}),
+		moduleContentCounts = $bindable({}),
 		onModuleExpand,
 		contentView,
 		contentEdit,
@@ -32,6 +33,7 @@
 		expandedModules?: Record<string, boolean>;
 		moduleContents?: Record<string, any[]>;
 		loadingContents?: Record<string, boolean>;
+		moduleContentCounts?: Record<string, number>;
 		onModuleExpand?: (moduleId: string, event: Event) => void;
 		contentView?: (courseId: string, moduleId: string, contentId: string) => string;
 		contentEdit?: (courseId: string, moduleId: string, contentId: string) => string;
@@ -52,6 +54,7 @@
 				bind:expandedModules
 				bind:moduleContents
 				bind:loadingContents
+				bind:moduleContentCounts
 				{onModuleExpand}
 				{contentView}
 				{contentEdit}

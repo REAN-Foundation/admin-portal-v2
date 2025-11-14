@@ -13,25 +13,14 @@ export const createModule = async (
 	sequence?: number,
 	courseId?: string
 ) => {
-	const body: any = {
-		Name: name
+	const body = {
+		Name: name,
+		Description: description ?? null,
+		DurationInMins: durationInMins ?? null,
+		ImageUrl: imageUrl ?? null,
+		Sequence: sequence ?? null,
+		CourseId: courseId ?? null
 	};
-	
-	if (description !== undefined && description !== null) {
-		body.Description = description;
-	}
-	if (durationInMins !== undefined && durationInMins !== null) {
-		body.DurationInMins = durationInMins;
-	}
-	if (imageUrl !== undefined && imageUrl !== null) {
-		body.ImageUrl = imageUrl;
-	}
-	if (sequence !== undefined && sequence !== null) {
-		body.Sequence = sequence;
-	}
-	if (courseId !== undefined && courseId !== null) {
-		body.CourseId = courseId;
-	}
 	const url = BACKEND_API_URL + '/educational/course-modules';
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 
@@ -92,23 +81,14 @@ export const updateModule = async (
 	imageUrl?: string,
 	sequence?: number
 ) => {
-	const body: any = {
+	const body = {
 		moduleId,
-		Name: name
+		Name: name,
+		Description: description ?? null,
+		DurationInMins: durationInMins ?? null,
+		ImageUrl: imageUrl ?? null,
+		Sequence: sequence ?? null
 	};
-	
-	if (description !== undefined && description !== null) {
-		body.Description = description;
-	}
-	if (durationInMins !== undefined && durationInMins !== null) {
-		body.DurationInMins = durationInMins;
-	}
-	if (imageUrl !== undefined && imageUrl !== null) {
-		body.ImageUrl = imageUrl;
-	}
-	if (sequence !== undefined && sequence !== null) {
-		body.Sequence = sequence;
-	}
 	const url = BACKEND_API_URL + `/educational/course-modules/${moduleId}`;
 	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 
