@@ -11,15 +11,15 @@
 	import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema.js';
 	import type { FaviconUploadModel, LogoUploadModel } from '$lib/types/tenant.settings.types.js';
 
-	let { data } = $props();
+	///////////////////////////////////////////////////////////////////////////////////////////
 
-	console.log('Here is data', data);
+	let { data } = $props();
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
 	const tenantRoute = `/users/${userId}/tenants`;
 	const marketingMaterialRoute = `/users/${userId}/tenants/${tenantId}/marketing-material`;
-
+	let errors: Record<string, string> = $state({});
 	const breadCrumbs = [
 		{
 			name: 'Tenants',
@@ -30,21 +30,11 @@
 			path: marketingMaterialRoute
 		}
 	];
-	let errors: Record<string, string> = $state({});
 	let promise = $state();
-
-	// Check if marketing material already exists (for create vs update)
-	const hasExistingData =
-		!data.isEmpty &&
-		data.marketingMaterial &&
-		(Object.keys(data.marketingMaterial).length > 0 ||
-			data.marketingMaterial.Styling ||
-			data.marketingMaterial.Content);
-
-	// Initialize fields as empty if data is empty, otherwise populate with existing data
 	const isEmpty = data.isEmpty || !data.marketingMaterial;
-
-	// New nested structures for Styling and Content
+	const hasMarketingMaterial = $derived(
+		!data.isEmpty && data.marketingMaterial !== null && data.marketingMaterial !== undefined
+	);
 	let Styling = $state(
 		isEmpty
 			? {
@@ -94,7 +84,7 @@
 					},
 					benefits: {
 						title: '',
-						items: [] // Will be objects with { icon, title, description }
+						items: []
 					},
 					userInterface: {
 						heading: '',
@@ -118,20 +108,15 @@
 					benefits: {
 						title: data.marketingMaterial?.Content?.benefits?.title ?? '',
 						items: (data.marketingMaterial?.Content?.benefits?.items ?? []).map((item) => {
-							// Handle string format (from backend)
 							if (typeof item === 'string') {
-								// Check if string contains ":" separator (Title: Description format)
 								const colonIndex = item.indexOf(':');
 								if (colonIndex > 0) {
-									// Split into title and description
 									const title = item.substring(0, colonIndex).trim();
 									const description = item.substring(colonIndex + 1).trim();
 									return { title, description };
 								}
-								// If no colon, treat entire string as title
 								return { title: item, description: '' };
 							}
-							// If it's already an object, use it (without icon)
 							return {
 								title: item?.title ?? '',
 								description: item?.description ?? ''
@@ -149,8 +134,6 @@
 					}
 				}
 	);
-
-	// Images state
 	let Images = $state(
 		isEmpty
 			? {
@@ -162,19 +145,6 @@
 					userInterfaceImage: data.marketingMaterial?.Images?.userInterfaceImage ?? ''
 				}
 	);
-
-	// Logos state (array of resource IDs, always 3)
-	const initializeLogos = () => {
-		const logos = isEmpty ? [] : (data.marketingMaterial?.Logos ?? []).slice(0, 3);
-		// Always ensure we have exactly 3 slots
-		while (logos.length < 3) {
-			logos.push('');
-		}
-		return logos;
-	};
-	let Logos = $state<string[]>(initializeLogos());
-
-	// QRcode state
 	let QRcode = $state(
 		isEmpty
 			? {
@@ -188,42 +158,31 @@
 					url: data.marketingMaterial?.QRcode?.url ?? ''
 				}
 	);
-
-	// Store original resource IDs to detect changes (after all state is initialized)
-	// const originalImages = {
-	// 	titleImage: Images.titleImage,
-	// 	userInterfaceImage: Images.userInterfaceImage
-	// };
-	// const originalLogos = [...Logos];
-	// const originalQRCode = QRcode.resourceId;
-
-	// File name tracking for UI display
 	let titleImageFileName = $state('');
 	let userInterfaceImageFileName = $state('');
 	let qrCodeFileName = $state('');
 	let logoFileNames = $state<string[]>(['', '', '']);
-
-	// Preview URLs for selected files
-	// let titleImagePreview = $state<string | null>(null);
-	// let userInterfaceImagePreview = $state<string | null>(null);
-	// let qrCodePreview = $state<string | null>(null);
-	// let logoPreviews = $state<(string | null)[]>([null, null, null]);
-
-	// Store files before upload (matching symptoms pattern)
 	let titleImageFile: File | null = null;
 	let userInterfaceImageFile: File | null = null;
 	let logoFiles: (File | null)[] = [null, null, null];
 	let qrCodeFile: File | null = null;
+	let disabled = $state(true);
+	let edit = $state(false);
+	let activeSections = $state(new Set([]));
 
-	// Helper function to get image URL from resource ID (using correct server endpoint)
+	const initializeLogos = () => {
+		const logos = isEmpty ? [] : (data.marketingMaterial?.Logos ?? []).slice(0, 3);
+		while (logos.length < 3) {
+			logos.push('');
+		}
+		return logos;
+	};
+	let Logos = $state<string[]>(initializeLogos());
+
 	const getImageUrl = (resourceId: string) => {
 		if (!resourceId) return null;
 		return `/api/server/file-resources/download/${resourceId}`;
 	};
-
-	let disabled = $state(true);
-	let edit = $state(false);
-	let activeSections = $state(new Set([]));
 
 	const toggleSection = (sectionId: string) => {
 		if (activeSections.has(sectionId)) {
@@ -243,22 +202,13 @@
 	};
 
 	const removeLogo = (index: number) => {
-		// Clean up preview URL
-		// if (logoPreviews[index]) {
-		// 	URL.revokeObjectURL(logoPreviews[index]!);
-		// 	logoPreviews[index] = null;
-		// 	logoPreviews = [...logoPreviews];
-		// }
-		// Clear the logo instead of removing the slot
 		Logos[index] = '';
 		logoFileNames[index] = '';
 		Logos = [...Logos];
 		logoFileNames = [...logoFileNames];
-		// Clear file
 		logoFiles[index] = null;
 	};
 
-	// File selection handler for images
 	const onImageSelected = async (e: Event, imageType: 'titleImage' | 'userInterfaceImage') => {
 		const input = e.target as HTMLInputElement;
 		const file = input.files?.[0];
@@ -283,25 +233,14 @@
 		}
 
 		if (imageType === 'titleImage') {
-			// Clean up previous preview URL
-			// if (titleImagePreview) {
-			// 	URL.revokeObjectURL(titleImagePreview);
-			// }
 			titleImageFileName = file.name;
-			// titleImagePreview = URL.createObjectURL(file);
 			titleImageFile = file;
 		} else {
-			// Clean up previous preview URL
-			// if (userInterfaceImagePreview) {
-			// 	URL.revokeObjectURL(userInterfaceImagePreview);
-			// }
 			userInterfaceImageFileName = file.name;
-			// userInterfaceImagePreview = URL.createObjectURL(file);
 			userInterfaceImageFile = file;
 		}
 	};
 
-	// File selection handler for logos
 	const onLogoSelected = async (e: Event, logoIndex: number) => {
 		const input = e.target as HTMLInputElement;
 		const file = input.files?.[0];
@@ -325,27 +264,14 @@
 			return;
 		}
 
-		// Clean up previous preview URL
-		// if (logoPreviews[logoIndex]) {
-		// 	URL.revokeObjectURL(logoPreviews[logoIndex]!);
-		// }
-
-		// Update file name array
 		if (!logoFileNames[logoIndex]) {
 			logoFileNames = [...logoFileNames];
 		}
 		logoFileNames[logoIndex] = file.name;
 		logoFileNames = [...logoFileNames];
-
-		// Create preview URL
-		// logoPreviews[logoIndex] = URL.createObjectURL(file);
-		// logoPreviews = [...logoPreviews];
-
-		// Store file
 		logoFiles[logoIndex] = file;
 	};
 
-	// File selection handler for QR code
 	const onQRCodeSelected = async (e: Event) => {
 		const input = e.target as HTMLInputElement;
 		const file = input.files?.[0];
@@ -369,13 +295,7 @@
 			return;
 		}
 
-		// Clean up previous preview URL
-		// if (qrCodePreview) {
-		// 	URL.revokeObjectURL(qrCodePreview);
-		// }
-
 		qrCodeFileName = file.name;
-		// qrCodePreview = URL.createObjectURL(file);
 		qrCodeFile = file;
 	};
 
@@ -399,6 +319,15 @@
 	};
 
 	const handleDownload = async () => {
+		if (!hasMarketingMaterial) {
+			addToast({
+				message: 'No marketing material available to download.',
+				type: 'warning',
+				timeout: 3000
+			});
+			return;
+		}
+
 		try {
 			const res = await fetch(
 				`/api/server/tenants/settings/${tenantId}/marketing-material/download`
@@ -425,7 +354,6 @@
 			const a = document.createElement('a');
 			a.href = url;
 
-			// Get filename from Content-Disposition header or use default
 			const contentDisposition = res.headers.get('content-disposition');
 			let filename = `marketing-material-${tenantId}.pdf`;
 			if (contentDisposition) {
@@ -456,7 +384,6 @@
 		}
 	};
 
-	// Helper function to upload a single file
 	const uploadFile = async (file: File, fileType: string): Promise<string | null> => {
 		try {
 			const uploadFormData = new FormData();
@@ -479,7 +406,6 @@
 				throw new Error('Invalid response from server');
 			}
 
-			// Check for connection errors in response
 			if (
 				fileJson.Message &&
 				(fileJson.Message.includes('ECONNRESET') || fileJson.Message.includes('ECONNREFUSED'))
@@ -527,16 +453,13 @@
 
 			errors = {};
 
-			// Step 1: Upload all files that have changed or are new
-			// Upload title image if it's new or changed
 			if (titleImageFile) {
 				const resourceId = await uploadFile(titleImageFile, 'Title image');
-				if (!resourceId) return; // Error already shown in uploadFile
+				if (!resourceId) return;
 				Images.titleImage = resourceId;
 				titleImageFile = null;
 			}
 
-			// Upload user interface image if it's new or changed
 			if (userInterfaceImageFile) {
 				const resourceId = await uploadFile(userInterfaceImageFile, 'User interface image');
 				if (!resourceId) return;
@@ -544,7 +467,6 @@
 				userInterfaceImageFile = null;
 			}
 
-			// Upload logos that are new or changed
 			for (let i = 0; i < 3; i++) {
 				if (logoFiles[i]) {
 					const resourceId = await uploadFile(logoFiles[i]!, `Logo ${i + 1}`);
@@ -554,15 +476,12 @@
 				}
 			}
 
-			// Upload QR code if it's new or changed
 			if (qrCodeFile) {
 				const resourceId = await uploadFile(qrCodeFile, 'QR code');
 				if (!resourceId) return;
 				QRcode.resourceId = resourceId;
 				qrCodeFile = null;
 			}
-
-			// Step 2: Now submit the form with all resource IDs (after all files are uploaded)
 
 			const marketingMaterialModel: MarketingMaterialCreateModel | MarketingMaterialUpdateModel = {
 				Styling,
@@ -574,10 +493,8 @@
 							if (typeof item === 'string') {
 								return item;
 							}
-							// Combine title and description, prioritizing description
 							const title = item?.title?.trim() || '';
 							const description = item?.description?.trim() || '';
-							// If both exist, combine them; otherwise use whichever is available
 							if (title && description) {
 								return `${title}: ${description}`;
 							}
@@ -590,7 +507,6 @@
 				QRcode
 			};
 
-			// Client-side validation
 			const validationResult = MarketingMaterialRequestSchema.safeParse(marketingMaterialModel);
 
 			if (!validationResult.success) {
@@ -603,7 +519,6 @@
 				return;
 			}
 
-			// Determine if this is a create (POST) or update (PUT) operation
 			const method = isEmpty ? 'POST' : 'PUT';
 
 			try {
@@ -624,7 +539,6 @@
 					throw new Error('Invalid response from server');
 				}
 
-				// Check if response contains error message
 				if (
 					response.Message &&
 					(response.Message.includes('ECONNRESET') || response.Message.includes('ECONNREFUSED'))
@@ -687,8 +601,9 @@
 				<div class="flex items-center gap-2 text-end">
 					<button
 						type="button"
-						class="table-btn variant-filled-secondary gap-1"
+						class="table-btn variant-filled-secondary gap-1 disabled:cursor-not-allowed disabled:opacity-50"
 						onclick={handleDownload}
+						disabled={!hasMarketingMaterial}
 					>
 						<Icon icon="material-symbols:download-outline" />
 						Download
@@ -819,6 +734,7 @@
 					{/if}
 				</div>
 
+				<!-- Header Section -->
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('header') ? 'border-hover' : ''}`}
 				>
@@ -889,6 +805,7 @@
 					{/if}
 				</div>
 
+				<!-- Introduction Section -->
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('introduction') ? 'border-hover' : ''}`}
 				>
@@ -959,6 +876,7 @@
 					{/if}
 				</div>
 
+				<!-- Benefits Section -->
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('benefits') ? 'border-hover' : ''}`}
 				>
@@ -1079,6 +997,7 @@
 					{/if}
 				</div>
 
+				<!-- User Interface Section -->
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('userInterface') ? 'border-hover' : ''}`}
 				>
@@ -1149,6 +1068,7 @@
 					{/if}
 				</div>
 
+				<!-- Footer Section -->
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('footer') ? 'border-hover' : ''}`}
 				>
@@ -1237,6 +1157,7 @@
 					{/if}
 				</div>
 
+				<!-- Images Section -->
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('images') ? 'border-hover' : ''}`}
 				>
@@ -1369,6 +1290,7 @@
 					{/if}
 				</div>
 
+				<!-- QR Section -->
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('qrcode') ? 'border-hover' : ''}`}
 				>
@@ -1481,6 +1403,7 @@
 					{/if}
 				</div>
 
+				<!-- Color Section -->
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('colors') ? 'border-hover' : ''}`}
 				>
@@ -1550,6 +1473,7 @@
 					{/if}
 				</div>
 
+				<!-- Fonts Section -->
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('fonts') ? 'border-hover' : ''}`}
 				>
@@ -1678,6 +1602,7 @@
 					{/if}
 				</div>
 
+				<!-- Sizes Section -->
 				<div
 					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('sizes') ? 'border-hover' : ''}`}
 				>
