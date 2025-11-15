@@ -127,7 +127,6 @@
 				Follow-up
 			</a>
 
-			<!-- Row 3 -->
 			<a
 				class="btn {page.url.pathname === customSettingsLink
 					? 'variant-filled-secondary'
