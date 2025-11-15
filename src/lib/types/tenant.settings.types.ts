@@ -12,7 +12,7 @@ export enum TenantSettingsTypes {
 	Followup = 'Followup',
 	ChatBot = 'ChatBot',
 	Forms = 'Forms',
-	Consent = 'Consent',
+	Consent = 'Consent'
 }
 
 export enum WeekDay {
@@ -30,7 +30,7 @@ export const TenantSettingsTypesList = [
 	TenantSettingsTypes.Followup,
 	TenantSettingsTypes.ChatBot,
 	TenantSettingsTypes.Forms,
-	TenantSettingsTypes.Consent,
+	TenantSettingsTypes.Consent
 ];
 
 export interface UserInterfaces {
