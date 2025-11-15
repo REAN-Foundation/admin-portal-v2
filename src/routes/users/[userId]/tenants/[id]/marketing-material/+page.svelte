@@ -14,6 +14,7 @@
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data } = $props();
+console.log('Marketing Material Page Data:', data);
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
@@ -32,7 +33,7 @@
 	];
 	let promise = $state();
 	const isEmpty = data.isEmpty || !data.marketingMaterial;
-	const hasMarketingMaterial = $derived(
+	let hasMarketingMaterial = $state(
 		!data.isEmpty && data.marketingMaterial !== null && data.marketingMaterial !== undefined
 	);
 	let Styling = $state(
@@ -137,12 +138,12 @@
 	let Images = $state(
 		isEmpty
 			? {
-					titleImage: '',
-					userInterfaceImage: ''
+					TitleImage: '',
+					UserInterfaceImage: ''
 				}
 			: {
-					titleImage: data.marketingMaterial?.Images?.titleImage ?? '',
-					userInterfaceImage: data.marketingMaterial?.Images?.userInterfaceImage ?? ''
+					TitleImage: data.marketingMaterial?.Images?.TitleImage ?? '',
+					UserInterfaceImage: data.marketingMaterial?.Images?.UserInterfaceImage ?? ''
 				}
 	);
 	let QRcode = $state(
@@ -335,10 +336,18 @@
 
 			if (!res.ok) {
 				let errorMessage = 'Download failed';
-				try {
-					const errorData = await res.json();
-					errorMessage = errorData.Message || errorMessage;
-				} catch {
+				const contentType = res.headers.get('content-type');
+				if (contentType && contentType.includes('application/json')) {
+					try {
+						const errorText = await res.text();
+						if (errorText) {
+							const errorData = JSON.parse(errorText);
+							errorMessage = errorData.Message || errorData.message || errorMessage;
+						}
+					} catch {
+						errorMessage = `Download failed with status ${res.status}`;
+					}
+				} else {
 					errorMessage = `Download failed with status ${res.status}`;
 				}
 				addToast({
@@ -384,7 +393,7 @@
 		}
 	};
 
-	const uploadFile = async (file: File, fileType: string): Promise<string | null> => {
+	const uploadFile = async (file: File, fileType: string, retryCount = 0): Promise<string | null> => {
 		try {
 			const uploadFormData = new FormData();
 			uploadFormData.append('file', file);
@@ -396,7 +405,21 @@
 			});
 
 			if (!fileRes.ok) {
-				throw new Error(`Upload failed with status ${fileRes.status}`);
+				const errorText = await fileRes.text();
+				let errorMessage = `Upload failed with status ${fileRes.status}`;
+				try {
+					const errorJson = JSON.parse(errorText);
+					errorMessage = errorJson.Message || errorJson.message || errorMessage;
+				} catch {
+					errorMessage = errorText || errorMessage;
+				}
+				
+				if (fileRes.status === 500 && retryCount < 2) {
+					await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
+					return uploadFile(file, fileType, retryCount + 1);
+				}
+				
+				throw new Error(errorMessage);
 			}
 
 			let fileJson;
@@ -456,31 +479,68 @@
 			if (titleImageFile) {
 				const resourceId = await uploadFile(titleImageFile, 'Title image');
 				if (!resourceId) return;
-				Images.titleImage = resourceId;
+				Images.TitleImage = resourceId;
 				titleImageFile = null;
+				if (userInterfaceImageFile || logoFiles.some(f => f !== null) || qrCodeFile) {
+					await new Promise(resolve => setTimeout(resolve, 300));
+				}
 			}
 
 			if (userInterfaceImageFile) {
 				const resourceId = await uploadFile(userInterfaceImageFile, 'User interface image');
 				if (!resourceId) return;
-				Images.userInterfaceImage = resourceId;
+				Images.UserInterfaceImage = resourceId;
 				userInterfaceImageFile = null;
+				if (logoFiles.some(f => f !== null) || qrCodeFile) {
+					await new Promise(resolve => setTimeout(resolve, 300));
+				}
 			}
 
+			const uploadedLogoResourceIds: (string | null)[] = [null, null, null];
 			for (let i = 0; i < 3; i++) {
 				if (logoFiles[i]) {
 					const resourceId = await uploadFile(logoFiles[i]!, `Logo ${i + 1}`);
-					if (!resourceId) return;
-					Logos[i] = resourceId;
+					if (!resourceId) {
+						addToast({
+							message: `Failed to upload Logo ${i + 1}. Please try again.`,
+							type: 'error',
+							timeout: 5000
+						});
+						return;
+					}
+					uploadedLogoResourceIds[i] = resourceId;
 					logoFiles[i] = null;
+					
+					if (i < 2 && logoFiles[i + 1]) {
+						await new Promise(resolve => setTimeout(resolve, 500));
+					}
 				}
 			}
 
 			if (qrCodeFile) {
+				await new Promise(resolve => setTimeout(resolve, 300));
 				const resourceId = await uploadFile(qrCodeFile, 'QR code');
-				if (!resourceId) return;
-				QRcode.resourceId = resourceId;
+				if (!resourceId) {
+					addToast({
+						message: 'Failed to upload QR code. Please try again.',
+						type: 'error',
+						timeout: 5000
+					});
+					return;
+				}
+				QRcode = {
+					...QRcode,
+					resourceId: resourceId
+				};
 				qrCodeFile = null;
+			}
+
+			const finalLogosArray: string[] = [];
+			for (let i = 0; i < 3; i++) {
+				const logoResourceId = uploadedLogoResourceIds[i] || Logos[i];
+				if (logoResourceId && logoResourceId.trim() !== '') {
+					finalLogosArray.push(logoResourceId);
+				}
 			}
 
 			const marketingMaterialModel: MarketingMaterialCreateModel | MarketingMaterialUpdateModel = {
@@ -502,9 +562,16 @@
 						})
 					}
 				},
-				Images,
-				Logos: Logos.filter((logo) => logo && logo.trim() !== ''),
-				QRcode
+				Images: {
+					TitleImage: Images.TitleImage,
+					UserInterfaceImage: Images.UserInterfaceImage
+				},
+				Logos: finalLogosArray,
+				QRcode: {
+					resourceId: QRcode.resourceId || '',
+					whatsappNumber: QRcode.whatsappNumber || '',
+					url: QRcode.url || ''
+				}
 			};
 
 			const validationResult = MarketingMaterialRequestSchema.safeParse(marketingMaterialModel);
@@ -555,6 +622,19 @@
 					toastMessage(response);
 					edit = false;
 					disabled = true;
+					hasMarketingMaterial = true;
+					
+					for (let i = 0; i < 3; i++) {
+						if (uploadedLogoResourceIds[i]) {
+							Logos[i] = uploadedLogoResourceIds[i]!;
+						} else if (i < finalLogosArray.length) {
+							Logos[i] = finalLogosArray[i];
+						} else {
+							Logos[i] = '';
+						}
+					}
+					Logos = [...Logos];
+					
 					return;
 				}
 
@@ -1222,15 +1302,15 @@
 										placeholder="No file selected..."
 									/>
 								</div>
-								{#if Images.titleImage && (data.marketingMaterial?.Images?.titleImageUrl || getImageUrl(Images.titleImage))}
+								{#if Images.TitleImage && (data.marketingMaterial?.Images?.TitleImageUrl || getImageUrl(Images.TitleImage))}
 									<div class="mt-2">
 										<img
-											src={data.marketingMaterial?.Images?.titleImageUrl ||
-												getImageUrl(Images.titleImage)}
+											src={data.marketingMaterial?.Images?.TitleImageUrl ||
+												getImageUrl(Images.TitleImage)}
 											alt="Title"
 											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
 											onerror={(e) => {
-												console.error('Failed to load title image:', Images.titleImage);
+												console.error('Failed to load title image:', Images.TitleImage);
 												(e.target as HTMLImageElement).style.display = 'none';
 											}}
 										/>
@@ -1268,17 +1348,17 @@
 										placeholder="No file selected..."
 									/>
 								</div>
-								{#if Images.userInterfaceImage && (data.marketingMaterial?.Images?.userInterfaceImageUrl || getImageUrl(Images.userInterfaceImage))}
+								{#if Images.UserInterfaceImage && (data.marketingMaterial?.Images?.UserInterfaceImageUrl || getImageUrl(Images.UserInterfaceImage))}
 									<div class="mt-2">
 										<img
-											src={data.marketingMaterial?.Images?.userInterfaceImageUrl ||
-												getImageUrl(Images.userInterfaceImage)}
+											src={data.marketingMaterial?.Images?.UserInterfaceImageUrl ||
+												getImageUrl(Images.UserInterfaceImage)}
 											alt="User Interface"
 											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
 											onerror={(e) => {
 												console.error(
 													'Failed to load user interface image:',
-													Images.userInterfaceImage
+													Images.UserInterfaceImage
 												);
 												(e.target as HTMLImageElement).style.display = 'none';
 											}}

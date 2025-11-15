@@ -149,9 +149,28 @@ export const createMarketingMaterialByTenantId = async (
 	}
 
 	if (settings.QRcode) {
-		const filteredQRcode = filterEmptyStrings(settings.QRcode as Record<string, unknown>);
-		if (filteredQRcode) {
-			body.QRcode = filteredQRcode;
+		const qrcode = settings.QRcode as Record<string, unknown>;
+		// Transform camelCase to PascalCase to match backend expectations
+		// Backend accepts QRCode as either a string (resource ID) or an object with ResourceId, WhatsappNumber, Url
+		const transformedQRcode: Record<string, unknown> = {};
+		
+		// Always include ResourceId if it exists and is not empty (like Images)
+		if (qrcode.resourceId && typeof qrcode.resourceId === 'string' && qrcode.resourceId.trim() !== '') {
+			transformedQRcode.ResourceId = qrcode.resourceId;
+		}
+		
+		// Include optional metadata fields only if they're not empty
+		if (qrcode.whatsappNumber && typeof qrcode.whatsappNumber === 'string' && qrcode.whatsappNumber.trim() !== '') {
+			transformedQRcode.WhatsappNumber = qrcode.whatsappNumber;
+		}
+		if (qrcode.url && typeof qrcode.url === 'string' && qrcode.url.trim() !== '') {
+			transformedQRcode.Url = qrcode.url;
+		}
+		
+		// Backend expects QRCode (capital C) not QRcode
+		// Only include QRCode if ResourceId is present (required for QR code image)
+		if (transformedQRcode.ResourceId) {
+			body.QRCode = transformedQRcode;
 		}
 	}
 
@@ -226,9 +245,28 @@ export const updateMarketingMaterialByTenantId = async (
 	}
 
 	if (settings.QRcode) {
-		const filteredQRcode = filterEmptyStrings(settings.QRcode as Record<string, unknown>);
-		if (filteredQRcode) {
-			body.QRcode = filteredQRcode;
+		const qrcode = settings.QRcode as Record<string, unknown>;
+		// Transform camelCase to PascalCase to match backend expectations
+		// Backend accepts QRCode as either a string (resource ID) or an object with ResourceId, WhatsappNumber, Url
+		const transformedQRcode: Record<string, unknown> = {};
+		
+		// Always include ResourceId if it exists and is not empty (like Images)
+		if (qrcode.resourceId && typeof qrcode.resourceId === 'string' && qrcode.resourceId.trim() !== '') {
+			transformedQRcode.ResourceId = qrcode.resourceId;
+		}
+		
+		// Include optional metadata fields only if they're not empty
+		if (qrcode.whatsappNumber && typeof qrcode.whatsappNumber === 'string' && qrcode.whatsappNumber.trim() !== '') {
+			transformedQRcode.WhatsappNumber = qrcode.whatsappNumber;
+		}
+		if (qrcode.url && typeof qrcode.url === 'string' && qrcode.url.trim() !== '') {
+			transformedQRcode.Url = qrcode.url;
+		}
+		
+		// Backend expects QRCode (capital C) not QRcode
+		// Only include QRCode if ResourceId is present (required for QR code image)
+		if (transformedQRcode.ResourceId) {
+			body.QRCode = transformedQRcode;
 		}
 	}
 

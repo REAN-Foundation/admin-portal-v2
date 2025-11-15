@@ -444,8 +444,8 @@ const MarketingMaterialContentSchema = z.object({
 });
 
 const MarketingMaterialImagesSchema = z.object({
-    titleImage: z.string().optional(),
-    userInterfaceImage: z.string().optional(),
+    TitleImage: z.string().optional(),
+    UserInterfaceImage: z.string().optional(),
 });
 
 const MarketingMaterialQRcodeSchema = z.object({

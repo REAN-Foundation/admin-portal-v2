@@ -31,22 +31,31 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 		// Add image URLs for all images and logos (similar to symptom view page)
 		if (tenantMarketingSettings) {
+			// Normalize Images object to PascalCase for frontend
+			if (tenantMarketingSettings.Images) {
+				const images = tenantMarketingSettings.Images as any;
+				tenantMarketingSettings.Images = {
+					TitleImage: images.TitleImage || images.titleImage || '',
+					UserInterfaceImage: images.UserInterfaceImage || images.userInterfaceImage || ''
+				};
+			}
+
 			// Title Image URL
-			if (tenantMarketingSettings.Images?.titleImage) {
-				tenantMarketingSettings.Images.titleImageUrl =
-					BACKEND_API_URL + `/file-resources/${tenantMarketingSettings.Images.titleImage}/download?disposition=inline`;
+			if (tenantMarketingSettings.Images?.TitleImage) {
+				tenantMarketingSettings.Images.TitleImageUrl =
+					BACKEND_API_URL + `/file-resources/${tenantMarketingSettings.Images.TitleImage}/download?disposition=inline`;
 			} else {
 				tenantMarketingSettings.Images = tenantMarketingSettings.Images || {};
-				tenantMarketingSettings.Images.titleImageUrl = null;
+				tenantMarketingSettings.Images.TitleImageUrl = null;
 			}
 
 			// User Interface Image URL
-			if (tenantMarketingSettings.Images?.userInterfaceImage) {
-				tenantMarketingSettings.Images.userInterfaceImageUrl =
-					BACKEND_API_URL + `/file-resources/${tenantMarketingSettings.Images.userInterfaceImage}/download?disposition=inline`;
+			if (tenantMarketingSettings.Images?.UserInterfaceImage) {
+				tenantMarketingSettings.Images.UserInterfaceImageUrl =
+					BACKEND_API_URL + `/file-resources/${tenantMarketingSettings.Images.UserInterfaceImage}/download?disposition=inline`;
 			} else {
 				tenantMarketingSettings.Images = tenantMarketingSettings.Images || {};
-				tenantMarketingSettings.Images.userInterfaceImageUrl = null;
+				tenantMarketingSettings.Images.UserInterfaceImageUrl = null;
 			}
 
 			// Logo URLs (array of URLs for each logo)

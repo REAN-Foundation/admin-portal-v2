@@ -462,8 +462,8 @@ export interface MarketingMaterialContent {
 }
 
 export interface MarketingMaterialImages {
-	titleImage?: string;
-	userInterfaceImage?: string;
+	TitleImage?: string;
+	UserInterfaceImage?: string;
 }
 
 export interface MarketingMaterialQRcode {
