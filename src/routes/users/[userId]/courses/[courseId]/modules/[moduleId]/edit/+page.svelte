@@ -15,17 +15,6 @@
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
-	if (!data.module) {
-		data.module = {
-			Name: '',
-			Description: undefined,
-			ImageUrl: undefined,
-			ImageResourceId: undefined,
-			DurationInMins: undefined,
-			Sequence: undefined
-		};
-	}
-
 	let moduleName = $state(data.module?.Name || '');
 	let description = $state(data.module?.Description || undefined) ;
 	let imageUrl = $state(data.module?.ImageUrl ?? undefined);
