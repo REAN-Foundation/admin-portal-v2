@@ -60,9 +60,9 @@
 		const modules = data.modules || [];
 		if (modules.length > 0) {
 			modules.forEach((module: any) => {
-				expandedModules = { ...expandedModules, [module.id]: true };
-				if (!moduleContents[module.id] && !loadingContents[module.id]) {
-					fetchModuleContents(module.id);
+				// Initialize modules as collapsed (false) instead of expanded
+				if (expandedModules[module.id] === undefined) {
+					expandedModules = { ...expandedModules, [module.id]: false };
 				}
 			});
 		}

@@ -35,17 +35,20 @@
 <div class="tree-connector pl-4">
 	{#if hasChildren}
 		<details 
-			open={expandedModules[node.id] || false}
+			open={expandedModules[node.id] === true}
 			class="group"
-			ontoggle={(e) => {
-				if (onModuleExpand) {
-					onModuleExpand(node.id, e);
-				}
-			}}
 		>
-			<summary class="flex cursor-pointer items-center gap-2 text-[var(--color-info)] hover:text-blue-600">
+			<summary 
+				class="flex cursor-pointer items-center gap-2 text-[var(--color-info)] hover:text-blue-600"
+				onclick={(e) => {
+					e.preventDefault();
+					if (onModuleExpand) {
+						onModuleExpand(node.id, e);
+					}
+				}}
+			>
 				<span class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-secondary)] text-sm text-[var(--color-info)]">
-					→
+					{expandedModules[node.id] === true ? '-' : '+'}
 				</span>
 				<span class="hover:underline">
 					{displayName}

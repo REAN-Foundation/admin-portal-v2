@@ -32,8 +32,22 @@
 <div class="space-y-2 pl-4 hover:text-black">
 	{#each modules as module}
 		{#if !module.ParentModuleId || module.ParentModuleId === null}
-			<details open={expandedModules[module.id] || false} class="group hover:text-black">
-				<summary class="flex cursor-pointer items-center gap-2 font-semibold text-[var(--color-info)]">
+			<details 
+				open={expandedModules[module.id] === true} 
+				class="group hover:text-black"
+			>
+				<summary 
+					class="flex cursor-pointer items-center gap-2 font-semibold text-[var(--color-info)]"
+					onclick={(e) => {
+						e.preventDefault();
+						if (onModuleExpand) {
+							onModuleExpand(module.id, e);
+						}
+					}}
+				>
+					<span class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-secondary)] text-sm text-[var(--color-info)]">
+						{expandedModules[module.id] === true ? '-' : '+'}
+					</span>
 					<span class="text-[var(--color-info)]">📚</span>
 					<span class="hover:text-black">
 						{#if module.Sequence}

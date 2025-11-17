@@ -71,29 +71,20 @@
 		amounts: [10, 20, 30, 50]
 	});
 
-	// Update pagination size when totalCoursesCount changes
 	$effect(() => {
 		paginationSettings.size = totalCoursesCount;
-	});
-
-	// Fetch counts for courses and modules on initial load and when modules are loaded
-	$effect(() => {
-		// Fetch module counts for all courses
 		if (retrivedCourses.length > 0) {
 			retrivedCourses.forEach(course => {
-				// Only fetch if we don't have the count yet and modules haven't been fetched
 				if (!courseModuleCounts[course.id] && !courseModules[course.id]) {
 					fetchCourseModuleCount(course.id);
 				}
 			});
 		}
 
-		// Fetch content counts for all modules when they are loaded
 		Object.keys(courseModules).forEach(courseId => {
 			const modules = courseModules[courseId];
 			if (modules && modules.length > 0) {
 				modules.forEach(module => {
-					// Only fetch if we don't have the count yet and contents haven't been fetched
 					if (!moduleContentCounts[module.id] && !moduleContents[module.id]) {
 						fetchModuleContentCount(module.id);
 					}
@@ -646,7 +637,8 @@
 									: (cachedCount !== undefined
 										? cachedCount
 										: (row.ModuleCount ?? row.ModulesCount ?? row.moduleCount ?? row.modulesCount ?? row.TotalModules ?? row.totalModules ?? (row.Modules?.length ?? row.modules?.length ?? 0)))}
-								<tr>
+								{@const isExpanded = expandedCourses[row.id]}
+								<tr class={isExpanded ? 'bg-gray-300 hover:!bg-gray-300' : ''}>
 									<td>
 										{paginationSettings.page * paginationSettings.limit + index + 1}
 									</td>
@@ -726,7 +718,7 @@
 									{@const hasModules = courseModulesList && courseModulesList.length > 0}
 									{@const isLoading = loadingModules[row.id]}
 									<tr>
-										<td colspan="6" class="bg-gray-50 p-4" style="position: relative; overflow: visible;">
+										<td colspan="6" class="bg-gray-300 p-4" style="position: relative; overflow: visible;">
 											{#if isLoading}
 												<div class="flex items-center gap-2 text-gray-500">
 													<Icon icon="svg-spinners:ring-resize" class="inline" width="20" />

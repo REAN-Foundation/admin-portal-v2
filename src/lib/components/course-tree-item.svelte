@@ -96,7 +96,7 @@
 	
 </script>
 
-<div class="tree-connector pl-4">
+<div class="tree-connector pl-4 bg-gray-200 rounded-md p-2 my-1">
 	<div class="flex items-center justify-between gap-2 text-[var(--color-info)]">
 		<div class="flex items-center gap-2 flex-1">
 			<button
@@ -162,7 +162,7 @@
 		</div>
 	</div>
 	{#if isExpanded}
-		<div class="relative mt-2 ml-4 space-y-2 border-l-2 border-[var(--color-active)] pl-4">
+		<div class="relative mt-2 ml-4 space-y-2 pl-4">
 			{#if isLoading}
 				<div class="flex items-center gap-2 text-gray-500 pl-4">
 					<Icon icon="svg-spinners:ring-resize" class="inline" width="16" />
