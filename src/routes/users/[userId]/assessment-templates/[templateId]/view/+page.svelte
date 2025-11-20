@@ -34,6 +34,13 @@
 			: 'Not specified';
 	let tags_ = data.assessmentTemplate.Tags;
 	let tags = tags_.join(', ');
+	let rawData = $state(
+		typeof data.assessmentTemplate.RawData === 'string'
+			? data.assessmentTemplate.RawData
+			: data.assessmentTemplate.RawData
+				? JSON.stringify(data.assessmentTemplate.RawData, null, 2)
+				: "Not Specified"
+	);
 
 	$effect(() => {
 		assessmentNodes = assessmentNodes.sort((a, b) => {
@@ -217,6 +224,12 @@ const handleFlowJson = async () => {
 					{:else}
 						<span>{tags}</span>
 					{/if}
+				</td>
+			</tr>
+			<tr class="tables-row">
+				<td class="table-label align-top">Raw Data</td>
+				<td class="table-data">
+					{rawData}
 				</td>
 			</tr>
 			<tr class="tables-row">

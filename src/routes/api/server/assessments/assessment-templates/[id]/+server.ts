@@ -93,7 +93,8 @@ export const PUT = async (event: RequestEvent) => {
             data.ProviderAssessmentCode,
             data.ServeListNodeChildrenAtOnce,
             data.ScoringApplicable,
-            data.Tags
+            data.Tags,
+            data.RawData
         );
 
         return ResponseHandler.success(response);

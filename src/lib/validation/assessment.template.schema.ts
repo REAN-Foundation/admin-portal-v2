@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const INVALID_JSON = Symbol('invalid_json');
+
 export const createOrUpdateSchema = z.object({
     Title: z
         .string({
@@ -52,5 +54,27 @@ export const createOrUpdateSchema = z.object({
 
     Tags: z
         .array(z.string())
+        .optional(),
+
+    RawData: z
+        .preprocess((val) => {
+            if (typeof val === 'string') {
+                if (val.trim() === '') return undefined;
+                try {
+                    return JSON.parse(val);
+                } catch {
+                    return INVALID_JSON;
+                }
+            }
+            return val;
+        }, z.union([
+            z.record(z.any()),
+            z.null(),
+            z.undefined(),
+            z.literal(INVALID_JSON)
+        ]))
+        .refine((val) => val !== INVALID_JSON, {
+            message: "RawData must be a valid JSON object.",
+        })
         .optional()
 });

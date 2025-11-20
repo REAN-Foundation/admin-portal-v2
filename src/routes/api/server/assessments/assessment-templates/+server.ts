@@ -35,7 +35,8 @@ export const POST = async (event: RequestEvent) => {
 			data.ProviderAssessmentCode,
 			data.ServeListNodeChildrenAtOnce || false,
 			data.ScoringApplicable || false,
-			data.Tags || []
+			data.Tags || [],
+			data.RawData
 		);
 
 		return ResponseHandler.success(response);
