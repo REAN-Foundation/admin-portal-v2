@@ -256,16 +256,6 @@
 				<td class="table-label">Sequence</td>
 				<td class="table-data">{sequence}</td>
 			</tr>
-			{#if nodeType === 'Question'}
-				<tr class="tables-row">
-					<td class="table-label">Field Identifier</td>
-					<td class="table-data">{fieldIdentifier ? toLabel(fieldIdentifier) : 'Not specified'}</td>
-				</tr>
-				<tr class="tables-row">
-					<td class="table-label">Field Identifier Unit</td>
-					<td class="table-data">{fieldIdentifierUnit}</td>
-				</tr>
-			{/if}
 			<tr class="tables-row">
 				<td class="table-label">Tags</td>
 				<td class="table-data">
@@ -276,7 +266,16 @@
 					{/if}
 				</td>
 			</tr>
+			
 			{#if nodeType === 'Question'}
+				<tr class="tables-row">
+					<td class="table-label">Field Identifier</td>
+					<td class="table-data">{fieldIdentifier ? toLabel(fieldIdentifier) : 'Not specified'}</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Field Identifier Unit</td>
+					<td class="table-data">{fieldIdentifierUnit}</td>
+				</tr>
 				<tr class="tables-row">
 					<td class="table-label">Query Response Type</td>
 					<td class="table-data">{queryType}</td>

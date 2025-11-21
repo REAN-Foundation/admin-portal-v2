@@ -170,10 +170,43 @@
 
 	const sortedIdentifiers = AssessmentFieldIdentifiers;
 
+	function isBiometricField(identifier: string | undefined): boolean {
+		if (!identifier) return false;
+		return identifier.startsWith('Clinical:Vitals:') || identifier.startsWith('Clinical:LabRecords:');
+	}
+
+	const filteredQueryResponseTypes = $derived(() => {
+		if (!data.queryResponseTypes) return [];
+		
+		if (isBiometricField(fieldIdentifier)) {
+			// For biometrics, return Integer first, then Float
+			const filtered = data.queryResponseTypes.filter(type => 
+				type === 'Integer' || type === 'Float'
+			);
+			// Ensure Integer comes before Float
+			return filtered.sort((a, b) => {
+				if (a === 'Integer' && b === 'Float') return -1;
+				if (a === 'Float' && b === 'Integer') return 1;
+				return 0;
+			});
+		}
+		
+		return data.queryResponseTypes;
+	});
+
+	$effect(() => {
+		if (fieldIdentifier && queryType) {
+			const validTypes = filteredQueryResponseTypes();
+			if (!validTypes.includes(queryType)) {
+				queryType = validTypes.length > 0 ? validTypes[0] : undefined;
+			}
+		}
+	});
+
 	function toLabel(identifier: string) {
 		const parts = identifier.split(':');
 		const lastPart = parts[parts.length - 1];
-		return lastPart.replace(/([a-z])([A-Z])/g, '$1 $2'); // adds space before capital letters
+		return lastPart.replace(/([a-z])([A-Z])/g, '$1 $2'); 
 	}
 
 	const handleSubmit = async (event: Event) => {
@@ -408,21 +441,32 @@
 				</tr>
 				{#if selectedNodeType === 'Question'}
 					<tr class=" ">
-						<td class="table-label align-top text-gray-500"
+						<td class="table-label align-top"
 							>Query Response Type <span class="text-red-600">*</span></td
 						>
 						<td class="table-data">
-							<input type="hidden" name="queryType" bind:value={queryType} />
-							<select
-								id="mySelect"
-								name="queryType"
-								disabled
-								class="grayout-input {errors?.queryType ? 'input-text-error' : ''} text-gray-500"
-								placeholder="Select query type here..."
-								bind:value={queryType}
-							>
-								<option selected value={queryType}>{queryType}</option>
-							</select>
+							<div class="relative">
+								<select
+									id="mySelect"
+									name="queryType"
+									class="select {errors?.queryType ? 'input-text-error' : ''}"
+									placeholder="Select query type here..."
+									bind:value={queryType}
+								>
+									<option value="" disabled>Select query type here...</option>
+									{#each filteredQueryResponseTypes() as responseType}
+										<option value={responseType} selected={responseType === queryType}>
+											{responseType}
+										</option>
+									{/each}
+								</select>
+								<div class="select-icon-container">
+									<Icon icon="mdi:chevron-down" class="select-icon" />
+								</div>
+							</div>
+							{#if errors?.QueryType}
+								<p class="text-error">{errors?.QueryType}</p>
+							{/if}
 						</td>
 					</tr>
 					{#if selectedQueryType === 'Single Choice Selection' || selectedQueryType === 'Multi Choice Selection'}
