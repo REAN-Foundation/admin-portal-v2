@@ -24,7 +24,14 @@
 		providerAssessmentCode = $state(data.assessmentTemplate.ProviderAssessmentCode || undefined),
 		serveListNodeChildrenAtOnce = $state(data.assessmentTemplate.ServeListNodeChildrenAtOnce),
 		scoringApplicable = $state(data.assessmentTemplate.ScoringApplicable),
-		keywords: string[] = $state(data.assessmentTemplate.Tags || []);
+		keywords: string[] = $state(data.assessmentTemplate.Tags || []),
+		rawData = $state(
+			typeof data.assessmentTemplate.RawData === 'string'
+				? data.assessmentTemplate.RawData
+				: data.assessmentTemplate.RawData
+					? JSON.stringify(data.assessmentTemplate.RawData, null, 2)
+					: ''
+		);
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
@@ -40,6 +47,11 @@
 		serveListNodeChildrenAtOnce = data.assessmentTemplate.ServeListNodeChildrenAtOnce;
 		scoringApplicable = data.assessmentTemplate.ScoringApplicable;
 		keywords = data?.assessmentTemplate?.Tags;
+		rawData = typeof data.assessmentTemplate.RawData === 'string'
+			? data.assessmentTemplate.RawData
+			: data.assessmentTemplate.RawData
+				? JSON.stringify(data.assessmentTemplate.RawData, null, 2)
+				: '';
 		errors = {};
 	}
 
@@ -67,7 +79,8 @@
 				ProviderAssessmentCode: providerAssessmentCode,
 				ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce,
 				ScoringApplicable: scoringApplicable,
-				Tags: keywords
+				Tags: keywords,
+				RawData: rawData
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentTemplateUpdateModel);
@@ -248,6 +261,20 @@
 						/>
 						{#if errors?.ScoringApplicable}
 							<p class="text-error">{errors?.ScoringApplicable}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label align-top">Raw Data</td>
+					<td class="table-data">
+						<textarea
+							name="rawData"
+							bind:value={rawData}
+							placeholder="Enter raw data here..."
+							class="input {errors?.rawData ? 'input-text-error' : ''}"
+						></textarea>
+						{#if errors?.RawData}
+							<p class="text-error">{errors?.RawData}</p>
 						{/if}
 					</td>
 				</tr>

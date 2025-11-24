@@ -26,6 +26,7 @@
 	let scoringApplicable = $state(undefined);
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
+	let rawData = $state(undefined);
 
 	data.title = 'Clinical-Assessments Create';
 	const userId = $page.params.userId;
@@ -50,7 +51,8 @@
 				ProviderAssessmentCode: providerAssessmentCode,
 				ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce,
 				ScoringApplicable: scoringApplicable,
-				Tags: keywords
+				Tags: keywords,
+				RawData: rawData
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(assessmentTemplateCreateModel);
@@ -224,6 +226,20 @@
 						/>
 						{#if errors?.ScoringApplicable}
 							<p class="text-error">{errors?.ScoringApplicable}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label align-top">Raw Data</td>
+					<td class="table-data">
+						<textarea
+							name="rawData"
+							bind:value={rawData}
+							placeholder="Enter raw data here..."
+							class="input {errors?.rawData ? 'input-text-error' : ''}"
+						></textarea>
+						{#if errors?.RawData}
+							<p class="text-error">{errors?.RawData}</p>
 						{/if}
 					</td>
 				</tr>
