@@ -16,6 +16,7 @@
 	let { data }: { data: PageServerData } = $props();
 
 	let documents = $state(data.documents?.Items || []);
+	let errors: Record<string, string> = $state({});
 
 	let retrivedDocuments = $derived(documents);
 	let debounceTimeout;
@@ -23,6 +24,8 @@
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
 	let isDeleting = $state(false);
+	let isRefreshing = $state(false);
+	let isPublishing = $state(false);
 
 	$inspect('retrivedDocuments', retrivedDocuments);
 
@@ -194,6 +197,73 @@
 		a.remove();
 		URL.revokeObjectURL(url);
 	};
+
+	const handleRefresh = async (event: Event) => {
+		try {
+			event.preventDefault();
+			errors = {};
+			isRefreshing = true;
+			console.log('Inside the refresh')
+			const res = await fetch('/api/server/documents/refresh', {
+				method: 'POST',
+				body: JSON.stringify({}),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			const response = await res.json();;
+
+			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				toastMessage(response);
+				isRefreshing = false;
+				return;
+			}
+
+			if (response.Errors) {
+				errors = response?.Errors || {};
+			} else {
+				toastMessage(response);
+			}
+		} catch (error) {
+			toastMessage();
+		} finally {
+			isRefreshing = false;
+		}
+	};
+
+
+	const handlePublish = async (event: Event) => {
+		try {
+			event.preventDefault();
+			errors = {};
+			isPublishing = true;
+
+			const res = await fetch(`/api/server/documents/publish`, {
+				method: 'POST',
+				body: JSON.stringify({}),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			const response = await res.json();
+			console.log('response of vector', response);
+
+			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				toastMessage(response);
+				isPublishing = false;
+				return;
+			}
+
+			if (response.Errors) {
+				errors = response?.Errors || {};
+			} else {
+				toastMessage(response);
+			}
+		} catch (error) {
+			toastMessage();
+		} finally {
+			isPublishing = false;
+		}
+	};
+
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -255,6 +325,20 @@
 							</button>
 						{/if}
 					</div>
+					<Button
+						text={isRefreshing ? "Refreshing..." : "Refresh"}
+						variant="primary"
+						iconBefore="material-symbols:refresh"
+						onclick={handleRefresh}
+						disabled={isRefreshing}
+					/>
+					<Button
+						text={isPublishing ? "Publishing..." : "Publish"}
+						variant="primary"
+						iconBefore="material-symbols:publish"
+						onclick={handlePublish}
+						disabled={isPublishing}
+					/>
 					<Button href={createRoute} text="Add New" variant="primary" />
 				</div>
 			</div>

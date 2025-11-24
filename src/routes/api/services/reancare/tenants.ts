@@ -1,4 +1,4 @@
-import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY, NODE_ENV, } from '$env/static/private';
+import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY, NODE_ENV} from '$env/static/private';
 import { Helper } from '$lib/utils/helper';
 import { del, get, post, put } from './common.reancare';
 
@@ -97,22 +97,23 @@ export const createTenantSchema = async (
 	tenantId: string,
 	tenantCode: string,
 ) => {
-	let environment = NODE_ENV;
-	if (environment === 'development') {
-		environment = 'dev';
-	}
-	if(environment === 'production') {
-		environment = 'prod';
-	}
-	if (environment === 'uat') {
-		environment = 'uat';
-	}
-	const code = tenantCode.toLowerCase();
-	const SchemaName = `${code}_${environment}`;
-	const body = {
-		SchemaName,
-		Environment: environment
-	};
+	// let environment = NODE_ENV;
+	// if (environment === 'development') {
+	// 	environment = 'dev';
+	// }
+	// if(environment === 'production') {
+	// 	environment = 'prod';
+	// }
+	// if (environment === 'uat') {
+	// 	environment = 'uat';
+	// }
+	// const code = tenantCode.toLowerCase();
+	// const SchemaName = `${code}_${environment}`;
+	// const body = {
+	// 	SchemaName,
+	// 	Environment: environment
+	// };
+	const body = {};
 	const url = BACKEND_API_URL + `/tenants/${tenantId}/settings/database/create-bot-schema`;
 
 	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
