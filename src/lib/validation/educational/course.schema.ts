@@ -28,6 +28,11 @@ export const createOrUpdateSchema = z.object({
 			invalid_type_error: 'DurationInDays must be a number.'
 		})
 		.positive({ message: 'DurationInDays must be a positive number.' })
-		.optional()
+		.optional(),
+	TenantId: z
+		.string({
+			required_error: 'TenantId is required.',
+			invalid_type_error: 'TenantId must be a string.'
+		})
 });
 

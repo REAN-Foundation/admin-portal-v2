@@ -3,6 +3,7 @@ export interface CourseCreateModel {
 	Description?: string;
 	ImageResourceId: string;
 	DurationInDays?: number;
+	TenantId?: string;
 }
 
 export interface CourseUpdateModel {
