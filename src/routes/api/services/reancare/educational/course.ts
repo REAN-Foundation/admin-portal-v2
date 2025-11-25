@@ -14,10 +14,10 @@ export const createCourse = async (
 ) => {
 	const body = {
 		Name: name,
-		Description: description ?? null,
-		ImageUrl: imageResourceId ?? null,
-		DurationInDays: durationInDays ?? null,
-		TenantId: tenantId ?? null
+		Description: description ? description : '',
+		ImageUrl: imageResourceId ? imageResourceId : '',
+		DurationInDays: durationInDays ? durationInDays : null,
+		TenantId: tenantId,
 	};
 	const url = LMS_BACKEND_API_URL + '/courses';
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
@@ -58,6 +58,8 @@ export const searchCourses = async (sessionId: string, searchParams?) => {
 			searchString += params.join('&');
 		}
 	}
+
+	console.log('searchString', searchString);
 	const url = LMS_BACKEND_API_URL + `/courses/search${searchString}`;
 
 	const cacheKey = `session-${sessionId}:req-searchCourses:${searchString}`;
@@ -79,11 +81,10 @@ export const updateCourse = async (
 	durationInDays?: number
 ) => {
 	const body = {
-		courseId,
 		Name: name,
-		Description: description ?? null,
-		ImageUrl: imageResourceId ?? null,
-		DurationInDays: durationInDays ?? null
+		Description: description ? description : '',
+		ImageUrl: imageResourceId ? imageResourceId : '',
+		DurationInDays: durationInDays ? durationInDays : null
 	};
 	const url = LMS_BACKEND_API_URL + `/courses/${courseId}`;
 	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);

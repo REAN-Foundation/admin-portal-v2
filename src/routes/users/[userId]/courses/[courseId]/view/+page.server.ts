@@ -11,9 +11,9 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     const courseId = event.params.courseId;
     const response = await getCourseById(sessionId, courseId);
 
-    const course = response?.Data?.Course;
+    const course = response?.Data;
     const imageResourceId = course?.ImageResourceId || course?.ImageUrl;
-    const id = response?.Data?.Course?.id;
+    const id = response?.Data?.id;
 
     if (imageResourceId) {
         course['ImageResourceUrl'] =

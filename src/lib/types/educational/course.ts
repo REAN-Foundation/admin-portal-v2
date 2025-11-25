@@ -11,6 +11,7 @@ export interface CourseUpdateModel {
 	Description?: string;
 	ImageResourceId: string;
 	DurationInDays?: number;
+	TenantId?: string;
 }
 
 export interface CourseImageUploadModel {

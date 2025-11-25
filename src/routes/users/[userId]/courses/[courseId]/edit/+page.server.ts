@@ -8,11 +8,12 @@ import { BACKEND_API_URL } from '$env/static/private';
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     const sessionId = event.cookies.get('sessionId');
     const courseId = event.params.courseId;
+    const tenantId = event.locals.sessionUser.tenantId;
     const response = await getCourseById(sessionId, courseId);
 
-    const course = response?.Data?.Course;
+    const course = response?.Data;
     const imageResourceId = course?.ImageResourceId || course?.ImageUrl;
-    const id = response?.Data?.Course?.id;
+    const id = response?.Data?.id;
 
     if (imageResourceId) {
         course['ImageUrl'] =
@@ -24,6 +25,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     }
 
     return {
+        tenantId,
         location: `${id}/edit`,
         course,
         message: response?.Message || 'Course retrieved successfully',

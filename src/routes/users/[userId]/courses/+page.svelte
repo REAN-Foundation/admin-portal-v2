@@ -17,13 +17,16 @@
 
 	let { data }: { data: PageServerData } = $props();
 
+	$inspect(data);
+
 	let debounceTimeout;
 	let isLoading = $state(false);
 	// Initialize courses and preserve nested Modules if they exist in the API response
-	let courses = $state((data.courses?.Items || []).map(item => ({
-		...item,
-		Modules: item.Modules || item.modules || []
-	})));
+	// let courses = $state((data.courses || []).map(item => ({
+	// 	...item,
+	// 	Modules: item.Modules || item.modules || []
+	// })));
+	let courses = $state(data.courses.CourseRecords.Items || []);
 	let retrivedCourses = $derived(courses);
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
@@ -71,27 +74,27 @@
 		amounts: [10, 20, 30, 50]
 	});
 
-	$effect(() => {
-		paginationSettings.size = totalCoursesCount;
-		if (retrivedCourses.length > 0) {
-			retrivedCourses.forEach(course => {
-				if (!courseModuleCounts[course.id] && !courseModules[course.id]) {
-					fetchCourseModuleCount(course.id);
-				}
-			});
-		}
+	// $effect(() => {
+	// 	paginationSettings.size = totalCoursesCount;
+	// 	if (retrivedCourses.length > 0) {
+	// 		retrivedCourses.forEach(course => {
+	// 			if (!courseModuleCounts[course.id] && !courseModules[course.id]) {
+	// 				fetchCourseModuleCount(course.id);
+	// 			}
+	// 		});
+	// 	}
 
-		Object.keys(courseModules).forEach(courseId => {
-			const modules = courseModules[courseId];
-			if (modules && modules.length > 0) {
-				modules.forEach(module => {
-					if (!moduleContentCounts[module.id] && !moduleContents[module.id]) {
-						fetchModuleContentCount(module.id);
-					}
-				});
-			}
-		});
-	});
+	// 	Object.keys(courseModules).forEach(courseId => {
+	// 		const modules = courseModules[courseId];
+	// 		if (modules && modules.length > 0) {
+	// 			modules.forEach(module => {
+	// 				if (!moduleContentCounts[module.id] && !moduleContents[module.id]) {
+	// 					fetchModuleContentCount(module.id);
+	// 				}
+	// 			});
+	// 		}
+	// 	});
+	// });
 
 	async function searchCourse(model) {
 		try {
@@ -230,33 +233,33 @@
 	};
 	
 	// Fetch module count for a course (lightweight call to get just the count)
-	const fetchCourseModuleCount = async (courseId: string) => {
-		try {
-			let url = `/api/server/educational/modules/search?`;
-			url += `itemsPerPage=1`;
-			url += `&pageIndex=0`;
-			url += `&sortBy=Name`;
-			url += `&sortOrder=ascending`;
-			url += `&courseId=${courseId}`;
+	// const fetchCourseModuleCount = async (courseId: string) => {
+	// 	try {
+	// 		let url = `/api/server/educational/modules/search?`;
+	// 		url += `itemsPerPage=1`;
+	// 		url += `&pageIndex=0`;
+	// 		url += `&sortBy=Name`;
+	// 		url += `&sortOrder=ascending`;
+	// 		url += `&courseId=${courseId}`;
 
-			const res = await fetch(url, {
-				method: 'GET',
-				headers: { 'content-type': 'application/json' },
-				credentials: 'include'
-			});
+	// 		const res = await fetch(url, {
+	// 			method: 'GET',
+	// 			headers: { 'content-type': 'application/json' },
+	// 			credentials: 'include'
+	// 		});
 			
-			if (res.ok) {
-				const searchResult = await res.json();
-				if (searchResult.Data && searchResult.Data.CourseModules) {
-					const courseModulesData = searchResult.Data.CourseModules;
-					const totalCount = courseModulesData.TotalCount || 0;
-					courseModuleCounts = { ...courseModuleCounts, [courseId]: totalCount };
-				}
-			}
-		} catch (err) {
-			console.error('Failed to fetch module count:', err);
-		}
-	};
+	// 		if (res.ok) {
+	// 			const searchResult = await res.json();
+	// 			if (searchResult.Data && searchResult.Data.CourseModules) {
+	// 				const courseModulesData = searchResult.Data.CourseModules;
+	// 				const totalCount = courseModulesData.TotalCount || 0;
+	// 				courseModuleCounts = { ...courseModuleCounts, [courseId]: totalCount };
+	// 			}
+	// 		}
+	// 	} catch (err) {
+	// 		console.error('Failed to fetch module count:', err);
+	// 	}
+	// };
 
 	// Fetch modules for a specific course - fetch all modules across all pages
 	const fetchCourseModules = async (courseId: string) => {

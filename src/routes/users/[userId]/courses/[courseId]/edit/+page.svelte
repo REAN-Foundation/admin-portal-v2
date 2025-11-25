@@ -14,6 +14,7 @@
 	///////////////////////////////////////////////////////////////////////////
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
+	const tenantId = data.tenantId;
 
 	let courseName = $state(data.course.Name);
 	let description = $state(data.course.Description || undefined) ;
@@ -128,10 +129,12 @@
 				Name: courseName,
 				Description: description,
 				ImageResourceId: imageResourceId,
-				DurationInDays: durationInDays ? parseFloat(durationInDays) : undefined
+				DurationInDays: durationInDays ? parseFloat(durationInDays) : undefined,
+				TenantId: tenantId
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(courseUpdateModel);
+			console.log('validationResult', validationResult);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -157,7 +160,7 @@
 					previewUrl = undefined;
 				}
 				toastMessage(response);
-				goto(`${coursesRoute}/${response?.Data?.Course?.id}/view`);
+				goto(`${coursesRoute}/${response?.Data?.id}/view`);
 				return;
 			}
 			if (response.Errors) {
@@ -228,7 +231,6 @@
 							<input
 								name="fileinput"
 								type="file"
-								required
 								class="input"
 								placeholder="Image"
 								onchange={async (e) => await onFileSelected(e)}

@@ -13,7 +13,7 @@
 	///////////////////////////////////////////////////////////////////////////
 
 	let { data } = $props();
-
+	const tenantId = data.sessionUser.tenantId;
 	let errors: Record<string, string> = $state({});
 	let courseName = $state(undefined);
 	let description = $state(undefined);
@@ -43,7 +43,7 @@
 		const input = e.target as HTMLInputElement;
 		const file = input.files?.[0];
 		if (!file) return;
-		
+
 		fileName = file.name;
 
 		const fileCreateModel: CourseImageUploadModel = {
@@ -76,7 +76,6 @@
 		formData.append('filename', file.name);
 	};
 
-
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
@@ -108,10 +107,14 @@
 				Name: courseName,
 				Description: description,
 				ImageResourceId: imageResourceId,
-				DurationInDays: durationInDays ? parseFloat(durationInDays) : undefined
+				DurationInDays: durationInDays ? parseFloat(durationInDays) : undefined,
+				TenantId: tenantId
 			};
 
+			console.log('courseCreateModel', courseCreateModel);
+
 			const validationResult = createOrUpdateSchema.safeParse(courseCreateModel);
+			console.log('validationResult', validationResult);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -123,6 +126,8 @@
 				return;
 			}
 
+			console.log('courseCreateModel after validation', validationResult);
+
 			const res = await fetch(`/api/server/educational/course`, {
 				method: 'POST',
 				body: JSON.stringify(courseCreateModel),
@@ -131,16 +136,18 @@
 
 			const response = await res.json();
 
+			console.log('response', response);
+
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				if (previewUrl) {
 					URL.revokeObjectURL(previewUrl);
 					previewUrl = undefined;
 				}
 				toastMessage(response);
-				goto(`${coursesRoute}/${response?.Data?.Course?.id}/view`);
+				goto(`${coursesRoute}/${response?.Data?.id}/view`);
 				return;
 			}
-			
+
 			if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -172,7 +179,6 @@
 		</div>
 		<table class="w-full">
 			<tbody>
-				
 				<tr class="tables-row">
 					<td class="table-label">Name <span class="text-red-700">*</span></td>
 					<td class="table-data">
@@ -252,4 +258,3 @@
 		</div>
 	</form>
 </div>
-
