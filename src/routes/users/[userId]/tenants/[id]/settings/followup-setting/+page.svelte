@@ -553,7 +553,7 @@
 									</tr>
 									<tr>
 										<td>
-											<label for="baseUrl" class="text-[var(--color-info)]">API Base URL </label>
+										<label for="baseUrl" class="text-[var(--color-info)]">API Base URL </label>
 										</td>
 										<td>
 											<input
