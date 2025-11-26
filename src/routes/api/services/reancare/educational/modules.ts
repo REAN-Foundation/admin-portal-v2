@@ -1,4 +1,4 @@
-import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY } from '$env/static/private';
+import { LMS_BACKEND_API_URL, API_CLIENT_INTERNAL_KEY } from '$env/static/private';
 import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 import { del, get, post, put } from '../common.reancare';
 
@@ -11,7 +11,8 @@ export const createModule = async (
 	durationInMins?: number,
 	imageUrl?: string,
 	sequence?: number,
-	courseId?: string
+	courseId?: string,
+	learningPathId?: string,
 ) => {
 	const body = {
 		Name: name,
@@ -19,9 +20,10 @@ export const createModule = async (
 		DurationInMins: durationInMins ?? null,
 		ImageUrl: imageUrl ?? null,
 		Sequence: sequence ?? null,
-		CourseId: courseId ?? null
+		CourseId: courseId ?? null,
+		learningPathId: learningPathId ?? null,
 	};
-	const url = BACKEND_API_URL + '/educational/course-modules';
+	const url = LMS_BACKEND_API_URL + '/course-modules';
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 
 	const findAndClearKeys = [`session-${sessionId}:req-searchModules`];
@@ -31,7 +33,7 @@ export const createModule = async (
 };
 
 export const getModuleById = async (sessionId: string, id: string) => {
-	const url = BACKEND_API_URL + `/educational/course-modules/${id}`;
+	const url = LMS_BACKEND_API_URL + `/course-modules/${id}`;
 
 	const cacheKey = `session-${sessionId}:req-getModuleById-${id}`;
 
@@ -60,7 +62,7 @@ export const searchModules = async (sessionId: string, searchParams?) => {
 			searchString += params.join('&');
 		}
 	}
-	const url = BACKEND_API_URL + `/educational/course-modules/search${searchString}`;
+	const url = LMS_BACKEND_API_URL + `/course-modules/search${searchString}`;
 
 	const cacheKey = `session-${sessionId}:req-searchModules:${searchString}`;
 	if (await DashboardManager.has(cacheKey)) {
@@ -89,7 +91,7 @@ export const updateModule = async (
 		ImageUrl: imageUrl ?? null,
 		Sequence: sequence ?? null
 	};
-	const url = BACKEND_API_URL + `/educational/course-modules/${moduleId}`;
+	const url = LMS_BACKEND_API_URL + `/course-modules/${moduleId}`;
 	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 
 	const keysToBeDeleted = [`session-${sessionId}:req-getModuleById-${moduleId}`,];
@@ -102,7 +104,7 @@ export const updateModule = async (
 };
 
 export const deleteModule = async (sessionId: string, id: string) => {
-	const url = BACKEND_API_URL + `/educational/course-modules/${id}`;
+	const url = LMS_BACKEND_API_URL + `/course-modules/${id}`;
 	const result = await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
 
 	const keysToBeDeleted = [`session-${sessionId}:req-getModuleById-${id}`,];

@@ -10,14 +10,14 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	event.depends('app:course');
 	
     const searchFilters = createSearchFilters(event, {
-        // orderBy: "Name",
         order: "ascending",
         itemsPerPage: 10
     });
     
     const response = await searchCourses(sessionId,searchFilters);
     console.log("Courses response:", response);
-    const courses = response?.Data || [];
+    
+     const courses = response?.Data?.CourseRecords || [];    
 
     return {
         courses,

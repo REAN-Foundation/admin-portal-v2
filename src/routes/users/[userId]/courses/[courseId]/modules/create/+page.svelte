@@ -144,7 +144,7 @@
 					previewUrl = undefined;
 				}
 				toastMessage(response);
-				const moduleId = response?.Data?.CourseModule?.id;
+				const moduleId = response?.Data?.id;
 				console.log("Extracted moduleId:", moduleId);
 				if (moduleId) {
 					goto(`${modulesRoute}/${moduleId}/view`);

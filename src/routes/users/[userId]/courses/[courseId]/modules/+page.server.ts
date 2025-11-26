@@ -21,7 +21,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     console.log('CourseId from params:', courseId);
     const response = await searchModules(sessionId, searchFilters);
 
-    const modules = response?.Data?.CourseModules || [];
+    const modules = response?.Data|| [];
 	console.log("modules==>",modules);
     
 

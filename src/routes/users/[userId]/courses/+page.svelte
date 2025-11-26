@@ -17,16 +17,27 @@
 
 	let { data }: { data: PageServerData } = $props();
 
-	$inspect(data);
-
 	let debounceTimeout;
 	let isLoading = $state(false);
-	// Initialize courses and preserve nested Modules if they exist in the API response
-	// let courses = $state((data.courses || []).map(item => ({
-	// 	...item,
-	// 	Modules: item.Modules || item.modules || []
-	// })));
-	let courses = $state(data.courses.CourseRecords.Items || []);
+	let initialCourses = (() => {
+		if (!data.courses) {
+			return [];
+		}
+		if (Array.isArray(data.courses)) {
+			return data.courses;
+		}
+		if (data.courses.Items && Array.isArray(data.courses.Items)) {
+			return data.courses.Items;
+		}
+		if (data.courses.Courses?.Items) {
+			return data.courses.Courses.Items;
+		}
+		if (data.courses.CourseRecords?.Items) {
+			return data.courses.CourseRecords.Items;
+		}
+		return [];
+	})();
+	let courses = $state(initialCourses);
 	let retrivedCourses = $derived(courses);
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
@@ -63,38 +74,41 @@
 
 	let courseName = $state(undefined);
 
-	let totalCoursesCount = $state(data.courses?.TotalCount || 0);
+	// Safely extract total count from different response structures
+	let initialTotalCount = (() => {
+		if (!data.courses) return 0;
+		// Check TotalCount directly on courses (when server returns Courses object directly)
+		if (data.courses.TotalCount !== undefined) return data.courses.TotalCount;
+		// Check Courses.TotalCount (when server returns full Data object)
+		if (data.courses.Courses?.TotalCount !== undefined) return data.courses.Courses.TotalCount;
+		// Check CourseRecords.TotalCount
+		if (data.courses.CourseRecords?.TotalCount !== undefined) return data.courses.CourseRecords.TotalCount;
+		return 0;
+	})();
+	let totalCoursesCount = $state(initialTotalCount);
 	let isSortingName = $state(false);
 	let sortBy = $state('Name');
 	let sortOrder = $state('ascending');
 	let paginationSettings: PaginationSettings = $state({
 		page: 0,
 		limit: 10,
-		size: data.courses?.TotalCount || 0,
+		size: initialTotalCount,
 		amounts: [10, 20, 30, 50]
 	});
 
-	// $effect(() => {
-	// 	paginationSettings.size = totalCoursesCount;
-	// 	if (retrivedCourses.length > 0) {
-	// 		retrivedCourses.forEach(course => {
-	// 			if (!courseModuleCounts[course.id] && !courseModules[course.id]) {
-	// 				fetchCourseModuleCount(course.id);
-	// 			}
-	// 		});
-	// 	}
+	let hasInitialized = $state(false);
+	$effect(() => {
+		if (!hasInitialized && courses.length === 0 && !isLoading) {
+			hasInitialized = true;
+			searchCourse({
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: paginationSettings.page,
+				sortBy,
+				sortOrder
+			});
+		}
+	});
 
-	// 	Object.keys(courseModules).forEach(courseId => {
-	// 		const modules = courseModules[courseId];
-	// 		if (modules && modules.length > 0) {
-	// 			modules.forEach(module => {
-	// 				if (!moduleContentCounts[module.id] && !moduleContents[module.id]) {
-	// 					fetchModuleContentCount(module.id);
-	// 				}
-	// 			});
-	// 		}
-	// 	});
-	// });
 
 	async function searchCourse(model) {
 		try {
@@ -112,12 +126,36 @@
 			});
 			const searchResult = await res.json();
 			console.log('searchResult', searchResult);
-			const courseData = searchResult.Data.Courses;
-			totalCoursesCount = courseData.TotalCount;
+			
+			if (searchResult.Status === 'failure' || searchResult.HttpCode !== 200) {
+				toastMessage({
+					HttpCode: searchResult.HttpCode || 400,
+					Message: searchResult.Message || 'Failed to search courses'
+				});
+				return;
+			}
+			
+			if (!searchResult.Data) {
+				toastMessage({
+					HttpCode: 500,
+					Message: 'Invalid response from server'
+				});
+				return;
+			}
+			
+			const courseData = searchResult.Data.CourseRecords || searchResult.Data.Courses;
+			if (!courseData) {
+				toastMessage({
+					HttpCode: 500,
+					Message: 'No course data in response'
+				});
+				return;
+			}
+			totalCoursesCount = courseData.TotalCount || 0;
 			paginationSettings.size = totalCoursesCount;
 
 			// Map courses and preserve nested Modules if they exist
-			courses = courseData.Items.map((item, index) => ({
+			courses = (courseData.Items || []).map((item, index) => ({
 				...item,
 				index: index + 1,
 				// Preserve nested Modules if they exist in the API response
@@ -126,6 +164,10 @@
 			searchKeyword = model.courseName;
 		} catch (err) {
 			console.error('Search failed:', err);
+			toastMessage({
+				HttpCode: 500,
+				Message: 'An error occurred while searching courses'
+			});
 		} finally {
 			isLoading = false;
 		}
@@ -232,36 +274,6 @@
 		}
 	};
 	
-	// Fetch module count for a course (lightweight call to get just the count)
-	// const fetchCourseModuleCount = async (courseId: string) => {
-	// 	try {
-	// 		let url = `/api/server/educational/modules/search?`;
-	// 		url += `itemsPerPage=1`;
-	// 		url += `&pageIndex=0`;
-	// 		url += `&sortBy=Name`;
-	// 		url += `&sortOrder=ascending`;
-	// 		url += `&courseId=${courseId}`;
-
-	// 		const res = await fetch(url, {
-	// 			method: 'GET',
-	// 			headers: { 'content-type': 'application/json' },
-	// 			credentials: 'include'
-	// 		});
-			
-	// 		if (res.ok) {
-	// 			const searchResult = await res.json();
-	// 			if (searchResult.Data && searchResult.Data.CourseModules) {
-	// 				const courseModulesData = searchResult.Data.CourseModules;
-	// 				const totalCount = courseModulesData.TotalCount || 0;
-	// 				courseModuleCounts = { ...courseModuleCounts, [courseId]: totalCount };
-	// 			}
-	// 		}
-	// 	} catch (err) {
-	// 		console.error('Failed to fetch module count:', err);
-	// 	}
-	// };
-
-	// Fetch modules for a specific course - fetch all modules across all pages
 	const fetchCourseModules = async (courseId: string) => {
 		try {
 			loadingModules = { ...loadingModules, [courseId]: true };
@@ -270,7 +282,6 @@
 			let hasMore = true;
 			const itemsPerPage = 100;
 			
-			// Fetch all pages of modules
 			while (hasMore) {
 				let url = `/api/server/educational/modules/search?`;
 				url += `itemsPerPage=${itemsPerPage}`;
@@ -507,10 +518,7 @@
 			url += `&pageIndex=0`;
 			url += `&sortBy=Title`;
 			url += `&sortOrder=ascending`;
-			url += `&moduleId=${moduleId}`; // Filter contents by moduleId
-
-			console.log('Fetching contents for moduleId:', moduleId);
-			console.log('Request URL:', url);
+			url += `&moduleId=${moduleId}`;
 
 			const res = await fetch(url, {
 				method: 'GET',
@@ -528,18 +536,15 @@
 			console.log('Contents search result:', searchResult);
 			let contentsList = [];
 			
-			// Handle both CourseContents and Contents response structures
 			if (searchResult.Data) {
 				const contentsData = searchResult.Data.CourseContents || searchResult.Data.Contents;
 				console.log('Contents data:', contentsData);
 				
 				if (contentsData) {
-					// Check for Items array (standard structure)
 					if (contentsData.Items && Array.isArray(contentsData.Items)) {
 						contentsList = contentsData.Items;
 						console.log('Found contents in Items array:', contentsList.length);
 					}
-					// If contentsData is directly an array
 					else if (Array.isArray(contentsData)) {
 						contentsList = contentsData;
 						console.log('Found contents as direct array:', contentsList.length);
