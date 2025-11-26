@@ -16,12 +16,12 @@ export const createModule = async (
 ) => {
 	const body = {
 		Name: name,
-		Description: description ?? null,
-		DurationInMins: durationInMins ?? null,
-		ImageUrl: imageUrl ?? null,
-		Sequence: sequence ?? null,
+		Description: description ? description : '',
+		DurationInMins: durationInMins ? durationInMins : '',
+		ImageUrl: imageUrl ? imageUrl : '',
+		Sequence: sequence ? sequence : '',
 		CourseId: courseId ?? null,
-		learningPathId: learningPathId ?? null,
+		LearningPathId: '6683dcee-a315-460c-ad99-9d2b055a7b9d',
 	};
 	const url = LMS_BACKEND_API_URL + '/course-modules';
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
