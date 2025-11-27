@@ -169,7 +169,7 @@ console.log('Marketing Material Page Data:', data);
 	let qrCodeFile: File | null = null;
 	let disabled = $state(true);
 	let edit = $state(false);
-	let activeSections = $state(new Set([]));
+	let activeSection = $state<string | null>(null);
 
 	const initializeLogos = () => {
 		const logos = isEmpty ? [] : (data.marketingMaterial?.Logos ?? []).slice(0, 3);
@@ -186,12 +186,11 @@ console.log('Marketing Material Page Data:', data);
 	};
 
 	const toggleSection = (sectionId: string) => {
-		if (activeSections.has(sectionId)) {
-			activeSections.delete(sectionId);
+		if (activeSection === sectionId) {
+			activeSection = null;
 		} else {
-			activeSections.add(sectionId);
+			activeSection = sectionId;
 		}
-		activeSections = new Set(activeSections);
 	};
 
 	const addBenefit = () => {
@@ -708,14 +707,14 @@ console.log('Marketing Material Page Data:', data);
 			<div class="flex flex-col space-y-4 px-4 py-4">
 				<!-- Logos Section -->
 				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('logos') ? 'border-hover' : ''}`}
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSection === 'logos' ? 'border-hover' : ''}`}
 				>
 					<button
 						type="button"
 						onclick={() => toggleSection('logos')}
 						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
 						transition-all duration-100 ease-in-out ${
-							activeSections.has('logos')
+							activeSection === 'logos'
 								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
 								: 'border-hover rounded bg-[var(--color-secondary)]'
 						}`}
@@ -732,7 +731,7 @@ console.log('Marketing Material Page Data:', data);
 						</div>
 						<span
 							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('logos')}
+							class:rotate-90={activeSection === 'logos'}
 						>
 							<Icon
 								icon="icon-park-outline:down"
@@ -744,7 +743,7 @@ console.log('Marketing Material Page Data:', data);
 						</span>
 					</button>
 
-					{#if activeSections.has('logos')}
+					{#if activeSection === 'logos'}
 						<div class="p-6">
 							<div class="flex flex-col gap-4">
 								{#each Logos as logo, index}
@@ -816,14 +815,14 @@ console.log('Marketing Material Page Data:', data);
 
 				<!-- Header Section -->
 				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('header') ? 'border-hover' : ''}`}
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSection === 'header' ? 'border-hover' : ''}`}
 				>
 					<button
 						type="button"
 						onclick={() => toggleSection('header')}
 						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
 						transition-all duration-100 ease-in-out ${
-							activeSections.has('header')
+							activeSection === 'header'
 								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
 								: 'border-hover rounded bg-[var(--color-secondary)]'
 						}`}
@@ -837,7 +836,7 @@ console.log('Marketing Material Page Data:', data);
 						</div>
 						<span
 							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('header')}
+							class:rotate-90={activeSection === 'header'}
 						>
 							<Icon
 								icon="icon-park-outline:down"
@@ -849,7 +848,7 @@ console.log('Marketing Material Page Data:', data);
 						</span>
 					</button>
 
-					{#if activeSections.has('header')}
+					{#if activeSection === 'header'}
 						<div class="space-y-4 p-6">
 							<div class="my-2 flex flex-col md:flex-row md:items-center">
 								<label
@@ -887,14 +886,14 @@ console.log('Marketing Material Page Data:', data);
 
 				<!-- Introduction Section -->
 				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('introduction') ? 'border-hover' : ''}`}
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSection === 'introduction' ? 'border-hover' : ''}`}
 				>
 					<button
 						type="button"
 						onclick={() => toggleSection('introduction')}
 						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
 						transition-all duration-100 ease-in-out ${
-							activeSections.has('introduction')
+							activeSection === 'introduction'
 								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
 								: 'border-hover rounded bg-[var(--color-secondary)]'
 						}`}
@@ -908,7 +907,7 @@ console.log('Marketing Material Page Data:', data);
 						</div>
 						<span
 							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('introduction')}
+							class:rotate-90={activeSection === 'introduction'}
 						>
 							<Icon
 								icon="icon-park-outline:down"
@@ -920,7 +919,7 @@ console.log('Marketing Material Page Data:', data);
 						</span>
 					</button>
 
-					{#if activeSections.has('introduction')}
+					{#if activeSection === 'introduction'}
 						<div class="space-y-4 p-6">
 							<div class="my-2 flex flex-col md:flex-row md:items-center">
 								<label
@@ -958,14 +957,14 @@ console.log('Marketing Material Page Data:', data);
 
 				<!-- Benefits Section -->
 				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('benefits') ? 'border-hover' : ''}`}
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSection === 'benefits' ? 'border-hover' : ''}`}
 				>
 					<button
 						type="button"
 						onclick={() => toggleSection('benefits')}
 						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
 						transition-all duration-100 ease-in-out ${
-							activeSections.has('benefits')
+							activeSection === 'benefits'
 								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
 								: 'border-hover rounded bg-[var(--color-secondary)]'
 						}`}
@@ -979,7 +978,7 @@ console.log('Marketing Material Page Data:', data);
 						</div>
 						<span
 							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('benefits')}
+							class:rotate-90={activeSection === 'benefits'}
 						>
 							<Icon
 								icon="icon-park-outline:down"
@@ -991,7 +990,7 @@ console.log('Marketing Material Page Data:', data);
 						</span>
 					</button>
 
-					{#if activeSections.has('benefits')}
+					{#if activeSection === 'benefits'}
 						<div class="space-y-4 p-6">
 							<div class="my-2 flex flex-col md:flex-row md:items-center">
 								<label
@@ -1079,14 +1078,14 @@ console.log('Marketing Material Page Data:', data);
 
 				<!-- User Interface Section -->
 				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('userInterface') ? 'border-hover' : ''}`}
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSection === 'userInterface' ? 'border-hover' : ''}`}
 				>
 					<button
 						type="button"
 						onclick={() => toggleSection('userInterface')}
 						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
 						transition-all duration-100 ease-in-out ${
-							activeSections.has('userInterface')
+							activeSection === 'userInterface'
 								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
 								: 'border-hover rounded bg-[var(--color-secondary)]'
 						}`}
@@ -1100,7 +1099,7 @@ console.log('Marketing Material Page Data:', data);
 						</div>
 						<span
 							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('userInterface')}
+							class:rotate-90={activeSection === 'userInterface'}
 						>
 							<Icon
 								icon="icon-park-outline:down"
@@ -1112,7 +1111,7 @@ console.log('Marketing Material Page Data:', data);
 						</span>
 					</button>
 
-					{#if activeSections.has('userInterface')}
+					{#if activeSection === 'userInterface'}
 						<div class="space-y-4 p-6">
 							<div class="my-2 flex flex-col md:flex-row md:items-center">
 								<label
@@ -1150,14 +1149,14 @@ console.log('Marketing Material Page Data:', data);
 
 				<!-- Footer Section -->
 				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('footer') ? 'border-hover' : ''}`}
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSection === 'footer' ? 'border-hover' : ''}`}
 				>
 					<button
 						type="button"
 						onclick={() => toggleSection('footer')}
 						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
 						transition-all duration-100 ease-in-out ${
-							activeSections.has('footer')
+							activeSection === 'footer'
 								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
 								: 'border-hover rounded bg-[var(--color-secondary)]'
 						}`}
@@ -1174,7 +1173,7 @@ console.log('Marketing Material Page Data:', data);
 						</div>
 						<span
 							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('footer')}
+							class:rotate-90={activeSection === 'footer'}
 						>
 							<Icon
 								icon="icon-park-outline:down"
@@ -1186,7 +1185,7 @@ console.log('Marketing Material Page Data:', data);
 						</span>
 					</button>
 
-					{#if activeSections.has('footer')}
+					{#if activeSection === 'footer'}
 						<div class="space-y-4 p-6">
 							<div class="my-2 flex flex-col md:flex-row md:items-center">
 								<label
@@ -1239,14 +1238,14 @@ console.log('Marketing Material Page Data:', data);
 
 				<!-- Images Section -->
 				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('images') ? 'border-hover' : ''}`}
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSection === 'images' ? 'border-hover' : ''}`}
 				>
 					<button
 						type="button"
 						onclick={() => toggleSection('images')}
 						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
 						transition-all duration-100 ease-in-out ${
-							activeSections.has('images')
+							activeSection === 'images'
 								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
 								: 'border-hover rounded bg-[var(--color-secondary)]'
 						}`}
@@ -1260,7 +1259,7 @@ console.log('Marketing Material Page Data:', data);
 						</div>
 						<span
 							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('images')}
+							class:rotate-90={activeSection === 'images'}
 						>
 							<Icon
 								icon="icon-park-outline:down"
@@ -1272,7 +1271,7 @@ console.log('Marketing Material Page Data:', data);
 						</span>
 					</button>
 
-					{#if activeSections.has('images')}
+					{#if activeSection === 'images'}
 						<div class="space-y-4 p-6">
 							<div class="my-2 flex flex-col md:flex-row md:items-center">
 								<label
@@ -1372,14 +1371,14 @@ console.log('Marketing Material Page Data:', data);
 
 				<!-- QR Section -->
 				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('qrcode') ? 'border-hover' : ''}`}
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSection === 'qrcode' ? 'border-hover' : ''}`}
 				>
 					<button
 						type="button"
 						onclick={() => toggleSection('qrcode')}
 						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
 						transition-all duration-100 ease-in-out ${
-							activeSections.has('qrcode')
+							activeSection === 'qrcode'
 								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
 								: 'border-hover rounded bg-[var(--color-secondary)]'
 						}`}
@@ -1393,7 +1392,7 @@ console.log('Marketing Material Page Data:', data);
 						</div>
 						<span
 							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('qrcode')}
+							class:rotate-90={activeSection === 'qrcode'}
 						>
 							<Icon
 								icon="icon-park-outline:down"
@@ -1405,7 +1404,7 @@ console.log('Marketing Material Page Data:', data);
 						</span>
 					</button>
 
-					{#if activeSections.has('qrcode')}
+					{#if activeSection === 'qrcode'}
 						<div class="space-y-4 p-6">
 							<div class="my-2 flex flex-col md:flex-row md:items-center">
 								<label
@@ -1485,14 +1484,14 @@ console.log('Marketing Material Page Data:', data);
 
 				<!-- Color Section -->
 				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('colors') ? 'border-hover' : ''}`}
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSection === 'colors' ? 'border-hover' : ''}`}
 				>
 					<button
 						type="button"
 						onclick={() => toggleSection('colors')}
 						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
 						transition-all duration-100 ease-in-out ${
-							activeSections.has('colors')
+							activeSection === 'colors'
 								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
 								: 'border-hover rounded bg-[var(--color-secondary)]'
 						}`}
@@ -1506,7 +1505,7 @@ console.log('Marketing Material Page Data:', data);
 						</div>
 						<span
 							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('colors')}
+							class:rotate-90={activeSection === 'colors'}
 						>
 							<Icon
 								icon="icon-park-outline:down"
@@ -1518,7 +1517,7 @@ console.log('Marketing Material Page Data:', data);
 						</span>
 					</button>
 
-					{#if activeSections.has('colors')}
+					{#if activeSection === 'colors'}
 						<div class="space-y-4 p-6">
 							<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 								{#each [{ key: 'primary', label: 'Primary' }, { key: 'secondary', label: 'Secondary' }, { key: 'accent', label: 'Accent' }, { key: 'lightBg', label: 'Light Background' }, { key: 'panel', label: 'Panel' }, { key: 'muted', label: 'Muted Text' }, { key: 'text', label: 'Body Text' }] as c}
@@ -1555,14 +1554,14 @@ console.log('Marketing Material Page Data:', data);
 
 				<!-- Fonts Section -->
 				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('fonts') ? 'border-hover' : ''}`}
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSection === 'fonts' ? 'border-hover' : ''}`}
 				>
 					<button
 						type="button"
 						onclick={() => toggleSection('fonts')}
 						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
 						transition-all duration-100 ease-in-out ${
-							activeSections.has('fonts')
+							activeSection === 'fonts'
 								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
 								: 'border-hover rounded bg-[var(--color-secondary)]'
 						}`}
@@ -1576,7 +1575,7 @@ console.log('Marketing Material Page Data:', data);
 						</div>
 						<span
 							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('fonts')}
+							class:rotate-90={activeSection === 'fonts'}
 						>
 							<Icon
 								icon="icon-park-outline:down"
@@ -1588,7 +1587,7 @@ console.log('Marketing Material Page Data:', data);
 						</span>
 					</button>
 
-					{#if activeSections.has('fonts')}
+					{#if activeSection === 'fonts'}
 						<div class="space-y-4 p-6">
 							<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 								<div class="my-2 flex flex-col md:flex-row md:items-center">
@@ -1684,14 +1683,14 @@ console.log('Marketing Material Page Data:', data);
 
 				<!-- Sizes Section -->
 				<div
-					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSections.has('sizes') ? 'border-hover' : ''}`}
+					class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${activeSection === 'sizes' ? 'border-hover' : ''}`}
 				>
 					<button
 						type="button"
 						onclick={() => toggleSection('sizes')}
 						class={`flex w-full items-center justify-between rounded-lg px-5 py-3 text-[var(--color-info)]
 						transition-all duration-100 ease-in-out ${
-							activeSections.has('sizes')
+							activeSection === 'sizes'
 								? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
 								: 'border-hover rounded bg-[var(--color-secondary)]'
 						}`}
@@ -1705,7 +1704,7 @@ console.log('Marketing Material Page Data:', data);
 						</div>
 						<span
 							class="transition-transform duration-300"
-							class:rotate-90={activeSections.has('sizes')}
+							class:rotate-90={activeSection === 'sizes'}
 						>
 							<Icon
 								icon="icon-park-outline:down"
@@ -1717,7 +1716,7 @@ console.log('Marketing Material Page Data:', data);
 						</span>
 					</button>
 
-					{#if activeSections.has('sizes')}
+					{#if activeSection === 'sizes'}
 						<div class="space-y-4 p-6">
 							<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 								<div class="my-2 flex flex-col md:flex-row md:items-center">
