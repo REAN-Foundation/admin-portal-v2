@@ -109,7 +109,7 @@
 			url += `&pageIndex=0`;
 			url += `&sortBy=Title`;
 			url += `&sortOrder=ascending`;
-			url += `&moduleId=${moduleId}`; 
+			url += `&moduleId=${encodeURIComponent(moduleId)}`; 
 
 			const res = await fetch(url, {
 				method: 'GET',
@@ -122,20 +122,11 @@
 			}
 			
 			const searchResult = await res.json();
-			let contentsList = [];
+			let contentsList = searchResult?.Data?.CourseContentRecords?.Items || [];
 			
-			if (searchResult.Data) {
-				const contentsData = searchResult.Data.CourseContents || searchResult.Data.Contents;
-				
-				if (contentsData) {
-					if (contentsData.Items && Array.isArray(contentsData.Items)) {
-						contentsList = contentsData.Items;
-					}
-					else if (Array.isArray(contentsData)) {
-						contentsList = contentsData;
-					}
-				}
-			}
+			contentsList = contentsList.filter(content => 
+				content.CourseModuleId === moduleId || content.courseModuleId === moduleId
+			);
 			
 			moduleContents = { ...moduleContents, [moduleId]: contentsList };
 		} catch (err) {

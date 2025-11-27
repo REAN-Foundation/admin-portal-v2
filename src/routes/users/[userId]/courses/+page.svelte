@@ -20,22 +20,7 @@
 	let debounceTimeout;
 	let isLoading = $state(false);
 	let initialCourses = (() => {
-		if (!data.courses) {
-			return [];
-		}
-		if (Array.isArray(data.courses)) {
-			return data.courses;
-		}
-		if (data.courses.Items && Array.isArray(data.courses.Items)) {
-			return data.courses.Items;
-		}
-		if (data.courses.Courses?.Items) {
-			return data.courses.Courses.Items;
-		}
-		if (data.courses.CourseRecords?.Items) {
-			return data.courses.CourseRecords.Items;
-		}
-		return [];
+		return data.courses?.Items ?? [];
 	})();
 	let courses = $state(initialCourses);
 	let retrivedCourses = $derived(courses);
@@ -47,43 +32,24 @@
 	let openContentDeleteModal = $state(false);
 	let contentToBeDeleted = $state<{ contentId: string; moduleId: string } | null>(null);
 	let searchKeyword = $state(undefined);
-	
+
 	// State for managing expanded courses and their modules
 	let expandedCourses = $state<Record<string, boolean>>({});
 	let courseModules = $state<Record<string, any[]>>({});
 	let loadingModules = $state<Record<string, boolean>>({});
 	let courseModuleCounts = $state<Record<string, number>>({});
-	
+
 	// State for managing expanded modules and their contents
 	let expandedModules = $state<Record<string, boolean>>({});
 	let moduleContents = $state<Record<string, any[]>>({});
 	let loadingContents = $state<Record<string, boolean>>({});
 	let moduleContentCounts = $state<Record<string, number>>({});
-	
+
 	// State for managing selected content IDs per module
-	let selectedContentIds = $state<Record<string, string | null>>({});
-
-	const userId = page.params.userId;
-	const courseRoute = `/users/${userId}/courses`;
-	const editRoute = (courseId) => `/users/${userId}/courses/${courseId}/edit`;
-	const viewRoute = (courseId) => `/users/${userId}/courses/${courseId}/view`;
-	const modulesRoute = (courseId) => `/users/${userId}/courses/${courseId}/modules`;
-	const createRoute = `/users/${userId}/courses/create`;
-
-	const breadCrumbs = [{ name: 'Courses', path: courseRoute }];
-
+	let selectedContentIds = $state<Record<string, string | null>>({})
 	let courseName = $state(undefined);
-
-	// Safely extract total count from different response structures
 	let initialTotalCount = (() => {
-		if (!data.courses) return 0;
-		// Check TotalCount directly on courses (when server returns Courses object directly)
-		if (data.courses.TotalCount !== undefined) return data.courses.TotalCount;
-		// Check Courses.TotalCount (when server returns full Data object)
-		if (data.courses.Courses?.TotalCount !== undefined) return data.courses.Courses.TotalCount;
-		// Check CourseRecords.TotalCount
-		if (data.courses.CourseRecords?.TotalCount !== undefined) return data.courses.CourseRecords.TotalCount;
-		return 0;
+		return data.courses?.TotalCount ?? 0;
 	})();
 	let totalCoursesCount = $state(initialTotalCount);
 	let isSortingName = $state(false);
@@ -95,6 +61,15 @@
 		size: initialTotalCount,
 		amounts: [10, 20, 30, 50]
 	});
+
+	const userId = page.params.userId;
+	const courseRoute = `/users/${userId}/courses`;
+	const editRoute = (courseId) => `/users/${userId}/courses/${courseId}/edit`;
+	const viewRoute = (courseId) => `/users/${userId}/courses/${courseId}/view`;
+	const modulesRoute = (courseId) => `/users/${userId}/courses/${courseId}/modules`;
+	const createRoute = `/users/${userId}/courses/create`;
+
+	const breadCrumbs = [{ name: 'Courses', path: courseRoute }];
 
 	let hasInitialized = $state(false);
 	$effect(() => {
@@ -108,7 +83,6 @@
 			});
 		}
 	});
-
 
 	async function searchCourse(model) {
 		try {
@@ -126,7 +100,7 @@
 			});
 			const searchResult = await res.json();
 			console.log('searchResult', searchResult);
-			
+
 			if (searchResult.Status === 'failure' || searchResult.HttpCode !== 200) {
 				toastMessage({
 					HttpCode: searchResult.HttpCode || 400,
@@ -134,7 +108,7 @@
 				});
 				return;
 			}
-			
+
 			if (!searchResult.Data) {
 				toastMessage({
 					HttpCode: 500,
@@ -142,7 +116,7 @@
 				});
 				return;
 			}
-			
+
 			const courseData = searchResult.Data.CourseRecords || searchResult.Data.Courses;
 			if (!courseData) {
 				toastMessage({
@@ -154,11 +128,9 @@
 			totalCoursesCount = courseData.TotalCount || 0;
 			paginationSettings.size = totalCoursesCount;
 
-			// Map courses and preserve nested Modules if they exist
 			courses = (courseData.Items || []).map((item, index) => ({
 				...item,
 				index: index + 1,
-				// Preserve nested Modules if they exist in the API response
 				Modules: item.Modules || item.modules || []
 			}));
 			searchKeyword = model.courseName;
@@ -177,7 +149,7 @@
 		clearTimeout(debounceTimeout);
 		let searchKeyword = e.target.value;
 		debounceTimeout = setTimeout(() => {
-			paginationSettings.page = 0; // reset page when typing new search
+			paginationSettings.page = 0; 
 			searchCourse({
 				courseName: searchKeyword,
 				itemsPerPage: paginationSettings.limit,
@@ -210,7 +182,7 @@
 	};
 
 	function onItemsPerPageChange() {
-		paginationSettings.page = 0; // reset to first page
+		paginationSettings.page = 0; 
 		searchCourse({
 			courseName: searchKeyword,
 			itemsPerPage: paginationSettings.limit,
@@ -254,26 +226,20 @@
 		});
 	};
 
-	// Toggle course expansion and fetch modules
 	const toggleCourseModules = async (courseId: string, event: Event) => {
 		event.preventDefault();
 		event.stopPropagation();
-		
+
 		if (expandedCourses[courseId]) {
-			// Collapse
 			expandedCourses = { ...expandedCourses, [courseId]: false };
 		} else {
-			// Expand
 			expandedCourses = { ...expandedCourses, [courseId]: true };
-			
-			// Always fetch fresh modules to ensure newly added modules are displayed
-			// Fetch modules if not currently loading
 			if (!loadingModules[courseId]) {
 				await fetchCourseModules(courseId);
 			}
 		}
 	};
-	
+
 	const fetchCourseModules = async (courseId: string) => {
 		try {
 			loadingModules = { ...loadingModules, [courseId]: true };
@@ -281,15 +247,14 @@
 			let pageIndex = 0;
 			let hasMore = true;
 			const itemsPerPage = 100;
-			
-			// Validate courseId
+
 			if (!courseId) {
 				console.error('fetchCourseModules: courseId is required');
 				courseModules = { ...courseModules, [courseId]: [] };
 				courseModuleCounts = { ...courseModuleCounts, [courseId]: 0 };
 				return;
 			}
-			
+
 			while (hasMore) {
 				let url = `/api/server/educational/modules/search?`;
 				url += `itemsPerPage=${itemsPerPage}`;
@@ -305,65 +270,61 @@
 					headers: { 'content-type': 'application/json' },
 					credentials: 'include'
 				});
-				
+
 				if (!res.ok) {
 					const errorText = await res.text();
 					console.error('HTTP error response:', res.status, errorText);
 					throw new Error(`HTTP error! status: ${res.status}`);
 				}
-				
+
 				const searchResult = await res.json();
 				console.log(`Modules response for courseId ${courseId}:`, searchResult);
 				let modulesList: any[] = [];
-				
-				// Match the API response structure: searchResult.Data.CourseModuleRecords
+
 				if (searchResult.Data && searchResult.Data.CourseModuleRecords) {
 					const courseModuleRecords = searchResult.Data.CourseModuleRecords;
-					
-					// Check for Items array (standard structure)
+
 					if (courseModuleRecords.Items && Array.isArray(courseModuleRecords.Items)) {
 						modulesList = courseModuleRecords.Items;
-						// Verify modules belong to this course
-						modulesList = modulesList.filter(module => 
-							module.CourseId === courseId || module.courseId === courseId
+						modulesList = modulesList.filter(
+							(module) => module.CourseId === courseId || module.courseId === courseId
 						);
-						console.log(`Filtered modules for courseId ${courseId}:`, modulesList.length, 'modules');
-						
+						console.log(
+							`Filtered modules for courseId ${courseId}:`,
+							modulesList.length,
+							'modules'
+						);
+
 						// Check if there are more pages
 						const totalCount = courseModuleRecords.TotalCount || 0;
 						const currentCount = allModules.length + modulesList.length;
 						hasMore = currentCount < totalCount && modulesList.length === itemsPerPage;
 					}
-					// If CourseModuleRecords is directly an array (fallback)
 					else if (Array.isArray(courseModuleRecords)) {
-						modulesList = courseModuleRecords.filter(module => 
-							module.CourseId === courseId || module.courseId === courseId
+						modulesList = courseModuleRecords.filter(
+							(module) => module.CourseId === courseId || module.courseId === courseId
 						);
 						hasMore = modulesList.length === itemsPerPage;
 					}
 				}
-				
+
 				allModules = [...allModules, ...modulesList];
-				
-				// If we got fewer items than requested, we've reached the end
+
 				if (modulesList.length < itemsPerPage) {
 					hasMore = false;
 				} else {
 					pageIndex++;
 				}
 			}
-			
+
 			console.log(`Total modules fetched for courseId ${courseId}:`, allModules.length);
-			
-			// Update state reactively - store all modules for this course ONLY
-			// Ensure each module has the courseId for content navigation
-			const modulesWithCourseId = allModules.map(module => ({
+
+			const modulesWithCourseId = allModules.map((module) => ({
 				...module,
 				CourseId: courseId
 			}));
-			// Only update this specific course's modules, don't merge with others
+
 			courseModules = { ...courseModules, [courseId]: modulesWithCourseId };
-			// Update the count as well
 			courseModuleCounts = { ...courseModuleCounts, [courseId]: allModules.length };
 		} catch (err) {
 			console.error('Failed to fetch modules:', err);
@@ -377,40 +338,34 @@
 		}
 	};
 
-	// Module route helpers
 	const moduleViewRoute = (courseId: string, moduleId: string) => {
 		return `/users/${userId}/courses/${courseId}/modules/${moduleId}/view`;
 	};
-	
+
 	const moduleEditRoute = (courseId: string, moduleId: string) => {
 		return `/users/${userId}/courses/${courseId}/modules/${moduleId}/edit`;
 	};
-	
+
 	const moduleCreateRoute = (courseId: string) => {
 		return `/users/${userId}/courses/${courseId}/modules/create`;
 	};
-	
-	// Content view route helper
+
 	const contentViewRoute = (courseId: string, moduleId: string, contentId: string) => {
 		return `/users/${userId}/courses/${courseId}/modules/${moduleId}/contents/${contentId}/view`;
 	};
-	
-	// Content edit route helper
+
 	const contentEditRoute = (courseId: string, moduleId: string, contentId: string) => {
 		return `/users/${userId}/courses/${courseId}/modules/${moduleId}/contents/${contentId}/edit`;
 	};
-	
-	// Content create route helper
+
 	const contentCreateRoute = (courseId: string, moduleId: string) => {
 		return `/users/${userId}/courses/${courseId}/modules/${moduleId}/contents/create`;
 	};
-	
-	// Content delete handler
+
 	const handleContentDeleteClick = (contentId: string) => {
-		// Find which module this content belongs to
 		let moduleId = null;
 		for (const [modId, contents] of Object.entries(moduleContents)) {
-			if (contents.some(c => c.id === contentId)) {
+			if (contents.some((c) => c.id === contentId)) {
 				moduleId = modId;
 				break;
 			}
@@ -420,7 +375,7 @@
 			contentToBeDeleted = { contentId, moduleId };
 		}
 	};
-	
+
 	const handleContentDelete = async (data: { contentId: string; moduleId: string }) => {
 		const { contentId, moduleId } = data;
 		console.log('Deleting content:', contentId);
@@ -433,7 +388,6 @@
 		console.log('Delete content response:', res);
 		if (res.HttpCode === 200) {
 			toastMessage(res);
-			// Refresh contents for the module
 			if (moduleContents[moduleId]) {
 				await fetchModuleContents(moduleId);
 			}
@@ -443,13 +397,12 @@
 		openContentDeleteModal = false;
 		contentToBeDeleted = null;
 	};
-	
-	// Module delete handler
+
 	const handleModuleDeleteClick = (moduleId: string, courseId: string) => {
 		openModuleDeleteModal = true;
 		moduleToBeDeleted = { moduleId, courseId };
 	};
-	
+
 	const handleModuleDelete = async (data: { moduleId: string; courseId: string }) => {
 		const { moduleId, courseId } = data;
 		console.log('Deleting module:', moduleId);
@@ -462,7 +415,6 @@
 		console.log('Delete module response:', res);
 		if (res.HttpCode === 200) {
 			toastMessage(res);
-			// Refresh modules for the course
 			if (courseModules[courseId]) {
 				await fetchCourseModules(courseId);
 			}
@@ -472,27 +424,23 @@
 		openModuleDeleteModal = false;
 		moduleToBeDeleted = null;
 	};
-	
-	// Toggle module expansion and fetch contents
+
 	const toggleModuleContents = async (moduleId: string, courseId: string, event: Event) => {
 		event.preventDefault();
 		event.stopPropagation();
-		
+
 		if (expandedModules[moduleId]) {
 			// Collapse
 			expandedModules = { ...expandedModules, [moduleId]: false };
 		} else {
-			// Expand
 			expandedModules = { ...expandedModules, [moduleId]: true };
-			
-			// Fetch contents if not already loaded
+
 			if (!moduleContents[moduleId] && !loadingContents[moduleId]) {
 				await fetchModuleContents(moduleId);
 			}
 		}
 	};
-	
-	// Fetch content count for a module (lightweight call to get just the count)
+
 	const fetchModuleContentCount = async (moduleId: string) => {
 		try {
 			let url = `/api/server/educational/content/search?`;
@@ -507,23 +455,10 @@
 				headers: { 'content-type': 'application/json' },
 				credentials: 'include'
 			});
-			
+
 			if (res.ok) {
 				const searchResult = await res.json();
-				let totalCount = 0;
-				
-				// Handle both CourseContents and Contents response structures
-				if (searchResult.Data) {
-					const contentsData = searchResult.Data.CourseContents || searchResult.Data.Contents;
-					if (contentsData) {
-						if (contentsData.TotalCount !== undefined) {
-							totalCount = contentsData.TotalCount;
-						} else if (Array.isArray(contentsData)) {
-							totalCount = contentsData.length;
-						}
-					}
-				}
-				
+				const totalCount = searchResult?.Data?.CourseContentRecords?.TotalCount || 0;
 				moduleContentCounts = { ...moduleContentCounts, [moduleId]: totalCount };
 			}
 		} catch (err) {
@@ -536,49 +471,32 @@
 		try {
 			loadingContents = { ...loadingContents, [moduleId]: true };
 			let url = `/api/server/educational/content/search?`;
-			url += `itemsPerPage=100`; // Get all contents
+			url += `itemsPerPage=100`;
 			url += `&pageIndex=0`;
 			url += `&sortBy=Title`;
 			url += `&sortOrder=ascending`;
-			url += `&moduleId=${moduleId}`;
+			url += `&moduleId=${encodeURIComponent(moduleId)}`;
 
 			const res = await fetch(url, {
 				method: 'GET',
 				headers: { 'content-type': 'application/json' },
 				credentials: 'include'
 			});
-			
+
 			if (!res.ok) {
 				const errorText = await res.text();
 				console.error('HTTP error response:', res.status, errorText);
 				throw new Error(`HTTP error! status: ${res.status}`);
 			}
-			
+
 			const searchResult = await res.json();
-			console.log('Contents search result:', searchResult);
-			let contentsList = [];
-			
-			if (searchResult.Data) {
-				const contentsData = searchResult.Data.CourseContents || searchResult.Data.Contents;
-				console.log('Contents data:', contentsData);
-				
-				if (contentsData) {
-					if (contentsData.Items && Array.isArray(contentsData.Items)) {
-						contentsList = contentsData.Items;
-						console.log('Found contents in Items array:', contentsList.length);
-					}
-					else if (Array.isArray(contentsData)) {
-						contentsList = contentsData;
-						console.log('Found contents as direct array:', contentsList.length);
-					}
-				}
-			}
-			
-			console.log('Final contents list for module:', moduleId, contentsList);
-			
-			// Update state reactively - store all contents for this module
+			let contentsList = searchResult?.Data?.CourseContentRecords?.Items || [];
+
+			contentsList = contentsList.filter(
+				(content) => content.CourseModuleId === moduleId || content.courseModuleId === moduleId
+			);
+
 			moduleContents = { ...moduleContents, [moduleId]: contentsList };
-			// Update the count as well
 			moduleContentCounts = { ...moduleContentCounts, [moduleId]: contentsList.length };
 		} catch (err) {
 			console.error('Failed to fetch contents:', err);
@@ -662,11 +580,20 @@
 							{#each retrivedCourses as row, index}
 								{@const fetchedModules = courseModules[row.id]}
 								{@const cachedCount = courseModuleCounts[row.id]}
-								{@const moduleCount = fetchedModules !== undefined
-									? fetchedModules.length
-									: (cachedCount !== undefined
-										? cachedCount
-										: (row.ModuleCount ?? row.ModulesCount ?? row.moduleCount ?? row.modulesCount ?? row.TotalModules ?? row.totalModules ?? (row.Modules?.length ?? row.modules?.length ?? 0)))}
+								{@const moduleCount =
+									fetchedModules !== undefined
+										? fetchedModules.length
+										: cachedCount !== undefined
+											? cachedCount
+											: (row.ModuleCount ??
+												row.ModulesCount ??
+												row.moduleCount ??
+												row.modulesCount ??
+												row.TotalModules ??
+												row.totalModules ??
+												row.Modules?.length ??
+												row.modules?.length ??
+												0)}
 								{@const isExpanded = expandedCourses[row.id]}
 								<tr class={isExpanded ? 'bg-gray-300 hover:!bg-gray-300' : ''}>
 									<td>
@@ -677,7 +604,7 @@
 										<Tooltip text={row.Name || 'Not specified'}>
 											<button
 												onclick={(e) => toggleCourseModules(row.id, e)}
-												class="hover:underline cursor-pointer text-left flex items-center gap-2"
+												class="flex cursor-pointer items-center gap-2 text-left hover:underline"
 											>
 												<Icon
 													icon={expandedCourses[row.id] ? 'mdi:chevron-down' : 'mdi:chevron-right'}
@@ -710,7 +637,7 @@
 
 									<td>
 										<div class="flex items-center justify-end gap-2">
-											<span class="text-gray-700 text-sm">Modules ({moduleCount})</span>
+											<span class="text-sm text-gray-700">Modules ({moduleCount})</span>
 											<Button
 												href={moduleCreateRoute(row.id)}
 												variant="icon"
@@ -748,7 +675,11 @@
 									{@const hasModules = courseModulesList && courseModulesList.length > 0}
 									{@const isLoading = loadingModules[row.id]}
 									<tr>
-										<td colspan="6" class="bg-gray-300 p-4" style="position: relative; overflow: visible;">
+										<td
+											colspan="6"
+											class="bg-gray-300 p-4"
+											style="position: relative; overflow: visible;"
+										>
 											{#if isLoading}
 												<div class="flex items-center gap-2 text-gray-500">
 													<Icon icon="svg-spinners:ring-resize" class="inline" width="20" />
@@ -759,12 +690,14 @@
 													modules={courseModulesList}
 													moduleView={(moduleId) => moduleViewRoute(row.id, moduleId)}
 													moduleEdit={(moduleId) => moduleEditRoute(row.id, moduleId)}
-													onModuleDelete={(moduleId, courseId) => handleModuleDeleteClick(moduleId, courseId || row.id)}
+													onModuleDelete={(moduleId, courseId) =>
+														handleModuleDeleteClick(moduleId, courseId || row.id)}
 													bind:expandedModules
 													bind:moduleContents
 													bind:loadingContents
 													bind:moduleContentCounts
-													onModuleExpand={(moduleId, event) => toggleModuleContents(moduleId, row.id, event)}
+													onModuleExpand={(moduleId, event) =>
+														toggleModuleContents(moduleId, row.id, event)}
 													contentView={contentViewRoute}
 													contentEdit={contentEditRoute}
 													contentCreate={contentCreateRoute}

@@ -18,14 +18,6 @@
 	let debounceTimeout;
 	let isLoading = $state(false);
 	
-	const initialContents = data.contents?.Items || data.contents || [];
-	let contents = $state(Array.isArray(initialContents) ? initialContents : []);
-	let retrivedContents = $derived(contents);
-	let openDeleteModal = $state(false);
-	let idToBeDeleted = $state(null);
-	let isDeleting = $state(false);
-	let searchKeyword = $state(undefined);
-
 	const userId = page.params.userId;
 	const courseId = page.params.courseId;
 	const moduleId = page.params.moduleId;
@@ -43,10 +35,20 @@
 	];
 
 	let title = $state(undefined);
+	let openDeleteModal = $state(false);
+	let idToBeDeleted = $state(null);
+	let isDeleting = $state(false);
+	let searchKeyword = $state(undefined);
 
 	const initialContentData = data.contents;
+	const initialContents = initialContentData?.Items || [];
 	const initialTotalCount = initialContentData?.TotalCount || 0;
 	
+	let contents = $state(Array.isArray(initialContents) ? initialContents.map((item, index) => ({
+		...item,
+		index: index + 1
+	})) : []);
+	let retrivedContents = $derived(contents);
 	let totalContentsCount = $state(initialTotalCount);
 	let isSortingTitle = $state(false);
 	let sortBy = $state('Title');
@@ -78,17 +80,12 @@
 				headers: { 'content-type': 'application/json' }
 			});
 			const searchResult = await res.json();
-			const contentData = searchResult.Data?.CourseContents || searchResult.Data?.Contents;
-			if (!contentData) {
-				contents = [];
-				totalContentsCount = 0;
-				paginationSettings.size = 0;
-				return;
-			}
-			totalContentsCount = contentData.TotalCount || 0;
+			const courseContentRecords = searchResult?.Data?.CourseContentRecords;
+			
+			totalContentsCount = courseContentRecords?.TotalCount;
 			paginationSettings.size = totalContentsCount;
 
-			contents = (contentData.Items || []).map((item, index) => ({
+			contents = (courseContentRecords?.Items || []).map((item, index) => ({
 				...item,
 				index: index + 1
 			}));

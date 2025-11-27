@@ -1,5 +1,5 @@
 export interface ContentCreateModel {
-	ModuleId?: string;
+	CourseModuleId?: string;
 	Title: string;
 	Description?: string;
 	Sequence?: number;
@@ -7,7 +7,7 @@ export interface ContentCreateModel {
 	ResourceLink?: string;
 	ImageUrl?: string;
 	DurationInMins?: number;
-	learningPathId?: string;
+	LearningPathId?: string;
 	// ActionTemplateId: string;
 }
 

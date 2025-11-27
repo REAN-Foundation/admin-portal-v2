@@ -14,18 +14,20 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
         orderBy: "Title",
         order: "ascending",
         itemsPerPage: 10,
-        moduleId: moduleId
+        courseModuleId: moduleId
     });
     
-    console.log('Search Parameters:', searchFilters);
     const response = await searchContents(sessionId, searchFilters);
-    
-    // Handle both CourseContents and Contents response structures
-    const contentsData = response?.Data?.CourseContentRecords
-    console.log("contents==>", contentsData);
+    const contentsData = response?.Data?.CourseContentRecords || {
+        Items: [],
+        TotalCount: 0,
+        RetrievedCount: 0,
+        PageIndex: 0,
+        ItemsPerPage: 0
+    };
 
     return {
-        contents: contentsData || { Items: [], TotalCount: 0 },
+        contents: contentsData,
         sessionId,
         message: response?.Message || 'Contents retrieved successfully',
         title:'Educational-Learning Journey-Courses-Modules-Contents'

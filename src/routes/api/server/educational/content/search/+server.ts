@@ -15,7 +15,7 @@ export const GET = async (event: RequestEvent) => {
         const searchFilters = createSearchFilters(event, {
             title: event.url.searchParams.get("title") ?? undefined,
             contentType: event.url.searchParams.get("contentType") ?? undefined,
-            moduleId: event.url.searchParams.get("moduleId") ?? undefined,
+            courseModuleId: event.url.searchParams.get("moduleId") ?? undefined,
         });
 
         console.log("Search Parameters:", searchFilters);

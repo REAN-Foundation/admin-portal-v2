@@ -20,7 +20,7 @@ export const POST = async (event: RequestEvent) => {
 
         console.log("data", data);
         
-        const moduleId = data.ModuleId;
+        const moduleId = data.CourseModuleId;
         if (!moduleId) {
             return ResponseHandler.handleError(400, null, new Error("ModuleId is required."));
         }
@@ -39,7 +39,7 @@ export const POST = async (event: RequestEvent) => {
             sessionId,
             data.Title,
             data.ContentType,
-            moduleId,
+            data.CourseModuleId,
             data.Description,
             data.Sequence,
             data.ResourceLink,

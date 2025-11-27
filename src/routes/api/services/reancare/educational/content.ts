@@ -16,7 +16,7 @@ export const createContent = async (
 	durationInMins?: number,
 ) => {
 	const body = {
-		ModuleId: moduleId,
+		CourseModuleId: moduleId,
 		Title: title,
 		ContentType: contentType,
 		Description: description ?? null,
@@ -57,8 +57,9 @@ export const searchContents = async (sessionId: string, searchParams?) => {
 			searchString = '?';
 			const params = [];
 			for (const key of keys) {
-				if (searchParams[key]) {
-					const param = `${key}=${searchParams[key]}`;
+				const value = searchParams[key];
+				if (value !== null && value !== undefined && value !== '') {
+					const param = `${key}=${encodeURIComponent(value)}`;
 					params.push(param);
 				}
 			}

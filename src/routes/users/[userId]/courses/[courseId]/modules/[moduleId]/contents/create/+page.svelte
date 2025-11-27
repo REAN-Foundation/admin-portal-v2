@@ -126,7 +126,7 @@
 			}
 
 			const contentCreateModel: ContentCreateModel = {
-				ModuleId: currentModuleId,
+				CourseModuleId: currentModuleId,
 				Title: title,
 				ContentType: contentType,
 				Description: description,

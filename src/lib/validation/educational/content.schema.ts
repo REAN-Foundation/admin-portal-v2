@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const createOrUpdateSchema = z.object({
-	ModuleId: z
+	CourseModuleId: z
 		.string({
 			required_error: 'ModuleId is required.',
 			invalid_type_error: 'ModuleId must be a string.'
@@ -45,7 +45,7 @@ export const createOrUpdateSchema = z.object({
 		})
 		.positive({ message: 'DurationInMins must be a positive number.' })
 		.optional(),
-	learningPathId: z
+	LearningPathId: z
 			.string()
 			.min(1, { message: 'CourseId cannot be empty.' })
 			.optional()
