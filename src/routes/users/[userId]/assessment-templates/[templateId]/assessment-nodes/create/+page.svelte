@@ -44,17 +44,13 @@
 	let keywordsStr: string = $state('');
 
 	let selectedNodeType = $state('Question');
-	let selectedQueryType = $state('Text');
+	let selectedQueryType = $derived(queryType || 'Text');
 
 	let optionArray = $state([]);
 
 	const onSelectNodeType = (val: Event) => {
 		selectedNodeType = (val.target as HTMLSelectElement).value;
 		console.log('val', (val.target as HTMLSelectElement).value);
-	};
-
-	const onSelectQueryResponseType = (val: Event) => {
-		selectedQueryType = (val.target as HTMLSelectElement).value;
 	};
 
 	const userId = page.params.userId;
@@ -129,6 +125,38 @@
 		return lastPart.replace(/([a-z])([A-Z])/g, '$1 $2'); // adds space before capital letters
 	}
 
+	function isBiometricField(identifier: string | undefined): boolean {
+		if (!identifier) return false;
+		return identifier.startsWith('Clinical:Vitals:') || identifier.startsWith('Clinical:LabRecords:');
+	}
+
+	const filteredQueryResponseTypes = $derived(() => {
+		if (!queryResponseTypes) return [];
+		
+		if (isBiometricField(fieldIdentifier)) {
+			const filtered = queryResponseTypes.filter(type => 
+				type === 'Integer' || type === 'Float'
+			);
+
+			return filtered.sort((a, b) => {
+				if (a === 'Integer' && b === 'Float') return -1;
+				if (a === 'Float' && b === 'Integer') return 1;
+				return 0;
+			});
+		}
+
+		return queryResponseTypes;
+	});
+
+	$effect(() => {
+		if (fieldIdentifier && queryType) {
+			const validTypes = filteredQueryResponseTypes();
+			if (!validTypes.includes(queryType)) {
+				queryType = validTypes.length > 0 ? validTypes[0] : undefined;
+			}
+		}
+	});
+
 	const handleSubmit = async (event: Event) => {
 		try {
 			event.preventDefault();
@@ -160,7 +188,7 @@
 				Title: title,
 				Description: description,
 				Sequence: sequenceValue,
-				QueryType: selectedQueryType,
+				QueryType: queryType,
 				Score: resolutionScore,
 				ProviderAssessmentCode: providerAssessmentCode,
 				ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce,
@@ -381,30 +409,7 @@
 					</td>
 				</tr>
 				{#if selectedNodeType === 'Question'}
-					<tr class="tables-row">
-						<td class="table-label align-top"
-							>Query Response Type <span class=" text-red-600">*</span></td
-						>
-						<td class="table-data">
-							<div class="relative">
-							<select
-								id="mySelect"
-								name="queryType"
-								class="select{errors?.queryType ? 'input-text-error' : ''}"
-								placeholder="Select query type here..."
-								onchange={(val) => onSelectQueryResponseType(val)}
-							>
-								{#each queryResponseTypes as responseType}
-									<option value={responseType}>{responseType}</option>
-								{/each}
-							</select>
-							<div class="select-icon-container">
-								<Icon icon="mdi:chevron-down" class="select-icon" />
-							</div>
-						</div>
-						</td>
-					</tr>
-					<tr class="tables-row">
+						<tr class="tables-row">
 						<td class="table-label">Field Identifier</td>
 						<td class="table-data">
 							<div class="relative">
@@ -446,6 +451,34 @@
 							{/if}
 						</td>
 					</tr>
+					<tr class="tables-row">
+						<td class="table-label align-top"
+							>Query Response Type <span class=" text-red-600">*</span></td
+						>
+						<td class="table-data">
+							<div class="relative">
+							<select
+								id="mySelect"
+								name="queryType"
+								class="select{errors?.queryType ? 'input-text-error' : ''}"
+								placeholder="Select query type here..."
+								bind:value={queryType}
+							>
+								<option value="" disabled>Select query type here...</option>
+								{#each filteredQueryResponseTypes() as responseType}
+									<option value={responseType}>{responseType}</option>
+								{/each}
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
+						{#if errors?.QueryType}
+							<p class="text-error">{errors?.QueryType}</p>
+						{/if}
+						</td>
+					</tr>
+			
 					{#if $scoringApplicableCondition === true}
 						{#if selectedQueryType === 'Single Choice Selection' || selectedQueryType === 'Multi Choice Selection'}
 							<tr class="tables-row">
