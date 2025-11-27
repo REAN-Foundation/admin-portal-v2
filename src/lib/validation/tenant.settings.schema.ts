@@ -394,6 +394,73 @@ export const ConsentSettingsSchema = z.object({
         .optional(),
 });
 
+const MarketingMaterialStylingSchema = z.object({
+    primary: z.string().optional(),
+    secondary: z.string().optional(),
+    accent: z.string().optional(),
+    lightBg: z.string().optional(),
+    panel: z.string().optional(),
+    muted: z.string().optional(),
+    text: z.string().optional(),
+    headingFont: z.string().optional(),
+    bodyFont: z.string().optional(),
+    pageWidth: z.string().optional(),
+    pageHeight: z.string().optional(),
+    userInterfaceWidth: z.string().optional(),
+    userInteractionWidth: z.string().optional(),
+    qrSize: z.string().optional(),
+});
+
+const MarketingMaterialBenefitItemSchema = z.union([
+    z.string(),
+    z.object({
+        title: z.string().optional(),
+        description: z.string().optional(),
+    })
+]);
+
+const MarketingMaterialContentSchema = z.object({
+    header: z.object({
+        mainTitle: z.string().optional(),
+        subtitle: z.string().optional(),
+    }).optional(),
+    introduction: z.object({
+        introParagraph: z.string().optional(),
+        problemStatement: z.string().optional(),
+    }).optional(),
+    benefits: z.object({
+        title: z.string().optional(),
+        items: z.array(MarketingMaterialBenefitItemSchema).optional(),
+    }).optional(),
+    userInterface: z.object({
+        heading: z.string().optional(),
+        paragraph: z.string().optional(),
+    }).optional(),
+    footer: z.object({
+        ctaHeading: z.string().optional(),
+        ctaDescription: z.string().optional(),
+        qrInstruction: z.string().optional(),
+    }).optional(),
+});
+
+const MarketingMaterialImagesSchema = z.object({
+    TitleImage: z.string().optional(),
+    UserInterfaceImage: z.string().optional(),
+});
+
+const MarketingMaterialQRcodeSchema = z.object({
+    resourceId: z.string().optional(),
+    whatsappNumber: z.string().optional(),
+    url: z.string().optional(),
+});
+
+export const MarketingMaterialRequestSchema = z.object({
+    Styling: MarketingMaterialStylingSchema.optional(),
+    Content: MarketingMaterialContentSchema.optional(),
+    Images: MarketingMaterialImagesSchema.optional(),
+    Logos: z.array(z.string()).optional(),
+    QRcode: MarketingMaterialQRcodeSchema.optional(),
+});
 export const CustomSettingSchema = z.object({
     Name: z.string({
         required_error: "Name is required",
