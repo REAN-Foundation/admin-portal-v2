@@ -5,8 +5,8 @@
 	import Image from '$lib/components/image.svelte';
 	import type { PageServerData } from './$types';
 	import { toastMessage } from '$lib/components/toast/toast.store';
-	import type { ContentUpdateModel } from '$lib/types/educational/content';
-	import { createOrUpdateSchema } from '$lib/validation/educational/content.schema';
+	import type { ContentUpdateModel } from '$lib/types/lms/content';
+	import { createOrUpdateSchema } from '$lib/validation/lms/content.schema';
 	import { goto } from '$app/navigation';
 	import Button from '$lib/components/button/button.svelte';
 	import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema';

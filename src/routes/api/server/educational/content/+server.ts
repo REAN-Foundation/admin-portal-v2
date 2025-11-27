@@ -1,7 +1,7 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
 import type { RequestEvent } from "@sveltejs/kit";
-import type { ContentCreateModel } from "$lib/types/educational/content";
-import { createOrUpdateSchema } from "$lib/validation/educational/content.schema";
+import type { ContentCreateModel } from "$lib/types/lms/content";
+import { createOrUpdateSchema } from "$lib/validation/lms/content.schema";
 import { createContent } from "$routes/api/services/reancare/educational/content";
 
 ///////////////////////////////////////////////////////////////////////////////

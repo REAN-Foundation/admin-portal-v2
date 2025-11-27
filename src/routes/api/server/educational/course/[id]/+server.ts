@@ -1,8 +1,8 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
 import { uuidSchema } from "$lib/validation/common.schema";
 import type { RequestEvent } from "@sveltejs/kit";
-import type { CourseUpdateModel } from "$lib/types/educational/course";
-import { createOrUpdateSchema } from "$lib/validation/educational/course.schema";
+import type { CourseUpdateModel } from "$lib/types/lms/course";
+import { createOrUpdateSchema } from "$lib/validation/lms/course.schema";
 import { deleteCourse, getCourseById, updateCourse } from "$routes/api/services/reancare/educational/course";
 
 ///////////////////////////////////////////////////////////////////////////////

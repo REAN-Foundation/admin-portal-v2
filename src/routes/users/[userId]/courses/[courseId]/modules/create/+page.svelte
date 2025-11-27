@@ -3,9 +3,9 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import Image from '$lib/components/image.svelte';
-	import { createOrUpdateSchema } from '$lib/validation/educational/modules.schema.js';
+	import { createOrUpdateSchema } from '$lib/validation/lms/modules.schema.js';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
-	import type { ModuleCreateModel } from '$lib/types/educational/modules.js';
+	import type { ModuleCreateModel } from '$lib/types/lms/modules.js';
 	import { goto } from '$app/navigation';
 	import Button from '$lib/components/button/button.svelte';
 	import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema.js';
