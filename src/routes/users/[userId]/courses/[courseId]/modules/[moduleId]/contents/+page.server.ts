@@ -21,7 +21,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     const response = await searchContents(sessionId, searchFilters);
     
     // Handle both CourseContents and Contents response structures
-    const contentsData = response?.Data?.CourseContents || response?.Data?.Contents;
+    const contentsData = response?.Data?.CourseContentRecords
     console.log("contents==>", contentsData);
 
     return {

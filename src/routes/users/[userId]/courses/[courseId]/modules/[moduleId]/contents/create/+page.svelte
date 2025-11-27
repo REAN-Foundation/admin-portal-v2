@@ -21,6 +21,7 @@
 	let sequence = $state(undefined);
 	let resourceLink = $state(undefined);
 	let imageResourceId = $state(undefined);
+	let actionTemplateId = $state(undefined);
 	let fileName = $state('');
 	const formData = new FormData();
 	let contentImage;
@@ -136,6 +137,7 @@
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(contentCreateModel);
+			console.log('validationResult*********', validationResult);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
