@@ -10,7 +10,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     const moduleId = event.params.moduleId;
     const response = await getModuleById(sessionId, moduleId);
 
-    const module = response?.Data?.CourseModule;
+    const module = response?.Data;
     
     if (!module) {
         return {
@@ -21,7 +21,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     }
 
     const imageResourceId = module?.ImageResourceId || module?.ImageUrl;
-    const id = module?.id || response?.Data?.Module?.id;
+    const id = module?.id;
 
     if (imageResourceId) {
         module['ImageResourceUrl'] =

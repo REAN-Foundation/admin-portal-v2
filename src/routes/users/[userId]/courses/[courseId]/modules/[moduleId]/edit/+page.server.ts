@@ -10,7 +10,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     const moduleId = event.params.moduleId;
     const response = await getModuleById(sessionId, moduleId);
 
-    const module = response?.Data?.CourseModule;
+    const module = response?.Data;
     
     if (!module) {
         return {
@@ -20,13 +20,23 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
         };
     }
 
-    const imageResourceId = module?.ImageResourceId || module?.ImageUrl;
-    const id = module?.id || response?.Data?.Module?.id;
+    const imageResourceId = module?.ImageResourceId;
+    const imageUrl = module?.ImageUrl;
+    const id = module?.id;
 
-    if (imageResourceId) {
+    // Check if ImageUrl is a UUID (resource ID) or already a full URL
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const isImageUrlUuid = imageUrl && uuidRegex.test(imageUrl);
+
+    if (imageResourceId || isImageUrlUuid) {
+        const resourceId = imageResourceId || imageUrl;
         module['ImageUrl'] =
-            BACKEND_API_URL + `/file-resources/${imageResourceId}/download?disposition=inline`;
-        module['ImageResourceId'] = imageResourceId;
+            BACKEND_API_URL + `/file-resources/${resourceId}/download?disposition=inline`;
+        module['ImageResourceId'] = resourceId;
+    } else if (imageUrl) {
+        // ImageUrl is already a full URL, use it as-is
+        module['ImageUrl'] = imageUrl;
+        module['ImageResourceId'] = null;
     } else {
         module['ImageUrl'] = null;
         module['ImageResourceId'] = null;

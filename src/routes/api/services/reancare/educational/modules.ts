@@ -12,7 +12,7 @@ export const createModule = async (
 	imageUrl?: string,
 	sequence?: number,
 	courseId?: string,
-	learningPathId?: string,
+	// learningPathId?: string,
 ) => {
 	const body = {
 		Name: name,
@@ -21,7 +21,7 @@ export const createModule = async (
 		ImageUrl: imageUrl ? imageUrl : '',
 		Sequence: sequence ? sequence : '',
 		CourseId: courseId ?? null,
-		LearningPathId: '6683dcee-a315-460c-ad99-9d2b055a7b9d',
+		LearningPathId: '6f91d80b-8e62-4182-b34f-886df053edea',
 	};
 	const url = LMS_BACKEND_API_URL + '/course-modules';
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
@@ -54,8 +54,11 @@ export const searchModules = async (sessionId: string, searchParams?) => {
 			searchString = '?';
 			const params = [];
 			for (const key of keys) {
-				if (searchParams[key]) {
-					const param = `${key}=${searchParams[key]}`;
+				const value = searchParams[key];
+				// Include the parameter if it's not null, undefined, or empty string
+				// This ensures courseId and other filters are always included when provided
+				if (value !== null && value !== undefined && value !== '') {
+					const param = `${key}=${encodeURIComponent(value)}`;
 					params.push(param);
 				}
 			}
@@ -84,7 +87,6 @@ export const updateModule = async (
 	sequence?: number
 ) => {
 	const body = {
-		moduleId,
 		Name: name,
 		Description: description ?? null,
 		DurationInMins: durationInMins ?? null,

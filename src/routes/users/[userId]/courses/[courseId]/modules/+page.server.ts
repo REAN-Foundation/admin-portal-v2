@@ -21,7 +21,13 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     console.log('CourseId from params:', courseId);
     const response = await searchModules(sessionId, searchFilters);
 
-    const modules = response?.Data|| [];
+    const modules = response?.Data?.CourseModuleRecords || {
+        Items: [],
+        TotalCount: 0,
+        RetrievedCount: 0,
+        PageIndex: 0,
+        ItemsPerPage: 0
+    };
 	console.log("modules==>",modules);
     
 

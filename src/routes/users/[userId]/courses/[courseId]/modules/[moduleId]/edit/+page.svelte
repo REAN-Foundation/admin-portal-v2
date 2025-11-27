@@ -20,8 +20,8 @@
 	let imageUrl = $state(data.module?.ImageUrl ?? undefined);
 	let imageResourceId = $state(data.module?.ImageResourceId ?? undefined);
 	let moduleImage = $state();
-	let durationInMins = $state(data.module?.DurationInMins?.toString());
-	let sequence = $state(data.module?.Sequence?.toString());
+	let durationInMins = $state(data.module?.DurationInMins != null ? data.module.DurationInMins.toString() : '');
+	let sequence = $state(data.module?.Sequence != null ? data.module.Sequence.toString() : '');
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let previewUrl = $state<string | undefined>(undefined);
@@ -52,8 +52,8 @@
 		description = data?.module?.Description || undefined;
 		imageUrl = data?.module?.ImageUrl || undefined;
 		imageResourceId = data?.module?.ImageResourceId || undefined;
-		durationInMins = data?.module?.DurationInMins?.toString();
-		sequence = data?.module?.Sequence?.toString();
+		durationInMins = data?.module?.DurationInMins != null ? data.module.DurationInMins.toString() : '';
+		sequence = data?.module?.Sequence != null ? data.module.Sequence.toString() : '';
 		errors = {};
 		if (previewUrl) {
 			URL.revokeObjectURL(previewUrl);

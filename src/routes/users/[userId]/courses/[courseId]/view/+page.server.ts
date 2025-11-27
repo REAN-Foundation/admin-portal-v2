@@ -32,7 +32,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
             order: "ascending"
         });
         
-        const modulesData = modulesResponse?.Data?.CourseModules;
+        const modulesData = modulesResponse?.Data?.CourseModuleRecords;
         if (modulesData) {
             if (modulesData.Items && Array.isArray(modulesData.Items)) {
                 modules = modulesData.Items;

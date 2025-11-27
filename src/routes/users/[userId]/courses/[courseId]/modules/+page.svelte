@@ -79,11 +79,11 @@
 			});
 			const searchResult = await res.json();
 			console.log('searchResult', searchResult);
-			const courseModules = searchResult.Data.CourseModules;
-			totalModulesCount = courseModules.TotalCount;
+			const courseModuleRecords = searchResult.Data.CourseModuleRecords;
+			totalModulesCount = courseModuleRecords.TotalCount;
 			paginationSettings.size = totalModulesCount;
 
-			modules = courseModules.Items.map((item, index) => ({
+			modules = courseModuleRecords.Items.map((item, index) => ({
 				...item,
 				index: index + 1
 			}));

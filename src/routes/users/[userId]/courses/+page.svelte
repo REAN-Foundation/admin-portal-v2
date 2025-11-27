@@ -282,13 +282,23 @@
 			let hasMore = true;
 			const itemsPerPage = 100;
 			
+			// Validate courseId
+			if (!courseId) {
+				console.error('fetchCourseModules: courseId is required');
+				courseModules = { ...courseModules, [courseId]: [] };
+				courseModuleCounts = { ...courseModuleCounts, [courseId]: 0 };
+				return;
+			}
+			
 			while (hasMore) {
 				let url = `/api/server/educational/modules/search?`;
 				url += `itemsPerPage=${itemsPerPage}`;
 				url += `&pageIndex=${pageIndex}`;
 				url += `&sortBy=Name`;
 				url += `&sortOrder=ascending`;
-				url += `&courseId=${courseId}`;
+				url += `&courseId=${encodeURIComponent(courseId)}`;
+
+				console.log(`Fetching modules for courseId: ${courseId}, URL: ${url}`);
 
 				const res = await fetch(url, {
 					method: 'GET',
@@ -303,23 +313,32 @@
 				}
 				
 				const searchResult = await res.json();
+				console.log(`Modules response for courseId ${courseId}:`, searchResult);
 				let modulesList: any[] = [];
 				
-				// Match the exact pattern from modules page: searchResult.Data.CourseModules
-				if (searchResult.Data && searchResult.Data.CourseModules) {
-					const courseModulesData = searchResult.Data.CourseModules;
+				// Match the API response structure: searchResult.Data.CourseModuleRecords
+				if (searchResult.Data && searchResult.Data.CourseModuleRecords) {
+					const courseModuleRecords = searchResult.Data.CourseModuleRecords;
 					
 					// Check for Items array (standard structure)
-					if (courseModulesData.Items && Array.isArray(courseModulesData.Items)) {
-						modulesList = courseModulesData.Items;
+					if (courseModuleRecords.Items && Array.isArray(courseModuleRecords.Items)) {
+						modulesList = courseModuleRecords.Items;
+						// Verify modules belong to this course
+						modulesList = modulesList.filter(module => 
+							module.CourseId === courseId || module.courseId === courseId
+						);
+						console.log(`Filtered modules for courseId ${courseId}:`, modulesList.length, 'modules');
+						
 						// Check if there are more pages
-						const totalCount = courseModulesData.TotalCount || 0;
+						const totalCount = courseModuleRecords.TotalCount || 0;
 						const currentCount = allModules.length + modulesList.length;
 						hasMore = currentCount < totalCount && modulesList.length === itemsPerPage;
 					}
-					// If CourseModules is directly an array
-					else if (Array.isArray(courseModulesData)) {
-						modulesList = courseModulesData;
+					// If CourseModuleRecords is directly an array (fallback)
+					else if (Array.isArray(courseModuleRecords)) {
+						modulesList = courseModuleRecords.filter(module => 
+							module.CourseId === courseId || module.courseId === courseId
+						);
 						hasMore = modulesList.length === itemsPerPage;
 					}
 				}
@@ -334,12 +353,15 @@
 				}
 			}
 			
-			// Update state reactively - store all modules for this course
+			console.log(`Total modules fetched for courseId ${courseId}:`, allModules.length);
+			
+			// Update state reactively - store all modules for this course ONLY
 			// Ensure each module has the courseId for content navigation
 			const modulesWithCourseId = allModules.map(module => ({
 				...module,
 				CourseId: courseId
 			}));
+			// Only update this specific course's modules, don't merge with others
 			courseModules = { ...courseModules, [courseId]: modulesWithCourseId };
 			// Update the count as well
 			courseModuleCounts = { ...courseModuleCounts, [courseId]: allModules.length };
