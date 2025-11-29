@@ -146,7 +146,7 @@
 				return;
 			}
 
-			const res = await fetch(`/api/server/educational/course/${courseId}`, {
+			const res = await fetch(`/api/server/lms/course/${courseId}`, {
 				method: 'PUT',
 				body: JSON.stringify(courseUpdateModel),
 				headers: { 'content-type': 'application/json' }

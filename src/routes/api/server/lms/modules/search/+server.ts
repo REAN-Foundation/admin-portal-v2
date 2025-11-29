@@ -1,7 +1,7 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
 import type { RequestEvent } from "@sveltejs/kit";
 import { createSearchFilters } from '$lib/utils/search.utils';
-import { searchContents } from "$routes/api/services/reancare/educational/content";
+import { searchModules } from "$routes/api/services/lms/modules";
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -13,17 +13,17 @@ export const GET = async (event: RequestEvent) => {
         }
 
         const searchFilters = createSearchFilters(event, {
-            title: event.url.searchParams.get("title") ?? undefined,
-            contentType: event.url.searchParams.get("contentType") ?? undefined,
-            courseModuleId: event.url.searchParams.get("moduleId") ?? undefined,
+            name: event.url.searchParams.get("name") ?? undefined,
+            courseId: event.url.searchParams.get("courseId") ?? undefined,
+            durationInMins: event.url.searchParams.get("durationInMins") ? parseFloat(event.url.searchParams.get("durationInMins")) : undefined,
         });
 
         console.log("Search Parameters:", searchFilters);
-        const response = await searchContents(sessionId, searchFilters);
+        const response = await searchModules(sessionId, searchFilters);
         return ResponseHandler.success(response);
 
     } catch (error) {
-        console.error("Error retrieving contents:", error);
+        console.error("Error retrieving modules:", error);
         return ResponseHandler.handleError(500, null, error);
     }
 };

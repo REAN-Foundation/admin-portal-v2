@@ -1,5 +1,5 @@
-import { getCourseById } from '$routes/api/services/reancare/educational/course';
-import { searchModules } from '$routes/api/services/reancare/educational/modules';
+import { getCourseById } from '$routes/api/services/lms/course';
+import { searchModules } from '$routes/api/services/lms/modules';
 import type { PageServerLoad } from './$types';
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import { BACKEND_API_URL } from '$env/static/private';

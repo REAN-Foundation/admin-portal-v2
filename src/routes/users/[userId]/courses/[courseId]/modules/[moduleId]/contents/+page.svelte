@@ -67,7 +67,7 @@
 	async function searchContent(model) {
 		try {
 			isLoading = true;
-			let url = `/api/server/educational/content/search?`;
+			let url = `/api/server/lms/content/search?`;
 			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
@@ -155,7 +155,7 @@
 	}
 
 	const handleContentDelete = async (id) => {
-		const response = await fetch(`/api/server/educational/content/${id}`, {
+		const response = await fetch(`/api/server/lms/content/${id}`, {
 			method: 'DELETE',
 			headers: { 'content-type': 'application/json' }
 		});

@@ -1,14 +1,14 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
 import type { RequestEvent } from "@sveltejs/kit";
-import type { CourseCreateModel } from "$lib/types/lms/course";
-import { createOrUpdateSchema } from "$lib/validation/lms/course.schema";
-import { createCourse } from "$routes/api/services/reancare/educational/course";
+import type { ModuleCreateModel } from "$lib/types/lms/modules";
+import { createOrUpdateSchema } from "$lib/validation/lms/modules.schema";
+import { createModule } from "$routes/api/services/lms/modules";
 
 ///////////////////////////////////////////////////////////////////////////////
 
 export const POST = async (event: RequestEvent) => {
     try {
-        console.log("Inside course server POST endpoints");
+        console.log("Inside module server POST endpoints");
         const sessionId = event.locals?.sessionUser?.sessionId;
 
         if (!sessionId) {
@@ -16,7 +16,7 @@ export const POST = async (event: RequestEvent) => {
         }
 
         const request = event.request;
-        const data: CourseCreateModel = await request.json();
+        const data: ModuleCreateModel = await request.json();
 
         console.log("data", data);
         const validationResult = createOrUpdateSchema.safeParse(data);
@@ -29,18 +29,19 @@ export const POST = async (event: RequestEvent) => {
             });
         }
 
-        const response = await createCourse(
+        const response = await createModule(
             sessionId,
             data.Name,
             data.Description,
-            data.ImageResourceId,
-            data.DurationInDays,
-            data.TenantId
+            data.DurationInMins,
+            data.ImageUrl,
+            data.Sequence,
+            data.CourseId
         );
 
         return ResponseHandler.success(response);
     } catch (error) {
-        console.error("Error creating course:", error);
+        console.error("Error creating module:", error);
         return ResponseHandler.handleError(500, null, error);
     }
 };

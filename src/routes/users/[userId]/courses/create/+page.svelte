@@ -128,7 +128,7 @@
 
 			console.log('courseCreateModel after validation', validationResult);
 
-			const res = await fetch(`/api/server/educational/course`, {
+			const res = await fetch(`/api/server/lms/course`, {
 				method: 'POST',
 				body: JSON.stringify(courseCreateModel),
 				headers: { 'content-type': 'application/json' }

@@ -1,6 +1,6 @@
 import { LMS_BACKEND_API_URL,API_CLIENT_INTERNAL_KEY } from '$env/static/private';
 import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
-import { del, get, post, put } from '../common.reancare';
+import { del, get, post, put } from './common.lms';
 
 ///////////////////////////////////////////////////////////////////////////////
 

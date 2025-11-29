@@ -149,7 +149,7 @@
 				return;
 			}
 
-			const res = await fetch(`/api/server/educational/modules/${moduleId}`, {
+			const res = await fetch(`/api/server/lms/modules/${moduleId}`, {
 				method: 'PUT',
 				body: JSON.stringify(moduleUpdateModel),
 				headers: { 'content-type': 'application/json' }

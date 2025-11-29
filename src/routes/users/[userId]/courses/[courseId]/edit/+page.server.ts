@@ -1,4 +1,4 @@
-import { getCourseById } from '$routes/api/services/reancare/educational/course';
+import { getCourseById } from '$routes/api/services/lms/course';
 import type { PageServerLoad } from './$types';
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import { BACKEND_API_URL } from '$env/static/private';

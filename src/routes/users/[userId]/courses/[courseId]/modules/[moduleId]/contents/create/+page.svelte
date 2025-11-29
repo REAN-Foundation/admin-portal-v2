@@ -149,7 +149,7 @@
 				return;
 			}
 
-			const res = await fetch(`/api/server/educational/content`, {
+			const res = await fetch(`/api/server/lms/content`, {
 				method: 'POST',
 				body: JSON.stringify(contentCreateModel),
 				headers: { 'content-type': 'application/json' }

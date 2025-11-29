@@ -1,7 +1,7 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { createSearchFilters } from '$lib/utils/search.utils';
-import { searchModules } from '$routes/api/services/reancare/educational/modules';
+import { searchModules } from '$routes/api/services/lms/modules';
 
 ////////////////////////////////////////////////////////////////////////////
 

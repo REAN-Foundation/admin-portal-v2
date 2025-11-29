@@ -1,9 +1,9 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
 import { uuidSchema } from "$lib/validation/common.schema";
 import type { RequestEvent } from "@sveltejs/kit";
-import type { ContentUpdateModel } from "$lib/types/lms/content";
-import { createOrUpdateSchema } from "$lib/validation/lms/content.schema";
-import { deleteContent, getContentById, updateContent } from "$routes/api/services/reancare/educational/content";
+import type { CourseUpdateModel } from "$lib/types/lms/course";
+import { createOrUpdateSchema } from "$lib/validation/lms/course.schema";
+import { deleteCourse, getCourseById, updateCourse } from "$routes/api/services/lms/course";
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -23,14 +23,14 @@ export const DELETE = async (event: RequestEvent) => {
 
         const id = event.params.id;
 
-        const response = await deleteContent(
+        const response = await deleteCourse(
             sessionId,
             id
         );
 
         return ResponseHandler.success(response);
     } catch (error) {
-        console.error('Error deleting content:', error);
+        console.error('Error deleting course:', error);
         return ResponseHandler.handleError(500, null, error);
     }
 };
@@ -52,27 +52,27 @@ export const GET = async (event: RequestEvent) => {
 
         const id = event.params.id;
 
-        const response = await getContentById(sessionId, id);
+        const response = await getCourseById(sessionId, id);
 
         return ResponseHandler.success(response);
     } catch (error) {
-        console.error("Error fetching content:", error);
+        console.error("Error fetching course:", error);
         return ResponseHandler.handleError(500, null, error);
     }
 };
 
 export const PUT = async (event: RequestEvent) => {
     try {
-        console.log("Inside content server PUT endpoints");
+        console.log("Inside course server PUT endpoints");
         const sessionId = event.locals?.sessionUser?.sessionId;
 
         if (!sessionId) {
             return ResponseHandler.handleError(401, null, new Error("Access denied: Invalid session."));
         }
 
-        const contentId = event.params.id;
+        const courseId = event.params.id;
         const request = event.request;
-        const data: ContentUpdateModel = await request.json();
+        const data: CourseUpdateModel = await request.json();
 
         console.log("data", data);
         const validationResult = createOrUpdateSchema.safeParse(data);
@@ -85,21 +85,18 @@ export const PUT = async (event: RequestEvent) => {
             });
         }
 
-        const response = await updateContent(
+        const response = await updateCourse(
             sessionId,
-            contentId,
-            data.Title,
-            data.ContentType,
+            courseId,
+            data.Name,
             data.Description,
-            data.Sequence,
-            data.ResourceLink,
-            data.ImageUrl,
-            data.DurationInMins
+            data.ImageResourceId,
+            data.DurationInDays
         );
 
         return ResponseHandler.success(response);
     } catch (error) {
-        console.error("Error updating contents:", error);
+        console.error("Error updating course:", error);
         return ResponseHandler.handleError(500, null, error);
     }
 };
