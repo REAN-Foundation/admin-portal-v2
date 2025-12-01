@@ -14,7 +14,7 @@
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data } = $props();
-console.log('Marketing Material Page Data:', data);
+	console.log('Marketing Material Page Data:', data);
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
@@ -392,7 +392,287 @@ console.log('Marketing Material Page Data:', data);
 		}
 	};
 
-	const uploadFile = async (file: File, fileType: string, retryCount = 0): Promise<string | null> => {
+	// const uploadFile = async (file: File, fileType: string, retryCount = 0): Promise<string | null> => {
+	// 	try {
+	// 		const uploadFormData = new FormData();
+	// 		uploadFormData.append('file', file);
+	// 		uploadFormData.append('filename', file.name);
+
+	// 		const fileRes = await fetch(`/api/server/file-resources/upload/reancare`, {
+	// 			method: 'POST',
+	// 			body: uploadFormData
+	// 		});
+
+	// 		if (!fileRes.ok) {
+	// 			const errorText = await fileRes.text();
+	// 			let errorMessage = `Upload failed with status ${fileRes.status}`;
+	// 			try {
+	// 				const errorJson = JSON.parse(errorText);
+	// 				errorMessage = errorJson.Message || errorJson.message || errorMessage;
+	// 			} catch {
+	// 				errorMessage = errorText || errorMessage;
+	// 			}
+
+	// 			if (fileRes.status === 500 && retryCount < 2) {
+	// 				await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
+	// 				return uploadFile(file, fileType, retryCount + 1);
+	// 			}
+
+	// 			throw new Error(errorMessage);
+	// 		}
+
+	// 		let fileJson;
+	// 		try {
+	// 			fileJson = await fileRes.json();
+	// 		} catch (jsonError) {
+	// 			throw new Error('Invalid response from server');
+	// 		}
+
+	// 		if (
+	// 			fileJson.Message &&
+	// 			(fileJson.Message.includes('ECONNRESET') || fileJson.Message.includes('ECONNREFUSED'))
+	// 		) {
+	// 			throw new Error('Connection error. Please check your network connection and try again.');
+	// 		}
+
+	// 		if (fileJson.Status === 'success' && fileJson.HttpCode === 201) {
+	// 			const resourceId = fileJson.Data.FileResources[0].id;
+	// 			if (resourceId) {
+	// 				return resourceId;
+	// 			} else {
+	// 				throw new Error(`${fileType} upload failed: No resource ID returned`);
+	// 			}
+	// 		} else {
+	// 			throw new Error(fileJson.Message || `${fileType} upload failed`);
+	// 		}
+	// 	} catch (error) {
+	// 		console.error(`Error uploading ${fileType}:`, error);
+	// 		const errorStr = error instanceof Error ? error.message : String(error);
+	// 		const errorMessage =
+	// 			errorStr.includes('ECONNRESET') || errorStr.includes('ECONNREFUSED')
+	// 				? 'Connection was reset. Please check your network and try again.'
+	// 				: errorStr.includes('fetch') ||
+	// 					  errorStr.includes('network') ||
+	// 					  errorStr.includes('Failed to fetch')
+	// 					? 'Network error. Please check your connection and try again.'
+	// 					: `${fileType} upload failed. Please try again.`;
+	// 		addToast({ message: errorMessage, type: 'error', timeout: 5000 });
+	// 		return null;
+	// 	}
+	// };
+
+	// const handleSubmit = async (event: Event) => {
+	// 	try {
+	// 		event.preventDefault();
+	// 		if (disabled) {
+	// 			addToast({
+	// 				message: 'Nothing to edit !',
+	// 				type: 'warning',
+	// 				timeout: 3000
+	// 			});
+	// 			return;
+	// 		}
+
+	// 		errors = {};
+
+	// 		if (titleImageFile) {
+	// 			const resourceId = await uploadFile(titleImageFile, 'Title image');
+	// 			if (!resourceId) return;
+	// 			Images.TitleImage = resourceId;
+	// 			titleImageFile = null;
+	// 			if (userInterfaceImageFile || logoFiles.some(f => f !== null) || qrCodeFile) {
+	// 				await new Promise(resolve => setTimeout(resolve, 300));
+	// 			}
+	// 		}
+
+	// 		if (userInterfaceImageFile) {
+	// 			const resourceId = await uploadFile(userInterfaceImageFile, 'User interface image');
+	// 			if (!resourceId) return;
+	// 			Images.UserInterfaceImage = resourceId;
+	// 			userInterfaceImageFile = null;
+	// 			if (logoFiles.some(f => f !== null) || qrCodeFile) {
+	// 				await new Promise(resolve => setTimeout(resolve, 300));
+	// 			}
+	// 		}
+
+	// 		const uploadedLogoResourceIds: (string | null)[] = [null, null, null];
+	// 		for (let i = 0; i < 3; i++) {
+	// 			if (logoFiles[i]) {
+	// 				const resourceId = await uploadFile(logoFiles[i]!, `Logo ${i + 1}`);
+	// 				if (!resourceId) {
+	// 					addToast({
+	// 						message: `Failed to upload Logo ${i + 1}. Please try again.`,
+	// 						type: 'error',
+	// 						timeout: 5000
+	// 					});
+	// 					return;
+	// 				}
+	// 				uploadedLogoResourceIds[i] = resourceId;
+	// 				logoFiles[i] = null;
+
+	// 				if (i < 2 && logoFiles[i + 1]) {
+	// 					await new Promise(resolve => setTimeout(resolve, 500));
+	// 				}
+	// 			}
+	// 		}
+
+	// 		if (qrCodeFile) {
+	// 			await new Promise(resolve => setTimeout(resolve, 300));
+	// 			const resourceId = await uploadFile(qrCodeFile, 'QR code');
+	// 			if (!resourceId) {
+	// 				addToast({
+	// 					message: 'Failed to upload QR code. Please try again.',
+	// 					type: 'error',
+	// 					timeout: 5000
+	// 				});
+	// 				return;
+	// 			}
+	// 			QRcode = {
+	// 				...QRcode,
+	// 				resourceId: resourceId
+	// 			};
+	// 			qrCodeFile = null;
+	// 		}
+
+	// 		const finalLogosArray: string[] = [];
+	// 		for (let i = 0; i < 3; i++) {
+	// 			const logoResourceId = uploadedLogoResourceIds[i] || Logos[i];
+	// 			if (logoResourceId && logoResourceId.trim() !== '') {
+	// 				finalLogosArray.push(logoResourceId);
+	// 			}
+	// 		}
+
+	// 		const marketingMaterialModel: MarketingMaterialCreateModel | MarketingMaterialUpdateModel = {
+	// 			Styling,
+	// 			Content: {
+	// 				...Content,
+	// 				benefits: {
+	// 					...Content.benefits,
+	// 					items: Content.benefits.items.map((item) => {
+	// 						if (typeof item === 'string') {
+	// 							return item;
+	// 						}
+	// 						const title = item?.title?.trim() || '';
+	// 						const description = item?.description?.trim() || '';
+	// 						if (title && description) {
+	// 							return `${title}: ${description}`;
+	// 						}
+	// 						return description || title || '';
+	// 					})
+	// 				}
+	// 			},
+	// 			Images: {
+	// 				TitleImage: Images.TitleImage,
+	// 				UserInterfaceImage: Images.UserInterfaceImage
+	// 			},
+	// 			Logos: finalLogosArray,
+	// 			QRcode: {
+	// 				resourceId: QRcode.resourceId || '',
+	// 				whatsappNumber: QRcode.whatsappNumber || '',
+	// 				url: QRcode.url || ''
+	// 			}
+	// 		};
+
+	// 		const validationResult = MarketingMaterialRequestSchema.safeParse(marketingMaterialModel);
+
+	// 		if (!validationResult.success) {
+	// 			errors = Object.fromEntries(
+	// 				Object.entries(validationResult.error.flatten().fieldErrors).map(([key, val]) => [
+	// 					key,
+	// 					val?.[0] || 'This field is required'
+	// 				])
+	// 			);
+	// 			return;
+	// 		}
+
+	// 		const method = isEmpty ? 'POST' : 'PUT';
+
+	// 		try {
+	// 			const res = await fetch(`/api/server/tenants/settings/${tenantId}/marketing-material`, {
+	// 				method: method,
+	// 				body: JSON.stringify(marketingMaterialModel),
+	// 				headers: { 'content-type': 'application/json' }
+	// 			});
+
+	// 			if (!res.ok) {
+	// 				throw new Error(`Request failed with status ${res.status}`);
+	// 			}
+
+	// 			let response;
+	// 			try {
+	// 				response = await res.json();
+	// 			} catch (jsonError) {
+	// 				throw new Error('Invalid response from server');
+	// 			}
+
+	// 			if (
+	// 				response.Message &&
+	// 				(response.Message.includes('ECONNRESET') || response.Message.includes('ECONNREFUSED'))
+	// 			) {
+	// 				addToast({
+	// 					message: 'Connection error. Please check your network connection and try again.',
+	// 					type: 'error',
+	// 					timeout: 5000
+	// 				});
+	// 				return;
+	// 			}
+
+	// 			if (response.HttpCode === 201 || response.HttpCode === 200) {
+	// 				toastMessage(response);
+	// 				edit = false;
+	// 				disabled = true;
+	// 				hasMarketingMaterial = true;
+
+	// 				for (let i = 0; i < 3; i++) {
+	// 					if (uploadedLogoResourceIds[i]) {
+	// 						Logos[i] = uploadedLogoResourceIds[i]!;
+	// 					} else if (i < finalLogosArray.length) {
+	// 						Logos[i] = finalLogosArray[i];
+	// 					} else {
+	// 						Logos[i] = '';
+	// 					}
+	// 				}
+	// 				Logos = [...Logos];
+
+	// 				return;
+	// 			}
+
+	// 			if (response.Errors) {
+	// 				errors = response?.Errors || {};
+	// 			} else {
+	// 				toastMessage(response);
+	// 			}
+	// 		} catch (fetchError) {
+	// 			console.error('Error submitting form:', fetchError);
+	// 			const errorStr = fetchError instanceof Error ? fetchError.message : String(fetchError);
+	// 			const errorMessage =
+	// 				errorStr.includes('ECONNRESET') || errorStr.includes('ECONNREFUSED')
+	// 					? 'Connection error. Please check your network connection and try again.'
+	// 					: errorStr.includes('fetch') ||
+	// 						  errorStr.includes('network') ||
+	// 						  errorStr.includes('Failed to fetch')
+	// 						? 'Network error. Please check your connection and try again.'
+	// 						: 'Failed to submit. Please try again.';
+	// 			addToast({ message: errorMessage, type: 'error', timeout: 5000 });
+	// 			return;
+	// 		}
+	// 	} catch (error) {
+	// 		console.error('Unexpected error in handleSubmit:', error);
+	// 		const errorStr = error instanceof Error ? error.message : String(error);
+	// 		const errorMessage =
+	// 			errorStr.includes('ECONNRESET') || errorStr.includes('ECONNREFUSED')
+	// 				? 'Connection was reset. Please check your network and try again.'
+	// 				: 'An unexpected error occurred. Please try again.';
+	// 		addToast({ message: errorMessage, type: 'error', timeout: 5000 });
+	// 	}
+	// };
+
+	// +page.svelte - Improved handleSubmit function
+
+	const uploadFile = async (
+		file: File,
+		fileType: string
+	): Promise<{ success: boolean; resourceId?: string; error?: string }> => {
 		try {
 			const uploadFormData = new FormData();
 			uploadFormData.append('file', file);
@@ -412,52 +692,37 @@ console.log('Marketing Material Page Data:', data);
 				} catch {
 					errorMessage = errorText || errorMessage;
 				}
-				
-				if (fileRes.status === 500 && retryCount < 2) {
-					await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
-					return uploadFile(file, fileType, retryCount + 1);
-				}
-				
-				throw new Error(errorMessage);
+
+				return { success: false, error: errorMessage };
 			}
 
 			let fileJson;
 			try {
 				fileJson = await fileRes.json();
 			} catch (jsonError) {
-				throw new Error('Invalid response from server');
-			}
-
-			if (
-				fileJson.Message &&
-				(fileJson.Message.includes('ECONNRESET') || fileJson.Message.includes('ECONNREFUSED'))
-			) {
-				throw new Error('Connection error. Please check your network connection and try again.');
+				return { success: false, error: 'Invalid response from server' };
 			}
 
 			if (fileJson.Status === 'success' && fileJson.HttpCode === 201) {
 				const resourceId = fileJson.Data.FileResources[0].id;
 				if (resourceId) {
-					return resourceId;
+					return { success: true, resourceId };
 				} else {
-					throw new Error(`${fileType} upload failed: No resource ID returned`);
+					return { success: false, error: `${fileType} upload failed: No resource ID returned` };
 				}
 			} else {
-				throw new Error(fileJson.Message || `${fileType} upload failed`);
+				return { success: false, error: fileJson.Message || `${fileType} upload failed` };
 			}
 		} catch (error) {
 			console.error(`Error uploading ${fileType}:`, error);
 			const errorStr = error instanceof Error ? error.message : String(error);
-			const errorMessage =
-				errorStr.includes('ECONNRESET') || errorStr.includes('ECONNREFUSED')
-					? 'Connection was reset. Please check your network and try again.'
-					: errorStr.includes('fetch') ||
-						  errorStr.includes('network') ||
-						  errorStr.includes('Failed to fetch')
+			return {
+				success: false,
+				error:
+					errorStr.includes('fetch') || errorStr.includes('network')
 						? 'Network error. Please check your connection and try again.'
-						: `${fileType} upload failed. Please try again.`;
-			addToast({ message: errorMessage, type: 'error', timeout: 5000 });
-			return null;
+						: `${fileType} upload failed. Please try again.`
+			};
 		}
 	};
 
@@ -466,7 +731,7 @@ console.log('Marketing Material Page Data:', data);
 			event.preventDefault();
 			if (disabled) {
 				addToast({
-					message: 'Nothing to edit !',
+					message: 'Nothing to edit!',
 					type: 'warning',
 					timeout: 3000
 				});
@@ -475,73 +740,95 @@ console.log('Marketing Material Page Data:', data);
 
 			errors = {};
 
+			// Step 1: Collect all files that need to be uploaded
+			const filesToUpload: Array<{
+				file: File;
+				type: string;
+				index?: number;
+			}> = [];
+
 			if (titleImageFile) {
-				const resourceId = await uploadFile(titleImageFile, 'Title image');
-				if (!resourceId) return;
-				Images.TitleImage = resourceId;
-				titleImageFile = null;
-				if (userInterfaceImageFile || logoFiles.some(f => f !== null) || qrCodeFile) {
-					await new Promise(resolve => setTimeout(resolve, 300));
-				}
+				filesToUpload.push({ file: titleImageFile, type: 'Title image' });
 			}
-
 			if (userInterfaceImageFile) {
-				const resourceId = await uploadFile(userInterfaceImageFile, 'User interface image');
-				if (!resourceId) return;
-				Images.UserInterfaceImage = resourceId;
-				userInterfaceImageFile = null;
-				if (logoFiles.some(f => f !== null) || qrCodeFile) {
-					await new Promise(resolve => setTimeout(resolve, 300));
-				}
+				filesToUpload.push({ file: userInterfaceImageFile, type: 'User interface image' });
 			}
-
-			const uploadedLogoResourceIds: (string | null)[] = [null, null, null];
-			for (let i = 0; i < 3; i++) {
-				if (logoFiles[i]) {
-					const resourceId = await uploadFile(logoFiles[i]!, `Logo ${i + 1}`);
-					if (!resourceId) {
-						addToast({
-							message: `Failed to upload Logo ${i + 1}. Please try again.`,
-							type: 'error',
-							timeout: 5000
-						});
-						return;
-					}
-					uploadedLogoResourceIds[i] = resourceId;
-					logoFiles[i] = null;
-					
-					if (i < 2 && logoFiles[i + 1]) {
-						await new Promise(resolve => setTimeout(resolve, 500));
-					}
+			logoFiles.forEach((file, index) => {
+				if (file) {
+					filesToUpload.push({ file, type: `Logo ${index + 1}`, index });
 				}
-			}
-
+			});
 			if (qrCodeFile) {
-				await new Promise(resolve => setTimeout(resolve, 300));
-				const resourceId = await uploadFile(qrCodeFile, 'QR code');
-				if (!resourceId) {
+				filesToUpload.push({ file: qrCodeFile, type: 'QR code' });
+			}
+
+			// Step 2: Upload all files in parallel
+			if (filesToUpload.length > 0) {
+				addToast({
+					message: `Uploading ${filesToUpload.length} file(s)...`,
+					type: 'info',
+					timeout: 3000
+				});
+
+				const uploadPromises = filesToUpload.map(({ file, type }) => uploadFile(file, type));
+
+				const uploadResults = await Promise.all(uploadPromises);
+
+				// Step 3: Check for upload failures
+				const failures = uploadResults
+					.map((result, idx) => ({ result, file: filesToUpload[idx] }))
+					.filter(({ result }) => !result.success);
+
+				if (failures.length > 0) {
+					const errorMessages = failures
+						.map(({ file, result }) => `${file.type}: ${result.error}`)
+						.join('\n');
+
 					addToast({
-						message: 'Failed to upload QR code. Please try again.',
+						message: `Failed to upload ${failures.length} file(s):\n${errorMessages}`,
 						type: 'error',
 						timeout: 5000
 					});
 					return;
 				}
-				QRcode = {
-					...QRcode,
-					resourceId: resourceId
-				};
-				qrCodeFile = null;
+
+				// Step 4: Update resource IDs with uploaded results
+				uploadResults.forEach((result, idx) => {
+					const fileInfo = filesToUpload[idx];
+					if (result.success && result.resourceId) {
+						switch (fileInfo.type) {
+							case 'Title image':
+								Images.TitleImage = result.resourceId;
+								titleImageFile = null;
+								break;
+							case 'User interface image':
+								Images.UserInterfaceImage = result.resourceId;
+								userInterfaceImageFile = null;
+								break;
+							case 'QR code':
+								QRcode.resourceId = result.resourceId;
+								qrCodeFile = null;
+								break;
+							default:
+								if (fileInfo.type.startsWith('Logo') && fileInfo.index !== undefined) {
+									Logos[fileInfo.index] = result.resourceId;
+									logoFiles[fileInfo.index] = null;
+								}
+						}
+					}
+				});
+
+				addToast({
+					message: `Successfully uploaded ${uploadResults.length} file(s)`,
+					type: 'success',
+					timeout: 3000
+				});
 			}
 
-			const finalLogosArray: string[] = [];
-			for (let i = 0; i < 3; i++) {
-				const logoResourceId = uploadedLogoResourceIds[i] || Logos[i];
-				if (logoResourceId && logoResourceId.trim() !== '') {
-					finalLogosArray.push(logoResourceId);
-				}
-			}
+			// Step 5: Prepare final logos array (only non-empty values)
+			const finalLogosArray: string[] = Logos.filter((logo) => logo && logo.trim() !== '');
 
+			// Step 6: Prepare marketing material model
 			const marketingMaterialModel: MarketingMaterialCreateModel | MarketingMaterialUpdateModel = {
 				Styling,
 				Content: {
@@ -573,6 +860,7 @@ console.log('Marketing Material Page Data:', data);
 				}
 			};
 
+			// Step 7: Validate the model
 			const validationResult = MarketingMaterialRequestSchema.safeParse(marketingMaterialModel);
 
 			if (!validationResult.success) {
@@ -582,9 +870,15 @@ console.log('Marketing Material Page Data:', data);
 						val?.[0] || 'This field is required'
 					])
 				);
+				addToast({
+					message: 'Validation failed. Please check the form.',
+					type: 'error',
+					timeout: 3000
+				});
 				return;
 			}
 
+			// Step 8: Submit to backend
 			const method = isEmpty ? 'POST' : 'PUT';
 
 			try {
@@ -605,35 +899,15 @@ console.log('Marketing Material Page Data:', data);
 					throw new Error('Invalid response from server');
 				}
 
-				if (
-					response.Message &&
-					(response.Message.includes('ECONNRESET') || response.Message.includes('ECONNREFUSED'))
-				) {
-					addToast({
-						message: 'Connection error. Please check your network connection and try again.',
-						type: 'error',
-						timeout: 5000
-					});
-					return;
-				}
-
 				if (response.HttpCode === 201 || response.HttpCode === 200) {
 					toastMessage(response);
 					edit = false;
 					disabled = true;
 					hasMarketingMaterial = true;
-					
-					for (let i = 0; i < 3; i++) {
-						if (uploadedLogoResourceIds[i]) {
-							Logos[i] = uploadedLogoResourceIds[i]!;
-						} else if (i < finalLogosArray.length) {
-							Logos[i] = finalLogosArray[i];
-						} else {
-							Logos[i] = '';
-						}
-					}
+
+					// Update local state
 					Logos = [...Logos];
-					
+
 					return;
 				}
 
@@ -646,24 +920,20 @@ console.log('Marketing Material Page Data:', data);
 				console.error('Error submitting form:', fetchError);
 				const errorStr = fetchError instanceof Error ? fetchError.message : String(fetchError);
 				const errorMessage =
-					errorStr.includes('ECONNRESET') || errorStr.includes('ECONNREFUSED')
-						? 'Connection error. Please check your network connection and try again.'
-						: errorStr.includes('fetch') ||
-							  errorStr.includes('network') ||
-							  errorStr.includes('Failed to fetch')
-							? 'Network error. Please check your connection and try again.'
-							: 'Failed to submit. Please try again.';
+					errorStr.includes('fetch') || errorStr.includes('network')
+						? 'Network error. Please check your connection and try again.'
+						: 'Failed to submit. Please try again.';
 				addToast({ message: errorMessage, type: 'error', timeout: 5000 });
 				return;
 			}
 		} catch (error) {
 			console.error('Unexpected error in handleSubmit:', error);
 			const errorStr = error instanceof Error ? error.message : String(error);
-			const errorMessage =
-				errorStr.includes('ECONNRESET') || errorStr.includes('ECONNREFUSED')
-					? 'Connection was reset. Please check your network and try again.'
-					: 'An unexpected error occurred. Please try again.';
-			addToast({ message: errorMessage, type: 'error', timeout: 5000 });
+			addToast({
+				message: 'An unexpected error occurred. Please try again.',
+				type: 'error',
+				timeout: 5000
+			});
 		}
 	};
 </script>
