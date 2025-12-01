@@ -7,8 +7,6 @@ export interface ContentCreateModel {
 	ResourceLink?: string;
 	ImageUrl?: string;
 	DurationInMins?: number;
-	LearningPathId?: string;
-	// ActionTemplateId: string;
 }
 
 export interface ContentUpdateModel {

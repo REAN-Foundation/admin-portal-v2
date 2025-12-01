@@ -12,7 +12,6 @@ export const createModule = async (
 	imageUrl?: string,
 	sequence?: number,
 	courseId?: string,
-	// learningPathId?: string,
 ) => {
 	const body = {
 		Name: name,
@@ -21,7 +20,6 @@ export const createModule = async (
 		ImageUrl: imageUrl ? imageUrl : '',
 		Sequence: sequence ? sequence : '',
 		CourseId: courseId ?? null,
-		LearningPathId: '6f91d80b-8e62-4182-b34f-886df053edea',
 	};
 	const url = LMS_BACKEND_API_URL + '/course-modules';
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);

@@ -45,15 +45,6 @@ export const createOrUpdateSchema = z.object({
 		})
 		.positive({ message: 'DurationInMins must be a positive number.' })
 		.optional(),
-	LearningPathId: z
-			.string()
-			.min(1, { message: 'CourseId cannot be empty.' })
-			.optional()
-	// ActionTemplateId: z
-	// 	.string({
-	// 		required_error: 'ActionTemplateId is required.',
-	// 		invalid_type_error: 'ActionTemplateId must be a string.'
-	// 	})
 
 });
 

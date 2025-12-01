@@ -25,7 +25,6 @@ export const createContent = async (
 		ResourceLink: resourceLink ?? null,
 		ImageUrl: imageUrl ?? null,
 		DurationInMins: durationInMins ?? null,
-		LearningPathId: '6f91d80b-8e62-4182-b34f-886df053edea',
 	};
 	const url = LMS_BACKEND_API_URL + '/course-contents';
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);

@@ -5,7 +5,6 @@ export interface ModuleCreateModel {
 	ImageUrl?: string;
 	Sequence?: number;
 	CourseId?: string;
-	learningPathId?: string;
 }
 
 export interface ModuleUpdateModel {

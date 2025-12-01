@@ -21,7 +21,6 @@
 	let sequence = $state(undefined);
 	let resourceLink = $state(undefined);
 	let imageResourceId = $state(undefined);
-	let actionTemplateId = $state(undefined);
 	let fileName = $state('');
 	const formData = new FormData();
 	let contentImage;

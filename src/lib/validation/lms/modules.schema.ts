@@ -32,9 +32,5 @@ export const createOrUpdateSchema = z.object({
 		.string()
 		.min(1, { message: 'CourseId cannot be empty.' })
 		.optional(),
-	learningPathId: z
-		.string()
-		.min(1, { message: 'CourseId cannot be empty.' })
-		.optional()
 });
 
