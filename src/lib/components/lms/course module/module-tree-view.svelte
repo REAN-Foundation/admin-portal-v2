@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ModuleTreeItem from './module-tree-item.svelte';
-	import ContentTreeItem from './content-tree-item.svelte';
+	import ContentTreeItem from '../course content/content-tree-item.svelte';
 	
 	let { 
 		modules, 

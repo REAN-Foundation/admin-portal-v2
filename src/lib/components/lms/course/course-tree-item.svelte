@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Self from './course-tree-item.svelte';
-	import ContentTable from './content-table.svelte';
+	import ContentTable from '../course content/content-table.svelte';
 	import Icon from '@iconify/svelte';
 	import Button from '$lib/components/button/button.svelte';
 	

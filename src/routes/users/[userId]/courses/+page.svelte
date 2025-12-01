@@ -11,7 +11,7 @@
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 	import Button from '$lib/components/button/button.svelte';
-	import CourseTreeView from '$lib/components/course-tree-view.svelte';
+	import CourseTreeView from '$lib/components/lms/course/course-tree-view.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
