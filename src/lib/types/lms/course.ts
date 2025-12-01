@@ -4,6 +4,7 @@ export interface CourseCreateModel {
 	ImageResourceId: string;
 	DurationInDays?: number;
 	TenantId?: string;
+	Sequence?: number;
 }
 
 export interface CourseUpdateModel {
@@ -12,6 +13,7 @@ export interface CourseUpdateModel {
 	ImageResourceId: string;
 	DurationInDays?: number;
 	TenantId?: string;
+	Sequence?: number;
 }
 
 export interface CourseImageUploadModel {

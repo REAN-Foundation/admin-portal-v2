@@ -22,6 +22,7 @@
 	let imageResourceId = $state(data.course.ImageResourceId ?? undefined);
 	let courseImage = $state();
 	let durationInDays = $state(data.course.DurationInDays?.toString());
+	let sequence = $state(data.course?.Sequence != null ? data.course.Sequence.toString() : '');
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let previewUrl = $state<string | undefined>(undefined);
@@ -50,6 +51,7 @@
 		imageUrl = data?.course?.ImageUrl;
 		imageResourceId = data?.course?.ImageResourceId;
 		durationInDays = data?.course?.DurationInDays?.toString();
+		sequence = data?.course?.Sequence != null ? data.course.Sequence.toString() : '';
 		errors = {};
 		if (previewUrl) {
 			URL.revokeObjectURL(previewUrl);
@@ -130,7 +132,8 @@
 				Description: description,
 				ImageResourceId: imageResourceId,
 				DurationInDays: durationInDays ? parseFloat(durationInDays) : undefined,
-				TenantId: tenantId
+				TenantId: tenantId,
+				Sequence: sequence ? parseInt(sequence) : undefined
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(courseUpdateModel);
@@ -270,6 +273,23 @@
 						/>
 						{#if errors?.DurationInDays}
 							<p class="text-error">{errors?.DurationInDays}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Sequence</td>
+					<td class="table-data">
+						<input
+							type="number"
+							step="1"
+							min="0"
+							class="input {errors?.Sequence ? 'input-text-error' : ''}"
+							name="sequence"
+							placeholder="Enter sequence..."
+							bind:value={sequence}
+						/>
+						{#if errors?.Sequence}
+							<p class="text-error">{errors?.Sequence}</p>
 						{/if}
 					</td>
 				</tr>

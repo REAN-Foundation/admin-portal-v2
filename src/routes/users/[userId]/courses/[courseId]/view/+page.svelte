@@ -23,6 +23,7 @@
 	let description = course.Description || 'Not specified';
 	let imageUrl = data.course.ImageResourceUrl;
 	let durationInDays = course.DurationInDays ? course.DurationInDays.toString() : 'Not specified';
+	let sequence = course.Sequence ? course.Sequence.toString() : 'Not specified';
 
 	const buildModuleTree = (modules: any[]) => {
 		if (!modules || modules.length === 0) return [];
@@ -195,6 +196,16 @@
 					{/if}
 				</td>
 			</tr>
+			<tr class="tables-row">
+					<td class="table-label">Sequence</td>
+					<td class="table-data">
+						{#if sequence && sequence !== 'Not specified'}
+							<span class="span">{sequence}</span>
+						{:else}
+							<span class="span">Not specified</span>
+						{/if}
+					</td>
+				</tr>
 			<tr class="tables-row">
 				<td class="table-label align-top">Modules</td>
 				<td class="table-data">

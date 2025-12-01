@@ -18,6 +18,7 @@
 	let courseName = $state(undefined);
 	let description = $state(undefined);
 	let durationInDays = $state(undefined);
+	let sequence = $state(undefined);
 	let promise = $state();
 	let imageResourceId = $state(undefined);
 	let fileName = $state('');
@@ -108,7 +109,8 @@
 				Description: description,
 				ImageResourceId: imageResourceId,
 				DurationInDays: durationInDays ? parseFloat(durationInDays) : undefined,
-				TenantId: tenantId
+				TenantId: tenantId,
+				Sequence: sequence ? parseInt(sequence) : undefined,
 			};
 
 			console.log('courseCreateModel', courseCreateModel);
@@ -244,6 +246,23 @@
 						/>
 						{#if errors?.DurationInDays}
 							<p class="text-error">{errors?.DurationInDays}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Sequence</td>
+					<td class="table-data">
+						<input
+							type="number"
+							step="1"
+							min="0"
+							class="input {errors?.Sequence ? 'input-text-error' : ''}"
+							name="sequence"
+							placeholder="Enter sequence..."
+							bind:value={sequence}
+						/>
+						{#if errors?.Sequence}
+							<p class="text-error">{errors?.Sequence}</p>
 						{/if}
 					</td>
 				</tr>

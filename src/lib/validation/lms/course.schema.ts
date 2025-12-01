@@ -33,6 +33,12 @@ export const createOrUpdateSchema = z.object({
 		.string({
 			required_error: 'TenantId is required.',
 			invalid_type_error: 'TenantId must be a string.'
+		}),
+	Sequence: z
+		.number({
+			invalid_type_error: 'Sequence must be a number.'
 		})
+		.positive({ message: 'Sequence must be a positive number.' })
+		.optional()
 });
 
