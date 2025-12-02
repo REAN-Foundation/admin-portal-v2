@@ -262,8 +262,8 @@
 	<div class=" btn-container">
 		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
 		></Button>
-		<Button onclick = {handleSubmit} text={isPublishing ? "Publishing..." : "Publish"} variant="secondary" disabled={isPublishing}>
-		</Button>
+		<!-- <Button onclick = {handleSubmit} text={isPublishing ? "Publishing..." : "Publish"} variant="secondary" disabled={isPublishing}>
+		</Button> -->
 	</div>
 </div>
 <FilePreviewModal {showModal} {fileUrl} {fileType} {closeModal} />
