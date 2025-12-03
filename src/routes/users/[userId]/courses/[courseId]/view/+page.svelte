@@ -103,7 +103,8 @@
 			expandedModules = { ...expandedModules, [moduleId]: false };
 		} else {
 			expandedModules = { ...expandedModules, [moduleId]: true };
-			if (!moduleContents[moduleId] && !loadingContents[moduleId]) {
+			// Always refetch contents when expanding to ensure fresh data
+			if (!loadingContents[moduleId]) {
 				await fetchModuleContents(moduleId);
 			}
 		}
