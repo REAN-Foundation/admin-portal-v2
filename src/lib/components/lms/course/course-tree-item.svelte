@@ -96,7 +96,7 @@
 	
 </script>
 
-<div class="tree-connector pl-4 bg-gray-200 rounded-md p-2 my-1">
+<div class="tree-connector px-4 bg-gray-200 rounded-md py-2 mt-1 mb-1">
 	<div class="flex items-center justify-between gap-2 text-[var(--color-info)]">
 		<div class="flex items-center gap-2 flex-1">
 			<button
@@ -162,29 +162,27 @@
 		</div>
 	</div>
 	{#if isExpanded}
-		<div class="relative mt-4 ml-4 space-y-2 pl-4">
+		<div class="relative py-2 px-4">
 			{#if isLoading}
-				<div class="flex items-center gap-2 text-gray-500 pl-4">
+				<div class="flex items-center gap-2 text-gray-500">
 					<Icon icon="svg-spinners:ring-resize" class="inline" width="16" />
 					<span class="text-sm">Loading contents...</span>
 				</div>
 			{:else if contents !== undefined && contents.length > 0}
 				{@const courseId = node.CourseId || ''}
-				<div class="mt-3 pt-3">
-					<ContentTable 
-						contents={contents}
-						onContentEdit={contentEdit ? (contentId) => contentEdit(courseId, node.id, contentId) : undefined}
-						onContentView={contentView ? (contentId) => contentView(courseId, node.id, contentId) : undefined}
-						onContentDelete={onContentDelete}
-					/>
-				</div>
+				<ContentTable 
+					contents={contents}
+					onContentEdit={contentEdit ? (contentId) => contentEdit(courseId, node.id, contentId) : undefined}
+					onContentView={contentView ? (contentId) => contentView(courseId, node.id, contentId) : undefined}
+					onContentDelete={onContentDelete}
+				/>
 			{:else}
-				<div class="text-gray-500 italic pl-4 text-sm">No contents found</div>
+				<div class="text-gray-500 italic text-sm">No contents found</div>
 			{/if}
 		</div>
 	{/if}
 	{#if node.Children && node.Children.length > 0}
-		<div class="relative mt-2 ml-4 space-y-2 border-l-2 border-[var(--color-active)] pl-4">
+		<div class="relative my-2 ml-4 space-y-2 border-l-2 border-[var(--color-active)] pl-4">
 			{#each node.Children as child}
 				<Self 
 					node={child} 

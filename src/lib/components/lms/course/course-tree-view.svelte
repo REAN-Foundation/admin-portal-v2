@@ -43,7 +43,8 @@
 	}>();
 </script>
 
-<div class="space-y-2 pl-4">
+<div class="px-4 py-1">
+	<div class="space-y-1">
 	{#if modules && modules.length > 0}
 		{#each modules as module}
 			<CourseTreeItem 
@@ -66,5 +67,6 @@
 	{:else}
 		<div class="text-gray-500 italic pl-4">No modules found</div>
 	{/if}
+	</div>
 </div>
 
