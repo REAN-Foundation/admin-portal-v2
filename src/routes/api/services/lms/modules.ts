@@ -16,16 +16,26 @@ export const createModule = async (
 	const body = {
 		Name: name,
 		Description: description ? description : '',
-		DurationInMins: durationInMins ? durationInMins : '',
+		DurationInMins: durationInMins ? durationInMins : undefined,
 		ImageUrl: imageUrl ? imageUrl : '',
-		Sequence: sequence ? sequence : '',
+		Sequence: sequence ? sequence : null,
 		CourseId: courseId ?? null,
 	};
 	const url = LMS_BACKEND_API_URL + '/course-modules';
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 
-	const findAndClearKeys = [`session-${sessionId}:req-searchModules`];
+	// Clear both modules and courses cache since courses include nested modules
+	const findAndClearKeys = [
+		`session-${sessionId}:req-searchModules`,
+		`session-${sessionId}:req-searchCourses`
+	];
 	await DashboardManager.findAndClear(findAndClearKeys);
+	
+	// Also clear the specific course cache if courseId is provided
+	if (courseId) {
+		const courseCacheKey = `session-${sessionId}:req-getCourseById-${courseId}`;
+		await DashboardManager.deleteMany([courseCacheKey]);
+	}
 
 	return result;
 };
@@ -53,8 +63,6 @@ export const searchModules = async (sessionId: string, searchParams?) => {
 			const params = [];
 			for (const key of keys) {
 				const value = searchParams[key];
-				// Include the parameter if it's not null, undefined, or empty string
-				// This ensures courseId and other filters are always included when provided
 				if (value !== null && value !== undefined && value !== '') {
 					const param = `${key}=${encodeURIComponent(value)}`;
 					params.push(param);
@@ -97,7 +105,11 @@ export const updateModule = async (
 	const keysToBeDeleted = [`session-${sessionId}:req-getModuleById-${moduleId}`,];
 	await DashboardManager.deleteMany(keysToBeDeleted);
 
-	const findAndClearKeys = [`session-${sessionId}:req-searchModules`,];
+	// Clear both modules and courses cache since courses include nested modules
+	const findAndClearKeys = [
+		`session-${sessionId}:req-searchModules`,
+		`session-${sessionId}:req-searchCourses`
+	];
 	await DashboardManager.findAndClear(findAndClearKeys);
 
 	return result;
@@ -110,8 +122,10 @@ export const deleteModule = async (sessionId: string, id: string) => {
 	const keysToBeDeleted = [`session-${sessionId}:req-getModuleById-${id}`,];
 	await DashboardManager.deleteMany(keysToBeDeleted);
 
+	// Clear both modules and courses cache since courses include nested modules
 	const findAndClearKeys = [
-		`session-${sessionId}:req-searchModules`
+		`session-${sessionId}:req-searchModules`,
+		`session-${sessionId}:req-searchCourses`
 	];
 	await DashboardManager.findAndClear(findAndClearKeys);
 

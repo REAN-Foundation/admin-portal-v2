@@ -28,8 +28,14 @@
 	const buildModuleTree = (modules: any[]) => {
 		if (!modules || modules.length === 0) return [];
 		
+		// Filter modules to ensure they belong to this specific course
+		const filteredModules = modules.filter((module) => 
+			module.CourseId === courseId || 
+			module.courseId === courseId
+		);
+		
 		const moduleMap = new Map();
-		modules.forEach(module => {
+		filteredModules.forEach(module => {
 			moduleMap.set(module.id, {
 				...module,
 				Children: [],

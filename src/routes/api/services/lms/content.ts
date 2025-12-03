@@ -24,7 +24,7 @@ export const createContent = async (
 		Sequence: sequence ?? null,
 		ResourceLink: resourceLink ?? null,
 		ImageUrl: imageUrl ?? null,
-		DurationInMins: durationInMins ?? null,
+		DurationInMins: durationInMins ?? undefined,
 	};
 	const url = LMS_BACKEND_API_URL + '/course-contents';
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);

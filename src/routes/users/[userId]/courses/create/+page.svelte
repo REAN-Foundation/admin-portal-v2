@@ -18,7 +18,7 @@
 	let courseName = $state(undefined);
 	let description = $state(undefined);
 	let durationInDays = $state(undefined);
-	let sequence = $state(undefined);
+	let sequence = $state(1);
 	let promise = $state();
 	let imageResourceId = $state(undefined);
 	let fileName = $state('');
@@ -108,15 +108,12 @@
 				Name: courseName,
 				Description: description,
 				ImageResourceId: imageResourceId,
-				DurationInDays: durationInDays ? parseFloat(durationInDays) : undefined,
+				DurationInDays: durationInDays,
 				TenantId: tenantId,
-				Sequence: sequence ? parseInt(sequence) : undefined,
+				Sequence: sequence,
 			};
 
-			console.log('courseCreateModel', courseCreateModel);
-
 			const validationResult = createOrUpdateSchema.safeParse(courseCreateModel);
-			console.log('validationResult', validationResult);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -128,8 +125,6 @@
 				return;
 			}
 
-			console.log('courseCreateModel after validation', validationResult);
-
 			const res = await fetch(`/api/server/lms/course`, {
 				method: 'POST',
 				body: JSON.stringify(courseCreateModel),
@@ -137,8 +132,6 @@
 			});
 
 			const response = await res.json();
-
-			console.log('response', response);
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				if (previewUrl) {

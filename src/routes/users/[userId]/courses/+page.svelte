@@ -19,19 +19,6 @@
 
 	let debounceTimeout;
 	let isLoading = $state(false);
-	let initialCourses = (() => {
-		return data.courses?.Items ?? [];
-	})();
-	let courses = $state(initialCourses);
-	let retrivedCourses = $derived(courses);
-	let openDeleteModal = $state(false);
-	let idToBeDeleted = $state(null);
-	let isDeleting = $state(false);
-	let openModuleDeleteModal = $state(false);
-	let moduleToBeDeleted = $state<{ moduleId: string; courseId: string } | null>(null);
-	let openContentDeleteModal = $state(false);
-	let contentToBeDeleted = $state<{ contentId: string; moduleId: string } | null>(null);
-	let searchKeyword = $state(undefined);
 
 	// State for managing expanded courses and their modules
 	let expandedCourses = $state<Record<string, boolean>>({});
@@ -44,9 +31,74 @@
 	let moduleContents = $state<Record<string, any[]>>({});
 	let loadingContents = $state<Record<string, boolean>>({});
 	let moduleContentCounts = $state<Record<string, number>>({});
+	
+	let initialCourses = (() => {
+		try {
+			const items = data.courses?.Items ?? [];
+
+			return items
+				.map((item) => {
+					if (!item) return null;
+					const modules = item.Modules || item.modules || [];
+					const processedModules = modules.map((module) => ({
+						...module,
+						CourseId: item.id,
+						Contents: module.Contents || module.contents || []
+					}));
+
+					return {
+						...item,
+						Modules: processedModules
+					};
+				})
+				.filter(Boolean);
+		} catch (error) {
+			console.error('Error processing initial courses:', error);
+			return [];
+		}
+	})();
+	let courses = $state(initialCourses);
+
+	// Process and store modules/contents in state after initialization (one-time)
+	let hasProcessedInitialData = $state(false);
+	$effect(() => {
+		if (!hasProcessedInitialData && courses.length > 0) {
+			hasProcessedInitialData = true;
+			try {
+				courses.forEach((item) => {
+					if (item.id && item.Modules) {
+						courseModules = { ...courseModules, [item.id]: item.Modules };
+						courseModuleCounts = { ...courseModuleCounts, [item.id]: item.Modules.length };
+
+						// Store contents for each module
+						item.Modules.forEach((module) => {
+							if (module.id && module.Contents) {
+								moduleContents = { ...moduleContents, [module.id]: module.Contents };
+								moduleContentCounts = {
+									...moduleContentCounts,
+									[module.id]: module.Contents.length
+								};
+							}
+						});
+					}
+				});
+			} catch (error) {
+				console.error('Error storing modules/contents in state:', error);
+			}
+		}
+	});
+	let retrivedCourses = $derived(courses);
+	let openDeleteModal = $state(false);
+	let idToBeDeleted = $state(null);
+	let isDeleting = $state(false);
+	let openModuleDeleteModal = $state(false);
+	let moduleToBeDeleted = $state<{ moduleId: string; courseId: string } | null>(null);
+	let openContentDeleteModal = $state(false);
+	let contentToBeDeleted = $state<{ contentId: string; moduleId: string } | null>(null);
+	let searchKeyword = $state(undefined);
 
 	// State for managing selected content IDs per module
-	let selectedContentIds = $state<Record<string, string | null>>({})
+	let selectedContentIds = $state<Record<string, string | null>>({});
 	let courseName = $state(undefined);
 	let initialTotalCount = (() => {
 		return data.courses?.TotalCount ?? 0;
@@ -98,6 +150,17 @@
 				method: 'GET',
 				headers: { 'content-type': 'application/json' }
 			});
+
+			if (!res.ok) {
+				const errorText = await res.text();
+				console.error('HTTP error response:', res.status, errorText);
+				toastMessage({
+					HttpCode: res.status,
+					Message: `Failed to fetch courses: ${res.status} ${res.statusText}`
+				});
+				return;
+			}
+
 			const searchResult = await res.json();
 			console.log('searchResult', searchResult);
 
@@ -128,11 +191,48 @@
 			totalCoursesCount = courseData.TotalCount || 0;
 			paginationSettings.size = totalCoursesCount;
 
-			courses = (courseData.Items || []).map((item, index) => ({
-				...item,
-				index: index + 1,
-				Modules: item.Modules || item.modules || []
-			}));
+			courses = (courseData.Items || [])
+				.map((item, index) => {
+					try {
+						if (!item) return null;
+						const modules = item.Modules || item.modules || [];
+						// Process modules and extract contents
+						const processedModules = (modules || []).map((module) => ({
+							...module,
+							CourseId: item.id,
+							Contents: module.Contents || module.contents || []
+						}));
+
+						// Store modules and contents in state for easy access
+						if (item.id) {
+							courseModules = { ...courseModules, [item.id]: processedModules };
+							courseModuleCounts = { ...courseModuleCounts, [item.id]: processedModules.length };
+
+							// Store contents for each module
+							processedModules.forEach((module) => {
+								if (module && module.id) {
+									const contents = module.Contents || [];
+									moduleContents = { ...moduleContents, [module.id]: contents };
+									moduleContentCounts = { ...moduleContentCounts, [module.id]: contents.length };
+								}
+							});
+						}
+
+						return {
+							...item,
+							index: index + 1,
+							Modules: processedModules
+						};
+					} catch (error) {
+						console.error('Error processing course item:', error, item);
+						return {
+							...item,
+							index: index + 1,
+							Modules: []
+						};
+					}
+				})
+				.filter(Boolean);
 			searchKeyword = model.courseName;
 		} catch (err) {
 			console.error('Search failed:', err);
@@ -149,7 +249,7 @@
 		clearTimeout(debounceTimeout);
 		let searchKeyword = e.target.value;
 		debounceTimeout = setTimeout(() => {
-			paginationSettings.page = 0; 
+			paginationSettings.page = 0;
 			searchCourse({
 				courseName: searchKeyword,
 				itemsPerPage: paginationSettings.limit,
@@ -182,7 +282,7 @@
 	};
 
 	function onItemsPerPageChange() {
-		paginationSettings.page = 0; 
+		paginationSettings.page = 0;
 		searchCourse({
 			courseName: searchKeyword,
 			itemsPerPage: paginationSettings.limit,
@@ -234,6 +334,7 @@
 			expandedCourses = { ...expandedCourses, [courseId]: false };
 		} else {
 			expandedCourses = { ...expandedCourses, [courseId]: true };
+
 			if (!loadingModules[courseId]) {
 				await fetchCourseModules(courseId);
 			}
@@ -296,11 +397,10 @@
 						);
 
 						// Check if there are more pages
-						const totalCount = courseModuleRecords.TotalCount || 0;
+						const totalCount = courseModuleRecords.TotalCount;
 						const currentCount = allModules.length + modulesList.length;
 						hasMore = currentCount < totalCount && modulesList.length === itemsPerPage;
-					}
-					else if (Array.isArray(courseModuleRecords)) {
+					} else if (Array.isArray(courseModuleRecords)) {
 						modulesList = courseModuleRecords.filter(
 							(module) => module.CourseId === courseId || module.courseId === courseId
 						);
@@ -388,9 +488,14 @@
 		console.log('Delete content response:', res);
 		if (res.HttpCode === 200) {
 			toastMessage(res);
-			if (moduleContents[moduleId]) {
-				await fetchModuleContents(moduleId);
-			}
+			// Refresh course data to get updated nested structure
+			await searchCourse({
+				courseName: searchKeyword,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: paginationSettings.page,
+				sortBy,
+				sortOrder
+			});
 		} else {
 			toastMessage(res);
 		}
@@ -415,9 +520,14 @@
 		console.log('Delete module response:', res);
 		if (res.HttpCode === 200) {
 			toastMessage(res);
-			if (courseModules[courseId]) {
-				await fetchCourseModules(courseId);
-			}
+			// Refresh course data to get updated nested structure
+			await searchCourse({
+				courseName: searchKeyword,
+				itemsPerPage: paginationSettings.limit,
+				pageIndex: paginationSettings.page,
+				sortBy,
+				sortOrder
+			});
 		} else {
 			toastMessage(res);
 		}
@@ -435,34 +545,25 @@
 		} else {
 			expandedModules = { ...expandedModules, [moduleId]: true };
 
-			if (!moduleContents[moduleId] && !loadingContents[moduleId]) {
-				await fetchModuleContents(moduleId);
+			// Check if contents are already loaded from the module response
+			if (!moduleContents[moduleId]) {
+				// Try to get contents from the module data
+				const course = courses.find((c) => c.id === courseId);
+				if (course && course.Modules) {
+					const module = course.Modules.find((m) => m.id === moduleId);
+					if (module && module.Contents && module.Contents.length > 0) {
+						// Contents are already in the response, use them
+						moduleContents = { ...moduleContents, [moduleId]: module.Contents };
+						moduleContentCounts = { ...moduleContentCounts, [moduleId]: module.Contents.length };
+					} else if (!loadingContents[moduleId]) {
+						// Fallback: fetch contents if not in response
+						await fetchModuleContents(moduleId);
+					}
+				} else if (!loadingContents[moduleId]) {
+					// Fallback: fetch contents if not in response
+					await fetchModuleContents(moduleId);
+				}
 			}
-		}
-	};
-
-	const fetchModuleContentCount = async (moduleId: string) => {
-		try {
-			let url = `/api/server/lms/content/search?`;
-			url += `itemsPerPage=1`;
-			url += `&pageIndex=0`;
-			url += `&sortBy=Title`;
-			url += `&sortOrder=ascending`;
-			url += `&moduleId=${moduleId}`;
-
-			const res = await fetch(url, {
-				method: 'GET',
-				headers: { 'content-type': 'application/json' },
-				credentials: 'include'
-			});
-
-			if (res.ok) {
-				const searchResult = await res.json();
-				const totalCount = searchResult?.Data?.CourseContentRecords?.TotalCount || 0;
-				moduleContentCounts = { ...moduleContentCounts, [moduleId]: totalCount };
-			}
-		} catch (err) {
-			console.error('Failed to fetch content count:', err);
 		}
 	};
 

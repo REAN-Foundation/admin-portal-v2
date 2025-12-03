@@ -17,7 +17,7 @@ export const createCourse = async (
 		Name: name,
 		Description: description ? description : '',
 		ImageUrl: imageResourceId ? imageResourceId : '',
-		DurationInDays: durationInDays ? durationInDays : null,
+		DurationInDays: durationInDays ? durationInDays : undefined,
 		TenantId: tenantId,
 		Sequence: sequence ? sequence : null
 	};
