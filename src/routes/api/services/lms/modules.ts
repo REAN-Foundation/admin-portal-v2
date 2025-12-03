@@ -15,7 +15,7 @@ export const createModule = async (
 ) => {
 	const body = {
 		Name: name,
-		Description: description ? description : '',
+		Description: description ? description : undefined,
 		DurationInMins: durationInMins ? durationInMins : undefined,
 		ImageUrl: imageUrl ? imageUrl : '',
 		Sequence: sequence ? sequence : null,

@@ -18,7 +18,7 @@
 	let title = $state(undefined);
 	let description = $state(undefined);
 	let contentType = $state(undefined);
-	let sequence = $state(undefined);
+	let sequence = $state(1);
 	let resourceLink = $state(undefined);
 	let imageResourceId = $state(undefined);
 	let fileName = $state('');
@@ -129,7 +129,7 @@
 				Title: title,
 				ContentType: contentType,
 				Description: description,
-				Sequence: sequence ? parseFloat(sequence) : undefined,
+				Sequence: sequence,
 				ResourceLink: resourceLink,
 				ImageUrl: imageResourceId,
 				DurationInMins: durationInMins ? parseFloat(durationInMins) : undefined
@@ -231,9 +231,11 @@
 						<div class="relative">
 							<select required class="select" bind:value={contentType}>
 								<option>Text</option>
-								<option>Pdf</option>
+								<option>Document</option>
 								<option>Video</option>
 								<option>Assessment</option>
+								<option>Audio</option>
+								<option>Url</option>
 							</select>
 							<div class="select-icon-container">
 								<Icon icon="mdi:chevron-down" class="select-icon" />

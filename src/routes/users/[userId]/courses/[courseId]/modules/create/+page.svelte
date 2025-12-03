@@ -18,7 +18,7 @@
 	let moduleName = $state(undefined);
 	let description = $state(undefined);
 	let durationInMins = $state(undefined);
-	let sequence = $state(undefined);
+	let sequence = $state(1);
 	let promise = $state();
 	let imageResourceId = $state(undefined);
 	let fileName = $state('');
@@ -113,7 +113,7 @@
 				Description: description,
 				DurationInMins: durationInMins ? parseFloat(durationInMins) : undefined,
 				ImageUrl: imageResourceId,
-				Sequence: sequence ? parseFloat(sequence) : undefined,
+				Sequence: sequence,
 				CourseId: courseId // Include courseId from URL params
 			};
 

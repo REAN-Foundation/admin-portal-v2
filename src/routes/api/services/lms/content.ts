@@ -20,10 +20,10 @@ export const createContent = async (
 		CourseModuleId: moduleId,
 		Title: title,
 		ContentType: contentType,
-		Description: description ?? null,
+		Description: description ?? undefined,
 		Sequence: sequence ?? null,
-		ResourceLink: resourceLink ?? null,
-		ImageUrl: imageUrl ?? null,
+		ResourceLink: resourceLink ?? undefined,
+		ImageUrl: imageUrl ?? undefined,
 		DurationInMins: durationInMins ?? undefined,
 	};
 	const url = LMS_BACKEND_API_URL + '/course-contents';
