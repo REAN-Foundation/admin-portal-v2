@@ -1,7 +1,7 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
 import type { RequestEvent } from "@sveltejs/kit";
 import { createSearchFilters } from '$lib/utils/search.utils';
-import { searchLearningPaths } from "$routes/api/services/lms/learning.path";
+import { searchLearningPaths } from "$routes/api/services/lms/learning.journeys";
 
 ///////////////////////////////////////////////////////////////////////////////
 
