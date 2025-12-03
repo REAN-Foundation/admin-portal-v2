@@ -31,7 +31,7 @@
 	};
 </script>
 
-<div class="w-full -ml-4 border-2 border-gray-300 rounded-lg overflow-hidden shadow-sm">
+<div class="w-full -ml-4 border-2 border-gray-300 rounded-lg overflow-hidden shadow-sm mt-2">
 	<div class="overflow-x-auto">
 		<table class="table-c min-w-full text-sm">
 			<thead>

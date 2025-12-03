@@ -696,7 +696,7 @@
 												row.modules?.length ??
 												0)}
 								{@const isExpanded = expandedCourses[row.id]}
-								<tr class={isExpanded ? 'bg-gray-300 hover:!bg-gray-300' : ''}>
+								<tr class={isExpanded ? 'bg-gray-100 hover:!bg-gray-100' : ''}>
 									<td>
 										{paginationSettings.page * paginationSettings.limit + index + 1}
 									</td>
@@ -778,7 +778,7 @@
 									<tr>
 										<td
 											colspan="6"
-											class="bg-gray-300 p-4"
+											class="bg-gray-100 p-4"
 											style="position: relative; overflow: visible;"
 										>
 											{#if isLoading}
