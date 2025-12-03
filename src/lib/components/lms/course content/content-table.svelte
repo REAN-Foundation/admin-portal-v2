@@ -47,7 +47,7 @@
 			<tbody>
 				{#if contents && contents.length > 0}
 					{#each contents as content, index}
-						<tr class="bg-gray-100">
+						<tr class="bg-gray-300">
 							<td>{index + 1}</td>
 							<td>
 								{content.Sequence ? `${content.Sequence}-` : ''}{content.Title || 'Not specified'}

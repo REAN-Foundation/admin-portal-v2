@@ -96,7 +96,7 @@
 	
 </script>
 
-<div class="tree-connector pl-4 bg-gray-300 rounded-md p-2 my-1">
+<div class="tree-connector pl-4 bg-gray-200 rounded-md p-2 my-1">
 	<div class="flex items-center justify-between gap-2 text-[var(--color-info)]">
 		<div class="flex items-center gap-2 flex-1">
 			<button
