@@ -31,7 +31,7 @@
 	};
 </script>
 
-<div class="w-full -ml-4 border-2 border-gray-300 rounded-lg overflow-hidden shadow-sm">
+<div class="w-full -ml-4 border-2 border-gray-300 rounded-lg overflow-hidden shadow-sm mt-2">
 	<div class="overflow-x-auto">
 		<table class="table-c min-w-full text-sm">
 			<thead>
@@ -47,7 +47,7 @@
 			<tbody>
 				{#if contents && contents.length > 0}
 					{#each contents as content, index}
-						<tr class="bg-gray-100">
+						<tr class="bg-gray-300">
 							<td>{index + 1}</td>
 							<td>
 								{content.Sequence ? `${content.Sequence}-` : ''}{content.Title || 'Not specified'}

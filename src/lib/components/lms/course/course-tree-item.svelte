@@ -162,7 +162,7 @@
 		</div>
 	</div>
 	{#if isExpanded}
-		<div class="relative mt-2 ml-4 space-y-2 pl-4">
+		<div class="relative mt-4 ml-4 space-y-2 pl-4">
 			{#if isLoading}
 				<div class="flex items-center gap-2 text-gray-500 pl-4">
 					<Icon icon="svg-spinners:ring-resize" class="inline" width="16" />
@@ -170,12 +170,14 @@
 				</div>
 			{:else if contents !== undefined && contents.length > 0}
 				{@const courseId = node.CourseId || ''}
-				<ContentTable 
-					contents={contents}
-					onContentEdit={contentEdit ? (contentId) => contentEdit(courseId, node.id, contentId) : undefined}
-					onContentView={contentView ? (contentId) => contentView(courseId, node.id, contentId) : undefined}
-					onContentDelete={onContentDelete}
-				/>
+				<div class="mt-3 pt-3">
+					<ContentTable 
+						contents={contents}
+						onContentEdit={contentEdit ? (contentId) => contentEdit(courseId, node.id, contentId) : undefined}
+						onContentView={contentView ? (contentId) => contentView(courseId, node.id, contentId) : undefined}
+						onContentDelete={onContentDelete}
+					/>
+				</div>
 			{:else}
 				<div class="text-gray-500 italic pl-4 text-sm">No contents found</div>
 			{/if}
