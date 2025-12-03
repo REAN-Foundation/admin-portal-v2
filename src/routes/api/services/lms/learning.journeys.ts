@@ -18,8 +18,8 @@ export const createLearningPath = async (
 	const body = {
 		TenantId: tenantId,
 		Name: name,
-		Description: description ? description : '',
-		ImageUrl: imageUrl ? imageUrl : '',
+		Description: description ? description : undefined,
+		ImageUrl: imageUrl ? imageUrl : undefined,
 		DurationInDays: durationInDays ? durationInDays : undefined,
 		PreferenceWeight: preferenceWeight ? preferenceWeight : undefined,
 		Enabled: enabled !== undefined ? enabled : undefined,
@@ -48,7 +48,7 @@ export const getLearningPathById = async (sessionId: string, id: string) => {
 	return result;
 };
 
-export const searchLearningPaths = async (sessionId: string, searchParams?) => {
+export const searchLearningJourneys = async (sessionId: string, searchParams?) => {
 	let searchString = '';
 	if (searchParams) {
 		const keys = Object.keys(searchParams);

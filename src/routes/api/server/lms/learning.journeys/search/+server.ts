@@ -1,7 +1,7 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
 import type { RequestEvent } from "@sveltejs/kit";
 import { createSearchFilters } from '$lib/utils/search.utils';
-import { searchLearningPaths } from "$routes/api/services/lms/learning.journeys";
+import { searchLearningJourneys } from "$routes/api/services/lms/learning.journeys";
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -17,7 +17,7 @@ export const GET = async (event: RequestEvent) => {
         });
 
         console.log("Search Parameters:", searchFilters);
-        const response = await searchLearningPaths(sessionId, searchFilters);
+        const response = await searchLearningJourneys(sessionId, searchFilters);
         return ResponseHandler.success(response);
 
     } catch (error) {
