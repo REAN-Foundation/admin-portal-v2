@@ -35,7 +35,7 @@
 	<div class="overflow-x-auto">
 		<table class="table-c min-w-full text-sm">
 			<thead>
-				<tr class="bg-gray-200">
+				<tr class="bg-gray-300">
 					<th class="w-[2%]">Id</th>
 					<th class="w-[25%]">Title</th>
 					<th class="w-[30%]">Description</th>
@@ -47,7 +47,7 @@
 			<tbody>
 				{#if contents && contents.length > 0}
 					{#each contents as content, index}
-						<tr class="bg-gray-300">
+						<tr class="bg-gray-200">
 							<td>{index + 1}</td>
 							<td>
 								{content.Sequence ? `${content.Sequence}-` : ''}{content.Title || 'Not specified'}

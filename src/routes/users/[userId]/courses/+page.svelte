@@ -544,25 +544,8 @@
 			expandedModules = { ...expandedModules, [moduleId]: false };
 		} else {
 			expandedModules = { ...expandedModules, [moduleId]: true };
-
-			// Check if contents are already loaded from the module response
-			if (!moduleContents[moduleId]) {
-				// Try to get contents from the module data
-				const course = courses.find((c) => c.id === courseId);
-				if (course && course.Modules) {
-					const module = course.Modules.find((m) => m.id === moduleId);
-					if (module && module.Contents && module.Contents.length > 0) {
-						// Contents are already in the response, use them
-						moduleContents = { ...moduleContents, [moduleId]: module.Contents };
-						moduleContentCounts = { ...moduleContentCounts, [moduleId]: module.Contents.length };
-					} else if (!loadingContents[moduleId]) {
-						// Fallback: fetch contents if not in response
-						await fetchModuleContents(moduleId);
-					}
-				} else if (!loadingContents[moduleId]) {
-					// Fallback: fetch contents if not in response
-					await fetchModuleContents(moduleId);
-				}
+			if (!loadingContents[moduleId]) {
+				await fetchModuleContents(moduleId);
 			}
 		}
 	};
