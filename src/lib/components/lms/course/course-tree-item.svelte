@@ -102,7 +102,7 @@
 			<button
 				type="button"
 				onclick={handleModuleClick}
-				class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-secondary)] text-sm text-[var(--color-info)]"
+				class="flex h-6 w-6 items-center justify-center text-sm text-[var(--color-info)]"
 			>
 				{#if isExpanded}
 					<Icon icon="mdi:chevron-down" class="text-xs" />
@@ -110,7 +110,7 @@
 					<Icon icon="mdi:chevron-right" class="text-xs" />
 				{/if}
 			</button>
-			<span class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-secondary)] text-sm text-[var(--color-info)]">
+			<span class="flex h-6 w-6 items-center justify-center text-sm text-[var(--color-info)]">
 				📚
 			</span>
 			<button

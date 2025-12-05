@@ -86,10 +86,16 @@
 	const viewRoute = (courseId) => `/users/${userId}/courses/${courseId}/view`;
 	const createRoute = `/users/${userId}/courses/create`;
 
+	const moduleViewRoute = (courseId, moduleId) => `/users/${userId}/courses/${courseId}/modules/${moduleId}/view`;
+	const moduleEditRoute = (courseId, moduleId) => `/users/${userId}/courses/${courseId}/modules/${moduleId}/edit`;
+	const moduleCreateRoute = (courseId) => `/users/${userId}/courses/${courseId}/modules/create`;
+	const contentViewRoute = (courseId, moduleId, contentId) => `/users/${userId}/courses/${courseId}/modules/${moduleId}/contents/${contentId}/view`;
+	const contentEditRoute = (courseId, moduleId, contentId) => `/users/${userId}/courses/${courseId}/modules/${moduleId}/contents/${contentId}/edit`;
+	const contentCreateRoute = (courseId, moduleId) => `/users/${userId}/courses/${courseId}/modules/${moduleId}/contents/create`;
+
 	const breadCrumbs = [{ name: 'Courses', path: courseRoute }];
 
 	$effect(() => {
-		// Process initial data if available
 		if (!hasProcessedInitialData && courses.length > 0) {
 			hasProcessedInitialData = true;
 			try {
@@ -98,7 +104,6 @@
 						courseModules = { ...courseModules, [item.id]: item.Modules };
 						courseModuleCounts = { ...courseModuleCounts, [item.id]: item.Modules.length };
 
-						// Store contents for each module
 						item.Modules.forEach((module) => {
 							if (module.id && module.Contents) {
 								moduleContents = { ...moduleContents, [module.id]: module.Contents };
@@ -115,7 +120,6 @@
 			}
 		}
 
-		// Fetch courses if none exist and not already initialized
 		if (!hasInitialized && courses.length === 0 && !isLoading) {
 			hasInitialized = true;
 			searchCourse({
@@ -171,7 +175,7 @@
 				return;
 			}
 
-			const courseData = searchResult.Data.CourseRecords || searchResult.Data.Courses;
+			const courseData = searchResult.Data.CourseRecords;
 			if (!courseData) {
 				toastMessage({
 					HttpCode: 500,
@@ -187,7 +191,6 @@
 					try {
 						if (!item) return null;
 						const modules = item.Modules || item.modules || [];
-						// Process modules and extract contents
 						const processedModules = (modules || []).map((module) => ({
 							...module,
 							CourseId: item.id,
@@ -429,29 +432,6 @@
 		}
 	};
 
-	const moduleViewRoute = (courseId: string, moduleId: string) => {
-		return `/users/${userId}/courses/${courseId}/modules/${moduleId}/view`;
-	};
-
-	const moduleEditRoute = (courseId: string, moduleId: string) => {
-		return `/users/${userId}/courses/${courseId}/modules/${moduleId}/edit`;
-	};
-
-	const moduleCreateRoute = (courseId: string) => {
-		return `/users/${userId}/courses/${courseId}/modules/create`;
-	};
-
-	const contentViewRoute = (courseId: string, moduleId: string, contentId: string) => {
-		return `/users/${userId}/courses/${courseId}/modules/${moduleId}/contents/${contentId}/view`;
-	};
-
-	const contentEditRoute = (courseId: string, moduleId: string, contentId: string) => {
-		return `/users/${userId}/courses/${courseId}/modules/${moduleId}/contents/${contentId}/edit`;
-	};
-
-	const contentCreateRoute = (courseId: string, moduleId: string) => {
-		return `/users/${userId}/courses/${courseId}/modules/${moduleId}/contents/create`;
-	};
 
 	const handleContentDeleteClick = (contentId: string) => {
 		let moduleId = null;
