@@ -19,19 +19,14 @@
 
 	let debounceTimeout;
 	let isLoading = $state(false);
-
-	// State for managing expanded courses and their modules
 	let expandedCourses = $state<Record<string, boolean>>({});
 	let courseModules = $state<Record<string, any[]>>({});
 	let loadingModules = $state<Record<string, boolean>>({});
 	let courseModuleCounts = $state<Record<string, number>>({});
-
-	// State for managing expanded modules and their contents
 	let expandedModules = $state<Record<string, boolean>>({});
 	let moduleContents = $state<Record<string, any[]>>({});
 	let loadingContents = $state<Record<string, boolean>>({});
 	let moduleContentCounts = $state<Record<string, number>>({});
-	
 	let initialCourses = (() => {
 		try {
 			const items = data.courses?.Items ?? [];
@@ -58,10 +53,43 @@
 		}
 	})();
 	let courses = $state(initialCourses);
-
-	// Process and store modules/contents in state after initialization (one-time)
 	let hasProcessedInitialData = $state(false);
+	let retrivedCourses = $derived(courses);
+	let openDeleteModal = $state(false);
+	let idToBeDeleted = $state(null);
+	let isDeleting = $state(false);
+	let openModuleDeleteModal = $state(false);
+	let moduleToBeDeleted = $state<{ moduleId: string; courseId: string } | null>(null);
+	let openContentDeleteModal = $state(false);
+	let contentToBeDeleted = $state<{ contentId: string; moduleId: string } | null>(null);
+	let searchKeyword = $state(undefined);
+	let selectedContentIds = $state<Record<string, string | null>>({});
+	let courseName = $state(undefined);
+	let hasInitialized = $state(false);
+	let initialTotalCount = (() => {
+		return data.courses?.TotalCount ?? 0;
+	})();
+	let totalCoursesCount = $state(initialTotalCount);
+	let isSortingName = $state(false);
+	let sortBy = $state('Name');
+	let sortOrder = $state('ascending');
+	let paginationSettings: PaginationSettings = $state({
+		page: 0,
+		limit: 10,
+		size: initialTotalCount,
+		amounts: [10, 20, 30, 50]
+	});
+
+	const userId = page.params.userId;
+	const courseRoute = `/users/${userId}/courses`;
+	const editRoute = (courseId) => `/users/${userId}/courses/${courseId}/edit`;
+	const viewRoute = (courseId) => `/users/${userId}/courses/${courseId}/view`;
+	const createRoute = `/users/${userId}/courses/create`;
+
+	const breadCrumbs = [{ name: 'Courses', path: courseRoute }];
+
 	$effect(() => {
+		// Process initial data if available
 		if (!hasProcessedInitialData && courses.length > 0) {
 			hasProcessedInitialData = true;
 			try {
@@ -86,45 +114,8 @@
 				console.error('Error storing modules/contents in state:', error);
 			}
 		}
-	});
-	let retrivedCourses = $derived(courses);
-	let openDeleteModal = $state(false);
-	let idToBeDeleted = $state(null);
-	let isDeleting = $state(false);
-	let openModuleDeleteModal = $state(false);
-	let moduleToBeDeleted = $state<{ moduleId: string; courseId: string } | null>(null);
-	let openContentDeleteModal = $state(false);
-	let contentToBeDeleted = $state<{ contentId: string; moduleId: string } | null>(null);
-	let searchKeyword = $state(undefined);
 
-	// State for managing selected content IDs per module
-	let selectedContentIds = $state<Record<string, string | null>>({});
-	let courseName = $state(undefined);
-	let initialTotalCount = (() => {
-		return data.courses?.TotalCount ?? 0;
-	})();
-	let totalCoursesCount = $state(initialTotalCount);
-	let isSortingName = $state(false);
-	let sortBy = $state('Name');
-	let sortOrder = $state('ascending');
-	let paginationSettings: PaginationSettings = $state({
-		page: 0,
-		limit: 10,
-		size: initialTotalCount,
-		amounts: [10, 20, 30, 50]
-	});
-
-	const userId = page.params.userId;
-	const courseRoute = `/users/${userId}/courses`;
-	const editRoute = (courseId) => `/users/${userId}/courses/${courseId}/edit`;
-	const viewRoute = (courseId) => `/users/${userId}/courses/${courseId}/view`;
-	const modulesRoute = (courseId) => `/users/${userId}/courses/${courseId}/modules`;
-	const createRoute = `/users/${userId}/courses/create`;
-
-	const breadCrumbs = [{ name: 'Courses', path: courseRoute }];
-
-	let hasInitialized = $state(false);
-	$effect(() => {
+		// Fetch courses if none exist and not already initialized
 		if (!hasInitialized && courses.length === 0 && !isLoading) {
 			hasInitialized = true;
 			searchCourse({
@@ -716,7 +707,8 @@
 											: 'Not specified'}
 									</td>
 									<td role="gridcell" aria-colindex={5} tabindex="0">
-										{TimeHelper.formatDateToReadable(row.CreatedAt, LocaleIdentifier.EN_US)}
+										{TimeHelper.formatDateToReadable(row.CreatedAt, LocaleIdentifier.EN_US)};
+										
 									</td>
 
 									<td>
