@@ -86,7 +86,6 @@
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(learningJourneyUpdateModel);
-			console.log('validationResult', validationResult);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(

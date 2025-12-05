@@ -15,7 +15,6 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
     });
     
     const response = await searchLearningJourneys(sessionId, searchFilters);
-    console.log("Learning Journeys response:", response);
     
     const learningJourneys = response?.Data?.LearningPathRecords || {
         TotalCount: 0,

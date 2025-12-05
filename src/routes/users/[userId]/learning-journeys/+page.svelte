@@ -103,7 +103,6 @@
 			}
 
 			const searchResult = await res.json();
-			console.log('searchResult', searchResult);
 
 			if (searchResult.Status === 'failure' || searchResult.HttpCode !== 200) {
 				toastMessage({
@@ -219,14 +218,12 @@
 	}
 
 	const handleLearningJourneyDelete = async (id) => {
-		console.log('Inside handleLearningJourneyDelete', id);
 		const response = await fetch(`/api/server/lms/learning.journeys/${id}`, {
 			method: 'DELETE',
 			headers: { 'content-type': 'application/json' }
 		});
 
 		const res = await response.json();
-		console.log('deleted Response', res);
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);

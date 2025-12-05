@@ -8,6 +8,8 @@
 	import type { LearningPathCreateModel } from '$lib/types/lms/learning.journeys.js';
 	import { goto } from '$app/navigation';
 	import Button from '$lib/components/button/button.svelte';
+	import CoursesDragDrop from '$lib/components/lms/courses-drag-drop.svelte';
+	import SelectedCoursesDragDrop from '$lib/components/lms/selected-courses-drag-drop.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -20,12 +22,14 @@
 	let durationInDays = $state(undefined);
 	let preferenceWeight = $state(undefined);
 	let enabled = $state(true);
-	let courseIds = $state<string[]>([]);
 	let promise = $state();
 	let previewUrl = $state<string | undefined>(undefined);
+	let selectedCourses = $state<any[]>([]);
+	let availableCourses = $state<any[]>([]);
+	let courseIds = $derived(selectedCourses.map((course) => course.id));
 
-	data.title = 'Educational-Learning Journey Create';
 	const userId = page.params.userId;
+
 	const createRoute = `/users/${userId}/learning-journeys/create`;
 	const learningJourneysRoute = `/users/${userId}/learning-journeys`;
 
@@ -42,6 +46,28 @@
 			previewUrl = undefined;
 		}
 	};
+
+	let allCoursesNormalized = $derived.by(() => {
+		if (data.courses && Array.isArray(data.courses)) {
+			return data.courses.filter(
+				(course) => course && (course.id || course.Id || course.ID)
+			).map((course) => ({
+				id: course.id || course.Id || course.ID,
+				Name: course.Name || course.name || course.NAME || 'Unnamed Course',
+				...course
+			}));
+		}
+		return [];
+	});
+
+	$effect(() => {
+		if (allCoursesNormalized.length > 0) {
+			const selectedIds = new Set(selectedCourses.map(c => c.id));
+			availableCourses = allCoursesNormalized.filter(
+				(course) => !selectedIds.has(course.id)
+			);
+		}
+	});
 
 	const handleSubmit = async (event: Event) => {
 		try {
@@ -171,6 +197,22 @@
 						/>
 						{#if errors?.DurationInDays}
 							<p class="text-error">{errors?.DurationInDays}</p>
+						{/if}
+					</td>
+				</tr>
+				<tr class="tables-row">
+					<td class="table-label">Courses</td>
+					<td class="table-data">
+						<div class="flex flex-col gap-4">
+							<div>
+								<CoursesDragDrop title="Available Courses" bind:items={availableCourses} />
+							</div>
+							<div>
+								<SelectedCoursesDragDrop title="Selected Courses" bind:selectedItems={selectedCourses} />
+							</div>
+						</div>
+						{#if errors?.CourseIds}
+							<p class="text-error">{errors?.CourseIds}</p>
 						{/if}
 					</td>
 				</tr>

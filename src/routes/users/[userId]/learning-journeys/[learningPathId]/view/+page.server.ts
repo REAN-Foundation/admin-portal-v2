@@ -9,23 +9,22 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const learningPathId = event.params.learningPathId;
 	
 	event.depends('app:learning-journey');
+	event.depends('app:course');
 	
-	const response = await getLearningPathById(sessionId, learningPathId);
-	console.log("Learning Journey response:", JSON.stringify(response, null, 2));
-	
-	
+	const response = await getLearningPathById(sessionId, learningPathId);	
 	const learningJourney = response?.Data?.LearningPath || null;
-	const id = response?.Data?.id;
+	const id = learningJourney?.id;
 	
-	console.log("Extracted learning journey:", JSON.stringify(learningJourney, null, 2));
-
-	if (!learningJourney) {
-		console.error("Learning journey not found in response. Full response:", response);
+	let courses = learningJourney?.Courses || [];
+	
+	if (!Array.isArray(courses)) {
+		courses = [];
 	}
 
 	return {
 		location: `${id}/edit`,
 		learningJourney: learningJourney || {},
+		courses,
 		message: response?.Message || 'Learning journey retrieved successfully',
 		title: 'Educational-Learning Journey View'
 	};
