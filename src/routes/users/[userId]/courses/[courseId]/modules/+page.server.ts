@@ -17,8 +17,6 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
         courseId: courseId
     });
     
-    console.log('Search Parameters:', searchFilters);
-    console.log('CourseId from params:', courseId);
     const response = await searchModules(sessionId, searchFilters);
 
     const modules = response?.Data?.CourseModuleRecords || {
@@ -28,7 +26,6 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
         PageIndex: 0,
         ItemsPerPage: 0
     };
-	console.log("modules==>",modules);
     
 
     return {

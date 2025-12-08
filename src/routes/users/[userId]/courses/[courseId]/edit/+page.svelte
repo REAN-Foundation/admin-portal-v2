@@ -133,7 +133,7 @@
 				ImageResourceId: imageResourceId,
 				DurationInDays: durationInDays ? parseFloat(durationInDays) : undefined,
 				TenantId: tenantId,
-				Sequence: sequence ? parseInt(sequence) : undefined
+				// Sequence: sequence ? parseInt(sequence) : undefined
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(courseUpdateModel);

@@ -358,8 +358,6 @@
 				url += `&sortOrder=ascending`;
 				url += `&courseId=${encodeURIComponent(courseId)}`;
 
-				console.log(`Fetching modules for courseId: ${courseId}, URL: ${url}`);
-
 				const res = await fetch(url, {
 					method: 'GET',
 					headers: { 'content-type': 'application/json' },
@@ -373,7 +371,6 @@
 				}
 
 				const searchResult = await res.json();
-				console.log(`Modules response for courseId ${courseId}:`, searchResult);
 				let modulesList: any[] = [];
 
 				if (searchResult.Data && searchResult.Data.CourseModuleRecords) {
@@ -384,13 +381,7 @@
 						modulesList = modulesList.filter(
 							(module) => module.CourseId === courseId || module.courseId === courseId
 						);
-						console.log(
-							`Filtered modules for courseId ${courseId}:`,
-							modulesList.length,
-							'modules'
-						);
 
-						// Check if there are more pages
 						const totalCount = courseModuleRecords.TotalCount;
 						const currentCount = allModules.length + modulesList.length;
 						hasMore = currentCount < totalCount && modulesList.length === itemsPerPage;
@@ -410,8 +401,6 @@
 					pageIndex++;
 				}
 			}
-
-			console.log(`Total modules fetched for courseId ${courseId}:`, allModules.length);
 
 			const modulesWithCourseId = allModules.map((module) => ({
 				...module,
@@ -449,17 +438,14 @@
 
 	const handleContentDelete = async (data: { contentId: string; moduleId: string }) => {
 		const { contentId, moduleId } = data;
-		console.log('Deleting content:', contentId);
 		const response = await fetch(`/api/server/lms/course.contents/${contentId}`, {
 			method: 'DELETE',
 			headers: { 'content-type': 'application/json' }
 		});
 
 		const res = await response.json();
-		console.log('Delete content response:', res);
 		if (res.HttpCode === 200) {
 			toastMessage(res);
-			// Refresh course data to get updated nested structure
 			await searchCourse({
 				courseName: searchKeyword,
 				itemsPerPage: paginationSettings.limit,
@@ -481,14 +467,12 @@
 
 	const handleModuleDelete = async (data: { moduleId: string; courseId: string }) => {
 		const { moduleId, courseId } = data;
-		console.log('Deleting module:', moduleId);
 		const response = await fetch(`/api/server/lms/course.modules/${moduleId}`, {
 			method: 'DELETE',
 			headers: { 'content-type': 'application/json' }
 		});
 
 		const res = await response.json();
-		console.log('Delete module response:', res);
 		if (res.HttpCode === 200) {
 			toastMessage(res);
 			// Refresh course data to get updated nested structure

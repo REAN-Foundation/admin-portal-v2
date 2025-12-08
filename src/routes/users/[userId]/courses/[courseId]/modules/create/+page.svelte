@@ -113,7 +113,7 @@
 				Description: description,
 				DurationInMins: durationInMins ? parseFloat(durationInMins) : undefined,
 				ImageUrl: imageResourceId,
-				ContentSequence: contentSequence,
+				// ContentSequence: contentSequence,
 				CourseId: courseId // Include courseId from URL params
 			};
 

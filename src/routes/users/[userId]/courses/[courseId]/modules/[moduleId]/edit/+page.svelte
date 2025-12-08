@@ -134,7 +134,7 @@
 				Description: description,
 				DurationInMins: durationInMins ? parseFloat(durationInMins) : undefined,
 				ImageUrl: imageResourceId,
-				ContentSequence: contentSequence ? parseFloat(contentSequence) : undefined
+				// ContentSequence: contentSequence ? parseFloat(contentSequence) : undefined
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(moduleUpdateModel);
