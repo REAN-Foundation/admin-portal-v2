@@ -243,7 +243,7 @@
 							onclick={openAddMessageModal}
 							disabled={!edit}
 						>
-							Add Message +
+							Add Message
 						</button>
 					</div>
 				</div>
