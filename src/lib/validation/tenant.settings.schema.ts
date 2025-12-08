@@ -394,73 +394,87 @@ export const ConsentSettingsSchema = z.object({
         .optional(),
 });
 
-const MarketingMaterialStylingSchema = z.object({
-    primary: z.string().optional(),
-    secondary: z.string().optional(),
-    accent: z.string().optional(),
-    lightBg: z.string().optional(),
-    panel: z.string().optional(),
-    muted: z.string().optional(),
-    text: z.string().optional(),
-    headingFont: z.string().optional(),
-    bodyFont: z.string().optional(),
-    pageWidth: z.string().optional(),
-    pageHeight: z.string().optional(),
-    userInterfaceWidth: z.string().optional(),
-    userInteractionWidth: z.string().optional(),
-    qrSize: z.string().optional(),
+const TenantMarketingStylingSchema = z.object({
+    Primary: z.string().optional(),
+    Secondary: z.string().optional(),
+    Accent: z.string().optional(),
+    LightBg: z.string().optional(),
+    Panel: z.string().optional(),
+    Muted: z.string().optional(),
+    Text: z.string().optional(),
+    HeadingFont: z.string().optional(),
+    BodyFont: z.string().optional(),
+    PageWidth: z.string().optional(),
+    PageHeight: z.string().optional(),
+    UserInterfaceWidth: z.string().optional(),
+    UserInteractionWidth: z.string().optional(),
+    QrSize: z.string().optional(),
 });
 
-const MarketingMaterialBenefitItemSchema = z.union([
-    z.string(),
-    z.object({
-        title: z.string().optional(),
-        description: z.string().optional(),
-    })
-]);
-
-const MarketingMaterialContentSchema = z.object({
-    header: z.object({
-        mainTitle: z.string().optional(),
-        subtitle: z.string().optional(),
-    }).optional(),
-    introduction: z.object({
-        introParagraph: z.string().optional(),
-        problemStatement: z.string().optional(),
-    }).optional(),
-    benefits: z.object({
-        title: z.string().optional(),
-        items: z.array(MarketingMaterialBenefitItemSchema).optional(),
-    }).optional(),
-    userInterface: z.object({
-        heading: z.string().optional(),
-        paragraph: z.string().optional(),
-    }).optional(),
-    footer: z.object({
-        ctaHeading: z.string().optional(),
-        ctaDescription: z.string().optional(),
-        qrInstruction: z.string().optional(),
-    }).optional(),
+const TenantMarketingContentSectionSchema = z.object({
+    Heading: z.string().optional(),
+    Paragraph: z.string().optional(),
 });
 
-const MarketingMaterialImagesSchema = z.object({
+const TenantMarketingContentIntroductionSchema = z.object({
+    IntroParagraph: z.string().optional(),
+    ProblemStatement: z.string().optional(),
+});
+
+const TenantMarketingContentBenefitsSchema = z.object({
+    Title: z.string().optional(),
+    Items: z.array(z.string()).optional(),
+});
+
+const TenantMarketingContentFooterSchema = z.object({
+    CtaHeading: z.string().optional(),
+    CtaDescription: z.string().optional(),
+    QrInstruction: z.string().optional(),
+});
+
+const TenantMarketingContentHeaderSchema = z.object({
+    MainTitle: z.string().optional(),
+    Subtitle: z.string().optional(),
+});
+
+const TenantMarketingContentSchema = z.object({
+    Header: TenantMarketingContentHeaderSchema.nullable().optional(),
+    Introduction: TenantMarketingContentIntroductionSchema.nullable().optional(),
+    Benefits: TenantMarketingContentBenefitsSchema.nullable().optional(),
+    UserInterface: TenantMarketingContentSectionSchema.nullable().optional(),
+    Footer: TenantMarketingContentFooterSchema.nullable().optional(),
+});
+
+const TenantMarketingImagesSchema = z.object({
     TitleImage: z.string().optional(),
     UserInterfaceImage: z.string().optional(),
+}).catchall(z.string().optional());
+
+const TenantMarketingQRCodeSchema = z.union([
+    z.string(),
+    z.object({
+        ResourceId: z.string().optional(),
+    }).catchall(z.unknown()),
+    z.null(),
+]);
+
+const TenantMarketingLogosSchema = z.union([
+    z.array(z.string()),
+    z.record(z.string()),
+    z.null(),
+]);
+
+export const TenantSettingsMarketingDomainModelSchema = z.object({
+    Styling: TenantMarketingStylingSchema.nullable().optional(),
+    Content: TenantMarketingContentSchema.nullable().optional(),
+    QRCode: TenantMarketingQRCodeSchema.optional(),
+    Images: TenantMarketingImagesSchema.nullable().optional(),
+    Logos: TenantMarketingLogosSchema.optional(),
+    PDFResourceId: z.string().nullable().optional(),
 });
 
-const MarketingMaterialQRcodeSchema = z.object({
-    resourceId: z.string().optional(),
-    whatsappNumber: z.string().optional(),
-    url: z.string().optional(),
-});
-
-export const MarketingMaterialRequestSchema = z.object({
-    Styling: MarketingMaterialStylingSchema.optional(),
-    Content: MarketingMaterialContentSchema.optional(),
-    Images: MarketingMaterialImagesSchema.optional(),
-    Logos: z.array(z.string()).optional(),
-    QRcode: MarketingMaterialQRcodeSchema.optional(),
-});
+// Legacy alias for backward compatibility
+export const MarketingMaterialRequestSchema = TenantSettingsMarketingDomainModelSchema;
 export const CustomSettingSchema = z.object({
     Name: z.string({
         required_error: "Name is required",

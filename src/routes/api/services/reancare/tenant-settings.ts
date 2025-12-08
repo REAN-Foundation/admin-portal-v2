@@ -1,6 +1,6 @@
 import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY } from '$env/static/private';
 import { get, put, del, post } from './common.reancare';
-import type { MarketingMaterialCreateModel, MarketingMaterialUpdateModel } from '$lib/types/tenant.settings.types';
+import type { TenantSettingsMarketingDomainModel, TenantMarketingQRCode } from '$lib/types/tenant.settings.types';
 import { SessionManager } from '$routes/api/cache/session/session.manager';
 import { error } from '@sveltejs/kit';
 
@@ -85,9 +85,46 @@ export const getMarketingMaterialByTenantId = async (
 export const createMarketingMaterialByTenantId = async (
 	sessionId: string,
 	tenantId: string,
-	settings: MarketingMaterialCreateModel
+	settings: TenantSettingsMarketingDomainModel
 ) => {
-	// Helper function to filter out empty strings from objects
+	// Helper function to convert camelCase to PascalCase
+	const toPascalCase = (str: string): string => {
+		return str.charAt(0).toUpperCase() + str.slice(1);
+	};
+
+	// Helper function to transform object keys from camelCase to PascalCase
+	const transformToPascalCase = (obj: Record<string, unknown> | null | undefined): Record<string, unknown> | null => {
+		if (!obj || typeof obj !== 'object') return null;
+		const transformed: Record<string, unknown> = {};
+		for (const [key, value] of Object.entries(obj)) {
+			const pascalKey = toPascalCase(key);
+			if (typeof value === 'string') {
+				// Only include non-empty strings
+				if (value.trim() !== '') {
+					transformed[pascalKey] = value;
+				}
+			} else if (Array.isArray(value)) {
+				// Filter empty strings from arrays and keep array as is
+				const filteredArray = value.filter((item) => item && (typeof item === 'string' ? item.trim() !== '' : true));
+				if (filteredArray.length > 0) {
+					transformed[pascalKey] = filteredArray;
+				}
+			} else if (typeof value === 'object' && value !== null) {
+				// Recursively transform nested objects
+				const transformedNested = transformToPascalCase(value as Record<string, unknown>);
+				// Only include nested object if it has at least one property
+				if (transformedNested && Object.keys(transformedNested).length > 0) {
+					transformed[pascalKey] = transformedNested;
+				}
+			} else if (value !== '' && value !== null && value !== undefined) {
+				// Include other non-empty values
+				transformed[pascalKey] = value;
+			}
+		}
+		return Object.keys(transformed).length > 0 ? transformed : null;
+	};
+
+	// Helper function to filter out empty strings from objects (for Images and QRCode which are already PascalCase)
 	const filterEmptyStrings = (obj: Record<string, unknown> | null | undefined): Record<string, unknown> | null => {
 		if (!obj || typeof obj !== 'object') return null;
 		const filtered: Record<string, unknown> = {};
@@ -121,16 +158,16 @@ export const createMarketingMaterialByTenantId = async (
 	const body: Record<string, unknown> = {};
 
 	if (settings.Styling) {
-		const filteredStyling = filterEmptyStrings(settings.Styling as Record<string, unknown>);
-		if (filteredStyling) {
-			body.Styling = filteredStyling;
+		const transformedStyling = transformToPascalCase(settings.Styling as Record<string, unknown>);
+		if (transformedStyling) {
+			body.Styling = transformedStyling;
 		}
 	}
 
 	if (settings.Content) {
-		const filteredContent = filterEmptyStrings(settings.Content as Record<string, unknown>);
-		if (filteredContent) {
-			body.Content = filteredContent;
+		const transformedContent = transformToPascalCase(settings.Content as Record<string, unknown>);
+		if (transformedContent) {
+			body.Content = transformedContent;
 		}
 	}
 
@@ -141,36 +178,39 @@ export const createMarketingMaterialByTenantId = async (
 		}
 	}
 
-	if (settings.Logos && settings.Logos.length > 0) {
-		const filteredLogos = settings.Logos.filter((logo) => logo && logo.trim() !== '');
+	if (settings.Logos !== undefined && settings.Logos !== null) {
+		// Logos can be string[] or object or null
+		if (Array.isArray(settings.Logos)) {
+			const filteredLogos = settings.Logos.filter((logo) => logo && typeof logo === 'string' && logo.trim() !== '');
 		if (filteredLogos.length > 0) {
 			body.Logos = filteredLogos;
 		}
+		} else if (typeof settings.Logos === 'object') {
+			body.Logos = settings.Logos;
+		}
 	}
 
-	if (settings.QRcode) {
-		const qrcode = settings.QRcode as Record<string, unknown>;
-		// Transform camelCase to PascalCase to match backend expectations
-		// Backend accepts QRCode as either a string (resource ID) or an object with ResourceId, WhatsappNumber, Url
-		const transformedQRcode: Record<string, unknown> = {};
-		
-		// Always include ResourceId if it exists and is not empty (like Images)
-		if (qrcode.resourceId && typeof qrcode.resourceId === 'string' && qrcode.resourceId.trim() !== '') {
-			transformedQRcode.ResourceId = qrcode.resourceId;
-		}
-		
-		// Include optional metadata fields only if they're not empty
-		if (qrcode.whatsappNumber && typeof qrcode.whatsappNumber === 'string' && qrcode.whatsappNumber.trim() !== '') {
-			transformedQRcode.WhatsappNumber = qrcode.whatsappNumber;
-		}
-		if (qrcode.url && typeof qrcode.url === 'string' && qrcode.url.trim() !== '') {
-			transformedQRcode.Url = qrcode.url;
-		}
-		
-		// Backend expects QRCode (capital C) not QRcode
-		// Only include QRCode if ResourceId is present (required for QR code image)
-		if (transformedQRcode.ResourceId) {
-			body.QRCode = transformedQRcode;
+	if (settings.QRCode !== undefined && settings.QRCode !== null) {
+		// QRCode can be string, object, or null
+		if (typeof settings.QRCode === 'string') {
+			// If it's a string, use it as ResourceId
+			body.QRCode = {
+				ResourceId: settings.QRCode
+			};
+		} else if (typeof settings.QRCode === 'object' && !Array.isArray(settings.QRCode)) {
+			// If it's an object, transform it
+			const qrcode = settings.QRCode as Record<string, unknown>;
+			const transformedQRcode: Record<string, unknown> = {};
+			
+			// Always include ResourceId if it exists and is not empty
+			if (qrcode.ResourceId && typeof qrcode.ResourceId === 'string' && qrcode.ResourceId.trim() !== '') {
+				transformedQRcode.ResourceId = qrcode.ResourceId;
+			}
+			
+			// Only include QRCode if ResourceId is present (required for QR code image)
+			if (transformedQRcode.ResourceId) {
+				body.QRCode = transformedQRcode;
+			}
 		}
 	}
 
@@ -181,9 +221,46 @@ export const createMarketingMaterialByTenantId = async (
 export const updateMarketingMaterialByTenantId = async (
 	sessionId: string,
 	tenantId: string,
-	settings: MarketingMaterialUpdateModel
+	settings: TenantSettingsMarketingDomainModel
 ) => {
-	// Helper function to filter out empty strings from objects
+	// Helper function to convert camelCase to PascalCase
+	const toPascalCase = (str: string): string => {
+		return str.charAt(0).toUpperCase() + str.slice(1);
+	};
+
+	// Helper function to transform object keys from camelCase to PascalCase
+	const transformToPascalCase = (obj: Record<string, unknown> | null | undefined): Record<string, unknown> | null => {
+		if (!obj || typeof obj !== 'object') return null;
+		const transformed: Record<string, unknown> = {};
+		for (const [key, value] of Object.entries(obj)) {
+			const pascalKey = toPascalCase(key);
+			if (typeof value === 'string') {
+				// Only include non-empty strings
+				if (value.trim() !== '') {
+					transformed[pascalKey] = value;
+				}
+			} else if (Array.isArray(value)) {
+				// Filter empty strings from arrays and keep array as is
+				const filteredArray = value.filter((item) => item && (typeof item === 'string' ? item.trim() !== '' : true));
+				if (filteredArray.length > 0) {
+					transformed[pascalKey] = filteredArray;
+				}
+			} else if (typeof value === 'object' && value !== null) {
+				// Recursively transform nested objects
+				const transformedNested = transformToPascalCase(value as Record<string, unknown>);
+				// Only include nested object if it has at least one property
+				if (transformedNested && Object.keys(transformedNested).length > 0) {
+					transformed[pascalKey] = transformedNested;
+				}
+			} else if (value !== '' && value !== null && value !== undefined) {
+				// Include other non-empty values
+				transformed[pascalKey] = value;
+			}
+		}
+		return Object.keys(transformed).length > 0 ? transformed : null;
+	};
+
+	// Helper function to filter out empty strings from objects (for Images and QRCode which are already PascalCase)
 	const filterEmptyStrings = (obj: Record<string, unknown> | null | undefined): Record<string, unknown> | null => {
 		if (!obj || typeof obj !== 'object') return null;
 		const filtered: Record<string, unknown> = {};
@@ -217,16 +294,16 @@ export const updateMarketingMaterialByTenantId = async (
 	const body: Record<string, unknown> = {};
 
 	if (settings.Styling) {
-		const filteredStyling = filterEmptyStrings(settings.Styling as Record<string, unknown>);
-		if (filteredStyling) {
-			body.Styling = filteredStyling;
+		const transformedStyling = transformToPascalCase(settings.Styling as Record<string, unknown>);
+		if (transformedStyling) {
+			body.Styling = transformedStyling;
 		}
 	}
 
 	if (settings.Content) {
-		const filteredContent = filterEmptyStrings(settings.Content as Record<string, unknown>);
-		if (filteredContent) {
-			body.Content = filteredContent;
+		const transformedContent = transformToPascalCase(settings.Content as Record<string, unknown>);
+		if (transformedContent) {
+			body.Content = transformedContent;
 		}
 	}
 
@@ -237,36 +314,39 @@ export const updateMarketingMaterialByTenantId = async (
 		}
 	}
 
-	if (settings.Logos && settings.Logos.length > 0) {
-		const filteredLogos = settings.Logos.filter((logo) => logo && logo.trim() !== '');
+	if (settings.Logos !== undefined && settings.Logos !== null) {
+		// Logos can be string[] or object or null
+		if (Array.isArray(settings.Logos)) {
+			const filteredLogos = settings.Logos.filter((logo) => logo && typeof logo === 'string' && logo.trim() !== '');
 		if (filteredLogos.length > 0) {
 			body.Logos = filteredLogos;
 		}
+		} else if (typeof settings.Logos === 'object') {
+			body.Logos = settings.Logos;
+		}
 	}
 
-	if (settings.QRcode) {
-		const qrcode = settings.QRcode as Record<string, unknown>;
-		// Transform camelCase to PascalCase to match backend expectations
-		// Backend accepts QRCode as either a string (resource ID) or an object with ResourceId, WhatsappNumber, Url
-		const transformedQRcode: Record<string, unknown> = {};
-		
-		// Always include ResourceId if it exists and is not empty (like Images)
-		if (qrcode.resourceId && typeof qrcode.resourceId === 'string' && qrcode.resourceId.trim() !== '') {
-			transformedQRcode.ResourceId = qrcode.resourceId;
-		}
-		
-		// Include optional metadata fields only if they're not empty
-		if (qrcode.whatsappNumber && typeof qrcode.whatsappNumber === 'string' && qrcode.whatsappNumber.trim() !== '') {
-			transformedQRcode.WhatsappNumber = qrcode.whatsappNumber;
-		}
-		if (qrcode.url && typeof qrcode.url === 'string' && qrcode.url.trim() !== '') {
-			transformedQRcode.Url = qrcode.url;
-		}
-		
-		// Backend expects QRCode (capital C) not QRcode
-		// Only include QRCode if ResourceId is present (required for QR code image)
-		if (transformedQRcode.ResourceId) {
-			body.QRCode = transformedQRcode;
+	if (settings.QRCode !== undefined && settings.QRCode !== null) {
+		// QRCode can be string, object, or null
+		if (typeof settings.QRCode === 'string') {
+			// If it's a string, use it as ResourceId
+			body.QRCode = {
+				ResourceId: settings.QRCode
+			};
+		} else if (typeof settings.QRCode === 'object' && !Array.isArray(settings.QRCode)) {
+			// If it's an object, transform it
+			const qrcode = settings.QRCode as Record<string, unknown>;
+			const transformedQRcode: Record<string, unknown> = {};
+			
+			// Always include ResourceId if it exists and is not empty
+			if (qrcode.ResourceId && typeof qrcode.ResourceId === 'string' && qrcode.ResourceId.trim() !== '') {
+				transformedQRcode.ResourceId = qrcode.ResourceId;
+			}
+			
+			// Only include QRCode if ResourceId is present (required for QR code image)
+			if (transformedQRcode.ResourceId) {
+				body.QRCode = transformedQRcode;
+			}
 		}
 	}
 

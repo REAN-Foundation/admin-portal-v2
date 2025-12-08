@@ -337,86 +337,106 @@ export interface MarketingMaterialUploadModel {
 	FileType: string;
 }
 
-// New Marketing Material Types with Styling and Content structure
-export interface MarketingMaterialStyling {
-	primary?: string;
-	secondary?: string;
-	accent?: string;
-	lightBg?: string;
-	panel?: string;
-	muted?: string;
-	text?: string;
-	headingFont?: string;
-	bodyFont?: string;
-	pageWidth?: string;
-	pageHeight?: string;
-	userInterfaceWidth?: string;
-	userInteractionWidth?: string;
-	qrSize?: string;
+// Tenant Marketing Material Types matching backend structure
+export interface TenantMarketingStyling {
+	Primary?: string;
+	Secondary?: string;
+	Accent?: string;
+	LightBg?: string;
+	Panel?: string;
+	Muted?: string;
+	Text?: string;
+	HeadingFont?: string;
+	BodyFont?: string;
+	PageWidth?: string;
+	PageHeight?: string;
+	UserInterfaceWidth?: string;
+	UserInteractionWidth?: string;
+	QrSize?: string;
 }
 
-export interface MarketingMaterialContentHeader {
-	mainTitle?: string;
-	subtitle?: string;
+export interface TenantMarketingContentSection {
+	Heading?: string;
+	Paragraph?: string;
 }
 
-export interface MarketingMaterialContentIntroduction {
-	introParagraph?: string;
-	problemStatement?: string;
+export interface TenantMarketingContentIntroduction {
+	IntroParagraph?: string;
+	ProblemStatement?: string;
 }
 
-export interface MarketingMaterialBenefitItem {
-	title?: string;
-	description?: string;
+export interface TenantMarketingContentBenefits {
+	Title?: string;
+	Items?: string[];
 }
 
-export interface MarketingMaterialContentBenefits {
-	title?: string;
-	items?: (string | MarketingMaterialBenefitItem)[];
+export interface TenantMarketingContentFooter {
+	CtaHeading?: string;
+	CtaDescription?: string;
+	QrInstruction?: string;
 }
 
-export interface MarketingMaterialContentUserInterface {
-	heading?: string;
-	paragraph?: string;
+export interface TenantMarketingContentHeader {
+	MainTitle?: string;
+	Subtitle?: string;
 }
 
-export interface MarketingMaterialContentFooter {
-	ctaHeading?: string;
-	ctaDescription?: string;
-	qrInstruction?: string;
+export interface TenantMarketingContent {
+	Header?: TenantMarketingContentHeader | null;
+	Introduction?: TenantMarketingContentIntroduction | null;
+	Benefits?: TenantMarketingContentBenefits | null;
+	UserInterface?: TenantMarketingContentSection | null;
+	Footer?: TenantMarketingContentFooter | null;
 }
 
-export interface MarketingMaterialContent {
-	header?: MarketingMaterialContentHeader;
-	introduction?: MarketingMaterialContentIntroduction;
-	benefits?: MarketingMaterialContentBenefits;
-	userInterface?: MarketingMaterialContentUserInterface;
-	footer?: MarketingMaterialContentFooter;
-}
+export type TenantMarketingQRCode = string | {
+	ResourceId?: string;
+	[key: string]: unknown;
+} | null;
 
-export interface MarketingMaterialImages {
+export interface TenantMarketingImages {
 	TitleImage?: string;
 	UserInterfaceImage?: string;
+	[key: string]: string | undefined;
 }
 
-export interface MarketingMaterialQRcode {
-	resourceId?: string;
-	whatsappNumber?: string;
-	url?: string;
+export type TenantMarketingLogos = string[] | {
+	[key: string]: string;
+} | null;
+
+export interface TenantSettingsMarketingDomainModel {
+	Styling?: TenantMarketingStyling | null;
+	Content?: TenantMarketingContent | null;
+	QRCode?: TenantMarketingQRCode;
+	Images?: TenantMarketingImages | null;
+	Logos?: TenantMarketingLogos;
+	PDFResourceId?: string | null;
 }
 
-export interface MarketingMaterialCreateModel {
-	Styling?: MarketingMaterialStyling;
-	Content?: MarketingMaterialContent;
-	Images?: MarketingMaterialImages;
-	Logos?: string[];
-	QRcode?: MarketingMaterialQRcode;
+export interface TenantSettingsMarketingDto extends TenantSettingsMarketingDomainModel {
+	TenantId?: string;
 }
 
-export interface MarketingMaterialUpdateModel {
-	Styling?: MarketingMaterialStyling;
-	Content?: MarketingMaterialContent;
-	Images?: MarketingMaterialImages;
-	Logos?: string[];
-	QRcode?: MarketingMaterialQRcode;
+export enum TenantSettingsMarketingTypes {
+	Styling = 'Styling',
+	Content = 'Content',
+	QRCode = 'QRCode',
+	Images = 'Images',
+	Logos = 'Logos',
 }
+
+export const TenantSettingsMarketingTypesList = [
+	TenantSettingsMarketingTypes.Styling,
+	TenantSettingsMarketingTypes.Content,
+	TenantSettingsMarketingTypes.QRCode,
+	TenantSettingsMarketingTypes.Images,
+	TenantSettingsMarketingTypes.Logos,
+];
+
+// Legacy aliases for backward compatibility
+export type MarketingMaterialStyling = TenantMarketingStyling;
+export type MarketingMaterialContent = TenantMarketingContent;
+export type MarketingMaterialImages = TenantMarketingImages;
+export type MarketingMaterialQRcode = TenantMarketingQRCode;
+export type MarketingMaterialCreateModel = TenantSettingsMarketingDomainModel;
+export type MarketingMaterialUpdateModel = TenantSettingsMarketingDomainModel;

@@ -5,8 +5,8 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import { MarketingMaterialRequestSchema } from '$lib/validation/tenant.settings.schema';
 	import type {
-		MarketingMaterialCreateModel,
-		MarketingMaterialUpdateModel
+		TenantSettingsMarketingDomainModel,
+		TenantMarketingQRCode
 	} from '$lib/types/tenant.settings.types';
 	import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema.js';
 	import type { FaviconUploadModel, LogoUploadModel } from '$lib/types/tenant.settings.types.js';
@@ -39,99 +39,85 @@
 	let Styling = $state(
 		isEmpty
 			? {
-					primary: '',
-					secondary: '',
-					accent: '',
-					lightBg: '',
-					panel: '',
-					muted: '',
-					text: '',
-					headingFont: '',
-					bodyFont: '',
-					pageWidth: '',
-					pageHeight: '',
-					userInterfaceWidth: '',
-					userInteractionWidth: '',
-					qrSize: ''
+					Primary: '',
+					Secondary: '',
+					Accent: '',
+					LightBg: '',
+					Panel: '',
+					Muted: '',
+					Text: '',
+					HeadingFont: '',
+					BodyFont: '',
+					PageWidth: '',
+					PageHeight: '',
+					UserInterfaceWidth: '',
+					UserInteractionWidth: '',
+					QrSize: ''
 				}
 			: {
-					primary: data.marketingMaterial?.Styling?.primary ?? '',
-					secondary: data.marketingMaterial?.Styling?.secondary ?? '',
-					accent: data.marketingMaterial?.Styling?.accent ?? '',
-					lightBg: data.marketingMaterial?.Styling?.lightBg ?? '',
-					panel: data.marketingMaterial?.Styling?.panel ?? '',
-					muted: data.marketingMaterial?.Styling?.muted ?? '',
-					text: data.marketingMaterial?.Styling?.text ?? '',
-					headingFont: data.marketingMaterial?.Styling?.headingFont ?? '',
-					bodyFont: data.marketingMaterial?.Styling?.bodyFont ?? '',
-					pageWidth: data.marketingMaterial?.Styling?.pageWidth ?? '',
-					pageHeight: data.marketingMaterial?.Styling?.pageHeight ?? '',
-					userInterfaceWidth: data.marketingMaterial?.Styling?.userInterfaceWidth ?? '',
-					userInteractionWidth: data.marketingMaterial?.Styling?.userInteractionWidth ?? '',
-					qrSize: data.marketingMaterial?.Styling?.qrSize ?? ''
+					Primary: data.marketingMaterial?.Styling?.Primary ?? '',
+					Secondary: data.marketingMaterial?.Styling?.Secondary ?? '',
+					Accent: data.marketingMaterial?.Styling?.Accent ?? '',
+					LightBg: data.marketingMaterial?.Styling?.LightBg ?? '',
+					Panel: data.marketingMaterial?.Styling?.Panel ?? '',
+					Muted: data.marketingMaterial?.Styling?.Muted ?? '',
+					Text: data.marketingMaterial?.Styling?.Text ?? '',
+					HeadingFont: data.marketingMaterial?.Styling?.HeadingFont ?? '',
+					BodyFont: data.marketingMaterial?.Styling?.BodyFont ?? '',
+					PageWidth: data.marketingMaterial?.Styling?.PageWidth ?? '',
+					PageHeight: data.marketingMaterial?.Styling?.PageHeight ?? '',
+					UserInterfaceWidth: data.marketingMaterial?.Styling?.UserInterfaceWidth ?? '',
+					UserInteractionWidth: data.marketingMaterial?.Styling?.UserInteractionWidth ?? '',
+					QrSize: data.marketingMaterial?.Styling?.QrSize ?? ''
 				}
 	);
 
 	let Content = $state(
 		isEmpty
 			? {
-					header: {
-						mainTitle: '',
-						subtitle: ''
+					Header: {
+						MainTitle: '',
+						Subtitle: ''
 					},
-					introduction: {
-						introParagraph: '',
-						problemStatement: ''
+					Introduction: {
+						IntroParagraph: '',
+						ProblemStatement: ''
 					},
-					benefits: {
-						title: '',
-						items: []
+					Benefits: {
+						Title: '',
+						Items: []
 					},
-					userInterface: {
-						heading: '',
-						paragraph: ''
+					UserInterface: {
+						Heading: '',
+						Paragraph: ''
 					},
-					footer: {
-						ctaHeading: '',
-						ctaDescription: '',
-						qrInstruction: ''
+					Footer: {
+						CtaHeading: '',
+						CtaDescription: '',
+						QrInstruction: ''
 					}
 				}
 			: {
-					header: {
-						mainTitle: data.marketingMaterial?.Content?.header?.mainTitle ?? '',
-						subtitle: data.marketingMaterial?.Content?.header?.subtitle ?? ''
+					Header: {
+						MainTitle: data.marketingMaterial?.Content?.Header?.MainTitle ?? '',
+						Subtitle: data.marketingMaterial?.Content?.Header?.Subtitle ?? ''
 					},
-					introduction: {
-						introParagraph: data.marketingMaterial?.Content?.introduction?.introParagraph ?? '',
-						problemStatement: data.marketingMaterial?.Content?.introduction?.problemStatement ?? ''
+					Introduction: {
+						IntroParagraph: data.marketingMaterial?.Content?.Introduction?.IntroParagraph ?? '',
+						ProblemStatement: data.marketingMaterial?.Content?.Introduction?.ProblemStatement ?? ''
 					},
-					benefits: {
-						title: data.marketingMaterial?.Content?.benefits?.title ?? '',
-						items: (data.marketingMaterial?.Content?.benefits?.items ?? []).map((item) => {
-							if (typeof item === 'string') {
-								const colonIndex = item.indexOf(':');
-								if (colonIndex > 0) {
-									const title = item.substring(0, colonIndex).trim();
-									const description = item.substring(colonIndex + 1).trim();
-									return { title, description };
-								}
-								return { title: item, description: '' };
-							}
-							return {
-								title: item?.title ?? '',
-								description: item?.description ?? ''
-							};
-						})
+					Benefits: {
+						Title: data.marketingMaterial?.Content?.Benefits?.Title ?? '',
+						Items: (data.marketingMaterial?.Content?.Benefits?.Items ?? [])
 					},
-					userInterface: {
-						heading: data.marketingMaterial?.Content?.userInterface?.heading ?? '',
-						paragraph: data.marketingMaterial?.Content?.userInterface?.paragraph ?? ''
+					UserInterface: {
+						Heading: data.marketingMaterial?.Content?.UserInterface?.Heading ?? '',
+						Paragraph: data.marketingMaterial?.Content?.UserInterface?.Paragraph ?? ''
 					},
-					footer: {
-						ctaHeading: data.marketingMaterial?.Content?.footer?.ctaHeading ?? '',
-						ctaDescription: data.marketingMaterial?.Content?.footer?.ctaDescription ?? '',
-						qrInstruction: data.marketingMaterial?.Content?.footer?.qrInstruction ?? ''
+					Footer: {
+						CtaHeading: data.marketingMaterial?.Content?.Footer?.CtaHeading ?? '',
+						CtaDescription: data.marketingMaterial?.Content?.Footer?.CtaDescription ?? '',
+						QrInstruction: data.marketingMaterial?.Content?.Footer?.QrInstruction ?? ''
 					}
 				}
 	);
@@ -146,18 +132,17 @@
 					UserInterfaceImage: data.marketingMaterial?.Images?.UserInterfaceImage ?? ''
 				}
 	);
-	let QRcode = $state(
+	let QRcode: TenantMarketingQRCode = $state(
 		isEmpty
-			? {
-					resourceId: '',
-					whatsappNumber: '',
-					url: ''
-				}
-			: {
-					resourceId: data.marketingMaterial?.QRcode?.resourceId ?? '',
-					whatsappNumber: data.marketingMaterial?.QRcode?.whatsappNumber ?? '',
-					url: data.marketingMaterial?.QRcode?.url ?? ''
-				}
+			? null
+			: (() => {
+					const qrData = data.marketingMaterial?.QRCode;
+					if (!qrData) return null;
+					if (typeof qrData === 'string') return qrData;
+					return {
+						ResourceId: qrData.ResourceId ?? ''
+					};
+				})()
 	);
 	let titleImageFileName = $state('');
 	let userInterfaceImageFileName = $state('');
@@ -194,11 +179,11 @@
 	};
 
 	const addBenefit = () => {
-		Content.benefits.items = [...Content.benefits.items, { title: '', description: '' }];
+		Content.Benefits.Items = [...(Content.Benefits.Items ?? []), ''];
 	};
 
 	const removeBenefit = (index: number) => {
-		Content.benefits.items = Content.benefits.items.filter((_, i) => i !== index);
+		Content.Benefits.Items = (Content.Benefits.Items ?? []).filter((_, i) => i !== index);
 	};
 
 	const removeLogo = (index: number) => {
@@ -806,7 +791,9 @@
 								userInterfaceImageFile = null;
 								break;
 							case 'QR code':
-								QRcode.resourceId = result.resourceId;
+								QRcode = {
+									ResourceId: result.resourceId
+								};
 								qrCodeFile = null;
 								break;
 							default:
@@ -829,35 +816,21 @@
 			const finalLogosArray: string[] = Logos.filter((logo) => logo && logo.trim() !== '');
 
 			// Step 6: Prepare marketing material model
-			const marketingMaterialModel: MarketingMaterialCreateModel | MarketingMaterialUpdateModel = {
+			const marketingMaterialModel: TenantSettingsMarketingDomainModel = {
 				Styling,
 				Content: {
 					...Content,
-					benefits: {
-						...Content.benefits,
-						items: Content.benefits.items.map((item) => {
-							if (typeof item === 'string') {
-								return item;
-							}
-							const title = item?.title?.trim() || '';
-							const description = item?.description?.trim() || '';
-							if (title && description) {
-								return `${title}: ${description}`;
-							}
-							return description || title || '';
-						})
+					Benefits: {
+						...Content.Benefits,
+						Items: Content.Benefits.Items?.filter(item => item.trim() !== '') ?? []
 					}
 				},
 				Images: {
 					TitleImage: Images.TitleImage,
 					UserInterfaceImage: Images.UserInterfaceImage
 				},
-				Logos: finalLogosArray,
-				QRcode: {
-					resourceId: QRcode.resourceId || '',
-					whatsappNumber: QRcode.whatsappNumber || '',
-					url: QRcode.url || ''
-				}
+				Logos: finalLogosArray.length > 0 ? finalLogosArray : null,
+				QRCode: QRcode
 			};
 
 			// Step 7: Validate the model
@@ -1129,7 +1102,7 @@
 								<input
 									type="text"
 									id="content-main-title"
-									bind:value={Content.header.mainTitle}
+									bind:value={Content.Header.MainTitle}
 									{disabled}
 									placeholder="Enter main title"
 									class="input-field w-[70%]"
@@ -1144,7 +1117,7 @@
 								<input
 									type="text"
 									id="content-subtitle"
-									bind:value={Content.header.subtitle}
+									bind:value={Content.Header.Subtitle}
 									{disabled}
 									placeholder="Enter subtitle"
 									class="input-field w-[70%]"
@@ -1200,7 +1173,7 @@
 								<textarea
 									id="content-intro-paragraph"
 									rows="3"
-									bind:value={Content.introduction.introParagraph}
+									bind:value={Content.Introduction.IntroParagraph}
 									{disabled}
 									placeholder="Enter introduction paragraph"
 									class="input-field w-[70%]"
@@ -1215,7 +1188,7 @@
 								<textarea
 									id="content-problem-statement"
 									rows="3"
-									bind:value={Content.introduction.problemStatement}
+									bind:value={Content.Introduction.ProblemStatement}
 									{disabled}
 									placeholder="Enter problem statement"
 									class="input-field w-[70%]"
@@ -1271,7 +1244,7 @@
 								<input
 									type="text"
 									id="content-benefits-title"
-									bind:value={Content.benefits.title}
+									bind:value={Content.Benefits.Title}
 									{disabled}
 									placeholder="Key Benefits"
 									class="input-field w-[70%]"
@@ -1279,7 +1252,7 @@
 							</div>
 
 							<div class="space-y-4">
-								{#each Content.benefits.items as benefit, index}
+								{#each (Content.Benefits.Items ?? []) as benefit, index}
 									<div
 										class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4"
 									>
@@ -1297,37 +1270,20 @@
 												</button>
 											{/if}
 										</div>
-										<div class="space-y-4">
 											<div class="my-2 flex flex-col md:flex-row md:items-center">
 												<label
-													for="benefit-title-{index}"
+												for="benefit-item-{index}"
 													class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
-													>Title</label
-												>
-												<input
-													type="text"
-													id="benefit-title-{index}"
-													bind:value={benefit.title}
-													{disabled}
-													placeholder="Enter benefit title (required)"
-													class="input-field w-[70%]"
-												/>
-											</div>
-											<div class="my-4 flex flex-col md:flex-row md:items-center">
-												<label
-													for="benefit-description-{index}"
-													class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
-													>Description</label
+												>Benefit Text <span class="text-red-700">*</span></label
 												>
 												<textarea
-													id="benefit-description-{index}"
+												id="benefit-item-{index}"
 													rows="3"
-													bind:value={benefit.description}
+												bind:value={Content.Benefits.Items[index]}
 													{disabled}
-													placeholder="Enter benefit description (required)"
+												placeholder="Enter benefit text"
 													class="input-field w-[70%]"
 												></textarea>
-											</div>
 										</div>
 									</div>
 								{/each}
@@ -1392,7 +1348,7 @@
 								<input
 									type="text"
 									id="content-ui-heading"
-									bind:value={Content.userInterface.heading}
+									bind:value={Content.UserInterface.Heading}
 									{disabled}
 									placeholder="Who Can Benefit from This Program"
 									class="input-field w-[70%]"
@@ -1407,7 +1363,7 @@
 								<textarea
 									id="content-ui-paragraph"
 									rows="3"
-									bind:value={Content.userInterface.paragraph}
+									bind:value={Content.UserInterface.Paragraph}
 									{disabled}
 									placeholder="Enter user interface paragraph"
 									class="input-field w-[70%]"
@@ -1466,7 +1422,7 @@
 								<input
 									type="text"
 									id="content-cta-heading"
-									bind:value={Content.footer.ctaHeading}
+									bind:value={Content.Footer.CtaHeading}
 									{disabled}
 									placeholder="Get Started Today"
 									class="input-field w-[70%]"
@@ -1481,7 +1437,7 @@
 								<textarea
 									id="content-cta-description"
 									rows="3"
-									bind:value={Content.footer.ctaDescription}
+									bind:value={Content.Footer.CtaDescription}
 									{disabled}
 									placeholder="Enter CTA description"
 									class="input-field w-[70%]"
@@ -1496,7 +1452,7 @@
 								<input
 									type="text"
 									id="content-qr-instruction"
-									bind:value={Content.footer.qrInstruction}
+									bind:value={Content.Footer.QrInstruction}
 									{disabled}
 									placeholder="Scan to get started"
 									class="input-field w-[70%]"
@@ -1704,49 +1660,21 @@
 										placeholder="No file selected..."
 									/>
 								</div>
-								{#if QRcode.resourceId && (data.marketingMaterial?.QRcode?.imageUrl || getImageUrl(QRcode.resourceId))}
+								{#if (typeof QRcode === 'object' && QRcode !== null && !Array.isArray(QRcode) && QRcode.ResourceId) && (data.marketingMaterial?.QRCode && typeof data.marketingMaterial.QRCode === 'object' && (data.marketingMaterial.QRCode as any)?.imageUrl || getImageUrl(QRcode.ResourceId))}
 									<div class="mt-2">
 										<img
-											src={data.marketingMaterial?.QRcode?.imageUrl ||
-												getImageUrl(QRcode.resourceId)}
+											src={(data.marketingMaterial?.QRCode && typeof data.marketingMaterial.QRCode === 'object' && (data.marketingMaterial.QRCode as any)?.imageUrl) ||
+												getImageUrl(QRcode.ResourceId)}
 											alt="QR Code"
 											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
 											onerror={(e) => {
-												console.error('Failed to load QR code image:', QRcode.resourceId);
+												const resourceId = typeof QRcode === 'object' && QRcode !== null && !Array.isArray(QRcode) ? QRcode.ResourceId : null;
+												console.error('Failed to load QR code image:', resourceId);
 												(e.target as HTMLImageElement).style.display = 'none';
 											}}
 										/>
 									</div>
 								{/if}
-							</div>
-							<div class="my-4 flex flex-col md:flex-row md:items-center">
-								<label
-									for="qrcode-whatsapp-number"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
-									>WhatsApp Number</label
-								>
-								<input
-									type="text"
-									id="qrcode-whatsapp-number"
-									bind:value={QRcode.whatsappNumber}
-									{disabled}
-									placeholder="+91-1234567890"
-									class="input-field w-[70%]"
-								/>
-							</div>
-							<div class="my-4 flex flex-col md:flex-row md:items-center">
-								<label
-									for="qrcode-url"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]">URL</label
-								>
-								<input
-									type="text"
-									id="qrcode-url"
-									bind:value={QRcode.url}
-									{disabled}
-									placeholder="https://wa.me/911234567890"
-									class="input-field w-[70%]"
-								/>
 							</div>
 						</div>
 					{/if}
@@ -1790,7 +1718,7 @@
 					{#if activeSection === 'colors'}
 						<div class="space-y-4 p-6">
 							<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-								{#each [{ key: 'primary', label: 'Primary' }, { key: 'secondary', label: 'Secondary' }, { key: 'accent', label: 'Accent' }, { key: 'lightBg', label: 'Light Background' }, { key: 'panel', label: 'Panel' }, { key: 'muted', label: 'Muted Text' }, { key: 'text', label: 'Body Text' }] as c}
+								{#each [{ key: 'Primary', label: 'Primary' }, { key: 'Secondary', label: 'Secondary' }, { key: 'Accent', label: 'Accent' }, { key: 'LightBg', label: 'Light Background' }, { key: 'Panel', label: 'Panel' }, { key: 'Muted', label: 'Muted Text' }, { key: 'Text', label: 'Body Text' }] as c}
 									<div class="my-2 flex flex-col md:flex-row md:items-center">
 										<label
 											for="styling-{c.key}-color"
@@ -1868,7 +1796,7 @@
 									>
 									<select
 										id="styling-heading-font"
-										bind:value={Styling.headingFont}
+										bind:value={Styling.HeadingFont}
 										{disabled}
 										class="select input-field w-[70%]"
 									>
@@ -1893,10 +1821,10 @@
 										<option value="'Crimson Text', serif">Crimson Text</option>
 										<option value="'Libre Baskerville', serif">Libre Baskerville</option>
 									</select>
-									{#if Styling.headingFont && !['', "'Poppins', sans-serif", "'Inter', sans-serif", "'Roboto', sans-serif", "'Open Sans', sans-serif", "'Lato', sans-serif", "'Montserrat', sans-serif", "'Raleway', sans-serif", "'Nunito', sans-serif", "'Playfair Display', serif", "'Merriweather', serif", "'Lora', serif", "'PT Serif', serif", "'Roboto Slab', serif", "'Source Sans Pro', sans-serif", "'Ubuntu', sans-serif", "'Oswald', sans-serif", "'Fira Sans', sans-serif", "'Crimson Text', serif", "'Libre Baskerville', serif"].includes(Styling.headingFont)}
+									{#if Styling.HeadingFont && !['', "'Poppins', sans-serif", "'Inter', sans-serif", "'Roboto', sans-serif", "'Open Sans', sans-serif", "'Lato', sans-serif", "'Montserrat', sans-serif", "'Raleway', sans-serif", "'Nunito', sans-serif", "'Playfair Display', serif", "'Merriweather', serif", "'Lora', serif", "'PT Serif', serif", "'Roboto Slab', serif", "'Source Sans Pro', sans-serif", "'Ubuntu', sans-serif", "'Oswald', sans-serif", "'Fira Sans', sans-serif", "'Crimson Text', serif", "'Libre Baskerville', serif"].includes(Styling.HeadingFont)}
 										<input
 											type="text"
-											bind:value={Styling.headingFont}
+											bind:value={Styling.HeadingFont}
 											{disabled}
 											placeholder="Custom font (e.g., 'Custom Font', sans-serif)"
 											class="input-field mt-2 w-[70%]"
@@ -1911,7 +1839,7 @@
 									>
 									<select
 										id="styling-body-font"
-										bind:value={Styling.bodyFont}
+										bind:value={Styling.BodyFont}
 										{disabled}
 										class="select input-field w-[70%]"
 									>
@@ -1936,10 +1864,10 @@
 										<option value="'Crimson Text', serif">Crimson Text</option>
 										<option value="'Libre Baskerville', serif">Libre Baskerville</option>
 									</select>
-									{#if Styling.bodyFont && !['', "'Poppins', sans-serif", "'Inter', sans-serif", "'Roboto', sans-serif", "'Open Sans', sans-serif", "'Lato', sans-serif", "'Montserrat', sans-serif", "'Raleway', sans-serif", "'Nunito', sans-serif", "'Playfair Display', serif", "'Merriweather', serif", "'Lora', serif", "'PT Serif', serif", "'Roboto Slab', serif", "'Source Sans Pro', sans-serif", "'Ubuntu', sans-serif", "'Oswald', sans-serif", "'Fira Sans', sans-serif", "'Crimson Text', serif", "'Libre Baskerville', serif"].includes(Styling.bodyFont)}
+									{#if Styling.BodyFont && !['', "'Poppins', sans-serif", "'Inter', sans-serif", "'Roboto', sans-serif", "'Open Sans', sans-serif", "'Lato', sans-serif", "'Montserrat', sans-serif", "'Raleway', sans-serif", "'Nunito', sans-serif", "'Playfair Display', serif", "'Merriweather', serif", "'Lora', serif", "'PT Serif', serif", "'Roboto Slab', serif", "'Source Sans Pro', sans-serif", "'Ubuntu', sans-serif", "'Oswald', sans-serif", "'Fira Sans', sans-serif", "'Crimson Text', serif", "'Libre Baskerville', serif"].includes(Styling.BodyFont)}
 										<input
 											type="text"
-											bind:value={Styling.bodyFont}
+											bind:value={Styling.BodyFont}
 											{disabled}
 											placeholder="Custom font (e.g., 'Custom Font', sans-serif)"
 											class="input-field mt-2 w-[70%]"
@@ -1997,7 +1925,7 @@
 									>
 									<select
 										id="styling-page-width"
-										bind:value={Styling.pageWidth}
+										bind:value={Styling.PageWidth}
 										{disabled}
 										class="select input-field w-[70%]"
 									>
@@ -2013,10 +1941,10 @@
 										<option value="300mm" disabled>Custom 300mm</option>
 										<option value="350mm" disabled>Custom 350mm</option>
 									</select>
-									{#if Styling.pageWidth && !['', '148mm', '210mm', '297mm', '420mm', '216mm', '279mm', '200mm', '250mm', '300mm', '350mm'].includes(Styling.pageWidth)}
+									{#if Styling.PageWidth && !['', '148mm', '210mm', '297mm', '420mm', '216mm', '279mm', '200mm', '250mm', '300mm', '350mm'].includes(Styling.PageWidth)}
 										<input
 											type="text"
-											bind:value={Styling.pageWidth}
+											bind:value={Styling.PageWidth}
 											{disabled}
 											placeholder="Custom width (e.g., 180mm)"
 											class="input-field mt-2 w-[70%]"
@@ -2031,7 +1959,7 @@
 									>
 									<select
 										id="styling-page-height"
-										bind:value={Styling.pageHeight}
+										bind:value={Styling.PageHeight}
 										{disabled}
 										class="select input-field w-[70%]"
 									>
@@ -2047,10 +1975,10 @@
 										<option value="350mm" disabled>Custom 350mm</option>
 										<option value="400mm" disabled>Custom 400mm</option>
 									</select>
-									{#if Styling.pageHeight && !['', '105mm', '148mm', '210mm', '297mm', '279mm', '356mm', '250mm', '300mm', '350mm', '400mm'].includes(Styling.pageHeight)}
+									{#if Styling.PageHeight && !['', '105mm', '148mm', '210mm', '297mm', '279mm', '356mm', '250mm', '300mm', '350mm', '400mm'].includes(Styling.PageHeight)}
 										<input
 											type="text"
-											bind:value={Styling.pageHeight}
+											bind:value={Styling.PageHeight}
 											{disabled}
 											placeholder="Custom height (e.g., 240mm)"
 											class="input-field mt-2 w-[70%]"
@@ -2065,7 +1993,7 @@
 									>
 									<select
 										id="styling-ui-width"
-										bind:value={Styling.userInterfaceWidth}
+										bind:value={Styling.UserInterfaceWidth}
 										{disabled}
 										class="select input-field w-[70%]"
 									>
@@ -2081,10 +2009,10 @@
 										<option value="450px">450px</option>
 										<option value="500px">500px</option>
 									</select>
-									{#if Styling.userInterfaceWidth && !['', '200px', '240px', '260px', '280px', '300px', '320px', '350px', '400px', '450px', '500px'].includes(Styling.userInterfaceWidth)}
+									{#if Styling.UserInterfaceWidth && !['', '200px', '240px', '260px', '280px', '300px', '320px', '350px', '400px', '450px', '500px'].includes(Styling.UserInterfaceWidth)}
 										<input
 											type="text"
-											bind:value={Styling.userInterfaceWidth}
+											bind:value={Styling.UserInterfaceWidth}
 											{disabled}
 											placeholder="Custom width (e.g., 270px)"
 											class="input-field mt-2 w-[70%]"
@@ -2099,7 +2027,7 @@
 									>
 									<select
 										id="styling-interaction-width"
-										bind:value={Styling.userInteractionWidth}
+										bind:value={Styling.UserInteractionWidth}
 										{disabled}
 										class="select input-field w-[70%]"
 									>
@@ -2115,10 +2043,10 @@
 										<option value="400px">400px</option>
 										<option value="450px">450px</option>
 									</select>
-									{#if Styling.userInteractionWidth && !['', '200px', '220px', '250px', '270px', '300px', '320px', '350px', '380px', '400px', '450px'].includes(Styling.userInteractionWidth)}
+									{#if Styling.UserInteractionWidth && !['', '200px', '220px', '250px', '270px', '300px', '320px', '350px', '380px', '400px', '450px'].includes(Styling.UserInteractionWidth)}
 										<input
 											type="text"
-											bind:value={Styling.userInteractionWidth}
+											bind:value={Styling.UserInteractionWidth}
 											{disabled}
 											placeholder="Custom width (e.g., 230px)"
 											class="input-field mt-2 w-[70%]"
@@ -2133,7 +2061,7 @@
 									>
 									<select
 										id="styling-qr-size"
-										bind:value={Styling.qrSize}
+										bind:value={Styling.QrSize}
 										{disabled}
 										class="select input-field w-[70%]"
 									>
@@ -2147,10 +2075,10 @@
 										<option value="250px">250px</option>
 										<option value="300px">300px (Extra Large)</option>
 									</select>
-									{#if Styling.qrSize && !['', '80px', '100px', '120px', '150px', '180px', '200px', '250px', '300px'].includes(Styling.qrSize)}
+									{#if Styling.QrSize && !['', '80px', '100px', '120px', '150px', '180px', '200px', '250px', '300px'].includes(Styling.QrSize)}
 										<input
 											type="text"
-											bind:value={Styling.qrSize}
+											bind:value={Styling.QrSize}
 											{disabled}
 											placeholder="Custom size (e.g., 140px)"
 											class="input-field mt-2 w-[70%]"
