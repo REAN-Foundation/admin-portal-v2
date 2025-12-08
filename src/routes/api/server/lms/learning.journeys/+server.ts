@@ -1,7 +1,7 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
 import type { RequestEvent } from "@sveltejs/kit";
-import type { LearningPathCreateModel } from "$lib/types/lms/learning.journeys";
-import { createOrUpdateSchema } from "$lib/validation/lms/learning.journeys.schema";
+import type { LearningPathCreateModel } from "$lib/types/lms/learning.journey";
+import { createOrUpdateSchema } from "$lib/validation/lms/learning.journey.schema";
 import { createLearningPath } from "$routes/api/services/lms/learning.journeys";
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -5,8 +5,8 @@
 	import Image from '$lib/components/image.svelte';
 	import type { PageServerData } from './$types';
 	import { toastMessage } from '$lib/components/toast/toast.store';
-	import type { LearningPathUpdateModel } from '$lib/types/lms/learning.journeys';
-	import { createOrUpdateSchema } from '$lib/validation/lms/learning.journeys.schema';
+	import type { LearningPathUpdateModel } from '$lib/types/lms/learning.journey';
+	import { createOrUpdateSchema } from '$lib/validation/lms/learning.journey.schema';
 	import { goto } from '$app/navigation';
 	import Button from '$lib/components/button/button.svelte';
 	import CoursesDragDrop from '$lib/components/lms/courses-drag-drop.svelte';
