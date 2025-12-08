@@ -18,7 +18,7 @@
 	let moduleName = $state(undefined);
 	let description = $state(undefined);
 	let durationInMins = $state(undefined);
-	let sequence = $state(1);
+	let contentSequence = $state(1);
 	let promise = $state();
 	let imageResourceId = $state(undefined);
 	let fileName = $state('');
@@ -113,7 +113,7 @@
 				Description: description,
 				DurationInMins: durationInMins ? parseFloat(durationInMins) : undefined,
 				ImageUrl: imageResourceId,
-				Sequence: sequence,
+				ContentSequence: contentSequence,
 				CourseId: courseId // Include courseId from URL params
 			};
 
@@ -255,8 +255,8 @@
 						<input type="hidden" name="imageResourceId" value={imageResourceId} />
 					</td>
 				</tr>
-				<tr class="tables-row">
-					<td class="table-label">Sequence</td>
+				<!-- <tr class="tables-row">
+					<td class="table-label">Content Sequence</td>
 					<td class="table-data">
 						<input
 							type="number"
@@ -265,13 +265,13 @@
 							class="input {errors?.Sequence ? 'input-text-error' : ''}"
 							name="sequence"
 							placeholder="Enter sequence..."
-							bind:value={sequence}
+							bind:value={contentSequence}
 						/>
 						{#if errors?.Sequence}
 							<p class="text-error">{errors?.Sequence}</p>
 						{/if}
 					</td>
-				</tr>
+				</tr> -->
 			</tbody>
 		</table>
 		<div class="btn-container">

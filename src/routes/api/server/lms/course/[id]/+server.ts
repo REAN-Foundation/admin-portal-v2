@@ -91,8 +91,8 @@ export const PUT = async (event: RequestEvent) => {
             data.Name,
             data.Description,
             data.ImageResourceId,
-            data.DurationInDays,
-            data.Sequence
+            data.DurationInDays
+            // data.Sequence
         );
 
         return ResponseHandler.success(response);

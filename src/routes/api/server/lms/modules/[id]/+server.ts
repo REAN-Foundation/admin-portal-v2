@@ -92,7 +92,7 @@ export const PUT = async (event: RequestEvent) => {
             data.Description,
             data.DurationInMins,
             data.ImageUrl,
-            data.Sequence
+            // data.ContentSequence
         );
 
         return ResponseHandler.success(response);

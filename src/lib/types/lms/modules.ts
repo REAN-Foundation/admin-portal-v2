@@ -3,7 +3,7 @@ export interface ModuleCreateModel {
 	Description?: string;
 	DurationInMins?: number;
 	ImageUrl?: string;
-	Sequence?: number;
+	// ContentSequence?: number;
 	CourseId?: string;
 }
 
@@ -12,6 +12,6 @@ export interface ModuleUpdateModel {
 	Description?: string;
 	DurationInMins?: number;
 	ImageUrl?: string;
-	Sequence?: number;
+	// ContentSequence?: number;
 }
 

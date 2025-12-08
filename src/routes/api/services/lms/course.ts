@@ -11,7 +11,7 @@ export const createCourse = async (
 	imageResourceId?: string,
 	durationInDays?: number,
 	tenantId?: string,
-	sequence?: number,
+	// sequence?: number,
 ) => {
 	const body = {
 		Name: name,
@@ -19,7 +19,7 @@ export const createCourse = async (
 		ImageUrl: imageResourceId ? imageResourceId : '',
 		DurationInDays: durationInDays ? durationInDays : undefined,
 		TenantId: tenantId,
-		Sequence: sequence ? sequence : null
+		// Sequence: sequence ? sequence : null
 	};
 	const url = LMS_BACKEND_API_URL + '/courses';
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
@@ -81,14 +81,14 @@ export const updateCourse = async (
 	description?: string,
 	imageResourceId?: string,
 	durationInDays?: number,
-	sequence?: number
+	// sequence?: number
 ) => {
 	const body = {
 		Name: name,
 		Description: description ? description : '',
 		ImageUrl: imageResourceId ? imageResourceId : '',
 		DurationInDays: durationInDays ? durationInDays : null,
-		Sequence: sequence ? sequence : null
+		// Sequence: sequence ? sequence : null
 	};
 	const url = LMS_BACKEND_API_URL + `/courses/${courseId}`;
 	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);

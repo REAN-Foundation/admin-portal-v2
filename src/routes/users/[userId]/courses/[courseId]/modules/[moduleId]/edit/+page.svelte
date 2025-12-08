@@ -21,7 +21,7 @@
 	let imageResourceId = $state(data.module?.ImageResourceId ?? undefined);
 	let moduleImage = $state();
 	let durationInMins = $state(data.module?.DurationInMins != null ? data.module.DurationInMins.toString() : '');
-	let sequence = $state(data.module?.Sequence != null ? data.module.Sequence.toString() : '');
+	let contentSequence = $state(data.module?.ContentSequence != null ? data.module.ContentSequence.toString() : '');
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let previewUrl = $state<string | undefined>(undefined);
@@ -53,7 +53,7 @@
 		imageUrl = data?.module?.ImageUrl || undefined;
 		imageResourceId = data?.module?.ImageResourceId || undefined;
 		durationInMins = data?.module?.DurationInMins != null ? data.module.DurationInMins.toString() : '';
-		sequence = data?.module?.Sequence != null ? data.module.Sequence.toString() : '';
+		contentSequence = data?.module?.ContentSequence != null ? data.module.ContentSequence.toString() : '';
 		errors = {};
 		if (previewUrl) {
 			URL.revokeObjectURL(previewUrl);
@@ -134,7 +134,7 @@
 				Description: description,
 				DurationInMins: durationInMins ? parseFloat(durationInMins) : undefined,
 				ImageUrl: imageResourceId,
-				Sequence: sequence ? parseFloat(sequence) : undefined
+				ContentSequence: contentSequence ? parseFloat(contentSequence) : undefined
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(moduleUpdateModel);
@@ -279,7 +279,7 @@
 					</td>
 				</tr>
 				<tr class="tables-row">
-					<td class="table-label">Sequence</td>
+					<td class="table-label">Content Sequence</td>
 					<td class="table-data">
 						<input
 							type="number"
@@ -288,7 +288,7 @@
 							class="input {errors?.Sequence ? 'input-text-error' : ''}"
 							name="sequence"
 							placeholder="Enter sequence..."
-							bind:value={sequence}
+							bind:value={contentSequence}
 						/>
 						{#if errors?.Sequence}
 							<p class="text-error">{errors?.Sequence}</p>

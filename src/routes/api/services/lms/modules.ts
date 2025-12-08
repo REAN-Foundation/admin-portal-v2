@@ -10,7 +10,7 @@ export const createModule = async (
 	description?: string,
 	durationInMins?: number,
 	imageUrl?: string,
-	sequence?: number,
+	// contentSequence?: number,
 	courseId?: string,
 ) => {
 	const body = {
@@ -18,7 +18,7 @@ export const createModule = async (
 		Description: description ? description : undefined,
 		DurationInMins: durationInMins ? durationInMins : undefined,
 		ImageUrl: imageUrl ? imageUrl : '',
-		Sequence: sequence ? sequence : null,
+		// ContentSequence: contentSequence ? contentSequence : null,
 		CourseId: courseId ?? null,
 	};
 	const url = LMS_BACKEND_API_URL + '/course-modules';
@@ -90,14 +90,14 @@ export const updateModule = async (
 	description?: string,
 	durationInMins?: number,
 	imageUrl?: string,
-	sequence?: number
+	// contentSequence?: number
 ) => {
 	const body = {
 		Name: name,
 		Description: description ?? null,
 		DurationInMins: durationInMins ?? null,
 		ImageUrl: imageUrl ?? null,
-		Sequence: sequence ?? null
+		// ContentSequence: contentSequence ?? null
 	};
 	const url = LMS_BACKEND_API_URL + `/course-modules/${moduleId}`;
 	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);

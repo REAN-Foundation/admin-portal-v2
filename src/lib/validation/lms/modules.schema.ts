@@ -22,12 +22,12 @@ export const createOrUpdateSchema = z.object({
 		.string()
 		.max(512, { message: 'ImageUrl must be at most 512 characters long.' })
 		.optional(),
-	Sequence: z
-		.number({
-			invalid_type_error: 'Sequence must be a number.'
-		})
-		.positive({ message: 'Sequence must be a positive number.' })
-		.optional(),
+	// ContentSequence: z
+	// 	.number({
+	// 		invalid_type_error: 'Content Sequence must be a number.'
+	// 	})
+	// 	.positive({ message: 'Content Sequence must be a positive number.' })
+	// 	.optional(),
 	CourseId: z
 		.string()
 		.min(1, { message: 'CourseId cannot be empty.' })

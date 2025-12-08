@@ -18,7 +18,7 @@
 	let courseName = $state(undefined);
 	let description = $state(undefined);
 	let durationInDays = $state(undefined);
-	let sequence = $state(1);
+	// let sequence = $state(1);
 	let promise = $state();
 	let imageResourceId = $state(undefined);
 	let fileName = $state('');
@@ -110,7 +110,7 @@
 				ImageResourceId: imageResourceId,
 				DurationInDays: durationInDays,
 				TenantId: tenantId,
-				Sequence: sequence,
+				// Sequence: sequence,
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(courseCreateModel);
@@ -242,7 +242,7 @@
 						{/if}
 					</td>
 				</tr>
-				<tr class="tables-row">
+				<!-- <tr class="tables-row">
 					<td class="table-label">Sequence</td>
 					<td class="table-data">
 						<input
@@ -258,7 +258,7 @@
 							<p class="text-error">{errors?.Sequence}</p>
 						{/if}
 					</td>
-				</tr>
+				</tr> -->
 			</tbody>
 		</table>
 		<div class="btn-container">
