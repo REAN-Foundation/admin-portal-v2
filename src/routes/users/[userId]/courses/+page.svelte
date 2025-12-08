@@ -1,15 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
-	import { Helper } from '$lib/utils/helper';
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
-	import Tooltip from '$lib/components/tooltip.svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
 	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
-	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 	import Button from '$lib/components/button/button.svelte';
 	import CourseTreeView from '$lib/components/lms/course/course-tree-view.svelte';
 
@@ -63,7 +60,6 @@
 	let openContentDeleteModal = $state(false);
 	let contentToBeDeleted = $state<{ contentId: string; moduleId: string } | null>(null);
 	let searchKeyword = $state(undefined);
-	let selectedContentIds = $state<Record<string, string | null>>({});
 	let courseName = $state(undefined);
 	let hasInitialized = $state(false);
 	let initialTotalCount = (() => {
@@ -72,7 +68,7 @@
 	let totalCoursesCount = $state(initialTotalCount);
 	let isSortingName = $state(false);
 	let sortBy = $state('Name');
-	let sortOrder = $state('ascending');
+	let sortOrder = $state<'ascending' | 'descending'>('ascending');
 	let paginationSettings: PaginationSettings = $state({
 		page: 0,
 		limit: 10,
@@ -320,108 +316,6 @@
 		});
 	};
 
-	const toggleCourseModules = async (courseId: string, event: Event) => {
-		event.preventDefault();
-		event.stopPropagation();
-
-		if (expandedCourses[courseId]) {
-			expandedCourses = { ...expandedCourses, [courseId]: false };
-		} else {
-			expandedCourses = { ...expandedCourses, [courseId]: true };
-
-			if (!loadingModules[courseId]) {
-				await fetchCourseModules(courseId);
-			}
-		}
-	};
-
-	const fetchCourseModules = async (courseId: string) => {
-		try {
-			loadingModules = { ...loadingModules, [courseId]: true };
-			let allModules: any[] = [];
-			let pageIndex = 0;
-			let hasMore = true;
-			const itemsPerPage = 100;
-
-			if (!courseId) {
-				console.error('fetchCourseModules: courseId is required');
-				courseModules = { ...courseModules, [courseId]: [] };
-				courseModuleCounts = { ...courseModuleCounts, [courseId]: 0 };
-				return;
-			}
-
-			while (hasMore) {
-				let url = `/api/server/lms/course.modules/search?`;
-				url += `itemsPerPage=${itemsPerPage}`;
-				url += `&pageIndex=${pageIndex}`;
-				url += `&sortBy=Name`;
-				url += `&sortOrder=ascending`;
-				url += `&courseId=${encodeURIComponent(courseId)}`;
-
-				const res = await fetch(url, {
-					method: 'GET',
-					headers: { 'content-type': 'application/json' },
-					credentials: 'include'
-				});
-
-				if (!res.ok) {
-					const errorText = await res.text();
-					console.error('HTTP error response:', res.status, errorText);
-					throw new Error(`HTTP error! status: ${res.status}`);
-				}
-
-				const searchResult = await res.json();
-				let modulesList: any[] = [];
-
-				if (searchResult.Data && searchResult.Data.CourseModuleRecords) {
-					const courseModuleRecords = searchResult.Data.CourseModuleRecords;
-
-					if (courseModuleRecords.Items && Array.isArray(courseModuleRecords.Items)) {
-						modulesList = courseModuleRecords.Items;
-						modulesList = modulesList.filter(
-							(module) => module.CourseId === courseId || module.courseId === courseId
-						);
-
-						const totalCount = courseModuleRecords.TotalCount;
-						const currentCount = allModules.length + modulesList.length;
-						hasMore = currentCount < totalCount && modulesList.length === itemsPerPage;
-					} else if (Array.isArray(courseModuleRecords)) {
-						modulesList = courseModuleRecords.filter(
-							(module) => module.CourseId === courseId || module.courseId === courseId
-						);
-						hasMore = modulesList.length === itemsPerPage;
-					}
-				}
-
-				allModules = [...allModules, ...modulesList];
-
-				if (modulesList.length < itemsPerPage) {
-					hasMore = false;
-				} else {
-					pageIndex++;
-				}
-			}
-
-			const modulesWithCourseId = allModules.map((module) => ({
-				...module,
-				CourseId: courseId
-			}));
-
-			courseModules = { ...courseModules, [courseId]: modulesWithCourseId };
-			courseModuleCounts = { ...courseModuleCounts, [courseId]: allModules.length };
-		} catch (err) {
-			console.error('Failed to fetch modules:', err);
-			courseModules = { ...courseModules, [courseId]: [] };
-			toastMessage({
-				HttpCode: 500,
-				Message: 'Failed to load modules'
-			});
-		} finally {
-			loadingModules = { ...loadingModules, [courseId]: false };
-		}
-	};
-
-
 	const handleContentDeleteClick = (contentId: string) => {
 		let moduleId = null;
 		for (const [modId, contents] of Object.entries(moduleContents)) {
@@ -490,64 +384,6 @@
 		moduleToBeDeleted = null;
 	};
 
-	const toggleModuleContents = async (moduleId: string, courseId: string, event: Event) => {
-		event.preventDefault();
-		event.stopPropagation();
-
-		if (expandedModules[moduleId]) {
-			// Collapse
-			expandedModules = { ...expandedModules, [moduleId]: false };
-		} else {
-			expandedModules = { ...expandedModules, [moduleId]: true };
-			if (!loadingContents[moduleId]) {
-				await fetchModuleContents(moduleId);
-			}
-		}
-	};
-
-	// Fetch contents for a specific module
-	const fetchModuleContents = async (moduleId: string) => {
-		try {
-			loadingContents = { ...loadingContents, [moduleId]: true };
-			let url = `/api/server/lms/course.contents/search?`;
-			url += `itemsPerPage=100`;
-			url += `&pageIndex=0`;
-			url += `&sortBy=Title`;
-			url += `&sortOrder=ascending`;
-			url += `&moduleId=${encodeURIComponent(moduleId)}`;
-
-			const res = await fetch(url, {
-				method: 'GET',
-				headers: { 'content-type': 'application/json' },
-				credentials: 'include'
-			});
-
-			if (!res.ok) {
-				const errorText = await res.text();
-				console.error('HTTP error response:', res.status, errorText);
-				throw new Error(`HTTP error! status: ${res.status}`);
-			}
-
-			const searchResult = await res.json();
-			let contentsList = searchResult?.Data?.CourseContentRecords?.Items || [];
-
-			contentsList = contentsList.filter(
-				(content) => content.CourseModuleId === moduleId || content.courseModuleId === moduleId
-			);
-
-			moduleContents = { ...moduleContents, [moduleId]: contentsList };
-			moduleContentCounts = { ...moduleContentCounts, [moduleId]: contentsList.length };
-		} catch (err) {
-			console.error('Failed to fetch contents:', err);
-			moduleContents = { ...moduleContents, [moduleId]: [] };
-			toastMessage({
-				HttpCode: 500,
-				Message: 'Failed to load contents'
-			});
-		} finally {
-			loadingContents = { ...loadingContents, [moduleId]: false };
-		}
-	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -588,173 +424,33 @@
 					<Button href={createRoute} text="Add New" variant="primary"></Button>
 				</div>
 			</div>
-			<div class="overflow-x-auto">
-				<table class="table-c min-w-full">
-					<thead>
-						<tr>
-							<th class="w-[2%]"></th>
-							<th class="w-[20%]">
-								<button onclick={() => sortTable('Name')}>
-									Name {#if isSortingName}
-										{#if sortOrder === 'ascending'}
-											<Icon icon="mdi:chevron-up" class="ml-1 inline" width="16" />
-										{:else}
-											<Icon icon="mdi:chevron-down" class="ml-1 inline" width="16" />
-										{/if}
-									{/if}
-								</button>
-							</th>
-							<th class="w-[20%]">Description</th>
-							<th class="w-[15%]">Duration (Days)</th>
-							<th class="w-[15%]">Created</th>
-							<th class="w-[23%]"></th>
-						</tr>
-					</thead>
-					<tbody>
-						{#if retrivedCourses.length <= 0}
-							<tr class="text-center">
-								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
-							</tr>
-						{:else}
-							{#each retrivedCourses as row, index}
-								{@const fetchedModules = courseModules[row.id]}
-								{@const cachedCount = courseModuleCounts[row.id]}
-								{@const moduleCount =
-									fetchedModules !== undefined
-										? fetchedModules.length
-										: cachedCount !== undefined
-											? cachedCount
-											: (row.ModuleCount ??
-												row.ModulesCount ??
-												row.moduleCount ??
-												row.modulesCount ??
-												row.TotalModules ??
-												row.totalModules ??
-												row.Modules?.length ??
-												row.modules?.length ??
-												0)}
-								{@const isExpanded = expandedCourses[row.id]}
-								<tr class={isExpanded ? 'bg-gray-100 hover:!bg-gray-100' : ''}>
-									<td>
-										{paginationSettings.page * paginationSettings.limit + index + 1}
-									</td>
-
-									<td>
-										<Tooltip text={row.Name || 'Not specified'}>
-											<button
-												onclick={(e) => toggleCourseModules(row.id, e)}
-												class="flex cursor-pointer items-center gap-2 text-left hover:underline"
-											>
-												<Icon
-													icon={expandedCourses[row.id] ? 'mdi:chevron-down' : 'mdi:chevron-right'}
-													class="inline"
-													width="16"
-												/>
-												<span>
-													{row.Name !== null && row.Name !== ''
-														? Helper.truncateText(row.Name, 50)
-														: 'Not specified'}
-												</span>
-											</button>
-										</Tooltip>
-									</td>
-									<td>
-										<Tooltip text={row.Description || 'Not specified'}>
-											{row.Description !== null && row.Description !== ''
-												? Helper.truncateText(row.Description, 50)
-												: 'Not specified'}
-										</Tooltip>
-									</td>
-									<td>
-										{row.DurationInDays !== null && row.DurationInDays !== undefined
-											? row.DurationInDays
-											: 'Not specified'}
-									</td>
-									<td role="gridcell" aria-colindex={5} tabindex="0">
-										{TimeHelper.formatDateToReadable(row.CreatedAt, LocaleIdentifier.EN_US)};
-										
-									</td>
-
-									<td>
-										<div class="flex items-center justify-end gap-2">
-											<span class="text-sm text-gray-700">Modules ({moduleCount})</span>
-											<Button
-												href={moduleCreateRoute(row.id)}
-												variant="icon"
-												icon="material-symbols:add"
-												iconSize="sm"
-												tooltip="Add New Module"
-											/>
-											<Button
-												href={editRoute(row.id)}
-												variant="icon"
-												icon="material-symbols:edit-outline"
-												iconSize="sm"
-												tooltip="Edit"
-											/>
-											<Button
-												href={viewRoute(row.id)}
-												variant="icon"
-												icon="icon-park-outline:preview-open"
-												iconSize="sm"
-												tooltip="View"
-											/>
-											<Button
-												onclick={() => handleDeleteClick(row.id)}
-												variant="icon"
-												icon="material-symbols:delete-outline-rounded"
-												iconSize="sm"
-												color="red"
-												tooltip="Delete"
-											/>
-										</div>
-									</td>
-								</tr>
-								{#if expandedCourses[row.id]}
-									{@const courseModulesList = courseModules[row.id] || []}
-									{@const hasModules = courseModulesList && courseModulesList.length > 0}
-									{@const isLoading = loadingModules[row.id]}
-									<tr>
-										<td
-											colspan="6"
-											class="bg-gray-100 p-4"
-											style="position: relative; overflow: visible;"
-										>
-											{#if isLoading}
-												<div class="flex items-center gap-2 text-gray-500">
-													<Icon icon="svg-spinners:ring-resize" class="inline" width="20" />
-													<span>Loading modules...</span>
-												</div>
-											{:else if hasModules}
-												<CourseTreeView
-													modules={courseModulesList}
-													moduleView={(moduleId) => moduleViewRoute(row.id, moduleId)}
-													moduleEdit={(moduleId) => moduleEditRoute(row.id, moduleId)}
-													onModuleDelete={(moduleId, courseId) =>
-														handleModuleDeleteClick(moduleId, courseId || row.id)}
-													bind:expandedModules
-													bind:moduleContents
-													bind:loadingContents
-													bind:moduleContentCounts
-													onModuleExpand={(moduleId, event) =>
-														toggleModuleContents(moduleId, row.id, event)}
-													contentView={contentViewRoute}
-													contentEdit={contentEditRoute}
-													contentCreate={contentCreateRoute}
-													onContentDelete={handleContentDeleteClick}
-													bind:selectedContentIds
-												/>
-											{:else}
-												<div class="text-gray-500 italic">No modules found for this course</div>
-											{/if}
-										</td>
-									</tr>
-								{/if}
-							{/each}
-						{/if}
-					</tbody>
-				</table>
-			</div>
+			<CourseTreeView
+				courses={retrivedCourses}
+				courseView={viewRoute}
+				courseEdit={editRoute}
+				onCourseDelete={handleDeleteClick}
+				courseCreate={createRoute}
+				moduleView={moduleViewRoute}
+				moduleEdit={moduleEditRoute}
+				onModuleDelete={handleModuleDeleteClick}
+				moduleCreate={moduleCreateRoute}
+				contentView={contentViewRoute}
+				contentEdit={contentEditRoute}
+				onContentDelete={handleContentDeleteClick}
+				contentCreate={contentCreateRoute}
+				bind:expandedCourses
+				bind:expandedModules
+				bind:courseModules
+				bind:moduleContents
+				bind:loadingModules
+				bind:loadingContents
+				bind:courseModuleCounts
+				bind:moduleContentCounts
+				onSort={sortTable}
+				{isSortingName}
+				{sortBy}
+				{sortOrder}
+			/>
 		</div>
 	</div>
 </div>

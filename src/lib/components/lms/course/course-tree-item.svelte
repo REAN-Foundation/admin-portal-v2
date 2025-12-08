@@ -1,11 +1,11 @@
 <script lang="ts">
-	import Self from './course-tree-item.svelte';
-	import ContentTable from '../course-content/content-table.svelte';
 	import Icon from '@iconify/svelte';
 	import Button from '$lib/components/button/button.svelte';
-	
-	let { 
-		node, 
+	import { Helper } from '$lib/utils/helper';
+
+	let {
+		module,
+		courseId,
 		moduleView,
 		moduleEdit,
 		onModuleDelete,
@@ -17,83 +17,83 @@
 		contentView,
 		contentEdit,
 		contentCreate,
-		onContentDelete,
-		selectedContentIds = $bindable({})
+		onContentDelete
 	} = $props<{
-		node: {
+		module: {
 			id: string;
 			Name: string;
 			Description?: string;
 			DurationInMins?: number;
 			Sequence?: number;
 			CourseId?: string;
-			Children?: Array<any>;
+			ContentCount?: number;
+			ContentsCount?: number;
+			contentCount?: number;
+			contentsCount?: number;
+			Contents?: Array<any>;
 		};
-		moduleView: (moduleId: string) => string;
-		moduleEdit?: (moduleId: string) => string;
+		courseId: string;
+		moduleView: (courseId: string, moduleId: string) => string;
+		moduleEdit?: (courseId: string, moduleId: string) => string;
 		onModuleDelete?: (moduleId: string, courseId?: string) => void;
 		expandedModules?: Record<string, boolean>;
 		moduleContents?: Record<string, any[]>;
 		loadingContents?: Record<string, boolean>;
 		moduleContentCounts?: Record<string, number>;
-		onModuleExpand?: (moduleId: string, event: Event) => void;
+		onModuleExpand?: (moduleId: string, courseId: string, event: Event) => void;
 		contentView?: (courseId: string, moduleId: string, contentId: string) => string;
 		contentEdit?: (courseId: string, moduleId: string, contentId: string) => string;
 		contentCreate?: (courseId: string, moduleId: string) => string;
 		onContentDelete?: (contentId: string) => void;
-		selectedContentIds?: Record<string, string | null>;
 	}>();
-	
-	const isExpanded = $derived(expandedModules[node.id] || false);
-	const contents = $derived(moduleContents[node.id]);
-	const isLoading = $derived(loadingContents[node.id] || false);
-	const cachedCount = $derived(moduleContentCounts[node.id]);
-	// Use fetched contents count if contents have been fetched, otherwise fall back to cached count or node's ContentCount property
+
+	const isExpanded = $derived(expandedModules[module.id] || false);
+	const moduleContentsList = $derived(moduleContents[module.id]);
+	const cachedContentCount = $derived(moduleContentCounts[module.id]);
 	const contentCount = $derived(
-		contents !== undefined
-			? contents.length
-			: (cachedCount !== undefined
-				? cachedCount
-				: (node.ContentCount ?? node.ContentsCount ?? node.contentCount ?? node.contentsCount ?? 0))
+		moduleContentsList !== undefined
+			? moduleContentsList.length
+			: cachedContentCount !== undefined
+				? cachedContentCount
+				: (module.ContentCount ??
+					module.ContentsCount ??
+					module.contentCount ??
+					module.contentsCount ??
+					module.Contents?.length ??
+					0)
 	);
-	
-	// Debug logging
-	$effect(() => {
-		if (isExpanded) {
-			console.log('Module expanded:', node.id, 'Contents:', contents, 'Loading:', isLoading);
-		}
-	});
-	
+
 	const handleModuleClick = (event: Event) => {
 		event.preventDefault();
 		event.stopPropagation();
 		if (onModuleExpand) {
-			onModuleExpand(node.id, event);
+			onModuleExpand(module.id, courseId, event);
 		}
 	};
-	
+
 	const handleModuleNameClick = (event: Event) => {
 		event.preventDefault();
 		event.stopPropagation();
 		if (onModuleExpand) {
-			onModuleExpand(node.id, event);
+			onModuleExpand(module.id, courseId, event);
 		}
 	};
-	
+
 	const handleDeleteClick = (event: Event) => {
 		event.preventDefault();
 		event.stopPropagation();
 		if (onModuleDelete) {
-			// Pass both moduleId and courseId if available
-			const courseId = node.CourseId;
-			if (courseId) {
-				onModuleDelete(node.id, courseId);
-			} else {
-				onModuleDelete(node.id);
-			}
+			onModuleDelete(module.id, courseId);
 		}
 	};
-	
+
+	const handleContentDeleteClick = (contentId: string, event: Event) => {
+		event.preventDefault();
+		event.stopPropagation();
+		if (onContentDelete) {
+			onContentDelete(contentId);
+		}
+	};
 </script>
 
 <div class="tree-connector px-4 bg-gray-200 rounded-md py-2 mt-1 mb-1">
@@ -113,20 +113,21 @@
 			<span class="flex h-6 w-6 items-center justify-center text-sm text-[var(--color-info)]">
 				📚
 			</span>
-			<button
-				type="button"
-				onclick={handleModuleNameClick}
-				class="cursor-pointer text-left"
-			>
-				{node.Sequence ? `${node.Sequence}-` : ''}{node.Name}
-			</button>
+			{#if !isExpanded}
+				<button
+					type="button"
+					onclick={handleModuleNameClick}
+					class="cursor-pointer text-left"
+				>
+					{module.Sequence ? `${module.Sequence}-` : ''}{module.Name}
+				</button>
+			{/if}
 		</div>
 		<div class="flex items-center justify-end gap-2">
 			<span class="text-gray-700 text-sm">Contents ({contentCount})</span>
 			{#if contentCreate}
-				{@const courseId = node.CourseId || ''}
 				<Button
-					href={contentCreate(courseId, node.id)}
+					href={contentCreate(courseId, module.id)}
 					variant="icon"
 					icon="material-symbols:add"
 					iconSize="sm"
@@ -135,7 +136,7 @@
 			{/if}
 			{#if moduleEdit}
 				<Button
-					href={moduleEdit(node.id)}
+					href={moduleEdit(courseId, module.id)}
 					variant="icon"
 					icon="material-symbols:edit-outline"
 					iconSize="sm"
@@ -143,7 +144,7 @@
 				/>
 			{/if}
 			<Button
-				href={moduleView(node.id)}
+				href={moduleView(courseId, module.id)}
 				variant="icon"
 				icon="icon-park-outline:preview-open"
 				iconSize="sm"
@@ -161,53 +162,93 @@
 			{/if}
 		</div>
 	</div>
+
+	<!-- Content Table (when module is expanded) -->
 	{#if isExpanded}
+		{@const isLoadingContents = loadingContents[module.id]}
 		<div class="relative py-2 px-4">
-			{#if isLoading}
+			{#if isLoadingContents}
 				<div class="flex items-center gap-2 text-gray-500">
 					<Icon icon="svg-spinners:ring-resize" class="inline" width="16" />
 					<span class="text-sm">Loading contents...</span>
 				</div>
-			{:else if contents !== undefined && contents.length > 0}
-				{@const courseId = node.CourseId || ''}
-				<ContentTable 
-					contents={contents}
-					onContentEdit={contentEdit ? (contentId) => contentEdit(courseId, node.id, contentId) : undefined}
-					onContentView={contentView ? (contentId) => contentView(courseId, node.id, contentId) : undefined}
-					onContentDelete={onContentDelete}
-				/>
+			{:else if moduleContentsList !== undefined && moduleContentsList.length > 0}
+				<div class="w-full border-2 border-gray-300 rounded-lg overflow-hidden shadow-sm">
+					<div class="overflow-x-auto">
+						<table class="table-c min-w-full text-sm">
+							<thead>
+								<tr class="bg-gray-300">
+									<th class="w-[2%]">Id</th>
+									<th class="w-[25%]">Title</th>
+									<th class="w-[30%]">Description</th>
+									<th class="w-[15%]">Duration (Mins)</th>
+									<th class="w-[15%]">Sequence</th>
+									<th class="w-[13%]"></th>
+								</tr>
+							</thead>
+							<tbody>
+								{#each moduleContentsList as content, contentIndex}
+									<tr class="bg-gray-200">
+										<td>{contentIndex + 1}</td>
+										<td>
+											{content.Sequence ? `${content.Sequence}-` : ''}{content.Title || 'Not specified'}
+										</td>
+										<td>
+											{content.Description !== null && content.Description !== ''
+												? Helper.truncateText(content.Description, 50)
+												: 'Not specified'}
+										</td>
+										<td>
+											{content.DurationInMins !== null && content.DurationInMins !== undefined
+												? content.DurationInMins
+												: 'Not specified'}
+										</td>
+										<td>
+											{content.Sequence !== null && content.Sequence !== undefined
+												? content.Sequence
+												: 'Not specified'}
+										</td>
+										<td>
+											<div class="flex justify-end gap-1">
+												{#if contentEdit}
+													<Button
+														href={contentEdit(courseId, module.id, content.id)}
+														variant="icon"
+														icon="material-symbols:edit-outline"
+														iconSize="sm"
+														tooltip="Edit"
+													/>
+												{/if}
+												{#if contentView}
+													<Button
+														href={contentView(courseId, module.id, content.id)}
+														variant="icon"
+														icon="icon-park-outline:preview-open"
+														iconSize="sm"
+														tooltip="View"
+													/>
+												{/if}
+												{#if onContentDelete}
+													<Button
+														onclick={(e) => handleContentDeleteClick(content.id, e)}
+														variant="icon"
+														icon="material-symbols:delete-outline-rounded"
+														iconSize="sm"
+														color="red"
+														tooltip="Delete"
+													/>
+												{/if}
+											</div>
+										</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</div>
+				</div>
 			{:else}
 				<div class="text-gray-500 italic text-sm">No contents found</div>
 			{/if}
 		</div>
 	{/if}
-	{#if node.Children && node.Children.length > 0}
-		<div class="relative my-2 ml-4 space-y-2 border-l-2 border-[var(--color-active)] pl-4">
-			{#each node.Children as child}
-				<Self 
-					node={child} 
-					{moduleView}
-					{moduleEdit}
-					{onModuleDelete}
-					bind:expandedModules
-					bind:moduleContents
-					bind:loadingContents
-					bind:moduleContentCounts
-					{onModuleExpand}
-					{contentView}
-					{contentEdit}
-					{contentCreate}
-					{onContentDelete}
-					bind:selectedContentIds
-				/>
-			{/each}
-		</div>
-	{/if}
 </div>
-
-<style>
-	.tree-connector {
-		position: relative;
-	}
-</style>
-
