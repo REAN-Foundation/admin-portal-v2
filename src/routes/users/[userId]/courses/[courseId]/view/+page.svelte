@@ -5,7 +5,7 @@
 	import Image from '$lib/components/image.svelte';
 	import type { PageServerData } from './$types';
 	import Button from '$lib/components/button/button.svelte';
-	import ModuleTreeView from '$lib/components/lms/course module/module-tree-view.svelte';
+	import ModuleTreeView from '$lib/components/lms/course-module/module-tree-view.svelte';
 
 	///////////////////////////////////////////////////////////////////////////////
 
