@@ -129,7 +129,7 @@
 				return;
 			}
 
-			const res = await fetch(`/api/server/lms/modules`, {
+			const res = await fetch(`/api/server/lms/course.modules`, {
 				method: 'POST',
 				body: JSON.stringify(moduleCreateModel),
 				headers: { 'content-type': 'application/json' }

@@ -112,7 +112,7 @@
 	const fetchModuleContents = async (moduleId: string) => {
 		try {
 			loadingContents = { ...loadingContents, [moduleId]: true };
-			let url = `/api/server/lms/content/search?`;
+			let url = `/api/server/lms/course.contents/search?`;
 			url += `itemsPerPage=100`;
 			url += `&pageIndex=0`;
 			url += `&sortBy=Title`;

@@ -64,7 +64,7 @@
 	async function searchModule(model) {
 		try {
 			isLoading = true;
-			let url = `/api/server/lms/modules/search?`;
+			let url = `/api/server/lms/course.modules/search?`;
 			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
@@ -174,7 +174,7 @@
 
 	const handleModuleDelete = async (id) => {
 		console.log('Inside handleModuleDelete', id);
-		const response = await fetch(`/api/server/lms/modules/${id}`, {
+		const response = await fetch(`/api/server/lms/course.modules/${id}`, {
 			method: 'DELETE',
 			headers: { 'content-type': 'application/json' }
 		});

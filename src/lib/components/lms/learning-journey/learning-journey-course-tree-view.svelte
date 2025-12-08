@@ -52,7 +52,7 @@
 	const fetchCourseModules = async (courseId: string) => {
 		try {
 			loadingModules = { ...loadingModules, [courseId]: true };
-			let url = `/api/server/lms/modules/search?`;
+			let url = `/api/server/lms/course.modules/search?`;
 			url += `itemsPerPage=100`;
 			url += `&pageIndex=0`;
 			url += `&sortBy=Name`;
@@ -140,7 +140,7 @@
 		const key = `${courseId}-${moduleId}`;
 		try {
 			loadingContents = { ...loadingContents, [key]: true };
-			let url = `/api/server/lms/content/search?`;
+			let url = `/api/server/lms/course.contents/search?`;
 			url += `itemsPerPage=100`;
 			url += `&pageIndex=0`;
 			url += `&sortBy=Title`;

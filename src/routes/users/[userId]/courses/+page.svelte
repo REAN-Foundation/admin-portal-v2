@@ -134,7 +134,7 @@
 	async function searchCourse(model) {
 		try {
 			isLoading = true;
-			let url = `/api/server/lms/course/search?`;
+			let url = `/api/server/lms/courses/search?`;
 			url += `sortOrder=${model.sortOrder ?? sortOrder}`;
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
@@ -298,7 +298,7 @@
 
 	const handleCourseDelete = async (id) => {
 		console.log('Inside handleCourseDelete', id);
-		const response = await fetch(`/api/server/lms/course/${id}`, {
+		const response = await fetch(`/api/server/lms/courses/${id}`, {
 			method: 'DELETE',
 			headers: { 'content-type': 'application/json' }
 		});
@@ -351,7 +351,7 @@
 			}
 
 			while (hasMore) {
-				let url = `/api/server/lms/modules/search?`;
+				let url = `/api/server/lms/course.modules/search?`;
 				url += `itemsPerPage=${itemsPerPage}`;
 				url += `&pageIndex=${pageIndex}`;
 				url += `&sortBy=Name`;
@@ -450,7 +450,7 @@
 	const handleContentDelete = async (data: { contentId: string; moduleId: string }) => {
 		const { contentId, moduleId } = data;
 		console.log('Deleting content:', contentId);
-		const response = await fetch(`/api/server/lms/content/${contentId}`, {
+		const response = await fetch(`/api/server/lms/course.contents/${contentId}`, {
 			method: 'DELETE',
 			headers: { 'content-type': 'application/json' }
 		});
@@ -482,7 +482,7 @@
 	const handleModuleDelete = async (data: { moduleId: string; courseId: string }) => {
 		const { moduleId, courseId } = data;
 		console.log('Deleting module:', moduleId);
-		const response = await fetch(`/api/server/lms/modules/${moduleId}`, {
+		const response = await fetch(`/api/server/lms/course.modules/${moduleId}`, {
 			method: 'DELETE',
 			headers: { 'content-type': 'application/json' }
 		});
@@ -525,7 +525,7 @@
 	const fetchModuleContents = async (moduleId: string) => {
 		try {
 			loadingContents = { ...loadingContents, [moduleId]: true };
-			let url = `/api/server/lms/content/search?`;
+			let url = `/api/server/lms/course.contents/search?`;
 			url += `itemsPerPage=100`;
 			url += `&pageIndex=0`;
 			url += `&sortBy=Title`;
