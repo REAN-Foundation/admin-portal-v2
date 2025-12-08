@@ -2,7 +2,7 @@ import { ResponseHandler } from "$lib/utils/response.handler";
 import type { RequestEvent } from "@sveltejs/kit";
 import type { ContentCreateModel } from "$lib/types/lms/content";
 import { createOrUpdateSchema } from "$lib/validation/lms/content.schema";
-import { createContent } from "$routes/api/services/lms/content";
+import { createContent } from "$routes/api/services/lms/course.contents";
 
 ///////////////////////////////////////////////////////////////////////////////
 

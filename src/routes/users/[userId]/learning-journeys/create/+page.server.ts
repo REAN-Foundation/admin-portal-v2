@@ -1,7 +1,7 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { createSearchFilters } from '$lib/utils/search.utils';
-import { searchCourses } from '$routes/api/services/lms/course';
+import { searchCourses } from '$routes/api/services/lms/courses';
 
 ////////////////////////////////////////////////////////////////////////////
 

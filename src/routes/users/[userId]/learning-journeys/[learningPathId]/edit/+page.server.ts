@@ -2,7 +2,7 @@ import { getLearningPathById } from '$routes/api/services/lms/learning.journeys'
 import type { PageServerLoad } from './$types';
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import { createSearchFilters } from '$lib/utils/search.utils';
-import { searchCourses } from '$routes/api/services/lms/course';
+import { searchCourses } from '$routes/api/services/lms/courses';
 
 ///////////////////////////////////////////////////////////////////////////////
 

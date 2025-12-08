@@ -3,7 +3,7 @@ import { uuidSchema } from "$lib/validation/common.schema";
 import type { RequestEvent } from "@sveltejs/kit";
 import type { CourseUpdateModel } from "$lib/types/lms/course";
 import { createOrUpdateSchema } from "$lib/validation/lms/course.schema";
-import { deleteCourse, getCourseById, updateCourse } from "$routes/api/services/lms/course";
+import { deleteCourse, getCourseById, updateCourse } from "$routes/api/services/lms/courses";
 
 ///////////////////////////////////////////////////////////////////////////////
 
