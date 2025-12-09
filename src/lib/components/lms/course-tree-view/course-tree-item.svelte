@@ -64,7 +64,7 @@
 		</span>
 	</summary>
 
-	<div class="relative mt-2 ml-4 space-y-2 border-l-2 border-[var(--color-active)] pl-4">
+	<div class="relative mt-2 ml-4 space-y-2 pl-4">
 		{#if isLoadingModules}
 			<div class="text-sm text-gray-500 italic">Loading modules...</div>
 		{:else if modules && modules.length > 0}
