@@ -8,7 +8,7 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import Button from '$lib/components/button/button.svelte';
-	import CourseTreeView from '$lib/components/lms/course/course-tree-view.svelte';
+	import CourseTreeView from '$lib/components/lms/course-table-view/course-table-view.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 

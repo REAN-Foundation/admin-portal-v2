@@ -4,7 +4,7 @@
 	import { Helper } from '$lib/utils/helper';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 	import { toastMessage } from '$lib/components/toast/toast.store';
-	import CourseTreeItem from './course-tree-item.svelte';
+	import CourseTreeItem from './course-table-item.svelte';
 
 	let {
 		courses,
