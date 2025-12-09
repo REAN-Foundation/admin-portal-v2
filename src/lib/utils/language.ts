@@ -9,4 +9,13 @@ export const languages = [
   { name: 'Swahili', code: 'sw' },
   { name: 'Yoruba', code: 'yo' },
   { name: 'Punjabi', code: 'pa' },
+  { name: 'Spanish', code:'es'},
+  { name: 'French', code:'fr'},
+  { name: 'German', code:'de'},
+  { name: 'Chinese', code:'zh'},
+  { name: 'Japanese', code:'ja'},
+  { name: 'Russian', code:'ru'},
+  { name: 'Arabic', code:'ar'},
+  { name: 'Telugu', code:'te'},
+  { name: 'Tamil', code:'ta'},
 ];
