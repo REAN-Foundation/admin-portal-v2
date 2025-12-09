@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { onDestroy } from 'svelte';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import Image from '$lib/components/image.svelte';
@@ -20,17 +21,15 @@
 	let description = $state(data.learningJourney.Description || undefined);
 	let imageUrl = $state(data.learningJourney.ImageUrl ?? undefined);
 	let durationInDays = $state(data.learningJourney.DurationInDays ?? undefined);
-	let preferenceWeight = $state(
-		data.learningJourney.PreferenceWeight?.toString() ?? undefined
-	);
+	let preferenceWeight = $state(data.learningJourney.PreferenceWeight?.toString() ?? undefined);
 	let enabled = $state(
 		data.learningJourney.Enabled !== undefined ? data.learningJourney.Enabled : true
 	);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let previewUrl = $state<string | undefined>(undefined);
-let selectedCourses = $state<any[]>([]);
-let availableCourses = $state<any[]>([]);
+	let selectedCourses = $state<any[]>([]);
+	let availableCourses = $state<any[]>([]);
 	let courseSequence = $derived.by(() => {
 		const sequence: Record<string, number> = {};
 		selectedCourses.forEach((course, index) => {
@@ -54,6 +53,30 @@ let availableCourses = $state<any[]>([]);
 		{ name: 'Edit', path: editRoute }
 	];
 
+	const getExistingCourseIds = (
+		courseSequenceFromJourney: Record<string, number>,
+		courseIdsFromJourney: string[],
+		coursesFromJourney: any[]
+	) => {
+		if (courseSequenceFromJourney && Object.keys(courseSequenceFromJourney).length > 0) {
+			return Object.entries(courseSequenceFromJourney)
+				.sort(([, seqA], [, seqB]) => (seqA as number) - (seqB as number))
+				.map(([courseId]) => courseId);
+		}
+
+		if (courseIdsFromJourney.length > 0) {
+			return courseIdsFromJourney;
+		}
+
+		if (coursesFromJourney.length > 0) {
+			return coursesFromJourney
+				.filter((c) => c && (c.id || c.Id || c.ID))
+				.map((c) => c.id || c.Id || c.ID);
+		}
+
+		return [];
+	};
+
 	const handleReset = () => {
 		learningPathId = page.params.learningPathId;
 		learningJourneyName = data?.learningJourney?.Name;
@@ -62,40 +85,27 @@ let availableCourses = $state<any[]>([]);
 		durationInDays = data?.learningJourney?.DurationInDays?.toString();
 		preferenceWeight = data?.learningJourney?.PreferenceWeight?.toString();
 		enabled = data?.learningJourney?.Enabled !== undefined ? data.learningJourney.Enabled : true;
-		
-		// Get CourseSequence from the learning journey, with fallback to CourseIds or Courses array
+
 		const courseSequenceFromJourney = data?.learningJourney?.CourseSequence || {};
 		const courseIdsFromJourney = data?.learningJourney?.CourseIds || [];
 		const coursesFromJourney = data?.learningJourney?.Courses || [];
-		
-		let existingCourseIds: string[] = [];
-		
-		// Prioritize CourseSequence, then CourseIds, then Courses array
-		if (courseSequenceFromJourney && Object.keys(courseSequenceFromJourney).length > 0) {
-			// Sort by sequence number and extract course IDs
-			existingCourseIds = Object.entries(courseSequenceFromJourney)
-				.sort(([, seqA], [, seqB]) => (seqA as number) - (seqB as number))
-				.map(([courseId]) => courseId);
-		} else if (courseIdsFromJourney.length > 0) {
-			existingCourseIds = courseIdsFromJourney;
-		} else if (coursesFromJourney.length > 0) {
-			existingCourseIds = coursesFromJourney
-				.filter(c => c && (c.id || c.Id || c.ID))
-				.map(c => c.id || c.Id || c.ID);
-		}
-		
-		// Convert all IDs to strings for comparison and filter matched courses, maintaining order
-		const existingIdsSet = new Set(existingCourseIds.map(id => String(id)));
-		const matchedCourses = allCoursesNormalized.filter(
-			(course) => existingIdsSet.has(String(course.id))
+
+		const existingCourseIds = getExistingCourseIds(
+			courseSequenceFromJourney,
+			courseIdsFromJourney,
+			coursesFromJourney
 		);
-		
-		// Sort matched courses according to the order in existingCourseIds
-		const courseMap = new Map(matchedCourses.map(c => [String(c.id), c]));
+
+		const existingIdsSet = new Set(existingCourseIds.map((id) => String(id)));
+		const matchedCourses = allCoursesNormalized.filter((course) =>
+			existingIdsSet.has(String(course.id))
+		);
+
+		const courseMap = new Map(matchedCourses.map((c) => [String(c.id), c]));
 		selectedCourses = existingCourseIds
-			.map(id => courseMap.get(String(id)))
-			.filter(c => c !== undefined) as any[];
-		
+			.map((id) => courseMap.get(String(id)))
+			.filter((c) => c !== undefined) as any[];
+
 		errors = {};
 		previewUrl && URL.revokeObjectURL(previewUrl);
 		previewUrl = undefined;
@@ -125,45 +135,31 @@ let availableCourses = $state<any[]>([]);
 
 	let hasInitializedCourses = $state(false);
 
-	// Initialize selected/available courses once from server data
 	$effect(() => {
-		if (hasInitializedCourses || allCoursesNormalized.length === 0 || !data.learningJourney) {
-			return;
+		if (!hasInitializedCourses && allCoursesNormalized.length > 0 && data.learningJourney) {
+			const courseSequenceFromJourney = data.learningJourney?.CourseSequence || {};
+			const courseIdsFromJourney = data.learningJourney?.CourseIds || [];
+			const coursesFromJourney = data.learningJourney?.Courses || [];
+
+			const existingCourseIds = getExistingCourseIds(
+				courseSequenceFromJourney,
+				courseIdsFromJourney,
+				coursesFromJourney
+			);
+
+			const existingIdsSet = new Set(existingCourseIds.map((id) => String(id)));
+			const matchedCourses = allCoursesNormalized.filter((course) =>
+				existingIdsSet.has(String(course.id))
+			);
+
+			const courseMap = new Map(matchedCourses.map((c) => [String(c.id), c]));
+			selectedCourses = existingCourseIds
+				.map((id) => courseMap.get(String(id)))
+				.filter((c) => c !== undefined) as any[];
+
+			hasInitializedCourses = true;
 		}
 
-		const courseSequenceFromJourney = data.learningJourney?.CourseSequence || {};
-		const courseIdsFromJourney = data.learningJourney?.CourseIds || [];
-		const coursesFromJourney = data.learningJourney?.Courses || [];
-
-		let existingCourseIds: string[] = [];
-
-		if (courseSequenceFromJourney && Object.keys(courseSequenceFromJourney).length > 0) {
-			existingCourseIds = Object.entries(courseSequenceFromJourney)
-				.sort(([, seqA], [, seqB]) => (seqA as number) - (seqB as number))
-				.map(([courseId]) => courseId);
-		} else if (courseIdsFromJourney.length > 0) {
-			existingCourseIds = courseIdsFromJourney;
-		} else if (coursesFromJourney.length > 0) {
-			existingCourseIds = coursesFromJourney
-				.filter((c) => c && (c.id || c.Id || c.ID))
-				.map((c) => c.id || c.Id || c.ID);
-		}
-
-		const existingIdsSet = new Set(existingCourseIds.map((id) => String(id)));
-		const matchedCourses = allCoursesNormalized.filter((course) =>
-			existingIdsSet.has(String(course.id))
-		);
-
-		const courseMap = new Map(matchedCourses.map((c) => [String(c.id), c]));
-		selectedCourses = existingCourseIds
-			.map((id) => courseMap.get(String(id)))
-			.filter((c) => c !== undefined) as any[];
-
-		hasInitializedCourses = true;
-	});
-
-	// Keep availableCourses in sync with current selection and catalog
-	$effect(() => {
 		const selectedIds = new Set(selectedCourses.map((c) => c.id));
 		availableCourses = allCoursesNormalized.filter((course) => !selectedIds.has(course.id));
 	});
@@ -223,12 +219,10 @@ let availableCourses = $state<any[]>([]);
 		}
 	};
 
-	$effect(() => {
-		return () => {
-			if (previewUrl) {
-				URL.revokeObjectURL(previewUrl);
-			}
-		};
+	onDestroy(() => {
+		if (previewUrl) {
+			URL.revokeObjectURL(previewUrl);
+		}
 	});
 </script>
 
@@ -388,4 +382,3 @@ let availableCourses = $state<any[]>([]);
 		</div>
 	</form>
 </div>
-
