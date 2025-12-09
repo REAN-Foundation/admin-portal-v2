@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Self from './learning-journey-module-tree-item.svelte';
 	import ContentTreeItem from '../course-content/content-tree-item.svelte';
+	import Icon from '@iconify/svelte';
 	
 	let {
 		node,
@@ -32,6 +33,7 @@
 
 	const moduleKey = $derived(`${courseId}-${node.id}`);
 	const displayName = $derived(node.Sequence ? `${node.Sequence} - ${node.Name}` : node.Name);
+	const isExpanded = $derived(expandedModules[moduleKey] === true);
 	
 	const contentViewWrapper = (contentId: string, moduleId?: string) => {
 		return contentView(courseId, moduleId || node.id, contentId);
@@ -63,9 +65,14 @@
 			onkeydown={handleKeyDown}
 		>
 			<span class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-secondary)] text-sm text-[var(--color-info)]">
-				{expandedModules[moduleKey] === true ? '-' : '+'}
+				{isExpanded ? '-' : '+'}
 			</span>
-			<span class="text-[var(--color-info)]">📚</span>
+			<Icon 
+				icon="iconoir:multiple-pages" 
+				width="20" 
+				height="20" 
+				class="text-[var(--color-info)]" 
+			/>
 			<span class="hover:underline">
 				{displayName}
 			</span>

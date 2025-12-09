@@ -13,7 +13,7 @@ export const createLearningPath = async (
 	durationInDays?: number,
 	preferenceWeight?: number,
 	enabled?: boolean,
-	courseIds?: string[]
+	courseSequence?: Record<string, number>
 ) => {
 	const body = {
 		TenantId: tenantId,
@@ -23,7 +23,7 @@ export const createLearningPath = async (
 		DurationInDays: durationInDays ? durationInDays : undefined,
 		PreferenceWeight: preferenceWeight ? preferenceWeight : undefined,
 		Enabled: enabled !== undefined ? enabled : undefined,
-		CourseIds: courseIds ? courseIds : undefined
+		CourseSequence: courseSequence ? courseSequence : undefined
 	};
 	const url = LMS_BACKEND_API_URL + '/learning-paths';
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
@@ -88,7 +88,7 @@ export const updateLearningPath = async (
 	durationInDays?: number,
 	preferenceWeight?: number,
 	enabled?: boolean,
-	courseIds?: string[]
+	courseSequence?: Record<string, number>
 ) => {
 	const body = {
 		TenantId: tenantId,
@@ -98,7 +98,7 @@ export const updateLearningPath = async (
 		DurationInDays: durationInDays ? durationInDays : null,
 		PreferenceWeight: preferenceWeight ? preferenceWeight : null,
 		Enabled: enabled !== undefined ? enabled : null,
-		CourseIds: courseIds ? courseIds : null
+		CourseSequence: courseSequence ? courseSequence : null
 	};
 	const url = LMS_BACKEND_API_URL + `/learning-paths/${learningPathId}`;
 	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);

@@ -38,7 +38,7 @@ export const POST = async (event: RequestEvent) => {
             data.DurationInDays,
             data.PreferenceWeight,
             data.Enabled,
-            data.CourseIds
+            data.CourseSequence
         );
 
         return ResponseHandler.success(response);

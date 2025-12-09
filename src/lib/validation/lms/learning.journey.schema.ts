@@ -50,9 +50,10 @@ export const createOrUpdateSchema = z.object({
 		})
 		.optional(),
 		
-	CourseIds: z
-		.array(
-			z.string().uuid({ message: 'Each CourseId must be a valid UUID.' })
+	CourseSequence: z
+		.record(
+			z.string().uuid({ message: 'Each CourseId key must be a valid UUID.' }),
+			z.number().int().positive({ message: 'Sequence must be a positive integer.' })
 		)
 		.optional()
 });

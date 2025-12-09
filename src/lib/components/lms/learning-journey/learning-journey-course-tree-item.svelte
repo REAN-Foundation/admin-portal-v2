@@ -1,5 +1,6 @@
 <script lang="ts">
 	import LearningJourneyModuleTreeItem from './learning-journey-module-tree-item.svelte';
+	import Icon from '@iconify/svelte';
 	
 	let {
 		node,
@@ -62,7 +63,12 @@
 		<span class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-secondary)] text-sm text-[var(--color-info)]">
 			{isExpanded ? '-' : '+'}
 		</span>
-		<span class="text-[var(--color-info)]">📖</span>
+		<Icon 
+			icon="iconoir:book" 
+			width="20" 
+			height="20" 
+			class="text-[var(--color-info)]" 
+		/>
 		<span class="hover:text-black">
 			{index + 1} - {displayName}
 		</span>

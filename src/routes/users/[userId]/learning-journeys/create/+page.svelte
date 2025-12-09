@@ -26,7 +26,16 @@
 	let previewUrl = $state<string | undefined>(undefined);
 	let selectedCourses = $state<any[]>([]);
 	let availableCourses = $state<any[]>([]);
-	let courseIds = $derived(selectedCourses.map((course) => course.id));
+	let courseSequence = $derived.by(() => {
+		const sequence: Record<string, number> = {};
+		selectedCourses.forEach((course, index) => {
+			const courseId = course.id || course.Id || course.ID;
+			if (courseId) {
+				sequence[courseId] = index + 1;
+			}
+		});
+		return Object.keys(sequence).length > 0 ? sequence : undefined;
+	});
 
 	const userId = page.params.userId;
 
@@ -82,7 +91,7 @@
 				DurationInDays: durationInDays ? Number(durationInDays) : undefined,
 				PreferenceWeight: preferenceWeight ? Number(preferenceWeight) : undefined,
 				Enabled: enabled,
-				CourseIds: courseIds.length > 0 ? courseIds : undefined
+				CourseSequence: courseSequence
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(learningJourneyCreateModel);
@@ -211,8 +220,8 @@
 								<SelectedCoursesDragDrop title="Selected Courses" bind:selectedItems={selectedCourses} />
 							</div>
 						</div>
-						{#if errors?.CourseIds}
-							<p class="text-error">{errors?.CourseIds}</p>
+						{#if errors?.CourseSequence}
+							<p class="text-error">{errors?.CourseSequence}</p>
 						{/if}
 					</td>
 				</tr>

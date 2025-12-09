@@ -6,7 +6,7 @@ export interface LearningPathCreateModel {
 	DurationInDays?: number;
 	PreferenceWeight?: number;
 	Enabled?: boolean;
-	CourseIds?: string[];
+	CourseSequence?: Record<string, number>;
 }
 
 export interface LearningPathUpdateModel {
@@ -17,5 +17,5 @@ export interface LearningPathUpdateModel {
 	DurationInDays?: number;
 	PreferenceWeight?: number;
 	Enabled?: boolean;
-	CourseIds?: string[];
+	CourseSequence?: Record<string, number>;
 }

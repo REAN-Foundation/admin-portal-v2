@@ -20,9 +20,7 @@
 	let learningJourneyName = $state(data.learningJourney.Name);
 	let description = $state(data.learningJourney.Description || undefined);
 	let imageUrl = $state(data.learningJourney.ImageUrl ?? undefined);
-	let durationInDays = $state(
-		data.learningJourney.DurationInDays?.toString() ?? undefined
-	);
+	let durationInDays = $state(data.learningJourney.DurationInDays ?? undefined);
 	let preferenceWeight = $state(
 		data.learningJourney.PreferenceWeight?.toString() ?? undefined
 	);
@@ -34,7 +32,16 @@
 	let previewUrl = $state<string | undefined>(undefined);
 	let selectedCourses = $state<any[]>([]);
 	let availableCourses = $state<any[]>([]);
-	let courseIds = $derived(selectedCourses.map((course) => course.id));
+	let courseSequence = $derived.by(() => {
+		const sequence: Record<string, number> = {};
+		selectedCourses.forEach((course, index) => {
+			const courseId = course.id || course.Id || course.ID;
+			if (courseId) {
+				sequence[courseId] = index + 1;
+			}
+		});
+		return Object.keys(sequence).length > 0 ? sequence : undefined;
+	});
 
 	const userId = page.params.userId;
 	var learningPathId = page.params.learningPathId;
@@ -57,21 +64,38 @@
 		preferenceWeight = data?.learningJourney?.PreferenceWeight?.toString();
 		enabled = data?.learningJourney?.Enabled !== undefined ? data.learningJourney.Enabled : true;
 		
-		// Get CourseIds from the learning journey, with fallback to Courses array
+		// Get CourseSequence from the learning journey, with fallback to CourseIds or Courses array
+		const courseSequenceFromJourney = data?.learningJourney?.CourseSequence || {};
 		const courseIdsFromJourney = data?.learningJourney?.CourseIds || [];
 		const coursesFromJourney = data?.learningJourney?.Courses || [];
 		
-		const existingCourseIds = courseIdsFromJourney.length > 0
-			? courseIdsFromJourney
-			: coursesFromJourney
+		let existingCourseIds: string[] = [];
+		
+		// Prioritize CourseSequence, then CourseIds, then Courses array
+		if (courseSequenceFromJourney && Object.keys(courseSequenceFromJourney).length > 0) {
+			// Sort by sequence number and extract course IDs
+			existingCourseIds = Object.entries(courseSequenceFromJourney)
+				.sort(([, seqA], [, seqB]) => (seqA as number) - (seqB as number))
+				.map(([courseId]) => courseId);
+		} else if (courseIdsFromJourney.length > 0) {
+			existingCourseIds = courseIdsFromJourney;
+		} else if (coursesFromJourney.length > 0) {
+			existingCourseIds = coursesFromJourney
 				.filter(c => c && (c.id || c.Id || c.ID))
 				.map(c => c.id || c.Id || c.ID);
+		}
 		
-		// Convert all IDs to strings for comparison and filter matched courses
+		// Convert all IDs to strings for comparison and filter matched courses, maintaining order
 		const existingIdsSet = new Set(existingCourseIds.map(id => String(id)));
-		selectedCourses = existingCourseIds.length > 0 && allCoursesNormalized.length > 0
-			? allCoursesNormalized.filter((course) => existingIdsSet.has(String(course.id)))
-			: [];
+		const matchedCourses = allCoursesNormalized.filter(
+			(course) => existingIdsSet.has(String(course.id))
+		);
+		
+		// Sort matched courses according to the order in existingCourseIds
+		const courseMap = new Map(matchedCourses.map(c => [String(c.id), c]));
+		selectedCourses = existingCourseIds
+			.map(id => courseMap.get(String(id)))
+			.filter(c => c !== undefined) as any[];
 		
 		errors = {};
 		previewUrl && URL.revokeObjectURL(previewUrl);
@@ -106,24 +130,42 @@
 			return;
 		}
 
+		// Get CourseSequence from the learning journey, with fallback to CourseIds or Courses array
+		const courseSequenceFromJourney = data.learningJourney?.CourseSequence || {};
 		const courseIdsFromJourney = data.learningJourney?.CourseIds || [];
 		const coursesFromJourney = data.learningJourney?.Courses || [];
 		
-		const existingCourseIds = courseIdsFromJourney.length > 0
-			? courseIdsFromJourney
-			: coursesFromJourney
+		let existingCourseIds: string[] = [];
+		
+		// Prioritize CourseSequence, then CourseIds, then Courses array
+		if (courseSequenceFromJourney && Object.keys(courseSequenceFromJourney).length > 0) {
+			// Sort by sequence number and extract course IDs
+			existingCourseIds = Object.entries(courseSequenceFromJourney)
+				.sort(([, seqA], [, seqB]) => (seqA as number) - (seqB as number))
+				.map(([courseId]) => courseId);
+		} else if (courseIdsFromJourney.length > 0) {
+			existingCourseIds = courseIdsFromJourney;
+		} else if (coursesFromJourney.length > 0) {
+			existingCourseIds = coursesFromJourney
 				.filter(c => c && (c.id || c.Id || c.ID))
 				.map(c => c.id || c.Id || c.ID);
+		}
 
 		const existingIdsSet = new Set(existingCourseIds.map(id => String(id)));
 		const matchedCourses = allCoursesNormalized.filter(
 			(course) => existingIdsSet.has(String(course.id))
 		);
 
-		const hasChanged = selectedCourses.length !== matchedCourses.length ||
-			selectedCourses.some((sc, i) => sc.id !== matchedCourses[i]?.id);
+		// Sort matched courses according to the order in existingCourseIds
+		const courseMap = new Map(matchedCourses.map(c => [String(c.id), c]));
+		const orderedCourses = existingCourseIds
+			.map(id => courseMap.get(String(id)))
+			.filter(c => c !== undefined) as any[];
+
+		const hasChanged = selectedCourses.length !== orderedCourses.length ||
+			selectedCourses.some((sc, i) => sc.id !== orderedCourses[i]?.id);
 		
-		selectedCourses = hasChanged ? matchedCourses : selectedCourses;
+		selectedCourses = hasChanged ? orderedCourses : selectedCourses;
 
 		const selectedIds = new Set(selectedCourses.map(c => c.id));
 		availableCourses = allCoursesNormalized.filter(
@@ -144,7 +186,7 @@
 				DurationInDays: durationInDays ? Number(durationInDays) : undefined,
 				PreferenceWeight: preferenceWeight ? Number(preferenceWeight) : undefined,
 				Enabled: enabled,
-				CourseIds: courseIds.length > 0 ? courseIds : undefined
+				CourseSequence: courseSequence
 			};
 
 			const validationResult = createOrUpdateSchema.safeParse(learningJourneyUpdateModel);
@@ -293,8 +335,8 @@
 								<SelectedCoursesDragDrop title="Selected Courses" bind:selectedItems={selectedCourses} />
 							</div>
 						</div>
-						{#if errors?.CourseIds}
-							<p class="text-error">{errors?.CourseIds}</p>
+						{#if errors?.CourseSequence}
+							<p class="text-error">{errors?.CourseSequence}</p>
 						{/if}
 					</td>
 				</tr>
