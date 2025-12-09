@@ -3,6 +3,7 @@
 	import Icon from '@iconify/svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
+	import Image from '$lib/components/image.svelte';
 	import { MarketingMaterialRequestSchema } from '$lib/validation/tenant.settings.schema';
 	import type {
 		TenantSettingsMarketingDomainModel,
@@ -1037,15 +1038,12 @@
 										</div>
 										{#if Logos[index] && (data.marketingMaterial?.LogoUrls?.[index] || getImageUrl(Logos[index]))}
 											<div class="mt-2">
-												<img
-													src={(data.marketingMaterial?.LogoUrls?.[index]) ||
+												<Image
+													cls="h-24 w-24 rounded border border-[var(--color-outline)] object-cover"
+													source={(data.marketingMaterial?.LogoUrls?.[index]) ||
 														getImageUrl(Logos[index])}
-													alt="Logo {index + 1}"
-													class="h-24 w-24 rounded border border-[var(--color-outline)] object-cover"
-													onerror={(e) => {
-														console.error('Failed to load logo:', Logos[index]);
-														(e.target as HTMLImageElement).style.display = 'none';
-													}}
+													w="24"
+													h="24"
 												/>
 											</div>
 										{/if}
@@ -1530,15 +1528,12 @@
 							</div>
 							{#if Images.TitleImage && (data.marketingMaterial?.Images?.TitleImageUrl || getImageUrl(Images.TitleImage))}
 								<div class="mt-2">
-									<img
-										src={(data.marketingMaterial?.Images?.TitleImageUrl) ||
+									<Image
+										cls="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
+										source={(data.marketingMaterial?.Images?.TitleImageUrl) ||
 											getImageUrl(Images.TitleImage)}
-										alt="Title"
-										class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
-										onerror={(e) => {
-											console.error('Failed to load title image:', Images.TitleImage);
-											(e.target as HTMLImageElement).style.display = 'none';
-										}}
+										w="32"
+										h="32"
 									/>
 								</div>
 							{/if}
@@ -1576,18 +1571,12 @@
 							</div>
 							{#if Images.UserInterfaceImage && (data.marketingMaterial?.Images?.UserInterfaceImageUrl || getImageUrl(Images.UserInterfaceImage))}
 								<div class="mt-2">
-									<img
-										src={(data.marketingMaterial?.Images?.UserInterfaceImageUrl) ||
+									<Image
+										cls="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
+										source={(data.marketingMaterial?.Images?.UserInterfaceImageUrl) ||
 											getImageUrl(Images.UserInterfaceImage)}
-										alt="User Interface"
-										class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
-										onerror={(e) => {
-											console.error(
-												'Failed to load user interface image:',
-												Images.UserInterfaceImage
-											);
-											(e.target as HTMLImageElement).style.display = 'none';
-										}}
+										w="32"
+										h="32"
 									/>
 								</div>
 							{/if}
@@ -1662,16 +1651,12 @@
 								</div>
 								{#if (typeof QRcode === 'object' && QRcode !== null && !Array.isArray(QRcode) && QRcode.ResourceId) && (data.marketingMaterial?.QRCode && typeof data.marketingMaterial.QRCode === 'object' && (data.marketingMaterial.QRCode as any)?.imageUrl || getImageUrl(QRcode.ResourceId))}
 									<div class="mt-2">
-										<img
-											src={(data.marketingMaterial?.QRCode && typeof data.marketingMaterial.QRCode === 'object' && (data.marketingMaterial.QRCode as any)?.imageUrl) ||
+										<Image
+											cls="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
+											source={(data.marketingMaterial?.QRCode && typeof data.marketingMaterial.QRCode === 'object' && (data.marketingMaterial.QRCode as any)?.imageUrl) ||
 												getImageUrl(QRcode.ResourceId)}
-											alt="QR Code"
-											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
-											onerror={(e) => {
-												const resourceId = typeof QRcode === 'object' && QRcode !== null && !Array.isArray(QRcode) ? QRcode.ResourceId : null;
-												console.error('Failed to load QR code image:', resourceId);
-												(e.target as HTMLImageElement).style.display = 'none';
-											}}
+											w="32"
+											h="32"
 										/>
 									</div>
 								{/if}
