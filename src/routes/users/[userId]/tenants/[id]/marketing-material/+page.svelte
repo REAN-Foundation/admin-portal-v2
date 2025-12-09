@@ -15,7 +15,6 @@
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data } = $props();
-	console.log('Marketing Material Page Data:', data);
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
