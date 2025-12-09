@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { error } from '@sveltejs/kit';
-import { API_CLIENT_INTERNAL_KEY } from '$env/static/private';
+import { API_CLIENT_INTERNAL_KEY, BACKEND_API_URL } from '$env/static/private';
 import { SessionManager } from '../cache/session/session.manager';
 
 /////////////////////////////////////////////////////////////////////////////
@@ -142,7 +142,7 @@ export const delete_ = async (url: string, authorizeUser: boolean = false, sessi
 	}
 };
 
-const setHeaders = async (authorizeUser: boolean, sessionId?: string) => {
+const setHeaders = async (authorizeUser: boolean, sessionId?: string, isFormData = false) => {
 	try {
 		const headers = {
 			'x-api-key': API_CLIENT_INTERNAL_KEY
