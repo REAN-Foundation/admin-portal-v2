@@ -5,7 +5,7 @@
 	import Image from '$lib/components/image.svelte';
 	import type { PageServerData } from './$types';
 	import Button from '$lib/components/button/button.svelte';
-	import LearningJourneyCourseTreeView from '$lib/components/lms/learning-journey/learning-journey-course-tree-view.svelte';
+	import CourseTreeView from '$lib/components/lms/course-tree-view/course-tree-view.svelte';
 
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -132,7 +132,8 @@
 			<tr class="tables-row !border-b !border-b-secondary-100 dark:!border-b-surface-700">
 				<td class="table-label align-top">Courses</td>
 				<td class="table-data">
-					<LearningJourneyCourseTreeView
+					<CourseTreeView
+						mode="courses"
 						{courses}
 						courseView={courseViewRoute}
 						moduleView={moduleViewRoute}

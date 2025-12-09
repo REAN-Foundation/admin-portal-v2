@@ -43,13 +43,4 @@
 	.tree-connector {
 		position: relative;
 	}
-	.tree-connector::before {
-		content: '';
-		position: absolute;
-		top: 1rem;
-		left: -1rem;
-		width: 1rem;
-		height: 2px;
-		background-color: #7e22ce;
-	}
 </style>

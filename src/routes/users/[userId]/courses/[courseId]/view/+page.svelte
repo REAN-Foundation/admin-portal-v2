@@ -5,7 +5,7 @@
 	import Image from '$lib/components/image.svelte';
 	import type { PageServerData } from './$types';
 	import Button from '$lib/components/button/button.svelte';
-	import ModuleTreeView from '$lib/components/lms/course-module/module-tree-view.svelte';
+	import CourseTreeView from '$lib/components/lms/course-tree-view/course-tree-view.svelte';
 
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -25,65 +25,24 @@
 	let durationInDays = course.DurationInDays ? course.DurationInDays.toString() : 'Not specified';
 	let sequence = course.Sequence ? course.Sequence.toString() : 'Not specified';
 
-	const buildModuleTree = (modules: any[]) => {
-		if (!modules || modules.length === 0) return [];
-		
-		const filteredModules = modules.filter((module) => 
-			module.CourseId === courseId || 
-			module.courseId === courseId
-		);
-		
-		const moduleMap = new Map();
-		filteredModules.forEach(module => {
-			moduleMap.set(module.id, {
-				...module,
-				Children: [],
-				ParentModuleId: module.ParentModuleId || null
-			});
-		});
-		
-		const rootModules: any[] = [];
-		moduleMap.forEach((module, id) => {
-			if (module.ParentModuleId === null || !moduleMap.has(module.ParentModuleId)) {
-				rootModules.push(module);
-			} else {
-				const parent = moduleMap.get(module.ParentModuleId);
-				if (parent) {
-					if (!parent.Children) {
-						parent.Children = [];
-					}
-					parent.Children.push(module);
-				}
-			}
-		});
-		
-		return rootModules;
-	};
+	// Filter modules for this course
+	const filteredModules = $derived(
+		(data.modules || []).filter(
+			(module: any) => module.CourseId === courseId || module.courseId === courseId
+		)
+	);
 
-	const moduleNodes = $derived(buildModuleTree(data.modules || []));
-
-	$effect(() => {
-		const modules = data.modules || [];
-		if (modules.length > 0) {
-			modules.forEach((module: any) => {
-				// Initialize modules as collapsed (false) instead of expanded
-				if (expandedModules[module.id] === undefined) {
-					expandedModules = { ...expandedModules, [module.id]: false };
-				}
-			});
-		}
-	});
-	
 	const moduleView = (moduleId: string) => {
 		return `/users/${userId}/courses/${courseId}/modules/${moduleId}/view`;
 	};
-	
+
 	const contentView = (contentId: string, moduleId?: string) => {
 		if (moduleId) {
 			return `/users/${userId}/courses/${courseId}/modules/${moduleId}/contents/${contentId}/view`;
 		}
+		// Fallback: try to find moduleId from moduleContents
 		for (const [modId, contents] of Object.entries(moduleContents)) {
-			if (contents.some(c => c.id === contentId)) {
+			if (contents.some((c: any) => c.id === contentId)) {
 				return `/users/${userId}/courses/${courseId}/modules/${modId}/contents/${contentId}/view`;
 			}
 		}
@@ -93,56 +52,6 @@
 	let expandedModules = $state<Record<string, boolean>>({});
 	let moduleContents = $state<Record<string, any[]>>({});
 	let loadingContents = $state<Record<string, boolean>>({});
-	
-	const toggleModuleContents = async (moduleId: string, event: Event) => {
-		event.preventDefault();
-		event.stopPropagation();
-		
-		if (expandedModules[moduleId]) {
-			expandedModules = { ...expandedModules, [moduleId]: false };
-		} else {
-			expandedModules = { ...expandedModules, [moduleId]: true };
-			// Always refetch contents when expanding to ensure fresh data
-			if (!loadingContents[moduleId]) {
-				await fetchModuleContents(moduleId);
-			}
-		}
-	};
-	const fetchModuleContents = async (moduleId: string) => {
-		try {
-			loadingContents = { ...loadingContents, [moduleId]: true };
-			let url = `/api/server/lms/course.contents/search?`;
-			url += `itemsPerPage=100`;
-			url += `&pageIndex=0`;
-			url += `&sortBy=Title`;
-			url += `&sortOrder=ascending`;
-			url += `&moduleId=${encodeURIComponent(moduleId)}`; 
-
-			const res = await fetch(url, {
-				method: 'GET',
-				headers: { 'content-type': 'application/json' },
-				credentials: 'include'
-			});
-			
-			if (!res.ok) {
-				throw new Error(`HTTP error! status: ${res.status}`);
-			}
-			
-			const searchResult = await res.json();
-			let contentsList = searchResult?.Data?.CourseContentRecords?.Items || [];
-			
-			contentsList = contentsList.filter(content => 
-				content.CourseModuleId === moduleId || content.courseModuleId === moduleId
-			);
-			
-			moduleContents = { ...moduleContents, [moduleId]: contentsList };
-		} catch (err) {
-			console.error('Failed to fetch contents:', err);
-			moduleContents = { ...moduleContents, [moduleId]: [] };
-		} finally {
-			loadingContents = { ...loadingContents, [moduleId]: false };
-		}
-	};
 	
 
 	const breadCrumbs = [
@@ -215,15 +124,16 @@
 			<tr class="tables-row">
 				<td class="table-label align-top">Modules</td>
 				<td class="table-data">
-					{#if moduleNodes && moduleNodes.length > 0}
-						<ModuleTreeView 
-							modules={moduleNodes} 
+					{#if filteredModules && filteredModules.length > 0}
+						<CourseTreeView
+							mode="modules"
+							modules={filteredModules}
+							{courseId}
 							{moduleView}
+							{contentView}
 							bind:expandedModules
 							bind:moduleContents
 							bind:loadingContents
-							onModuleExpand={toggleModuleContents}
-							{contentView}
 						/>
 					{:else}
 						<span class="span">No modules found</span>
