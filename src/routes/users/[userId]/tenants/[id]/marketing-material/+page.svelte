@@ -15,6 +15,7 @@
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data } = $props();
+	console.log('Marketing Material Page Data:', data);
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
@@ -108,7 +109,7 @@
 					},
 					Benefits: {
 						Title: data.marketingMaterial?.Content?.Benefits?.Title ?? '',
-						Items: data.marketingMaterial?.Content?.Benefits?.Items ?? []
+						Items: (data.marketingMaterial?.Content?.Benefits?.Items ?? [])
 					},
 					UserInterface: {
 						Heading: data.marketingMaterial?.Content?.UserInterface?.Heading ?? '',
@@ -140,7 +141,7 @@
 					if (!qrData) return null;
 					if (typeof qrData === 'string') return qrData;
 					return {
-						ResourceId: qrData.ResourceId ?? ''
+						ResourceId: qrData.ResourceId ?? qrData.PDFResourceId ?? ''
 					};
 				})()
 	);
@@ -822,7 +823,7 @@
 					...Content,
 					Benefits: {
 						...Content.Benefits,
-						Items: Content.Benefits.Items?.filter((item) => item.trim() !== '') ?? []
+						Items: Content.Benefits.Items?.filter(item => item.trim() !== '') ?? []
 					}
 				},
 				Images: {
@@ -1009,6 +1010,8 @@
 											{/if}
 										</div>
 
+										
+
 										<!-- LOGO FILE Section -->
 										<div class="mb-2">
 											<label
@@ -1017,9 +1020,7 @@
 											>
 												Logo File
 											</label>
-											<div
-												class="relative flex items-center rounded border border-[var(--color-outline)] bg-[var(--color-primary)]"
-											>
+											<div class="relative flex items-center rounded border border-[var(--color-outline)] bg-[var(--color-primary)]">
 												<label
 													class="health-system-btn variant-filled-secondary"
 													for="logo-upload-{index}"
@@ -1050,7 +1051,7 @@
 											<div class="mt-4">
 												<Image
 													cls="h-24 w-24 rounded border border-[var(--color-outline)] object-cover"
-													source={data.marketingMaterial?.LogoUrls?.[index] ||
+													source={(data.marketingMaterial?.LogoUrls?.[index]) ||
 														getImageUrl(Logos[index])}
 													w="24"
 													h="24"
@@ -1260,7 +1261,7 @@
 							</div>
 
 							<div class="space-y-4">
-								{#each Content.Benefits.Items ?? [] as benefit, index}
+								{#each (Content.Benefits.Items ?? []) as benefit, index}
 									<div
 										class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4"
 									>
@@ -1278,20 +1279,20 @@
 												</button>
 											{/if}
 										</div>
-										<div class="my-2 flex flex-col md:flex-row md:items-center">
-											<label
+											<div class="my-2 flex flex-col md:flex-row md:items-center">
+												<label
 												for="benefit-item-{index}"
-												class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
+													class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 												>Benefit Text <span class="text-red-700">*</span></label
-											>
-											<textarea
+												>
+												<textarea
 												id="benefit-item-{index}"
-												rows="3"
+													rows="3"
 												bind:value={Content.Benefits.Items[index]}
-												{disabled}
+													{disabled}
 												placeholder="Enter benefit text"
-												class="input-field w-[70%]"
-											></textarea>
+													class="input-field w-[70%]"
+												></textarea>
 										</div>
 									</div>
 								{/each}
@@ -1525,9 +1526,7 @@
 										>
 											Image File
 										</label>
-										<div
-											class="relative flex items-center rounded border border-[var(--color-outline)] bg-[var(--color-primary)]"
-										>
+										<div class="relative flex items-center rounded border border-[var(--color-outline)] bg-[var(--color-primary)]">
 											<label
 												class="health-system-btn variant-filled-secondary"
 												for="title-image-upload"
@@ -1559,7 +1558,7 @@
 										<div class="mt-4">
 											<Image
 												cls="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
-												source={data.marketingMaterial?.Images?.TitleImageUrl ||
+												source={(data.marketingMaterial?.Images?.TitleImageUrl) ||
 													getImageUrl(Images.TitleImage)}
 												w="32"
 												h="32"
@@ -1574,9 +1573,7 @@
 								>
 									<!-- Heading -->
 									<div class="mb-4">
-										<h4 class="text-base font-bold text-[var(--color-info)]">
-											User Interface Image
-										</h4>
+										<h4 class="text-base font-bold text-[var(--color-info)]">User Interface Image</h4>
 									</div>
 
 									<!-- Select File -->
@@ -1587,9 +1584,7 @@
 										>
 											Image File
 										</label>
-										<div
-											class="relative flex items-center rounded border border-[var(--color-outline)] bg-[var(--color-primary)]"
-										>
+										<div class="relative flex items-center rounded border border-[var(--color-outline)] bg-[var(--color-primary)]">
 											<label
 												class="health-system-btn variant-filled-secondary"
 												for="user-interface-image-upload"
@@ -1621,7 +1616,7 @@
 										<div class="mt-4">
 											<Image
 												cls="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
-												source={data.marketingMaterial?.Images?.UserInterfaceImageUrl ||
+												source={(data.marketingMaterial?.Images?.UserInterfaceImageUrl) ||
 													getImageUrl(Images.UserInterfaceImage)}
 												w="32"
 												h="32"
@@ -1652,7 +1647,7 @@
 							<Icon icon="material-symbols:qr-code-scanner" class="h-5 w-5" />
 							<div class="text-start">
 								<p class="text-md font-medium">QR Code</p>
-								<p class="text-sm">Upload QR code</p>
+								<p class="text-sm">Upload QR code </p>
 							</div>
 						</div>
 						<span
@@ -1689,10 +1684,11 @@
 										>
 											QR File
 										</label>
-										<div
-											class="relative flex items-center rounded border border-[var(--color-outline)] bg-[var(--color-primary)]"
-										>
-											<label class="health-system-btn variant-filled-secondary" for="qrcode-upload">
+										<div class="relative flex items-center rounded border border-[var(--color-outline)] bg-[var(--color-primary)]">
+											<label
+												class="health-system-btn variant-filled-secondary"
+												for="qrcode-upload"
+											>
 												Select File
 												<input
 													type="file"
@@ -1720,8 +1716,7 @@
 										<div class="mt-4">
 											<Image
 												cls="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
-												source={data.marketingMaterial?.QRCode?.imageUrl ||
-													getImageUrl(QRcode.ResourceId)}
+												source={data.marketingMaterial?.QRCode?.imageUrl || getImageUrl(QRcode.ResourceId)}
 												w="32"
 												h="32"
 											/>
