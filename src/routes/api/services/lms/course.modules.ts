@@ -24,14 +24,12 @@ export const createModule = async (
 	const url = LMS_BACKEND_API_URL + '/course-modules';
 	const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 
-	// Clear both modules and courses cache since courses include nested modules
 	const findAndClearKeys = [
 		`session-${sessionId}:req-searchModules`,
 		`session-${sessionId}:req-searchCourses`
 	];
 	await DashboardManager.findAndClear(findAndClearKeys);
-	
-	// Also clear the specific course cache if courseId is provided
+
 	if (courseId) {
 		const courseCacheKey = `session-${sessionId}:req-getCourseById-${courseId}`;
 		await DashboardManager.deleteMany([courseCacheKey]);
@@ -94,9 +92,9 @@ export const updateModule = async (
 ) => {
 	const body = {
 		Name: name,
-		Description: description ?? null,
-		DurationInMins: durationInMins ?? null,
-		ImageUrl: imageUrl ?? null,
+		Description: description ?? undefined,
+		DurationInMins: durationInMins ?? undefined,
+		ImageUrl: imageUrl ?? undefined,
 		// ContentSequence: contentSequence ?? null
 	};
 	const url = LMS_BACKEND_API_URL + `/course-modules/${moduleId}`;

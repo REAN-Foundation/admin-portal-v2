@@ -246,7 +246,7 @@
 					</td>
 				</tr>
 				<tr class="tables-row">
-					<td class="table-label">Image</td>
+					<td class="table-label">Image Url</td>
 					<td class="table-data">
 						{#if imageUrl == undefined || imageUrl == null}
 							<input

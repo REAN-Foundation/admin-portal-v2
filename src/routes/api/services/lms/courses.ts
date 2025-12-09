@@ -87,7 +87,7 @@ export const updateCourse = async (
 		Name: name,
 		Description: description ? description : '',
 		ImageUrl: imageResourceId ? imageResourceId : '',
-		DurationInDays: durationInDays ? durationInDays : null,
+		DurationInDays: durationInDays ? durationInDays : undefined,
 		// Sequence: sequence ? sequence : null
 	};
 	const url = LMS_BACKEND_API_URL + `/courses/${courseId}`;
