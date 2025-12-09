@@ -8,8 +8,7 @@
 	import type { LearningPathCreateModel } from '$lib/types/lms/learning.journey.js';
 	import { goto } from '$app/navigation';
 	import Button from '$lib/components/button/button.svelte';
-	import CoursesDragDrop from '$lib/components/lms/courses-drag-drop.svelte';
-	import SelectedCoursesDragDrop from '$lib/components/lms/selected-courses-drag-drop.svelte';
+	import DragDropList from '$lib/components/lms/drag-drop-list.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -214,10 +213,18 @@
 					<td class="table-data">
 						<div class="flex flex-col gap-4">
 							<div>
-								<CoursesDragDrop title="Available Courses" bind:items={availableCourses} />
+								<DragDropList
+									title="Available Courses"
+									bind:items={availableCourses}
+									emptyText="No courses available"
+								/>
 							</div>
 							<div>
-								<SelectedCoursesDragDrop title="Selected Courses" bind:selectedItems={selectedCourses} />
+								<DragDropList
+									title="Selected Courses"
+									bind:items={selectedCourses}
+									emptyText="No courses selected"
+								/>
 							</div>
 						</div>
 						{#if errors?.CourseSequence}
@@ -245,17 +252,16 @@
 				<tr class="tables-row">
 					<td class="table-label">Enabled</td>
 					<td class="table-data">
-						<label class="flex items-center gap-2">
-							<input
-								type="checkbox"
-								class="input"
-								name="enabled"
-								bind:checked={enabled}
-							/>
-							<span>Enable this learning journey</span>
-						</label>
-						{#if errors?.Enabled}
-							<p class="text-error">{errors?.Enabled}</p>
+						<input
+							type="checkbox"
+							name="enabled"
+							bind:checked={enabled}
+							class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2 {errors?.enabled
+								? 'input-text-error'
+								: ''}"
+						/>
+						{#if errors?.enabled}
+							<p class="text-error">{errors?.enabled}</p>
 						{/if}
 					</td>
 				</tr>

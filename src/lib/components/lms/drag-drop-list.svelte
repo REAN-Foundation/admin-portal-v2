@@ -2,9 +2,19 @@
 	import { flip } from 'svelte/animate';
 	import { dndzone } from 'svelte-dnd-action';
 
-	let { title, items = $bindable(), onItemClick } = $props<{
+	let {
+		title,
+		items = $bindable(),
+		emptyText = 'No items',
+		itemLabel = (item: any) => item?.Name ?? item?.name ?? item?.title ?? 'Unnamed',
+		dropFromOtherZones = true,
+		onItemClick
+	} = $props<{
 		title: string;
 		items: any[];
+		emptyText?: string;
+		itemLabel?: (item: any) => string;
+		dropFromOtherZones?: boolean;
 		onItemClick?: (item: any) => void;
 	}>();
 
@@ -19,10 +29,10 @@
 	};
 
 	const handleItemClick = (item: any) => {
-		if (onItemClick) {
-			onItemClick(item);
-		}
+		onItemClick?.(item);
 	};
+
+	const getItemKey = (item: any) => item?.id ?? item?.Id ?? item?.ID ?? item;
 </script>
 
 <div
@@ -31,11 +41,11 @@
 	<div class="font-semibold">{title}</div>
 	<section
 		class="grow"
-		use:dndzone={{ items: items, flipDurationMs, dropFromOtherZones: true } as any}
+		use:dndzone={{ items: items, flipDurationMs, dropFromOtherZones } as any}
 		onconsider={handleDndConsider}
 		onfinalize={handleDndFinalize}
 	>
-		{#each items as item (item.id)}
+		{#each items as item (getItemKey(item))}
 			<div
 				class="px-1 py-0.5 cursor-move hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
 				animate:flip={{ duration: flipDurationMs }}
@@ -43,12 +53,13 @@
 				role="button"
 				tabindex="0"
 			>
-				{item.Name}
+				{itemLabel(item)}
 			</div>
 		{/each}
 		{#if items.length === 0}
-			<div class="text-gray-400 text-sm italic p-2">No courses available</div>
+			<div class="text-gray-400 text-sm italic p-2">{emptyText}</div>
 		{/if}
 	</section>
 </div>
+
 

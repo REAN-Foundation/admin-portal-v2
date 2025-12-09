@@ -93,12 +93,12 @@ export const updateLearningPath = async (
 	const body = {
 		TenantId: tenantId,
 		Name: name,
-		Description: description ? description : '',
-		ImageUrl: imageUrl ? imageUrl : '',
-		DurationInDays: durationInDays ? durationInDays : null,
-		PreferenceWeight: preferenceWeight ? preferenceWeight : null,
-		Enabled: enabled !== undefined ? enabled : null,
-		CourseSequence: courseSequence ? courseSequence : null
+		Description: description ? description : undefined,
+		ImageUrl: imageUrl ? imageUrl : undefined,
+		DurationInDays: durationInDays ? durationInDays : undefined,
+		PreferenceWeight: preferenceWeight ? preferenceWeight : undefined,
+		Enabled: enabled !== undefined ? enabled : undefined,
+		CourseSequence: courseSequence ? courseSequence : undefined
 	};
 	const url = LMS_BACKEND_API_URL + `/learning-paths/${learningPathId}`;
 	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);

@@ -9,8 +9,7 @@
 	import { createOrUpdateSchema } from '$lib/validation/lms/learning.journey.schema';
 	import { goto } from '$app/navigation';
 	import Button from '$lib/components/button/button.svelte';
-	import CoursesDragDrop from '$lib/components/lms/courses-drag-drop.svelte';
-	import SelectedCoursesDragDrop from '$lib/components/lms/selected-courses-drag-drop.svelte';
+	import DragDropList from '$lib/components/lms/drag-drop-list.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -30,8 +29,8 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let previewUrl = $state<string | undefined>(undefined);
-	let selectedCourses = $state<any[]>([]);
-	let availableCourses = $state<any[]>([]);
+let selectedCourses = $state<any[]>([]);
+let availableCourses = $state<any[]>([]);
 	let courseSequence = $derived.by(() => {
 		const sequence: Record<string, number> = {};
 		selectedCourses.forEach((course, index) => {
@@ -113,33 +112,32 @@
 
 	let allCoursesNormalized = $derived.by(() => {
 		if (data.courses && Array.isArray(data.courses)) {
-			return data.courses.filter(
-				(course) => course && (course.id || course.Id || course.ID)
-			).map((course) => ({
-				id: course.id || course.Id || course.ID,
-				Name: course.Name || course.name || course.NAME || 'Unnamed Course',
-				...course
-			}));
+			return data.courses
+				.filter((course) => course && (course.id || course.Id || course.ID))
+				.map((course) => ({
+					id: course.id || course.Id || course.ID,
+					Name: course.Name || course.name || course.NAME || 'Unnamed Course',
+					...course
+				}));
 		}
 		return [];
 	});
 
+	let hasInitializedCourses = $state(false);
+
+	// Initialize selected/available courses once from server data
 	$effect(() => {
-		if (allCoursesNormalized.length === 0 || !data.learningJourney) {
-			availableCourses = [];
+		if (hasInitializedCourses || allCoursesNormalized.length === 0 || !data.learningJourney) {
 			return;
 		}
 
-		// Get CourseSequence from the learning journey, with fallback to CourseIds or Courses array
 		const courseSequenceFromJourney = data.learningJourney?.CourseSequence || {};
 		const courseIdsFromJourney = data.learningJourney?.CourseIds || [];
 		const coursesFromJourney = data.learningJourney?.Courses || [];
-		
+
 		let existingCourseIds: string[] = [];
-		
-		// Prioritize CourseSequence, then CourseIds, then Courses array
+
 		if (courseSequenceFromJourney && Object.keys(courseSequenceFromJourney).length > 0) {
-			// Sort by sequence number and extract course IDs
 			existingCourseIds = Object.entries(courseSequenceFromJourney)
 				.sort(([, seqA], [, seqB]) => (seqA as number) - (seqB as number))
 				.map(([courseId]) => courseId);
@@ -147,30 +145,27 @@
 			existingCourseIds = courseIdsFromJourney;
 		} else if (coursesFromJourney.length > 0) {
 			existingCourseIds = coursesFromJourney
-				.filter(c => c && (c.id || c.Id || c.ID))
-				.map(c => c.id || c.Id || c.ID);
+				.filter((c) => c && (c.id || c.Id || c.ID))
+				.map((c) => c.id || c.Id || c.ID);
 		}
 
-		const existingIdsSet = new Set(existingCourseIds.map(id => String(id)));
-		const matchedCourses = allCoursesNormalized.filter(
-			(course) => existingIdsSet.has(String(course.id))
+		const existingIdsSet = new Set(existingCourseIds.map((id) => String(id)));
+		const matchedCourses = allCoursesNormalized.filter((course) =>
+			existingIdsSet.has(String(course.id))
 		);
 
-		// Sort matched courses according to the order in existingCourseIds
-		const courseMap = new Map(matchedCourses.map(c => [String(c.id), c]));
-		const orderedCourses = existingCourseIds
-			.map(id => courseMap.get(String(id)))
-			.filter(c => c !== undefined) as any[];
+		const courseMap = new Map(matchedCourses.map((c) => [String(c.id), c]));
+		selectedCourses = existingCourseIds
+			.map((id) => courseMap.get(String(id)))
+			.filter((c) => c !== undefined) as any[];
 
-		const hasChanged = selectedCourses.length !== orderedCourses.length ||
-			selectedCourses.some((sc, i) => sc.id !== orderedCourses[i]?.id);
-		
-		selectedCourses = hasChanged ? orderedCourses : selectedCourses;
+		hasInitializedCourses = true;
+	});
 
-		const selectedIds = new Set(selectedCourses.map(c => c.id));
-		availableCourses = allCoursesNormalized.filter(
-			(course) => !selectedIds.has(course.id)
-		);
+	// Keep availableCourses in sync with current selection and catalog
+	$effect(() => {
+		const selectedIds = new Set(selectedCourses.map((c) => c.id));
+		availableCourses = allCoursesNormalized.filter((course) => !selectedIds.has(course.id));
 	});
 
 	const handleSubmit = async (event: Event) => {
@@ -329,10 +324,18 @@
 					<td class="table-data">
 						<div class="flex flex-col gap-4">
 							<div>
-								<CoursesDragDrop title="Available Courses" bind:items={availableCourses} />
+								<DragDropList
+									title="Available Courses"
+									bind:items={availableCourses}
+									emptyText="No courses available"
+								/>
 							</div>
 							<div>
-								<SelectedCoursesDragDrop title="Selected Courses" bind:selectedItems={selectedCourses} />
+								<DragDropList
+									title="Selected Courses"
+									bind:items={selectedCourses}
+									emptyText="No courses selected"
+								/>
 							</div>
 						</div>
 						{#if errors?.CourseSequence}
@@ -360,17 +363,16 @@
 				<tr class="tables-row">
 					<td class="table-label">Enabled</td>
 					<td class="table-data">
-						<label class="flex items-center gap-2">
-							<input
-								type="checkbox"
-								class="input"
-								name="enabled"
-								bind:checked={enabled}
-							/>
-							<span>Enable this learning journey</span>
-						</label>
-						{#if errors?.Enabled}
-							<p class="text-error">{errors?.Enabled}</p>
+						<input
+							type="checkbox"
+							name="enabled"
+							bind:checked={enabled}
+							class="checkbox checkbox-primary border-primary-200 hover:border-primary-400 checkbox-md ml-2 {errors?.enabled
+								? 'input-text-error'
+								: ''}"
+						/>
+						{#if errors?.enabled}
+							<p class="text-error">{errors?.enabled}</p>
 						{/if}
 					</td>
 				</tr>
