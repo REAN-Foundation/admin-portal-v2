@@ -14,6 +14,7 @@ export const GET = async (event: RequestEvent) => {
 
 		const searchFilters = createSearchFilters(event, {
 			phone: event.url.searchParams.get('phone') ?? undefined,
+			name: event.url.searchParams.get('name') ?? undefined,
 		});
 
 		console.log('Patient Search Parameters:', searchFilters);

@@ -7,6 +7,7 @@ export interface AssessmentTemplateCreateModel {
     ServeListNodeChildrenAtOnce: boolean;
     ScoringApplicable: boolean;
     Tags?: string[];
+    RawData?: string;
 };
 
 export interface AssessmentTemplateUpdateModel {
@@ -18,4 +19,5 @@ export interface AssessmentTemplateUpdateModel {
     ServeListNodeChildrenAtOnce?: boolean;
     ScoringApplicable?: boolean;
     Tags?: string[];
+    RawData?: string;
 };

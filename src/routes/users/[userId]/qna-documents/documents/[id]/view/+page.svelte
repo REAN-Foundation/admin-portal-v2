@@ -40,6 +40,7 @@
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
+	let isPublishing = $state(false);
 
 	// Generating routes for edit, view, and document
 	const editRoute = `/users/${userId}/qna-documents/documents/${id}/edit`;
@@ -62,6 +63,7 @@
 		try {
 			event.preventDefault();
 			errors = {};
+			isPublishing = true;
 
 			const vectorStoreCreateModel: VectorStoreCreateModel = {
 				id: resourceId,
@@ -81,6 +83,7 @@
 						val?.[0] || 'This field is required'
 					])
 				);
+				isPublishing = false;
 				return;
 			}
 
@@ -95,6 +98,7 @@
 
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
+				isPublishing = false;
 				goto(`${documentRoute}/${response?.Data?.id}/view`);
 				return;
 			}
@@ -106,6 +110,8 @@
 			}
 		} catch (error) {
 			toastMessage();
+		} finally {
+			isPublishing = false;
 		}
 	};
 
@@ -256,8 +262,8 @@
 	<div class=" btn-container">
 		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
 		></Button>
-		<Button onclick = {handleSubmit} text="Publish" variant="secondary">
-		</Button>
+		<!-- <Button onclick = {handleSubmit} text={isPublishing ? "Publishing..." : "Publish"} variant="secondary" disabled={isPublishing}>
+		</Button> -->
 	</div>
 </div>
 <FilePreviewModal {showModal} {fileUrl} {fileType} {closeModal} />

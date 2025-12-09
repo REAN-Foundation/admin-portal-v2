@@ -15,19 +15,15 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
 	import { tick } from 'svelte';
-
+	
 	///////////////////////////////////////////////////////////////////////////
 	
 	let loginType = $state('username');
 	let showPassword = $state(false);
 	let isLoading = $state(false);
 	let errors: Record<string, string> = $state({});
-
 	let { data }: { data: PageServerData } = $props();
-
-	let roles: PersonRole[] = data.roles;
-	let emailRoles: PersonRole[] = data.emailRoles || [];
-	let phoneRoles: PersonRole[] = data.phoneRoles || [];
+	let roles: PersonRole[] = data.roles;	
 	
 	const logoImageSource = getPublicLogoImageSource();
 	const footerText = `© ${new Date().getFullYear()} ${getPublicFooterText()}`;
@@ -45,7 +41,8 @@
 	}
 
 	// Handle form submission
-	async function handleSubmit(event: Event) {
+	const handleSubmit = async (event: Event) => {
+		try {
 		event.preventDefault();
 		isLoading = true;
 		errors = {};
@@ -72,63 +69,32 @@
 			isLoading = false;
 			return;
 		}
-
-		try {
-			// Determine role ID based on login type and available roles
-			let roleId = null;
-			if (loginType === 'email' && emailRoles.length > 0) {
-				roleId = emailRoles[0].id;
-			} else if (loginType === 'phone' && phoneRoles.length > 0) {
-				roleId = phoneRoles[0].id;
-			} else if (loginType === 'username') {
-				// Use existing logic for username-based login
-				if (loginData.username === 'admin') {
-					const adminRole = roles.find(role => role.RoleName === 'System admin');
-					roleId = adminRole?.id;
-				} else {
-					const userRole = roles.find(role => 
-						role.RoleName === 'System user' || 
-						role.RoleName === 'Tenant admin' || 
-						role.RoleName === 'Tenant user'
-					);
-					roleId = userRole?.id;
-				}
-			}
-
-			// Add role ID to login data
-			const loginPayload = {
-				...loginData,
-				roleId
-			};
-
-			// Make API call to login endpoint
 			const response = await fetch('/api/server/login', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify(loginPayload)
+				body: JSON.stringify(loginData)
 			});
 
 			const result = await response.json();
 
 			if (result.success) {
 				await goto(result.data.redirectUrl);
-				await tick(); // Wait for the new page to render
+				await tick();
 				toastMessage({
 					Message: result.message,
 					HttpCode: 200,
 					Status: 'success'
 				});
-				// Redirect to the user's home page
-				
+	
 			} else {
 				toastMessage({
 					Message: result.message,
 					HttpCode: response.status,
 					Status: 'failure'
 				});
-				
+				isLoading = false
 				// Handle validation errors
 				if (result.errors) {
 					const validationErrors: Record<string, string> = {};
@@ -138,17 +104,12 @@
 					errors = validationErrors;
 				}
 			}
+		
 		} catch (error) {
-			console.error('Login error:', error);
-			toastMessage({
-				Message: 'An unexpected error occurred. Please try again.',
-				HttpCode: 500,
-				Status: 'failure'
-			});
-		} finally {
-			isLoading = false;
+			toastMessage();
 		}
-	}
+	};
+	
 
 	let maxHeight = '80vh';
 	if (browser) {
@@ -299,7 +260,6 @@
 		<div class="mt-4 flex justify-between">
 			<a href="/forgot-password" class="link">Forgot Password?</a>
 		</div>
-
 		<button type="submit" class="btn mt-4" disabled={isLoading}>
 			{#if isLoading}
 				<span class="flex items-center gap-2">

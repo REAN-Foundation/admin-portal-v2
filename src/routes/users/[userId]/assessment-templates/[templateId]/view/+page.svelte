@@ -34,6 +34,13 @@
 			: 'Not specified';
 	let tags_ = data.assessmentTemplate.Tags;
 	let tags = tags_.join(', ');
+	let rawData = $state(
+		typeof data.assessmentTemplate.RawData === 'string'
+			? data.assessmentTemplate.RawData
+			: data.assessmentTemplate.RawData
+				? JSON.stringify(data.assessmentTemplate.RawData, null, 2)
+				: "Not Specified"
+	);
 
 	$effect(() => {
 		assessmentNodes = assessmentNodes.sort((a, b) => {
@@ -112,6 +119,58 @@ const handleExport = async () => {
 	}
 };
 
+let isExportingFlowJson = $state(false);
+
+const handleFlowJson = async () => {
+	try {
+		isExportingFlowJson = true;
+
+		const response = await fetch(
+			`/api/server/assessments/assessment-templates/${templateId}/generate-flow-json`,
+			{
+				method: 'GET'
+			}
+		);
+
+		if (!response.ok) {
+			throw new Error(`Export failed: ${response.status}`);
+		}
+
+		// get the filename from headers if available
+		const contentDisposition = response.headers.get('Content-Disposition');
+		const match = contentDisposition?.match(/filename="?([^"]+)"?/);
+		const filename = match ? match[1] : `assessment-template-${templateId}.json`;
+
+		// convert response into a blob
+		const blob = await response.blob();
+
+		// create a temporary URL and trigger download
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = filename;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+
+		toastMessage({
+			Status: 'success',
+			HttpCode: 200,
+			Message: 'Flow JSON exported successfully!'
+		});
+	} catch (error) {
+		console.error('Export failed:', error);
+		toastMessage({
+			Status: 'failure',
+			HttpCode: 500,
+			Message: 'Export failed. Please try again.'
+		});
+	} finally {
+		isExportingFlowJson = false;
+	}
+};
+
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -168,6 +227,12 @@ const handleExport = async () => {
 				</td>
 			</tr>
 			<tr class="tables-row">
+				<td class="table-label align-top">Raw Data</td>
+				<td class="table-data">
+					{rawData}
+				</td>
+			</tr>
+			<tr class="tables-row">
 				<td class="table-label align-top">Nodes</td>
 				<td class="table-data">
 					{#if assessmentNodes.length <= 1}
@@ -191,7 +256,17 @@ const handleExport = async () => {
 			disabled={isExporting}
 		></Button>
 
+        <Button 
+			onclick={handleFlowJson} 
+			text={isExportingFlowJson ? "Exporting..." : "Flow JSON"} 
+			variant="primary" 
+			iconBefore="mdi:download" 
+			iconSize="md"
+			disabled={isExportingFlowJson}
+		></Button>
+
 		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
 		></Button>
 	</div>
+    
 </div>
