@@ -995,25 +995,25 @@
 									>
 										<div class="mb-4 flex items-center justify-between">
 											<h4 class="text-sm font-medium text-[var(--color-info)]">
-												Logo #{index + 1}
+												Logo {index + 1}
 											</h4>
 											{#if !disabled}
 												<button
 													type="button"
 													onclick={() => removeLogo(index)}
-													class="min-w-[100px] rounded-md border border-red-300 bg-red-50 px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-100"
+													class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
 												>
-													Remove
+													<Icon icon="material-symbols:delete-outline" class="h-5" />
 												</button>
 											{/if}
 										</div>
 										<div class="my-2 flex flex-col md:flex-row md:items-center">
 											<label
 												for="logo-upload-{index}"
-												class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+												class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 												>Logo File</label
 											>
-											<div class="flex w-[70%] gap-3">
+											<div class="flex w-[70%] gap-3 md:items-center">
 												<label class="table-btn variant-filled-secondary" for="logo-upload-{index}">
 													Select File
 													<input
@@ -1038,7 +1038,7 @@
 										{#if Logos[index] && (data.marketingMaterial?.LogoUrls?.[index] || getImageUrl(Logos[index]))}
 											<div class="mt-2">
 												<img
-													src={data.marketingMaterial?.LogoUrls?.[index] ||
+													src={(data.marketingMaterial?.LogoUrls?.[index]) ||
 														getImageUrl(Logos[index])}
 													alt="Logo {index + 1}"
 													class="h-24 w-24 rounded border border-[var(--color-outline)] object-cover"
@@ -1096,7 +1096,7 @@
 							<div class="my-2 flex flex-col md:flex-row md:items-center">
 								<label
 									for="content-main-title"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>Main Title <span class="text-red-700">*</span></label
 								>
 								<input
@@ -1111,7 +1111,7 @@
 							<div class="my-4 flex flex-col md:flex-row md:items-center">
 								<label
 									for="content-subtitle"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>Subtitle</label
 								>
 								<input
@@ -1167,7 +1167,7 @@
 							<div class="my-2 flex flex-col md:flex-row md:items-center">
 								<label
 									for="content-intro-paragraph"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>Introduction Paragraph <span class="text-red-700">*</span></label
 								>
 								<textarea
@@ -1182,7 +1182,7 @@
 							<div class="my-4 flex flex-col md:flex-row md:items-center">
 								<label
 									for="content-problem-statement"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>Problem Statement</label
 								>
 								<textarea
@@ -1238,7 +1238,7 @@
 							<div class="my-2 flex flex-col md:flex-row md:items-center">
 								<label
 									for="content-benefits-title"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>Benefits Title</label
 								>
 								<input
@@ -1264,16 +1264,16 @@
 												<button
 													type="button"
 													onclick={() => removeBenefit(index)}
-													class="min-w-[100px] rounded-md border border-red-300 bg-red-50 px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-100"
+													class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
 												>
-													Remove
+													<Icon icon="material-symbols:delete-outline" class="h-5" />
 												</button>
 											{/if}
 										</div>
 											<div class="my-2 flex flex-col md:flex-row md:items-center">
 												<label
 												for="benefit-item-{index}"
-													class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+													class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 												>Benefit Text <span class="text-red-700">*</span></label
 												>
 												<textarea
@@ -1342,7 +1342,7 @@
 							<div class="my-2 flex flex-col md:flex-row md:items-center">
 								<label
 									for="content-ui-heading"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>UI Heading <span class="text-red-700">*</span></label
 								>
 								<input
@@ -1357,7 +1357,7 @@
 							<div class="my-4 flex flex-col md:flex-row md:items-center">
 								<label
 									for="content-ui-paragraph"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>UI Paragraph</label
 								>
 								<textarea
@@ -1416,7 +1416,7 @@
 							<div class="my-2 flex flex-col md:flex-row md:items-center">
 								<label
 									for="content-cta-heading"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>CTA Heading</label
 								>
 								<input
@@ -1431,7 +1431,7 @@
 							<div class="my-4 flex flex-col md:flex-row md:items-center">
 								<label
 									for="content-cta-description"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>CTA Description</label
 								>
 								<textarea
@@ -1446,7 +1446,7 @@
 							<div class="my-4 flex flex-col md:flex-row md:items-center">
 								<label
 									for="content-qr-instruction"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>QR Instruction</label
 								>
 								<input
@@ -1502,10 +1502,10 @@
 							<div class="my-2 flex flex-col md:flex-row md:items-center">
 								<label
 									for="image-title-image"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>Title Image</label
 								>
-								<div class="flex w-[70%] gap-3">
+								<div class="flex w-[70%] gap-3 md:items-center">
 									<label class="table-btn variant-filled-secondary" for="title-image-upload">
 										Select File
 										<input
@@ -1527,28 +1527,28 @@
 										placeholder="No file selected..."
 									/>
 								</div>
-								{#if Images.TitleImage && (data.marketingMaterial?.Images?.TitleImageUrl || getImageUrl(Images.TitleImage))}
-									<div class="mt-2">
-										<img
-											src={data.marketingMaterial?.Images?.TitleImageUrl ||
-												getImageUrl(Images.TitleImage)}
-											alt="Title"
-											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
-											onerror={(e) => {
-												console.error('Failed to load title image:', Images.TitleImage);
-												(e.target as HTMLImageElement).style.display = 'none';
-											}}
-										/>
-									</div>
-								{/if}
 							</div>
+							{#if Images.TitleImage && (data.marketingMaterial?.Images?.TitleImageUrl || getImageUrl(Images.TitleImage))}
+								<div class="mt-2">
+									<img
+										src={(data.marketingMaterial?.Images?.TitleImageUrl) ||
+											getImageUrl(Images.TitleImage)}
+										alt="Title"
+										class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
+										onerror={(e) => {
+											console.error('Failed to load title image:', Images.TitleImage);
+											(e.target as HTMLImageElement).style.display = 'none';
+										}}
+									/>
+								</div>
+							{/if}
 							<div class="my-4 flex flex-col md:flex-row md:items-center">
 								<label
 									for="image-user-interface-image"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>User Interface Image</label
 								>
-								<div class="flex w-[70%] gap-3">
+								<div class="flex w-[70%] gap-3 md:items-center">
 									<label
 										class="table-btn variant-filled-secondary"
 										for="user-interface-image-upload"
@@ -1573,24 +1573,24 @@
 										placeholder="No file selected..."
 									/>
 								</div>
-								{#if Images.UserInterfaceImage && (data.marketingMaterial?.Images?.UserInterfaceImageUrl || getImageUrl(Images.UserInterfaceImage))}
-									<div class="mt-2">
-										<img
-											src={data.marketingMaterial?.Images?.UserInterfaceImageUrl ||
-												getImageUrl(Images.UserInterfaceImage)}
-											alt="User Interface"
-											class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
-											onerror={(e) => {
-												console.error(
-													'Failed to load user interface image:',
-													Images.UserInterfaceImage
-												);
-												(e.target as HTMLImageElement).style.display = 'none';
-											}}
-										/>
-									</div>
-								{/if}
 							</div>
+							{#if Images.UserInterfaceImage && (data.marketingMaterial?.Images?.UserInterfaceImageUrl || getImageUrl(Images.UserInterfaceImage))}
+								<div class="mt-2">
+									<img
+										src={(data.marketingMaterial?.Images?.UserInterfaceImageUrl) ||
+											getImageUrl(Images.UserInterfaceImage)}
+										alt="User Interface"
+										class="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
+										onerror={(e) => {
+											console.error(
+												'Failed to load user interface image:',
+												Images.UserInterfaceImage
+											);
+											(e.target as HTMLImageElement).style.display = 'none';
+										}}
+									/>
+								</div>
+							{/if}
 						</div>
 					{/if}
 				</div>
@@ -1635,10 +1635,10 @@
 							<div class="my-2 flex flex-col md:flex-row md:items-center">
 								<label
 									for="qrcode-resource-id"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>QR Code Image</label
 								>
-								<div class="flex w-[70%] gap-3">
+								<div class="flex w-[70%] gap-3 md:items-center">
 									<label class="table-btn variant-filled-secondary" for="qrcode-upload">
 										Select File
 										<input
@@ -1722,7 +1722,7 @@
 									<div class="my-2 flex flex-col md:flex-row md:items-center">
 										<label
 											for="styling-{c.key}-color"
-											class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+											class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 											>{c.label} Color</label
 										>
 										<div class="flex w-[70%] items-center gap-2">
@@ -1791,7 +1791,7 @@
 								<div class="my-2 flex flex-col md:flex-row md:items-center">
 									<label
 										for="styling-heading-font"
-										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 										>Heading Font</label
 									>
 									<select
@@ -1834,7 +1834,7 @@
 								<div class="my-2 flex flex-col md:flex-row md:items-center">
 									<label
 										for="styling-body-font"
-										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 										>Body Font</label
 									>
 									<select
@@ -1920,7 +1920,7 @@
 								<div class="my-2 flex flex-col md:flex-row md:items-center">
 									<label
 										for="styling-page-width"
-										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 										>Page Width</label
 									>
 									<select
@@ -1954,7 +1954,7 @@
 								<div class="my-2 flex flex-col md:flex-row md:items-center">
 									<label
 										for="styling-page-height"
-										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 										>Page Height</label
 									>
 									<select
@@ -1988,7 +1988,7 @@
 								<div class="my-2 flex flex-col md:flex-row md:items-center">
 									<label
 										for="styling-ui-width"
-										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 										>UI Width</label
 									>
 									<select
@@ -2022,7 +2022,7 @@
 								<div class="my-2 flex flex-col md:flex-row md:items-center">
 									<label
 										for="styling-interaction-width"
-										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 										>Interaction Width</label
 									>
 									<select
@@ -2056,7 +2056,7 @@
 								<div class="my-2 flex flex-col md:flex-row md:items-center">
 									<label
 										for="styling-qr-size"
-										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 										>QR Size</label
 									>
 									<select
