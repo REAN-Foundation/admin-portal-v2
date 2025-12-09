@@ -109,7 +109,7 @@
 					},
 					Benefits: {
 						Title: data.marketingMaterial?.Content?.Benefits?.Title ?? '',
-						Items: (data.marketingMaterial?.Content?.Benefits?.Items ?? [])
+						Items: data.marketingMaterial?.Content?.Benefits?.Items ?? []
 					},
 					UserInterface: {
 						Heading: data.marketingMaterial?.Content?.UserInterface?.Heading ?? '',
@@ -823,7 +823,7 @@
 					...Content,
 					Benefits: {
 						...Content.Benefits,
-						Items: Content.Benefits.Items?.filter(item => item.trim() !== '') ?? []
+						Items: Content.Benefits.Items?.filter((item) => item.trim() !== '') ?? []
 					}
 				},
 				Images: {
@@ -970,7 +970,7 @@
 							/>
 							<div class="text-start">
 								<p class="text-md font-medium">Logos</p>
-								<p class="text-sm">Upload 3 logos</p>
+								<p class="text-sm">Upload logos</p>
 							</div>
 						</div>
 						<span
@@ -992,10 +992,11 @@
 							<div class="flex flex-col gap-4">
 								{#each Logos as logo, index}
 									<div
-										class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4"
+										class="relative rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-sm"
 									>
+										<!-- Header with Logo title and close button -->
 										<div class="mb-4 flex items-center justify-between">
-											<h4 class="text-sm font-medium text-[var(--color-info)]">
+											<h4 class="text-base font-bold text-[var(--color-info)]">
 												Logo {index + 1}
 											</h4>
 											{#if !disabled}
@@ -1008,14 +1009,22 @@
 												</button>
 											{/if}
 										</div>
-										<div class="my-2 flex flex-col md:flex-row md:items-center">
+
+										<!-- LOGO FILE Section -->
+										<div class="mb-2">
 											<label
 												for="logo-upload-{index}"
-												class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
-												>Logo File</label
+												class="mb-2 block text-xs font-medium tracking-wide text-[var(--color-info)]"
 											>
-											<div class="flex w-[70%] gap-3 md:items-center">
-												<label class="table-btn variant-filled-secondary" for="logo-upload-{index}">
+												Logo File
+											</label>
+											<div
+												class="relative flex items-center rounded border border-[var(--color-outline)] bg-[var(--color-primary)]"
+											>
+												<label
+													class="health-system-btn variant-filled-secondary"
+													for="logo-upload-{index}"
+												>
 													Select File
 													<input
 														type="file"
@@ -1031,16 +1040,18 @@
 													value={logoFileNames[index] || ''}
 													readonly
 													{disabled}
-													class="input-field flex-1"
+													class="flex-1 border-0 bg-transparent px-3 py-2 text-sm text-[var(--color-info)] placeholder-[var(--color-muted)] focus:outline-none"
 													placeholder="No file selected..."
 												/>
 											</div>
 										</div>
+
+										<!-- Logo Preview -->
 										{#if Logos[index] && (data.marketingMaterial?.LogoUrls?.[index] || getImageUrl(Logos[index]))}
-											<div class="mt-2">
+											<div class="mt-4">
 												<Image
 													cls="h-24 w-24 rounded border border-[var(--color-outline)] object-cover"
-													source={(data.marketingMaterial?.LogoUrls?.[index]) ||
+													source={data.marketingMaterial?.LogoUrls?.[index] ||
 														getImageUrl(Logos[index])}
 													w="24"
 													h="24"
@@ -1250,7 +1261,7 @@
 							</div>
 
 							<div class="space-y-4">
-								{#each (Content.Benefits.Items ?? []) as benefit, index}
+								{#each Content.Benefits.Items ?? [] as benefit, index}
 									<div
 										class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4"
 									>
@@ -1268,20 +1279,20 @@
 												</button>
 											{/if}
 										</div>
-											<div class="my-2 flex flex-col md:flex-row md:items-center">
-												<label
+										<div class="my-2 flex flex-col md:flex-row md:items-center">
+											<label
 												for="benefit-item-{index}"
-													class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
+												class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 												>Benefit Text <span class="text-red-700">*</span></label
-												>
-												<textarea
+											>
+											<textarea
 												id="benefit-item-{index}"
-													rows="3"
+												rows="3"
 												bind:value={Content.Benefits.Items[index]}
-													{disabled}
+												{disabled}
 												placeholder="Enter benefit text"
-													class="input-field w-[70%]"
-												></textarea>
+												class="input-field w-[70%]"
+											></textarea>
 										</div>
 									</div>
 								{/each}
@@ -1496,90 +1507,130 @@
 					</button>
 
 					{#if activeSection === 'images'}
-						<div class="space-y-4 p-6">
-							<div class="my-2 flex flex-col md:flex-row md:items-center">
-								<label
-									for="image-title-image"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
-									>Title Image</label
+						<div class="p-6">
+							<div class="flex flex-col gap-4">
+								<!-- Title Image -->
+								<div
+									class="relative rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-sm"
 								>
-								<div class="flex w-[70%] gap-3 md:items-center">
-									<label class="table-btn variant-filled-secondary" for="title-image-upload">
-										Select File
-										<input
-											type="file"
-											id="title-image-upload"
-											accept="image/*"
-											class="hidden"
-											{disabled}
-											onchange={async (e) => await onImageSelected(e, 'titleImage')}
-										/>
-									</label>
-									<input
-										type="text"
-										id="image-title-image"
-										value={titleImageFileName || ''}
-										readonly
-										{disabled}
-										class="input-field flex-1"
-										placeholder="No file selected..."
-									/>
+									<!-- Heading -->
+									<div class="mb-4">
+										<h4 class="text-base font-bold text-[var(--color-info)]">Title Image</h4>
+									</div>
+
+									<!-- Select File -->
+									<div class="mb-2">
+										<label
+											for="title-image-upload"
+											class="mb-2 block text-xs font-medium tracking-wide text-[var(--color-info)]"
+										>
+											Image File
+										</label>
+										<div
+											class="relative flex items-center rounded border border-[var(--color-outline)] bg-[var(--color-primary)]"
+										>
+											<label
+												class="health-system-btn variant-filled-secondary"
+												for="title-image-upload"
+											>
+												Select File
+												<input
+													type="file"
+													id="title-image-upload"
+													accept="image/*"
+													class="hidden"
+													{disabled}
+													onchange={async (e) => await onImageSelected(e, 'titleImage')}
+												/>
+											</label>
+											<input
+												type="text"
+												id="image-title-image"
+												value={titleImageFileName || ''}
+												readonly
+												{disabled}
+												class="flex-1 border-0 bg-transparent px-3 py-2 text-sm text-[var(--color-info)] placeholder-[var(--color-muted)] focus:outline-none"
+												placeholder="No file selected..."
+											/>
+										</div>
+									</div>
+
+									<!-- Preview -->
+									{#if Images.TitleImage && (data.marketingMaterial?.Images?.TitleImageUrl || getImageUrl(Images.TitleImage))}
+										<div class="mt-4">
+											<Image
+												cls="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
+												source={data.marketingMaterial?.Images?.TitleImageUrl ||
+													getImageUrl(Images.TitleImage)}
+												w="32"
+												h="32"
+											/>
+										</div>
+									{/if}
+								</div>
+
+								<!-- User Interface Image -->
+								<div
+									class="relative rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-sm"
+								>
+									<!-- Heading -->
+									<div class="mb-4">
+										<h4 class="text-base font-bold text-[var(--color-info)]">
+											User Interface Image
+										</h4>
+									</div>
+
+									<!-- Select File -->
+									<div class="mb-2">
+										<label
+											for="user-interface-image-upload"
+											class="mb-2 block text-xs font-medium tracking-wide text-[var(--color-info)]"
+										>
+											Image File
+										</label>
+										<div
+											class="relative flex items-center rounded border border-[var(--color-outline)] bg-[var(--color-primary)]"
+										>
+											<label
+												class="health-system-btn variant-filled-secondary"
+												for="user-interface-image-upload"
+											>
+												Select File
+												<input
+													type="file"
+													id="user-interface-image-upload"
+													accept="image/*"
+													class="hidden"
+													{disabled}
+													onchange={async (e) => await onImageSelected(e, 'userInterfaceImage')}
+												/>
+											</label>
+											<input
+												type="text"
+												id="image-user-interface-image"
+												value={userInterfaceImageFileName || ''}
+												readonly
+												{disabled}
+												class="flex-1 border-0 bg-transparent px-3 py-2 text-sm text-[var(--color-info)] placeholder-[var(--color-muted)] focus:outline-none"
+												placeholder="No file selected..."
+											/>
+										</div>
+									</div>
+
+									<!-- Preview -->
+									{#if Images.UserInterfaceImage && (data.marketingMaterial?.Images?.UserInterfaceImageUrl || getImageUrl(Images.UserInterfaceImage))}
+										<div class="mt-4">
+											<Image
+												cls="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
+												source={data.marketingMaterial?.Images?.UserInterfaceImageUrl ||
+													getImageUrl(Images.UserInterfaceImage)}
+												w="32"
+												h="32"
+											/>
+										</div>
+									{/if}
 								</div>
 							</div>
-							{#if Images.TitleImage && (data.marketingMaterial?.Images?.TitleImageUrl || getImageUrl(Images.TitleImage))}
-								<div class="mt-2">
-									<Image
-										cls="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
-										source={(data.marketingMaterial?.Images?.TitleImageUrl) ||
-											getImageUrl(Images.TitleImage)}
-										w="32"
-										h="32"
-									/>
-								</div>
-							{/if}
-							<div class="my-4 flex flex-col md:flex-row md:items-center">
-								<label
-									for="image-user-interface-image"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
-									>User Interface Image</label
-								>
-								<div class="flex w-[70%] gap-3 md:items-center">
-									<label
-										class="table-btn variant-filled-secondary"
-										for="user-interface-image-upload"
-									>
-										Select File
-										<input
-											type="file"
-											id="user-interface-image-upload"
-											accept="image/*"
-											class="hidden"
-											{disabled}
-											onchange={async (e) => await onImageSelected(e, 'userInterfaceImage')}
-										/>
-									</label>
-									<input
-										type="text"
-										id="image-user-interface-image"
-										value={userInterfaceImageFileName || ''}
-										readonly
-										{disabled}
-										class="input-field flex-1"
-										placeholder="No file selected..."
-									/>
-								</div>
-							</div>
-							{#if Images.UserInterfaceImage && (data.marketingMaterial?.Images?.UserInterfaceImageUrl || getImageUrl(Images.UserInterfaceImage))}
-								<div class="mt-2">
-									<Image
-										cls="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
-										source={(data.marketingMaterial?.Images?.UserInterfaceImageUrl) ||
-											getImageUrl(Images.UserInterfaceImage)}
-										w="32"
-										h="32"
-									/>
-								</div>
-							{/if}
 						</div>
 					{/if}
 				</div>
@@ -1602,7 +1653,7 @@
 							<Icon icon="material-symbols:qr-code-scanner" class="h-5 w-5" />
 							<div class="text-start">
 								<p class="text-md font-medium">QR Code</p>
-								<p class="text-sm">QR code resource ID, WhatsApp number and URL</p>
+								<p class="text-sm">Upload QR code</p>
 							</div>
 						</div>
 						<span
@@ -1620,46 +1671,64 @@
 					</button>
 
 					{#if activeSection === 'qrcode'}
-						<div class="space-y-4 p-6">
-							<div class="my-2 flex flex-col md:flex-row md:items-center">
-								<label
-									for="qrcode-resource-id"
-									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
-									>QR Code Image</label
+						<div class="p-6">
+							<div class="flex flex-col gap-4">
+								<!-- QR Code -->
+								<div
+									class="relative rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-sm"
 								>
-								<div class="flex w-[70%] gap-3 md:items-center">
-									<label class="table-btn variant-filled-secondary" for="qrcode-upload">
-										Select File
-										<input
-											type="file"
-											id="qrcode-upload"
-											accept="image/*"
-											class="hidden"
-											{disabled}
-											onchange={async (e) => await onQRCodeSelected(e)}
-										/>
-									</label>
-									<input
-										type="text"
-										id="qrcode-resource-id"
-										value={qrCodeFileName || ''}
-										readonly
-										{disabled}
-										class="input-field flex-1"
-										placeholder="No file selected..."
-									/>
-								</div>
-								{#if (typeof QRcode === 'object' && QRcode !== null && !Array.isArray(QRcode) && QRcode.ResourceId) && (data.marketingMaterial?.QRCode && typeof data.marketingMaterial.QRCode === 'object' && (data.marketingMaterial.QRCode as any)?.imageUrl || getImageUrl(QRcode.ResourceId))}
-									<div class="mt-2">
-										<Image
-											cls="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
-											source={(data.marketingMaterial?.QRCode && typeof data.marketingMaterial.QRCode === 'object' && (data.marketingMaterial.QRCode as any)?.imageUrl) ||
-												getImageUrl(QRcode.ResourceId)}
-											w="32"
-											h="32"
-										/>
+									<!-- Heading -->
+									<!-- <div class="mb-4">
+										<h4 class="text-base font-bold text-[var(--color-info)]">QR Code</h4>
+									</div> -->
+
+									<!-- Select File -->
+									<div class="mb-2">
+										<label
+											for="qrcode-upload"
+											class="mb-2 block text-xs font-medium tracking-wide text-[var(--color-info)]"
+										>
+											QR File
+										</label>
+										<div
+											class="relative flex items-center rounded border border-[var(--color-outline)] bg-[var(--color-primary)]"
+										>
+											<label class="health-system-btn variant-filled-secondary" for="qrcode-upload">
+												Select File
+												<input
+													type="file"
+													id="qrcode-upload"
+													accept="image/*"
+													class="hidden"
+													{disabled}
+													onchange={async (e) => await onQRCodeSelected(e)}
+												/>
+											</label>
+											<input
+												type="text"
+												id="qrcode-resource-id"
+												value={qrCodeFileName || ''}
+												readonly
+												{disabled}
+												class="flex-1 border-0 bg-transparent px-3 py-2 text-sm text-[var(--color-info)] placeholder-[var(--color-muted)] focus:outline-none"
+												placeholder="No file selected..."
+											/>
+										</div>
 									</div>
-								{/if}
+
+									<!-- Preview -->
+									{#if QRcode && typeof QRcode === 'object' && QRcode.ResourceId && (data.marketingMaterial?.QRCode?.imageUrl || getImageUrl(QRcode.ResourceId))}
+										<div class="mt-4">
+											<Image
+												cls="h-32 w-32 rounded border border-[var(--color-outline)] object-cover"
+												source={data.marketingMaterial?.QRCode?.imageUrl ||
+													getImageUrl(QRcode.ResourceId)}
+												w="32"
+												h="32"
+											/>
+										</div>
+									{/if}
+								</div>
 							</div>
 						</div>
 					{/if}

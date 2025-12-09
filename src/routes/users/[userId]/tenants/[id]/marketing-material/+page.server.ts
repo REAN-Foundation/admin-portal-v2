@@ -13,7 +13,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const userId = params.userId;
 
 	try {
-
 		const marketingMaterial = await getMarketingMaterialByTenantId(sessionId, tenantId);
 
 		if (marketingMaterial.Status === 'failure' || marketingMaterial.HttpCode !== 200) {
@@ -23,7 +22,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		const tenantMarketingSettings = marketingMaterial.Data?.TenantMarketingSettings;
 
 		// Check if data is empty/null
-		const isEmpty = !tenantMarketingSettings ||
+		const isEmpty =
+			!tenantMarketingSettings ||
 			tenantMarketingSettings === null ||
 			(Object.keys(tenantMarketingSettings).length === 0 &&
 				!tenantMarketingSettings.Styling &&
@@ -43,7 +43,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			// Title Image URL
 			if (tenantMarketingSettings.Images?.TitleImage) {
 				tenantMarketingSettings.Images.TitleImageUrl =
-					BACKEND_API_URL + `/file-resources/${tenantMarketingSettings.Images.TitleImage}/download?disposition=inline`;
+					BACKEND_API_URL +
+					`/file-resources/${tenantMarketingSettings.Images.TitleImage}/download?disposition=inline`;
 			} else {
 				tenantMarketingSettings.Images = tenantMarketingSettings.Images || {};
 				tenantMarketingSettings.Images.TitleImageUrl = null;
@@ -52,7 +53,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			// User Interface Image URL
 			if (tenantMarketingSettings.Images?.UserInterfaceImage) {
 				tenantMarketingSettings.Images.UserInterfaceImageUrl =
-					BACKEND_API_URL + `/file-resources/${tenantMarketingSettings.Images.UserInterfaceImage}/download?disposition=inline`;
+					BACKEND_API_URL +
+					`/file-resources/${tenantMarketingSettings.Images.UserInterfaceImage}/download?disposition=inline`;
 			} else {
 				tenantMarketingSettings.Images = tenantMarketingSettings.Images || {};
 				tenantMarketingSettings.Images.UserInterfaceImageUrl = null;
@@ -69,20 +71,20 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			} else {
 				tenantMarketingSettings.LogoUrls = [null, null, null];
 			}
-
 			// QR Code Image URL
-			if (tenantMarketingSettings.QRcode?.resourceId) {
-				tenantMarketingSettings.QRcode.imageUrl =
-					BACKEND_API_URL + `/file-resources/${tenantMarketingSettings.QRcode.resourceId}/download?disposition=inline`;
+			const qrCodeData = tenantMarketingSettings.QRCode || tenantMarketingSettings.QRcode;
+			if (qrCodeData?.ResourceId) {
+				if (!tenantMarketingSettings.QRCode) {
+					tenantMarketingSettings.QRCode = {};
+				}
+				tenantMarketingSettings.QRCode.imageUrl =
+					BACKEND_API_URL + `/file-resources/${qrCodeData.ResourceId}/download?disposition=inline`;
+				tenantMarketingSettings.QRCode.ResourceId = qrCodeData.ResourceId;
 			} else {
-				tenantMarketingSettings.QRcode = tenantMarketingSettings.QRcode || {};
-				tenantMarketingSettings.QRcode.imageUrl = null;
+				tenantMarketingSettings.QRCode = tenantMarketingSettings.QRCode || {};
+				tenantMarketingSettings.QRCode.imageUrl = null;
 			}
 		}
-
-		console.log('marketingMaterial for this tenant', marketingMaterial);
-		console.log('marketingMaterialSettings', tenantMarketingSettings);
-		console.log('isEmpty:', isEmpty);
 
 		return {
 			marketingMaterial: tenantMarketingSettings || null,
@@ -95,4 +97,3 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		throw error(500, 'Failed to load marketing material');
 	}
 };
-
