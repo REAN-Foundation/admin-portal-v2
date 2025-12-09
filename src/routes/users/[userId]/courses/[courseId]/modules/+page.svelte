@@ -31,9 +31,8 @@
 	const editRoute = (moduleId) => `/users/${userId}/courses/${courseId}/modules/${moduleId}/edit`;
 	const viewRoute = (moduleId) => `/users/${userId}/courses/${courseId}/modules/${moduleId}/view`;
 	const createRoute = `/users/${userId}/courses/${courseId}/modules/create`;
-	const coursesRoute = `/users/${userId}/courses`;
-
 	const courseViewRoute = `/users/${userId}/courses/${courseId}/view`;
+
 	const breadCrumbs = [
 		{ name: 'Courses', path: courseViewRoute },
 		{ name: 'Modules', path: moduleRoute }
@@ -43,7 +42,6 @@
 	let durationInMins = $state(undefined);
 
 	let totalModulesCount = $state(data.modules?.TotalCount || 0);
-	$inspect('totalModulesCount', totalModulesCount);
 	let isSortingName = $state(false);
 	let sortBy = $state('Name');
 	let sortOrder = $state('ascending');
@@ -54,9 +52,6 @@
 		amounts: [10, 20, 30, 50]
 	});
 
-	$inspect('retrivedModules', modules);
-
-	// Update pagination size when totalModulesCount changes
 	$effect(() => {
 		paginationSettings.size = totalModulesCount;
 	});
@@ -99,7 +94,7 @@
 		clearTimeout(debounceTimeout);
 		let searchKeyword = e.target.value;
 		debounceTimeout = setTimeout(() => {
-			paginationSettings.page = 0; // reset page when typing new search
+			paginationSettings.page = 0; 
 			searchModule({
 				moduleName: searchKeyword,
 				durationInMins: durationInMins,
@@ -115,7 +110,7 @@
 		clearTimeout(debounceTimeout);
 		let durationValue = e.target.value;
 		debounceTimeout = setTimeout(() => {
-			paginationSettings.page = 0; // reset page when typing new search
+			paginationSettings.page = 0; 
 			searchModule({
 				moduleName: searchKeyword,
 				durationInMins: durationValue ? parseFloat(durationValue) : undefined,
@@ -180,7 +175,6 @@
 		});
 
 		const res = await response.json();
-		console.log('deleted Response', res);
 		if (res.HttpCode === 200) {
 			isDeleting = true;
 			toastMessage(res);

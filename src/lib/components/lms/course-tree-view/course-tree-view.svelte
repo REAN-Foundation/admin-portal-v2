@@ -172,7 +172,7 @@
 			<CourseTreeItem
 				node={course}
 				index={i}
-				{courseView}
+				courseView={courseView}
 				moduleView={moduleView as (courseId: string, moduleId: string) => string}
 				contentView={contentView as (courseId: string, moduleId: string, contentId: string) => string}
 				bind:expandedCourses

@@ -30,40 +30,7 @@
 		onSort,
 		isSortingName = false,
 		sortOrder = 'ascending'
-	} = $props<{
-		courses: Array<{
-			id: string;
-			Name: string;
-			Description?: string;
-			DurationInDays?: number;
-			CreatedAt?: string;
-			Modules?: Array<any>;
-		}>;
-		courseView: (courseId: string) => string;
-		courseEdit?: (courseId: string) => string;
-		onCourseDelete?: (courseId: string) => void;
-		courseCreate?: string;
-		moduleView: (courseId: string, moduleId: string) => string;
-		moduleEdit?: (courseId: string, moduleId: string) => string;
-		onModuleDelete?: (moduleId: string, courseId?: string) => void;
-		moduleCreate?: (courseId: string) => string;
-		contentView?: (courseId: string, moduleId: string, contentId: string) => string;
-		contentEdit?: (courseId: string, moduleId: string, contentId: string) => string;
-		onContentDelete?: (contentId: string) => void;
-		contentCreate?: (courseId: string, moduleId: string) => string;
-		expandedCourses?: Record<string, boolean>;
-		expandedModules?: Record<string, boolean>;
-		courseModules?: Record<string, any[]>;
-		moduleContents?: Record<string, any[]>;
-		loadingModules?: Record<string, boolean>;
-		loadingContents?: Record<string, boolean>;
-		courseModuleCounts?: Record<string, number>;
-		moduleContentCounts?: Record<string, number>;
-		onSort?: (columnName: string) => void;
-		isSortingName?: boolean;
-		sortBy?: string;
-		sortOrder?: 'ascending' | 'descending';
-	}>();
+	} = $props();
 
 	const toggleCourseModules = async (courseId: string, event: Event) => {
 		event.preventDefault();

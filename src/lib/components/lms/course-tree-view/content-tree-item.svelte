@@ -1,19 +1,7 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
 	
-	let { content, contentView, moduleId } = $props<{
-		content: {
-			id: string;
-			Title: string;
-			Sequence?: number;
-			Description?: string;
-			DurationInMins?: number;
-			ContentType?: string;
-			ModuleId?: string;
-		};
-		contentView?: (contentId: string, moduleId?: string) => string;
-		moduleId?: string;
-	}>();
+	let { content, contentView, moduleId } = $props();
 	
 	const displayName = $derived(content.Sequence ? `${content.Sequence} - ${content.Title}` : content.Title);
 	const viewUrl = $derived(contentView ? contentView(content.id, moduleId || content.ModuleId) : '#');

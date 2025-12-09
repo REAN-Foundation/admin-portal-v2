@@ -12,25 +12,7 @@
 		moduleContents = $bindable({}),
 		loadingContents = $bindable({}),
 		onModuleExpand
-	} = $props<{
-		node: {
-			id: string;
-			Name?: string;
-			name?: string;
-			Sequence?: number;
-			Description?: string;
-			DurationInMins?: number;
-			ParentModuleId?: string | null;
-			Children?: Array<any>;
-		};
-		courseId?: string;
-		moduleView?: (courseId: string, moduleId: string) => string | ((moduleId: string) => string);
-		contentView?: (courseId: string, moduleId: string, contentId: string) => string | ((contentId: string, moduleId?: string) => string);
-		expandedModules?: Record<string, boolean>;
-		moduleContents?: Record<string, any[]>;
-		loadingContents?: Record<string, boolean>;
-		onModuleExpand?: (moduleId: string, event: Event, courseId?: string) => void;
-	}>();
+	} = $props();
 
 	const moduleKey = $derived(courseId ? `${courseId}-${node.id}` : node.id);
 	const displayName = $derived(
@@ -40,32 +22,24 @@
 	);
 	const isExpanded = $derived(expandedModules[moduleKey] === true);
 	const hasChildren = $derived(node.Children && node.Children.length > 0);
-
-	// Handle moduleView function signature differences
 	const moduleViewWrapper = () => {
 		if (!moduleView) return '#';
 		
-		// If moduleView takes 2 params (courseId, moduleId) - for courses mode
 		if (courseId && typeof moduleView === 'function') {
 			try {
 				return (moduleView as (courseId: string, moduleId: string) => string)(courseId, node.id);
 			} catch {
-				// Fallback: try single param signature
 				return (moduleView as (moduleId: string) => string)(node.id);
 			}
 		}
-		// If moduleView takes 1 param (moduleId) - for modules mode
 		else if (typeof moduleView === 'function') {
 			return (moduleView as (moduleId: string) => string)(node.id);
 		}
 		return '#';
 	};
-
-	// Handle contentView function signature differences
 	const contentViewWrapper = (contentId: string, moduleId?: string) => {
 		if (!contentView) return '#';
 		
-		// If contentView takes 3 params (courseId, moduleId, contentId)
 		if (courseId && typeof contentView === 'function') {
 			try {
 				return (contentView as (courseId: string, moduleId: string, contentId: string) => string)(
@@ -74,14 +48,12 @@
 					contentId
 				);
 			} catch {
-				// Fallback: try 2 param signature
 				return (contentView as (contentId: string, moduleId?: string) => string)(
 					contentId,
 					moduleId || node.id
 				);
 			}
 		}
-		// If contentView takes 2 params (contentId, moduleId)
 		else if (typeof contentView === 'function') {
 			return (contentView as (contentId: string, moduleId?: string) => string)(
 				contentId,

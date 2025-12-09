@@ -5,6 +5,7 @@
 	let {
 		node,
 		index,
+		courseView,
 		moduleView,
 		contentView,
 		expandedCourses = $bindable({}),
@@ -15,26 +16,7 @@
 		loadingModules = $bindable({}),
 		onCourseExpand,
 		onModuleExpand
-	} = $props<{
-		node: {
-			id: string;
-			Name?: string;
-			name?: string;
-			Modules?: Array<any>;
-		};
-		index: number;
-		courseView: (courseId: string) => string;
-		moduleView: (courseId: string, moduleId: string) => string;
-		contentView: (courseId: string, moduleId: string, contentId: string) => string;
-		expandedCourses?: Record<string, boolean>;
-		expandedModules?: Record<string, boolean>;
-		moduleContents?: Record<string, any[]>;
-		loadingContents?: Record<string, boolean>;
-		courseModules?: Record<string, any[]>;
-		loadingModules?: Record<string, boolean>;
-		onCourseExpand?: (courseId: string, event: Event) => void;
-		onModuleExpand?: (moduleId: string, event: Event, courseId?: string) => void;
-	}>();
+	} = $props();
 
 	const courseId = $derived(node.id || node.Id);
 	const isExpanded = $derived(expandedCourses[courseId] === true);

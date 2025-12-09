@@ -18,34 +18,7 @@
 		contentEdit,
 		contentCreate,
 		onContentDelete
-	} = $props<{
-		module: {
-			id: string;
-			Name: string;
-			Description?: string;
-			DurationInMins?: number;
-			Sequence?: number;
-			CourseId?: string;
-			ContentCount?: number;
-			ContentsCount?: number;
-			contentCount?: number;
-			contentsCount?: number;
-			Contents?: Array<any>;
-		};
-		courseId: string;
-		moduleView: (courseId: string, moduleId: string) => string;
-		moduleEdit?: (courseId: string, moduleId: string) => string;
-		onModuleDelete?: (moduleId: string, courseId?: string) => void;
-		expandedModules?: Record<string, boolean>;
-		moduleContents?: Record<string, any[]>;
-		loadingContents?: Record<string, boolean>;
-		moduleContentCounts?: Record<string, number>;
-		onModuleExpand?: (moduleId: string, courseId: string, event: Event) => void;
-		contentView?: (courseId: string, moduleId: string, contentId: string) => string;
-		contentEdit?: (courseId: string, moduleId: string, contentId: string) => string;
-		contentCreate?: (courseId: string, moduleId: string) => string;
-		onContentDelete?: (contentId: string) => void;
-	}>();
+	} = $props();
 
 	const isExpanded = $derived(expandedModules[module.id] || false);
 	const moduleContentsList = $derived(moduleContents[module.id]);
@@ -111,7 +84,7 @@
 				{/if}
 			</button>
 			<span class="flex h-6 w-6 items-center justify-center text-sm text-[var(--color-info)]">
-				📚
+				
 			</span>
 			{#if !isExpanded}
 				<button
