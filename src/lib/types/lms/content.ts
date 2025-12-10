@@ -1,5 +1,5 @@
 export interface ContentCreateModel {
-	CourseModuleId?: string;
+	CourseModuleId: string;
 	Title: string;
 	Description?: string;
 	Sequence?: number;

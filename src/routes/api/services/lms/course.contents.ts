@@ -90,14 +90,13 @@ export const updateContent = async (
 	durationInMins?: number
 ) => {
 	const body = {
-		contentId,
 		Title: title,
 		ContentType: contentType,
-		Description: description ?? null,
+		Description: description ?? undefined,
 		Sequence: sequence ?? null,
-		ResourceLink: resourceLink ?? null,
-		ImageUrl: imageUrl ?? null,
-		DurationInMins: durationInMins ?? null
+		ResourceLink: resourceLink ?? undefined,
+		ImageUrl: imageUrl ?? undefined,
+		DurationInMins: durationInMins ?? undefined
 	};
 	const url = LMS_BACKEND_API_URL + `/course-contents/${contentId}`;
 	const result = await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);

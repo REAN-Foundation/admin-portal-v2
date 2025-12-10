@@ -1,7 +1,7 @@
 export interface CourseCreateModel {
 	Name: string;
 	Description?: string;
-	ImageResourceId: string;
+	ImageResourceId?: string;
 	DurationInDays?: number;
 	TenantId?: string;
 	// Sequence?: number;
