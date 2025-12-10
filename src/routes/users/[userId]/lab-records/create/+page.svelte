@@ -162,6 +162,7 @@
 						<input
 							type="number"
 							name="normalRangeMin"
+							step="any"
 							placeholder="Enter minimum normal range here..."
 							class="input {errors?.normalRangeMin ? 'input-text-error' : ''}"
 							bind:value={normalRangeMin}
@@ -177,6 +178,7 @@
 						<input
 							type="number"
 							name="normalRangeMax"
+							step="any"
 							placeholder="Enter maximum normal range here..."
 							class="input {errors?.normalRangeMax ? 'input-text-error' : ''}"
 							bind:value={normalRangeMax}
