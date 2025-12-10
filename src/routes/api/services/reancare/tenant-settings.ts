@@ -351,9 +351,23 @@ export const downloadMarketingMaterialByTenantId = async (sessionId: string, ten
 		headers
 	});
 
+	if (!res.ok) {
+		// Read error response as text first, then try to parse as JSON
+		const errorText = await res.text();
+		let errorResponse;
+		try {
+			errorResponse = JSON.parse(errorText);
+		} catch {
+			errorResponse = { Message: errorText || 'Download failed', HttpCode: res.status };
+		}
+		console.log(`Download response message: ${errorResponse.Message}`);
+		throw error(errorResponse.HttpCode || res.status || 500, errorResponse.Message || 'Download failed');
+	}
+
+	// Read the response body as arrayBuffer only if response is OK
 	const data = await res.arrayBuffer();
 
-	if (data && res.ok) {
+	if (data) {
 		const responseHeaders = res.headers;
 		const contentType = responseHeaders.get('content-type') || 'application/octet-stream';
 
@@ -375,9 +389,7 @@ export const downloadMarketingMaterialByTenantId = async (sessionId: string, ten
 				MimeType: contentType
 			}
 		};
-	} else {
-		const response = await res.json();
-		console.log(`Download response message: ${response.Message}`);
-		throw error(response.HttpCode || 500, response.Message || 'Download failed');
 	}
+
+	throw error(500, 'Download failed: No data received');
 };
