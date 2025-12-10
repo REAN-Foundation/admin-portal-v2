@@ -1,0 +1,34 @@
+<script lang="ts">
+	import Icon from '@iconify/svelte';
+	
+	let { content, contentView, moduleId } = $props();
+	
+	const displayName = $derived(content.Sequence ? `${content.Sequence} - ${content.Title}` : content.Title);
+	const viewUrl = $derived(contentView ? contentView(content.id, moduleId || content.ModuleId) : '#');
+</script>
+
+<div class="tree-connector pl-4">
+	<div class="flex items-center gap-2 text-[var(--color-info)] hover:text-blue-600">
+		<span class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-secondary)] text-sm">
+			<Icon 
+				icon="iconoir:empty-page" 
+				width="16" 
+				height="16" 
+				 
+			/>
+		</span>
+		{#if contentView}
+			<a class="hover:underline" href={viewUrl}>
+				{displayName}
+			</a>
+		{:else}
+			<span>{displayName}</span>
+		{/if}
+	</div>
+</div>
+
+<style>
+	.tree-connector {
+		position: relative;
+	}
+</style>
