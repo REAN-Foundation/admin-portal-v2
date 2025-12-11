@@ -294,20 +294,22 @@
 			</div>
 
 			<div class="flex flex-col space-y-4 px-5 py-4">
-				{#if isEditing}
+				{#if isEditing && !showAddForm}
 					<div class="my-4 flex flex-col md:flex-row md:items-center">
 						<div class="w-[30%]"></div>
 						<div class="flex w-[70%] justify-end">
 							<button
 								type="button"
 								class="health-system-btn variant-filled-secondary"
-								onclick={() => (showAddForm = !showAddForm)}
+								onclick={() => (showAddForm = true)}
 							>
-								{showAddForm ? 'Cancel Add' : 'Add Setting +'}
+								Add Setting
 							</button>
 						</div>
 					</div>
+				{/if}
 
+				{#if isEditing}
 					{#if showAddForm}
 						<div class="space-y-4 border border-[var(--color-outline)] rounded-lg p-4">
 							<div class="my-4 flex flex-col md:flex-row md:items-center">
@@ -409,7 +411,7 @@
 									</button>
 									<button
 										type="button"
-										class="health-system-btn variant-filled-primary"
+										class="health-system-btn variant-filled-secondary"
 										onclick={handleAddSetting}
 									>
 										Add Setting
