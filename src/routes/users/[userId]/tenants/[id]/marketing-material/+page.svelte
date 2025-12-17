@@ -359,7 +359,7 @@
 	};
 
 	
-export const validateQRCode = async (
+	export const validateQRCode = async (
   file: File
 ): Promise<{ isValid: boolean; errors: string[]; data?: string }> => {
   const errors: string[] = [];
@@ -1139,7 +1139,7 @@ export const validateQRCode = async (
 								class="table-btn variant-filled-secondary gap-1 disabled:cursor-not-allowed disabled:opacity-50"
 								disabled
 							>
-								<Icon icon="material-symbols:download-outline" />
+								<Icon icon="meteor-icons:download" class="h-5" />
 								Downloading...
 							</button>
 						{:then data}
@@ -1149,7 +1149,7 @@ export const validateQRCode = async (
 								onclick={() => (downloadPromise = handleDownload())}
 								disabled={!hasMarketingMaterial}
 							>
-								<Icon icon="material-symbols:download-outline" />
+								<Icon icon="meteor-icons:download" class="h-5" />
 								
 							</button>
 						{:catch error}
@@ -1159,7 +1159,7 @@ export const validateQRCode = async (
 								onclick={() => (downloadPromise = handleDownload())}
 								disabled={!hasMarketingMaterial}
 							>
-								<Icon icon="material-symbols:download-outline" />
+								<Icon icon="meteor-icons:download" class="h-5" />
 							
 							</button>
 						{/await}
@@ -2179,12 +2179,20 @@ export const validateQRCode = async (
 					{#if activeSection === 'colors'}
 						<div class="space-y-4 p-6">
 							<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-								{#each [{ key: 'Primary', label: 'Primary' }, { key: 'Secondary', label: 'Secondary' }, { key: 'Accent', label: 'Accent' }, { key: 'LightBg', label: 'Light Background' }, { key: 'Panel', label: 'Panel' }, { key: 'Muted', label: 'Muted Text' }, { key: 'Text', label: 'Body Text' }] as c}
+								{#each [
+									{ key: 'Primary', label: 'Primary Color' }, 
+									{ key: 'Secondary', label: 'Secondary Color' }, 
+									{ key: 'Text', label: 'Body Text Color' }, 
+									{ key: 'Muted', label: 'Muted Text Color' }, 
+									{ key: 'Accent', label: 'Accent Color (Primary Background)' }, 
+									{ key: 'LightBg', label: 'Light Background Color (Secondary Background)' }, 
+									{ key: 'Panel', label: 'Panel Color' }
+								] as c}
 									<div class="my-2 flex flex-col md:flex-row md:items-center">
 										<label
 											for="styling-{c.key}-color"
 											class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
-											>{c.label} Color</label
+											>{c.label}</label
 										>
 										<div class="flex w-[70%] items-center gap-2">
 											<input
@@ -2249,91 +2257,93 @@ export const validateQRCode = async (
 					{#if activeSection === 'fonts'}
 						<div class="space-y-4 p-6">
 							<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-								<div class="my-2 flex flex-col md:flex-row md:items-center">
+								<div class="my-2 flex flex-col md:flex-row md:items-start">
 									<label
 										for="styling-heading-font"
 										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 										>Heading Font</label
 									>
-									<select
-										id="styling-heading-font"
-										bind:value={Styling.HeadingFont}
-										{disabled}
-										class="select input-field w-[70%]"
-									>
-										<option value="">Select a font</option>
-										<option value="'Poppins', sans-serif">Poppins</option>
-										<option value="'Inter', sans-serif">Inter</option>
-										<option value="'Roboto', sans-serif">Roboto</option>
-										<option value="'Open Sans', sans-serif">Open Sans</option>
-										<option value="'Lato', sans-serif">Lato</option>
-										<option value="'Montserrat', sans-serif">Montserrat</option>
-										<option value="'Raleway', sans-serif">Raleway</option>
-										<option value="'Nunito', sans-serif">Nunito</option>
-										<option value="'Playfair Display', serif">Playfair Display</option>
-										<option value="'Merriweather', serif">Merriweather</option>
-										<option value="'Lora', serif">Lora</option>
-										<option value="'PT Serif', serif">PT Serif</option>
-										<option value="'Roboto Slab', serif">Roboto Slab</option>
-										<option value="'Source Sans Pro', sans-serif">Source Sans Pro</option>
-										<option value="'Ubuntu', sans-serif">Ubuntu</option>
-										<option value="'Oswald', sans-serif">Oswald</option>
-										<option value="'Fira Sans', sans-serif">Fira Sans</option>
-										<option value="'Crimson Text', serif">Crimson Text</option>
-										<option value="'Libre Baskerville', serif">Libre Baskerville</option>
-									</select>
-									{#if Styling.HeadingFont && !['', "'Poppins', sans-serif", "'Inter', sans-serif", "'Roboto', sans-serif", "'Open Sans', sans-serif", "'Lato', sans-serif", "'Montserrat', sans-serif", "'Raleway', sans-serif", "'Nunito', sans-serif", "'Playfair Display', serif", "'Merriweather', serif", "'Lora', serif", "'PT Serif', serif", "'Roboto Slab', serif", "'Source Sans Pro', sans-serif", "'Ubuntu', sans-serif", "'Oswald', sans-serif", "'Fira Sans', sans-serif", "'Crimson Text', serif", "'Libre Baskerville', serif"].includes(Styling.HeadingFont)}
-										<input
-											type="text"
+									<div class="w-[70%] flex flex-col">
+										<select
+											id="styling-heading-font"
 											bind:value={Styling.HeadingFont}
 											{disabled}
-											placeholder="Custom font (e.g., 'Custom Font', sans-serif)"
-											class="input-field mt-2 w-[70%]"
-										/>
-									{/if}
+											class="select input-field w-full"
+										>
+											<option value="">Select a font</option>
+											<option value="'Poppins', sans-serif">Poppins</option>
+											<option value="'Inter', sans-serif">Inter</option>
+											<option value="'Roboto', sans-serif">Roboto</option>
+											<option value="'Open Sans', sans-serif">Open Sans</option>
+											<option value="'Lato', sans-serif">Lato</option>
+											<option value="'Montserrat', sans-serif">Montserrat</option>
+											<option value="'Raleway', sans-serif">Raleway</option>
+											<option value="'Nunito', sans-serif">Nunito</option>
+											<option value="'Playfair Display', serif">Playfair Display</option>
+											<option value="'Merriweather', serif">Merriweather</option>
+											<option value="'Lora', serif">Lora</option>
+											<option value="'PT Serif', serif">PT Serif</option>
+											<option value="'Roboto Slab', serif">Roboto Slab</option>
+											<option value="'Source Sans Pro', sans-serif">Source Sans Pro</option>
+											<option value="'Ubuntu', sans-serif">Ubuntu</option>
+											<option value="'Oswald', sans-serif">Oswald</option>
+											<option value="'Fira Sans', sans-serif">Fira Sans</option>
+											<option value="'Crimson Text', serif">Crimson Text</option>
+											<option value="'Libre Baskerville', serif">Libre Baskerville</option>
+										</select>
+										{#if Styling.HeadingFont}
+											<div class="mt-2 rounded border border-[var(--color-outline)] bg-[var(--color-secondary)] p-2">
+												<p class="text-xs text-[var(--color-muted)] mb-1">Example:</p>
+												<p style="font-family: {Styling.HeadingFont}; font-size: 16px; font-weight: 600;" class="text-[var(--color-info)]">
+													This is a heading
+												</p>
+											</div>
+										{/if}
+									</div>
 								</div>
-								<div class="my-2 flex flex-col md:flex-row md:items-center">
+								<div class="my-2 flex flex-col md:flex-row md:items-start">
 									<label
 										for="styling-body-font"
 										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 										>Body Font</label
 									>
-									<select
-										id="styling-body-font"
-										bind:value={Styling.BodyFont}
-										{disabled}
-										class="select input-field w-[70%]"
-									>
-										<option value="">Select a font</option>
-										<option value="'Poppins', sans-serif">Poppins</option>
-										<option value="'Inter', sans-serif">Inter</option>
-										<option value="'Roboto', sans-serif">Roboto</option>
-										<option value="'Open Sans', sans-serif">Open Sans</option>
-										<option value="'Lato', sans-serif">Lato</option>
-										<option value="'Montserrat', sans-serif">Montserrat</option>
-										<option value="'Raleway', sans-serif">Raleway</option>
-										<option value="'Nunito', sans-serif">Nunito</option>
-										<option value="'Playfair Display', serif">Playfair Display</option>
-										<option value="'Merriweather', serif">Merriweather</option>
-										<option value="'Lora', serif">Lora</option>
-										<option value="'PT Serif', serif">PT Serif</option>
-										<option value="'Roboto Slab', serif">Roboto Slab</option>
-										<option value="'Source Sans Pro', sans-serif">Source Sans Pro</option>
-										<option value="'Ubuntu', sans-serif">Ubuntu</option>
-										<option value="'Oswald', sans-serif">Oswald</option>
-										<option value="'Fira Sans', sans-serif">Fira Sans</option>
-										<option value="'Crimson Text', serif">Crimson Text</option>
-										<option value="'Libre Baskerville', serif">Libre Baskerville</option>
-									</select>
-									{#if Styling.BodyFont && !['', "'Poppins', sans-serif", "'Inter', sans-serif", "'Roboto', sans-serif", "'Open Sans', sans-serif", "'Lato', sans-serif", "'Montserrat', sans-serif", "'Raleway', sans-serif", "'Nunito', sans-serif", "'Playfair Display', serif", "'Merriweather', serif", "'Lora', serif", "'PT Serif', serif", "'Roboto Slab', serif", "'Source Sans Pro', sans-serif", "'Ubuntu', sans-serif", "'Oswald', sans-serif", "'Fira Sans', sans-serif", "'Crimson Text', serif", "'Libre Baskerville', serif"].includes(Styling.BodyFont)}
-										<input
-											type="text"
+									<div class="w-[70%] flex flex-col">
+										<select
+											id="styling-body-font"
 											bind:value={Styling.BodyFont}
 											{disabled}
-											placeholder="Custom font (e.g., 'Custom Font', sans-serif)"
-											class="input-field mt-2 w-[70%]"
-										/>
-									{/if}
+											class="select input-field w-full"
+										>
+											<option value="">Select a font</option>
+											<option value="'Poppins', sans-serif">Poppins</option>
+											<option value="'Inter', sans-serif">Inter</option>
+											<option value="'Roboto', sans-serif">Roboto</option>
+											<option value="'Open Sans', sans-serif">Open Sans</option>
+											<option value="'Lato', sans-serif">Lato</option>
+											<option value="'Montserrat', sans-serif">Montserrat</option>
+											<option value="'Raleway', sans-serif">Raleway</option>
+											<option value="'Nunito', sans-serif">Nunito</option>
+											<option value="'Playfair Display', serif">Playfair Display</option>
+											<option value="'Merriweather', serif">Merriweather</option>
+											<option value="'Lora', serif">Lora</option>
+											<option value="'PT Serif', serif">PT Serif</option>
+											<option value="'Roboto Slab', serif">Roboto Slab</option>
+											<option value="'Source Sans Pro', sans-serif">Source Sans Pro</option>
+											<option value="'Ubuntu', sans-serif">Ubuntu</option>
+											<option value="'Oswald', sans-serif">Oswald</option>
+											<option value="'Fira Sans', sans-serif">Fira Sans</option>
+											<option value="'Crimson Text', serif">Crimson Text</option>
+											<option value="'Libre Baskerville', serif">Libre Baskerville</option>
+										</select>
+										{#if Styling.BodyFont}
+											<div class="mt-2 rounded border border-[var(--color-outline)] bg-[var(--color-secondary)] p-2">
+												<p class="text-xs text-[var(--color-muted)] mb-1">Example:</p>
+												<p style="font-family: {Styling.BodyFont}; font-size: 13px;" class="text-[var(--color-info)]">
+													This is body text in the PDF
+												</p>
+											</div>
+										{/if}
+									</div>
 								</div>
 							</div>
 						</div>
@@ -2450,7 +2460,7 @@ export const validateQRCode = async (
 									<label
 										for="styling-ui-width"
 										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
-										>UI Width</label
+										>Margin</label
 									>
 									<select
 										id="styling-ui-width"
@@ -2458,7 +2468,7 @@ export const validateQRCode = async (
 										{disabled}
 										class="select input-field w-[70%]"
 									>
-										<option value="">Select UI width</option>
+										<option value="">Select margin</option>
 										<option value="200px">200px</option>
 										<option value="240px">240px</option>
 										<option value="260px">260px</option>
@@ -2475,7 +2485,7 @@ export const validateQRCode = async (
 											type="text"
 											bind:value={Styling.UserInterfaceWidth}
 											{disabled}
-											placeholder="Custom width (e.g., 270px)"
+											placeholder="Custom margin (e.g., 270px)"
 											class="input-field mt-2 w-[70%]"
 										/>
 									{/if}
@@ -2510,38 +2520,6 @@ export const validateQRCode = async (
 											bind:value={Styling.UserInteractionWidth}
 											{disabled}
 											placeholder="Custom width (e.g., 230px)"
-											class="input-field mt-2 w-[70%]"
-										/>
-									{/if}
-								</div>
-								<div class="my-2 flex flex-col md:flex-row md:items-center">
-									<label
-										for="styling-qr-size"
-										class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
-										>QR Size</label
-									>
-									<select
-										id="styling-qr-size"
-										bind:value={Styling.QrSize}
-										{disabled}
-										class="select input-field w-[70%]"
-									>
-										<option value="">Select QR size</option>
-										<option value="80px">80px (Small)</option>
-										<option value="100px">100px</option>
-										<option value="120px">120px (Medium)</option>
-										<option value="150px">150px</option>
-										<option value="180px">180px</option>
-										<option value="200px">200px (Large)</option>
-										<option value="250px">250px</option>
-										<option value="300px">300px (Extra Large)</option>
-									</select>
-									{#if Styling.QrSize && !['', '80px', '100px', '120px', '150px', '180px', '200px', '250px', '300px'].includes(Styling.QrSize)}
-										<input
-											type="text"
-											bind:value={Styling.QrSize}
-											{disabled}
-											placeholder="Custom size (e.g., 140px)"
 											class="input-field mt-2 w-[70%]"
 										/>
 									{/if}
