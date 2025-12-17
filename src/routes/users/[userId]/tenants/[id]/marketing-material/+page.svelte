@@ -11,6 +11,8 @@
 	} from '$lib/types/tenant.settings.types';
 	import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema.js';
 	import type { FaviconUploadModel, LogoUploadModel } from '$lib/types/tenant.settings.types.js';
+	import jsQR from 'jsqr';
+
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -33,6 +35,7 @@
 		}
 	];
 	let promise = $state();
+	let downloadPromise = $state();
 	const isEmpty = data.isEmpty || !data.marketingMaterial;
 	let hasMarketingMaterial = $state(
 		!data.isEmpty && data.marketingMaterial !== null && data.marketingMaterial !== undefined
@@ -148,23 +151,71 @@
 	let titleImageFileName = $state('');
 	let userInterfaceImageFileName = $state('');
 	let qrCodeFileName = $state('');
-	let logoFileNames = $state<string[]>(['', '', '']);
+	let logoFileNames = $state<string[]>([]);
 	let titleImageFile: File | null = null;
 	let userInterfaceImageFile: File | null = null;
-	let logoFiles: (File | null)[] = [null, null, null];
+	let logoFiles = $state<(File | null)[]>([]);
 	let qrCodeFile: File | null = null;
 	let disabled = $state(true);
 	let edit = $state(false);
 	let activeSection = $state<string | null>(null);
+	let pageView = $state<1 | 2>(
+		isEmpty ? 1 : (data.marketingMaterial?.PageView as 1 | 2) || 1
+	); // PDF page view: 1 or 2 pages
+
+	// Content limits based on page view
+	const contentLimits = {
+		1: {
+			mainTitle: { min: 10, max: 50 },
+			subtitle: { min: 0, max: 80 },
+			introParagraph: { min: 50, max: 300 },
+			problemStatement: { min: 0, max: 600 },
+			benefitsTitle: { min: 0, max: 30 },
+			benefitItem: { min: 10, max: 100 },
+			maxBenefits: 4,
+			uiHeading: { min: 10, max: 50 },
+			uiParagraph: { min: 0, max: 150 },
+			ctaHeading: { min: 0, max: 40 },
+			ctaDescription: { min: 0, max: 100 },
+			qrInstruction: { min: 0, max: 50 }
+		},
+		2: {
+			mainTitle: { min: 10, max: 80 },
+			subtitle: { min: 0, max: 120 },
+			introParagraph: { min: 50, max: 400 },
+			problemStatement: { min: 0, max: 300 },
+			benefitsTitle: { min: 0, max: 50 },
+			benefitItem: { min: 10, max: 200 },
+			maxBenefits: 8,
+			uiHeading: { min: 10, max: 80 },
+			uiParagraph: { min: 0, max: 300 },
+			ctaHeading: { min: 0, max: 60 },
+			ctaDescription: { min: 0, max: 200 },
+			qrInstruction: { min: 0, max: 80 }
+		}
+	};
+
+	// Helper function to get character count and limit status
+	const getCharacterStatus = (text: string, field: keyof typeof contentLimits[1]): { length: number; limits: { min: number; max: number }; isValid: boolean } => {
+		const limits = contentLimits[pageView][field] as { min: number; max: number };
+		const length = text?.length || 0;
+		const isValid = length >= limits.min && length <= limits.max;
+		return { length, limits, isValid };
+	};
 
 	const initializeLogos = () => {
-		const logos = isEmpty ? [] : (data.marketingMaterial?.Logos ?? []).slice(0, 3);
-		while (logos.length < 3) {
-			logos.push('');
+		const logos = isEmpty ? [] : (data.marketingMaterial?.Logos ?? []).slice(0, 2);
+		// Start with 1 logo if empty, otherwise use existing logos (max 2)
+		if (logos.length === 0) {
+			return [''];
 		}
 		return logos;
 	};
-	let Logos = $state<string[]>(initializeLogos());
+	const initialLogos = initializeLogos();
+	let Logos = $state<string[]>(initialLogos);
+	// Initialize logoFileNames and logoFiles to match Logos length
+	logoFileNames = initialLogos.map(() => '');
+	logoFiles = initialLogos.map(() => null);
 
 	const getImageUrl = (resourceId: string) => {
 		if (!resourceId) return null;
@@ -180,19 +231,63 @@
 	};
 
 	const addBenefit = () => {
-		Content.Benefits.Items = [...(Content.Benefits.Items ?? []), ''];
+		const currentCount = (Content.Benefits.Items ?? []).length;
+		const maxBenefits = contentLimits[pageView].maxBenefits;
+		if (currentCount < maxBenefits) {
+			Content.Benefits.Items = [...(Content.Benefits.Items ?? []), ''];
+		} else {
+			addToast({
+				message: `Maximum ${maxBenefits} benefits allowed for ${pageView}-page view`,
+				type: 'warning',
+				timeout: 3000
+			});
+		}
 	};
 
 	const removeBenefit = (index: number) => {
 		Content.Benefits.Items = (Content.Benefits.Items ?? []).filter((_, i) => i !== index);
 	};
 
+	const addLogo = () => {
+		const maxLogos = 2;
+		if (Logos.length < maxLogos) {
+			Logos = [...Logos, ''];
+			logoFileNames = [...logoFileNames, ''];
+			logoFiles = [...logoFiles, null];
+		} else {
+			addToast({
+				message: `Maximum ${maxLogos} logos allowed`,
+				type: 'warning',
+				timeout: 3000
+			});
+		}
+	};
+
 	const removeLogo = (index: number) => {
-		Logos[index] = '';
-		logoFileNames[index] = '';
-		Logos = [...Logos];
-		logoFileNames = [...logoFileNames];
-		logoFiles[index] = null;
+		Logos = Logos.filter((_, i) => i !== index);
+		logoFileNames = logoFileNames.filter((_, i) => i !== index);
+		logoFiles = logoFiles.filter((_, i) => i !== index);
+	};
+
+	const removeTitleImage = () => {
+		Images.TitleImage = '';
+		titleImageFileName = '';
+		titleImageFile = null;
+	};
+
+	const removeUserInterfaceImage = () => {
+		Images.UserInterfaceImage = '';
+		userInterfaceImageFileName = '';
+		userInterfaceImageFile = null;
+	};
+
+	const removeQRCode = () => {
+		QRcode = null;
+		qrCodeFileName = '';
+		qrCodeFile = null;
+		// Clear QR code errors
+		errors = { ...errors };
+		delete errors.qrCode;
 	};
 
 	const onImageSelected = async (e: Event, imageType: 'titleImage' | 'userInterfaceImage') => {
@@ -250,18 +345,109 @@
 			return;
 		}
 
-		if (!logoFileNames[logoIndex]) {
-			logoFileNames = [...logoFileNames];
+		// Ensure arrays are properly sized
+		while (logoFileNames.length <= logoIndex) {
+			logoFileNames = [...logoFileNames, ''];
+		}
+		while (logoFiles.length <= logoIndex) {
+			logoFiles = [...logoFiles, null];
 		}
 		logoFileNames[logoIndex] = file.name;
 		logoFileNames = [...logoFileNames];
 		logoFiles[logoIndex] = file;
+		logoFiles = [...logoFiles];
 	};
+
+	
+export const validateQRCode = async (
+  file: File
+): Promise<{ isValid: boolean; errors: string[]; data?: string }> => {
+  const errors: string[] = [];
+
+  // 1️⃣ Validate image dimensions
+  const imageSize = await new Promise<{ width: number; height: number }>((resolve) => {
+    const img = document.createElement('img');
+    const url = URL.createObjectURL(file);
+
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve({ width: img.width, height: img.height });
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve({ width: 0, height: 0 });
+    };
+
+    img.src = url;
+  });
+
+  const MIN_SIZE = 200;
+  if (imageSize.width < MIN_SIZE || imageSize.height < MIN_SIZE) {
+    errors.push(
+      `QR code image must be at least ${MIN_SIZE}x${MIN_SIZE}px`
+    );
+  }
+
+  // 2️⃣ Real QR validation (decode)
+  const qrResult = await new Promise<string | null>((resolve) => {
+    const img = document.createElement('img');
+    const url = URL.createObjectURL(file);
+
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) {
+        URL.revokeObjectURL(url);
+        resolve(null);
+        return;
+      }
+
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(
+        imageData.data,
+        imageData.width,
+        imageData.height
+      );
+
+      URL.revokeObjectURL(url);
+      resolve(code?.data ?? null);
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(null);
+    };
+
+    img.src = url;
+  });
+
+  if (!qrResult) {
+    errors.push('Uploaded image does not contain a readable QR code.');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    data: qrResult ?? undefined
+  };
+};
+
 
 	const onQRCodeSelected = async (e: Event) => {
 		const input = e.target as HTMLInputElement;
 		const file = input.files?.[0];
 		if (!file) return;
+
+		// Clear previous QR code errors
+		errors = { ...errors };
+		delete errors.qrCode;
+		delete errors.qrCodeSize;
 
 		const fileCreateModel: FaviconUploadModel = {
 			UploadFile: file,
@@ -272,14 +458,37 @@
 		const fileValidationResult = imageUploadSchema.safeParse(fileCreateModel);
 
 		if (!fileValidationResult.success) {
-			errors = Object.fromEntries(
-				Object.entries(fileValidationResult.error.flatten().fieldErrors).map(([key, val]) => [
-					key,
-					val?.[0] || 'This field is required'
-				])
-			);
+			errors = {
+				...errors,
+				...Object.fromEntries(
+					Object.entries(fileValidationResult.error.flatten().fieldErrors).map(([key, val]) => [
+						key,
+						val?.[0] || 'This field is required'
+					])
+				)
+			};
 			return;
 		}
+
+		// Validate QR code and size
+		const qrValidation = await validateQRCode(file);
+		
+		if (!qrValidation.isValid) {
+			errors = {
+				...errors,
+				qrCode: qrValidation.errors.join(' ')
+			};
+			// Clear the file if validation fails
+			qrCodeFileName = '';
+			qrCodeFile = null;
+			input.value = ''; // Reset the input
+			return;
+		}
+
+		// Clear errors if validation passes
+		errors = { ...errors };
+		delete errors.qrCode;
+		delete errors.qrCodeSize;
 
 		qrCodeFileName = file.name;
 		qrCodeFile = file;
@@ -831,7 +1040,8 @@
 					UserInterfaceImage: Images.UserInterfaceImage
 				},
 				Logos: finalLogosArray.length > 0 ? finalLogosArray : null,
-				QRCode: QRcode
+				QRCode: QRcode,
+				PageView: pageView
 			};
 
 			// Step 7: Validate the model
@@ -922,22 +1132,56 @@
 			>
 				<h1 class="text-xl text-[var(--color-info)]">Marketing Material</h1>
 				<div class="flex items-center gap-2 text-end">
-					<button
-						type="button"
-						class="table-btn variant-filled-secondary gap-1 disabled:cursor-not-allowed disabled:opacity-50"
-						onclick={handleDownload}
-						disabled={!hasMarketingMaterial}
-					>
-						<Icon icon="material-symbols:download-outline" />
-						Download
-					</button>
+					{#if downloadPromise}
+						{#await downloadPromise}
+							<button
+								type="button"
+								class="table-btn variant-filled-secondary gap-1 disabled:cursor-not-allowed disabled:opacity-50"
+								disabled
+							>
+								<Icon icon="material-symbols:download-outline" />
+								Downloading...
+							</button>
+						{:then data}
+							<button
+								type="button"
+								class="table-btn variant-filled-secondary gap-1 disabled:cursor-not-allowed disabled:opacity-50"
+								onclick={() => (downloadPromise = handleDownload())}
+								disabled={!hasMarketingMaterial}
+							>
+								<Icon icon="material-symbols:download-outline" />
+								
+							</button>
+						{:catch error}
+							<button
+								type="button"
+								class="table-btn variant-filled-secondary gap-1 disabled:cursor-not-allowed disabled:opacity-50"
+								onclick={() => (downloadPromise = handleDownload())}
+								disabled={!hasMarketingMaterial}
+							>
+								<Icon icon="material-symbols:download-outline" />
+							
+							</button>
+						{/await}
+					{:else}
+						<button
+							type="button"
+							class="table-btn variant-filled-secondary gap-1 disabled:cursor-not-allowed disabled:opacity-50"
+							onclick={() => (downloadPromise = handleDownload())}
+							disabled={!hasMarketingMaterial}
+						>
+							<!-- <Icon icon="material-symbols:download-outline" class="h-5" /> -->
+							<Icon icon="meteor-icons:download" class="h-5" />
+							
+						</button>
+					{/if}
 					<button
 						type="button"
 						class="table-btn variant-filled-secondary gap-1"
 						onclick={handleEditClick}
 					>
-						<Icon icon="material-symbols:edit-outline" />
-						Edit
+						<Icon icon="material-symbols:edit-outline" class='h-5'/>
+					
 					</button>
 					<a
 						href={tenantRoute}
@@ -945,6 +1189,36 @@
 					>
 						<Icon icon="material-symbols:close-rounded" class="h-5" />
 					</a>
+				</div>
+			</div>
+
+			<!-- Page View Selection -->
+			<div class="border-b border-[var(--color-outline)] bg-[var(--color-secondary)] px-5 py-4">
+				<div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+					<div>
+						<h3 class="text-base font-semibold text-[var(--color-info)]">PDF Page View</h3>
+						<p class="text-sm text-[var(--color-muted)]">Select the number of pages for your marketing material PDF</p>
+					</div>
+					<div class="flex gap-3">
+						<button
+							type="button"
+							onclick={() => pageView = 1}
+							{disabled}
+							class="inline-flex items-center gap-2 rounded-md border-2 px-4 py-2 text-sm font-medium transition-all {pageView === 1 ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-[var(--color-outline)] bg-[var(--color-primary)] text-[var(--color-info)] hover:bg-[var(--color-secondary)]'} disabled:cursor-not-allowed disabled:opacity-50"
+						>
+							<Icon icon="material-symbols:page-info-outline" class="h-5 w-5" />
+							<span>1 Page</span>
+						</button>
+						<button
+							type="button"
+							onclick={() => pageView = 2}
+							{disabled}
+							class="inline-flex items-center gap-2 rounded-md border-2 px-4 py-2 text-sm font-medium transition-all {pageView === 2 ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-[var(--color-outline)] bg-[var(--color-primary)] text-[var(--color-info)] hover:bg-[var(--color-secondary)]'} disabled:cursor-not-allowed disabled:opacity-50"
+						>
+							<Icon icon="material-symbols:pages-outline" class="h-5 w-5" />
+							<span>2 Pages</span>
+						</button>
+					</div>
 				</div>
 			</div>
 
@@ -990,76 +1264,93 @@
 					{#if activeSection === 'logos'}
 						<div class="p-6">
 							<div class="flex flex-col gap-4">
-								{#each Logos as logo, index}
-									<div
-										class="relative rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-sm"
-									>
-										<!-- Header with Logo title and close button -->
-										<div class="mb-4 flex items-center justify-between">
-											<h4 class="text-base font-bold text-[var(--color-info)]">
-												Logo {index + 1}
-											</h4>
-											{#if !disabled}
-												<button
-													type="button"
-													onclick={() => removeLogo(index)}
-													class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+								<div class="my-4 flex items-center justify-between">
+									<h4 class="text-sm font-medium text-[var(--color-info)]">
+										Logos ({Logos.length} / 2)
+									</h4>
+									{#if !disabled && Logos.length < 2}
+										<button
+											type="button"
+											onclick={addLogo}
+											class="table-btn variant-filled-secondary"
+										>
+											Add Logo
+										</button>
+									{/if}
+								</div>
+
+								<div class="flex flex-col gap-4">
+									{#each Logos as logo, index}
+										<div
+											class="relative rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-sm"
+										>
+											<!-- Header with Logo title and close button -->
+											<div class="mb-4 flex items-center justify-between">
+												<h4 class="text-base text-[var(--color-info)]">
+													Logo {index + 1}
+												</h4>
+												{#if !disabled}
+													<button
+														type="button"
+														onclick={() => removeLogo(index)}
+														class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+													>
+														<Icon icon="material-symbols:delete-outline" class="h-5" />
+													</button>
+												{/if}
+											</div>
+
+											
+
+											<!-- LOGO FILE Section -->
+											<div class="mb-2">
+												<label
+													for="logo-upload-{index}"
+													class="mb-2 block text-xs font-medium tracking-wide text-[var(--color-info)]"
 												>
-													<Icon icon="material-symbols:delete-outline" class="h-5" />
-												</button>
+													Logo File
+												</label>
+												<div class="relative flex items-center rounded border border-[var(--color-outline)] bg-[var(--color-primary)]">
+													<label
+														class="health-system-btn variant-filled-secondary"
+														for="logo-upload-{index}"
+													>
+														Select File
+														<input
+															type="file"
+															id="logo-upload-{index}"
+															accept="image/*"
+															class="hidden"
+															{disabled}
+															onchange={async (e) => await onLogoSelected(e, index)}
+														/>
+													</label>
+													<input
+														type="text"
+														value={logoFileNames[index] || ''}
+														readonly
+														{disabled}
+														class="flex-1 border-0 bg-transparent px-3 py-2 text-sm text-[var(--color-info)] placeholder-[var(--color-muted)] focus:outline-none"
+														placeholder="No file selected..."
+													/>
+												</div>
+											</div>
+
+											<!-- Logo Preview -->
+											{#if Logos[index] && (data.marketingMaterial?.LogoUrls?.[index] || getImageUrl(Logos[index]))}
+												<div class="mt-4">
+													<Image
+														cls="h-24 w-24 rounded border border-[var(--color-outline)] object-cover"
+														source={(data.marketingMaterial?.LogoUrls?.[index]) ||
+															getImageUrl(Logos[index])}
+														w="24"
+														h="24"
+													/>
+												</div>
 											{/if}
 										</div>
-
-										
-
-										<!-- LOGO FILE Section -->
-										<div class="mb-2">
-											<label
-												for="logo-upload-{index}"
-												class="mb-2 block text-xs font-medium tracking-wide text-[var(--color-info)]"
-											>
-												Logo File
-											</label>
-											<div class="relative flex items-center rounded border border-[var(--color-outline)] bg-[var(--color-primary)]">
-												<label
-													class="health-system-btn variant-filled-secondary"
-													for="logo-upload-{index}"
-												>
-													Select File
-													<input
-														type="file"
-														id="logo-upload-{index}"
-														accept="image/*"
-														class="hidden"
-														{disabled}
-														onchange={async (e) => await onLogoSelected(e, index)}
-													/>
-												</label>
-												<input
-													type="text"
-													value={logoFileNames[index] || ''}
-													readonly
-													{disabled}
-													class="flex-1 border-0 bg-transparent px-3 py-2 text-sm text-[var(--color-info)] placeholder-[var(--color-muted)] focus:outline-none"
-													placeholder="No file selected..."
-												/>
-											</div>
-										</div>
-
-										<!-- Logo Preview -->
-										{#if Logos[index] && (data.marketingMaterial?.LogoUrls?.[index] || getImageUrl(Logos[index]))}
-											<div class="mt-4">
-												<Image
-													cls="h-24 w-24 rounded border border-[var(--color-outline)] object-cover"
-													source={(data.marketingMaterial?.LogoUrls?.[index]) ||
-														getImageUrl(Logos[index])}
-													w="24"
-													h="24"
-												/>
-											</div>
-										{/if}
-									</div>
-								{/each}
+									{/each}
+								</div>
 							</div>
 						</div>
 					{/if}
@@ -1102,35 +1393,53 @@
 
 					{#if activeSection === 'header'}
 						<div class="space-y-4 p-6">
-							<div class="my-2 flex flex-col md:flex-row md:items-center">
+							<div class="my-2 flex flex-col md:flex-row md:items-start">
 								<label
 									for="content-main-title"
 									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>Main Title <span class="text-red-700">*</span></label
 								>
-								<input
-									type="text"
-									id="content-main-title"
-									bind:value={Content.Header.MainTitle}
-									{disabled}
-									placeholder="Enter main title"
-									class="input-field w-[70%]"
-								/>
+								<div class="w-[70%] flex flex-col gap-1">
+									<input
+										type="text"
+										id="content-main-title"
+										bind:value={Content.Header.MainTitle}
+										maxlength={contentLimits[pageView].mainTitle.max}
+										{disabled}
+										placeholder="Enter main title"
+										class="input-field"
+									/>
+									{#if true}
+										{@const status = getCharacterStatus(Content.Header.MainTitle, 'mainTitle')}
+										<span class="text-xs {status.isValid ? 'text-[var(--color-muted)]' : 'text-red-500'}">
+											{status.length} / {status.limits.max} characters (min: {status.limits.min})
+										</span>
+									{/if}
+								</div>
 							</div>
-							<div class="my-4 flex flex-col md:flex-row md:items-center">
+							<div class="my-4 flex flex-col md:flex-row md:items-start">
 								<label
 									for="content-subtitle"
 									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>Subtitle</label
 								>
-								<input
-									type="text"
-									id="content-subtitle"
-									bind:value={Content.Header.Subtitle}
-									{disabled}
-									placeholder="Enter subtitle"
-									class="input-field w-[70%]"
-								/>
+								<div class="w-[70%] flex flex-col gap-1">
+									<input
+										type="text"
+										id="content-subtitle"
+										bind:value={Content.Header.Subtitle}
+										maxlength={contentLimits[pageView].subtitle.max}
+										{disabled}
+										placeholder="Enter subtitle"
+										class="input-field"
+									/>
+									{#if true}
+										{@const status = getCharacterStatus(Content.Header.Subtitle, 'subtitle')}
+										<span class="text-xs {status.isValid ? 'text-[var(--color-muted)]' : 'text-red-500'}">
+											{status.length} / {status.limits.max} characters
+										</span>
+									{/if}
+								</div>
 							</div>
 						</div>
 					{/if}
@@ -1173,35 +1482,53 @@
 
 					{#if activeSection === 'introduction'}
 						<div class="space-y-4 p-6">
-							<div class="my-2 flex flex-col md:flex-row md:items-center">
+							<div class="my-2 flex flex-col md:flex-row md:items-start">
 								<label
 									for="content-intro-paragraph"
 									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>Introduction Paragraph <span class="text-red-700">*</span></label
 								>
-								<textarea
-									id="content-intro-paragraph"
-									rows="3"
-									bind:value={Content.Introduction.IntroParagraph}
-									{disabled}
-									placeholder="Enter introduction paragraph"
-									class="input-field w-[70%]"
-								></textarea>
+								<div class="w-[70%] flex flex-col gap-1">
+									<textarea
+										id="content-intro-paragraph"
+										rows="3"
+										bind:value={Content.Introduction.IntroParagraph}
+										maxlength={contentLimits[pageView].introParagraph.max}
+										{disabled}
+										placeholder="Enter introduction paragraph"
+										class="input-field"
+									></textarea>
+									{#if true}
+										{@const status = getCharacterStatus(Content.Introduction.IntroParagraph, 'introParagraph')}
+										<span class="text-xs {status.isValid ? 'text-[var(--color-muted)]' : 'text-red-500'}">
+											{status.length} / {status.limits.max} characters (min: {status.limits.min})
+										</span>
+									{/if}
+								</div>
 							</div>
-							<div class="my-4 flex flex-col md:flex-row md:items-center">
+							<div class="my-4 flex flex-col md:flex-row md:items-start">
 								<label
 									for="content-problem-statement"
 									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>Problem Statement</label
 								>
-								<textarea
-									id="content-problem-statement"
-									rows="3"
-									bind:value={Content.Introduction.ProblemStatement}
-									{disabled}
-									placeholder="Enter problem statement"
-									class="input-field w-[70%]"
-								></textarea>
+								<div class="w-[70%] flex flex-col gap-1">
+									<textarea
+										id="content-problem-statement"
+										rows="3"
+										bind:value={Content.Introduction.ProblemStatement}
+										maxlength={contentLimits[pageView].problemStatement.max}
+										{disabled}
+										placeholder="Enter problem statement"
+										class="input-field"
+									></textarea>
+									{#if true}
+										{@const status = getCharacterStatus(Content.Introduction.ProblemStatement, 'problemStatement')}
+										<span class="text-xs {status.isValid ? 'text-[var(--color-muted)]' : 'text-red-500'}">
+											{status.length} / {status.limits.max} characters
+										</span>
+									{/if}
+								</div>
 							</div>
 						</div>
 					{/if}
@@ -1244,68 +1571,76 @@
 
 					{#if activeSection === 'benefits'}
 						<div class="space-y-4 p-6">
-							<div class="my-2 flex flex-col md:flex-row md:items-center">
+							<div class=" flex flex-col md:flex-row md:items-start">
 								<label
 									for="content-benefits-title"
 									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>Benefits Title</label
 								>
-								<input
-									type="text"
-									id="content-benefits-title"
-									bind:value={Content.Benefits.Title}
-									{disabled}
-									placeholder="Key Benefits"
-									class="input-field w-[70%]"
-								/>
+								<div class="w-[70%] flex flex-col gap-1">
+									<input
+										type="text"
+										id="content-benefits-title"
+										bind:value={Content.Benefits.Title}
+										maxlength={contentLimits[pageView].benefitsTitle.max}
+										{disabled}
+										placeholder="Key Benefits"
+										class="input-field"
+									/>
+									{#if true}
+										{@const status = getCharacterStatus(Content.Benefits.Title, 'benefitsTitle')}
+										<span class="text-xs {status.isValid ? 'text-[var(--color-muted)]' : 'text-red-500'}">
+											{status.length} / {status.limits.max} characters
+										</span>
+									{/if}
+								</div>
+							</div>
+
+							<div class="my-4 flex items-center justify-between">
+								<h4 class="text-sm font-medium text-[var(--color-info)]">
+									Key Benefits
+								</h4>
+								<button
+									type="button"
+									onclick={addBenefit}
+									disabled={disabled || (Content.Benefits.Items ?? []).length >= contentLimits[pageView].maxBenefits}
+									class="table-btn variant-filled-secondary disabled:cursor-not-allowed disabled:opacity-50"
+								>
+									Add Benefit
+								</button>
 							</div>
 
 							<div class="space-y-4">
 								{#each (Content.Benefits.Items ?? []) as benefit, index}
-									<div
-										class="rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] p-4"
-									>
-										<div class="mb-4 flex items-center justify-between">
-											<h4 class="text-sm font-medium text-[var(--color-info)]">
-												Benefit #{index + 1}
-											</h4>
+									<div class="my-2 flex flex-col gap-1">
+										<div class="flex items-start gap-2">
+											<textarea
+												id="benefit-item-{index}"
+												rows="2"
+												bind:value={Content.Benefits.Items[index]}
+												maxlength={contentLimits[pageView].benefitItem.max}
+												{disabled}
+												placeholder="Enter benefit text"
+												class="input-field flex-1"
+											></textarea>
 											{#if !disabled}
 												<button
 													type="button"
 													onclick={() => removeBenefit(index)}
-													class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+													class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200 whitespace-nowrap"
 												>
 													<Icon icon="material-symbols:delete-outline" class="h-5" />
 												</button>
 											{/if}
 										</div>
-											<div class="my-2 flex flex-col md:flex-row md:items-center">
-												<label
-												for="benefit-item-{index}"
-													class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
-												>Benefit Text <span class="text-red-700">*</span></label
-												>
-												<textarea
-												id="benefit-item-{index}"
-													rows="3"
-												bind:value={Content.Benefits.Items[index]}
-													{disabled}
-												placeholder="Enter benefit text"
-													class="input-field w-[70%]"
-												></textarea>
-										</div>
+										{#if true}
+											{@const status = getCharacterStatus(Content.Benefits.Items[index], 'benefitItem')}
+											<span class="text-xs {status.isValid ? 'text-[var(--color-muted)]' : 'text-red-500'}">
+												{status.length} / {status.limits.max} characters (min: {status.limits.min})
+											</span>
+										{/if}
 									</div>
 								{/each}
-
-								<button
-									type="button"
-									onclick={addBenefit}
-									{disabled}
-									class="inline-flex min-w-[140px] items-center justify-center gap-1 rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-3 py-1.5 text-sm font-medium text-[var(--color-info)] hover:bg-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50"
-								>
-									<Icon icon="material-symbols:add" class="h-4 w-4" />
-									Add Benefit
-								</button>
 							</div>
 						</div>
 					{/if}
@@ -1328,7 +1663,7 @@
 						<div class="flex flex-1 items-center gap-2">
 							<Icon icon="material-symbols:phone-android-outline" class="hidden h-5 w-5 md:block" />
 							<div class="text-start">
-								<p class="text-md font-medium">User Interface</p>
+								<p class="text-md font-medium">Types of users</p>
 								<p class="text-sm">UI heading and paragraph text</p>
 							</div>
 						</div>
@@ -1348,35 +1683,53 @@
 
 					{#if activeSection === 'userInterface'}
 						<div class="space-y-4 p-6">
-							<div class="my-2 flex flex-col md:flex-row md:items-center">
+							<div class="my-2 flex flex-col md:flex-row md:items-start">
 								<label
 									for="content-ui-heading"
 									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>UI Heading <span class="text-red-700">*</span></label
 								>
-								<input
-									type="text"
-									id="content-ui-heading"
-									bind:value={Content.UserInterface.Heading}
-									{disabled}
-									placeholder="Who Can Benefit from This Program"
-									class="input-field w-[70%]"
-								/>
+								<div class="w-[70%] flex flex-col gap-1">
+									<input
+										type="text"
+										id="content-ui-heading"
+										bind:value={Content.UserInterface.Heading}
+										maxlength={contentLimits[pageView].uiHeading.max}
+										{disabled}
+										placeholder="Who Can Benefit from This Program"
+										class="input-field"
+									/>
+									{#if true}
+										{@const status = getCharacterStatus(Content.UserInterface.Heading, 'uiHeading')}
+										<span class="text-xs {status.isValid ? 'text-[var(--color-muted)]' : 'text-red-500'}">
+											{status.length} / {status.limits.max} characters (min: {status.limits.min})
+										</span>
+									{/if}
+								</div>
 							</div>
-							<div class="my-4 flex flex-col md:flex-row md:items-center">
+							<div class="my-4 flex flex-col md:flex-row md:items-start">
 								<label
 									for="content-ui-paragraph"
 									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>UI Paragraph</label
 								>
-								<textarea
-									id="content-ui-paragraph"
-									rows="3"
-									bind:value={Content.UserInterface.Paragraph}
-									{disabled}
-									placeholder="Enter user interface paragraph"
-									class="input-field w-[70%]"
-								></textarea>
+								<div class="w-[70%] flex flex-col gap-1">
+									<textarea
+										id="content-ui-paragraph"
+										rows="3"
+										bind:value={Content.UserInterface.Paragraph}
+										maxlength={contentLimits[pageView].uiParagraph.max}
+										{disabled}
+										placeholder="Enter user interface paragraph"
+										class="input-field"
+									></textarea>
+									{#if true}
+										{@const status = getCharacterStatus(Content.UserInterface.Paragraph, 'uiParagraph')}
+										<span class="text-xs {status.isValid ? 'text-[var(--color-muted)]' : 'text-red-500'}">
+											{status.length} / {status.limits.max} characters
+										</span>
+									{/if}
+								</div>
 							</div>
 						</div>
 					{/if}
@@ -1422,50 +1775,77 @@
 
 					{#if activeSection === 'footer'}
 						<div class="space-y-4 p-6">
-							<div class="my-2 flex flex-col md:flex-row md:items-center">
+							<div class="my-2 flex flex-col md:flex-row md:items-start">
 								<label
 									for="content-cta-heading"
 									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>CTA Heading</label
 								>
-								<input
-									type="text"
-									id="content-cta-heading"
-									bind:value={Content.Footer.CtaHeading}
-									{disabled}
-									placeholder="Get Started Today"
-									class="input-field w-[70%]"
-								/>
+								<div class="w-[70%] flex flex-col gap-1">
+									<input
+										type="text"
+										id="content-cta-heading"
+										bind:value={Content.Footer.CtaHeading}
+										maxlength={contentLimits[pageView].ctaHeading.max}
+										{disabled}
+										placeholder="Get Started Today"
+										class="input-field"
+									/>
+									{#if true}
+										{@const status = getCharacterStatus(Content.Footer.CtaHeading, 'ctaHeading')}
+										<span class="text-xs {status.isValid ? 'text-[var(--color-muted)]' : 'text-red-500'}">
+											{status.length} / {status.limits.max} characters
+										</span>
+									{/if}
+								</div>
 							</div>
-							<div class="my-4 flex flex-col md:flex-row md:items-center">
+							<div class="my-4 flex flex-col md:flex-row md:items-start">
 								<label
 									for="content-cta-description"
 									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>CTA Description</label
 								>
-								<textarea
-									id="content-cta-description"
-									rows="3"
-									bind:value={Content.Footer.CtaDescription}
-									{disabled}
-									placeholder="Enter CTA description"
-									class="input-field w-[70%]"
-								></textarea>
+								<div class="w-[70%] flex flex-col gap-1">
+									<textarea
+										id="content-cta-description"
+										rows="3"
+										bind:value={Content.Footer.CtaDescription}
+										maxlength={contentLimits[pageView].ctaDescription.max}
+										{disabled}
+										placeholder="Enter CTA description"
+										class="input-field"
+									></textarea>
+									{#if true}
+										{@const status = getCharacterStatus(Content.Footer.CtaDescription, 'ctaDescription')}
+										<span class="text-xs {status.isValid ? 'text-[var(--color-muted)]' : 'text-red-500'}">
+											{status.length} / {status.limits.max} characters
+										</span>
+									{/if}
+								</div>
 							</div>
-							<div class="my-4 flex flex-col md:flex-row md:items-center">
+							<div class="my-4 flex flex-col md:flex-row md:items-start">
 								<label
 									for="content-qr-instruction"
 									class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)] md:mb-0"
 									>QR Instruction</label
 								>
-								<input
-									type="text"
-									id="content-qr-instruction"
-									bind:value={Content.Footer.QrInstruction}
-									{disabled}
-									placeholder="Scan to get started"
-									class="input-field w-[70%]"
-								/>
+								<div class="w-[70%] flex flex-col gap-1">
+									<input
+										type="text"
+										id="content-qr-instruction"
+										bind:value={Content.Footer.QrInstruction}
+										maxlength={contentLimits[pageView].qrInstruction.max}
+										{disabled}
+										placeholder="Scan to get started"
+										class="input-field"
+									/>
+									{#if true}
+										{@const status = getCharacterStatus(Content.Footer.QrInstruction, 'qrInstruction')}
+										<span class="text-xs {status.isValid ? 'text-[var(--color-muted)]' : 'text-red-500'}">
+											{status.length} / {status.limits.max} characters
+										</span>
+									{/if}
+								</div>
 							</div>
 						</div>
 					{/if}
@@ -1514,8 +1894,17 @@
 									class="relative rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-sm"
 								>
 									<!-- Heading -->
-									<div class="mb-4">
-										<h4 class="text-base font-bold text-[var(--color-info)]">Title Image</h4>
+									<div class="mb-4 flex items-center justify-between">
+										<h4 class="text-base text-[var(--color-info)]">Title Image</h4>
+										{#if !disabled}
+											<button
+												type="button"
+												onclick={removeTitleImage}
+												class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+											>
+												<Icon icon="material-symbols:delete-outline" class="h-5" />
+											</button>
+										{/if}
 									</div>
 
 									<!-- Select File -->
@@ -1572,8 +1961,17 @@
 									class="relative rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-sm"
 								>
 									<!-- Heading -->
-									<div class="mb-4">
-										<h4 class="text-base font-bold text-[var(--color-info)]">User Interface Image</h4>
+									<div class="mb-4 flex items-center justify-between">
+										<h4 class="text-base text-[var(--color-info)]">Secondary Title image</h4>
+										{#if !disabled}
+											<button
+												type="button"
+												onclick={removeUserInterfaceImage}
+												class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+											>
+												<Icon icon="material-symbols:delete-outline" class="h-5" />
+											</button>
+										{/if}
 									</div>
 
 									<!-- Select File -->
@@ -1672,9 +2070,18 @@
 									class="relative rounded-lg border border-[var(--color-outline)] bg-[var(--color-primary)] p-4 shadow-sm"
 								>
 									<!-- Heading -->
-									<!-- <div class="mb-4">
-										<h4 class="text-base font-bold text-[var(--color-info)]">QR Code</h4>
-									</div> -->
+									<div class="mb-4 flex items-center justify-between">
+										<h4 class="text-base text-[var(--color-info)]">QR Code</h4>
+										{#if !disabled}
+											<button
+												type="button"
+												onclick={removeQRCode}
+												class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
+											>
+												<Icon icon="material-symbols:delete-outline" class="h-5" />
+											</button>
+										{/if}
+									</div>
 
 									<!-- Select File -->
 									<div class="mb-2">
@@ -1705,10 +2112,16 @@
 												value={qrCodeFileName || ''}
 												readonly
 												{disabled}
-												class="flex-1 border-0 bg-transparent px-3 py-2 text-sm text-[var(--color-info)] placeholder-[var(--color-muted)] focus:outline-none"
+												class="flex-1 border-0 bg-transparent px-3 py-2 text-sm text-[var(--color-info)] placeholder-[var(--color-muted)] focus:outline-none {errors.qrCode ? 'border-red-500' : ''}"
 												placeholder="No file selected..."
 											/>
 										</div>
+										{#if errors.qrCode}
+											<p class="mt-1 text-xs text-red-500">{errors.qrCode}</p>
+										{/if}
+										<p class="mt-1 text-xs text-[var(--color-muted)]">
+											QR code must be at least 200x200 pixels and a valid QR code image.
+										</p>
 									</div>
 
 									<!-- Preview -->

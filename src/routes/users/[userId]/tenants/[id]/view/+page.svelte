@@ -76,9 +76,9 @@
 			size="md"
 			text="Marketing Material"
 			variant="primary"
-			iconBefore="material-symbols:campaign-outline"
 			iconSize="md"
-		/>
+			/>
+			<!-- iconBefore="material-symbols:campaign-outline" -->
 		<Button href={settingsRoute} size="md" text="Setting" variant="primary" />
 		<Button
 			href={editRoute}

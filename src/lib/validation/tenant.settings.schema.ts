@@ -471,6 +471,7 @@ export const TenantSettingsMarketingDomainModelSchema = z.object({
     Images: TenantMarketingImagesSchema.nullable().optional(),
     Logos: TenantMarketingLogosSchema.optional(),
     PDFResourceId: z.string().nullable().optional(),
+    PageView: z.union([z.literal(1), z.literal(2)]).optional(),
 });
 
 // Legacy alias for backward compatibility

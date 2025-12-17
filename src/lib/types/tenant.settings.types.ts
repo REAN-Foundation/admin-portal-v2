@@ -411,6 +411,7 @@ export interface TenantSettingsMarketingDomainModel {
 	Images?: TenantMarketingImages | null;
 	Logos?: TenantMarketingLogos;
 	PDFResourceId?: string | null;
+	PageView?: 1 | 2;
 }
 
 export interface TenantSettingsMarketingDto extends TenantSettingsMarketingDomainModel {

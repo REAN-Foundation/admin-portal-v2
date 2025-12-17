@@ -200,6 +200,11 @@ export const createMarketingMaterialByTenantId = async (
 		}
 	}
 
+	// Add PageView if provided
+	if (settings.PageView !== undefined && (settings.PageView === 1 || settings.PageView === 2)) {
+		body.PageView = settings.PageView;
+	}
+
 	const url = BACKEND_API_URL + `/tenant-settings-marketing/${tenantId}`;
 	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 };
@@ -330,6 +335,11 @@ export const updateMarketingMaterialByTenantId = async (
 				body.QRCode = transformedQRcode;
 			}
 		}
+	}
+
+	// Add PageView if provided
+	if (settings.PageView !== undefined && (settings.PageView === 1 || settings.PageView === 2)) {
+		body.PageView = settings.PageView;
 	}
 
 	const url = BACKEND_API_URL + `/tenant-settings-marketing/${tenantId}`;
