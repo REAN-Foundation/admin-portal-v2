@@ -21,6 +21,7 @@
 	let version = $state('');
 	let keywords: string[] = $state([]);
 	let keywordsStr = $state('');
+
 	let metaDataInput = $state('');
 
 	let assessmentTemplates = data.assessmentTemplates ?? [];
@@ -60,14 +61,15 @@
 				return;
 			}
 
+			// Parse and validate metadata JSON
 			let metadata = undefined;
 			if (metaDataInput && metaDataInput.trim() !== '') {
 				try {
 					metadata = JSON.parse(metaDataInput);
-					if (!metadata.Type || !metadata.TemplateName) {
+					if (!metadata.Type) {
 						errors = {
 							...errors,
-							'Metadata': 'Metadata must include Type and TemplateName fields'
+							'Metadata': 'Metadata must include Type field'
 						};
 						return;
 					}
@@ -232,8 +234,9 @@
 						<textarea
 							bind:value={metaDataInput}
 							class="input {errors?.Metadata ? 'border-error-300' : 'border-primary-200'}"
-							placeholder="Enter Metadata JSON object..."
+							placeholder={`Example:\n{\n  "Type": "template",\n  "Channels": {\n    "WhatsApp": {\n      "TemplateName": "welcome_msg",\n      "TemplateLanguage": "en",\n      "FlowToken": "abc123"\n    }\n  }\n}`}
 							name="metaDataInput"
+							rows="8"
 						></textarea>
 						{#if errors?.Metadata}
 							<p class="error-text">{errors?.Metadata}</p>

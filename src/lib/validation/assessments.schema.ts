@@ -1,20 +1,12 @@
 import { z } from 'zod';
+import { NotificationChannel } from '$lib/types/notification.channel';
 
-const metaDataSchema = z.object({
-    Type: z
-        .string({
-            required_error: 'Type is required.',
-            invalid_type_error: 'Type must be a string.'
-        })
-        .min(1, { message: 'Type cannot be empty' })
-        .max(128, { message: 'Type must be at most 128 characters long.' }),
+const whatsAppConfigSchema = z.object({
     TemplateName: z
-        .string({
-            required_error: 'TemplateName is required.',
-            invalid_type_error: 'TemplateName must be a string.'
-        })
+        .string()
         .min(1, { message: 'TemplateName cannot be empty' })
-        .max(256, { message: 'TemplateName must be at most 256 characters long.' }),
+        .max(256, { message: 'TemplateName must be at most 256 characters long.' })
+        .optional(),
     TemplateLanguage: z
         .string()
         .max(64, { message: 'TemplateLanguage must be at most 64 characters long.' })
@@ -26,6 +18,31 @@ const metaDataSchema = z.object({
     FlowActionData: z
         .record(z.any())
         .optional()
+});
+
+const genericChannelConfigSchema = z.record(z.any());
+
+const metaDataSchema = z.object({
+    Type: z
+        .string({
+            required_error: 'Type is required.',
+            invalid_type_error: 'Type must be a string.'
+        })
+        .min(1, { message: 'Type cannot be empty' })
+        .max(128, { message: 'Type must be at most 128 characters long.' }),
+    Channels: z.object({
+        [NotificationChannel.WhatsApp]: whatsAppConfigSchema.optional(),
+        [NotificationChannel.Telegram]: genericChannelConfigSchema.optional(),
+        [NotificationChannel.Email]: genericChannelConfigSchema.optional(),
+        [NotificationChannel.SMS]: genericChannelConfigSchema.optional(),
+        [NotificationChannel.WebPush]: genericChannelConfigSchema.optional(),
+        [NotificationChannel.MobilePush]: genericChannelConfigSchema.optional(),
+        [NotificationChannel.Webhook]: genericChannelConfigSchema.optional(),
+        [NotificationChannel.Slack]: genericChannelConfigSchema.optional(),
+        [NotificationChannel.WhatsappWati]: genericChannelConfigSchema.optional(),
+        [NotificationChannel.WhatsappMeta]: genericChannelConfigSchema.optional()
+    })
+    .optional()
 });
 
 export const createOrUpdateSchema = z.object({
