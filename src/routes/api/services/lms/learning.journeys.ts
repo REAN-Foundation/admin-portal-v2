@@ -56,10 +56,12 @@ export const searchLearningJourneys = async (sessionId: string, searchParams?) =
 			searchString = '?';
 			const params = [];
 			for (const key of keys) {
-				if (searchParams[key]) {
-					const param = `${key}=${searchParams[key]}`;
-					params.push(param);
+				const value = searchParams[key];
+				if (value === undefined || value === null || value === '') {
+					continue;
 				}
+				const param = `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`;
+				params.push(param);
 			}
 			searchString += params.join('&');
 		}
