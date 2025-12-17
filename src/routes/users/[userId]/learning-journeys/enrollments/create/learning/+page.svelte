@@ -73,7 +73,10 @@
 			}
 		} catch (error) {
 			console.error('Learning enrollment creation failed:', error);
-			toastMessage();
+			toastMessage({
+				HttpCode: 500,
+				Message: 'Failed to create enrollment. Please try again.'
+			});
 		}
 	};
 </script>

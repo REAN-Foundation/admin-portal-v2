@@ -4,6 +4,7 @@
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import type { PaginationSettings } from '$lib/types/common.types';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
+	import Button from '$lib/components/button/button.svelte';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 	import type { PageServerData } from './$types';
 
@@ -23,6 +24,10 @@
 
 	const userId = page.params.userId;
 	const enrollmentsRoute = () => `/users/${userId}/learning-journeys/enrollments`;
+	const createCourseEnrollmentRoute = () =>
+		`/users/${userId}/learning-journeys/enrollments/create/course`;
+	const createLearningEnrollmentRoute = () =>
+		`/users/${userId}/learning-journeys/enrollments/create/learning`;
 
 	const breadCrumbs = [
 		{
@@ -150,37 +155,58 @@
 <div class="px-6 pb-8">
 	<div class="mx-auto">
 		<div class="table-container shadow">
-			<div class="mb-4 flex items-center justify-between gap-3 px-3 pt-3">
+			<div class="flex flex-wrap items-start justify-between gap-3 px-3 pt-3">
 				<div>
 					<div class="text-sm font-semibold text-gray-800">Tenant Active Enrollments</div>
 					{#if tenantName}
 						<div class="text-xs text-gray-500">{tenantName}</div>
 					{/if}
 				</div>
-				<div class="inline-flex gap-3">
-					<button
-						type="button"
-						class={`min-w-[140px] rounded-md border px-4 py-2 text-center text-sm font-semibold shadow ${
-							tenantActiveTab === 'courses'
-								? 'border-[#2ea3f2] bg-[#2ea3f2] text-white'
-								: 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-						}`}
-						onclick={() => switchTenantTab('courses')}
-					>
-						Courses ({tenantTotalCourseCount})
-					</button>
-					<button
-						type="button"
-						class={`min-w-[140px] rounded-md border px-4 py-2 text-center text-sm font-semibold shadow ${
-							tenantActiveTab === 'learning'
-								? 'border-[#2ea3f2] bg-[#2ea3f2] text-white'
-								: 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-						}`}
-						onclick={() => switchTenantTab('learning')}
-					>
-						Learning Journey ({tenantTotalLearningCount})
-					</button>
+				<div class="flex items-center justify-end">
+					{#if tenantActiveTab === 'courses'}
+						<Button
+							href={createCourseEnrollmentRoute()}
+							variant="primary"
+							size="sm"
+							iconBefore="material-symbols:add-rounded"
+							text="Add Course Enrollment"
+						/>
+					{:else}
+						<Button
+							href={createLearningEnrollmentRoute()}
+							variant="primary"
+							size="sm"
+							iconBefore="material-symbols:add-rounded"
+							text="Add Learning Enrollment"
+						/>
+					{/if}
 				</div>
+			</div>
+
+			<!-- Tabs (below header) -->
+			<div class="mb-4 mt-3 flex flex-wrap gap-3 px-3">
+				<button
+					type="button"
+					class={`min-w-[140px] rounded-md border px-4 py-2 text-center text-sm font-semibold shadow ${
+						tenantActiveTab === 'courses'
+							? 'border-[#2ea3f2] bg-[#2ea3f2] text-white'
+							: 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+					}`}
+					onclick={() => switchTenantTab('courses')}
+				>
+					Courses ({tenantTotalCourseCount})
+				</button>
+				<button
+					type="button"
+					class={`min-w-[140px] rounded-md border px-4 py-2 text-center text-sm font-semibold shadow ${
+						tenantActiveTab === 'learning'
+							? 'border-[#2ea3f2] bg-[#2ea3f2] text-white'
+							: 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+					}`}
+					onclick={() => switchTenantTab('learning')}
+				>
+					Learning Journey ({tenantTotalLearningCount})
+				</button>
 			</div>
 
 			<div class="overflow-x-auto">
