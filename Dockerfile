@@ -48,4 +48,4 @@ ENV BODY_SIZE_LIMIT=52428800
 
 RUN chmod +x /app/entrypoint.sh
 ENTRYPOINT ["/bin/bash", "-c", "/app/entrypoint.sh $ENVIRONMENT"]
-# CMD ["node", "build/index.js"]
+
