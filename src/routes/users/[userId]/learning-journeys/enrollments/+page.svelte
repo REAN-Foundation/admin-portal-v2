@@ -28,6 +28,22 @@
 		`/users/${userId}/learning-journeys/enrollments/create/course`;
 	const createLearningEnrollmentRoute = () =>
 		`/users/${userId}/learning-journeys/enrollments/create/learning`;
+	const learnerViewRoute = (learnerId: string) =>
+		`/users/${userId}/learning-journeys/enrollments/user/${learnerId}`;
+
+	const userDisplayName = (enrollment: any) => {
+		const person = enrollment?.User?.Person;
+		const personName =
+			person?.DisplayName || `${person?.FirstName ?? ''} ${person?.LastName ?? ''}`.trim();
+		return (
+			personName ||
+			enrollment?.User?.FullName ||
+			enrollment?.User?.Name ||
+			enrollment?.User?.Email ||
+			enrollment?.UserId ||
+			'Not specified'
+		);
+	};
 
 	const breadCrumbs = [
 		{
@@ -220,17 +236,19 @@
 							>
 							<th class="w-[15%]">Start Date</th>
 							<th class="w-[15%]">End Date</th>
+							<th class="w-[10%]"></th>
 						</tr>
 					</thead>
 					<tbody>
 						{#if tenantRetrievedEnrollments.length <= 0}
 							<tr class="text-center">
-								<td class="text-center" colspan="5"
+								<td class="text-center" colspan="6"
 									>{tenantIsLoading ? 'Loading...' : 'No records found'}</td
 								>
 							</tr>
 						{:else}
 							{#each tenantRetrievedEnrollments as enrollment, index}
+								{@const learnerId = enrollment.UserId || enrollment.User?.id || enrollment.User?.UserId}
 								<tr>
 									<td>{index + 1}</td>
 									<td>
@@ -241,11 +259,7 @@
 												enrollment.User?.Email ||
 												'Not specified'}
 										>
-											{enrollment.User?.FullName ||
-												enrollment.User?.Name ||
-												enrollment.User?.Email ||
-												enrollment.UserId ||
-												'Not specified'}
+											{userDisplayName(enrollment)}
 										</Tooltip>
 									</td>
 									<td role="gridcell" aria-colindex={3} tabindex="0">
@@ -267,6 +281,17 @@
 											enrollment.ExpectedEndDate || enrollment.EndDate,
 											LocaleIdentifier.EN_US
 										)}
+									</td>
+									<td class="text-right">
+										{#if learnerId}
+											<Button
+												href={learnerViewRoute(learnerId)}
+												variant="icon"
+												icon="icon-park-outline:preview-open"
+												iconSize="sm"
+												tooltip="View learner progress"
+											/>
+										{/if}
 									</td>
 								</tr>
 							{/each}

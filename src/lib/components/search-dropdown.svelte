@@ -19,6 +19,8 @@
 	let isOpen = $state(false);
 	let isLoading = $state(false);
 	let debounceTimeout: NodeJS.Timeout;
+	let dropdownContainer: HTMLDivElement;
+	let isClickingInside = $state(false);
 
 	const handleSearch = async (term: string) => {
 		if (!term.trim()) {
@@ -39,10 +41,29 @@
 				headers: { 'content-type': 'application/json' }
 			});
 
+			// if (!response.ok) {
+			// 	const text = await response.text();
+			// 	console.error(`Search request failed: ${response.status}`, text);
+			// 	searchResults = [];
+			// 	return;
+			// }
+
+			// const contentType = response.headers.get('content-type') ?? '';
+			// if (!contentType.includes('application/json')) {
+			// 	const text = await response.text();
+			// 	console.error('Search failed: non-JSON response received', text);
+			// 	searchResults = [];
+			// 	return;
+			// }
+
 			const result = await response.json();
 			
 			if (result.Data && result.Data.Items) {
 				searchResults = result.Data.Items;
+			} else if (result.Data?.CourseRecords?.Items) {
+				searchResults = result.Data.CourseRecords.Items;
+			} else if (result.Data?.LearningPathRecords?.Items) {
+				searchResults = result.Data.LearningPathRecords.Items;
 			} else if (result.Data && result.Data.Patients && result.Data.Patients.Items) {
 				searchResults = result.Data.Patients.Items;
 			} else if (result.Data && result.Data.Careplans && result.Data.Careplans.Items) {
@@ -81,6 +102,7 @@
 		searchTerm = item[displayField];
 		isOpen = false;
 		searchResults = [];
+		isClickingInside = false;
 		
 		if (onSelect) {
 			onSelect(item);
@@ -95,10 +117,17 @@
 	};
 
 	const handleBlur = () => {
-		// Delay closing to allow for click events
+		// Delay closing to allow for click events, but only if not clicking inside dropdown
 		setTimeout(() => {
-			isOpen = false;
+			if (!isClickingInside) {
+				isOpen = false;
+			}
+			isClickingInside = false;
 		}, 200);
+	};
+
+	const handleDropdownMouseDown = () => {
+		isClickingInside = true;
 	};
 
 	const clearSelection = () => {
@@ -140,9 +169,12 @@
 		{/if}
 	</div>
 
-	{console.log('Dropdown debug:', { isOpen, searchResultsLength: searchResults.length, isLoading, searchTerm: searchTerm.trim() })}
 	{#if isOpen && (searchResults.length > 0 || isLoading || (searchTerm.trim() && !isLoading))}
-		<div class="absolute z-50 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg">
+		<div 
+			bind:this={dropdownContainer}
+			class="absolute z-50 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg"
+			onmousedown={handleDropdownMouseDown}
+		>
 			{#if isLoading}
 				<div class="p-4 text-center text-gray-500">
 					<Icon icon="mdi:loading" class="h-5 w-5 animate-spin mx-auto" />
@@ -154,7 +186,10 @@
 						<li>
 							<button
 								type="button"
-								onclick={() => handleSelect(item)}
+								onmousedown={(e) => {
+									e.preventDefault();
+									handleSelect(item);
+								}}
 								class="block w-full px-4 py-2 text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
 							>
 								{item[displayField] || 'No display value'}

@@ -264,8 +264,7 @@
 					<td class="table-data">
 						<input
 							type="number"
-							step="0.01"
-							min="0"
+							step="1"
 							class="input {errors?.DurationInDays ? 'input-text-error' : ''}"
 							name="durationInDays"
 							placeholder="Enter duration in days..."
