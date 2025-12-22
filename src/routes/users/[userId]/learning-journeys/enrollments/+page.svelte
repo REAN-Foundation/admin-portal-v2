@@ -31,6 +31,20 @@
 	const learnerViewRoute = (learnerId: string) =>
 		`/users/${userId}/learning-journeys/enrollments/user/${learnerId}`;
 
+	const userDisplayName = (enrollment: any) => {
+		const person = enrollment?.User?.Person;
+		const personName =
+			person?.DisplayName || `${person?.FirstName ?? ''} ${person?.LastName ?? ''}`.trim();
+		return (
+			personName ||
+			enrollment?.User?.FullName ||
+			enrollment?.User?.Name ||
+			enrollment?.User?.Email ||
+			enrollment?.UserId ||
+			'Not specified'
+		);
+	};
+
 	const breadCrumbs = [
 		{
 			name: 'Enrollments',
@@ -245,11 +259,7 @@
 												enrollment.User?.Email ||
 												'Not specified'}
 										>
-											{enrollment.User?.FullName ||
-												enrollment.User?.Name ||
-												enrollment.User?.Email ||
-												enrollment.UserId ||
-												'Not specified'}
+											{userDisplayName(enrollment)}
 										</Tooltip>
 									</td>
 									<td role="gridcell" aria-colindex={3} tabindex="0">

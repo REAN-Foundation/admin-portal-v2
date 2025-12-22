@@ -51,7 +51,8 @@ export const GET = async (event: RequestEvent) => {
 				userIds.map(async (id: string) => {
 					try {
 						const u = await getUserById(sessionId, id);
-						userMap.set(id, u?.Data ?? u);
+						// getUserById() returns { Data: { user: ... } } in this codebase.
+						userMap.set(id, u?.Data?.user ?? u?.Data ?? u);
 					} catch {
 						// ignore individual failures
 					}
@@ -62,14 +63,18 @@ export const GET = async (event: RequestEvent) => {
 				const id = enrollment?.UserId ?? enrollment?.User?.id ?? enrollment?.User?.UserId;
 				const u = id ? userMap.get(id) : null;
 				if (!u) return enrollment;
-				const firstName = u?.FirstName ?? u?.firstName ?? '';
-				const lastName = u?.LastName ?? u?.lastName ?? '';
-				const fullName = `${firstName} ${lastName}`.trim();
+				const firstName = u?.FirstName ?? u?.firstName ?? u?.Person?.FirstName ?? '';
+				const lastName = u?.LastName ?? u?.lastName ?? u?.Person?.LastName ?? '';
+				const fullName =
+					u?.Person?.DisplayName ??
+					u?.Person?.FullName ??
+					`${firstName} ${lastName}`.trim();
 				enrollment.User = {
 					...(enrollment.User ?? {}),
 					id,
 					FirstName: firstName,
 					LastName: lastName,
+					Person: u?.Person ?? enrollment?.User?.Person,
 					FullName: fullName || enrollment?.User?.FullName || enrollment?.User?.Name || enrollment?.User?.Email
 				};
 				return enrollment;
