@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { BACKEND_API_URL } from '$env/static/private';
-import { getMarketingMaterialByTenantId } from '../../../../../api/services/reancare/tenant-settings';
+import { getMarketingMaterial } from '../../../../../api/services/reancare/tenant-settings';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const sessionId = locals?.sessionUser?.sessionId;
@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const userId = params.userId;
 
 	try {
-		const marketingMaterial = await getMarketingMaterialByTenantId(sessionId, tenantId);
+		const marketingMaterial = await getMarketingMaterial(sessionId, tenantId);
 
 		if (marketingMaterial.Status === 'failure' || marketingMaterial.HttpCode !== 200) {
 			throw error(marketingMaterial.HttpCode, marketingMaterial.Message);

@@ -68,12 +68,12 @@ export const deleteTenantSettings = async (sessionId: string, tenantId: string, 
 	return await del(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
 };
 
-export const getMarketingMaterialByTenantId = async (sessionId: string, tenantId: string) => {
+export const getMarketingMaterial = async (sessionId: string, tenantId: string) => {
 	const url = BACKEND_API_URL + `/tenant-settings-marketing/${tenantId}`;
 	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
 };
 
-export const createMarketingMaterialByTenantId = async (
+export const createMarketingMaterial = async (
 	sessionId: string,
 	tenantId: string,
 	settings: TenantSettingsMarketingDomainModel
@@ -83,7 +83,7 @@ export const createMarketingMaterialByTenantId = async (
 	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 };
 
-export const updateMarketingMaterialByTenantId = async (
+export const updateMarketingMaterial = async (
 	sessionId: string,
 	tenantId: string,
 	settings: TenantSettingsMarketingDomainModel
@@ -93,7 +93,7 @@ export const updateMarketingMaterialByTenantId = async (
 	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 };
 
-export const downloadMarketingMaterialByTenantId = async (sessionId: string, tenantId: string) => {
+export const downloadMarketingMaterial = async (sessionId: string, tenantId: string) => {
 	const url = BACKEND_API_URL + `/tenant-settings-marketing/${tenantId}/download`;
 	const session = await SessionManager.getSession(sessionId);
 	const accessToken = session.accessToken;

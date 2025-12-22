@@ -4,9 +4,9 @@ import { MarketingMaterialRequestSchema } from '$lib/validation/tenant.settings.
 import type { RequestEvent } from '@sveltejs/kit';
 import type { MarketingMaterialCreateModel, MarketingMaterialUpdateModel } from '$lib/types/tenant.settings.types';
 import {
-	createMarketingMaterialByTenantId,
-	getMarketingMaterialByTenantId,
-	updateMarketingMaterialByTenantId
+	createMarketingMaterial,
+	getMarketingMaterial,
+	updateMarketingMaterial
 } from '../../../../../services/reancare/tenant-settings';
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,7 +28,7 @@ export const GET = async (event: RequestEvent) => {
 
 		const tenantId = event.params.id;
 
-		const response = await getMarketingMaterialByTenantId(sessionId, tenantId);
+		const response = await getMarketingMaterial(sessionId, tenantId);
 
 		return ResponseHandler.success(response);
 	} catch (error) {
@@ -71,7 +71,7 @@ export const POST = async (event: RequestEvent) => {
 			});
 		}
 
-		const response = await createMarketingMaterialByTenantId(sessionId, tenantId, data);
+		const response = await createMarketingMaterial(sessionId, tenantId, data);
 
 		return ResponseHandler.success(response);
 	} catch (error) {
@@ -114,7 +114,7 @@ export const PUT = async (event: RequestEvent) => {
 			});
 		}
 
-		const response = await updateMarketingMaterialByTenantId(sessionId, tenantId, data);
+		const response = await updateMarketingMaterial(sessionId, tenantId, data);
 
 		return ResponseHandler.success(response);
 	} catch (error) {

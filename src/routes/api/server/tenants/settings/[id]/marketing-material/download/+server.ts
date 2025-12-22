@@ -1,7 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { ResponseHandler } from '$lib/utils/response.handler';
 import { uuidSchema } from '$lib/validation/common.schema';
-import { downloadMarketingMaterialByTenantId } from '../../../../../../services/reancare/tenant-settings';
+import { downloadMarketingMaterial } from '../../../../../../services/reancare/tenant-settings';
 
 //////////////////////////////////////////////////////////////
 
@@ -22,7 +22,7 @@ export const GET = async (event: RequestEvent) => {
 
 		const tenantId = event.params.id;
 
-		const response = await downloadMarketingMaterialByTenantId(sessionId, tenantId);
+		const response = await downloadMarketingMaterial(sessionId, tenantId);
 
 		if (response.success && response.Data) {
 			const buffer = Buffer.from(response.Data.Buffer);
