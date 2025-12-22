@@ -4,6 +4,7 @@
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import type { CustomSettings, CustomSetting } from '$lib/types/tenant.settings.types.js';
 	import { CustomSettingDataType } from '$lib/types/tenant.settings.types.js';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -294,20 +295,22 @@
 			</div>
 
 			<div class="flex flex-col space-y-4 px-5 py-4">
-				{#if isEditing}
+				{#if isEditing && !showAddForm}
 					<div class="my-4 flex flex-col md:flex-row md:items-center">
 						<div class="w-[30%]"></div>
 						<div class="flex w-[70%] justify-end">
-							<button
+							<Button
 								type="button"
-								class="health-system-btn variant-filled-secondary"
-								onclick={() => (showAddForm = !showAddForm)}
-							>
-								{showAddForm ? 'Cancel Add' : 'Add Setting +'}
-							</button>
+								variant="primary"
+								size="md"
+								text="Add Setting"
+								onclick={() => (showAddForm = true)}
+							/>
 						</div>
 					</div>
+				{/if}
 
+				{#if isEditing}
 					{#if showAddForm}
 						<div class="space-y-4 border border-[var(--color-outline)] rounded-lg p-4">
 							<div class="my-4 flex flex-col md:flex-row md:items-center">
@@ -397,23 +400,23 @@
 							<div class="my-4 flex flex-col md:flex-row md:items-center">
 								<div class="w-[30%]"></div>
 								<div class="flex w-[70%] justify-end gap-2">
-									<button
+									<Button
 										type="button"
-										class="health-system-btn variant-filled-secondary"
+										variant="primary"
+										size="md"
+										text="Cancel"
 										onclick={() => {
 											showAddForm = false;
 											resetNewSettingForm();
 										}}
-									>
-										Cancel
-									</button>
-									<button
+									/>
+									<Button
 										type="button"
-										class="health-system-btn variant-filled-primary"
+										variant="primary"
+										size="md"
+										text="Add Setting"
 										onclick={handleAddSetting}
-									>
-										Add Setting
-									</button>
+									/>
 								</div>
 							</div>
 						</div>
@@ -515,13 +518,9 @@
 			<hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
 			<div class="button-container my-4">
 				{#await promise}
-					<button type="submit" class="table-btn variant-soft-secondary" disabled>
-						Submitting
-					</button>
+					<Button type="submit" variant="primary" size="md" text="Submitting" disabled />
 				{:then data}
-					<button type="submit" class="table-btn variant-soft-secondary" disabled={!isEditing}>
-						Submit
-					</button>
+					<Button type="submit" variant="primary" size="md" text="Submit" disabled={!isEditing} />
 				{/await}
 			</div>
 		</form>

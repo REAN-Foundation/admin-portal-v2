@@ -361,7 +361,7 @@
 		},
 		BasicCarePlan: {
 			Name: 'Basic Care Plan',
-			IconPath: 'mdi:medical-bag-outline',
+			IconPath: 'mdi:clipboard-text-outline',
 			Description: 'Enable basic care plan functionality.'
 		},
 		Timezone: {

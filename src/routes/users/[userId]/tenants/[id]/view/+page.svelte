@@ -13,6 +13,7 @@
 	const editRoute = `/users/${userId}/tenants/${tenantId}/edit`;
 	const viewRoute = `/users/${userId}/tenants/${tenantId}/view`;
 	const tenantRoute = `/users/${userId}/tenants`;
+	const marketingMaterialRoute = `/users/${userId}/tenants/${tenantId}/marketing-material`;
 	const settingsRoute = `/users/${userId}/tenants/${tenantId}/settings`;
 
 	console.log('settingsRoute', page.params);
@@ -70,6 +71,14 @@
 		</tbody>
 	</table>
 	<div class="btn-container mb-2">
+		<Button
+			href={marketingMaterialRoute}
+			size="md"
+			text="Marketing Material"
+			variant="primary"
+			iconSize="md"
+			/>
+			<!-- iconBefore="material-symbols:campaign-outline" -->
 		<Button href={settingsRoute} size="md" text="Setting" variant="primary" />
 		<Button
 			href={editRoute}

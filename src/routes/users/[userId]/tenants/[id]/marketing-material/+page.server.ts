@@ -1,0 +1,99 @@
+import type { PageServerLoad } from './$types';
+import { error } from '@sveltejs/kit';
+import { BACKEND_API_URL } from '$env/static/private';
+import { getMarketingMaterial } from '../../../../../api/services/reancare/tenant-settings';
+
+export const load: PageServerLoad = async ({ params, locals }) => {
+	const sessionId = locals?.sessionUser?.sessionId;
+	if (!sessionId) {
+		throw error(401, 'Access denied: Invalid session');
+	}
+
+	const tenantId = params.id;
+	const userId = params.userId;
+
+	try {
+		const marketingMaterial = await getMarketingMaterial(sessionId, tenantId);
+
+		if (marketingMaterial.Status === 'failure' || marketingMaterial.HttpCode !== 200) {
+			throw error(marketingMaterial.HttpCode, marketingMaterial.Message);
+		}
+
+		const tenantMarketingSettings = marketingMaterial.Data?.TenantMarketingSettings;
+
+		// Check if data is empty/null
+		const isEmpty =
+			!tenantMarketingSettings ||
+			tenantMarketingSettings === null ||
+			(Object.keys(tenantMarketingSettings).length === 0 &&
+				!tenantMarketingSettings.Styling &&
+				!tenantMarketingSettings.Content);
+
+		// Add image URLs for all images and logos (similar to symptom view page)
+		if (tenantMarketingSettings) {
+			// Normalize Images object to PascalCase for frontend
+			if (tenantMarketingSettings.Images) {
+				const images = tenantMarketingSettings.Images as any;
+				tenantMarketingSettings.Images = {
+					TitleImage: images.TitleImage || images.titleImage || '',
+					UserInterfaceImage: images.UserInterfaceImage || images.userInterfaceImage || ''
+				};
+			}
+
+			// Title Image URL
+			if (tenantMarketingSettings.Images?.TitleImage) {
+				tenantMarketingSettings.Images.TitleImageUrl =
+					BACKEND_API_URL +
+					`/file-resources/${tenantMarketingSettings.Images.TitleImage}/download?disposition=inline`;
+			} else {
+				tenantMarketingSettings.Images = tenantMarketingSettings.Images || {};
+				tenantMarketingSettings.Images.TitleImageUrl = null;
+			}
+
+			// User Interface Image URL
+			if (tenantMarketingSettings.Images?.UserInterfaceImage) {
+				tenantMarketingSettings.Images.UserInterfaceImageUrl =
+					BACKEND_API_URL +
+					`/file-resources/${tenantMarketingSettings.Images.UserInterfaceImage}/download?disposition=inline`;
+			} else {
+				tenantMarketingSettings.Images = tenantMarketingSettings.Images || {};
+				tenantMarketingSettings.Images.UserInterfaceImageUrl = null;
+			}
+
+			// Logo URLs (array of URLs for each logo)
+			if (tenantMarketingSettings.Logos && Array.isArray(tenantMarketingSettings.Logos)) {
+				tenantMarketingSettings.LogoUrls = tenantMarketingSettings.Logos.map((logoId: string) => {
+					if (logoId) {
+						return BACKEND_API_URL + `/file-resources/${logoId}/download?disposition=inline`;
+					}
+					return null;
+				});
+			} else {
+				tenantMarketingSettings.LogoUrls = [null, null, null];
+			}
+			// QR Code Image URL
+			const qrCodeData = tenantMarketingSettings.QRCode || tenantMarketingSettings.QRcode;
+			if (qrCodeData?.ResourceId) {
+				if (!tenantMarketingSettings.QRCode) {
+					tenantMarketingSettings.QRCode = {};
+				}
+				tenantMarketingSettings.QRCode.imageUrl =
+					BACKEND_API_URL + `/file-resources/${qrCodeData.ResourceId}/download?disposition=inline`;
+				tenantMarketingSettings.QRCode.ResourceId = qrCodeData.ResourceId;
+			} else {
+				tenantMarketingSettings.QRCode = tenantMarketingSettings.QRCode || {};
+				tenantMarketingSettings.QRCode.imageUrl = null;
+			}
+		}
+
+		return {
+			marketingMaterial: tenantMarketingSettings || null,
+			isEmpty,
+			userId,
+			tenantId
+		};
+	} catch (err) {
+		console.error('Error loading marketing material:', err);
+		throw error(500, 'Failed to load marketing material');
+	}
+};
