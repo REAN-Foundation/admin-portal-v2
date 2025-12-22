@@ -154,9 +154,12 @@
 			</tbody>
 		</table>
 
-		<div class="form-actions">
-			<Button type="submit" text="Create Enrollment" variant="primary" />
-			<a href={enrollmentsRoute} class="secondary-btn"></a>
+		<div class="btn-container">
+			{#await promise}
+				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+			{:then data}
+				<Button type="submit" text="Submit" variant="primary" />
+			{/await}
 		</div>
 	</form>
 </div>
