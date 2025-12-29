@@ -35,11 +35,11 @@
 	let tags_ = data.assessmentTemplate.Tags;
 	let tags = tags_.join(', ');
 	let rawData = $state(
-		typeof data.assessmentTemplate.RawData === 'string'
+		typeof data.assessmentTemplate.RawData === 'string' && data.assessmentTemplate.RawData.trim() !== ''
 			? data.assessmentTemplate.RawData
-			: data.assessmentTemplate.RawData
+			: data.assessmentTemplate.RawData && typeof data.assessmentTemplate.RawData === 'object'
 				? JSON.stringify(data.assessmentTemplate.RawData, null, 2)
-				: "Not Specified"
+				: 'Not Specified'
 	);
 
 	$effect(() => {
