@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
+	import Button from '$lib/components/button/button.svelte';
 
 	let { open = true, onclose, tenantId, tenantCode } = $props();
 
@@ -23,6 +24,7 @@
 	let showEditor = $state(false);
 	let hasSecrets = $state(false);
 	let isCheckingSecrets = $state(false);
+	let preservedDataBaseName = $state<string | null>(null);
 
 	function handleJSONInput(event: Event) {
 		const value = (event.target as HTMLTextAreaElement).value;
@@ -55,10 +57,16 @@
 
 		isPublishing = true;
 		try {
+			// Parse the JSON and restore the preserved DataBaseName
+			const secretData = JSON.parse(jsonInput);
+			if (preservedDataBaseName) {
+				secretData.DataBaseName = preservedDataBaseName;
+			}
+
 			const res = await fetch(`/api/server/tenants/${tenantId}/secret`, {
 				method: 'PUT',
 				headers: { 'content-type': 'application/json' },
-				body: jsonInput
+				body: JSON.stringify(secretData)
 			});
 			const response = await res.json();
 			console.log('This is response', response);
@@ -77,7 +85,32 @@
 	}
 
 	function handleEditMode() {
+		if (preservedDataBaseName && viewEditMode === 'view') {
+			try {
+				const currentData = JSON.parse(jsonInput);
+				const { DataBaseName, ...editableData } = currentData;
+				jsonInput = JSON.stringify(editableData, null, 2);
+			} catch (err) {
+				// If parsing fails, keep current value
+			}
+		}
 		viewEditMode = 'edit';
+	}
+
+	function handleViewMode() {
+		if (preservedDataBaseName && viewEditMode === 'edit') {
+			try {
+				const currentData = JSON.parse(jsonInput);
+				const viewData = {
+					...currentData,
+					DataBaseName: preservedDataBaseName
+				};
+				jsonInput = JSON.stringify(viewData, null, 2);
+			} catch (err) {
+				// If parsing fails, keep current value
+			}
+		}
+		viewEditMode = 'view';
 	}
 
 	async function checkExistingSecrets() {
@@ -91,7 +124,16 @@
 			console.log('This is check', response);
 			if (response.HttpCode === 200 && response.Data) {
 				hasSecrets = true;
-				jsonInput = JSON.stringify(response.Data, null, 2);
+
+				// Preserve DataBaseName
+				const secretData = response.Data;
+				if (secretData.DataBaseName) {
+					preservedDataBaseName = secretData.DataBaseName;
+				}
+
+				// In view mode, show all data including DataBaseName
+				jsonInput = JSON.stringify(secretData, null, 2);
+
 				showEditor = true;
 				viewEditMode = 'view';
 			} else {
@@ -140,24 +182,34 @@
 			}
 
 			// Then, create secrets
+			const databaseName =  schemaResult?.data.Data.SchemaName
+			preservedDataBaseName = databaseName;
+
 			const res = await fetch(`/api/server/tenants/${tenantId}/secret`, {
 				method: 'POST',
 				headers: { 'content-type': 'application/json' },
-				body: JSON.stringify({})
+				body: JSON.stringify({
+					DataBaseName: databaseName
+				})
 			});
 			const response = await res.json();
 			if (response.HttpCode === 200 || response.HttpCode === 201) {
 				hasSecrets = true;
 				showEditor = true;
 				viewEditMode = 'view';
+
+				// In view mode, show all data including DataBaseName
+				let secretData;
 				if (response.Data) {
-					jsonInput = JSON.stringify(response.Data, null, 2);
+					secretData = response.Data;
 				} else if (response.secret) {
-					jsonInput =
-						typeof response.secret === 'string'
-							? response.secret
-							: JSON.stringify(response.secret, null, 2);
+					secretData = typeof response.secret === 'string' ? JSON.parse(response.secret) : response.secret;
 				}
+
+				if (secretData) {
+					jsonInput = JSON.stringify(secretData, null, 2);
+				}
+
 				toastMessage(response);
 			} else {
 				toastMessage(response);
@@ -201,31 +253,37 @@
 				</div>
 			{:else if !hasSecrets}
 				<div>
-					<button
-						class="variant-filled-secondary w-fit self-start rounded px-4 py-2 text-[var(--color-info)] shadow"
+					<Button
+						variant="primary"
+						size="md"
+						text={isPublishing ? 'Creating...' : 'Generate configuration file'}
 						onclick={createSecrets}
 						disabled={isPublishing}
-					>
-						{isPublishing ? 'Creating...' : 'Generate configuration file'}
-					</button>
+					/>
 				</div>
 			{:else}
 				<!-- Edit UI - Show directly if secrets exist -->
 				<div class="flex flex-1 flex-col gap-4">
 					<div class="mb-2 flex gap-2">
-						<button
-							class="variant-filled-secondary 0 rounded border px-4 py-1 text-[var(--color-info)] disabled:opacity-60"
-							disabled={isFetchingSecret || viewEditMode === 'view'}
-						>
-							{isFetchingSecret ? 'Loading...' : 'View'}
-						</button>
-						<button
-							class="variant-filled-secondary rounded border px-4 py-1 text-[var(--color-info)] disabled:opacity-60"
+						<Button
+							variant="primary"
+							size="sm"
+							text={isFetchingSecret ? 'Loading...' : 'View'}
+							onclick={handleViewMode}
+							disabled={isFetchingSecret}
+							className={viewEditMode === 'view'
+								? 'pointer-events-none'
+								: 'opacity-60!'}
+						/>
+						<Button
+							variant="primary"
+							size="sm"
+							text="Edit"
 							onclick={handleEditMode}
-							disabled={viewEditMode === 'edit'}
-						>
-							Edit
-						</button>
+							className={viewEditMode === 'edit'
+								? 'pointer-events-none'
+								: 'opacity-60!'}
+						/>
 					</div>
 					<!-- JSON Box -->
 					<div class="relative flex-1 rounded border border-[var(--color-info)]">
@@ -241,13 +299,14 @@
 							<p class="text-error mt-1 text-red-600">Invalid JSON format</p>
 						{/if}
 					</div>
-					<button
-						class="variant-filled-secondary mt-2 w-64 self-end rounded px-4 py-2 text-[var(--color-info)] shadow"
+					<Button
+						variant="primary"
+						size="md"
+						text={isPublishing ? 'Publishing...' : 'Publish'}
 						onclick={publish}
-						disabled={isPublishing}
-					>
-						{isPublishing ? 'Publishing...' : 'Publish'}
-					</button>
+						disabled={isPublishing || viewEditMode === 'view'}
+						className="mt-2 w-64 self-end"
+					/>
 				</div>
 			{/if}
 		</div>
