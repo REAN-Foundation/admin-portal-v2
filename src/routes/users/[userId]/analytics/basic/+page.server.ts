@@ -98,6 +98,8 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
         yearWiseAddictionDistributionDetails,
         deviceDetailsByYears,
         years,
+        tenantCode: event.locals.sessionUser.tenantCode,
+        tenantName: event.locals.sessionUser.tenantName,
         title: 'Dashboard-Home-Combined'
     };
 };
