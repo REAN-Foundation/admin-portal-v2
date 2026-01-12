@@ -383,6 +383,18 @@ export const ConsentMessageSchema = z.object({
         )
 });
 
+export const WelcomeMessageSchema = z.object({
+    LanguageCode: z.string().min(1, 'Language is required'),
+    Content: z.string().min(1, 'Content is required'),
+    URL: z.string()
+        .trim()
+        .optional()
+        .refine(
+            val => !val || val.length === 0 || /^https?:\/\/.+/.test(val),
+            { message: 'Invalid URL format' }
+        )
+});
+
 export const ConsentSettingsSchema = z.object({
     TenantId: z.string().optional(),
     TenantName: z.string().optional(),
