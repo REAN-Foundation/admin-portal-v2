@@ -31,8 +31,6 @@ export const ClickUpEventTypeSchema = z.enum([
 
 export const ClickUpConfigSchema = z.object({
 	Enabled: z.boolean().optional().default(true),
-	AuthToken: z.string().optional(), // Comes from authentication record or environment variable
-	TeamId: z.string().optional(), // Comes from authentication record or environment variable
 	ClickupAuthentication: z.string().optional(), // Authentication record ID
 	ClickupListId: z
 		.string({
@@ -42,11 +40,13 @@ export const ClickUpConfigSchema = z.object({
 	ClickupIssuesListId: z
 		.string()
 		.regex(/^\d+$/, 'Issues List ID must be numeric')
-		.optional(),
+		.optional()
+		.or(z.literal('')),
 	ClickupCaseListId: z
 		.string()
 		.regex(/^\d+$/, 'Case List ID must be numeric')
-		.optional(),
+		.optional()
+		.or(z.literal('')),
 	WebhookClickupClientUrlToken: z
 		.string({
 			required_error: 'Webhook Client URL Token is required'

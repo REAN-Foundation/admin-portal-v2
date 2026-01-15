@@ -85,7 +85,7 @@ export const DELETE = async (event: RequestEvent) => {
 
 		// Delete from ClickUp
 		try {
-			await deleteClickUpWebhook(config.AuthToken, webhookId);
+			await deleteClickUpWebhook(config.ClickupAuthentication, webhookId);
 		} catch (err: any) {
 			console.error('Failed to delete webhook from ClickUp:', err);
 			// Continue to update config even if ClickUp deletion fails

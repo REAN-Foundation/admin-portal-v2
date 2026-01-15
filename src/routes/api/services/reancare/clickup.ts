@@ -201,11 +201,10 @@ export const findWebhookByListId = async (
 	try {
 		const webhooksList = await getAllClickUpWebhooks(authToken, teamId);
 
-		// Ensure webhooks array exists
 		const webhooks = webhooksList?.webhooks || [];
 
 		const webhook = webhooks.find(
-			(wh) => wh?.webhook?.list_id && String(wh.webhook.list_id) === String(listId)
+			(wh) => wh?.list_id && (wh.list_id) === Number(listId)
 		);
 
 		return webhook || null;
@@ -225,23 +224,15 @@ export const getWebhookStatus = async (
 	const statuses: WebhookStatus[] = [];
 
 	try {
-		console.log('authToken',authToken)
+
 		const webhooksList = await getAllClickUpWebhooks(authToken, teamId);
 
-		console.log("webhooksList", webhooksList);
-
-		// Ensure webhooks array exists
 		const webhooks = webhooksList?.webhooks || [];
 
-		console.log("webhooks====", webhooks);
-		
-	    console.log("primaryListId====", primaryListId);
-		// Check primary list
 		if (primaryListId) {
 				const webhook = webhooks.find(
 					(wh) => wh?.list_id && (wh.list_id) === Number(primaryListId)
 				);
-				console.log("webhook====", webhook);
 				statuses.push({
 					listId: primaryListId,
 					listType: 'primary',

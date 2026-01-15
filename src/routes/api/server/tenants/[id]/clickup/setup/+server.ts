@@ -1,5 +1,5 @@
 import { ResponseHandler } from '$lib/utils/response.handler';
-import { uuidSchema } from '$lib/validation/common.schema';
+// import { uuidSchema } from '$lib/validation/common.schema';
 import { ClickUpConfigSchema } from '$lib/validation/clickup.schema';
 import {
 	getClickUpConfig,
@@ -22,21 +22,11 @@ export const POST = async (event: RequestEvent) => {
 			return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session'));
 		}
 
-		const result = await uuidSchema.safeParseAsync(event.params);
-		if (!result.success) {
-			const data = Object.fromEntries(
-				Object.entries(result.error.flatten().fieldErrors).map(([key, val]) => [
-					key,
-					val?.[0] || ''
-				])
-			);
-			return ResponseHandler.handleError(400, data, new Error('Validation failed'));
-		}
-
 		const tenantId = event.params.id;
 		const requestBody = await event.request.json();
 
 		// Validate the request body
+		console.log('requestBody',requestBody)
 		const validation = ClickUpConfigSchema.safeParse(requestBody);
 		if (!validation.success) {
 			const data = Object.fromEntries(
@@ -61,10 +51,8 @@ export const POST = async (event: RequestEvent) => {
 			clickUpConfig.WebhookClickupClientUrlToken +
 			`/receive`;
 
-		// Create webhooks for all configured lists, checking for existing webhooks first
 		const createdWebhooks: any[] = [];
 
-		// Primary List Webhook
 		if (clickUpConfig.ClickupListId) {
 			try {
 				const existingWebhook = await findWebhookByListId(
