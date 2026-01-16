@@ -20,7 +20,7 @@ export const getAnalyticsReport = async(format: string) => {
 
 export const getUserAnalytics = async (sessionId: string, formattedDate: string) => {
 	console.log('Formatted date: ' + formattedDate);
-	const url = USER_ANALYTICS_API_URL + `/analytics/metrics/2025-03-26-1`;
+	const url = USER_ANALYTICS_API_URL + `/analytics/metrics/${formattedDate}-1`;
 	const cacheKey = `session-${sessionId}:req-getUserAnalytics:${formattedDate}-1`;
 	const yesterday = TimeHelper.getYesterdayDate();
 	const yesterdayCacheKey = `session-${sessionId}:req-getUserAnalytics:${yesterday}-1`;
