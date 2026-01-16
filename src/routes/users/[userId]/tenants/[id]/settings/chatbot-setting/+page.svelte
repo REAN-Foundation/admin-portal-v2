@@ -10,8 +10,10 @@
 		LogoUploadModel
 	} from '$lib/types/tenant.settings.types.js';
 	import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema.js';
+	import { languages } from '$lib/utils/language';
 	import Progressive from './progressive.update.svelte';
 	import ExportSettingsDialog from './export-settings.dialog.svelte';
+	import WelcomeMessageModal from './welcome-message.modal.svelte';
 
 	///////////////////////////////////////////////////////////////////////
 
@@ -41,6 +43,11 @@
 	let logoName = $state('');
 	const totalSteps = 3;
 	let currentSection = $state(0);
+	let welcomeMessages = $state(data.chatbotSettings?.WelcomeMessages || []);
+	let showWelcomeMessageModal = $state(false);
+	let isEditWelcomeMessage = $state(false);
+	let editingWelcomeMessageIndex: number | null = $state(null);
+	let modalWelcomeMessage = $state({ LanguageCode: '', Content: '', URL: '' });
 
 	const handleEditClick = async () => {
 		if (!disabled) {
@@ -208,6 +215,7 @@
 				QnA: chatBotSetting.ChatBot.QnA,
 				Consent: chatBotSetting.ChatBot.Consent,
 				WelcomeMessage: chatBotSetting.ChatBot.WelcomeMessage,
+				WelcomeMessages: welcomeMessages,
 				Feedback: chatBotSetting.ChatBot.Feedback,
 				AppointmentFollowup: chatBotSetting.ChatBot.AppointmentFollowup,
 				ConversationHistory: chatBotSetting.ChatBot.ConversationHistory,
@@ -386,6 +394,47 @@
 	async function getBotSecret() {
 		showExportDialog = true;
 	}
+
+	function openAddWelcomeMessageModal() {
+		isEditWelcomeMessage = false;
+		modalWelcomeMessage = { LanguageCode: '', Content: '', URL: '' };
+		showWelcomeMessageModal = true;
+	}
+
+	function openEditWelcomeMessageModal(index: number) {
+		isEditWelcomeMessage = true;
+		editingWelcomeMessageIndex = index;
+		modalWelcomeMessage = { ...welcomeMessages[index] };
+		showWelcomeMessageModal = true;
+	}
+
+	function handleSaveWelcomeMessage(msg) {
+		if (isEditWelcomeMessage && editingWelcomeMessageIndex !== null) {
+			welcomeMessages[editingWelcomeMessageIndex] = { ...msg };
+		} else {
+			welcomeMessages.push({ ...msg });
+		}
+		welcomeMessages = [...welcomeMessages];
+	}
+
+	function deleteWelcomeMessage(index: number) {
+		const defaultLangCode = languages.find((l) => l.name === chatBotSetting.ChatBot.DefaultLanguage)?.code;
+		if (welcomeMessages[index].LanguageCode === defaultLangCode) {
+			addToast({
+				message: 'Cannot delete the welcome message for the default language.',
+				type: 'warning',
+				timeout: 3000
+			});
+			return;
+		}
+		welcomeMessages.splice(index, 1);
+		welcomeMessages = [...welcomeMessages];
+		addToast({
+			message: 'Welcome message deleted successfully.',
+			type: 'success',
+			timeout: 3000
+		});
+	}
 </script>
 
 <div class="px-5 py-4">
@@ -475,6 +524,10 @@
 					{onLogoSelected}
 					{logoName}
 					{errors}
+					bind:welcomeMessages
+					onAddWelcomeMessage={openAddWelcomeMessageModal}
+					onEditWelcomeMessage={openEditWelcomeMessageModal}
+					onDeleteWelcomeMessage={deleteWelcomeMessage}
 				/>
 			</div>
 			<!-- <hr class="border-[0.5px] border-t border-[var(--color-outline)]" /> -->
@@ -487,4 +540,18 @@
 	onclose={() => (showExportDialog = false)}
 	{tenantId}
 	{tenantCode}
+/>
+
+<!-- Welcome Message Modal -->
+<WelcomeMessageModal
+	isOpen={showWelcomeMessageModal}
+	onClose={() => {
+		showWelcomeMessageModal = false;
+		editingWelcomeMessageIndex = null;
+	}}
+	onSave={handleSaveWelcomeMessage}
+	message={modalWelcomeMessage}
+	isEdit={isEditWelcomeMessage}
+	allMessages={welcomeMessages}
+	editingIndex={editingWelcomeMessageIndex}
 />

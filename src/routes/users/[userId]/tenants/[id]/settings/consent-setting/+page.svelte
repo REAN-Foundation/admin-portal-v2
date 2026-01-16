@@ -234,19 +234,18 @@
 						<p class="text-error">{errors?.DefaultLanguage}</p>
 					{/if}
 				</div>
-				<div class="mt-4 flex flex-col md:flex-row md:items-center">
-					<div class="w-[30%]"></div>
-					<div class="flex w-[70%] justify-end">
-						<button
-							type="button"
-							class="health-system-btn variant-filled-secondary"
-							onclick={openAddMessageModal}
+				<div class="mt-4 flex flex-col md:flex-row md:items-center justify-end">
+					<!-- <div class="w-[30%]"></div> -->
+					<!-- <div class="flex w-[70%] justify-end"> -->
+						<Button
+							variant="primary"
+							size="sm"
+							text="Add Message"
+							onclick={() => openAddMessageModal()}
 							disabled={!edit}
-						>
-							Add Message
-						</button>
-					</div>
-				</div>
+						/>
+					<!-- </div> -->
+				<!-- </div> -->
 			</div>
 			{#if message.length > 0}
 				<div class="health-system-table-container my-4 shadow">
