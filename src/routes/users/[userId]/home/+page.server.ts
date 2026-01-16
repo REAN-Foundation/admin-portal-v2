@@ -49,7 +49,7 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 		response.Data.DailyStatistics.DashboardStats.UserStatistics.YearWiseDeviceDetails;
 	const today = new Date();
 	const formattedDate = TimeHelper.getDateString(today, DateStringFormat.YYYY_MM_DD);
-	// await getUserAnalytics(sessionId, formattedDate);
+	// await getUserAnalytics(sessionId, formattedDate,tenantCode);
 
 	return {
 		sessionId,

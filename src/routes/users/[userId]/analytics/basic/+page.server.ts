@@ -14,9 +14,10 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
     const userId = event.params.userId;
     const today = new Date();
     const formattedDate = TimeHelper.getDateString(today, DateStringFormat.YYYY_MM_DD);
+    const tenantCode = event.locals.sessionUser.tenantCode;
 
     // Get User Analytics
-    const response = await getUserAnalytics(sessionId ?? '', formattedDate ?? '');
+    const response = await getUserAnalytics(sessionId ?? '', formattedDate ?? '', tenantCode);
     if (!response) {
         throw error(404, 'Daily user statistics data not found');
     }
