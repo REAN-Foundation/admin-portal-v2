@@ -426,13 +426,13 @@
 						for="clickupIssuesListId"
 						class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]"
 					>
-						Issues List ID
+						Issues List Id
 					</label>
 					<input
 						id="clickupIssuesListId"
 						type="text"
 						bind:value={formData.ClickupIssuesListId}
-						placeholder="Issues List ID (optional)"
+						placeholder="Issues List Id"
 						disabled={edit}
 						class="input-field w-full md:w-[70%]"
 					/>
@@ -444,13 +444,13 @@
 						for="clickupCaseListId"
 						class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]"
 					>
-						Case List ID
+						Case List Id
 					</label>
 					<input
 						id="clickupCaseListId"
 						type="text"
 						bind:value={formData.ClickupCaseListId}
-						placeholder="Case List ID (optional)"
+						placeholder="Case List Id"
 						disabled={edit}
 						class="input-field w-full md:w-[70%]"
 					/>
@@ -479,8 +479,8 @@
 					<label class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
 						Events to Subscribe <span class="text-red-700">*</span>
 					</label>
-					<div class="w-full md:w-[70%]">
-						<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+					<div class="input-field w-full md:w-[70%]">
+						<div class="grid grid-cols-1 gap-2 md:grid-cols-2">
 							{#each availableEvents as event}
 								<label class="flex cursor-pointer items-center gap-2">
 									<input
