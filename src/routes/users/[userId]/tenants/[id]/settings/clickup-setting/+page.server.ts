@@ -23,13 +23,16 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 	}
 	const res = await getBotSecret(sessionId, tenantId)
 	console.log('respose---',res)
-	const botSecrete = res.Data
+	const botSecrete = res.Data || {};
 	const clickupAuthentication = botSecrete.ClickupAuthentication;
 	const primaryListId = botSecrete.ClickupListId;
 	const issuesListId = botSecrete.ClickupIssuesListId;
 	const caseListId = botSecrete.ClickupCaseListId;
-	
-	statuses = await getWebhookStatus(clickupAuthentication, CLICKUP_TEAM_ID, primaryListId, issuesListId, caseListId)
+
+	// Only fetch webhook status if ClickUp authentication is configured
+	if (clickupAuthentication && primaryListId) {
+		statuses = await getWebhookStatus(clickupAuthentication, CLICKUP_TEAM_ID, primaryListId, issuesListId, caseListId);
+	}
 
 	return {
 		tenantId,

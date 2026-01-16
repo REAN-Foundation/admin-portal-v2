@@ -96,9 +96,9 @@
 	async function testConnection() {
 		if (!formData.ClickupAuthentication) {
 			addToast({
-				message: 'Please provide Authorization Token',
+				message: 'ClickUp authentication is not configured. Please configure it in tenant settings first.',
 				type: 'error',
-				timeout: 3000
+				timeout: 4000
 			});
 			return;
 		}
@@ -387,6 +387,22 @@
 
 			<!-- Form Content -->
 			<div class="flex flex-col space-y-4 px-5 py-4">
+				<!-- Warning when ClickUp Authentication is not configured -->
+				{#if !formData.ClickupAuthentication}
+					<div class="my-4 rounded-lg border border-orange-300 bg-orange-50 p-4">
+						<div class="flex items-start gap-3">
+							<Icon icon="material-symbols:warning" class="h-6 w-6 text-orange-600 shrink-0 mt-0.5" />
+							<div>
+								<h3 class="font-semibold text-orange-800">ClickUp Authentication Not Configured</h3>
+								<p class="mt-1 text-sm text-orange-700">
+									Before you can set up webhooks, you need to configure ClickUp authentication in the Chat bot secrete.
+									Please add your ClickUp API token first.
+								</p>
+							</div>
+						</div>
+					</div>
+				{/if}
+
 				<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
 					<label
 						for="clickupListId"
@@ -487,17 +503,22 @@
 			<!-- Submit Button -->
 			<div class="button-container my-4">
 				{#await promise}
-					<button type="submit" class="table-btn variant-soft-secondary" disabled>
-						Submitting
-					</button>
+					<Button
+						type="submit"
+						variant="primary"
+						text="Submitting..."
+						disabled={true}
+					/>
 				{:then data}
-					<button type="submit" class="table-btn variant-soft-secondary">
-						{formData.WebhookId ||
+					<Button
+						type="submit"
+						variant="primary"
+						text={formData.WebhookId ||
 						formData.IssuesWebhookId ||
 						formData.CaseWebhookId
 							? 'Update Webhooks'
 							: 'Create Webhooks'}
-					</button>
+					/>
 				{/await}
 			</div>
 		</form>
