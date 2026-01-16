@@ -360,10 +360,8 @@
 		</div>
 	{/if}
 
-	<!-- Webhook Configuration Form Section -->
 	<div class="mx-auto my-6 border border-[var(--color-outline)]">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<!-- Heading -->
 			<div
 				class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6"
 			>
@@ -385,9 +383,7 @@
 				</div>
 			</div>
 
-			<!-- Form Content -->
 			<div class="flex flex-col space-y-4 px-5 py-4">
-				<!-- Warning when ClickUp Authentication is not configured -->
 				{#if !formData.ClickupAuthentication}
 					<div class="my-4 rounded-lg border border-orange-300 bg-orange-50 p-4">
 						<div class="flex items-start gap-3">
@@ -420,7 +416,6 @@
 					/>
 				</div>
 
-				<!-- Issues List ID -->
 				<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
 					<label
 						for="clickupIssuesListId"
@@ -438,7 +433,6 @@
 					/>
 				</div>
 
-				<!-- Case List ID -->
 				<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
 					<label
 						for="clickupCaseListId"
@@ -455,8 +449,6 @@
 						class="input-field w-full md:w-[70%]"
 					/>
 				</div>
-
-				<!-- Webhook Client URL Token -->
 				<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
 					<label
 						for="webhookClickupClientUrlToken"
@@ -473,7 +465,6 @@
 						class="input-field w-full md:w-[70%]"
 					/>
 				</div>
-				<!-- Events Selection -->
 				<div class="my-4 flex flex-col gap-2 md:flex-row md:items-start">
 					<!-- svelte-ignore a11y_label_has_associated_control -->
 					<label class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
@@ -513,11 +504,7 @@
 					<Button
 						type="submit"
 						variant="primary"
-						text={formData.WebhookId ||
-						formData.IssuesWebhookId ||
-						formData.CaseWebhookId
-							? 'Update Webhooks'
-							: 'Create Webhooks'}
+						text="Submit"
 					/>
 				{/await}
 			</div>
