@@ -268,98 +268,6 @@
 </script>
 
 <div class="px-5 py-4">
-	<!-- Webhook Status Table Section -->
-	{#if webhookStatuses.length > 0}
-		<div class="mx-auto my-6 border border-[var(--color-outline)]">
-			<!-- Heading -->
-			<div
-				class="flex items-center justify-between border-b border-[var(--color-outline)] bg-[var(--color-primary)] px-5 py-4"
-			>
-				<h2 class="text-lg font-medium text-[var(--color-info)]">Active Webhooks</h2>
-				<!-- <button
-					type="button"
-					onclick={fetchWebhookStatus}
-					disabled={isFetchingStatus}
-					class="table-btn variant-soft-secondary gap-1 text-sm"
-				>
-					<Icon icon="material-symbols:refresh" />
-					{isFetchingStatus ? 'Refreshing...' : 'Refresh Status'}
-				</button> -->
-			</div>
-
-			<!-- Webhook Status Table -->
-			<div class="health-system-table-container my-4 shadow">
-				<table class="health-system-table w-full">
-					<thead>
-						<tr>
-							<th>Status</th>
-							<th>List Type</th>
-							<th>List ID</th>
-							<!-- <th>Webhook ID</th> -->
-							<th>Endpoint URL</th>
-							<th>Health</th>
-							<!-- <th>Events</th> -->
-							<th>Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each webhookStatuses as status}
-							<tr>
-								<td>
-									<div class="flex items-center gap-2">
-										<Icon
-											icon={status.exists
-												? 'material-symbols:check-circle'
-												: 'material-symbols:cancel'}
-											class="h-5 w-5 {status.exists ? 'text-green-600' : 'text-gray-400'}"
-										/>
-										<span class="text-sm {status.exists ? 'text-green-600' : 'text-gray-500'}">
-											{status.exists ? 'Active' : 'Not Created'}
-										</span>
-									</div>
-								</td>
-								<td>{status.listName}</td>
-								<td>{status.listId}</td>
-								<td>
-									{#if status.endpoint}
-										<div class="flex items-center gap-2">
-											<span class="font-mono text-xs break-all">{status.endpoint}</span>
-										</div>
-									{:else}
-										<span class="text-gray-400">-</span>
-									{/if}
-								</td>
-								<td>
-									{#if status.health}
-										<span class="{status.health.status === 'active' ? 'text-green-600' : 'text-orange-600'}">
-											{status.health.status}
-										</span>
-									{:else}
-										<span class="text-gray-400">-</span>
-									{/if}
-								</td>
-								<td>
-									{#if status.exists && status.webhookId}
-										<Button
-											onclick={() => handleDeleteClick(status.webhookId)}
-											variant="icon"
-											icon="material-symbols:delete-outline-rounded"
-											iconSize="sm"
-											color="red"
-											tooltip="Delete"
-										/>
-									{:else}
-										<span class="text-xs text-gray-400">-</span>
-									{/if}
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
-		</div>
-	{/if}
-
 	<div class="mx-auto my-6 border border-[var(--color-outline)]">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 			<div
@@ -487,6 +395,7 @@
 						</div>
 					</div>
 				</div>
+
 			</div>
 
 			<hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
@@ -508,6 +417,71 @@
 					/>
 				{/await}
 			</div>
+
+			{#if webhookStatuses.length > 0}
+				<div class="health-system-table-container my-4 shadow">
+					<table class="health-system-table w-full">
+						<thead>
+							<tr>
+								<th>Status</th>
+								<th>List Type</th>
+								<th>List ID</th>
+								<th>Endpoint URL</th>
+								<th>Health</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each webhookStatuses as status}
+								<tr>
+									<td>
+										<div class="flex items-center gap-2">
+											<Icon
+												icon={status.exists
+													? 'material-symbols:check-circle'
+													: 'material-symbols:cancel'}
+												class="h-5 w-5 {status.exists ? 'text-green-600' : 'text-gray-400'}"
+											/>
+											<span class="text-sm {status.exists ? 'text-green-600' : 'text-gray-500'}">
+												{status.exists ? 'Active' : 'Not Created'}
+											</span>
+										</div>
+									</td>
+									<td>{status.listName}</td>
+									<td>{status.listId}</td>
+									<td>
+										{#if status.endpoint}
+											<span class="font-mono text-xs break-all">{status.endpoint}</span>
+										{:else}
+											<span class="text-gray-400">-</span>
+										{/if}
+									</td>
+									<td>
+										{#if status.health}
+											<span class="{status.health.status === 'active' ? 'text-green-600' : 'text-orange-600'}">
+												{status.health.status}
+											</span>
+										{:else}
+											<span class="text-gray-400">-</span>
+										{/if}
+									</td>
+									<td>
+										<div class="flex flex-row space-x-2">
+											{#if status.exists && status.webhookId}
+												<Icon
+													icon="material-symbols:delete-outline"
+													class="cursor-pointer text-red-600 {!disabled ? '' : 'cursor-not-allowed opacity-50'}"
+													onclick={() => !disabled && handleDeleteClick(status.webhookId)}
+												/>
+											{/if}
+										</div>
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			{/if}
 		</form>
 	</div>
 </div>
