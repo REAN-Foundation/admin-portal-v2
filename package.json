@@ -51,7 +51,7 @@
 		"chartjs-chart-funnel": "^4.2.4",
 		"chartjs-plugin-datalabels": "^2.2.0",
 		"dayjs": "^1.11.13",
-		"dexie": "^4.0.11",
+		"dexie": "^4.3.0",
 		"formidable": "^3.5.4",
 		"redis": "^4.7.0",
 		"sveltekit-flash-message": "^2.4.6",
