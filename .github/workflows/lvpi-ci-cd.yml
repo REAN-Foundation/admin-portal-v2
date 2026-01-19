@@ -16,7 +16,7 @@ on:
 
 env:
   AWS_REGION: ap-south-2
-  ECR_REPOSITORY: lvpei-prod-admin-portal
+  ECR_REPOSITORY: lvpei-prod-admin-portal-v2
   IMAGE_TAG: ${{ github.sha }}
 
 permissions:
