@@ -1,7 +1,6 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import {
-	createPromptsTemplate,
-	deletePromptTemplate
+	createPromptsTemplate
 } from '../../services/bot-content/prompt-template';
 import { ResponseHandler } from '$lib/utils/response.handler';
 import type { PromptTemplateCreateModel } from '$lib/types/prompt.template.types';
@@ -19,7 +18,8 @@ export const POST = async (event: RequestEvent) => {
 		}
 
 		const createdByUserId = event.locals?.sessionUser?.userId;
-        const tenantCode = event.locals?.sessionUser?.tenantCode;
+		const tenantId = event.locals?.sessionUser?.tenantId;
+        // const tenantCode = event.locals?.sessionUser?.tenantCode;
 
 		const request = event.request;
 		const data: PromptTemplateCreateModel = await request.json();
@@ -55,7 +55,7 @@ export const POST = async (event: RequestEvent) => {
 			data.PresencePenalty,
 			createdByUserId,
 			true,
-			tenantCode
+			tenantId
 		);
 
 		return ResponseHandler.success(response);
