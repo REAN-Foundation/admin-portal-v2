@@ -425,7 +425,7 @@
 				</tr>
 				<!-- Chunking Length -->
 				<tr class="tables-row">
-					<td class="table-label">Chunking length <span class="text-red-700">*</span></td>
+					<td class="table-label">Chunking Length <span class="text-red-700">*</span></td>
 					<td class="table-data">
 						<input
 							type="number"
