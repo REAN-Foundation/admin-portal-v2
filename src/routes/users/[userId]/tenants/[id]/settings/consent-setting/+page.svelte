@@ -21,7 +21,7 @@
 	let checkConsent = $state(data.chatbotSettings);
 	let edit = $state(false);
 	let promise = $state();
-	const tenantRoute = `/users/${userId}/tenants`;
+	const settingsRoute = `/users/${userId}/tenants/${tenantId}/settings`;
 	let message = $state(data.consentSettings?.Messages || []);
 	let defaultLangCode = $state('');
 	let errors: Record<string, string> = $state({});
@@ -171,7 +171,7 @@
 						<Icon icon="material-symbols:edit-outline" />
 					</button>
 					<a
-						href={tenantRoute}
+						href={settingsRoute}
 						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
 					>
 						<Icon icon="material-symbols:close-rounded" class="h-5" />

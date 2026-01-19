@@ -15,7 +15,7 @@
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
-	const tenantRoute = `/users/${userId}/tenants`;
+	const settingsRoute = `/users/${userId}/tenants/${tenantId}/settings`;
 
 	let promise = $state();
 	let errors: any = $state({});
@@ -359,7 +359,7 @@
 						<!-- <span>{edit ? 'Save' : 'Edit'}</span> -->
 					</button>
 					<a
-						href={tenantRoute}
+						href={settingsRoute}
 						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
 					>
 						<Icon icon="material-symbols:close-rounded" class=" h-5" />
