@@ -1,4 +1,4 @@
-import { CLICKUP_TEAM_ID, CLICKUP_AUTH_TOKEN } from '$env/static/private';
+import { CLICKUP_TEAM_ID } from '$env/static/private';
 import { ResponseHandler } from '$lib/utils/response.handler';
 import { uuidSchema } from '$lib/validation/common.schema';
 import { getClickUpConfig, getWebhookStatus } from '$routes/api/services/reancare/clickup';
@@ -37,7 +37,7 @@ export const GET = async (event: RequestEvent) => {
 
 		// Get webhook status for all configured lists
 		const statuses = await getWebhookStatus(
-			CLICKUP_AUTH_TOKEN,
+			config.ClickupAuthentication,
 			CLICKUP_TEAM_ID,
 			config.ClickupListId,
 			config.ClickupIssuesListId,

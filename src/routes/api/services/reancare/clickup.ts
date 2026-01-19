@@ -1,10 +1,9 @@
-import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY, CLICKUP_API_BASE, CLICKUP_AUTH_TOKEN, CLICKUP_TEAM_ID } from '$env/static/private';
+import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY, CLICKUP_API_BASE} from '$env/static/private';
 import { get, put } from './common.reancare';
 import type {
 	ClickUpConfig,
 	ClickUpWebhookRequest,
 	ClickUpWebhookResponse,
-	ClickUpAuthenticationRecord,
 	// ClickUpWebhooksList,
 	WebhookStatus
 } from '$lib/types/clickup.types';
@@ -149,28 +148,28 @@ export const testClickUpConnection = async (
 	}
 };
 
-export const getClickUpAuthenticationRecord = async (
-	sessionId: string,
-	authenticationId: string
-): Promise<ClickUpAuthenticationRecord> => {
-	const url = BACKEND_API_URL + `/clickup/authentication/${authenticationId}`;
-	const response = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+// export const getClickUpAuthenticationRecord = async (
+// 	sessionId: string,
+// 	authenticationId: string
+// ): Promise<ClickUpAuthenticationRecord> => {
+// 	const url = BACKEND_API_URL + `/clickup/authentication/${authenticationId}`;
+// 	const response = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
 
-	if (response && response.Data) {
-		return {
-			id: authenticationId,
-			AuthToken: response.Data.AuthToken || CLICKUP_AUTH_TOKEN,
-			TeamId: response.Data.TeamId || CLICKUP_TEAM_ID
-		};
-	}
+// 	if (response && response.Data) {
+// 		return {
+// 			id: authenticationId,
+// 			AuthToken: response.Data.AuthToken,
+// 			TeamId: response.Data.TeamId || CLICKUP_TEAM_ID
+// 		};
+// 	}
 
-	// Fallback to environment variables
-	return {
-		id: authenticationId,
-		AuthToken: CLICKUP_AUTH_TOKEN,
-		TeamId: CLICKUP_TEAM_ID
-	};
-};
+// 	// Fallback to environment variables
+// 	return {
+// 		id: authenticationId,
+// 		AuthToken: CLICKUP_AUTH_TOKEN,
+// 		TeamId: CLICKUP_TEAM_ID
+// 	};
+// };
 
 export const getAllClickUpWebhooks = async (
 	authToken: string,
