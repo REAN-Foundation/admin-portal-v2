@@ -4,6 +4,7 @@
 	import type { ReminderTrigger } from '$lib/types/tenant.settings.types.js';
 	import { FollowupSettingsSchema } from '$lib/validation/tenant.settings.schema';
 	import Icon from '@iconify/svelte';
+	import Button from '$lib/components/button/button.svelte';
 	import ReminderScheduleList from './reminder-schedule-list.svelte';
 	import ReminderScheduleForm from './reminder-schedule-form.svelte';
 	import FollowUpSettings from './follow-up-settings.svelte';
@@ -989,11 +990,9 @@
 			<hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
 			<div class="button-container my-4">
 				{#await promise}
-					<button type="submit" class="table-btn variant-filled-secondary gap-1 text-[var(--color-info)]" disabled>
-						Submiting
-					</button>
+					<Button type="submit" variant="primary" size="md" text="Submitting..." disabled={true} />
 				{:then data}
-					<button type="submit" class="table-btn variant-filled-secondary gap-1 text-[var(--color-info)]"> Submit </button>
+					<Button type="submit" variant="primary" size="md" text="Submit" />
 				{/await}
 			</div>
 		</form>

@@ -296,13 +296,9 @@
 			<hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
 			<div class="button-container my-4">
 				{#await promise}
-					<button type="submit" class="table-btn variant-soft-secondary" disabled>
-						Submiting
-					</button>
+					<Button type="submit" variant="primary" size="md" text="Submitting..." disabled={true} />
 				{:then data}
-					<button type="submit" class="table-btn variant-soft-secondary" disabled={!edit}>
-						Submit
-					</button>
+					<Button type="submit" variant="primary" size="md" text="Submit" disabled={!edit} />
 				{/await}
 			</div>
 		</form>

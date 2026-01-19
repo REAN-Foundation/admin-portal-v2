@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import Icon from '@iconify/svelte';
+	import Button from '$lib/components/button/button.svelte';
 	import Icons from '$lib/components/icons.svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import type { FormsSettings } from '$lib/types/tenant.settings.types';
@@ -380,11 +381,9 @@
 				<hr class="border-[0.5px] border-t border-[var(--color-outline)]" />
 				<div class="button-container my-4">
 					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
+						<Button type="submit" variant="primary" size="md" text="Submitting..." disabled={true} />
 					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
+						<Button type="submit" variant="primary" size="md" text="Submit" />
 					{/await}
 				</div>
 			</form>

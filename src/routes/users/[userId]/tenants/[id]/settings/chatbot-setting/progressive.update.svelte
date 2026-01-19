@@ -455,28 +455,39 @@
 <hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
 
 <div class="button-container my-4 ">
-	<button
+	<Button
 		type="button"
-		class="cursor-pointer rounded-md bg-[var(--color-primary)] px-3 py-2 text-[var(--color-info)] disabled:opacity-50"
+		variant="outline"
+		size="md"
+		text="Previous"
 		onclick={prevSection}
 		disabled={currentSection === 0}
-	>
-		Previous
-	</button>
+	/>
 
 	{#if currentSection < 3 - 1}
-		<button
+		<Button
 			type="button"
-			class="table-btn variant-filled-secondary !px-4 py-2 text-[var(--color-info)]"
+			variant="primary"
+			size="md"
+			text="Next"
 			onclick={nextSection}
-		>
-			Next
-		</button>
+		/>
 	{:else}
 		{#await promise}
-			<button type="submit" class="table-btn variant-filled-secondary" disabled> Submiting </button>
+			<Button
+				type="submit"
+				variant="primary"
+				size="md"
+				text="Submitting..."
+				disabled={true}
+			/>
 		{:then data}
-			<button type="submit" class="table-btn variant-filled-secondary"> Submit </button>
+			<Button
+				type="submit"
+				variant="primary"
+				size="md"
+				text="Submit"
+			/>
 		{/await}
 	{/if}
 </div>

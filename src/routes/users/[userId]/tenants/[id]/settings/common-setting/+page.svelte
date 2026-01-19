@@ -1,6 +1,7 @@
 <script lang="ts">
 	import ExpandableSettings from './tenant-setting.svelte';
 	import Icon from '@iconify/svelte';
+	import Button from '$lib/components/button/button.svelte';
 	import type { PageServerData } from '../$types';
 	import { page } from '$app/state';
 	import { commonUISettings } from './common-setting.types';
@@ -124,11 +125,9 @@
 
 			<div class="button-container my-4 ">
 				{#await promise}
-					<button type="submit" class="table-btn variant-soft-secondary" disabled>
-						Submiting
-					</button>
+					<Button type="submit" variant="primary" size="md" text="Submitting..." disabled={true} />
 				{:then data}
-					<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
+					<Button type="submit" variant="primary" size="md" text="Submit" />
 				{/await}
 			</div>
 		</form>
