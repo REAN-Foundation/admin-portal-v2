@@ -101,7 +101,15 @@ class Sidebar {
       {
         section: 'Clinical',
         items: [
-          { name: 'Assessments', icon: 'clipboard', href: 'assessment-templates.html' },
+          { 
+            name: 'Assessments', 
+            icon: 'clipboard', 
+            href: 'assessment-templates.html',
+            children: [
+              { name: 'Templates', icon: 'file-text', href: 'assessment-templates.html' },
+              { name: 'Nodes', icon: 'layout', href: 'assessment-nodes.html' }
+            ]
+          },
           { name: 'Lab Records', icon: 'flask', href: 'lab-records.html' },
           { name: 'Symptoms', icon: 'activity', href: 'symptoms.html' },
           { name: 'Drugs', icon: 'pill', href: 'drugs.html' }
@@ -110,11 +118,18 @@ class Sidebar {
       {
         section: 'Careplan',
         items: [
-          { name: 'Dashboard', icon: 'layout', href: 'careplan-dashboard.html' },
-          { name: 'Assets', icon: 'folder', href: 'careplan-assets.html' },
-          { name: 'Careplans', icon: 'heart', href: 'careplans.html' },
-          { name: 'Schedules', icon: 'tag', href: 'careplan-schedules.html' },
-          { name: 'Enrollments', icon: 'check-square', href: 'careplan-enrollments.html' }
+          { 
+            name: 'Careplan', 
+            icon: 'heart', 
+            href: 'careplan-dashboard.html',
+            children: [
+              { name: 'Dashboard', icon: 'layout', href: 'careplan-dashboard.html' },
+              { name: 'All Plans', icon: 'heart', href: 'careplans.html' },
+              { name: 'Assets', icon: 'folder', href: 'careplan-assets.html' },
+              { name: 'Schedules', icon: 'tag', href: 'careplan-schedules.html' },
+              { name: 'Enrollments', icon: 'check-square', href: 'careplan-enrollments.html' }
+            ]
+          }
         ]
       },
       {

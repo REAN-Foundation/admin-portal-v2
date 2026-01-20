@@ -69,6 +69,14 @@
             <p class="page-subtitle">Manage clinical assessments and questionnaires</p>
           </div>
           <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-ghost" onclick="exportTemplates()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Export
+            </button>
             <button class="btn btn-secondary" onclick="openImportModal()">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
@@ -282,6 +290,13 @@
                   <circle cx="12" cy="12" r="3"/>
                 </svg>
               </a>
+              <button class="btn btn-icon btn-ghost sm" onclick="exportSingleTemplate('${template.id}', '${template.title}')" title="Export" style="color: var(--color-primary-500);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+              </button>
               <button class="btn btn-icon btn-ghost sm" onclick="openDeleteModal('${template.id}', '${template.title}')" title="Delete" style="color: var(--color-error-500);">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="3 6 5 6 21 6"/>
@@ -311,6 +326,24 @@
     
     function sortTable(column) {
       Toast.info('Sorted by ' + column);
+    }
+    
+    function exportTemplates() {
+      // Create a dropdown menu for export options
+      const options = ['Export as JSON', 'Export as CSV', 'Export as Excel'];
+      const choice = prompt('Export options:\n1. JSON\n2. CSV\n3. Excel\n\nEnter your choice (1-3):');
+      
+      if (choice) {
+        const format = choice === '1' ? 'JSON' : choice === '2' ? 'CSV' : 'Excel';
+        Toast.success(`Exporting all templates as ${format}...`);
+        // Actual export logic would go here
+      }
+    }
+    
+    function exportSingleTemplate(id, title) {
+      Toast.success(`Exporting "${title}" as JSON...`);
+      // Actual export logic would go here
+      // Example: Download the template as a JSON file
     }
     
     function openImportModal() {
