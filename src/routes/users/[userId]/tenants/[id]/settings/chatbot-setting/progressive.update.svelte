@@ -3,6 +3,7 @@
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import { languages } from '$lib/utils/language';
 	import Icon from '@iconify/svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -18,7 +19,11 @@
 		chatBotUISettings,
 		onLogoSelected,
 		logoName,
-		errors = {}
+		errors = {},
+		welcomeMessages = $bindable(),
+		onAddWelcomeMessage = () => {},
+		onEditWelcomeMessage = (index: number) => {},
+		onDeleteWelcomeMessage = (index: number) => {}
 	} = $props();
 
 	let promise = $state();
@@ -194,6 +199,78 @@
 				<p class="text-error">{errors?.Timezone}</p>
 			{/if}
 		</div>
+
+		<!-- {#if chatBotSetting.ChatBot.WelcomeMessage} -->
+			<div class="my-6 border-t border-[var(--color-outline)] pt-4">
+				<div class="mb-4 flex items-center justify-between">
+					<label class="text mx-1 font-medium text-[var(--color-info)]">Welcome Messages</label>
+					<Button
+						variant="primary"
+						size="sm"
+						text="Add Message"
+						onclick={() => onAddWelcomeMessage()}
+						disabled={!edit}
+					/>
+				</div>
+
+				{#if welcomeMessages && welcomeMessages.length > 0}
+					<div class="health-system-table-container my-4 shadow">
+						<table class="health-system-table w-full">
+							<thead>
+								<tr>
+									<th>Language</th>
+									<th>Content</th>
+									<th>URL</th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								{#each welcomeMessages as msg, index}
+									<tr>
+										<td>
+											{languages.find((l) => l.code === msg.LanguageCode)?.name ||
+												msg.LanguageCode}
+										</td>
+										<td>{msg.Content}</td>
+										<td>{msg.URL || '-'}</td>
+										<td>
+											<div class="flex flex-row space-x-2">
+												<Icon
+													icon="material-symbols:edit-outline"
+													class="cursor-pointer {!edit ? 'cursor-not-allowed opacity-50' : ''}"
+													onclick={() => edit && onEditWelcomeMessage(index)}
+												/>
+												<Icon
+													icon="material-symbols:delete-outline"
+													class="cursor-pointer text-red-600 {!edit ||
+													msg.LanguageCode ===
+														languages.find(
+															(l) => l.name === chatBotSetting.ChatBot.DefaultLanguage
+														)?.code
+														? 'cursor-not-allowed opacity-50'
+														: ''}"
+													onclick={() =>
+														edit &&
+														msg.LanguageCode !==
+															languages.find(
+																(l) => l.name === chatBotSetting.ChatBot.DefaultLanguage
+															)?.code &&
+														onDeleteWelcomeMessage(index)}
+												/>
+											</div>
+										</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</div>
+				{:else}
+					<p class="text-sm text-[var(--color-info)] opacity-70 ml-[30%]">
+						No welcome messages configured. Click "Add Message" to create one.
+					</p>
+				{/if}
+			</div>
+		<!-- {/if} -->
 	{:else if currentSection === 1}
 		{#each Object.entries(chatBotSetting.ChatBot) as [groupName, groupItems]}
 			{#if groupName === 'MessageChannels' || groupName === 'SupportChannels'}

@@ -332,3 +332,11 @@ export const changePassword = async (
 	const url = BACKEND_API_URL + `/users/change-password`;
 	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 };
+
+export const logoutUser = async (sessionId: string, deviceToken?: string) => {
+	const body = {
+		DeviceToken: deviceToken
+	};
+	const url = BACKEND_API_URL + `/users/logout`;
+	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+};
