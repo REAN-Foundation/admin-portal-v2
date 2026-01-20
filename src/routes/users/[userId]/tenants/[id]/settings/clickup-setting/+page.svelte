@@ -14,6 +14,7 @@
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
 	const tenantRoute = `/users/${userId}/tenants`;
+	let tenantCode = $state(data.tenantCode || '');
 
 	// Available ClickUp events
 	const availableEvents: { value: ClickUpEventType; label: string }[] = [
@@ -32,6 +33,7 @@
 
 	// Form state
 	let formData = $state<ClickUpConfig>({
+		TenantCode: tenantCode,
 		Enabled: true,
 		ClickupAuthentication: data.clickUpConfig?.ClickupAuthentication,
 		ClickupListId: data.clickUpConfig?.ClickupListId || '',
@@ -205,7 +207,7 @@
 			});
 			return;
 		}
-
+		console.log('Form data',JSON.stringify(formData))
 		try {
 			const res = await fetch(`/api/server/tenants/${tenantId}/clickup/setup`, {
 				method: 'POST',
@@ -290,7 +292,13 @@
 					</a>
 				</div>
 			</div>
-
+			<input
+				id="clickupListId"
+				type="text"
+				bind:value={formData.TenantCode}
+				hidden
+				class="input-field w-full md:w-[70%]"
+			/>
 			<div class="flex flex-col space-y-4 px-5 py-4">
 				{#if !formData.ClickupAuthentication}
 					<div class="my-4 rounded-lg border border-orange-300 bg-orange-50 p-4">

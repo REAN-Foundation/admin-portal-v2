@@ -1,4 +1,5 @@
 export interface ClickUpConfig {
+	TenantCode: string;
 	Enabled: boolean;
 	// AuthToken: string;
 	// TeamId: string;
