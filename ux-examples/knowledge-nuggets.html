@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Knowledge Nuggets - REAN Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .nugget-masonry {
+      column-count: 3;
+      column-gap: 1.25rem;
+    }
+    
+    @media (max-width: 1200px) { .nugget-masonry { column-count: 2; } }
+    @media (max-width: 768px) { .nugget-masonry { column-count: 1; } }
+    
+    .nugget-card {
+      break-inside: avoid;
+      margin-bottom: 1.25rem;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+    
+    .nugget-card:hover {
+      border-color: var(--color-primary-500);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    
+    .nugget-card.featured {
+      border: 2px solid var(--color-warning-500);
+    }
+    
+    .nugget-card.featured::before {
+      content: '⭐ Featured';
+      display: block;
+      background: linear-gradient(135deg, var(--color-warning-400), var(--color-warning-500));
+      color: white;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.375rem 1rem;
+    }
+    
+    .nugget-image {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    .nugget-content {
+      padding: 1.25rem;
+    }
+    
+    .nugget-type {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.25rem 0.625rem;
+      border-radius: var(--radius-full);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    
+    .nugget-type.tip { background: rgba(16, 185, 129, 0.1); color: var(--color-success-500); }
+    .nugget-type.fact { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+    .nugget-type.quote { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+    .nugget-type.video { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+    .nugget-type.infographic { background: rgba(245, 158, 11, 0.1); color: var(--color-warning-500); }
+    
+    .nugget-title {
+      font-size: 1.0625rem;
+      font-weight: 600;
+      margin-bottom: 0.625rem;
+      line-height: 1.4;
+    }
+    
+    .nugget-text {
+      font-size: 0.9375rem;
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+    }
+    
+    .nugget-quote {
+      font-size: 1.125rem;
+      font-style: italic;
+      color: var(--color-text-primary);
+      line-height: 1.6;
+      padding-left: 1rem;
+      border-left: 3px solid var(--color-primary-500);
+    }
+    
+    .nugget-source {
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+      margin-top: 0.75rem;
+    }
+    
+    .nugget-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--color-border);
+      background: var(--color-surface-alt);
+    }
+    
+    .nugget-stats {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .nugget-stat {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+    }
+    
+    .nugget-actions {
+      display: flex;
+      gap: 0.25rem;
+    }
+    
+    .type-filters {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    
+    .type-filter {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1rem;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    
+    .type-filter:hover {
+      border-color: var(--color-primary-500);
+    }
+    
+    .type-filter.active {
+      background: var(--color-primary-500);
+      border-color: var(--color-primary-500);
+      color: white;
+    }
+    
+    .type-filter-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .type-filter.active .type-filter-icon {
+      background: rgba(255,255,255,0.2);
+    }
+    
+    .video-thumbnail {
+      position: relative;
+      background: #000;
+    }
+    
+    .video-thumbnail img {
+      width: 100%;
+      opacity: 0.8;
+    }
+    
+    .video-play-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 56px;
+      height: 56px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .video-play-btn:hover {
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+    
+    .video-duration {
+      position: absolute;
+      bottom: 0.5rem;
+      right: 0.5rem;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="navbar" id="navbar"></header>
+      
+      <div class="page-container">
+        <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h1 class="page-title">Knowledge Nuggets</h1>
+            <p class="page-subtitle">Bite-sized health education content for patients</p>
+          </div>
+          <button class="btn btn-primary" onclick="openCreateModal()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Create Nugget
+          </button>
+        </div>
+        
+        <!-- Type Filters -->
+        <div class="type-filters">
+          <button class="type-filter active" onclick="filterByType('all', this)">
+            <div class="type-filter-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+              </svg>
+            </div>
+            <span>All</span>
+            <span style="opacity: 0.7; font-size: 0.8125rem;">124</span>
+          </button>
+          <button class="type-filter" onclick="filterByType('tip', this)">
+            <div class="type-filter-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--color-success-500);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18h6"/><path d="M10 22h4"/>
+                <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 018.91 14"/>
+              </svg>
+            </div>
+            <span>Tips</span>
+            <span style="opacity: 0.7; font-size: 0.8125rem;">48</span>
+          </button>
+          <button class="type-filter" onclick="filterByType('fact', this)">
+            <div class="type-filter-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+            </div>
+            <span>Facts</span>
+            <span style="opacity: 0.7; font-size: 0.8125rem;">32</span>
+          </button>
+          <button class="type-filter" onclick="filterByType('quote', this)">
+            <div class="type-filter-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z"/>
+                <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3z"/>
+              </svg>
+            </div>
+            <span>Quotes</span>
+            <span style="opacity: 0.7; font-size: 0.8125rem;">18</span>
+          </button>
+          <button class="type-filter" onclick="filterByType('video', this)">
+            <div class="type-filter-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+            </div>
+            <span>Videos</span>
+            <span style="opacity: 0.7; font-size: 0.8125rem;">14</span>
+          </button>
+          <button class="type-filter" onclick="filterByType('infographic', this)">
+            <div class="type-filter-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--color-warning-500);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+            </div>
+            <span>Infographics</span>
+            <span style="opacity: 0.7; font-size: 0.8125rem;">12</span>
+          </button>
+        </div>
+        
+        <!-- Nuggets Grid -->
+        <div class="nugget-masonry" id="nuggetGrid">
+          <!-- Featured Tip -->
+          <div class="nugget-card featured" data-type="tip">
+            <div class="nugget-content">
+              <span class="nugget-type tip">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 18h6"/><path d="M10 22h4"/>
+                  <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 018.91 14"/>
+                </svg>
+                Health Tip
+              </span>
+              <h3 class="nugget-title">Stay Hydrated Throughout the Day</h3>
+              <p class="nugget-text">Drinking 8 glasses of water daily helps maintain energy levels, supports digestion, and keeps your skin healthy. Try keeping a water bottle at your desk as a reminder!</p>
+              <p class="nugget-source">— American Heart Association</p>
+            </div>
+            <div class="nugget-footer">
+              <div class="nugget-stats">
+                <span class="nugget-stat">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  2.4k
+                </span>
+                <span class="nugget-stat">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/>
+                  </svg>
+                  186
+                </span>
+              </div>
+              <div class="nugget-actions">
+                <button class="btn btn-icon btn-ghost sm" onclick="editNugget(1)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Video Nugget -->
+          <div class="nugget-card" data-type="video">
+            <div class="video-thumbnail">
+              <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=225&fit=crop" alt="Exercise video">
+              <div class="video-play-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--color-primary-500)">
+                  <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+              </div>
+              <span class="video-duration">3:24</span>
+            </div>
+            <div class="nugget-content">
+              <span class="nugget-type video">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+                Video
+              </span>
+              <h3 class="nugget-title">5-Minute Morning Stretch Routine</h3>
+              <p class="nugget-text">Start your day right with this quick and effective stretching routine designed for all fitness levels.</p>
+            </div>
+            <div class="nugget-footer">
+              <div class="nugget-stats">
+                <span class="nugget-stat">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  5.1k
+                </span>
+              </div>
+              <div class="nugget-actions">
+                <button class="btn btn-icon btn-ghost sm" onclick="editNugget(2)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Quote -->
+          <div class="nugget-card" data-type="quote">
+            <div class="nugget-content" style="background: linear-gradient(135deg, #f8f5ff, #f0ebff); padding: 1.5rem;">
+              <span class="nugget-type quote">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z"/>
+                </svg>
+                Inspirational
+              </span>
+              <p class="nugget-quote">"The greatest wealth is health. Take care of your body; it's the only place you have to live."</p>
+              <p class="nugget-source">— Jim Rohn</p>
+            </div>
+            <div class="nugget-footer">
+              <div class="nugget-stats">
+                <span class="nugget-stat">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+                  </svg>
+                  342
+                </span>
+              </div>
+              <div class="nugget-actions">
+                <button class="btn btn-icon btn-ghost sm" onclick="editNugget(3)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Fact -->
+          <div class="nugget-card" data-type="fact">
+            <div class="nugget-content">
+              <span class="nugget-type fact">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+                Did You Know?
+              </span>
+              <h3 class="nugget-title">Walking 30 Minutes a Day</h3>
+              <p class="nugget-text">Just 30 minutes of walking each day can reduce the risk of heart disease by up to 35%, improve mood, and help maintain a healthy weight. It's one of the easiest forms of exercise!</p>
+              <p class="nugget-source">— Harvard Medical School</p>
+            </div>
+            <div class="nugget-footer">
+              <div class="nugget-stats">
+                <span class="nugget-stat">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  1.8k
+                </span>
+              </div>
+              <div class="nugget-actions">
+                <button class="btn btn-icon btn-ghost sm" onclick="editNugget(4)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Infographic -->
+          <div class="nugget-card" data-type="infographic">
+            <img src="https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=400&h=300&fit=crop" alt="Healthy eating plate" class="nugget-image">
+            <div class="nugget-content">
+              <span class="nugget-type infographic">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                Infographic
+              </span>
+              <h3 class="nugget-title">The Healthy Eating Plate</h3>
+              <p class="nugget-text">Visual guide to creating balanced meals with proper portions of vegetables, proteins, grains, and healthy fats.</p>
+            </div>
+            <div class="nugget-footer">
+              <div class="nugget-stats">
+                <span class="nugget-stat">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  3.2k
+                </span>
+              </div>
+              <div class="nugget-actions">
+                <button class="btn btn-icon btn-ghost sm" onclick="editNugget(5)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Another Tip -->
+          <div class="nugget-card" data-type="tip">
+            <div class="nugget-content">
+              <span class="nugget-type tip">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 18h6"/><path d="M10 22h4"/>
+                  <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 018.91 14"/>
+                </svg>
+                Sleep Tip
+              </span>
+              <h3 class="nugget-title">Improve Your Sleep Quality</h3>
+              <p class="nugget-text">Avoid screens 1 hour before bed, keep your room cool (65-68°F), and maintain a consistent sleep schedule—even on weekends.</p>
+            </div>
+            <div class="nugget-footer">
+              <div class="nugget-stats">
+                <span class="nugget-stat">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  956
+                </span>
+              </div>
+              <div class="nugget-actions">
+                <button class="btn btn-icon btn-ghost sm" onclick="editNugget(6)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Fact 2 -->
+          <div class="nugget-card" data-type="fact">
+            <div class="nugget-content">
+              <span class="nugget-type fact">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+                Fun Fact
+              </span>
+              <h3 class="nugget-title">Your Heart Beats 100,000 Times Daily</h3>
+              <p class="nugget-text">On average, your heart beats about 100,000 times a day, pumping approximately 2,000 gallons of blood through 60,000 miles of blood vessels.</p>
+            </div>
+            <div class="nugget-footer">
+              <div class="nugget-stats">
+                <span class="nugget-stat">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  2.1k
+                </span>
+              </div>
+              <div class="nugget-actions">
+                <button class="btn btn-icon btn-ghost sm" onclick="editNugget(7)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Create Nugget Modal -->
+  <div class="modal-overlay" id="createModal">
+    <div class="modal" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Create Knowledge Nugget</h3>
+        <button class="modal-close" onclick="closeCreateModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Nugget Type</label>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <label class="radio-card">
+              <input type="radio" name="nuggetType" value="tip" checked>
+              <span>💡 Tip</span>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="nuggetType" value="fact">
+              <span>ℹ️ Fact</span>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="nuggetType" value="quote">
+              <span>💬 Quote</span>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="nuggetType" value="video">
+              <span>🎥 Video</span>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="nuggetType" value="infographic">
+              <span>📊 Infographic</span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Title</label>
+          <input type="text" class="form-input" placeholder="Enter nugget title">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Content</label>
+          <textarea class="form-input" rows="4" placeholder="Enter the main content"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Source (optional)</label>
+          <input type="text" class="form-input" placeholder="e.g., American Heart Association">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Image/Video URL (optional)</label>
+          <input type="text" class="form-input" placeholder="https://...">
+        </div>
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox">
+            <span>Mark as Featured</span>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeCreateModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveNugget()">Create Nugget</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeLayout({
+        currentPage: 'knowledge-nuggets.html',
+        breadcrumbs: [
+          { name: 'Content', href: '#' },
+          { name: 'Knowledge Nuggets', href: 'knowledge-nuggets.html' }
+        ],
+        user: currentUser
+      });
+    });
+    
+    function filterByType(type, btn) {
+      document.querySelectorAll('.type-filter').forEach(f => f.classList.remove('active'));
+      btn.classList.add('active');
+      
+      const cards = document.querySelectorAll('.nugget-card');
+      cards.forEach(card => {
+        if (type === 'all' || card.dataset.type === type) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+    
+    function openCreateModal() {
+      document.getElementById('createModal').classList.add('active');
+    }
+    
+    function closeCreateModal() {
+      document.getElementById('createModal').classList.remove('active');
+    }
+    
+    function editNugget(id) {
+      Toast.info('Editing nugget #' + id);
+    }
+    
+    function saveNugget() {
+      Toast.success('Knowledge nugget created!');
+      closeCreateModal();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Careplans - REAN Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .careplan-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .careplan-item {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: 1.25rem;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 1.25rem;
+      align-items: center;
+      transition: all 0.2s;
+    }
+    
+    .careplan-item:hover {
+      border-color: var(--color-primary-500);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    @media (max-width: 768px) {
+      .careplan-item {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .careplan-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .careplan-info {
+      min-width: 0;
+    }
+    
+    .careplan-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .careplan-name {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+    
+    .careplan-status {
+      padding: 0.25rem 0.625rem;
+      border-radius: var(--radius-full);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .careplan-status.active {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--color-success-500);
+    }
+    
+    .careplan-status.draft {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--color-warning-500);
+    }
+    
+    .careplan-status.archived {
+      background: var(--color-surface-alt);
+      color: var(--color-text-muted);
+    }
+    
+    .careplan-description {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      margin-bottom: 0.75rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .careplan-meta {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .careplan-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.8125rem;
+      color: var(--color-text-secondary);
+    }
+    
+    .careplan-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+    
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    .stat-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .stat-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .stat-card-content h4 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    
+    .stat-card-content p {
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+    }
+    
+    .filter-row {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .filter-row .table-search {
+      flex: 1;
+      max-width: 350px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="navbar" id="navbar"></header>
+      
+      <div class="page-container">
+        <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h1 class="page-title">Careplans</h1>
+            <p class="page-subtitle">Manage health management programs and patient journeys</p>
+          </div>
+          <button class="btn btn-primary" onclick="openCreateModal()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Create Careplan
+          </button>
+        </div>
+        
+        <!-- Stats Row -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-card-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+              </svg>
+            </div>
+            <div class="stat-card-content">
+              <h4>24</h4>
+              <p>Total Careplans</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+            </div>
+            <div class="stat-card-content">
+              <h4>18</h4>
+              <p>Active</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </div>
+            <div class="stat-card-content">
+              <h4>4</h4>
+              <p>Draft</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon" style="background: var(--color-surface-alt); color: var(--color-text-muted);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5" rx="1"/>
+              </svg>
+            </div>
+            <div class="stat-card-content">
+              <h4>2</h4>
+              <p>Archived</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Filter Row -->
+        <div class="filter-row">
+          <div class="table-search">
+            <span class="table-search-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+              </svg>
+            </span>
+            <input type="text" placeholder="Search careplans..." id="searchInput">
+          </div>
+          <select class="form-input form-select" style="width: 150px; height: 42px;">
+            <option value="">All Status</option>
+            <option>Active</option>
+            <option>Draft</option>
+            <option>Archived</option>
+          </select>
+          <select class="form-input form-select" style="width: 170px; height: 42px;">
+            <option value="">All Categories</option>
+            <option>Chronic Care</option>
+            <option>Mental Health</option>
+            <option>Wellness</option>
+            <option>Rehabilitation</option>
+          </select>
+          <select class="form-input form-select" style="width: 150px; height: 42px;">
+            <option>Sort: Newest</option>
+            <option>Sort: A-Z</option>
+            <option>Sort: Most Enrolled</option>
+          </select>
+        </div>
+        
+        <!-- Careplan List -->
+        <div class="careplan-list">
+          <!-- Careplan 1 -->
+          <div class="careplan-item">
+            <div class="careplan-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+              </svg>
+            </div>
+            <div class="careplan-info">
+              <div class="careplan-header">
+                <h3 class="careplan-name">Diabetes Management Program</h3>
+                <span class="careplan-status active">Active</span>
+              </div>
+              <p class="careplan-description">Comprehensive 12-week program for Type 2 diabetes patients focusing on blood sugar control, medication adherence, nutrition, and lifestyle modifications.</p>
+              <div class="careplan-meta">
+                <span class="careplan-meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                  </svg>
+                  12 weeks
+                </span>
+                <span class="careplan-meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+                  </svg>
+                  45 activities
+                </span>
+                <span class="careplan-meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                  </svg>
+                  342 enrolled
+                </span>
+              </div>
+            </div>
+            <div class="careplan-actions">
+              <button class="btn btn-ghost btn-sm">Edit</button>
+              <button class="btn btn-secondary btn-sm">View</button>
+              <button class="btn btn-icon btn-ghost sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Careplan 2 -->
+          <div class="careplan-item">
+            <div class="careplan-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+              </svg>
+            </div>
+            <div class="careplan-info">
+              <div class="careplan-header">
+                <h3 class="careplan-name">Cardiac Rehabilitation</h3>
+                <span class="careplan-status active">Active</span>
+              </div>
+              <p class="careplan-description">Post-cardiac event recovery program with progressive exercise, stress management, and heart-healthy lifestyle education.</p>
+              <div class="careplan-meta">
+                <span class="careplan-meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                  </svg>
+                  8 weeks
+                </span>
+                <span class="careplan-meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+                  </svg>
+                  32 activities
+                </span>
+                <span class="careplan-meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                  </svg>
+                  187 enrolled
+                </span>
+              </div>
+            </div>
+            <div class="careplan-actions">
+              <button class="btn btn-ghost btn-sm">Edit</button>
+              <button class="btn btn-secondary btn-sm">View</button>
+              <button class="btn btn-icon btn-ghost sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Careplan 3 -->
+          <div class="careplan-item">
+            <div class="careplan-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                <line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+              </svg>
+            </div>
+            <div class="careplan-info">
+              <div class="careplan-header">
+                <h3 class="careplan-name">Mental Wellness Journey</h3>
+                <span class="careplan-status active">Active</span>
+              </div>
+              <p class="careplan-description">6-week mindfulness and stress management program with guided meditations, CBT exercises, and daily mood tracking.</p>
+              <div class="careplan-meta">
+                <span class="careplan-meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                  </svg>
+                  6 weeks
+                </span>
+                <span class="careplan-meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+                  </svg>
+                  28 activities
+                </span>
+                <span class="careplan-meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                  </svg>
+                  156 enrolled
+                </span>
+              </div>
+            </div>
+            <div class="careplan-actions">
+              <button class="btn btn-ghost btn-sm">Edit</button>
+              <button class="btn btn-secondary btn-sm">View</button>
+              <button class="btn btn-icon btn-ghost sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Careplan 4 - Draft -->
+          <div class="careplan-item">
+            <div class="careplan-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                <circle cx="12" cy="5" r="3"/>
+                <line x1="12" y1="22" x2="12" y2="8"/>
+                <path d="M5 12H2a10 10 0 0020 0h-3"/>
+              </svg>
+            </div>
+            <div class="careplan-info">
+              <div class="careplan-header">
+                <h3 class="careplan-name">Weight Management Program</h3>
+                <span class="careplan-status draft">Draft</span>
+              </div>
+              <p class="careplan-description">16-week comprehensive weight management with personalized meal plans, exercise routines, and behavioral coaching.</p>
+              <div class="careplan-meta">
+                <span class="careplan-meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                  </svg>
+                  16 weeks
+                </span>
+                <span class="careplan-meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+                  </svg>
+                  48 activities
+                </span>
+                <span class="careplan-meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  Last edited 2 days ago
+                </span>
+              </div>
+            </div>
+            <div class="careplan-actions">
+              <button class="btn btn-ghost btn-sm">Edit</button>
+              <button class="btn btn-primary btn-sm">Publish</button>
+              <button class="btn btn-icon btn-ghost sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Careplan 5 - Archived -->
+          <div class="careplan-item" style="opacity: 0.7;">
+            <div class="careplan-icon" style="background: linear-gradient(135deg, #94a3b8, #64748b);">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                <path d="M18 8h1a4 4 0 010 8h-1"/>
+                <path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/>
+                <line x1="6" y1="1" x2="6" y2="4"/>
+              </svg>
+            </div>
+            <div class="careplan-info">
+              <div class="careplan-header">
+                <h3 class="careplan-name">Nutrition Basics 2023</h3>
+                <span class="careplan-status archived">Archived</span>
+              </div>
+              <p class="careplan-description">Previous version of nutrition education program. Replaced by updated 2024 version with new dietary guidelines.</p>
+              <div class="careplan-meta">
+                <span class="careplan-meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                  </svg>
+                  4 weeks
+                </span>
+                <span class="careplan-meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                  </svg>
+                  89 completed
+                </span>
+                <span class="careplan-meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="21 8 21 21 3 21 3 8"/>
+                    <rect x="1" y="3" width="22" height="5" rx="1"/>
+                  </svg>
+                  Archived Jan 2024
+                </span>
+              </div>
+            </div>
+            <div class="careplan-actions">
+              <button class="btn btn-ghost btn-sm">View</button>
+              <button class="btn btn-secondary btn-sm">Restore</button>
+              <button class="btn btn-icon btn-ghost sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div style="display: flex; justify-content: center; margin-top: 2rem;">
+          <div class="pagination">
+            <button class="pagination-btn" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+            <button class="pagination-btn active">1</button>
+            <button class="pagination-btn">2</button>
+            <button class="pagination-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeLayout({
+        currentPage: 'careplans.html',
+        breadcrumbs: [
+          { name: 'Careplan', href: 'careplan-dashboard.html' },
+          { name: 'Careplans', href: 'careplans.html' }
+        ],
+        user: currentUser
+      });
+    });
+    
+    function openCreateModal() {
+      Toast.info('Opening careplan builder...');
+    }
+  </script>
+</body>
+</html>

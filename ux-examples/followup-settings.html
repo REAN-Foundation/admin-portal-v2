@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Follow-up Settings - REAN Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .accordion-section {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+    
+    .accordion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      background: var(--color-surface-alt);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .accordion-header:hover {
+      background: var(--color-surface-hover);
+    }
+    
+    .accordion-header.active {
+      background: rgba(51, 89, 255, 0.05);
+      border-bottom: 1px solid var(--color-border);
+    }
+    
+    .accordion-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .accordion-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .accordion-icon.blue { background: rgba(51, 89, 255, 0.1); color: var(--color-primary-500); }
+    .accordion-icon.green { background: rgba(16, 185, 129, 0.1); color: var(--color-success-500); }
+    .accordion-icon.purple { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+    .accordion-icon.orange { background: rgba(245, 158, 11, 0.1); color: var(--color-warning-500); }
+    
+    .accordion-content {
+      display: none;
+      padding: 1.25rem;
+      background: var(--color-surface);
+    }
+    
+    .accordion-content.open {
+      display: block;
+    }
+    
+    .accordion-chevron {
+      transition: transform 0.2s ease;
+    }
+    
+    .accordion-header.active .accordion-chevron {
+      transform: rotate(180deg);
+    }
+    
+    .key-value-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .key-value-row input {
+      flex: 1;
+    }
+    
+    .schedule-card {
+      background: var(--color-surface-alt);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      transition: all 0.2s ease;
+    }
+    
+    .schedule-card:hover {
+      border-color: var(--color-primary-500);
+    }
+    
+    .schedule-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    
+    .schedule-badge.previous { background: rgba(51, 89, 255, 0.1); color: var(--color-primary-500); }
+    .schedule-badge.same { background: rgba(16, 185, 129, 0.1); color: var(--color-success-500); }
+    .schedule-badge.week { background: rgba(245, 158, 11, 0.1); color: var(--color-warning-500); }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar"></aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Navbar -->
+      <header class="navbar" id="navbar"></header>
+      
+      <!-- Page Content -->
+      <div class="page-container">
+        <!-- Settings Header Card -->
+        <div class="card">
+          <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 class="card-title" style="margin: 0;">Follow-up Settings</h2>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-secondary" id="editBtn" onclick="toggleEditMode()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                <span id="editBtnText">Edit</span>
+              </button>
+              <a href="tenant-settings.html" class="btn btn-icon btn-ghost" style="color: var(--color-error-500);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+          
+          <!-- Edit Mode Indicator -->
+          <div id="editModeIndicator" class="hidden" style="background: rgba(16, 185, 129, 0.1); padding: 0.5rem 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <div style="width: 8px; height: 8px; background: var(--color-success-500); border-radius: 50%; animation: pulse 2s infinite;"></div>
+            <span style="font-size: 0.875rem; color: var(--color-success-500); font-weight: 500;">Edit mode enabled</span>
+          </div>
+          
+          <div class="card-body">
+            <form id="followupForm" onsubmit="handleSubmit(event)">
+              <!-- Source Selection -->
+              <div class="form-group">
+                <label class="form-label">Data Source</label>
+                <select id="sourceSelect" class="form-input form-select" style="max-width: 300px;" onchange="handleSourceChange()" disabled>
+                  <option value="None">None</option>
+                  <option value="File">File Upload</option>
+                  <option value="Api" selected>API Integration</option>
+                </select>
+              </div>
+              
+              <!-- File Upload Settings (hidden by default) -->
+              <div id="fileSettings" class="hidden" style="margin-top: 1.5rem;">
+                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">File Upload Configuration</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Column Format (JSON) <span class="required">*</span></label>
+                    <textarea class="form-input" rows="4" disabled placeholder='{"columns": ["name", "phone", "date"]}'></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">File Type <span class="required">*</span></label>
+                    <select class="form-input form-select" disabled>
+                      <option value="">Select file type</option>
+                      <option value="csv" selected>CSV</option>
+                      <option value="json">JSON</option>
+                      <option value="xlsx">Excel</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- API Integration Settings -->
+              <div id="apiSettings" style="margin-top: 1.5rem;">
+                <!-- Authentication Endpoint -->
+                <div class="accordion-section">
+                  <div class="accordion-header" onclick="toggleAccordion('auth')">
+                    <div class="accordion-header-left">
+                      <div class="accordion-icon blue">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <div style="font-weight: 600;">Authentication Endpoint</div>
+                        <div style="font-size: 0.8125rem; color: var(--color-text-muted);">Configure API authentication settings</div>
+                      </div>
+                    </div>
+                    <svg class="accordion-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                  </div>
+                  <div class="accordion-content" id="authContent">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Method</label>
+                        <select class="form-input form-select" disabled>
+                          <option value="GET">GET</option>
+                          <option value="POST" selected>POST</option>
+                          <option value="PUT">PUT</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Base URL</label>
+                        <input type="url" class="form-input" value="https://api.example.com/auth" disabled>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Request Body</label>
+                      <textarea class="form-input" rows="3" disabled>{"username": "{{USER}}", "password": "{{PASS}}"}</textarea>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Token Path</label>
+                        <input type="text" class="form-input" value="data.accessToken" placeholder="e.g., data.token" disabled>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Response Type</label>
+                        <select class="form-input form-select" disabled>
+                          <option value="json" selected>JSON</option>
+                          <option value="xml">XML</option>
+                          <option value="text">Text</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Headers</label>
+                      <div id="authHeaders">
+                        <div class="key-value-row">
+                          <input type="text" class="form-input" value="Content-Type" placeholder="Key" disabled>
+                          <input type="text" class="form-input" value="application/json" placeholder="Value" disabled>
+                          <button type="button" class="btn btn-icon btn-ghost sm" disabled style="color: var(--color-error-500);">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <polyline points="3 6 5 6 21 6"/>
+                              <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      <button type="button" class="btn btn-ghost btn-sm" disabled style="margin-top: 0.5rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <line x1="12" y1="5" x2="12" y2="19"/>
+                          <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Add Header
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- API Fetch Configuration -->
+                <div class="accordion-section">
+                  <div class="accordion-header" onclick="toggleAccordion('fetch')">
+                    <div class="accordion-header-left">
+                      <div class="accordion-icon green">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                          <polyline points="7 10 12 15 17 10"/>
+                          <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <div style="font-weight: 600;">API Fetch Configuration</div>
+                        <div style="font-size: 0.8125rem; color: var(--color-text-muted);">Configure data retrieval settings</div>
+                      </div>
+                    </div>
+                    <svg class="accordion-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                  </div>
+                  <div class="accordion-content" id="fetchContent">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Method <span class="required">*</span></label>
+                        <select class="form-input form-select" disabled>
+                          <option value="GET" selected>GET</option>
+                          <option value="POST">POST</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">URL <span class="required">*</span></label>
+                        <input type="url" class="form-input" value="https://api.example.com/followups" disabled>
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Response Type</label>
+                        <select class="form-input form-select" disabled>
+                          <option value="json" selected>JSON</option>
+                          <option value="xml">XML</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Response Field</label>
+                        <input type="text" class="form-input" value="data.patients" placeholder="e.g., data.items" disabled>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Token Injection -->
+                <div class="accordion-section">
+                  <div class="accordion-header" onclick="toggleAccordion('token')">
+                    <div class="accordion-header-left">
+                      <div class="accordion-icon purple">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="12" r="10"/>
+                          <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
+                          <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <div style="font-weight: 600;">Token Injection</div>
+                        <div style="font-size: 0.8125rem; color: var(--color-text-muted);">Configure token placement in requests</div>
+                      </div>
+                    </div>
+                    <svg class="accordion-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                  </div>
+                  <div class="accordion-content" id="tokenContent">
+                    <div class="form-row" style="grid-template-columns: repeat(3, 1fr);">
+                      <div class="form-group">
+                        <label class="form-label">Location</label>
+                        <select class="form-input form-select" disabled>
+                          <option value="header" selected>Header</option>
+                          <option value="query">Query Parameter</option>
+                          <option value="body">Body</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Key</label>
+                        <input type="text" class="form-input" value="Authorization" disabled>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Prefix</label>
+                        <input type="text" class="form-input" value="Bearer " placeholder="e.g., Bearer " disabled>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Schedule Frequency -->
+                <div class="form-group" style="margin-top: 1.5rem;">
+                  <label class="form-label">Schedule Frequency <span class="required">*</span></label>
+                  <select class="form-input form-select" style="max-width: 300px;" disabled>
+                    <option value="">Select frequency</option>
+                    <option value="daily" selected>Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                  </select>
+                </div>
+              </div>
+              
+              <!-- Reminder Schedules Section -->
+              <div style="margin-top: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                  <div>
+                    <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem;">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 0.5rem; color: var(--color-warning-500);">
+                        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 01-3.46 0"/>
+                      </svg>
+                      Reminder Schedules
+                    </h3>
+                    <p style="font-size: 0.8125rem; color: var(--color-text-muted);">Configure when reminders should be sent</p>
+                  </div>
+                  <button type="button" class="btn btn-primary" id="addScheduleBtn" onclick="openScheduleModal()" disabled>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="12" y1="5" x2="12" y2="19"/>
+                      <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    Add Schedule
+                  </button>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+                  <!-- Schedule Card 1 -->
+                  <div class="schedule-card">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                      <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 32px; height: 32px; background: rgba(51, 89, 255, 0.1); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center;">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-500)" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                          </svg>
+                        </div>
+                        <span class="schedule-badge previous">Previous Day</span>
+                      </div>
+                      <div style="display: flex; gap: 0.25rem;">
+                        <button type="button" class="btn btn-icon btn-ghost sm" disabled title="Edit">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                          </svg>
+                        </button>
+                        <button type="button" class="btn btn-icon btn-ghost sm" disabled title="Delete" style="color: var(--color-error-500);">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    <div style="font-size: 0.875rem;">
+                      <p><span style="color: var(--color-text-muted);">Offset:</span> <strong>2 hours</strong></p>
+                      <p><span style="color: var(--color-text-muted);">Time:</span> <strong>09:00 AM</strong></p>
+                    </div>
+                  </div>
+                  
+                  <!-- Schedule Card 2 -->
+                  <div class="schedule-card">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                      <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 32px; height: 32px; background: rgba(16, 185, 129, 0.1); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center;">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success-500)" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                          </svg>
+                        </div>
+                        <span class="schedule-badge same">Same Day</span>
+                      </div>
+                      <div style="display: flex; gap: 0.25rem;">
+                        <button type="button" class="btn btn-icon btn-ghost sm" disabled title="Edit">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                          </svg>
+                        </button>
+                        <button type="button" class="btn btn-icon btn-ghost sm" disabled title="Delete" style="color: var(--color-error-500);">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    <div style="font-size: 0.875rem;">
+                      <p><span style="color: var(--color-text-muted);">Offset:</span> <strong>1 hour</strong></p>
+                      <p><span style="color: var(--color-text-muted);">Time:</span> <strong>08:00 AM</strong></p>
+                    </div>
+                  </div>
+                  
+                  <!-- Schedule Card 3 -->
+                  <div class="schedule-card">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                      <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 32px; height: 32px; background: rgba(245, 158, 11, 0.1); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center;">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-warning-500)" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                          </svg>
+                        </div>
+                        <span class="schedule-badge week">Week Before</span>
+                      </div>
+                      <div style="display: flex; gap: 0.25rem;">
+                        <button type="button" class="btn btn-icon btn-ghost sm" disabled title="Edit">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                          </svg>
+                        </button>
+                        <button type="button" class="btn btn-icon btn-ghost sm" disabled title="Delete" style="color: var(--color-error-500);">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    <div style="font-size: 0.875rem;">
+                      <p><span style="color: var(--color-text-muted);">Offset:</span> <strong>7 days</strong></p>
+                      <p><span style="color: var(--color-text-muted);">Time:</span> <strong>10:00 AM</strong></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Submit Button -->
+              <div style="display: flex; justify-content: center; padding-top: 1.5rem; margin-top: 1.5rem; border-top: 1px solid var(--color-border);">
+                <button type="submit" class="btn btn-primary" id="submitBtn" disabled>Submit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Schedule Modal -->
+  <div class="modal-overlay" id="scheduleModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Add Reminder Schedule</h3>
+        <button class="modal-close" onclick="closeScheduleModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="scheduleForm">
+          <div class="form-group">
+            <label class="form-label">Type</label>
+            <select class="form-input form-select">
+              <option value="PreviousDay">Previous Day</option>
+              <option value="SameDay">Same Day</option>
+              <option value="WeekBefore">Week Before</option>
+              <option value="Custom">Custom</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Offset Value</label>
+              <input type="number" class="form-input" min="1" value="1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Unit</label>
+              <select class="form-input form-select">
+                <option value="hours">Hours</option>
+                <option value="days">Days</option>
+                <option value="weeks">Weeks</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Time of Day</label>
+            <input type="time" class="form-input" value="09:00">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeScheduleModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="addSchedule()">Add Schedule</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    let isEditMode = false;
+    let openAccordions = new Set();
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeLayout({
+        currentPage: 'followup-settings.html',
+        breadcrumbs: [
+          { name: 'Tenants', href: 'tenants.html' },
+          { name: 'REAN Health', href: '#' },
+          { name: 'Settings', href: 'tenant-settings.html' },
+          { name: 'Follow-up', href: 'followup-settings.html' }
+        ],
+        user: currentUser
+      });
+    });
+    
+    function toggleEditMode() {
+      isEditMode = !isEditMode;
+      const editBtn = document.getElementById('editBtn');
+      const editBtnText = document.getElementById('editBtnText');
+      const editIndicator = document.getElementById('editModeIndicator');
+      const addScheduleBtn = document.getElementById('addScheduleBtn');
+      const submitBtn = document.getElementById('submitBtn');
+      const allInputs = document.querySelectorAll('input, select, textarea');
+      
+      if (isEditMode) {
+        editBtn.classList.add('btn-success');
+        editBtn.classList.remove('btn-secondary');
+        editBtnText.textContent = 'Editing';
+        editIndicator.classList.remove('hidden');
+        editIndicator.style.display = 'flex';
+        addScheduleBtn.disabled = false;
+        submitBtn.disabled = false;
+        allInputs.forEach(input => input.disabled = false);
+        Toast.info('Edit mode enabled');
+      } else {
+        editBtn.classList.remove('btn-success');
+        editBtn.classList.add('btn-secondary');
+        editBtnText.textContent = 'Edit';
+        editIndicator.classList.add('hidden');
+        editIndicator.style.display = 'none';
+        addScheduleBtn.disabled = true;
+        submitBtn.disabled = true;
+        allInputs.forEach(input => input.disabled = true);
+        Toast.info('Edit mode disabled');
+      }
+    }
+    
+    function toggleAccordion(id) {
+      const content = document.getElementById(id + 'Content');
+      const header = content.previousElementSibling;
+      
+      if (openAccordions.has(id)) {
+        content.classList.remove('open');
+        header.classList.remove('active');
+        openAccordions.delete(id);
+      } else {
+        content.classList.add('open');
+        header.classList.add('active');
+        openAccordions.add(id);
+      }
+    }
+    
+    function handleSourceChange() {
+      const source = document.getElementById('sourceSelect').value;
+      const fileSettings = document.getElementById('fileSettings');
+      const apiSettings = document.getElementById('apiSettings');
+      
+      if (source === 'File') {
+        fileSettings.classList.remove('hidden');
+        apiSettings.classList.add('hidden');
+      } else if (source === 'Api') {
+        fileSettings.classList.add('hidden');
+        apiSettings.classList.remove('hidden');
+      } else {
+        fileSettings.classList.add('hidden');
+        apiSettings.classList.add('hidden');
+      }
+    }
+    
+    function openScheduleModal() {
+      document.getElementById('scheduleModal').classList.add('active');
+    }
+    
+    function closeScheduleModal() {
+      document.getElementById('scheduleModal').classList.remove('active');
+    }
+    
+    function addSchedule() {
+      Toast.success('Schedule added successfully');
+      closeScheduleModal();
+    }
+    
+    function handleSubmit(event) {
+      event.preventDefault();
+      Toast.success('Follow-up settings updated successfully');
+      toggleEditMode();
+    }
+  </script>
+</body>
+</html>
