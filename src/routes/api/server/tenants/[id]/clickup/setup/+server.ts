@@ -17,7 +17,7 @@ export const POST = async (event: RequestEvent) => {
 	try {
 		console.log('Inside the webhook setup');
 		const sessionId = event.locals?.sessionUser?.sessionId;
-		const tenantCode = event.locals?.sessionUser?.tenantCode;
+		// const tenantCode = event.locals?.sessionUser?.tenantCode;
 		if (!sessionId) {
 			return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session'));
 		}
@@ -39,6 +39,7 @@ export const POST = async (event: RequestEvent) => {
 		}
 
 		const clickUpConfig = validation.data as ClickUpConfig;
+		console.log('TenantCode---',clickUpConfig.TenantCode)
 
 		// Get current config to retrieve auth credentials
 		const configResponse = await getClickUpConfig(sessionId, tenantId);
@@ -46,7 +47,7 @@ export const POST = async (event: RequestEvent) => {
 	
 		const webhookUrl =
 			BOT_WRAPPER_URL +
-			tenantCode +
+			clickUpConfig.TenantCode +
 			`/clickup/` +
 			clickUpConfig.WebhookClickupClientUrlToken +
 			`/receive`;

@@ -30,6 +30,7 @@ export const ClickUpEventTypeSchema = z.enum([
 ]);
 
 export const ClickUpConfigSchema = z.object({
+	TenantCode: z.string(),
 	Enabled: z.boolean().optional().default(true),
 	ClickupAuthentication: z.string().optional(), // Authentication record ID
 	ClickupListId: z

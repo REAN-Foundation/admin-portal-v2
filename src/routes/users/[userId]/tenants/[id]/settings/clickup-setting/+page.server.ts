@@ -1,7 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getBotSecret } from '$routes/api/services/reancare/tenants';
+import { getBotSecret, getTenantById } from '$routes/api/services/reancare/tenants';
 import { getWebhookStatus} from '$routes/api/services/reancare/clickup';
 import { CLICKUP_TEAM_ID } from '$env/static/private';
 import type { WebhookStatus } from '$lib/types/clickup.types';
@@ -11,7 +11,7 @@ import type { WebhookStatus } from '$lib/types/clickup.types';
 export const load: PageServerLoad = async (event: RequestEvent) => {
 	const sessionId = event.cookies.get('sessionId') as string;
 	const tenantId = event.params.id as string;
-	const tenantCode = event.locals.sessionUser?.tenantCode || '';
+	// const tenantCode = event.locals.sessionUser?.tenantCode || '';
 	let statuses: WebhookStatus[] = [];
 
 	if (!sessionId) {
@@ -34,6 +34,10 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 		statuses = await getWebhookStatus(clickupAuthentication, CLICKUP_TEAM_ID, primaryListId, issuesListId, caseListId);
 	}
 
+	const tenantResponse = await getTenantById(sessionId, tenantId);
+	const tenantCode = tenantResponse?.Data?.Tenant?.Code || '';
+
+	console.log("tenantCode",tenantCode)
 	return {
 		tenantId,
 		tenantCode,
