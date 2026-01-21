@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tenants - REAN Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar"></aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Navbar -->
+      <header class="navbar" id="navbar"></header>
+      
+      <!-- Page Content -->
+      <div class="page-container">
+        <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h1 class="page-title">Tenants</h1>
+            <p class="page-subtitle">Manage all tenant organizations in the system</p>
+          </div>
+          <button class="btn btn-primary" onclick="openCreateModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Add New Tenant
+          </button>
+        </div>
+        
+        <!-- Table -->
+        <div class="table-container">
+          <div class="table-header">
+            <div class="table-search">
+              <span class="table-search-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="M21 21l-4.35-4.35"/>
+                </svg>
+              </span>
+              <input type="text" placeholder="Search tenants..." id="searchInput" oninput="filterTenants()">
+            </div>
+            <div class="table-filters">
+              <select class="form-input form-select" style="width: auto;" onchange="filterByStatus(this.value)">
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+          
+          <table class="table">
+            <thead>
+              <tr>
+                <th style="width: 5%;">#</th>
+                <th style="width: 25%;" class="sortable" onclick="sortTable('name')">
+                  Name
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle;">
+                    <path d="M7 15l5 5 5-5"/>
+                    <path d="M7 9l5-5 5 5"/>
+                  </svg>
+                </th>
+                <th style="width: 12%;">Code</th>
+                <th style="width: 18%;">Email</th>
+                <th style="width: 15%;">Phone</th>
+                <th style="width: 10%;">Users</th>
+                <th style="width: 10%;">Status</th>
+                <th style="width: 10%; text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tenantsTableBody">
+              <!-- Data will be populated by JavaScript -->
+            </tbody>
+          </table>
+          
+          <div class="table-footer">
+            <div style="color: var(--color-text-muted); font-size: 0.875rem;">
+              Showing <strong id="showingCount">1-5</strong> of <strong id="totalCount">5</strong> tenants
+            </div>
+            <div class="pagination">
+              <button class="pagination-btn" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15 18 9 12 15 6"/>
+                </svg>
+              </button>
+              <button class="pagination-btn active">1</button>
+              <button class="pagination-btn">2</button>
+              <button class="pagination-btn">3</button>
+              <button class="pagination-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Delete Tenant</h3>
+        <button class="modal-close" onclick="closeDeleteModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this tenant? This action cannot be undone.</p>
+        <p style="margin-top: 0.75rem; color: var(--color-text-muted); font-size: 0.875rem;">
+          Tenant: <strong id="deleteTenantName"></strong>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Create/Edit Tenant Modal -->
+  <div class="modal-overlay" id="createModal">
+    <div class="modal" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Add New Tenant</h3>
+        <button class="modal-close" onclick="closeCreateModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="tenantForm">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Name <span class="required">*</span></label>
+              <input type="text" class="form-input" id="tenantName" required placeholder="Enter tenant name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Code <span class="required">*</span></label>
+              <input type="text" class="form-input" id="tenantCode" required placeholder="e.g., REAN">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email <span class="required">*</span></label>
+            <input type="email" class="form-input" id="tenantEmail" required placeholder="admin@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input type="tel" class="form-input" id="tenantPhone" placeholder="+1 (555) 000-0000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea class="form-input" id="tenantDescription" rows="3" placeholder="Brief description of the tenant"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeCreateModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveTenant()">Save Tenant</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    let currentTenants = [...tenantsData];
+    let deleteTargetId = null;
+    let editTargetId = null;
+    
+    // Initialize layout
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeLayout({
+        currentPage: 'tenants.html',
+        breadcrumbs: [
+          { name: 'Administration', href: '#' },
+          { name: 'Tenants', href: 'tenants.html' }
+        ],
+        user: currentUser
+      });
+      
+      renderTable();
+    });
+    
+    function renderTable(data = currentTenants) {
+      const tbody = document.getElementById('tenantsTableBody');
+      
+      if (data.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" style="text-align: center; padding: 3rem;">
+              <div style="color: var(--color-text-muted);">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 1rem; opacity: 0.5;">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="M21 21l-4.35-4.35"/>
+                </svg>
+                <p>No tenants found</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      tbody.innerHTML = data.map((tenant, index) => `
+        <tr>
+          <td>${index + 1}</td>
+          <td>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, ${getColorForTenant(tenant.code)}, ${getColorForTenant(tenant.code, true)}); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; font-size: 0.75rem;">
+                ${tenant.code.substring(0, 2)}
+              </div>
+              <div>
+                <a href="tenant-settings.html?id=${tenant.id}" style="font-weight: 500;">${tenant.name}</a>
+                <div style="font-size: 0.75rem; color: var(--color-text-muted);">Created ${Helpers.formatDate(tenant.createdAt)}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="badge badge-primary">${tenant.code}</span></td>
+          <td>${tenant.email}</td>
+          <td>${tenant.phone}</td>
+          <td style="font-weight: 600;">${Helpers.formatNumber(tenant.usersCount)}</td>
+          <td>
+            <span class="badge ${tenant.status === 'active' ? 'badge-success' : 'badge-warning'}">
+              ${tenant.status.charAt(0).toUpperCase() + tenant.status.slice(1)}
+            </span>
+          </td>
+          <td>
+            <div class="table-actions">
+              <button class="btn btn-icon btn-ghost sm" onclick="editTenant('${tenant.id}')" title="Edit">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+              <a href="tenant-settings.html?id=${tenant.id}" class="btn btn-icon btn-ghost sm" title="Settings">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4"/>
+                </svg>
+              </a>
+              <button class="btn btn-icon btn-ghost sm" onclick="openDeleteModal('${tenant.id}', '${tenant.name}')" title="Delete" style="color: var(--color-error-500);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+      
+      document.getElementById('showingCount').textContent = `1-${data.length}`;
+      document.getElementById('totalCount').textContent = data.length;
+    }
+    
+    function getColorForTenant(code, darker = false) {
+      const colors = {
+        'REAN': darker ? '#1a35f5' : '#3359ff',
+        'AHA': darker ? '#059669' : '#10b981',
+        'SNEHA': darker ? '#d97706' : '#f59e0b',
+        'GMU': darker ? '#7c3aed' : '#8b5cf6',
+        'PHN': darker ? '#dc2626' : '#ef4444'
+      };
+      return colors[code] || (darker ? '#475569' : '#64748b');
+    }
+    
+    function filterTenants() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = tenantsData.filter(tenant => 
+        tenant.name.toLowerCase().includes(searchTerm) ||
+        tenant.code.toLowerCase().includes(searchTerm) ||
+        tenant.email.toLowerCase().includes(searchTerm)
+      );
+      currentTenants = filtered;
+      renderTable(filtered);
+    }
+    
+    function filterByStatus(status) {
+      if (!status) {
+        currentTenants = [...tenantsData];
+      } else {
+        currentTenants = tenantsData.filter(t => t.status === status);
+      }
+      renderTable(currentTenants);
+    }
+    
+    function sortTable(key) {
+      const sorted = [...currentTenants].sort((a, b) => {
+        if (a[key] < b[key]) return -1;
+        if (a[key] > b[key]) return 1;
+        return 0;
+      });
+      currentTenants = sorted;
+      renderTable(sorted);
+    }
+    
+    function openDeleteModal(id, name) {
+      deleteTargetId = id;
+      document.getElementById('deleteTenantName').textContent = name;
+      document.getElementById('deleteModal').classList.add('active');
+    }
+    
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').classList.remove('active');
+      deleteTargetId = null;
+    }
+    
+    function confirmDelete() {
+      if (deleteTargetId) {
+        currentTenants = currentTenants.filter(t => t.id !== deleteTargetId);
+        renderTable(currentTenants);
+        Toast.success('Tenant deleted successfully');
+      }
+      closeDeleteModal();
+    }
+    
+    function openCreateModal() {
+      editTargetId = null;
+      document.getElementById('modalTitle').textContent = 'Add New Tenant';
+      document.getElementById('tenantForm').reset();
+      document.getElementById('createModal').classList.add('active');
+    }
+    
+    function closeCreateModal() {
+      document.getElementById('createModal').classList.remove('active');
+      editTargetId = null;
+    }
+    
+    function editTenant(id) {
+      editTargetId = id;
+      const tenant = tenantsData.find(t => t.id === id);
+      if (tenant) {
+        document.getElementById('modalTitle').textContent = 'Edit Tenant';
+        document.getElementById('tenantName').value = tenant.name;
+        document.getElementById('tenantCode').value = tenant.code;
+        document.getElementById('tenantEmail').value = tenant.email;
+        document.getElementById('tenantPhone').value = tenant.phone || '';
+        document.getElementById('createModal').classList.add('active');
+      }
+    }
+    
+    function saveTenant() {
+      const name = document.getElementById('tenantName').value;
+      const code = document.getElementById('tenantCode').value;
+      const email = document.getElementById('tenantEmail').value;
+      
+      if (!name || !code || !email) {
+        Toast.error('Please fill in all required fields');
+        return;
+      }
+      
+      if (editTargetId) {
+        Toast.success('Tenant updated successfully');
+      } else {
+        Toast.success('Tenant created successfully');
+      }
+      
+      closeCreateModal();
+    }
+  </script>
+</body>
+</html>
