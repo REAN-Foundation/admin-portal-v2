@@ -6,8 +6,8 @@ import { get } from '../reancare/common.reancare';
 
 ///////////////////////////////////////////////////////////////////////////////
 
-export const getAnalyticsReport = async(format: string) => {
-    const url = USER_ANALYTICS_API_URL + `/analytics/download/${new Date().toISOString().split('T')[0]}-1/formats/${format}`;
+export const getAnalyticsReport = async(format: string, tenantCode) => {
+    const url = USER_ANALYTICS_API_URL + `/analytics/download/${new Date().toISOString().split('T')[0]}-${tenantCode}-1/formats/${format}`;
 	const headers:any = {};
 	headers['x-api-key'] = API_CLIENT_INTERNAL_KEY;
 	const response = await fetch(url, {
