@@ -24,7 +24,7 @@ export const createPriority = async (
 	const result = await post_(url, body, true, sessionId);
 
 	// Clear asset search caches after creation
-	await DashboardManager.findAndClear([`session-${sessionId}:req-searchPriorities`]);
+	await DashboardManager.findAndClear([`session-${sessionId}:req-searchAssets`]);
 
 	return result;
 };
