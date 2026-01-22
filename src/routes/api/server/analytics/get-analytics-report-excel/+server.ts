@@ -8,8 +8,9 @@ import { getAnalyticsReport } from '../../../services/user-analytics/user-analyt
 export const GET = async (event: RequestEvent) => {
     let response;
 	const tenantCode = event.locals?.sessionUser?.tenantCode;
+	const roleName = event.locals?.sessionUser?.roleName;
 	try {
-        response = await getAnalyticsReport('excel', tenantCode);
+        response = await getAnalyticsReport('excel', tenantCode, roleName);
 	} catch (error) {
 		console.error(`Error downloading analytics report: ${error}`);
         throw redirect(
