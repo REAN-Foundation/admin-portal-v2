@@ -6,6 +6,8 @@
 	import { getPublicLogoImageSource } from '$lib/themes/theme.selector';
 	import Sidebar from './Sidebar.svelte';
 	import { clickOutside } from '$lib/actions/clickOutside';
+	import Button from '$lib/components/button/button.svelte';
+
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -28,6 +30,10 @@
 	let selectedMode = $state('Light');
 	let selectedOption = $state('Blue');
 	let showSidebar = $state(false);
+	const tenantId = tenantSettings.TenantId;
+	const settingRoute = `/users/${userId}/tenants/${tenantId}/settings`
+	const normalizedRoleName = (userRole ?? '').trim().toLowerCase();
+	const canViewSettings = normalizedRoleName === 'system admin' || normalizedRoleName === 'tenant admin';
 
 	const userMenuItems = [
 		{
@@ -120,6 +126,25 @@
 			<img src={logoImageSource} alt="Logo" class="px-4" width="100" height="100" />
 		</div>
 		<div class="relative ml-auto flex items-center">
+			<!-- <Button
+			href={settingRoute}
+			variant="icon"
+			icon="material-symbols:settings-outline"
+			iconSize="xl"
+			tooltip="Settings"
+			/> -->
+
+
+		{#if canViewSettings}
+			<a
+				href={settingRoute}
+				data-sveltekit-preload-data
+				class="btn-icon rounded mr-4"
+				title="Settings"
+			>
+				<Icon icon="material-symbols:settings-outline" class="!text-3xl" />
+			</a>
+		{/if}
 			<button
 				onclick={() => (showSidebar = !showSidebar)}
 				class=" btn-icon mx-4 rounded p-1 text-white hover:bg-white/10 md:hidden"
