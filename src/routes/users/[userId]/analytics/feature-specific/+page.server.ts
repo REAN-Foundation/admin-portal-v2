@@ -15,6 +15,11 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
     const today = new Date();
     const formattedDate = TimeHelper.getDateString(today, DateStringFormat.YYYY_MM_DD);
     const tenantCode = event.locals.sessionUser.tenantCode;
+    
+    // Get tenantSettings from parent layout
+    const parentData = await event.parent();
+    const tenantSettings = parentData?.tenantSettings;
+    
     const response = await getUserAnalytics(sessionId, formattedDate, tenantCode)
     if (!response) {
         throw error(404, 'Daily user statistics data not found');
@@ -45,6 +50,7 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
         patientTaskMetrics,
         vitalMetrics,
         assessmentMetrics,
+        tenantSettings,
         title:'Dashboard-Home-Feature'
     };
 };

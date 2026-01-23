@@ -7,24 +7,24 @@
 	/////////////////////////////////////////////////
 
 	let {
-		accessFrequencyData,
-		accessFrequencyLabels,
-		engagementRateData,
-		engagementRateLabels,
-		retentionRateDaysData,
-		retentionRateDaysLabels,
-		retentionRateDaysRate,
-		retentionRateIntervalsData,
-		retentionRateIntervalsLabels,
-		retentionRateIntervalsRate,
-		dropOffPointsData,
-		dropOffPointsLabels,
+		accessFrequencyData = [],
+		accessFrequencyLabels = [],
+		engagementRateData = [],
+		engagementRateLabels = [],
+		retentionRateDaysData = [],
+		retentionRateDaysLabels = [],
+		retentionRateDaysRate = [],
+		retentionRateIntervalsData = [],
+		retentionRateIntervalsLabels = [],
+		retentionRateIntervalsRate = [],
+		dropOffPointsData = [],
+		dropOffPointsLabels = [],
 		feature = undefined,
-		medicationManagementdata,
-		healthJourneyWiseTask,
-		overallHealthJourneyTaskData,
-		patientTaskMetrics,
-		vitalMetrics
+		medicationManagementdata = {},
+		healthJourneyWiseTask = [],
+		overallHealthJourneyTaskData = {},
+		patientTaskMetrics = {},
+		vitalMetrics = []
 	} = $props();
 
 	let selectedGraph = $state('graph1');
@@ -33,13 +33,18 @@
 	let selectedTaskCategory = $state('Overall');
 	let selectedVitalName = $state('Blood Pressure');
 	let healthJourneyMetricsData: any[] = $state([]);
-	let taskCategoriesData: string | any[] = $state([]);
-	let vitalMetricsData: string | any[] = $state([]);
-	let hasMedicationManagementData = Object.keys(medicationManagementdata).length > 0;
+	let taskCategoriesData: any[] = $state([]);
+	let vitalMetricsData: any[] = $state([]);
+	let hasMedicationManagementData = medicationManagementdata && Object.keys(medicationManagementdata).length > 0;
 
-	let sortedData = dropOffPointsData
-		.map((value: any, index: string | number) => ({ value, label: dropOffPointsLabels[index] }))
-		.sort((a: { value: string }, b: { value: string }) => parseInt(b.value) - parseInt(a.value));
+	// Ensure dropOffPointsData and dropOffPointsLabels are arrays before mapping
+	const safeDropOffPointsData = Array.isArray(dropOffPointsData) ? dropOffPointsData : [];
+	const safeDropOffPointsLabels = Array.isArray(dropOffPointsLabels) ? dropOffPointsLabels : [];
+	let sortedData = (safeDropOffPointsData.length > 0 && safeDropOffPointsLabels.length > 0)
+		? safeDropOffPointsData
+			.map((value: any, index: string | number) => ({ value, label: safeDropOffPointsLabels[index] }))
+			.sort((a: { value: string }, b: { value: string }) => parseInt(b.value) - parseInt(a.value))
+		: [];
 
 	$inspect('sortedData', sortedData);
 
@@ -61,26 +66,25 @@
 		patientTaskMetrics?.Overall?.patient_completed_task_count ?? 0;
 	let overallNotCompletedTasksCategory =
 		(patientTaskMetrics?.Overall?.patient_task_count ?? 0) - overallCompletedTasksCategory;
+	const safeHealthJourneyWiseTask = Array.isArray(healthJourneyWiseTask) ? healthJourneyWiseTask : [];
 	let planCodes = [
 		'Overall',
-		...(healthJourneyWiseTask?.length
-			? new Set(healthJourneyWiseTask.map((item: { PlanCode: any }) => item.PlanCode))
+		...(safeHealthJourneyWiseTask.length > 0
+			? Array.from(new Set(safeHealthJourneyWiseTask.map((item: { PlanCode: any }) => item.PlanCode)))
 			: [])
 	];
+	const safeCategorySpecific = Array.isArray(patientTaskMetrics?.CategorySpecific) ? patientTaskMetrics.CategorySpecific : [];
 	let taskCategories = [
 		'Overall',
-		...(patientTaskMetrics?.CategorySpecific?.length
-			? new Set(
-					patientTaskMetrics.CategorySpecific.map(
-						(item: { task_category: any }) => item.task_category
-					)
-				)
+		...(safeCategorySpecific.length > 0
+			? Array.from(new Set(safeCategorySpecific.map((item: { task_category: any }) => item.task_category)))
 			: [])
 	];
 	let taskCompletionTableHeaders = ['Percentage Range', 'User Count'];
 	let quarterWiseTaskCompletionData = patientTaskMetrics?.QuarterWiseTaskCompletionMetrics ?? [];
 
-	let vitalNames = vitalMetrics.map((item: { vital_name: any }) => item.vital_name);
+	const safeVitalMetrics = Array.isArray(vitalMetrics) ? vitalMetrics : [];
+	let vitalNames = safeVitalMetrics.map((item: { vital_name: any }) => item.vital_name);
 	let standardizedVitalNames = vitalNames.map((name: string) => Helper.standardizeVitalName(name));
 
 	function getSelectedHealthJourneyData(planCode: string) {
