@@ -142,7 +142,7 @@
 				class="btn-icon rounded mr-4"
 				title="Settings"
 			>
-				<Icon icon="material-symbols:settings-outline" class="!text-3xl" />
+				<Icon icon="heroicons:cog-6-tooth" class="!text-3xl" />
 			</a>
 		{/if}
 			<button
