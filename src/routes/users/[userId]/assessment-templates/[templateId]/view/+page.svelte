@@ -171,6 +171,27 @@ const handleFlowJson = async () => {
 	}
 };
 
+const handlePromotion = async () => {
+	try {
+		const res = await fetch(`/api/server/assessments/assessment-templates/${templateId}/promote-from`, {
+			method: 'POST',
+			body: JSON.stringify({}),
+			headers: { 'content-type': 'application/json' }
+		});
+
+		const response = await res.json();
+		if (response.HttpCode === 201 || response.HttpCode === 200) {
+			toastMessage(response);
+			return;
+		}
+
+		toastMessage(response);
+	} catch (error) {
+		console.error('Error promoting assessment template:', error);
+		toastMessage({ HttpCode: 500, Message: error.message || 'An error occurred during promotion.' });
+	}
+};
+
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -245,22 +266,24 @@ const handleFlowJson = async () => {
 		</tbody>
 	</table>
 	<div class="btn-container">
+		<Button onclick={handlePromotion} size="md" text="Promote" variant="primary" />
+
 		<Button href={nodeRoute} text="Add node" variant="primary" />
 
-		<Button 
-			onclick={handleExport} 
-			text={isExporting ? "Exporting..." : "Export"} 
-			variant="primary" 
-			iconBefore="mdi:download" 
+		<Button
+			onclick={handleExport}
+			text={isExporting ? "Exporting..." : "Export"}
+			variant="primary"
+			iconBefore="mdi:download"
 			iconSize="md"
 			disabled={isExporting}
 		></Button>
 
-        <Button 
-			onclick={handleFlowJson} 
-			text={isExportingFlowJson ? "Exporting..." : "Flow JSON"} 
-			variant="primary" 
-			iconBefore="mdi:download" 
+		<Button
+			onclick={handleFlowJson}
+			text={isExportingFlowJson ? "Exporting..." : "Flow JSON"}
+			variant="primary"
+			iconBefore="mdi:download"
 			iconSize="md"
 			disabled={isExportingFlowJson}
 		></Button>
