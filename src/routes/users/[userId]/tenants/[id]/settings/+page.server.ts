@@ -1,7 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getTenantSettings } from '../../../../../api/services/reancare/tenant-settings';
+import { getTenantSettings, getTenantSettingsByType } from '../../../../../api/services/reancare/tenant-settings';
 import type { CommonSettings } from '$lib/types/tenant.settings.types';
 
 ////////////////////////////////////////////////////////////////////////////
@@ -9,6 +9,7 @@ import type { CommonSettings } from '$lib/types/tenant.settings.types';
 export const load: PageServerLoad = async (event: RequestEvent) => {
 	const sessionId = event.cookies.get('sessionId') as string;
 	let commonSettings = undefined;
+	let followupSettings = undefined;
     const tenantId = event.params.id as string;
     const response = await getTenantSettings(sessionId, tenantId);
     console.log('response**', response);
@@ -20,10 +21,20 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
         commonSettings = response.Data.TenantSettings.Common as CommonSettings;
     }
 
+    // Load follow-up settings
+    const followupResponse = await getTenantSettingsByType(sessionId, tenantId, 'Followup');
+    if (followupResponse.Status === 'success' && followupResponse.HttpCode === 200) {
+        followupSettings = followupResponse.Data?.TenantSettings;
+    }
+
+    const isFollowupEnabled = commonSettings?.UserInterfaces?.Followup;
+
     return {
         sessionId,
         tenantId,
-        commonSettings
+        commonSettings,
+        followupSettings,
+        isFollowupEnabled
     };
-	
+
 };

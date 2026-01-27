@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Settings - Follow-up Configuration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #6366f1;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        input:disabled + .toggle-slider {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .nav-item {
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        .nav-item.active {
+            background-color: #eef2ff;
+            border-left: 3px solid #6366f1;
+        }
+
+        .form-input {
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Vertical Tabs Styles */
+        .vertical-tab {
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .vertical-tab:hover {
+            background-color: #f8fafc;
+        }
+
+        .vertical-tab.active {
+            background-color: #eef2ff;
+            border-left-color: #6366f1;
+            color: #6366f1;
+        }
+
+        .vertical-tab.active .tab-icon {
+            color: #6366f1;
+        }
+
+        .vertical-tab.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Sub-tab styles */
+        .sub-tab {
+            transition: all 0.2s ease;
+        }
+
+        .sub-tab:hover {
+            background-color: #f1f5f9;
+        }
+
+        .sub-tab.active {
+            background-color: #e0e7ff;
+            color: #4f46e5;
+            font-weight: 500;
+        }
+
+        .sub-tab.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .setting-row {
+            transition: all 0.2s ease;
+        }
+
+        .setting-row:hover {
+            background-color: #f8fafc;
+        }
+
+        .tab-content {
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .feature-disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .badge-enabled {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-disabled {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
+            overflow: hidden;
+            transform: scale(0.95);
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-body {
+            max-height: calc(85vh - 140px);
+            overflow-y: auto;
+        }
+
+        /* Collapsible section styles */
+        .collapsible-header {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .collapsible-header:hover {
+            background-color: #f8fafc;
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .collapsible-content.expanded {
+            max-height: 2000px;
+        }
+
+        .chevron-icon {
+            transition: transform 0.2s ease;
+        }
+
+        .chevron-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        /* Config card styles */
+        .config-card {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .config-card:hover {
+            border-color: #6366f1;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <button class="p-2 rounded-lg hover:bg-gray-100">
+                        <span class="iconify w-5 h-5 text-gray-600" data-icon="mdi:menu"></span>
+                    </button>
+                    <span class="text-xl font-semibold text-gray-800">REAN Admin</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="p-2 rounded-lg hover:bg-gray-100">
+                        <span class="iconify w-5 h-5 text-gray-600" data-icon="mdi:bell-outline"></span>
+                    </button>
+                    <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm font-medium">
+                        JD
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Left Sidebar Navigation (Settings Categories) -->
+        <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] hidden lg:block sticky top-16">
+            <div class="p-4">
+                <div class="mb-6">
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Tenant Settings</h3>
+                    <nav class="space-y-1">
+                        <a href="tenant-settings-main.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:view-dashboard-outline"></span>
+                            Integrations
+                        </a>
+                        <a href="tenant-settings-common.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:layers-outline"></span>
+                            Common Settings
+                        </a>
+                        <a href="tenant-settings-chatbot.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:robot-outline"></span>
+                            Chat Bot
+                        </a>
+                        <a href="tenant-settings-consent.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:shield-check-outline"></span>
+                            Consent
+                        </a>
+                        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:form-select"></span>
+                            Forms
+                        </a>
+                        <a href="#" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-indigo-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:calendar-clock"></span>
+                            Follow-up
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 lg:p-8">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+                <a href="#" class="hover:text-indigo-600">Tenants</a>
+                <span class="iconify w-4 h-4" data-icon="mdi:chevron-right"></span>
+                <a href="#" class="hover:text-indigo-600">ACME Healthcare</a>
+                <span class="iconify w-4 h-4" data-icon="mdi:chevron-right"></span>
+                <a href="tenant-settings-main.html" class="hover:text-indigo-600">Settings</a>
+                <span class="iconify w-4 h-4" data-icon="mdi:chevron-right"></span>
+                <span class="text-gray-800 font-medium">Follow-up</span>
+            </nav>
+
+            <!-- Page Container with Vertical Tabs -->
+            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <!-- Header -->
+                <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center">
+                            <span class="iconify w-6 h-6 text-amber-600" data-icon="mdi:calendar-clock"></span>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-semibold text-gray-800">Follow-up Settings</h1>
+                            <p class="text-sm text-gray-500">Configure patient follow-up reminders and data sources</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span id="statusBadge" class="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full flex items-center gap-1">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            Active
+                        </span>
+                        <button id="editBtn" class="px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                            <span class="iconify w-4 h-4" data-icon="mdi:pencil"></span>
+                            <span id="editBtnText">Edit</span>
+                        </button>
+                        <a href="tenant-settings-main.html" class="p-2 border border-gray-200 text-red-600 rounded-lg hover:bg-red-50">
+                            <span class="iconify w-5 h-5" data-icon="mdi:close"></span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Content with Vertical Tabs Layout -->
+                <div class="flex min-h-[600px]">
+                    <!-- Vertical Tabs Navigation -->
+                    <div class="w-56 border-r border-gray-100 bg-gray-50/50">
+                        <!-- Primary Tabs -->
+                        <div class="p-3">
+                            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">Settings</p>
+
+                            <!-- Common Tab -->
+                            <button
+                                class="vertical-tab active w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg text-sm font-medium"
+                                onclick="switchPrimaryTab('common')"
+                                id="tab-common"
+                            >
+                                <span class="iconify w-5 h-5 tab-icon" data-icon="mdi:cog-outline"></span>
+                                Common
+                            </button>
+
+                            <!-- User Interface Tab - conditionally enabled based on source selection -->
+                            <button
+                                class="vertical-tab w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg text-sm font-medium text-gray-600 disabled"
+                                onclick="switchPrimaryTab('userinterface')"
+                                id="tab-userinterface"
+                            >
+                                <span class="iconify w-5 h-5 tab-icon" data-icon="mdi:monitor-dashboard"></span>
+                                User Interface
+                                <span id="ui-tab-badge" class="ml-auto text-xs badge-disabled px-1.5 py-0.5 rounded">Off</span>
+                            </button>
+                        </div>
+
+                        <!-- Sub-tabs for User Interface (conditionally shown) -->
+                        <div id="ui-subtabs" class="hidden border-t border-gray-200 p-3">
+                            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">Configuration</p>
+
+                            <!-- File Upload Sub-tab -->
+                            <button
+                                class="sub-tab w-full flex items-center gap-2 px-4 py-2 text-left rounded-md text-sm text-gray-600 hidden"
+                                onclick="switchSubTab('file')"
+                                id="subtab-file"
+                            >
+                                <span class="iconify w-4 h-4" data-icon="mdi:file-upload-outline"></span>
+                                File Upload
+                                <span class="ml-auto text-xs badge-enabled px-1.5 py-0.5 rounded">On</span>
+                            </button>
+
+                            <!-- API Integration Sub-tab -->
+                            <button
+                                class="sub-tab w-full flex items-center gap-2 px-4 py-2 text-left rounded-md text-sm text-gray-600 hidden"
+                                onclick="switchSubTab('api')"
+                                id="subtab-api"
+                            >
+                                <span class="iconify w-4 h-4" data-icon="mdi:api"></span>
+                                API Integration
+                                <span class="ml-auto text-xs badge-enabled px-1.5 py-0.5 rounded">On</span>
+                            </button>
+
+                            <!-- Reminder Schedule Sub-tab -->
+                            <button
+                                class="sub-tab w-full flex items-center gap-2 px-4 py-2 text-left rounded-md text-sm text-gray-600"
+                                onclick="switchSubTab('reminders')"
+                                id="subtab-reminders"
+                            >
+                                <span class="iconify w-4 h-4" data-icon="mdi:bell-ring-outline"></span>
+                                Reminder Schedule
+                                <span class="ml-auto text-xs badge-enabled px-1.5 py-0.5 rounded">On</span>
+                            </button>
+                        </div>
+
+                        <!-- Feature Flags Legend -->
+                        <div class="mt-auto p-3 border-t border-gray-200">
+                            <p class="text-xs text-gray-500 px-3 mb-2">Feature Status</p>
+                            <div class="px-3 space-y-1">
+                                <div class="flex items-center gap-2 text-xs text-gray-600">
+                                    <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                                    Enabled when source selected
+                                </div>
+                                <div class="flex items-center gap-2 text-xs text-gray-400">
+                                    <span class="w-2 h-2 bg-gray-300 rounded-full"></span>
+                                    Disabled when source = None
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Content Area -->
+                    <div class="flex-1 p-6">
+                        <!-- Common Tab Content -->
+                        <div id="content-common" class="tab-content">
+                            <div class="max-w-3xl space-y-6">
+                                <!-- Data Source Section -->
+                                <div>
+                                    <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        <span class="iconify w-4 h-4 text-amber-600" data-icon="mdi:database-outline"></span>
+                                        Data Source
+                                    </h3>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Follow-up Data Source <span class="text-red-500">*</span></label>
+                                            <select id="sourceSelect" class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none bg-white" disabled onchange="handleSourceChange()">
+                                                <option value="None" selected>None</option>
+                                                <option value="File">File Upload</option>
+                                                <option value="Api">API Integration</option>
+                                            </select>
+                                            <p class="text-xs text-gray-500 mt-1">Select how follow-up data will be provided to the system</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Source Options Cards -->
+                                <div class="pt-6 border-t border-gray-100">
+                                    <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        <span class="iconify w-4 h-4 text-amber-600" data-icon="mdi:format-list-bulleted-type"></span>
+                                        Available Options
+                                    </h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <!-- None Option -->
+                                        <div class="config-card border-2 border-gray-200 rounded-xl p-4 bg-white" id="card-none" onclick="selectSource('None')">
+                                            <div class="flex items-center gap-3 mb-3">
+                                                <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                                                    <span class="iconify w-5 h-5 text-gray-500" data-icon="mdi:close-circle-outline"></span>
+                                                </div>
+                                                <div>
+                                                    <p class="font-medium text-gray-800">None</p>
+                                                    <span class="text-xs text-gray-500">Disabled</span>
+                                                </div>
+                                            </div>
+                                            <p class="text-sm text-gray-600">Follow-up feature is disabled. No reminders will be sent.</p>
+                                        </div>
+
+                                        <!-- File Upload Option -->
+                                        <div class="config-card border-2 border-gray-200 rounded-xl p-4 bg-white" id="card-file" onclick="selectSource('File')">
+                                            <div class="flex items-center gap-3 mb-3">
+                                                <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                                                    <span class="iconify w-5 h-5 text-blue-600" data-icon="mdi:file-upload-outline"></span>
+                                                </div>
+                                                <div>
+                                                    <p class="font-medium text-gray-800">File Upload</p>
+                                                    <span class="text-xs text-gray-500">Manual upload</span>
+                                                </div>
+                                            </div>
+                                            <p class="text-sm text-gray-600">Upload patient data files (CSV, JSON, Excel) for follow-up reminders.</p>
+                                            <button class="mt-3 text-sm text-indigo-600 font-medium flex items-center gap-1" onclick="event.stopPropagation(); openConfigModal('file')">
+                                                <span class="iconify w-4 h-4" data-icon="mdi:cog-outline"></span>
+                                                Configure
+                                            </button>
+                                        </div>
+
+                                        <!-- API Integration Option -->
+                                        <div class="config-card border-2 border-gray-200 rounded-xl p-4 bg-white" id="card-api" onclick="selectSource('Api')">
+                                            <div class="flex items-center gap-3 mb-3">
+                                                <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                                                    <span class="iconify w-5 h-5 text-purple-600" data-icon="mdi:api"></span>
+                                                </div>
+                                                <div>
+                                                    <p class="font-medium text-gray-800">API Integration</p>
+                                                    <span class="text-xs text-gray-500">Automated sync</span>
+                                                </div>
+                                            </div>
+                                            <p class="text-sm text-gray-600">Integrate with external API to fetch patient follow-up data automatically.</p>
+                                            <button class="mt-3 text-sm text-indigo-600 font-medium flex items-center gap-1" onclick="event.stopPropagation(); openConfigModal('api')">
+                                                <span class="iconify w-4 h-4" data-icon="mdi:cog-outline"></span>
+                                                Configure
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Info Banner -->
+                                <div class="p-4 rounded-lg bg-amber-50 border border-amber-200">
+                                    <div class="flex items-start gap-3">
+                                        <span class="iconify w-5 h-5 text-amber-600 shrink-0 mt-0.5" data-icon="mdi:information-outline"></span>
+                                        <div>
+                                            <p class="text-sm text-amber-800">
+                                                <strong>Note:</strong> Select a data source to enable follow-up reminders. Each source type has specific configuration options. Click "Configure" on any option to set up the integration.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- User Interface Tab Content -->
+                        <div id="content-userinterface" class="tab-content hidden">
+                            <!-- File Upload Sub-tab Content -->
+                            <div id="subcontent-file" class="max-w-3xl hidden">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wider flex items-center gap-2">
+                                        <span class="iconify w-4 h-4 text-blue-600" data-icon="mdi:file-upload-outline"></span>
+                                        File Upload Settings
+                                    </h3>
+                                    <button class="px-3 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 flex items-center gap-1" onclick="openConfigModal('file')">
+                                        <span class="iconify w-4 h-4" data-icon="mdi:pencil"></span>
+                                        Edit Configuration
+                                    </button>
+                                </div>
+
+                                <!-- Current File Settings Display -->
+                                <div class="border border-gray-200 rounded-xl overflow-hidden">
+                                    <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                                        <p class="text-sm font-medium text-gray-700">Current Configuration</p>
+                                    </div>
+                                    <div class="p-4 space-y-3">
+                                        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                                            <span class="text-sm text-gray-600">File Type</span>
+                                            <span class="text-sm font-medium text-gray-800">CSV</span>
+                                        </div>
+                                        <div class="flex items-start justify-between py-2 border-b border-gray-100">
+                                            <span class="text-sm text-gray-600">Column Format</span>
+                                            <span class="text-sm font-mono text-gray-800 bg-gray-100 px-2 py-1 rounded">{"name": "...", "phone": "..."}</span>
+                                        </div>
+                                        <div class="flex items-center justify-between py-2">
+                                            <span class="text-sm text-gray-600">Schedules Configured</span>
+                                            <span class="text-sm font-medium text-gray-800">2 reminders</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- API Integration Sub-tab Content -->
+                            <div id="subcontent-api" class="max-w-3xl hidden">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wider flex items-center gap-2">
+                                        <span class="iconify w-4 h-4 text-purple-600" data-icon="mdi:api"></span>
+                                        API Integration Settings
+                                    </h3>
+                                    <button class="px-3 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 flex items-center gap-1" onclick="openConfigModal('api')">
+                                        <span class="iconify w-4 h-4" data-icon="mdi:pencil"></span>
+                                        Edit Configuration
+                                    </button>
+                                </div>
+
+                                <!-- Current API Settings Display -->
+                                <div class="space-y-4">
+                                    <!-- Auth Endpoint Card -->
+                                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                                        <div class="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                                            <p class="text-sm font-medium text-gray-700">Authentication Endpoint</p>
+                                            <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Configured</span>
+                                        </div>
+                                        <div class="p-4 space-y-2">
+                                            <div class="flex items-center justify-between py-1">
+                                                <span class="text-sm text-gray-600">Method</span>
+                                                <span class="text-sm font-medium text-gray-800">POST</span>
+                                            </div>
+                                            <div class="flex items-center justify-between py-1">
+                                                <span class="text-sm text-gray-600">URL</span>
+                                                <span class="text-sm font-mono text-gray-800 text-right truncate max-w-[300px]">https://api.example.com/auth</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Fetch Endpoint Card -->
+                                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                                        <div class="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                                            <p class="text-sm font-medium text-gray-700">Fetch Endpoint</p>
+                                            <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Configured</span>
+                                        </div>
+                                        <div class="p-4 space-y-2">
+                                            <div class="flex items-center justify-between py-1">
+                                                <span class="text-sm text-gray-600">Method</span>
+                                                <span class="text-sm font-medium text-gray-800">GET</span>
+                                            </div>
+                                            <div class="flex items-center justify-between py-1">
+                                                <span class="text-sm text-gray-600">URL</span>
+                                                <span class="text-sm font-mono text-gray-800 text-right truncate max-w-[300px]">https://api.example.com/followups</span>
+                                            </div>
+                                            <div class="flex items-center justify-between py-1">
+                                                <span class="text-sm text-gray-600">Schedule Frequency</span>
+                                                <span class="text-sm font-medium text-gray-800">Daily</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reminder Schedule Sub-tab Content -->
+                            <div id="subcontent-reminders" class="max-w-3xl">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wider flex items-center gap-2">
+                                        <span class="iconify w-4 h-4 text-amber-600" data-icon="mdi:bell-ring-outline"></span>
+                                        Reminder Schedule
+                                    </h3>
+                                    <button class="px-3 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 flex items-center gap-1 disabled:opacity-50" disabled id="addReminderBtn" onclick="openReminderModal()">
+                                        <span class="iconify w-4 h-4" data-icon="mdi:plus"></span>
+                                        Add Schedule
+                                    </button>
+                                </div>
+
+                                <!-- Reminder Schedule Table -->
+                                <div class="border border-gray-200 rounded-xl overflow-hidden">
+                                    <table class="w-full text-sm">
+                                        <thead class="bg-gray-50 border-b border-gray-200">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left font-medium text-gray-600">Type</th>
+                                                <th class="px-4 py-3 text-left font-medium text-gray-600">Offset</th>
+                                                <th class="px-4 py-3 text-left font-medium text-gray-600">Time of Day</th>
+                                                <th class="px-4 py-3 text-center font-medium text-gray-600">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-100" id="reminderTableBody">
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-4 py-3">
+                                                    <span class="inline-flex items-center gap-2 text-gray-800">
+                                                        <span class="iconify w-4 h-4 text-amber-500" data-icon="mdi:clock-outline"></span>
+                                                        Previous Day
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-3 text-gray-600">24 hours</td>
+                                                <td class="px-4 py-3 text-gray-600">09:00 AM</td>
+                                                <td class="px-4 py-3 text-center">
+                                                    <div class="flex items-center justify-center gap-2">
+                                                        <button class="p-1.5 hover:bg-gray-100 rounded" disabled>
+                                                            <span class="iconify w-4 h-4 text-gray-500" data-icon="mdi:pencil-outline"></span>
+                                                        </button>
+                                                        <button class="p-1.5 hover:bg-red-50 rounded" disabled>
+                                                            <span class="iconify w-4 h-4 text-red-500" data-icon="mdi:delete-outline"></span>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-4 py-3">
+                                                    <span class="inline-flex items-center gap-2 text-gray-800">
+                                                        <span class="iconify w-4 h-4 text-amber-500" data-icon="mdi:clock-outline"></span>
+                                                        Same Day
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-3 text-gray-600">2 hours</td>
+                                                <td class="px-4 py-3 text-gray-600">08:00 AM</td>
+                                                <td class="px-4 py-3 text-center">
+                                                    <div class="flex items-center justify-center gap-2">
+                                                        <button class="p-1.5 hover:bg-gray-100 rounded" disabled>
+                                                            <span class="iconify w-4 h-4 text-gray-500" data-icon="mdi:pencil-outline"></span>
+                                                        </button>
+                                                        <button class="p-1.5 hover:bg-red-50 rounded" disabled>
+                                                            <span class="iconify w-4 h-4 text-red-500" data-icon="mdi:delete-outline"></span>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Empty State (hidden by default) -->
+                                <div class="hidden text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300" id="emptyReminders">
+                                    <span class="iconify w-12 h-12 mx-auto text-gray-400 mb-3" data-icon="mdi:bell-off-outline"></span>
+                                    <p class="text-gray-500">No reminder schedules configured yet.</p>
+                                    <p class="text-sm text-gray-400 mt-1">Click "Add Schedule" to create your first reminder.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                    <p class="text-sm text-gray-500 flex items-center gap-2" id="statusText">
+                        <span class="iconify w-4 h-4" data-icon="mdi:lock-outline"></span>
+                        Click "Edit" to modify settings
+                    </p>
+                    <div class="flex items-center gap-3">
+                        <button class="px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-100">
+                            Reset
+                        </button>
+                        <button class="px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-100">
+                            Cancel
+                        </button>
+                        <button id="saveBtn" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- File Upload Configuration Modal -->
+    <div id="fileConfigModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                        <span class="iconify w-5 h-5 text-blue-600" data-icon="mdi:file-upload-outline"></span>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-800">File Upload Configuration</h2>
+                        <p class="text-sm text-gray-500">Configure file format and column mapping</p>
+                    </div>
+                </div>
+                <button onclick="closeConfigModal('file')" class="p-2 hover:bg-gray-100 rounded-lg">
+                    <span class="iconify w-5 h-5 text-gray-500" data-icon="mdi:close"></span>
+                </button>
+            </div>
+            <div class="modal-body p-6">
+                <div class="space-y-6">
+                    <!-- File Type -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">File Type <span class="text-red-500">*</span></label>
+                        <select class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none bg-white">
+                            <option value="">Select file type</option>
+                            <option value="csv" selected>CSV</option>
+                            <option value="json">JSON</option>
+                            <option value="xlsx">Excel</option>
+                            <option value="xml">XML</option>
+                            <option value="txt">Text</option>
+                        </select>
+                    </div>
+
+                    <!-- Column Format -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Column Format <span class="text-red-500">*</span></label>
+                        <textarea class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none resize-none font-mono text-sm" rows="6" placeholder='{"name": "column_name", "phone": "phone_column"}'></textarea>
+                        <p class="text-xs text-gray-500 mt-1">Define column mapping in JSON format</p>
+                    </div>
+
+                    <!-- Info -->
+                    <div class="p-4 rounded-lg bg-blue-50 border border-blue-200">
+                        <div class="flex items-start gap-3">
+                            <span class="iconify w-5 h-5 text-blue-600 shrink-0 mt-0.5" data-icon="mdi:information-outline"></span>
+                            <div>
+                                <p class="text-sm text-blue-800">
+                                    The column format defines how your file columns map to the system fields.
+                                    Make sure to match the exact column headers in your file.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
+                <button onclick="closeConfigModal('file')" class="px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-100">
+                    Cancel
+                </button>
+                <button class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700">
+                    Save Configuration
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Integration Configuration Modal -->
+    <div id="apiConfigModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                        <span class="iconify w-5 h-5 text-purple-600" data-icon="mdi:api"></span>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-800">API Integration Configuration</h2>
+                        <p class="text-sm text-gray-500">Configure authentication and data fetch endpoints</p>
+                    </div>
+                </div>
+                <button onclick="closeConfigModal('api')" class="p-2 hover:bg-gray-100 rounded-lg">
+                    <span class="iconify w-5 h-5 text-gray-500" data-icon="mdi:close"></span>
+                </button>
+            </div>
+            <div class="modal-body p-6">
+                <div class="space-y-6">
+                    <!-- Authentication Endpoint Section -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <div class="collapsible-header flex items-center justify-between px-4 py-3 bg-gray-50" onclick="toggleCollapsible('auth')">
+                            <div class="flex items-center gap-2">
+                                <span class="iconify w-5 h-5 text-purple-600" data-icon="mdi:shield-key-outline"></span>
+                                <span class="font-medium text-gray-800">Authentication Endpoint</span>
+                            </div>
+                            <span class="iconify w-5 h-5 text-gray-500 chevron-icon" id="chevron-auth" data-icon="mdi:chevron-down"></span>
+                        </div>
+                        <div class="collapsible-content expanded p-4 space-y-4" id="content-auth">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Method</label>
+                                    <select class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none bg-white">
+                                        <option value="">Select Method</option>
+                                        <option value="GET">GET</option>
+                                        <option value="POST" selected>POST</option>
+                                        <option value="PUT">PUT</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Response Type</label>
+                                    <select class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none bg-white">
+                                        <option value="json" selected>JSON</option>
+                                        <option value="text">Text</option>
+                                        <option value="xml">XML</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">API URL</label>
+                                <input type="url" class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none" placeholder="https://api.example.com/auth">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Request Body</label>
+                                <textarea class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none resize-none font-mono text-sm" rows="3" placeholder='{"username": "...", "password": "..."}'></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Token Path</label>
+                                <input type="text" class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none" placeholder="data.token">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fetch Endpoint Section -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <div class="collapsible-header flex items-center justify-between px-4 py-3 bg-gray-50" onclick="toggleCollapsible('fetch')">
+                            <div class="flex items-center gap-2">
+                                <span class="iconify w-5 h-5 text-purple-600" data-icon="mdi:download-outline"></span>
+                                <span class="font-medium text-gray-800">Fetch Endpoint</span>
+                            </div>
+                            <span class="iconify w-5 h-5 text-gray-500 chevron-icon" id="chevron-fetch" data-icon="mdi:chevron-down"></span>
+                        </div>
+                        <div class="collapsible-content p-4 space-y-4" id="content-fetch">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Method <span class="text-red-500">*</span></label>
+                                    <select class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none bg-white">
+                                        <option value="">Select Method</option>
+                                        <option value="GET" selected>GET</option>
+                                        <option value="POST">POST</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Response Type</label>
+                                    <select class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none bg-white">
+                                        <option value="json" selected>JSON</option>
+                                        <option value="text">Text</option>
+                                        <option value="xml">XML</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">API URL <span class="text-red-500">*</span></label>
+                                <input type="url" class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none" placeholder="https://api.example.com/followups">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Response Field</label>
+                                <input type="text" class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none" placeholder="data.items">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Token Injection Section -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <div class="collapsible-header flex items-center justify-between px-4 py-3 bg-gray-50" onclick="toggleCollapsible('token')">
+                            <div class="flex items-center gap-2">
+                                <span class="iconify w-5 h-5 text-purple-600" data-icon="mdi:key-variant"></span>
+                                <span class="font-medium text-gray-800">Token Injection</span>
+                            </div>
+                            <span class="iconify w-5 h-5 text-gray-500 chevron-icon" id="chevron-token" data-icon="mdi:chevron-down"></span>
+                        </div>
+                        <div class="collapsible-content p-4 space-y-4" id="content-token">
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Location</label>
+                                    <select class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none bg-white">
+                                        <option value="">Select Location</option>
+                                        <option value="header" selected>Header</option>
+                                        <option value="query">Query</option>
+                                        <option value="body">Body</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Key</label>
+                                    <input type="text" class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none" placeholder="Authorization">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Prefix</label>
+                                    <input type="text" class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none" placeholder="Bearer">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Schedule Frequency -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Schedule Frequency <span class="text-red-500">*</span></label>
+                        <select class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none bg-white">
+                            <option value="">Select Schedule Frequency</option>
+                            <option value="daily" selected>Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
+                <button onclick="closeConfigModal('api')" class="px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-100">
+                    Cancel
+                </button>
+                <button class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700">
+                    Save Configuration
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reminder Schedule Modal -->
+    <div id="reminderModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
+                        <span class="iconify w-5 h-5 text-amber-600" data-icon="mdi:bell-ring-outline"></span>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-800">Add Reminder Schedule</h2>
+                        <p class="text-sm text-gray-500">Configure when to send follow-up reminders</p>
+                    </div>
+                </div>
+                <button onclick="closeReminderModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+                    <span class="iconify w-5 h-5 text-gray-500" data-icon="mdi:close"></span>
+                </button>
+            </div>
+            <div class="modal-body p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Reminder Type <span class="text-red-500">*</span></label>
+                        <select class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none bg-white">
+                            <option value="PreviousDay" selected>Previous Day</option>
+                            <option value="SameDay">Same Day</option>
+                            <option value="Custom">Custom</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Offset Value</label>
+                            <input type="number" class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none" placeholder="24">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Offset Unit</label>
+                            <select class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none bg-white">
+                                <option value="hours" selected>Hours</option>
+                                <option value="minutes">Minutes</option>
+                                <option value="days">Days</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Time of Day</label>
+                        <input type="time" class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none" value="09:00">
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
+                <button onclick="closeReminderModal()" class="px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-100">
+                    Cancel
+                </button>
+                <button class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700">
+                    Add Schedule
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSource = 'None';
+        let isEditMode = false;
+
+        // Primary tab switching
+        function switchPrimaryTab(tabName) {
+            // Hide all primary content
+            document.getElementById('content-common').classList.add('hidden');
+            document.getElementById('content-userinterface').classList.add('hidden');
+
+            // Remove active from all primary tabs
+            document.getElementById('tab-common').classList.remove('active');
+            document.getElementById('tab-userinterface').classList.remove('active');
+            document.getElementById('tab-common').classList.add('text-gray-600');
+            document.getElementById('tab-userinterface').classList.add('text-gray-600');
+
+            // Show selected content
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+
+            // Add active to selected tab
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.getElementById('tab-' + tabName).classList.remove('text-gray-600');
+
+            // Show/hide sub-tabs based on primary tab
+            if (tabName === 'userinterface') {
+                document.getElementById('ui-subtabs').classList.remove('hidden');
+                // Show appropriate sub-tab based on source
+                if (currentSource === 'File') {
+                    switchSubTab('file');
+                } else if (currentSource === 'Api') {
+                    switchSubTab('api');
+                } else {
+                    switchSubTab('reminders');
+                }
+            } else {
+                document.getElementById('ui-subtabs').classList.add('hidden');
+            }
+        }
+
+        // Sub-tab switching
+        function switchSubTab(subTabName) {
+            // Hide all sub-content
+            document.querySelectorAll('[id^="subcontent-"]').forEach(el => el.classList.add('hidden'));
+
+            // Remove active from all sub-tabs
+            document.querySelectorAll('.sub-tab').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Show selected sub-content
+            const subContent = document.getElementById('subcontent-' + subTabName);
+            if (subContent) {
+                subContent.classList.remove('hidden');
+            }
+
+            // Add active to selected sub-tab
+            const subTab = document.getElementById('subtab-' + subTabName);
+            if (subTab) {
+                subTab.classList.add('active');
+            }
+        }
+
+        // Handle source change
+        function handleSourceChange() {
+            const select = document.getElementById('sourceSelect');
+            selectSource(select.value);
+        }
+
+        // Select source from cards or dropdown
+        function selectSource(source) {
+            if (!isEditMode) return;
+
+            currentSource = source;
+            document.getElementById('sourceSelect').value = source;
+
+            // Update card selection styles
+            document.querySelectorAll('.config-card').forEach(card => {
+                card.classList.remove('border-indigo-500', 'bg-indigo-50');
+                card.classList.add('border-gray-200');
+            });
+
+            const selectedCard = document.getElementById('card-' + source.toLowerCase());
+            if (selectedCard) {
+                selectedCard.classList.remove('border-gray-200');
+                selectedCard.classList.add('border-indigo-500', 'bg-indigo-50');
+            }
+
+            // Update UI tab state
+            const uiTab = document.getElementById('tab-userinterface');
+            const uiTabBadge = document.getElementById('ui-tab-badge');
+
+            if (source !== 'None') {
+                uiTab.classList.remove('disabled');
+                uiTabBadge.textContent = 'On';
+                uiTabBadge.classList.remove('badge-disabled');
+                uiTabBadge.classList.add('badge-enabled');
+            } else {
+                uiTab.classList.add('disabled');
+                uiTabBadge.textContent = 'Off';
+                uiTabBadge.classList.remove('badge-enabled');
+                uiTabBadge.classList.add('badge-disabled');
+            }
+
+            // Show/hide appropriate sub-tabs
+            const fileSubtab = document.getElementById('subtab-file');
+            const apiSubtab = document.getElementById('subtab-api');
+
+            fileSubtab.classList.toggle('hidden', source !== 'File');
+            apiSubtab.classList.toggle('hidden', source !== 'Api');
+
+            // Update status badge
+            const statusBadge = document.getElementById('statusBadge');
+            if (source === 'None') {
+                statusBadge.innerHTML = '<span class="w-2 h-2 bg-gray-400 rounded-full"></span> Disabled';
+                statusBadge.classList.remove('bg-green-100', 'text-green-700');
+                statusBadge.classList.add('bg-gray-100', 'text-gray-600');
+            } else {
+                statusBadge.innerHTML = '<span class="w-2 h-2 bg-green-500 rounded-full"></span> Active';
+                statusBadge.classList.remove('bg-gray-100', 'text-gray-600');
+                statusBadge.classList.add('bg-green-100', 'text-green-700');
+            }
+        }
+
+        // Modal functions
+        function openConfigModal(type) {
+            if (type === 'file') {
+                document.getElementById('fileConfigModal').classList.add('show');
+            } else if (type === 'api') {
+                document.getElementById('apiConfigModal').classList.add('show');
+            }
+        }
+
+        function closeConfigModal(type) {
+            if (type === 'file') {
+                document.getElementById('fileConfigModal').classList.remove('show');
+            } else if (type === 'api') {
+                document.getElementById('apiConfigModal').classList.remove('show');
+            }
+        }
+
+        function openReminderModal() {
+            document.getElementById('reminderModal').classList.add('show');
+        }
+
+        function closeReminderModal() {
+            document.getElementById('reminderModal').classList.remove('show');
+        }
+
+        // Collapsible sections
+        function toggleCollapsible(section) {
+            const content = document.getElementById('content-' + section);
+            const chevron = document.getElementById('chevron-' + section);
+
+            content.classList.toggle('expanded');
+            chevron.classList.toggle('rotated');
+        }
+
+        // Toggle edit mode
+        const editBtn = document.getElementById('editBtn');
+        const editBtnText = document.getElementById('editBtnText');
+        const saveBtn = document.getElementById('saveBtn');
+        const statusText = document.getElementById('statusText');
+        const addReminderBtn = document.getElementById('addReminderBtn');
+
+        editBtn.addEventListener('click', () => {
+            isEditMode = !isEditMode;
+            editBtnText.textContent = isEditMode ? 'Cancel' : 'Edit';
+            editBtn.classList.toggle('bg-gray-100', isEditMode);
+
+            // Enable/disable form inputs
+            document.querySelectorAll('select:not(.modal-content select), input:not(.modal-content input), textarea:not(.modal-content textarea)').forEach(input => {
+                input.disabled = !isEditMode;
+            });
+
+            // Enable/disable table action buttons
+            document.querySelectorAll('#reminderTableBody button').forEach(btn => {
+                btn.disabled = !isEditMode;
+            });
+
+            // Enable/disable add reminder button
+            addReminderBtn.disabled = !isEditMode;
+
+            // Make cards clickable/non-clickable
+            document.querySelectorAll('.config-card').forEach(card => {
+                card.style.pointerEvents = isEditMode ? 'auto' : 'none';
+            });
+
+            saveBtn.disabled = !isEditMode;
+
+            if (isEditMode) {
+                statusText.innerHTML = '<span class="iconify w-4 h-4" data-icon="mdi:pencil"></span> You are in edit mode. Make changes and save.';
+            } else {
+                statusText.innerHTML = '<span class="iconify w-4 h-4" data-icon="mdi:lock-outline"></span> Click "Edit" to modify settings';
+            }
+        });
+
+        // Close modals on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('show');
+                }
+            });
+        });
+
+        // Close modals on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.show').forEach(modal => {
+                    modal.classList.remove('show');
+                });
+            }
+        });
+
+        // Initialize - expand auth section by default in API modal
+        document.getElementById('content-auth').classList.add('expanded');
+    </script>
+</body>
+</html>

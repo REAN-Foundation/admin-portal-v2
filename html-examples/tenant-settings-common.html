@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Settings - Common Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 40px;
+            height: 22px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: 0.3s;
+            border-radius: 22px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #6366f1;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(18px);
+        }
+
+        input:disabled + .toggle-slider {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .setting-card {
+            transition: all 0.2s ease;
+        }
+
+        .setting-card:hover {
+            background-color: #f8fafc;
+        }
+
+        .setting-card.enabled {
+            background-color: #eef2ff;
+            border-color: #c7d2fe;
+        }
+
+        .section-header {
+            transition: all 0.2s ease;
+        }
+
+        .section-header:hover {
+            background-color: #f8fafc;
+        }
+
+        .section-content {
+            animation: slideDown 0.2s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .nav-item {
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        .nav-item.active {
+            background-color: #eef2ff;
+            border-left: 3px solid #6366f1;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <button class="p-2 rounded-lg hover:bg-gray-100">
+                        <span class="iconify w-5 h-5 text-gray-600" data-icon="mdi:menu"></span>
+                    </button>
+                    <span class="text-xl font-semibold text-gray-800">REAN Admin</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="p-2 rounded-lg hover:bg-gray-100">
+                        <span class="iconify w-5 h-5 text-gray-600" data-icon="mdi:bell-outline"></span>
+                    </button>
+                    <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm font-medium">
+                        JD
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] hidden lg:block sticky top-16">
+            <div class="p-4">
+                <div class="mb-6">
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Tenant Settings</h3>
+                    <nav class="space-y-1">
+                        <a href="tenant-settings-main.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:view-dashboard-outline"></span>
+                            Integrations
+                        </a>
+                        <a href="#" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-indigo-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:layers-outline"></span>
+                            Common Settings
+                        </a>
+                        <a href="tenant-settings-chatbot.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:robot-outline"></span>
+                            Chat Bot
+                        </a>
+                        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:shield-check-outline"></span>
+                            Consent
+                        </a>
+                        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:form-select"></span>
+                            Forms
+                        </a>
+                        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:calendar-clock"></span>
+                            Follow-up
+                        </a>
+                        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:cog-outline"></span>
+                            Custom Settings
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 lg:p-8">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+                <a href="#" class="hover:text-indigo-600">Tenants</a>
+                <span class="iconify w-4 h-4" data-icon="mdi:chevron-right"></span>
+                <a href="#" class="hover:text-indigo-600">ACME Healthcare</a>
+                <span class="iconify w-4 h-4" data-icon="mdi:chevron-right"></span>
+                <a href="tenant-settings-main.html" class="hover:text-indigo-600">Settings</a>
+                <span class="iconify w-4 h-4" data-icon="mdi:chevron-right"></span>
+                <span class="text-gray-800 font-medium">Common</span>
+            </nav>
+
+            <!-- Page Container -->
+            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <!-- Header -->
+                <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center">
+                            <span class="iconify w-6 h-6 text-indigo-600" data-icon="mdi:layers-outline"></span>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-semibold text-gray-800">Common Settings</h1>
+                            <p class="text-sm text-gray-500">Configure clinical, wellness, and general tenant features</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button id="editBtn" class="px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                            <span class="iconify w-4 h-4" data-icon="mdi:pencil"></span>
+                            <span id="editBtnText">Edit</span>
+                        </button>
+                        <a href="tenant-settings-main.html" class="p-2 border border-gray-200 text-red-600 rounded-lg hover:bg-red-50">
+                            <span class="iconify w-5 h-5" data-icon="mdi:close"></span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Settings Sections -->
+                <div class="p-6 space-y-4">
+                    <!-- Clinical Section -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <button class="section-header w-full flex items-center justify-between px-5 py-4 bg-white" onclick="toggleSection('clinical')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center">
+                                    <span class="iconify w-5 h-5 text-red-600" data-icon="mdi:medical-bag"></span>
+                                </div>
+                                <div class="text-left">
+                                    <h3 class="font-medium text-gray-800">Clinical</h3>
+                                    <p class="text-sm text-gray-500">Vitals, lab records, medications, and care plans</p>
+                                </div>
+                            </div>
+                            <span class="iconify w-5 h-5 text-gray-400 transition-transform" id="clinical-chevron" data-icon="mdi:chevron-down"></span>
+                        </button>
+                        <div id="clinical-content" class="section-content border-t border-gray-100 bg-gray-50 p-4 hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                <!-- Vitals -->
+                                <div class="setting-card enabled bg-white rounded-lg border border-indigo-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="iconify w-5 h-5 text-indigo-600" data-icon="mdi:heart-pulse"></span>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-800">Vitals</span>
+                                                <p class="text-xs text-gray-500">Track patient vitals</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- Lab Records -->
+                                <div class="setting-card enabled bg-white rounded-lg border border-indigo-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="iconify w-5 h-5 text-indigo-600" data-icon="mdi:test-tube"></span>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-800">Lab Records</span>
+                                                <p class="text-xs text-gray-500">Lab test results</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- Medications -->
+                                <div class="setting-card enabled bg-white rounded-lg border border-indigo-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="iconify w-5 h-5 text-indigo-600" data-icon="mdi:pill"></span>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-800">Medications</span>
+                                                <p class="text-xs text-gray-500">Medication tracking</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- Care Plans -->
+                                <div class="setting-card bg-white rounded-lg border border-gray-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="iconify w-5 h-5 text-gray-400" data-icon="mdi:clipboard-list-outline"></span>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-800">Care Plans</span>
+                                                <p class="text-xs text-gray-500">Treatment plans</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- Assessments -->
+                                <div class="setting-card enabled bg-white rounded-lg border border-indigo-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="iconify w-5 h-5 text-indigo-600" data-icon="mdi:clipboard-check-outline"></span>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-800">Assessments</span>
+                                                <p class="text-xs text-gray-500">Health assessments</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- Appointments -->
+                                <div class="setting-card bg-white rounded-lg border border-gray-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="iconify w-5 h-5 text-gray-400" data-icon="mdi:calendar-check"></span>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-800">Appointments</span>
+                                                <p class="text-xs text-gray-500">Schedule management</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Wellness Section -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <button class="section-header w-full flex items-center justify-between px-5 py-4 bg-white" onclick="toggleSection('wellness')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                                    <span class="iconify w-5 h-5 text-green-600" data-icon="mdi:spa-outline"></span>
+                                </div>
+                                <div class="text-left">
+                                    <h3 class="font-medium text-gray-800">Wellness</h3>
+                                    <p class="text-sm text-gray-500">Exercise, nutrition, meditation, and goals</p>
+                                </div>
+                            </div>
+                            <span class="iconify w-5 h-5 text-gray-400 transition-transform" id="wellness-chevron" data-icon="mdi:chevron-down"></span>
+                        </button>
+                        <div id="wellness-content" class="section-content border-t border-gray-100 bg-gray-50 p-4 hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                <div class="setting-card enabled bg-white rounded-lg border border-green-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="iconify w-5 h-5 text-green-600" data-icon="mdi:run"></span>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-800">Exercise</span>
+                                                <p class="text-xs text-gray-500">Physical activity tracking</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="setting-card enabled bg-white rounded-lg border border-green-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="iconify w-5 h-5 text-green-600" data-icon="mdi:food-apple"></span>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-800">Nutrition</span>
+                                                <p class="text-xs text-gray-500">Diet and nutrition</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="setting-card bg-white rounded-lg border border-gray-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="iconify w-5 h-5 text-gray-400" data-icon="mdi:meditation"></span>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-800">Meditation</span>
+                                                <p class="text-xs text-gray-500">Mental wellness</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="setting-card enabled bg-white rounded-lg border border-green-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="iconify w-5 h-5 text-green-600" data-icon="mdi:target"></span>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-800">Goals</span>
+                                                <p class="text-xs text-gray-500">Health goals tracking</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EHR Section -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <button class="section-header w-full flex items-center justify-between px-5 py-4 bg-white" onclick="toggleSection('ehr')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                                    <span class="iconify w-5 h-5 text-blue-600" data-icon="mdi:database-outline"></span>
+                                </div>
+                                <div class="text-left">
+                                    <h3 class="font-medium text-gray-800">EHR</h3>
+                                    <p class="text-sm text-gray-500">FHIR storage and EHR integrations</p>
+                                </div>
+                            </div>
+                            <span class="iconify w-5 h-5 text-gray-400 transition-transform" id="ehr-chevron" data-icon="mdi:chevron-down"></span>
+                        </button>
+                        <div id="ehr-content" class="section-content border-t border-gray-100 bg-gray-50 p-4 hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                <div class="setting-card enabled bg-white rounded-lg border border-blue-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="iconify w-5 h-5 text-blue-600" data-icon="mdi:fire"></span>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-800">FHIR Storage</span>
+                                                <p class="text-xs text-gray-500">HL7 FHIR data storage</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="setting-card bg-white rounded-lg border border-gray-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="iconify w-5 h-5 text-gray-400" data-icon="mdi:connection"></span>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-800">EHR Integration</span>
+                                                <p class="text-xs text-gray-500">External EHR systems</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Community Section -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <button class="section-header w-full flex items-center justify-between px-5 py-4 bg-white" onclick="toggleSection('community')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                                    <span class="iconify w-5 h-5 text-purple-600" data-icon="mdi:account-group-outline"></span>
+                                </div>
+                                <div class="text-left">
+                                    <h3 class="font-medium text-gray-800">Community</h3>
+                                    <p class="text-sm text-gray-500">User groups and chat features</p>
+                                </div>
+                            </div>
+                            <span class="iconify w-5 h-5 text-gray-400 transition-transform" id="community-chevron" data-icon="mdi:chevron-down"></span>
+                        </button>
+                        <div id="community-content" class="section-content border-t border-gray-100 bg-gray-50 p-4 hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                <div class="setting-card bg-white rounded-lg border border-gray-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="iconify w-5 h-5 text-gray-400" data-icon="mdi:account-multiple"></span>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-800">User Groups</span>
+                                                <p class="text-xs text-gray-500">Community groups</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="setting-card bg-white rounded-lg border border-gray-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="iconify w-5 h-5 text-gray-400" data-icon="mdi:chat-outline"></span>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-800">Chat</span>
+                                                <p class="text-xs text-gray-500">In-app messaging</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Miscellaneous Section -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <button class="section-header w-full flex items-center justify-between px-5 py-4 bg-white" onclick="toggleSection('misc')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
+                                    <span class="iconify w-5 h-5 text-amber-600" data-icon="mdi:dots-horizontal-circle-outline"></span>
+                                </div>
+                                <div class="text-left">
+                                    <h3 class="font-medium text-gray-800">Miscellaneous</h3>
+                                    <p class="text-sm text-gray-500">Notifications, newsfeeds, and gamification</p>
+                                </div>
+                            </div>
+                            <span class="iconify w-5 h-5 text-gray-400 transition-transform" id="misc-chevron" data-icon="mdi:chevron-down"></span>
+                        </button>
+                        <div id="misc-content" class="section-content border-t border-gray-100 bg-gray-50 p-4 hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                <div class="setting-card enabled bg-white rounded-lg border border-amber-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="iconify w-5 h-5 text-amber-600" data-icon="mdi:bell-outline"></span>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-800">Notifications</span>
+                                                <p class="text-xs text-gray-500">Push notifications</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="setting-card bg-white rounded-lg border border-gray-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="iconify w-5 h-5 text-gray-400" data-icon="mdi:newspaper-variant-outline"></span>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-800">Newsfeeds</span>
+                                                <p class="text-xs text-gray-500">Content feeds</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="setting-card bg-white rounded-lg border border-gray-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="iconify w-5 h-5 text-gray-400" data-icon="mdi:gamepad-variant-outline"></span>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-800">Gamification</span>
+                                                <p class="text-xs text-gray-500">Points and rewards</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                    <p class="text-sm text-gray-500 flex items-center gap-2" id="statusText">
+                        <span class="iconify w-4 h-4" data-icon="mdi:lock-outline"></span>
+                        Click "Edit" to modify settings
+                    </p>
+                    <div class="flex items-center gap-3">
+                        <button class="px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-100">
+                            Cancel
+                        </button>
+                        <button id="saveBtn" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleSection(sectionId) {
+            const content = document.getElementById(sectionId + '-content');
+            const chevron = document.getElementById(sectionId + '-chevron');
+
+            content.classList.toggle('hidden');
+            chevron.style.transform = content.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+
+        // Toggle edit mode
+        const editBtn = document.getElementById('editBtn');
+        const editBtnText = document.getElementById('editBtnText');
+        const saveBtn = document.getElementById('saveBtn');
+        const statusText = document.getElementById('statusText');
+        const toggleInputs = document.querySelectorAll('.toggle-switch input');
+        let isEditMode = false;
+
+        editBtn.addEventListener('click', () => {
+            isEditMode = !isEditMode;
+            editBtnText.textContent = isEditMode ? 'Cancel' : 'Edit';
+            editBtn.classList.toggle('bg-gray-100', isEditMode);
+
+            toggleInputs.forEach(input => {
+                input.disabled = !isEditMode;
+            });
+
+            saveBtn.disabled = !isEditMode;
+
+            if (isEditMode) {
+                statusText.innerHTML = '<span class="iconify w-4 h-4" data-icon="mdi:pencil"></span> You are in edit mode. Make changes and save.';
+            } else {
+                statusText.innerHTML = '<span class="iconify w-4 h-4" data-icon="mdi:lock-outline"></span> Click "Edit" to modify settings';
+            }
+        });
+
+        // Open first section by default
+        toggleSection('clinical');
+    </script>
+</body>
+</html>

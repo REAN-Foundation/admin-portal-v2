@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Settings - Chatbot Configuration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #6366f1;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        input:disabled + .toggle-slider {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .nav-item {
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        .nav-item.active {
+            background-color: #eef2ff;
+            border-left: 3px solid #6366f1;
+        }
+
+        .form-input {
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Vertical Tabs Styles */
+        .vertical-tab {
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .vertical-tab:hover {
+            background-color: #f8fafc;
+        }
+
+        .vertical-tab.active {
+            background-color: #eef2ff;
+            border-left-color: #6366f1;
+            color: #6366f1;
+        }
+
+        .vertical-tab.active .tab-icon {
+            color: #6366f1;
+        }
+
+        /* Sub-tab styles */
+        .sub-tab {
+            transition: all 0.2s ease;
+        }
+
+        .sub-tab:hover {
+            background-color: #f1f5f9;
+        }
+
+        .sub-tab.active {
+            background-color: #e0e7ff;
+            color: #4f46e5;
+            font-weight: 500;
+        }
+
+        .setting-row {
+            transition: all 0.2s ease;
+        }
+
+        .setting-row:hover {
+            background-color: #f8fafc;
+        }
+
+        .tab-content {
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .feature-disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .badge-enabled {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-disabled {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <button class="p-2 rounded-lg hover:bg-gray-100">
+                        <span class="iconify w-5 h-5 text-gray-600" data-icon="mdi:menu"></span>
+                    </button>
+                    <span class="text-xl font-semibold text-gray-800">REAN Admin</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="p-2 rounded-lg hover:bg-gray-100">
+                        <span class="iconify w-5 h-5 text-gray-600" data-icon="mdi:bell-outline"></span>
+                    </button>
+                    <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm font-medium">
+                        JD
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Left Sidebar Navigation (Settings Categories) -->
+        <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] hidden lg:block sticky top-16">
+            <div class="p-4">
+                <div class="mb-6">
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Tenant Settings</h3>
+                    <nav class="space-y-1">
+                        <a href="tenant-settings-main.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:view-dashboard-outline"></span>
+                            Integrations
+                        </a>
+                        <a href="tenant-settings-common.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:layers-outline"></span>
+                            Common Settings
+                        </a>
+                        <a href="#" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-indigo-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:robot-outline"></span>
+                            Chat Bot
+                        </a>
+                        <a href="tenant-settings-consent.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:shield-check-outline"></span>
+                            Consent
+                        </a>
+                        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:form-select"></span>
+                            Forms
+                        </a>
+                        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:calendar-clock"></span>
+                            Follow-up
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 lg:p-8">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+                <a href="#" class="hover:text-indigo-600">Tenants</a>
+                <span class="iconify w-4 h-4" data-icon="mdi:chevron-right"></span>
+                <a href="#" class="hover:text-indigo-600">ACME Healthcare</a>
+                <span class="iconify w-4 h-4" data-icon="mdi:chevron-right"></span>
+                <a href="tenant-settings-main.html" class="hover:text-indigo-600">Settings</a>
+                <span class="iconify w-4 h-4" data-icon="mdi:chevron-right"></span>
+                <span class="text-gray-800 font-medium">Chat Bot</span>
+            </nav>
+
+            <!-- Page Container with Vertical Tabs -->
+            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <!-- Header -->
+                <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center">
+                            <span class="iconify w-6 h-6 text-indigo-600" data-icon="mdi:robot-outline"></span>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-semibold text-gray-800">Chatbot Settings</h1>
+                            <p class="text-sm text-gray-500">Configure chatbot behavior, channels, and personalization</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full flex items-center gap-1">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            Active
+                        </span>
+                        <button id="editBtn" class="px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                            <span class="iconify w-4 h-4" data-icon="mdi:pencil"></span>
+                            <span id="editBtnText">Edit</span>
+                        </button>
+                        <a href="tenant-settings-main.html" class="p-2 border border-gray-200 text-red-600 rounded-lg hover:bg-red-50">
+                            <span class="iconify w-5 h-5" data-icon="mdi:close"></span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Content with Vertical Tabs Layout -->
+                <div class="flex min-h-[600px]">
+                    <!-- Vertical Tabs Navigation -->
+                    <div class="w-56 border-r border-gray-100 bg-gray-50/50">
+                        <!-- Primary Tabs -->
+                        <div class="p-3">
+                            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">Settings</p>
+
+                            <!-- Common Tab -->
+                            <button
+                                class="vertical-tab active w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg text-sm font-medium"
+                                onclick="switchPrimaryTab('common')"
+                                id="tab-common"
+                            >
+                                <span class="iconify w-5 h-5 tab-icon" data-icon="mdi:cog-outline"></span>
+                                Common
+                            </button>
+
+                            <!-- User Interface Tab -->
+                            <button
+                                class="vertical-tab w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg text-sm font-medium text-gray-600"
+                                onclick="switchPrimaryTab('userinterface')"
+                                id="tab-userinterface"
+                            >
+                                <span class="iconify w-5 h-5 tab-icon" data-icon="mdi:monitor-dashboard"></span>
+                                User Interface
+                            </button>
+                        </div>
+
+                        <!-- Sub-tabs for User Interface (conditionally shown) -->
+                        <div id="ui-subtabs" class="hidden border-t border-gray-200 p-3">
+                            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">UI Settings</p>
+
+                            <!-- Sub-tabs based on enabled features -->
+                            <button
+                                class="sub-tab active w-full flex items-center gap-2 px-4 py-2 text-left rounded-md text-sm text-gray-600"
+                                onclick="switchSubTab('channels')"
+                                id="subtab-channels"
+                            >
+                                <span class="iconify w-4 h-4" data-icon="mdi:share-variant-outline"></span>
+                                Channels
+                                <span class="ml-auto text-xs badge-enabled px-1.5 py-0.5 rounded">On</span>
+                            </button>
+
+                            <button
+                                class="sub-tab w-full flex items-center gap-2 px-4 py-2 text-left rounded-md text-sm text-gray-600"
+                                onclick="switchSubTab('features')"
+                                id="subtab-features"
+                            >
+                                <span class="iconify w-4 h-4" data-icon="mdi:star-outline"></span>
+                                Features
+                                <span class="ml-auto text-xs badge-enabled px-1.5 py-0.5 rounded">On</span>
+                            </button>
+
+                            <button
+                                class="sub-tab w-full flex items-center gap-2 px-4 py-2 text-left rounded-md text-sm text-gray-600"
+                                onclick="switchSubTab('messages')"
+                                id="subtab-messages"
+                            >
+                                <span class="iconify w-4 h-4" data-icon="mdi:message-text-outline"></span>
+                                Messages
+                                <span class="ml-auto text-xs badge-enabled px-1.5 py-0.5 rounded">On</span>
+                            </button>
+
+                            <button
+                                class="sub-tab w-full flex items-center gap-2 px-4 py-2 text-left rounded-md text-sm text-gray-400 feature-disabled"
+                                id="subtab-analytics"
+                                disabled
+                            >
+                                <span class="iconify w-4 h-4" data-icon="mdi:chart-line"></span>
+                                Analytics
+                                <span class="ml-auto text-xs badge-disabled px-1.5 py-0.5 rounded">Off</span>
+                            </button>
+                        </div>
+
+                        <!-- Feature Flags Legend -->
+                        <div class="mt-auto p-3 border-t border-gray-200">
+                            <p class="text-xs text-gray-500 px-3 mb-2">Feature Status</p>
+                            <div class="px-3 space-y-1">
+                                <div class="flex items-center gap-2 text-xs text-gray-600">
+                                    <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                                    Enabled features shown
+                                </div>
+                                <div class="flex items-center gap-2 text-xs text-gray-400">
+                                    <span class="w-2 h-2 bg-gray-300 rounded-full"></span>
+                                    Disabled features hidden
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Content Area -->
+                    <div class="flex-1 p-6">
+                        <!-- Common Tab Content -->
+                        <div id="content-common" class="tab-content">
+                            <div class="max-w-3xl space-y-6">
+                                <!-- Basic Info Section -->
+                                <div>
+                                    <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        <span class="iconify w-4 h-4 text-indigo-600" data-icon="mdi:information-outline"></span>
+                                        Basic Information
+                                    </h3>
+                                    <div class="space-y-4">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Bot Name <span class="text-red-500">*</span></label>
+                                                <input type="text" class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none" value="ACME Health Bot" disabled>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Organization Name</label>
+                                                <input type="text" class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none" value="ACME Healthcare Inc." disabled>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
+                                            <textarea class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none resize-none" rows="3" disabled>A friendly healthcare assistant to help you manage your health journey.</textarea>
+                                        </div>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Default Language</label>
+                                                <select class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none bg-white" disabled>
+                                                    <option selected>English</option>
+                                                    <option>Spanish</option>
+                                                    <option>French</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Timezone</label>
+                                                <select class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none bg-white" disabled>
+                                                    <option selected>America/New_York (EST)</option>
+                                                    <option>America/Los_Angeles (PST)</option>
+                                                    <option>Europe/London (GMT)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Branding Section -->
+                                <div class="pt-6 border-t border-gray-100">
+                                    <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        <span class="iconify w-4 h-4 text-indigo-600" data-icon="mdi:palette-outline"></span>
+                                        Branding
+                                    </h3>
+                                    <div class="space-y-4">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Organization Logo</label>
+                                                <div class="flex items-center gap-4">
+                                                    <div class="w-16 h-16 rounded-lg bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center">
+                                                        <span class="iconify w-6 h-6 text-gray-400" data-icon="mdi:image-outline"></span>
+                                                    </div>
+                                                    <button class="px-4 py-2 border border-gray-200 text-sm font-medium rounded-lg hover:bg-gray-50" disabled>
+                                                        Upload Logo
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Favicon</label>
+                                                <div class="flex items-center gap-4">
+                                                    <div class="w-16 h-16 rounded-lg bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center">
+                                                        <span class="iconify w-6 h-6 text-gray-400" data-icon="mdi:web"></span>
+                                                    </div>
+                                                    <button class="px-4 py-2 border border-gray-200 text-sm font-medium rounded-lg hover:bg-gray-50" disabled>
+                                                        Upload Favicon
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Organization Website</label>
+                                            <input type="url" class="form-input w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none" value="https://acme-healthcare.com" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Global Feature Toggles -->
+                                <div class="pt-6 border-t border-gray-100">
+                                    <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        <span class="iconify w-4 h-4 text-indigo-600" data-icon="mdi:toggle-switch-outline"></span>
+                                        Global Features
+                                    </h3>
+                                    <div class="space-y-3">
+                                        <div class="setting-row flex items-center justify-between p-4 border border-gray-200 rounded-xl">
+                                            <div class="flex items-center gap-4">
+                                                <span class="iconify w-5 h-5 text-indigo-600" data-icon="mdi:shield-check-outline"></span>
+                                                <div>
+                                                    <p class="font-medium text-gray-800">Consent Required</p>
+                                                    <p class="text-sm text-gray-500">Require user consent before interaction</p>
+                                                </div>
+                                            </div>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked disabled id="toggle-consent">
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="setting-row flex items-center justify-between p-4 border border-gray-200 rounded-xl">
+                                            <div class="flex items-center gap-4">
+                                                <span class="iconify w-5 h-5 text-indigo-600" data-icon="mdi:message-reply-text-outline"></span>
+                                                <div>
+                                                    <p class="font-medium text-gray-800">Welcome Message</p>
+                                                    <p class="text-sm text-gray-500">Show welcome message on first interaction</p>
+                                                </div>
+                                            </div>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked disabled id="toggle-welcome">
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="setting-row flex items-center justify-between p-4 border border-gray-200 rounded-xl">
+                                            <div class="flex items-center gap-4">
+                                                <span class="iconify w-5 h-5 text-indigo-600" data-icon="mdi:star-outline"></span>
+                                                <div>
+                                                    <p class="font-medium text-gray-800">Feedback Collection</p>
+                                                    <p class="text-sm text-gray-500">Collect user feedback after interactions</p>
+                                                </div>
+                                            </div>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked disabled id="toggle-feedback">
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- User Interface Tab Content -->
+                        <div id="content-userinterface" class="tab-content hidden">
+                            <!-- Channels Sub-tab Content -->
+                            <div id="subcontent-channels" class="max-w-3xl">
+                                <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                    <span class="iconify w-4 h-4 text-indigo-600" data-icon="mdi:share-variant-outline"></span>
+                                    Message Channels
+                                </h3>
+                                <div class="space-y-3">
+                                    <div class="setting-row flex items-center justify-between p-4 border border-gray-200 rounded-xl">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                                                <span class="iconify w-5 h-5 text-green-600" data-icon="mdi:whatsapp"></span>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-800">WhatsApp</p>
+                                                <p class="text-sm text-gray-500">Connect via WhatsApp Business API</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="setting-row flex items-center justify-between p-4 border border-gray-200 rounded-xl">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                                                <span class="iconify w-5 h-5 text-blue-600" data-icon="mdi:telegram"></span>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-800">Telegram</p>
+                                                <p class="text-sm text-gray-500">Connect via Telegram Bot API</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wider mb-4 mt-8 flex items-center gap-2">
+                                    <span class="iconify w-4 h-4 text-indigo-600" data-icon="mdi:headset"></span>
+                                    Support Channels
+                                </h3>
+                                <div class="space-y-3">
+                                    <div class="setting-row flex items-center justify-between p-4 border border-gray-200 rounded-xl">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                                                <span class="iconify w-5 h-5 text-purple-600" data-icon="simple-icons:clickup"></span>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-800">ClickUp</p>
+                                                <p class="text-sm text-gray-500">Create support tickets in ClickUp</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="setting-row flex items-center justify-between p-4 border border-gray-200 rounded-xl">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-10 h-10 rounded-lg bg-pink-100 flex items-center justify-center">
+                                                <span class="iconify w-5 h-5 text-pink-600" data-icon="mdi:slack"></span>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-800">Slack</p>
+                                                <p class="text-sm text-gray-500">Send notifications to Slack</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="setting-row flex items-center justify-between p-4 border border-gray-200 rounded-xl">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                                                <span class="iconify w-5 h-5 text-gray-600" data-icon="mdi:email-outline"></span>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-800">Email</p>
+                                                <p class="text-sm text-gray-500">Email notifications and support</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Features Sub-tab Content -->
+                            <div id="subcontent-features" class="max-w-3xl hidden">
+                                <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                    <span class="iconify w-4 h-4 text-indigo-600" data-icon="mdi:star-outline"></span>
+                                    Bot Features
+                                </h3>
+                                <div class="space-y-3">
+                                    <div class="setting-row flex items-center justify-between p-4 border border-gray-200 rounded-xl">
+                                        <div class="flex items-center gap-4">
+                                            <span class="iconify w-5 h-5 text-indigo-600" data-icon="mdi:account-cog-outline"></span>
+                                            <div>
+                                                <p class="font-medium text-gray-800">Personalization</p>
+                                                <p class="text-sm text-gray-500">Personalize responses based on user data</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="setting-row flex items-center justify-between p-4 border border-gray-200 rounded-xl">
+                                        <div class="flex items-center gap-4">
+                                            <span class="iconify w-5 h-5 text-indigo-600" data-icon="mdi:map-marker-outline"></span>
+                                            <div>
+                                                <p class="font-medium text-gray-800">Location Context</p>
+                                                <p class="text-sm text-gray-500">Use location for relevant responses</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="setting-row flex items-center justify-between p-4 border border-gray-200 rounded-xl">
+                                        <div class="flex items-center gap-4">
+                                            <span class="iconify w-5 h-5 text-indigo-600" data-icon="mdi:translate"></span>
+                                            <div>
+                                                <p class="font-medium text-gray-800">Localization</p>
+                                                <p class="text-sm text-gray-500">Multi-language support</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="setting-row flex items-center justify-between p-4 border border-gray-200 rounded-xl">
+                                        <div class="flex items-center gap-4">
+                                            <span class="iconify w-5 h-5 text-indigo-600" data-icon="mdi:pill"></span>
+                                            <div>
+                                                <p class="font-medium text-gray-800">Medication Reminders</p>
+                                                <p class="text-sm text-gray-500">Send medication reminder notifications</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="setting-row flex items-center justify-between p-4 border border-gray-200 rounded-xl">
+                                        <div class="flex items-center gap-4">
+                                            <span class="iconify w-5 h-5 text-indigo-600" data-icon="mdi:help-circle-outline"></span>
+                                            <div>
+                                                <p class="font-medium text-gray-800">Q&A</p>
+                                                <p class="text-sm text-gray-500">Answer common questions from knowledge base</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="setting-row flex items-center justify-between p-4 border border-gray-200 rounded-xl">
+                                        <div class="flex items-center gap-4">
+                                            <span class="iconify w-5 h-5 text-indigo-600" data-icon="mdi:emoticon-outline"></span>
+                                            <div>
+                                                <p class="font-medium text-gray-800">Emojis</p>
+                                                <p class="text-sm text-gray-500">Use emojis in bot responses</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="setting-row flex items-center justify-between p-4 border border-gray-200 rounded-xl">
+                                        <div class="flex items-center gap-4">
+                                            <span class="iconify w-5 h-5 text-indigo-600" data-icon="mdi:history"></span>
+                                            <div>
+                                                <p class="font-medium text-gray-800">Conversation History</p>
+                                                <p class="text-sm text-gray-500">Maintain context across conversations</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Messages Sub-tab Content -->
+                            <div id="subcontent-messages" class="max-w-3xl hidden">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wider flex items-center gap-2">
+                                        <span class="iconify w-4 h-4 text-indigo-600" data-icon="mdi:message-text-outline"></span>
+                                        Welcome Messages
+                                    </h3>
+                                    <button class="px-3 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 flex items-center gap-1" disabled>
+                                        <span class="iconify w-4 h-4" data-icon="mdi:plus"></span>
+                                        Add Message
+                                    </button>
+                                </div>
+
+                                <div class="border border-gray-200 rounded-xl overflow-hidden">
+                                    <table class="w-full text-sm">
+                                        <thead class="bg-gray-50 border-b border-gray-200">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left font-medium text-gray-600">Language</th>
+                                                <th class="px-4 py-3 text-left font-medium text-gray-600">Message Content</th>
+                                                <th class="px-4 py-3 text-center font-medium text-gray-600">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-100">
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-4 py-3">
+                                                    <span class="inline-flex items-center gap-2">
+                                                        English
+                                                        <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Default</span>
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-3 text-gray-600 max-w-md truncate">
+                                                    Welcome to ACME Health Bot! I'm here to help you with your health journey. How can I assist you today?
+                                                </td>
+                                                <td class="px-4 py-3 text-center">
+                                                    <div class="flex items-center justify-center gap-2">
+                                                        <button class="p-1.5 hover:bg-gray-100 rounded" disabled>
+                                                            <span class="iconify w-4 h-4 text-gray-500" data-icon="mdi:pencil-outline"></span>
+                                                        </button>
+                                                        <button class="p-1.5 hover:bg-red-50 rounded" disabled>
+                                                            <span class="iconify w-4 h-4 text-red-500" data-icon="mdi:delete-outline"></span>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-4 py-3">Spanish</td>
+                                                <td class="px-4 py-3 text-gray-600 max-w-md truncate">
+                                                    ¡Bienvenido al Bot de Salud ACME! Estoy aquí para ayudarte en tu viaje de salud.
+                                                </td>
+                                                <td class="px-4 py-3 text-center">
+                                                    <div class="flex items-center justify-center gap-2">
+                                                        <button class="p-1.5 hover:bg-gray-100 rounded" disabled>
+                                                            <span class="iconify w-4 h-4 text-gray-500" data-icon="mdi:pencil-outline"></span>
+                                                        </button>
+                                                        <button class="p-1.5 hover:bg-red-50 rounded" disabled>
+                                                            <span class="iconify w-4 h-4 text-red-500" data-icon="mdi:delete-outline"></span>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                    <p class="text-sm text-gray-500 flex items-center gap-2" id="statusText">
+                        <span class="iconify w-4 h-4" data-icon="mdi:lock-outline"></span>
+                        Click "Edit" to modify settings
+                    </p>
+                    <div class="flex items-center gap-3">
+                        <button class="px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-100">
+                            Reset
+                        </button>
+                        <button class="px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-100">
+                            Cancel
+                        </button>
+                        <button id="saveBtn" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Primary tab switching
+        function switchPrimaryTab(tabName) {
+            // Hide all primary content
+            document.getElementById('content-common').classList.add('hidden');
+            document.getElementById('content-userinterface').classList.add('hidden');
+
+            // Remove active from all primary tabs
+            document.getElementById('tab-common').classList.remove('active');
+            document.getElementById('tab-userinterface').classList.remove('active');
+            document.getElementById('tab-common').classList.add('text-gray-600');
+            document.getElementById('tab-userinterface').classList.add('text-gray-600');
+
+            // Show selected content
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+
+            // Add active to selected tab
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.getElementById('tab-' + tabName).classList.remove('text-gray-600');
+
+            // Show/hide sub-tabs based on primary tab
+            if (tabName === 'userinterface') {
+                document.getElementById('ui-subtabs').classList.remove('hidden');
+                // Show first sub-tab content by default
+                switchSubTab('channels');
+            } else {
+                document.getElementById('ui-subtabs').classList.add('hidden');
+            }
+        }
+
+        // Sub-tab switching
+        function switchSubTab(subTabName) {
+            // Hide all sub-content
+            document.querySelectorAll('[id^="subcontent-"]').forEach(el => el.classList.add('hidden'));
+
+            // Remove active from all sub-tabs
+            document.querySelectorAll('.sub-tab').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Show selected sub-content
+            document.getElementById('subcontent-' + subTabName).classList.remove('hidden');
+
+            // Add active to selected sub-tab
+            document.getElementById('subtab-' + subTabName).classList.add('active');
+        }
+
+        // Toggle edit mode
+        const editBtn = document.getElementById('editBtn');
+        const editBtnText = document.getElementById('editBtnText');
+        const saveBtn = document.getElementById('saveBtn');
+        const statusText = document.getElementById('statusText');
+        let isEditMode = false;
+
+        editBtn.addEventListener('click', () => {
+            isEditMode = !isEditMode;
+            editBtnText.textContent = isEditMode ? 'Cancel' : 'Edit';
+            editBtn.classList.toggle('bg-gray-100', isEditMode);
+
+            // Enable/disable all form inputs
+            document.querySelectorAll('input, select, textarea, .toggle-switch input').forEach(input => {
+                input.disabled = !isEditMode;
+            });
+
+            // Enable/disable buttons (except navigation)
+            document.querySelectorAll('.tab-content button[disabled]').forEach(btn => {
+                btn.disabled = !isEditMode;
+            });
+
+            saveBtn.disabled = !isEditMode;
+
+            if (isEditMode) {
+                statusText.innerHTML = '<span class="iconify w-4 h-4" data-icon="mdi:pencil"></span> You are in edit mode. Make changes and save.';
+            } else {
+                statusText.innerHTML = '<span class="iconify w-4 h-4" data-icon="mdi:lock-outline"></span> Click "Edit" to modify settings';
+            }
+        });
+    </script>
+</body>
+</html>

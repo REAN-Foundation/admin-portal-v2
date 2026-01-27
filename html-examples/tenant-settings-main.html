@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Settings - Main</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@iconify/iconify@latest/dist/iconify.min.css">
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    <style>
+        :root {
+            --color-primary: #f8fafc;
+            --color-secondary: #ffffff;
+            --color-info: #334155;
+            --color-outline: #e2e8f0;
+            --color-accent: #6366f1;
+            --color-accent-light: #eef2ff;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        .settings-card {
+            transition: all 0.2s ease;
+        }
+
+        .settings-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .settings-card.enabled {
+            border-color: #6366f1;
+            background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #6366f1;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        .tab-active {
+            color: #6366f1;
+            border-bottom: 2px solid #6366f1;
+        }
+
+        .nav-item {
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        .nav-item.active {
+            background-color: #eef2ff;
+            border-left: 3px solid #6366f1;
+        }
+
+        .stat-card {
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <button class="p-2 rounded-lg hover:bg-gray-100">
+                        <span class="iconify w-5 h-5 text-gray-600" data-icon="mdi:menu"></span>
+                    </button>
+                    <span class="text-xl font-semibold text-gray-800">REAN Admin</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="p-2 rounded-lg hover:bg-gray-100">
+                        <span class="iconify w-5 h-5 text-gray-600" data-icon="mdi:bell-outline"></span>
+                    </button>
+                    <button class="p-2 rounded-lg hover:bg-gray-100">
+                        <span class="iconify w-5 h-5 text-gray-600" data-icon="mdi:cog-outline"></span>
+                    </button>
+                    <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm font-medium">
+                        JD
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] hidden lg:block">
+            <div class="p-4">
+                <div class="mb-6">
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Tenant Settings</h3>
+                    <nav class="space-y-1">
+                        <a href="#" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-indigo-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:view-dashboard-outline"></span>
+                            Integrations
+                        </a>
+                        <a href="tenant-settings-common.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:layers-outline"></span>
+                            Common Settings
+                        </a>
+                        <a href="tenant-settings-chatbot.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:robot-outline"></span>
+                            Chat Bot
+                        </a>
+                        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:shield-check-outline"></span>
+                            Consent
+                        </a>
+                        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:form-select"></span>
+                            Forms
+                        </a>
+                        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:calendar-clock"></span>
+                            Follow-up
+                        </a>
+                        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="mdi:cog-outline"></span>
+                            Custom Settings
+                        </a>
+                        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600">
+                            <span class="iconify w-5 h-5" data-icon="simple-icons:clickup"></span>
+                            ClickUp
+                        </a>
+                    </nav>
+                </div>
+            </div>
+            <div class="absolute bottom-4 left-4 right-4">
+                <a href="#" class="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg">
+                    <span class="iconify w-5 h-5" data-icon="mdi:arrow-left"></span>
+                    Back to Tenants
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 lg:p-8">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+                <a href="#" class="hover:text-indigo-600">Tenants</a>
+                <span class="iconify w-4 h-4" data-icon="mdi:chevron-right"></span>
+                <a href="#" class="hover:text-indigo-600">ACME Healthcare</a>
+                <span class="iconify w-4 h-4" data-icon="mdi:chevron-right"></span>
+                <span class="text-gray-800 font-medium">Settings</span>
+            </nav>
+
+            <!-- Page Header -->
+            <div class="bg-white rounded-xl border border-gray-200 mb-6 overflow-hidden">
+                <div class="px-6 py-5 border-b border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center">
+                                <span class="iconify w-6 h-6 text-indigo-600" data-icon="mdi:office-building"></span>
+                            </div>
+                            <div>
+                                <h1 class="text-xl font-semibold text-gray-800">ACME Healthcare</h1>
+                                <p class="text-sm text-gray-500">Tenant ID: acme-healthcare-001</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">Active</span>
+                            <button class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 flex items-center gap-2">
+                                <span class="iconify w-4 h-4" data-icon="mdi:pencil"></span>
+                                Edit Tenant
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Row -->
+                <div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100">
+                    <div class="stat-card px-6 py-4 text-center cursor-pointer hover:bg-gray-50">
+                        <p class="text-2xl font-semibold text-gray-800">3</p>
+                        <p class="text-sm text-gray-500">Active Integrations</p>
+                    </div>
+                    <div class="stat-card px-6 py-4 text-center cursor-pointer hover:bg-gray-50">
+                        <p class="text-2xl font-semibold text-gray-800">12</p>
+                        <p class="text-sm text-gray-500">Users</p>
+                    </div>
+                    <div class="stat-card px-6 py-4 text-center cursor-pointer hover:bg-gray-50">
+                        <p class="text-2xl font-semibold text-gray-800">847</p>
+                        <p class="text-sm text-gray-500">Patients</p>
+                    </div>
+                    <div class="stat-card px-6 py-4 text-center cursor-pointer hover:bg-gray-50">
+                        <p class="text-2xl font-semibold text-green-600">98%</p>
+                        <p class="text-sm text-gray-500">Uptime</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Integrations Section -->
+            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-800">Integrations</h2>
+                        <p class="text-sm text-gray-500">Enable or disable tenant modules and integrations</p>
+                    </div>
+                    <button id="editBtn" class="px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                        <span class="iconify w-4 h-4" data-icon="mdi:pencil"></span>
+                        <span id="editBtnText">Edit</span>
+                    </button>
+                </div>
+
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        <!-- Chatbot Card -->
+                        <div class="settings-card enabled rounded-xl border-2 border-indigo-200 p-5 bg-gradient-to-br from-indigo-50 to-white">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center">
+                                        <span class="iconify w-5 h-5 text-indigo-600" data-icon="mdi:robot-outline"></span>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-gray-800">Chatbot</h3>
+                                        <span class="text-xs text-green-600 bg-green-100 px-2 py-0.5 rounded-full">Active</span>
+                                    </div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked disabled>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-4">AI-powered chatbot for automated patient interaction and support.</p>
+                            <a href="tenant-settings-chatbot.html" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700">
+                                <span class="iconify w-4 h-4" data-icon="mdi:cog-outline"></span>
+                                Configure
+                                <span class="iconify w-4 h-4" data-icon="mdi:arrow-right"></span>
+                            </a>
+                        </div>
+
+                        <!-- Follow-up Card -->
+                        <div class="settings-card enabled rounded-xl border-2 border-green-200 p-5 bg-gradient-to-br from-green-50 to-white">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                                        <span class="iconify w-5 h-5 text-green-600" data-icon="mdi:calendar-clock"></span>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-gray-800">Follow-up</h3>
+                                        <span class="text-xs text-green-600 bg-green-100 px-2 py-0.5 rounded-full">Active</span>
+                                    </div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked disabled>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-4">Automated follow-up and appointment reminder system.</p>
+                            <a href="#" class="inline-flex items-center gap-1 text-sm font-medium text-green-600 hover:text-green-700">
+                                <span class="iconify w-4 h-4" data-icon="mdi:cog-outline"></span>
+                                Configure
+                                <span class="iconify w-4 h-4" data-icon="mdi:arrow-right"></span>
+                            </a>
+                        </div>
+
+                        <!-- Forms Card -->
+                        <div class="settings-card enabled rounded-xl border-2 border-purple-200 p-5 bg-gradient-to-br from-purple-50 to-white">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                                        <span class="iconify w-5 h-5 text-purple-600" data-icon="mdi:form-select"></span>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-gray-800">Forms</h3>
+                                        <span class="text-xs text-green-600 bg-green-100 px-2 py-0.5 rounded-full">Active</span>
+                                    </div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked disabled>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-4">Digital forms for data collection and patient surveys.</p>
+                            <a href="#" class="inline-flex items-center gap-1 text-sm font-medium text-purple-600 hover:text-purple-700">
+                                <span class="iconify w-4 h-4" data-icon="mdi:cog-outline"></span>
+                                Configure
+                                <span class="iconify w-4 h-4" data-icon="mdi:arrow-right"></span>
+                            </a>
+                        </div>
+
+                        <!-- Patient App Card (Disabled) -->
+                        <div class="settings-card rounded-xl border-2 border-gray-200 p-5 bg-white opacity-70">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                                        <span class="iconify w-5 h-5 text-gray-400" data-icon="mdi:cellphone"></span>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-gray-500">Patient App</h3>
+                                        <span class="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">Inactive</span>
+                                    </div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" disabled>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-4">Mobile application for patient self-service and health management.</p>
+                            <span class="text-sm text-gray-400">Enable to configure</span>
+                        </div>
+
+                        <!-- Patient Portal Card (Disabled) -->
+                        <div class="settings-card rounded-xl border-2 border-gray-200 p-5 bg-white opacity-70">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                                        <span class="iconify w-5 h-5 text-gray-400" data-icon="mdi:account-circle-outline"></span>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-gray-500">Patient Portal</h3>
+                                        <span class="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">Inactive</span>
+                                    </div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" disabled>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-4">Web-based portal for patient access to health records.</p>
+                            <span class="text-sm text-gray-400">Enable to configure</span>
+                        </div>
+
+                        <!-- Add New Integration Card -->
+                        <div class="settings-card rounded-xl border-2 border-dashed border-gray-300 p-5 bg-gray-50 flex flex-col items-center justify-center text-center cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+                            <div class="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center mb-3">
+                                <span class="iconify w-5 h-5 text-gray-500" data-icon="mdi:plus"></span>
+                            </div>
+                            <h3 class="font-medium text-gray-600 mb-1">Add Integration</h3>
+                            <p class="text-sm text-gray-400">Connect a new service</p>
+                        </div>
+                    </div>
+
+                    <!-- Info Banner -->
+                    <div class="mt-6 p-4 rounded-lg bg-blue-50 border border-blue-200 flex items-start gap-3">
+                        <span class="iconify w-5 h-5 text-blue-600 mt-0.5" data-icon="mdi:information-outline"></span>
+                        <div>
+                            <p class="text-sm text-blue-800">
+                                <strong>Note:</strong> Enabling an integration will activate its features for this tenant.
+                                Click on "Configure" to customize the settings for each integration.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                    <p class="text-sm text-gray-500 flex items-center gap-2">
+                        <span class="iconify w-4 h-4" data-icon="mdi:lock-outline"></span>
+                        Click "Edit" to modify integrations
+                    </p>
+                    <div class="flex items-center gap-3">
+                        <button class="px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-100">
+                            Cancel
+                        </button>
+                        <button class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Access Section -->
+            <div class="mt-6 bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100">
+                    <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                        <span class="iconify w-5 h-5 text-gray-600" data-icon="mdi:lightning-bolt"></span>
+                        Quick Access
+                    </h2>
+                </div>
+                <div class="p-4">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <a href="tenant-settings-common.html" class="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all">
+                            <span class="iconify w-6 h-6 text-gray-600" data-icon="mdi:layers-outline"></span>
+                            <span class="text-sm font-medium text-gray-700">Common</span>
+                        </a>
+                        <a href="#" class="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all">
+                            <span class="iconify w-6 h-6 text-gray-600" data-icon="mdi:shield-check-outline"></span>
+                            <span class="text-sm font-medium text-gray-700">Consent</span>
+                        </a>
+                        <a href="#" class="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all">
+                            <span class="iconify w-6 h-6 text-gray-600" data-icon="mdi:cog-outline"></span>
+                            <span class="text-sm font-medium text-gray-700">Custom</span>
+                        </a>
+                        <a href="#" class="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all">
+                            <span class="iconify w-6 h-6 text-gray-600" data-icon="simple-icons:clickup"></span>
+                            <span class="text-sm font-medium text-gray-700">ClickUp</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Toggle edit mode
+        const editBtn = document.getElementById('editBtn');
+        const editBtnText = document.getElementById('editBtnText');
+        const toggleInputs = document.querySelectorAll('.toggle-switch input');
+        const saveBtn = document.querySelector('button[disabled]:last-of-type');
+        let isEditMode = false;
+
+        editBtn.addEventListener('click', () => {
+            isEditMode = !isEditMode;
+            editBtnText.textContent = isEditMode ? 'Cancel' : 'Edit';
+            editBtn.classList.toggle('bg-gray-100', isEditMode);
+
+            toggleInputs.forEach(input => {
+                if (!input.closest('.opacity-70')) {
+                    input.disabled = !isEditMode;
+                }
+            });
+
+            if (saveBtn) {
+                saveBtn.disabled = !isEditMode;
+            }
+        });
+    </script>
+</body>
+</html>
