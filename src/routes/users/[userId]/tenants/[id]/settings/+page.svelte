@@ -314,10 +314,6 @@
 	// Submit follow-up settings
 	const handleFollowupSubmit = async () => {
 		try {
-			if (!modalEditMode) {
-				addToast({ message: 'Nothing to edit!', type: 'info', timeout: 3000 });
-				return;
-			}
 			followupErrors = {};
 
 			// Prepare data for submission
@@ -387,15 +383,6 @@
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
 		try {
-			if (disabled) {
-				addToast({
-					message: 'Nothing to edit!',
-					type: 'warning',
-					timeout: 3000
-				});
-				return;
-			}
-
 			errors = {};
 
 			const validationResult = UserInterfacesSchema.safeParse(commonSettings.UserInterfaces);
@@ -465,16 +452,6 @@
 						Enable or disable tenant modules and integrations
 					</p>
 				</div>
-				<div class="flex items-center gap-2">
-					<button
-						type="button"
-						class="table-btn variant-filled-secondary gap-1 flex items-center"
-						onclick={handleEditClick}
-					>
-						<Icon icon={disabled ? 'material-symbols:edit-outline' : 'material-symbols:close'} class="h-5 w-5" />
-						<span class="hidden sm:inline">{disabled ? 'Edit' : 'Cancel'}</span>
-					</button>
-				</div>
 			</div>
 
 			<!-- Integrations Grid -->
@@ -486,7 +463,7 @@
 						<div
 							class="integration-card relative rounded-xl border-2 p-5 transition-all duration-200
 								{isEnabled ? colorClasses.border : 'border-gray-200'}
-								{!disabled && !item.alwaysDisabled ? 'hover:shadow-md cursor-pointer' : ''}
+								{!item.alwaysDisabled ? 'hover:shadow-md cursor-pointer' : ''}
 								{item.alwaysDisabled ? 'opacity-60' : ''}"
 						>
 							<!-- Card Header -->
@@ -510,7 +487,7 @@
 									<input
 										type="checkbox"
 										class="sr-only peer"
-										disabled={disabled || item.alwaysDisabled}
+										disabled={item.alwaysDisabled}
 										bind:checked={commonSettings.UserInterfaces[item.key]}
 									/>
 									<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"></div>
@@ -560,19 +537,14 @@
 			<div class="px-6 py-4 bg-[var(--color-primary)] border-t border-[var(--color-outline)]">
 				<div class="flex items-center justify-between">
 					<p class="text-sm text-[var(--color-info)] opacity-70">
-						{#if !disabled}
-							<Icon icon="mdi:pencil" class="inline h-4 w-4 mr-1" />
-							You are in edit mode. Make changes and submit to save.
-						{:else}
-							<Icon icon="mdi:lock-outline" class="inline h-4 w-4 mr-1" />
-							Click "Edit" to modify integrations.
-						{/if}
+						<Icon icon="mdi:information-outline" class="inline h-4 w-4 mr-1" />
+						Toggle integrations on/off and click "Save Changes" to apply your settings.
 					</p>
 					<div class="flex gap-2">
 						{#await promise}
 							<Button type="submit" variant="primary" size="md" text="Saving..." disabled={true} />
 						{:then}
-							<Button type="submit" variant="primary" size="md" text="Save Changes" disabled={disabled} />
+							<Button type="submit" variant="primary" size="md" text="Save Changes" disabled={false} />
 						{/await}
 					</div>
 				</div>
@@ -655,18 +627,22 @@
 					</div>
 					<div>
 						<h2 class="text-lg font-semibold text-[var(--color-info)]">{item?.name} Settings</h2>
-						<p class="text-sm text-[var(--color-info)] opacity-70">Edit configuration details</p>
+						<p class="text-sm text-[var(--color-info)] opacity-70">
+							{activeModal === 'Followup' ? 'Configure follow-up settings' : 'Edit configuration details'}
+						</p>
 					</div>
 				</div>
 				<div class="flex items-center gap-2">
-					<button
-						type="button"
-						class="table-btn variant-filled-secondary gap-1 flex items-center"
-						onclick={toggleModalEditMode}
-					>
-						<Icon icon={modalEditMode ? 'material-symbols:close' : 'material-symbols:edit-outline'} class="h-4 w-4" />
-						<span class="hidden sm:inline">{modalEditMode ? 'Cancel' : 'Edit'}</span>
-					</button>
+					{#if activeModal !== 'Followup'}
+						<button
+							type="button"
+							class="table-btn variant-filled-secondary gap-1 flex items-center"
+							onclick={toggleModalEditMode}
+						>
+							<Icon icon={modalEditMode ? 'material-symbols:close' : 'material-symbols:edit-outline'} class="h-4 w-4" />
+							<span class="hidden sm:inline">{modalEditMode ? 'Cancel' : 'Edit'}</span>
+						</button>
+					{/if}
 					<button
 						type="button"
 						class="p-2 rounded-lg hover:bg-gray-100 text-gray-500"
@@ -699,11 +675,11 @@
 								<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 									<div>
 										<label class="block text-sm font-medium text-[var(--color-info)] mb-1.5">Bot Name</label>
-										<input type="text" class="input-field w-full" placeholder="Enter bot name" disabled={!modalEditMode} value={data.chatbotSettings?.Name || ''} />
+										<input type="text" class="input-field w-full" placeholder="Enter bot name" disabled={activeModal !== 'Followup' && !modalEditMode} value={data.chatbotSettings?.Name || ''} />
 									</div>
 									<div>
 										<label class="block text-sm font-medium text-[var(--color-info)] mb-1.5">Default Language</label>
-										<select class="select w-full" disabled={!modalEditMode}>
+										<select class="select w-full" disabled={activeModal !== 'Followup' && !modalEditMode}>
 											<option value="English" selected>English</option>
 											<option value="Spanish">Spanish</option>
 											<option value="French">French</option>
@@ -712,7 +688,7 @@
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-[var(--color-info)] mb-1.5">Description</label>
-									<textarea class="input-field w-full" rows="2" placeholder="Enter description" disabled={!modalEditMode}>{data.chatbotSettings?.Description || ''}</textarea>
+									<textarea class="input-field w-full" rows="2" placeholder="Enter description" disabled={activeModal !== 'Followup' && !modalEditMode}>{data.chatbotSettings?.Description || ''}</textarea>
 								</div>
 							</div>
 						</div>
@@ -746,7 +722,7 @@
 											</div>
 										</div>
 										<label class="relative inline-flex items-center cursor-pointer">
-											<input type="checkbox" class="sr-only peer" disabled={!modalEditMode} checked={data.chatbotSettings?.[feature.key] ?? false} />
+											<input type="checkbox" class="sr-only peer" disabled={activeModal !== 'Followup' && !modalEditMode} checked={data.chatbotSettings?.[feature.key] ?? false} />
 											<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 peer-disabled:opacity-50"></div>
 										</label>
 									</div>
@@ -788,7 +764,7 @@
 									<select
 										class="select w-full"
 										bind:value={followUpSettingUpdateModel.Source}
-										disabled={!modalEditMode}
+										disabled={activeModal !== 'Followup' && !modalEditMode}
 									>
 										<option value="None">None</option>
 										<option value="File">File Upload</option>
@@ -824,7 +800,7 @@
 											rows="4"
 											bind:value={followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat}
 											oninput={validateJSON}
-											disabled={!modalEditMode}
+											disabled={activeModal !== 'Followup' && !modalEditMode}
 											placeholder={'{"column1": "type1", "column2": "type2"}'}
 										></textarea>
 										{#if jsonError || followupErrors?.FileUploadSettings?.FileColumnFormat}
@@ -836,7 +812,7 @@
 										<select
 											class="select w-full"
 											bind:value={followUpSettingUpdateModel.FileUploadSettings.FileType}
-											disabled={!modalEditMode}
+											disabled={activeModal !== 'Followup' && !modalEditMode}
 										>
 											<option value="" disabled>Select file type</option>
 											<option value="csv">CSV</option>
@@ -854,8 +830,8 @@
 											<button
 												type="button"
 												class="table-btn variant-filled-secondary gap-1 text-xs"
-												onclick={() => showReminderModal = modalEditMode}
-												disabled={!modalEditMode}
+												onclick={() => showReminderModal = activeModal === 'Followup' ? true : modalEditMode}
+												disabled={activeModal !== 'Followup' && !modalEditMode}
 											>
 												<Icon icon="mdi:plus" class="h-4 w-4" />
 												Add Schedule
@@ -874,10 +850,10 @@
 															{/if}
 														</div>
 														<div class="flex gap-1">
-															<button type="button" class="p-1 hover:bg-gray-100 rounded" onclick={() => editSchedule(i)} disabled={!modalEditMode}>
+															<button type="button" class="p-1 hover:bg-gray-100 rounded" onclick={() => editSchedule(i)} disabled={activeModal !== 'Followup' && !modalEditMode}>
 																<Icon icon="mdi:pencil-outline" class="h-4 w-4 text-blue-600" />
 															</button>
-															<button type="button" class="p-1 hover:bg-gray-100 rounded" onclick={() => deleteSchedule(i)} disabled={!modalEditMode}>
+															<button type="button" class="p-1 hover:bg-gray-100 rounded" onclick={() => deleteSchedule(i)} disabled={activeModal !== 'Followup' && !modalEditMode}>
 																<Icon icon="mdi:delete-outline" class="h-4 w-4 text-red-600" />
 															</button>
 														</div>
@@ -914,7 +890,7 @@
 									<div class="grid grid-cols-2 gap-3">
 										<div>
 											<label class="block text-sm font-medium text-[var(--color-info)] mb-1">Method</label>
-											<select class="select w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Method} disabled={!modalEditMode}>
+											<select class="select w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Method} disabled={activeModal !== 'Followup' && !modalEditMode}>
 												<option value="">Select Method</option>
 												<option value="GET">GET</option>
 												<option value="POST">POST</option>
@@ -923,7 +899,7 @@
 										</div>
 										<div>
 											<label class="block text-sm font-medium text-[var(--color-info)] mb-1">Response Type</label>
-											<select class="select w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.ResponseType} disabled={!modalEditMode}>
+											<select class="select w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.ResponseType} disabled={activeModal !== 'Followup' && !modalEditMode}>
 												<option value="">Select Type</option>
 												<option value="json">JSON</option>
 												<option value="text">Text</option>
@@ -933,28 +909,28 @@
 									</div>
 									<div>
 										<label class="block text-sm font-medium text-[var(--color-info)] mb-1">URL</label>
-										<input type="text" class="input-field w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Url} disabled={!modalEditMode} placeholder="https://api.example.com/auth" />
+										<input type="text" class="input-field w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Url} disabled={activeModal !== 'Followup' && !modalEditMode} placeholder="https://api.example.com/auth" />
 									</div>
 									<div>
 										<label class="block text-sm font-medium text-[var(--color-info)] mb-1">Request Body</label>
-										<input type="text" class="input-field w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Body} disabled={!modalEditMode} placeholder="Request body" />
+										<input type="text" class="input-field w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Body} disabled={activeModal !== 'Followup' && !modalEditMode} placeholder="Request body" />
 									</div>
 									<div>
 										<label class="block text-sm font-medium text-[var(--color-info)] mb-1">Token Path</label>
-										<input type="text" class="input-field w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenPath} disabled={!modalEditMode} placeholder="data.token" />
+										<input type="text" class="input-field w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenPath} disabled={activeModal !== 'Followup' && !modalEditMode} placeholder="data.token" />
 									</div>
 									<!-- Query Params -->
 									<div>
 										<label class="block text-sm font-medium text-[var(--color-info)] mb-1">Query Parameters</label>
 										<div class="flex gap-2 mb-2">
-											<input type="text" class="input-field flex-1" bind:value={newAuthQueryKey} disabled={!modalEditMode} placeholder="Key" />
-											<input type="text" class="input-field flex-1" bind:value={newAuthQueryValue} disabled={!modalEditMode} placeholder="Value" />
-											<button type="button" class="table-btn variant-filled-secondary" onclick={addAuthQueryParam} disabled={!modalEditMode}>Add</button>
+											<input type="text" class="input-field flex-1" bind:value={newAuthQueryKey} disabled={activeModal !== 'Followup' && !modalEditMode} placeholder="Key" />
+											<input type="text" class="input-field flex-1" bind:value={newAuthQueryValue} disabled={activeModal !== 'Followup' && !modalEditMode} placeholder="Value" />
+											<button type="button" class="table-btn variant-filled-secondary" onclick={addAuthQueryParam} disabled={activeModal !== 'Followup' && !modalEditMode}>Add</button>
 										</div>
 										{#each Object.entries(followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams || {}) as [key, value]}
 											<div class="flex items-center justify-between p-1.5 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] mb-1 text-sm">
 												<span class="text-[var(--color-info)]">{key}: {value}</span>
-												<button type="button" class="p-0.5 hover:bg-gray-100 rounded" onclick={() => removeAuthQueryParam(key)} disabled={!modalEditMode}>
+												<button type="button" class="p-0.5 hover:bg-gray-100 rounded" onclick={() => removeAuthQueryParam(key)} disabled={activeModal !== 'Followup' && !modalEditMode}>
 													<Icon icon="mdi:close" class="h-4 w-4 text-red-600" />
 												</button>
 											</div>
@@ -964,14 +940,14 @@
 									<div>
 										<label class="block text-sm font-medium text-[var(--color-info)] mb-1">Headers</label>
 										<div class="flex gap-2 mb-2">
-											<input type="text" class="input-field flex-1" bind:value={newAuthHeaderKey} disabled={!modalEditMode} placeholder="Key" />
-											<input type="text" class="input-field flex-1" bind:value={newAuthHeaderValue} disabled={!modalEditMode} placeholder="Value" />
-											<button type="button" class="table-btn variant-filled-secondary" onclick={addAuthHeader} disabled={!modalEditMode}>Add</button>
+											<input type="text" class="input-field flex-1" bind:value={newAuthHeaderKey} disabled={activeModal !== 'Followup' && !modalEditMode} placeholder="Key" />
+											<input type="text" class="input-field flex-1" bind:value={newAuthHeaderValue} disabled={activeModal !== 'Followup' && !modalEditMode} placeholder="Value" />
+											<button type="button" class="table-btn variant-filled-secondary" onclick={addAuthHeader} disabled={activeModal !== 'Followup' && !modalEditMode}>Add</button>
 										</div>
 										{#each Object.entries(followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Headers || {}) as [key, value]}
 											<div class="flex items-center justify-between p-1.5 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] mb-1 text-sm">
 												<span class="text-[var(--color-info)]">{key}: {value}</span>
-												<button type="button" class="p-0.5 hover:bg-gray-100 rounded" onclick={() => removeAuthHeader(key)} disabled={!modalEditMode}>
+												<button type="button" class="p-0.5 hover:bg-gray-100 rounded" onclick={() => removeAuthHeader(key)} disabled={activeModal !== 'Followup' && !modalEditMode}>
 													<Icon icon="mdi:close" class="h-4 w-4 text-red-600" />
 												</button>
 											</div>
@@ -996,7 +972,7 @@
 								<div class="collapsible-content mt-3 space-y-3">
 									<div>
 										<label class="block text-sm font-medium text-[var(--color-info)] mb-1">Location</label>
-										<select class="select w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Location} disabled={!modalEditMode}>
+										<select class="select w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Location} disabled={activeModal !== 'Followup' && !modalEditMode}>
 											<option value="">Select Location</option>
 											<option value="header">Header</option>
 											<option value="query">Query</option>
@@ -1005,11 +981,11 @@
 									</div>
 									<div>
 										<label class="block text-sm font-medium text-[var(--color-info)] mb-1">Key</label>
-										<input type="text" class="input-field w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Key} disabled={!modalEditMode} placeholder="Authorization" />
+										<input type="text" class="input-field w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Key} disabled={activeModal !== 'Followup' && !modalEditMode} placeholder="Authorization" />
 									</div>
 									<div>
 										<label class="block text-sm font-medium text-[var(--color-info)] mb-1">Prefix</label>
-										<input type="text" class="input-field w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Prefix} disabled={!modalEditMode} placeholder="Bearer " />
+										<input type="text" class="input-field w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Prefix} disabled={activeModal !== 'Followup' && !modalEditMode} placeholder="Bearer " />
 									</div>
 								</div>
 							</div>
@@ -1031,7 +1007,7 @@
 									<div class="grid grid-cols-2 gap-3">
 										<div>
 											<label class="block text-sm font-medium text-[var(--color-info)] mb-1">Method <span class="text-red-500">*</span></label>
-											<select class="select w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Method} disabled={!modalEditMode}>
+											<select class="select w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Method} disabled={activeModal !== 'Followup' && !modalEditMode}>
 												<option value="">Select Method</option>
 												<option value="GET">GET</option>
 												<option value="POST">POST</option>
@@ -1040,7 +1016,7 @@
 										</div>
 										<div>
 											<label class="block text-sm font-medium text-[var(--color-info)] mb-1">Response Type</label>
-											<select class="select w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseType} disabled={!modalEditMode}>
+											<select class="select w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseType} disabled={activeModal !== 'Followup' && !modalEditMode}>
 												<option value="">Select Type</option>
 												<option value="json">JSON</option>
 												<option value="text">Text</option>
@@ -1050,28 +1026,28 @@
 									</div>
 									<div>
 										<label class="block text-sm font-medium text-[var(--color-info)] mb-1">URL <span class="text-red-500">*</span></label>
-										<input type="text" class="input-field w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Url} disabled={!modalEditMode} placeholder="https://api.example.com/data" />
+										<input type="text" class="input-field w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Url} disabled={activeModal !== 'Followup' && !modalEditMode} placeholder="https://api.example.com/data" />
 									</div>
 									<div>
 										<label class="block text-sm font-medium text-[var(--color-info)] mb-1">Request Body</label>
-										<input type="text" class="input-field w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Body} disabled={!modalEditMode} placeholder="Request body" />
+										<input type="text" class="input-field w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Body} disabled={activeModal !== 'Followup' && !modalEditMode} placeholder="Request body" />
 									</div>
 									<div>
 										<label class="block text-sm font-medium text-[var(--color-info)] mb-1">Response Field</label>
-										<input type="text" class="input-field w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseField} disabled={!modalEditMode} placeholder="data.items" />
+										<input type="text" class="input-field w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseField} disabled={activeModal !== 'Followup' && !modalEditMode} placeholder="data.items" />
 									</div>
 									<!-- Query Params -->
 									<div>
 										<label class="block text-sm font-medium text-[var(--color-info)] mb-1">Query Parameters</label>
 										<div class="flex gap-2 mb-2">
-											<input type="text" class="input-field flex-1" bind:value={newFetchQueryKey} disabled={!modalEditMode} placeholder="Key" />
-											<input type="text" class="input-field flex-1" bind:value={newFetchQueryValue} disabled={!modalEditMode} placeholder="Value" />
-											<button type="button" class="table-btn variant-filled-secondary" onclick={addFetchQueryParam} disabled={!modalEditMode}>Add</button>
+											<input type="text" class="input-field flex-1" bind:value={newFetchQueryKey} disabled={activeModal !== 'Followup' && !modalEditMode} placeholder="Key" />
+											<input type="text" class="input-field flex-1" bind:value={newFetchQueryValue} disabled={activeModal !== 'Followup' && !modalEditMode} placeholder="Value" />
+											<button type="button" class="table-btn variant-filled-secondary" onclick={addFetchQueryParam} disabled={activeModal !== 'Followup' && !modalEditMode}>Add</button>
 										</div>
 										{#each Object.entries(followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.QueryParams || {}) as [key, value]}
 											<div class="flex items-center justify-between p-1.5 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] mb-1 text-sm">
 												<span class="text-[var(--color-info)]">{key}: {value}</span>
-												<button type="button" class="p-0.5 hover:bg-gray-100 rounded" onclick={() => removeFetchQueryParam(key)} disabled={!modalEditMode}>
+												<button type="button" class="p-0.5 hover:bg-gray-100 rounded" onclick={() => removeFetchQueryParam(key)} disabled={activeModal !== 'Followup' && !modalEditMode}>
 													<Icon icon="mdi:close" class="h-4 w-4 text-red-600" />
 												</button>
 											</div>
@@ -1081,14 +1057,14 @@
 									<div>
 										<label class="block text-sm font-medium text-[var(--color-info)] mb-1">Headers</label>
 										<div class="flex gap-2 mb-2">
-											<input type="text" class="input-field flex-1" bind:value={newFetchHeaderKey} disabled={!modalEditMode} placeholder="Key" />
-											<input type="text" class="input-field flex-1" bind:value={newFetchHeaderValue} disabled={!modalEditMode} placeholder="Value" />
-											<button type="button" class="table-btn variant-filled-secondary" onclick={addFetchHeader} disabled={!modalEditMode}>Add</button>
+											<input type="text" class="input-field flex-1" bind:value={newFetchHeaderKey} disabled={activeModal !== 'Followup' && !modalEditMode} placeholder="Key" />
+											<input type="text" class="input-field flex-1" bind:value={newFetchHeaderValue} disabled={activeModal !== 'Followup' && !modalEditMode} placeholder="Value" />
+											<button type="button" class="table-btn variant-filled-secondary" onclick={addFetchHeader} disabled={activeModal !== 'Followup' && !modalEditMode}>Add</button>
 										</div>
 										{#each Object.entries(followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Headers || {}) as [key, value]}
 											<div class="flex items-center justify-between p-1.5 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] mb-1 text-sm">
 												<span class="text-[var(--color-info)]">{key}: {value}</span>
-												<button type="button" class="p-0.5 hover:bg-gray-100 rounded" onclick={() => removeFetchHeader(key)} disabled={!modalEditMode}>
+												<button type="button" class="p-0.5 hover:bg-gray-100 rounded" onclick={() => removeFetchHeader(key)} disabled={activeModal !== 'Followup' && !modalEditMode}>
 													<Icon icon="mdi:close" class="h-4 w-4 text-red-600" />
 												</button>
 											</div>
@@ -1113,7 +1089,7 @@
 								<div class="collapsible-content mt-3 space-y-4">
 									<div>
 										<label class="block text-sm font-medium text-[var(--color-info)] mb-1">Schedule Frequency <span class="text-red-500">*</span></label>
-										<select class="select w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.ScheduleFrequency} disabled={!modalEditMode}>
+										<select class="select w-full" bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.ScheduleFrequency} disabled={activeModal !== 'Followup' && !modalEditMode}>
 											<option value="">Select Frequency</option>
 											<option value="daily">Daily</option>
 											<option value="weekly">Weekly</option>
@@ -1129,8 +1105,8 @@
 											<button
 												type="button"
 												class="table-btn variant-filled-secondary gap-1 text-xs"
-												onclick={() => showReminderModal = modalEditMode}
-												disabled={!modalEditMode}
+												onclick={() => showReminderModal = activeModal === 'Followup' ? true : modalEditMode}
+												disabled={activeModal !== 'Followup' && !modalEditMode}
 											>
 												<Icon icon="mdi:plus" class="h-4 w-4" />
 												Add Schedule
@@ -1149,10 +1125,10 @@
 															{/if}
 														</div>
 														<div class="flex gap-1">
-															<button type="button" class="p-1 hover:bg-gray-100 rounded" onclick={() => editSchedule(i)} disabled={!modalEditMode}>
+															<button type="button" class="p-1 hover:bg-gray-100 rounded" onclick={() => editSchedule(i)} disabled={activeModal !== 'Followup' && !modalEditMode}>
 																<Icon icon="mdi:pencil-outline" class="h-4 w-4 text-blue-600" />
 															</button>
-															<button type="button" class="p-1 hover:bg-gray-100 rounded" onclick={() => deleteSchedule(i)} disabled={!modalEditMode}>
+															<button type="button" class="p-1 hover:bg-gray-100 rounded" onclick={() => deleteSchedule(i)} disabled={activeModal !== 'Followup' && !modalEditMode}>
 																<Icon icon="mdi:delete-outline" class="h-4 w-4 text-red-600" />
 															</button>
 														</div>
@@ -1197,7 +1173,7 @@
 										</div>
 									</div>
 									<label class="relative inline-flex items-center cursor-pointer">
-										<input type="checkbox" class="sr-only peer" disabled={!modalEditMode} />
+										<input type="checkbox" class="sr-only peer" disabled={activeModal !== 'Followup' && !modalEditMode} />
 										<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600 peer-disabled:opacity-50"></div>
 									</label>
 								</div>
@@ -1221,7 +1197,10 @@
 			<!-- Modal Footer -->
 			<div class="flex items-center justify-between px-6 py-4 border-t border-[var(--color-outline)] bg-[var(--color-primary)]">
 				<p class="text-sm text-[var(--color-info)] opacity-70">
-					{#if modalEditMode}
+					{#if activeModal === 'Followup'}
+						<Icon icon="mdi:information-outline" class="inline h-4 w-4 mr-1" />
+						Make your changes and click "Save Changes" to apply
+					{:else if modalEditMode}
 						<Icon icon="mdi:pencil" class="inline h-4 w-4 mr-1" />
 						You are in edit mode
 					{:else}
@@ -1235,10 +1214,10 @@
 						{#await followupPromise}
 							<Button type="button" variant="primary" size="md" text="Saving..." disabled={true} />
 						{:then}
-							<Button type="button" variant="primary" size="md" text="Save Changes" disabled={!modalEditMode} onclick={() => followupPromise = handleFollowupSubmit()} />
+							<Button type="button" variant="primary" size="md" text="Save Changes" disabled={activeModal !== 'Followup' && !modalEditMode} onclick={() => followupPromise = handleFollowupSubmit()} />
 						{/await}
 					{:else}
-						<Button type="button" variant="primary" size="md" text="Save Changes" disabled={!modalEditMode} />
+						<Button type="button" variant="primary" size="md" text="Save Changes" disabled={activeModal !== 'Followup' && !modalEditMode} />
 					{/if}
 				</div>
 			</div>
@@ -1375,5 +1354,321 @@
 	.modal-body::-webkit-scrollbar-thumb {
 		background-color: rgba(0, 0, 0, 0.2);
 		border-radius: 3px;
+	}
+
+	/* Followup Settings Styles */
+	.followup-card {
+		background: var(--color-secondary);
+		border: 1px solid var(--color-outline);
+		border-radius: 12px;
+		overflow: hidden;
+	}
+
+	.followup-card-header {
+		padding: 1rem 1.25rem;
+		background: var(--color-primary);
+		border-bottom: 1px solid var(--color-outline);
+	}
+
+	.followup-card-title {
+		font-size: 0.9375rem;
+		font-weight: 600;
+		color: var(--color-info);
+		margin: 0;
+	}
+
+	.followup-card-subtitle {
+		font-size: 0.8125rem;
+		color: var(--color-info);
+		opacity: 0.65;
+		margin-top: 0.125rem;
+	}
+
+	.followup-card-body {
+		padding: 1.25rem;
+	}
+
+	.icon-badge {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 0.625rem;
+		flex-shrink: 0;
+	}
+
+	.form-group {
+		margin-bottom: 0;
+	}
+
+	.form-label {
+		display: block;
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: var(--color-info);
+		margin-bottom: 0.5rem;
+	}
+
+	.form-label-sm {
+		display: block;
+		font-size: 0.8125rem;
+		font-weight: 500;
+		color: var(--color-info);
+		margin-bottom: 0.375rem;
+	}
+
+	.form-hint {
+		font-size: 0.75rem;
+		color: var(--color-info);
+		opacity: 0.6;
+		margin-top: 0.375rem;
+		line-height: 1.4;
+	}
+
+	.form-hint-sm {
+		font-size: 0.6875rem;
+		color: var(--color-info);
+		opacity: 0.55;
+		margin-top: 0.25rem;
+		line-height: 1.3;
+	}
+
+	.form-error {
+		font-size: 0.75rem;
+		color: #dc2626;
+		margin-top: 0.375rem;
+	}
+
+	.btn-add-schedule {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		padding: 0.5rem 0.875rem;
+		font-size: 0.8125rem;
+		font-weight: 500;
+		color: #10b981;
+		background-color: #f0fdf4;
+		border: 1px solid #d1fae5;
+		border-radius: 0.5rem;
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+
+	.btn-add-schedule:hover:not(:disabled) {
+		background-color: #dcfce7;
+		border-color: #a7f3d0;
+	}
+
+	.btn-add-schedule:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.schedule-item {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0.875rem 1rem;
+		border: 1px solid var(--color-outline);
+		border-radius: 0.5rem;
+		background: var(--color-primary);
+		transition: all 0.15s;
+	}
+
+	.schedule-item:hover {
+		border-color: #d1d5db;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	}
+
+	.schedule-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		border-radius: 0.375rem;
+		background: #f0fdf4;
+		flex-shrink: 0;
+	}
+
+	.schedule-type {
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: var(--color-info);
+		margin: 0;
+	}
+
+	.schedule-detail {
+		font-size: 0.75rem;
+		color: var(--color-info);
+		opacity: 0.6;
+		margin: 0.125rem 0 0 0;
+	}
+
+	.btn-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		border-radius: 0.375rem;
+		border: none;
+		background: transparent;
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+
+	.btn-icon:hover:not(:disabled) {
+		background: rgba(0, 0, 0, 0.05);
+	}
+
+	.btn-icon:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+
+	.btn-icon-edit {
+		color: #3b82f6;
+	}
+
+	.btn-icon-delete {
+		color: #ef4444;
+	}
+
+	.empty-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 2.5rem 1rem;
+		background: var(--color-primary);
+		border: 2px dashed var(--color-outline);
+		border-radius: 0.5rem;
+	}
+
+	.collapsible-header-v2 {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 1rem 1.25rem;
+		background: var(--color-primary);
+		border: 1px solid var(--color-outline);
+		border-radius: 0.75rem;
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+
+	.collapsible-header-v2:hover {
+		background: rgba(0, 0, 0, 0.02);
+		border-color: #d1d5db;
+	}
+
+	.collapsible-title {
+		font-size: 0.9375rem;
+		font-weight: 600;
+		color: var(--color-info);
+		margin: 0;
+	}
+
+	.collapsible-subtitle {
+		font-size: 0.75rem;
+		color: var(--color-info);
+		opacity: 0.6;
+		margin-top: 0.125rem;
+	}
+
+	.collapsible-content-v2 {
+		max-height: 0;
+		overflow: hidden;
+		transition: max-height 0.3s ease-out;
+	}
+
+	.config-section.expanded .collapsible-content-v2 {
+		max-height: 2000px;
+	}
+
+	.config-section.expanded .chevron-icon {
+		transform: rotate(180deg);
+	}
+
+	.key-value-input {
+		display: flex;
+		gap: 0.5rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.btn-add-kv {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0 0.875rem;
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: white;
+		background: #3b82f6;
+		border: none;
+		border-radius: 0.375rem;
+		cursor: pointer;
+		transition: all 0.15s;
+		white-space: nowrap;
+	}
+
+	.btn-add-kv:hover:not(:disabled) {
+		background: #2563eb;
+	}
+
+	.btn-add-kv:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.kv-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.375rem;
+		margin-top: 0.5rem;
+	}
+
+	.kv-item {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0.5rem 0.75rem;
+		background: var(--color-primary);
+		border: 1px solid var(--color-outline);
+		border-radius: 0.375rem;
+	}
+
+	.kv-text {
+		font-family: ui-monospace, monospace;
+		font-size: 0.8125rem;
+		color: var(--color-info);
+		word-break: break-all;
+	}
+
+	.kv-remove {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.25rem;
+		background: transparent;
+		border: none;
+		border-radius: 0.25rem;
+		color: #ef4444;
+		cursor: pointer;
+		transition: all 0.15s;
+		flex-shrink: 0;
+		margin-left: 0.5rem;
+	}
+
+	.kv-remove:hover:not(:disabled) {
+		background: #fee2e2;
+	}
+
+	.kv-remove:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
 	}
 </style>
