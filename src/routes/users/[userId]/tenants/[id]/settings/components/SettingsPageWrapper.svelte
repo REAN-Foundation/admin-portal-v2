@@ -101,8 +101,8 @@
 					<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
 						<p class="text-sm text-[var(--color-info)] opacity-70">
 							{#if !disabled}
-								<Icon icon="mdi:pencil" class="inline h-4 w-4 mr-1" />
-								You are in edit mode. Make changes and submit to save.
+								<Icon icon="mdi:information-outline" class="inline h-4 w-4 mr-1" />
+								{onEditClick ? 'You are in edit mode. Make changes and submit to save.' : 'Toggle features on/off and click "Save Changes" to apply your settings.'}
 							{:else}
 								<Icon icon="mdi:lock-outline" class="inline h-4 w-4 mr-1" />
 								Click "Edit" to modify settings.
@@ -112,7 +112,7 @@
 							{#if isSubmitting}
 								<Button type="submit" variant="primary" size="md" text="Saving..." disabled={true} />
 							{:else}
-								<Button type="submit" variant="primary" size="md" text={submitText} disabled={disabled} />
+								<Button type="submit" variant="primary" size="md" text={submitText} disabled={onEditClick ? disabled : false} />
 							{/if}
 						</div>
 					</div>

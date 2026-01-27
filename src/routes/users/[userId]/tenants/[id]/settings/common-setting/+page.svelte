@@ -20,22 +20,13 @@
 	let commonSetting = $state(data.commonSettings);
 	let isSubmitting = $state(false);
 	let errors: Record<string, string> = $state({});
-	let disabled = $state(true);
+	let disabled = $state(false);
 
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
 		errors = {};
 
 		try {
-			if (disabled) {
-				addToast({
-					message: 'Nothing to edit!',
-					type: 'info',
-					timeout: 3000
-				});
-				return;
-			}
-
 			isSubmitting = true;
 			const validationResult = CommonSettingsSchema.safeParse(commonSetting);
 
@@ -59,7 +50,6 @@
 			const response = await res.json();
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				disabled = true;
 			} else if (response.Errors) {
 				errors = response?.Errors || {};
 			} else {
@@ -70,24 +60,6 @@
 			toastMessage();
 		} finally {
 			isSubmitting = false;
-		}
-	};
-
-	const handleEditClick = async () => {
-		if (disabled) {
-			addToast({
-				message: 'Edit mode enabled.',
-				type: 'info',
-				timeout: 3000
-			});
-			disabled = false;
-		} else {
-			addToast({
-				message: 'Edit mode disabled.',
-				type: 'info',
-				timeout: 3000
-			});
-			disabled = true;
 		}
 	};
 
@@ -115,7 +87,6 @@
 	description="Configure clinical, wellness, and general tenant features"
 	icon="material-symbols:layers-outline"
 	{disabled}
-	onEditClick={handleEditClick}
 	onSubmit={handleSubmit}
 	backLink={settingsRoute}
 	{isSubmitting}
@@ -148,16 +119,14 @@
 	</div>
 
 	<!-- Info Banner -->
-	{#if !disabled}
-		<div class="mt-6 p-4 rounded-lg bg-amber-50 border border-amber-200">
-			<div class="flex items-start gap-3">
-				<Icon icon="mdi:alert-circle-outline" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-				<div>
-					<p class="text-sm text-amber-800">
-						<strong>Note:</strong> Changes will only take effect after you save. Toggle the features you want to enable or disable for this tenant.
-					</p>
-				</div>
+	<div class="mt-6 p-4 rounded-lg bg-blue-50 border border-blue-200">
+		<div class="flex items-start gap-3">
+			<Icon icon="mdi:information-outline" class="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+			<div>
+				<p class="text-sm text-blue-800">
+					<strong>Note:</strong> Changes will only take effect after you save. Toggle the features you want to enable or disable for this tenant.
+				</p>
 			</div>
 		</div>
-	{/if}
+	</div>
 </SettingsPageWrapper>
