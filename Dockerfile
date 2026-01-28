@@ -11,25 +11,26 @@ RUN npm run build
 
 FROM node:24-alpine3.22
 
-RUN apk add bash
 RUN apk add --no-cache \
-        # python3 \
-        aws-cli \
+        bash \
+        unzip \
         git \
         curl \
         expat \
         openssl \
     && rm -rf /var/cache/apk/*
 RUN apk add --update alpine-sdk
-# RUN apk add chromium \
-#     harfbuzz
-# RUN apk --no-cache add aws-cli
 
 RUN apk update
 RUN apk upgrade
 
+# Install AWS CLI v2
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+ && unzip awscliv2.zip \
+ && ./aws/install \
+ && rm -rf aws awscliv2.zip
+
 WORKDIR /app
-# RUN rm -rf ./*
 
 COPY --from=builder ./app/ ./
 # COPY --from=builder ./app/build .
