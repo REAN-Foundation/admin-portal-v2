@@ -11,24 +11,22 @@ RUN npm run build
 
 FROM node:24-alpine3.22
 
-RUN apk add --no-cache \
+RUN apk update && apk upgrade && \
+    apk add --no-cache \
         bash \
-        unzip \
         git \
         curl \
         expat \
         openssl \
+        alpine-sdk \
+        python3 \
+        py3-pip \
     && rm -rf /var/cache/apk/*
-RUN apk add --update alpine-sdk
 
-RUN apk update
-RUN apk upgrade
-
-# Install AWS CLI v2
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
- && unzip awscliv2.zip \
- && ./aws/install \
- && rm -rf aws awscliv2.zip
+# Install AWS CLI v1 and upgrade urllib3 to fix CVE
+RUN pip3 install --break-system-packages --no-cache-dir \
+    awscli \
+    urllib3>=2.2.3
 
 WORKDIR /app
 
