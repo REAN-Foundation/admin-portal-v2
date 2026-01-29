@@ -11,25 +11,24 @@ RUN npm run build
 
 FROM node:24-alpine3.22
 
-RUN apk add bash
-RUN apk add --no-cache \
-        # python3 \
-        aws-cli \
+RUN apk update && apk upgrade && \
+    apk add --no-cache \
+        bash \
         git \
         curl \
         expat \
         openssl \
+        alpine-sdk \
+        python3 \
+        py3-pip \
     && rm -rf /var/cache/apk/*
-RUN apk add --update alpine-sdk
-# RUN apk add chromium \
-#     harfbuzz
-# RUN apk --no-cache add aws-cli
 
-RUN apk update
-RUN apk upgrade
+# Install AWS CLI v1 and upgrade urllib3 to fix CVE
+RUN pip3 install --break-system-packages --no-cache-dir \
+    awscli \
+    urllib3>=2.2.3
 
 WORKDIR /app
-# RUN rm -rf ./*
 
 COPY --from=builder ./app/ ./
 # COPY --from=builder ./app/build .
