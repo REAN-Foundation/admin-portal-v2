@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forms Settings - REAN Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .integration-card {
+      background: var(--color-surface-alt);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      transition: all 0.2s ease;
+    }
+    
+    .integration-card:hover {
+      border-color: var(--color-primary-500);
+    }
+    
+    .integration-card.enabled {
+      border-color: var(--color-success-500);
+      background: rgba(16, 185, 129, 0.03);
+    }
+    
+    .integration-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-surface);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .setting-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      transition: all 0.2s ease;
+    }
+    
+    .setting-card:hover {
+      border-color: var(--color-primary-500);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .stats-banner {
+      background: linear-gradient(135deg, rgba(51, 89, 255, 0.05), rgba(16, 185, 129, 0.05));
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.5rem;
+      margin-top: 1.5rem;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+    
+    .stat-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .accordion-section {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    
+    .accordion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      background: var(--color-surface-alt);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .accordion-header:hover {
+      background: var(--color-surface-hover);
+    }
+    
+    .accordion-header.active {
+      background: rgba(51, 89, 255, 0.05);
+      border-bottom: 1px solid var(--color-border);
+    }
+    
+    .accordion-content {
+      display: none;
+      padding: 1.25rem;
+    }
+    
+    .accordion-content.open {
+      display: block;
+    }
+    
+    .accordion-chevron {
+      transition: transform 0.2s ease;
+    }
+    
+    .accordion-header.active .accordion-chevron {
+      transform: rotate(90deg);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar"></aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Navbar -->
+      <header class="navbar" id="navbar"></header>
+      
+      <!-- Page Content -->
+      <div class="page-container">
+        <!-- Settings Header Card -->
+        <div class="card">
+          <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 class="card-title" style="margin: 0;">Forms Settings</h2>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-secondary" id="editBtn" onclick="toggleEditMode()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                <span id="editBtnText">Edit</span>
+              </button>
+              <a href="tenant-settings.html" class="btn btn-icon btn-ghost" style="color: var(--color-error-500);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+          
+          <!-- Edit Mode Indicator -->
+          <div id="editModeIndicator" class="hidden" style="background: rgba(16, 185, 129, 0.1); padding: 0.5rem 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <div style="width: 8px; height: 8px; background: var(--color-success-500); border-radius: 50%; animation: pulse 2s infinite;"></div>
+            <span style="font-size: 0.875rem; color: var(--color-success-500); font-weight: 500;">Edit mode enabled</span>
+          </div>
+          
+          <div class="card-body">
+            <form id="formsSettingsForm" onsubmit="handleSubmit(event)">
+              <!-- Integrations Section -->
+              <div class="accordion-section">
+                <div class="accordion-header" onclick="toggleAccordion('integrations')">
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="width: 40px; height: 40px; background: rgba(51, 89, 255, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-500)" stroke-width="2">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <div style="font-weight: 600;">Integrations</div>
+                      <div style="font-size: 0.8125rem; color: var(--color-text-muted);">Connect with external form platforms and data collection services</div>
+                    </div>
+                  </div>
+                  <svg class="accordion-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </div>
+                <div class="accordion-content" id="integrationsContent">
+                  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+                    <!-- Kobo Toolbox -->
+                    <div class="integration-card enabled" id="koboCard">
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                          <div class="integration-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
+                              <rect x="3" y="3" width="18" height="18" rx="2"/>
+                              <path d="M9 9h6M9 12h6M9 15h4"/>
+                            </svg>
+                          </div>
+                          <div>
+                            <div style="font-weight: 500;">Kobo Toolbox</div>
+                            <div style="font-size: 0.75rem; color: var(--color-text-muted);">Field research & surveys</div>
+                          </div>
+                        </div>
+                        <label class="toggle">
+                          <input type="checkbox" checked disabled id="koboToggle" onchange="updateIntegrationCard('kobo', this)">
+                          <span class="toggle-slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                    
+                    <!-- ODK -->
+                    <div class="integration-card enabled" id="odkCard">
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                          <div class="integration-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                              <rect x="5" y="2" width="14" height="20" rx="2"/>
+                              <line x1="12" y1="18" x2="12" y2="18"/>
+                            </svg>
+                          </div>
+                          <div>
+                            <div style="font-weight: 500;">ODK</div>
+                            <div style="font-size: 0.75rem; color: var(--color-text-muted);">Mobile data collection</div>
+                          </div>
+                        </div>
+                        <label class="toggle">
+                          <input type="checkbox" checked disabled id="odkToggle" onchange="updateIntegrationCard('odk', this)">
+                          <span class="toggle-slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                    
+                    <!-- Google Forms -->
+                    <div class="integration-card enabled" id="googleCard">
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                          <div class="integration-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                              <circle cx="12" cy="12" r="10"/>
+                              <path d="M8 12l2 2 4-4"/>
+                            </svg>
+                          </div>
+                          <div>
+                            <div style="font-weight: 500;">Google Forms</div>
+                            <div style="font-size: 0.75rem; color: var(--color-text-muted);">Cloud-based surveys</div>
+                          </div>
+                        </div>
+                        <label class="toggle">
+                          <input type="checkbox" checked disabled id="googleToggle" onchange="updateIntegrationCard('google', this)">
+                          <span class="toggle-slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                    
+                    <!-- Microsoft Forms -->
+                    <div class="integration-card" id="msCard">
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                          <div class="integration-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2">
+                              <rect x="3" y="3" width="8" height="8"/>
+                              <rect x="13" y="3" width="8" height="8"/>
+                              <rect x="3" y="13" width="8" height="8"/>
+                              <rect x="13" y="13" width="8" height="8"/>
+                            </svg>
+                          </div>
+                          <div>
+                            <div style="font-weight: 500;">Microsoft Forms</div>
+                            <div style="font-size: 0.75rem; color: var(--color-text-muted);">Office 365 integration</div>
+                          </div>
+                        </div>
+                        <label class="toggle">
+                          <input type="checkbox" disabled id="msToggle" onchange="updateIntegrationCard('ms', this)">
+                          <span class="toggle-slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                    
+                    <!-- SurveyMonkey -->
+                    <div class="integration-card" id="surveyCard">
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                          <div class="integration-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="2">
+                              <path d="M18 20V10M12 20V4M6 20v-6"/>
+                            </svg>
+                          </div>
+                          <div>
+                            <div style="font-weight: 500;">SurveyMonkey</div>
+                            <div style="font-size: 0.75rem; color: var(--color-text-muted);">Professional surveys</div>
+                          </div>
+                        </div>
+                        <label class="toggle">
+                          <input type="checkbox" disabled id="surveyToggle" onchange="updateIntegrationCard('survey', this)">
+                          <span class="toggle-slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                    
+                    <!-- Custom API -->
+                    <div class="integration-card" id="customCard">
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                          <div class="integration-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2">
+                              <polyline points="16 18 22 12 16 6"/>
+                              <polyline points="8 6 2 12 8 18"/>
+                            </svg>
+                          </div>
+                          <div>
+                            <div style="font-weight: 500;">Custom API</div>
+                            <div style="font-size: 0.75rem; color: var(--color-text-muted);">Own form endpoints</div>
+                          </div>
+                        </div>
+                        <label class="toggle">
+                          <input type="checkbox" disabled id="customToggle" onchange="updateIntegrationCard('custom', this)">
+                          <span class="toggle-slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Standalone Settings -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                <!-- Offline Support -->
+                <div class="setting-card">
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <div style="width: 40px; height: 40px; background: var(--color-surface-alt); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="2">
+                          <line x1="1" y1="1" x2="23" y2="23"/>
+                          <path d="M16.72 11.06A10.94 10.94 0 0119 12.55"/>
+                          <path d="M5 12.55a10.94 10.94 0 015.17-2.39"/>
+                          <path d="M10.71 5.05A16 16 0 0122.58 9"/>
+                          <path d="M1.42 9a15.91 15.91 0 014.7-2.88"/>
+                          <path d="M8.53 16.11a6 6 0 016.95 0"/>
+                          <line x1="12" y1="20" x2="12.01" y2="20"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <div style="font-weight: 500;">Offline Support</div>
+                        <div style="font-size: 0.8125rem; color: var(--color-text-muted);">Enable forms to work without internet</div>
+                      </div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox" checked disabled id="offlineToggle">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+                
+                <!-- Field App -->
+                <div class="setting-card">
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <div style="width: 40px; height: 40px; background: var(--color-surface-alt); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="2">
+                          <rect x="5" y="2" width="14" height="20" rx="2"/>
+                          <line x1="12" y1="18" x2="12.01" y2="18"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <div style="font-weight: 500;">Field App</div>
+                        <div style="font-size: 0.8125rem; color: var(--color-text-muted);">Mobile field data collection app</div>
+                      </div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox" disabled id="fieldAppToggle">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Stats Banner -->
+              <div class="stats-banner">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-500)" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="16" x2="12" y2="12"/>
+                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                  </svg>
+                  <span style="font-weight: 600; color: var(--color-primary-500);">Current Configuration</span>
+                </div>
+                <div class="stats-grid">
+                  <div>
+                    <div class="stat-value" style="color: var(--color-primary-500);" id="enabledIntegrations">3</div>
+                    <div class="stat-label" style="color: var(--color-primary-500);">Integrations Enabled</div>
+                  </div>
+                  <div>
+                    <div class="stat-value" style="color: var(--color-success-500);" id="offlineStatus">Yes</div>
+                    <div class="stat-label" style="color: var(--color-success-500);">Offline Support</div>
+                  </div>
+                  <div>
+                    <div class="stat-value" style="color: var(--color-text-muted);" id="fieldAppStatus">No</div>
+                    <div class="stat-label" style="color: var(--color-text-muted);">Field App</div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Submit Button -->
+              <div style="display: flex; justify-content: center; padding-top: 1.5rem; margin-top: 1.5rem; border-top: 1px solid var(--color-border);">
+                <button type="submit" class="btn btn-primary" id="submitBtn" disabled>Submit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    let isEditMode = false;
+    let isAccordionOpen = false;
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeLayout({
+        currentPage: 'forms-settings.html',
+        breadcrumbs: [
+          { name: 'Tenants', href: 'tenants.html' },
+          { name: 'REAN Health', href: '#' },
+          { name: 'Settings', href: 'tenant-settings.html' },
+          { name: 'Forms', href: 'forms-settings.html' }
+        ],
+        user: currentUser
+      });
+      
+      updateStats();
+    });
+    
+    function toggleEditMode() {
+      isEditMode = !isEditMode;
+      const editBtn = document.getElementById('editBtn');
+      const editBtnText = document.getElementById('editBtnText');
+      const editIndicator = document.getElementById('editModeIndicator');
+      const submitBtn = document.getElementById('submitBtn');
+      const allToggles = document.querySelectorAll('.toggle input');
+      
+      if (isEditMode) {
+        editBtn.classList.add('btn-success');
+        editBtn.classList.remove('btn-secondary');
+        editBtnText.textContent = 'Editing';
+        editIndicator.classList.remove('hidden');
+        editIndicator.style.display = 'flex';
+        submitBtn.disabled = false;
+        allToggles.forEach(toggle => toggle.disabled = false);
+        Toast.info('Edit mode enabled');
+      } else {
+        editBtn.classList.remove('btn-success');
+        editBtn.classList.add('btn-secondary');
+        editBtnText.textContent = 'Edit';
+        editIndicator.classList.add('hidden');
+        editIndicator.style.display = 'none';
+        submitBtn.disabled = true;
+        allToggles.forEach(toggle => toggle.disabled = true);
+        Toast.info('Edit mode disabled');
+      }
+    }
+    
+    function toggleAccordion(id) {
+      const content = document.getElementById(id + 'Content');
+      const header = content.previousElementSibling;
+      
+      if (isAccordionOpen) {
+        content.classList.remove('open');
+        header.classList.remove('active');
+        isAccordionOpen = false;
+      } else {
+        content.classList.add('open');
+        header.classList.add('active');
+        isAccordionOpen = true;
+      }
+    }
+    
+    function updateIntegrationCard(id, checkbox) {
+      const card = document.getElementById(id + 'Card');
+      if (checkbox.checked) {
+        card.classList.add('enabled');
+      } else {
+        card.classList.remove('enabled');
+      }
+      updateStats();
+    }
+    
+    function updateStats() {
+      const integrationToggles = ['koboToggle', 'odkToggle', 'googleToggle', 'msToggle', 'surveyToggle', 'customToggle'];
+      let enabledCount = 0;
+      integrationToggles.forEach(id => {
+        if (document.getElementById(id).checked) enabledCount++;
+      });
+      document.getElementById('enabledIntegrations').textContent = enabledCount;
+      document.getElementById('offlineStatus').textContent = document.getElementById('offlineToggle').checked ? 'Yes' : 'No';
+      document.getElementById('fieldAppStatus').textContent = document.getElementById('fieldAppToggle').checked ? 'Yes' : 'No';
+    }
+    
+    function handleSubmit(event) {
+      event.preventDefault();
+      Toast.success('Forms settings updated successfully');
+      toggleEditMode();
+    }
+  </script>
+</body>
+</html>
