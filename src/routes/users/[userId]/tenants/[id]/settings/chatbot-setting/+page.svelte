@@ -22,7 +22,7 @@
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
 	const tenantCode = $state(data.tenantCode);
-	const tenantRoute = `/users/${userId}/tenants`;
+	const settingsRoute = `/users/${userId}/tenants/${tenantId}/settings`;
 	const formData = new FormData();
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
@@ -35,8 +35,8 @@
 	let showCancelModel = $state(false);
 	let showExportDialog = $state(false);
 	let isCreatingSecret = $state(false);
-	let faviconUrl = chatBotSetting.ChatBot.Favicon;
-	let logoUrl = chatBotSetting.ChatBot.OrganizationLogo;
+	let faviconUrl = $state(chatBotSetting.ChatBot.Favicon);
+	let logoUrl = $state(chatBotSetting.ChatBot.OrganizationLogo);
 	let disabled = $state(data.isChatBotEnabled);
 	let edit = $state(false);
 	let fileName = $state('');
@@ -48,6 +48,11 @@
 	let isEditWelcomeMessage = $state(false);
 	let editingWelcomeMessageIndex: number | null = $state(null);
 	let modalWelcomeMessage = $state({ LanguageCode: '', Content: '', URL: '' });
+
+	console.log("logoUrl",data.chatbotSettings)
+
+	console.log("faviconUrl",faviconUrl)
+
 
 	const handleEditClick = async () => {
 		if (!disabled) {
@@ -149,16 +154,20 @@
 			//------------------------------LOGO UPLOAD---------------------------------
 
 			if (formData.has('logofile')) {
+				const logoFormData = new FormData();
+				logoFormData.append('logofile', formData.get('logofile') as File);
+				logoFormData.append('filename', formData.get('filename') as string);
+
 				const fileRes = await fetch(`/api/server/tenants/settings/upload`, {
 					method: 'POST',
-					body: formData
+					body: logoFormData
 				});
 
 				const fileJson = await fileRes.json();
 
 				if (fileJson.HttpCode === 200 || fileJson.HttpCode === 201) {
 					logoUrl = fileJson.Data.FileResources[0].Url;
-
+					formData.delete('logofile');
 					isLogoUploaded = true;
 				} else {
 					addToast({ message: 'Logo upload failed.', type: 'error', timeout: 3000 });
@@ -170,16 +179,21 @@
 
 			// ----------------------------- FAVICON UPLOAD -----------------------------
 			if (formData.has('file')) {
+				const faviconFormData = new FormData();
+				faviconFormData.append('file', formData.get('file') as File);
+				faviconFormData.append('filename', formData.get('filename') as string);
+
 				const fileRes = await fetch(`/api/server/tenants/upload`, {
 					method: 'POST',
-					body: formData
+					body: faviconFormData
 				});
 
 				const fileJson = await fileRes.json();
 
 				if (fileJson.HttpCode === 200 || fileJson.HttpCode === 201) {
 					faviconUrl = fileJson.Data.FileResources[0].Url;
-
+					formData.delete('file');
+					formData.delete('filename');
 					isFaviconUploaded = true;
 				} else {
 					addToast({ message: 'Favicon upload failed.', type: 'error', timeout: 3000 });
@@ -501,7 +515,7 @@
 						<!-- <span>{edit ? 'Save' : 'Edit'}</span> -->
 					</button>
 					<a
-						href={tenantRoute}
+						href={settingsRoute}
 						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
 					>
 						<Icon icon="material-symbols:close-rounded" class=" h-5" />
@@ -528,6 +542,8 @@
 					onAddWelcomeMessage={openAddWelcomeMessageModal}
 					onEditWelcomeMessage={openEditWelcomeMessageModal}
 					onDeleteWelcomeMessage={deleteWelcomeMessage}
+					{logoUrl}
+					{faviconUrl}
 				/>
 			</div>
 			<!-- <hr class="border-[0.5px] border-t border-[var(--color-outline)]" /> -->
