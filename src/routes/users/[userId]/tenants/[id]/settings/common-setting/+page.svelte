@@ -1,6 +1,7 @@
 <script lang="ts">
 	import ExpandableSettings from './tenant-setting.svelte';
 	import Icon from '@iconify/svelte';
+	import Button from '$lib/components/button/button.svelte';
 	import type { PageServerData } from '../$types';
 	import { page } from '$app/state';
 	import { commonUISettings } from './common-setting.types';
@@ -13,7 +14,7 @@
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
-	const tenantRoute = `/users/${userId}/tenants`;
+	const settingsRoute = `/users/${userId}/tenants/${tenantId}/settings`;
 
 	let commonSetting = $state(data.commonSettings);
 	let promise = $state();
@@ -109,7 +110,7 @@
 						<!-- <span>{edit ? 'Edit' : 'Save'}</span> -->
 					</button>
 					<a
-						href={tenantRoute}
+						href={settingsRoute}
 						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
 					>
 						<Icon icon="material-symbols:close-rounded" class=" h-5" />
@@ -124,11 +125,9 @@
 
 			<div class="button-container my-4 ">
 				{#await promise}
-					<button type="submit" class="table-btn variant-soft-secondary" disabled>
-						Submiting
-					</button>
+					<Button type="submit" variant="primary" size="md" text="Submitting..." disabled={true} />
 				{:then data}
-					<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
+					<Button type="submit" variant="primary" size="md" text="Submit" />
 				{/await}
 			</div>
 		</form>

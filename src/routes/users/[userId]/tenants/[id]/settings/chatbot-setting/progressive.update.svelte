@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Icons from '$lib/components/icons.svelte';
 	import Tooltip from '$lib/components/tooltip.svelte';
+	import Image from '$lib/components/image.svelte';
 	import { languages } from '$lib/utils/language';
 	import Icon from '@iconify/svelte';
 	import Button from '$lib/components/button/button.svelte';
@@ -23,7 +24,9 @@
 		welcomeMessages = $bindable(),
 		onAddWelcomeMessage = () => {},
 		onEditWelcomeMessage = (index: number) => {},
-		onDeleteWelcomeMessage = (index: number) => {}
+		onDeleteWelcomeMessage = (index: number) => {},
+		logoUrl = $bindable(),
+		faviconUrl = $bindable()
 	} = $props();
 
 	let promise = $state();
@@ -84,28 +87,40 @@
 		<div class="my-4 flex flex-col md:flex-row md:items-center">
 			<label
 				for="organizationLogo"
-				class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]">Organization Logo</label
+				class="text mx-1 mb-2 w-[30%] pt-2 font-medium text-(--color-info)">Organization Logo</label
 			>
-			<div class="flex w-[100%] gap-3">
-				<label class="table-btn variant-filled-secondary">
-					Select File
-					<input type="file" class="hidden" onchange={onLogoSelected} disabled={!edit} />
-				</label>
-
-				<input
-					type="text"
-					class="input-field w-[70%]"
-					name="organizationLogo"
-					onchange={async (e) => await onLogoSelected(e)}
-					placeholder="No File Selected..."
-					readonly
-					disabled={!edit}
-					value={logoName}
-				/>
+			<div class="flex w-full items-start gap-4">
+				{#if logoUrl}
+					<div class="relative shrink-0 h-12 w-12 rounded-lg border border-(--color-outline) bg-white p-1 overflow-hidden">
+						<Image
+							source={logoUrl}
+							cls="h-full w-full object-contain"
+							w="48"
+							h="48"
+						/>
+					</div>
+				{/if}
+				<div class="flex flex-1 flex-col gap-2">
+					<div class="flex w-full gap-3">
+						<label class="table-btn variant-filled-secondary cursor-pointer">
+							{logoUrl ? 'Change' : 'Select File'}
+							<input type="file" class="hidden" onchange={onLogoSelected} disabled={!edit} accept="image/*" />
+						</label>
+						<input
+							type="text"
+							class="input-field flex-1"
+							name="organizationLogo"
+							placeholder={logoUrl ? 'Select new logo to replace...' : 'No File Selected...'}
+							readonly
+							disabled={!edit}
+							value={logoName}
+						/>
+					</div>
+					{#if errors?.OrganizationLogo}
+						<p class="text-error text-sm">{errors?.OrganizationLogo}</p>
+					{/if}
+				</div>
 			</div>
-			{#if errors?.OrganizationLogo}
-				<p class="text-error">{errors?.OrganizationLogo}</p>
-			{/if}
 		</div>
 
 		<div class="my-4 flex flex-col md:flex-row md:items-center">
@@ -127,28 +142,41 @@
 			{/if}
 		</div>
 
-		<div class="my-4 flex flex-col md:flex-row md:items-center">
-			<label for="favicon" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+		<div class="my-4 flex flex-col md:flex-row md:items-start">
+			<label for="favicon" class="text mx-1 mb-2 w-[30%] pt-2 font-medium text-(--color-info)"
 				>Favicon</label
 			>
-			<div class="flex w-[100%] gap-3">
-				<label class="table-btn variant-filled-secondary">
-					Select File
-					<input type="file" class="hidden" onchange={onFileSelected} disabled={!edit} />
-				</label>
-				<input
-					type="text"
-					class="input bg-[var(--color-primary)] text-[var(--color-info)] focus:outline-none"
-					onchange={async (e) => await onFileSelected(e)}
-					value={fileName}
-					readonly
-					placeholder="No file selected"
-					disabled={!edit}
-				/>
+			<div class="flex w-full items-center gap-4">
+				{#if faviconUrl}
+					<div class="relative shrink-0 h-12 w-12 rounded-lg border border-(--color-outline) bg-white p-1 overflow-hidden">
+						<Image
+							source={faviconUrl}
+							cls="h-full w-full object-contain"
+							w="48"
+							h="48"
+						/>
+					</div>
+				{/if}
+				<div class="flex flex-1 flex-col gap-2">
+					<div class="flex w-full gap-3">
+						<label class="table-btn variant-filled-secondary cursor-pointer">
+							{faviconUrl ? 'Change' : 'Select File'}
+							<input type="file" class="hidden" onchange={onFileSelected} disabled={!edit} accept="image/*" />
+						</label>
+						<input
+							type="text"
+							class="input-field flex-1"
+							placeholder={faviconUrl ? 'Select new favicon to replace...' : 'No file selected'}
+							readonly
+							disabled={!edit}
+							value={fileName}
+						/>
+					</div>
+					{#if errors?.UploadFile}
+						<p class="text-error text-sm">{errors?.UploadFile}</p>
+					{/if}
+				</div>
 			</div>
-			{#if errors?.UploadFile}
-				<p class="text-error">{errors?.UploadFile}</p>
-			{/if}
 		</div>
 
 		<div class="my-4 flex flex-col md:flex-row md:items-center">
@@ -427,28 +455,39 @@
 <hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
 
 <div class="button-container my-4 ">
-	<button
+	<Button
 		type="button"
-		class="cursor-pointer rounded-md bg-[var(--color-primary)] px-3 py-2 text-[var(--color-info)] disabled:opacity-50"
+		variant="outline"
+		size="md"
+		text="Previous"
 		onclick={prevSection}
 		disabled={currentSection === 0}
-	>
-		Previous
-	</button>
+	/>
 
 	{#if currentSection < 3 - 1}
-		<button
+		<Button
 			type="button"
-			class="table-btn variant-filled-secondary !px-4 py-2 text-[var(--color-info)]"
+			variant="primary"
+			size="md"
+			text="Next"
 			onclick={nextSection}
-		>
-			Next
-		</button>
+		/>
 	{:else}
 		{#await promise}
-			<button type="submit" class="table-btn variant-filled-secondary" disabled> Submiting </button>
+			<Button
+				type="submit"
+				variant="primary"
+				size="md"
+				text="Submitting..."
+				disabled={true}
+			/>
 		{:then data}
-			<button type="submit" class="table-btn variant-filled-secondary"> Submit </button>
+			<Button
+				type="submit"
+				variant="primary"
+				size="md"
+				text="Submit"
+			/>
 		{/await}
 	{/if}
 </div>
