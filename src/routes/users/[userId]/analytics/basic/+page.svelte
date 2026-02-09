@@ -161,7 +161,7 @@
 					>Tenant Name</td
 				>
 				<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
-					American Heart Association
+					{data.tenantCode}
 				</td>
 				<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
 					Name of the tenant

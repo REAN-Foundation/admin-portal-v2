@@ -21,7 +21,7 @@
 	let checkConsent = $state(data.chatbotSettings);
 	let edit = $state(false);
 	let promise = $state();
-	const tenantRoute = `/users/${userId}/tenants`;
+	const settingsRoute = `/users/${userId}/tenants/${tenantId}/settings`;
 	let message = $state(data.consentSettings?.Messages || []);
 	let defaultLangCode = $state('');
 	let errors: Record<string, string> = $state({});
@@ -171,7 +171,7 @@
 						<Icon icon="material-symbols:edit-outline" />
 					</button>
 					<a
-						href={tenantRoute}
+						href={settingsRoute}
 						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
 					>
 						<Icon icon="material-symbols:close-rounded" class="h-5" />
@@ -234,19 +234,18 @@
 						<p class="text-error">{errors?.DefaultLanguage}</p>
 					{/if}
 				</div>
-				<div class="mt-4 flex flex-col md:flex-row md:items-center">
-					<div class="w-[30%]"></div>
-					<div class="flex w-[70%] justify-end">
-						<button
-							type="button"
-							class="health-system-btn variant-filled-secondary"
-							onclick={openAddMessageModal}
+				<div class="mt-4 flex flex-col md:flex-row md:items-center justify-end">
+					<!-- <div class="w-[30%]"></div> -->
+					<!-- <div class="flex w-[70%] justify-end"> -->
+						<Button
+							variant="primary"
+							size="sm"
+							text="Add Message"
+							onclick={() => openAddMessageModal()}
 							disabled={!edit}
-						>
-							Add Message
-						</button>
-					</div>
-				</div>
+						/>
+					<!-- </div> -->
+				<!-- </div> -->
 			</div>
 			{#if message.length > 0}
 				<div class="health-system-table-container my-4 shadow">
@@ -297,13 +296,9 @@
 			<hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
 			<div class="button-container my-4">
 				{#await promise}
-					<button type="submit" class="table-btn variant-soft-secondary" disabled>
-						Submiting
-					</button>
+					<Button type="submit" variant="primary" size="md" text="Submitting..." disabled={true} />
 				{:then data}
-					<button type="submit" class="table-btn variant-soft-secondary" disabled={!edit}>
-						Submit
-					</button>
+					<Button type="submit" variant="primary" size="md" text="Submit" disabled={!edit} />
 				{/await}
 			</div>
 		</form>

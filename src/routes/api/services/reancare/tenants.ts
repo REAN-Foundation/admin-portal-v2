@@ -1,5 +1,6 @@
-import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY, NODE_ENV} from '$env/static/private';
+import { BACKEND_API_URL, API_CLIENT_INTERNAL_KEY} from '$env/static/private';
 import { Helper } from '$lib/utils/helper';
+import { DashboardManager } from '$routes/api/cache/dashboard/dashboard.manager';
 import { del, get, post, put } from './common.reancare';
 
 ////////////////////////////////////////////////////////////////
@@ -84,18 +85,26 @@ export const createBotSecret = async (sessionId: string, tenantId: string, body:
 export const getBotSecret = async (sessionId: string, tenantId: string) => {
 	console.log("Here in service file", sessionId, tenantId)
 	const url = BACKEND_API_URL + `/tenants/${tenantId}/settings/secret`;
-	return await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	const cacheKey = `session-${sessionId}:req-getBotSecret-${tenantId}`;
+	if (await DashboardManager.has(cacheKey)) {
+		return await DashboardManager.get(cacheKey);
+	};
+	const result = await get(sessionId, url, true, API_CLIENT_INTERNAL_KEY);
+	await DashboardManager.set(cacheKey, result);
+	return result;
 };
 
 export const updateBotSecret = async (sessionId: string, tenantId: string, body: any) => {
 	const url = BACKEND_API_URL + `/tenants/${tenantId}/settings/secret/`;
+	const findAndClearKeys = [`session-${sessionId}:req-getBotSecret`];
+	await DashboardManager.findAndClear(findAndClearKeys);
 	return await put(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
 };
 
 export const createTenantSchema = async (
 	sessionId: string,
 	tenantId: string,
-	tenantCode: string,
+	// tenantCode: string,
 ) => {
 	// let environment = NODE_ENV;
 	// if (environment === 'development') {

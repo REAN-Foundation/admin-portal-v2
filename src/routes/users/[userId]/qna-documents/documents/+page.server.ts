@@ -1,18 +1,20 @@
-import { error, type ServerLoadEvent } from '@sveltejs/kit';
+import {type ServerLoadEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { searchDocuments } from '$routes/api/services/bot-content/documents';
-import { Helper } from '$lib/utils/helper';
+// import { Helper } from '$lib/utils/helper';
 
 ////////////////////////////////////////////////////////////////////////////
 
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
+	const tenantId = event.locals?.sessionUser?.tenantId;
+	const tenantCode = event.locals?.sessionUser?.tenantCode; 
 
 	event.depends('app:documents');
 
 	const response = await searchDocuments(sessionId, {
-        tenantId: Helper.isDefaultTenant(event.locals?.sessionUser?.tenantCode, event.locals?.sessionUser?.roleName) ? null : event.locals?.sessionUser?.tenantId,
-        tenantCode: Helper.isDefaultTenant(event.locals?.sessionUser?.tenantCode, event.locals?.sessionUser?.roleName) ? null : event.locals?.sessionUser?.tenantCode,
+        tenantId,
+        tenantCode, 
 		orderBy: 'Name',
 		order: 'ascending',
 		itemsPerPage: 10

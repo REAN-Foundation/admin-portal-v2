@@ -8,6 +8,7 @@ import { createSearchFilters } from '$lib/utils/search.utils';
 export const GET = async (event: RequestEvent) => {
 	try {
 		const sessionId = event.locals?.sessionUser?.sessionId;
+		const tenantId = event.locals?.sessionUser?.tenantId;
 		if (!sessionId) {
 			return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session.'));
 		}
@@ -15,6 +16,7 @@ export const GET = async (event: RequestEvent) => {
 		const searchFilters = createSearchFilters(event, {
 			name: event.url.searchParams.get('name') ?? undefined,
 			documentType: event.url.searchParams.get('documentType') ?? undefined,
+			tenantId:tenantId
 		});
 
 		console.log('Search parms: ', searchFilters);

@@ -15,3 +15,9 @@ export interface TenantsUpdateModel {
     Email: string;
     Phone: string;
 }
+
+export enum PromotionEnvironment {
+    Development = 'development',
+    UAT = 'uat',
+    Production = 'production'
+}

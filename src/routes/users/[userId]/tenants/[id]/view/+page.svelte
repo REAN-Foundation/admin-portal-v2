@@ -4,6 +4,7 @@
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
 	import Button from '$lib/components/button/button.svelte';
+	import { toastMessage } from '$lib/components/toast/toast.store';
 
 	//////////////////////////////////////////////////////////////////////////
 	let { data }: { data: PageServerData } = $props();
@@ -34,6 +35,28 @@
 			path: viewRoute
 		}
 	];
+
+    const handlePromotion = async () => {
+        try {
+            const res = await fetch(`/api/server/tenants/${tenantId}/promotion-from`, {
+				method: 'POST',
+				body: JSON.stringify({}),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			const response = await res.json();
+            if (response.HttpCode === 201 || response.HttpCode === 200) {
+				toastMessage(response);
+                return;
+			}
+
+			toastMessage(response);
+        } catch (error) {
+            console.error('Error promoting tenant:', error);
+            toastMessage(error.message || 'An error occurred during promotion.');
+        }
+        
+    };
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -70,6 +93,7 @@
 		</tbody>
 	</table>
 	<div class="btn-container mb-2">
+        <Button onclick={handlePromotion} size="md" text="Promote" variant="primary" />
 		<Button href={settingsRoute} size="md" text="Setting" variant="primary" />
 		<Button
 			href={editRoute}

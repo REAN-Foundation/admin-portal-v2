@@ -30,6 +30,7 @@
 	const editRoute = (id) => `/users/${userId}/tenants/${id}/edit`;
 	const viewRoute = (id) => `/users/${userId}/tenants/${id}/view`;
 	const createRoute = `/users/${userId}/tenants/create`;
+	const settingRoute = (id) => `/users/${userId}/tenants/${id}/settings`
 
 	const breadCrumbs = [{ name: 'Tenants', path: tenantRoute }];
 
@@ -304,6 +305,13 @@
 
 									<td>
 										<div class="flex justify-end">
+											<Button
+												href={settingRoute(row.id)}
+												variant="icon"
+												icon="material-symbols:settings-outline"
+												iconSize="sm"
+												tooltip="Settings"
+											/>
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"

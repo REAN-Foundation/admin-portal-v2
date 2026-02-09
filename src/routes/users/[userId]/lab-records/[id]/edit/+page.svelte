@@ -18,9 +18,11 @@
 		displayName = $state(data.labRecordType.DisplayName || undefined),
 		snowmedCode = $state(data.labRecordType.SnowmedCode || undefined),
 		loincCode = $state(data.labRecordType.LoincCode || undefined),
-		normalRangeMin = $state(data.labRecordType.NormalRangeMin || undefined),
-		normalRangeMax = $state(data.labRecordType.NormalRangeMax || undefined),
+		normalRangeMin = $state(data.labRecordType.NormalRangeMin ),
+		normalRangeMax = $state(data.labRecordType.NormalRangeMax ),
 		unit = $state(data.labRecordType.Unit || undefined);
+
+		console.log("normalRangeMin",normalRangeMax)
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
@@ -182,6 +184,7 @@
 						<input
 							type="number"
 							name="normalRangeMin"
+							step="any"
 							bind:value={normalRangeMin}
 							placeholder="Enter minimum normal range here..."
 							class="input {errors?.normalRangeMin ? 'input-text-error' : ''}"
@@ -197,6 +200,7 @@
 						<input
 							type="number"
 							name="normalRangeMax"
+							step="any"
 							bind:value={normalRangeMax}
 							placeholder="Enter maximum normal range here..."
 							class="input {errors?.normalRangeMax ? 'input-text-error' : ''}"

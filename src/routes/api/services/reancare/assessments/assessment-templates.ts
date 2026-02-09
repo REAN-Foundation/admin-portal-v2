@@ -31,7 +31,7 @@ export const createAssessmentTemplate = async (
 		ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce ? serveListNodeChildrenAtOnce : false,
 		ScoringApplicable: scoringApplicable ? scoringApplicable : false,
 		Tags: tags ? tags : [],
-		RawData: rawData ? JSON.parse(rawData) : null
+		RawData: rawData == null ? null : rawData.trim() === '' ? '' : JSON.parse(rawData)
 	};
 
 	const url = BACKEND_API_URL + '/clinical/assessment-templates';
@@ -146,7 +146,7 @@ export const updateAssessmentTemplate = async (
 		ServeListNodeChildrenAtOnce: serveListNodeChildrenAtOnce ? serveListNodeChildrenAtOnce : false,
 		ScoringApplicable: scoringApplicable ? scoringApplicable : false,
 		Tags: tags ? tags : [],
-		RawData: rawData ? JSON.parse(rawData) : null
+		RawData: rawData == null ? null : rawData.trim() === '' ? '' : JSON.parse(rawData)
 	};
 
 	const url = BACKEND_API_URL + `/clinical/assessment-templates/${assessmentTemplateId}`;

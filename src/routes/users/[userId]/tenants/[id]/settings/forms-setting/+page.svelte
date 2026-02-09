@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import Icon from '@iconify/svelte';
+	import Button from '$lib/components/button/button.svelte';
 	import Icons from '$lib/components/icons.svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import type { FormsSettings } from '$lib/types/tenant.settings.types';
@@ -13,7 +14,7 @@
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
-	const tenantRoute = `/users/${userId}/tenants`;
+	const settingsRoute = `/users/${userId}/tenants/${tenantId}/settings`;
 
 	let formSetting = $state({ Forms: data.settings });
 	let errors: Record<string, string> = $state({});
@@ -177,7 +178,7 @@
 							<!-- <span>{edit ? 'Save' : 'Edit'}</span> -->
 						</button>
 						<a
-							href={tenantRoute}
+							href={settingsRoute}
 							class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
 						>
 							<Icon icon="material-symbols:close-rounded" class=" h-5" />
@@ -380,11 +381,9 @@
 				<hr class="border-[0.5px] border-t border-[var(--color-outline)]" />
 				<div class="button-container my-4">
 					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
+						<Button type="submit" variant="primary" size="md" text="Submitting..." disabled={true} />
 					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
+						<Button type="submit" variant="primary" size="md" text="Submit" />
 					{/await}
 				</div>
 			</form>

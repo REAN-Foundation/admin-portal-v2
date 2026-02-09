@@ -177,7 +177,7 @@
 	};
 
 	const downloadFile = async (id) => {
-		const response = await fetch(`/api/server/file-resources/download/${id}?asAttachment=true`, {
+		const response = await fetch(`/api/server/file-resources/download/${id}/bot-content?asAttachment=true`, {
 			method: 'GET',
 			headers: { 'content-type': 'application/json' }
 		});

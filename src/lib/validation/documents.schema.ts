@@ -59,4 +59,10 @@ export const createOrUpdateSchema = z.object({
 			invalid_type_error: 'Document type must be a string.'
 		})
 		.min(1, { message: 'Document type cannot be empty.' })
-});
+}).refine(
+	(data) => data.ChunkingOverlap < data.ChunkingLength,
+	{
+		message: 'Chunking Overlap must be less than Chunking Length.',
+		path: ['ChunkingOverlap']
+	}
+);

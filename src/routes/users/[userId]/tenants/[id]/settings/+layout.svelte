@@ -22,8 +22,8 @@
 		'consent-setting': 'Consent',
 		'followup-setting': 'Follow-up',
 		'forms-setting': 'Forms',
-		'custom-settings':'Custom'
-
+		'custom-settings': 'Custom',
+		'clickup-setting': 'ClickUp'
 	};
 
 	// Build breadcrumbs dynamically based on current route
@@ -65,6 +65,7 @@
 	let followupSettingsLink = `${tenantRoute}/${tenantId}/settings/followup-setting`;
 	let concentSettingsLink = `${tenantRoute}/${tenantId}/settings/consent-setting`;
 	let customSettingsLink = `${tenantRoute}/${tenantId}/settings/custom-settings`;
+	let clickUpSettingsLink = `${tenantRoute}/${tenantId}/settings/clickup-setting`;
 
 </script>
 
@@ -89,7 +90,7 @@
 			<a
 				class="btn {page.url.pathname === chatBotSettingsLink
 					? 'variant-filled-secondary'
-					: 'variant-soft-secondary'} flex items-center justify-center gap-2"
+					: 'variant-soft-secondary'} flex items-center justify-center gap-2 whitespace-nowrap"
 				href={chatBotSettingsLink}
 			>
 				<Icon icon="octicon:people-16" class="h-5 w-5 shrink-0" />
@@ -135,6 +136,16 @@
 			>
 				<Icon icon="material-symbols:settings-outline" class="h-5 w-5 shrink-0" />
 				Custom
+			</a>
+
+			<a
+				class="btn {page.url.pathname === clickUpSettingsLink
+					? 'variant-filled-secondary'
+					: 'variant-soft-secondary'} flex items-center justify-center gap-2 whitespace-nowrap"
+				href={clickUpSettingsLink}
+			>
+				<Icon icon="simple-icons:clickup" class="h-5 w-5 shrink-0" />
+				ClickUp
 			</a>
 		</div>
 	</div>

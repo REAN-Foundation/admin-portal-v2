@@ -109,11 +109,22 @@
 		}
 	};
 
+	// Allowed file extensions for QNA documents
+	const ALLOWED_EXTENSIONS = ['.csv', '.xlsx', '.pdf', '.json', '.txt'];
+
 	// Function triggered when file is selected
 	const onFileSelected = async (e) => {
 		try {
 			const file = e.target.files[0];
 			if (!file) return;
+
+			// Check file extension
+			const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+			if (!ALLOWED_EXTENSIONS.includes(fileExtension)) {
+				showMessage(`Invalid file type. Only ${ALLOWED_EXTENSIONS.join(', ')} files are allowed.`, 'error');
+				e.target.value = ''; // Clear the file input
+				return;
+			}
 
 			const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
 			if (file.size > MAX_FILE_SIZE) {
@@ -329,7 +340,7 @@
 							<!-- Select File Button -->
 							<label class="table-btn variant-filled-secondary">
 								Select File
-								<input type="file" class="hidden" onchange={handleFileChange} />
+								<input type="file" class="hidden" accept=".csv,.xlsx,.pdf,.json,.txt" onchange={handleFileChange} />
 							</label>
 
 							<input

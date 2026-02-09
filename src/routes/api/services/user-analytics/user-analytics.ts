@@ -4,6 +4,8 @@ import { TimeHelper } from '$lib/utils/time.helper';
 import { DashboardManager } from '../../cache/dashboard/dashboard.manager';
 import { get } from '../reancare/common.reancare';
 
+///////////////////////////////////////////////////////////////////////////////
+
 export const getAnalyticsReport = async(format: string) => {
     const url = USER_ANALYTICS_API_URL + `/analytics/download/${new Date().toISOString().split('T')[0]}-1/formats/${format}`;
 	const headers:any = {};
@@ -18,12 +20,12 @@ export const getAnalyticsReport = async(format: string) => {
     return null;
 }
 
-export const getUserAnalytics = async (sessionId: string, formattedDate: string) => {
+export const getUserAnalytics = async (sessionId: string, formattedDate: string, tenantCode: string) => {
 	console.log('Formatted date: ' + formattedDate);
-	const url = USER_ANALYTICS_API_URL + `/analytics/metrics/2025-03-26-1`;
-	const cacheKey = `session-${sessionId}:req-getUserAnalytics:${formattedDate}-1`;
+	const url = USER_ANALYTICS_API_URL + `/analytics/metrics/${formattedDate}-${tenantCode}-1`;
+	const cacheKey = `session-${sessionId}:req-getUserAnalytics:${formattedDate}-${tenantCode}-1`;
 	const yesterday = TimeHelper.getYesterdayDate();
-	const yesterdayCacheKey = `session-${sessionId}:req-getUserAnalytics:${yesterday}-1`;
+	const yesterdayCacheKey = `session-${sessionId}:req-getUserAnalytics:${yesterday}-${tenantCode}-1`;
 
 	if (await DashboardManager.has(yesterdayCacheKey)) {
 		await DashboardManager._cache.delete(yesterdayCacheKey);

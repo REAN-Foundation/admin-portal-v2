@@ -2,6 +2,7 @@
 	import type { PageServerData } from './$types';
 	import { page } from '$app/state';
 	import Icon from '@iconify/svelte';
+	import Button from '$lib/components/button/button.svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import { UserInterfacesSchema } from '$lib/validation/tenant.settings.schema';
 
@@ -251,11 +252,9 @@
 
 				<div class="button-container my-4">
 					{#await promise}
-						<button type="submit" class="table-btn variant-soft-secondary" disabled>
-							Submiting
-						</button>
+						<Button type="submit" variant="primary" size="sm" text="Submitting..." disabled={true} />
 					{:then data}
-						<button type="submit" class="table-btn variant-soft-secondary"> Submit </button>
+						<Button type="submit" variant="primary" size="md" text="Submit" />
 					{/await}
 				</div>
 			</form>

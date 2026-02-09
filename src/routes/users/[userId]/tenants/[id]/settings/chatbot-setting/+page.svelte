@@ -10,8 +10,10 @@
 		LogoUploadModel
 	} from '$lib/types/tenant.settings.types.js';
 	import { imageUploadSchema } from '$lib/validation/tenant-setting-favicon.schema.js';
+	import { languages } from '$lib/utils/language';
 	import Progressive from './progressive.update.svelte';
 	import ExportSettingsDialog from './export-settings.dialog.svelte';
+	import WelcomeMessageModal from './welcome-message.modal.svelte';
 
 	///////////////////////////////////////////////////////////////////////
 
@@ -20,7 +22,7 @@
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
 	const tenantCode = $state(data.tenantCode);
-	const tenantRoute = `/users/${userId}/tenants`;
+	const settingsRoute = `/users/${userId}/tenants/${tenantId}/settings`;
 	const formData = new FormData();
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
@@ -33,14 +35,24 @@
 	let showCancelModel = $state(false);
 	let showExportDialog = $state(false);
 	let isCreatingSecret = $state(false);
-	let faviconUrl = chatBotSetting.ChatBot.Favicon;
-	let logoUrl = chatBotSetting.ChatBot.OrganizationLogo;
+	let faviconUrl = $state(chatBotSetting.ChatBot.Favicon);
+	let logoUrl = $state(chatBotSetting.ChatBot.OrganizationLogo);
 	let disabled = $state(data.isChatBotEnabled);
 	let edit = $state(false);
 	let fileName = $state('');
 	let logoName = $state('');
 	const totalSteps = 3;
 	let currentSection = $state(0);
+	let welcomeMessages = $state(data.chatbotSettings?.WelcomeMessages || []);
+	let showWelcomeMessageModal = $state(false);
+	let isEditWelcomeMessage = $state(false);
+	let editingWelcomeMessageIndex: number | null = $state(null);
+	let modalWelcomeMessage = $state({ LanguageCode: '', Content: '', URL: '' });
+
+	console.log("logoUrl",data.chatbotSettings)
+
+	console.log("faviconUrl",faviconUrl)
+
 
 	const handleEditClick = async () => {
 		if (!disabled) {
@@ -142,16 +154,20 @@
 			//------------------------------LOGO UPLOAD---------------------------------
 
 			if (formData.has('logofile')) {
+				const logoFormData = new FormData();
+				logoFormData.append('logofile', formData.get('logofile') as File);
+				logoFormData.append('filename', formData.get('filename') as string);
+
 				const fileRes = await fetch(`/api/server/tenants/settings/upload`, {
 					method: 'POST',
-					body: formData
+					body: logoFormData
 				});
 
 				const fileJson = await fileRes.json();
 
 				if (fileJson.HttpCode === 200 || fileJson.HttpCode === 201) {
 					logoUrl = fileJson.Data.FileResources[0].Url;
-
+					formData.delete('logofile');
 					isLogoUploaded = true;
 				} else {
 					addToast({ message: 'Logo upload failed.', type: 'error', timeout: 3000 });
@@ -163,16 +179,21 @@
 
 			// ----------------------------- FAVICON UPLOAD -----------------------------
 			if (formData.has('file')) {
+				const faviconFormData = new FormData();
+				faviconFormData.append('file', formData.get('file') as File);
+				faviconFormData.append('filename', formData.get('filename') as string);
+
 				const fileRes = await fetch(`/api/server/tenants/upload`, {
 					method: 'POST',
-					body: formData
+					body: faviconFormData
 				});
 
 				const fileJson = await fileRes.json();
 
 				if (fileJson.HttpCode === 200 || fileJson.HttpCode === 201) {
 					faviconUrl = fileJson.Data.FileResources[0].Url;
-
+					formData.delete('file');
+					formData.delete('filename');
 					isFaviconUploaded = true;
 				} else {
 					addToast({ message: 'Favicon upload failed.', type: 'error', timeout: 3000 });
@@ -208,6 +229,7 @@
 				QnA: chatBotSetting.ChatBot.QnA,
 				Consent: chatBotSetting.ChatBot.Consent,
 				WelcomeMessage: chatBotSetting.ChatBot.WelcomeMessage,
+				WelcomeMessages: welcomeMessages,
 				Feedback: chatBotSetting.ChatBot.Feedback,
 				AppointmentFollowup: chatBotSetting.ChatBot.AppointmentFollowup,
 				ConversationHistory: chatBotSetting.ChatBot.ConversationHistory,
@@ -361,7 +383,7 @@
 		},
 		BasicCarePlan: {
 			Name: 'Basic Care Plan',
-			IconPath: 'mdi:medical-bag-outline',
+			IconPath: 'mdi:clipboard-text-outline',
 			Description: 'Enable basic care plan functionality.'
 		},
 		Timezone: {
@@ -385,6 +407,47 @@
 
 	async function getBotSecret() {
 		showExportDialog = true;
+	}
+
+	function openAddWelcomeMessageModal() {
+		isEditWelcomeMessage = false;
+		modalWelcomeMessage = { LanguageCode: '', Content: '', URL: '' };
+		showWelcomeMessageModal = true;
+	}
+
+	function openEditWelcomeMessageModal(index: number) {
+		isEditWelcomeMessage = true;
+		editingWelcomeMessageIndex = index;
+		modalWelcomeMessage = { ...welcomeMessages[index] };
+		showWelcomeMessageModal = true;
+	}
+
+	function handleSaveWelcomeMessage(msg) {
+		if (isEditWelcomeMessage && editingWelcomeMessageIndex !== null) {
+			welcomeMessages[editingWelcomeMessageIndex] = { ...msg };
+		} else {
+			welcomeMessages.push({ ...msg });
+		}
+		welcomeMessages = [...welcomeMessages];
+	}
+
+	function deleteWelcomeMessage(index: number) {
+		const defaultLangCode = languages.find((l) => l.name === chatBotSetting.ChatBot.DefaultLanguage)?.code;
+		if (welcomeMessages[index].LanguageCode === defaultLangCode) {
+			addToast({
+				message: 'Cannot delete the welcome message for the default language.',
+				type: 'warning',
+				timeout: 3000
+			});
+			return;
+		}
+		welcomeMessages.splice(index, 1);
+		welcomeMessages = [...welcomeMessages];
+		addToast({
+			message: 'Welcome message deleted successfully.',
+			type: 'success',
+			timeout: 3000
+		});
 	}
 </script>
 
@@ -452,7 +515,7 @@
 						<!-- <span>{edit ? 'Save' : 'Edit'}</span> -->
 					</button>
 					<a
-						href={tenantRoute}
+						href={settingsRoute}
 						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
 					>
 						<Icon icon="material-symbols:close-rounded" class=" h-5" />
@@ -475,6 +538,12 @@
 					{onLogoSelected}
 					{logoName}
 					{errors}
+					bind:welcomeMessages
+					onAddWelcomeMessage={openAddWelcomeMessageModal}
+					onEditWelcomeMessage={openEditWelcomeMessageModal}
+					onDeleteWelcomeMessage={deleteWelcomeMessage}
+					{logoUrl}
+					{faviconUrl}
 				/>
 			</div>
 			<!-- <hr class="border-[0.5px] border-t border-[var(--color-outline)]" /> -->
@@ -487,4 +556,18 @@
 	onclose={() => (showExportDialog = false)}
 	{tenantId}
 	{tenantCode}
+/>
+
+<!-- Welcome Message Modal -->
+<WelcomeMessageModal
+	isOpen={showWelcomeMessageModal}
+	onClose={() => {
+		showWelcomeMessageModal = false;
+		editingWelcomeMessageIndex = null;
+	}}
+	onSave={handleSaveWelcomeMessage}
+	message={modalWelcomeMessage}
+	isEdit={isEditWelcomeMessage}
+	allMessages={welcomeMessages}
+	editingIndex={editingWelcomeMessageIndex}
 />
