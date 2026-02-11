@@ -23,7 +23,8 @@
 		'followup-setting': 'Follow-up',
 		'forms-setting': 'Forms',
 		'custom-settings': 'Custom',
-		'clickup-setting': 'ClickUp'
+		'clickup-setting': 'ClickUp',
+		'vitals-threshold-setting': 'Vitals Thresholds'
 	};
 
 	// Build breadcrumbs dynamically based on current route
@@ -66,6 +67,7 @@
 	let concentSettingsLink = `${tenantRoute}/${tenantId}/settings/consent-setting`;
 	let customSettingsLink = `${tenantRoute}/${tenantId}/settings/custom-settings`;
 	let clickUpSettingsLink = `${tenantRoute}/${tenantId}/settings/clickup-setting`;
+	let vitalsThresholdSettingsLink = `${tenantRoute}/${tenantId}/settings/vitals-threshold-setting`;
 
 </script>
 
@@ -146,6 +148,16 @@
 			>
 				<Icon icon="simple-icons:clickup" class="h-5 w-5 shrink-0" />
 				ClickUp
+			</a>
+
+			<a
+				class="btn {page.url.pathname === vitalsThresholdSettingsLink
+					? 'variant-filled-secondary'
+					: 'variant-soft-secondary'} flex items-center justify-center gap-2 whitespace-nowrap"
+				href={vitalsThresholdSettingsLink}
+			>
+				<Icon icon="mdi:heart-pulse" class="h-5 w-5 shrink-0" />
+				Alerts
 			</a>
 		</div>
 	</div>

@@ -1,4 +1,4 @@
-import { TenantSettingsTypes } from "$lib/types/tenant.settings.types";
+import { TenantSettingsTypes, VITAL_TYPES } from "$lib/types/tenant.settings.types";
 import { z } from "zod";
 
 export const tenantSettingTypeSchema = z.nativeEnum(TenantSettingsTypes).refine(
@@ -424,6 +424,55 @@ export const CustomSettingSchema = z.object({
 
 export const CustomSettingsSchema = z.record(CustomSettingSchema);
 
+// Vitals Thresholds schemas
+
+const RangeDefinitionSchema = z.object({
+    Min: z.number().nullable().optional(),
+    Max: z.number().nullable().optional(),
+});
+
+const ThresholdCategorySchema = z.object({
+    Category: z.string({
+        required_error: "Category name is required",
+    }).min(1, "Category name is required"),
+    Severity: z.string({
+        required_error: "Severity is required",
+    }).min(1, "Severity is required"),
+    Ranges: z.record(RangeDefinitionSchema, {
+        required_error: "Ranges are required",
+    }),
+    AlertMessage: z.record(z.string(), {
+        required_error: "Alert messages are required",
+    }),
+    SendAlert: z.boolean({
+        required_error: "SendAlert is required",
+        invalid_type_error: "SendAlert must be a boolean",
+    }),
+    Priority: z.number({
+        required_error: "Priority is required",
+        invalid_type_error: "Priority must be a number",
+    }).int("Priority must be an integer"),
+});
+
+const VitalThresholdConfigSchema = z.object({
+    Enabled: z.boolean({
+        required_error: "Enabled is required",
+        invalid_type_error: "Enabled must be a boolean",
+    }),
+    Unit: z.string({
+        required_error: "Unit is required",
+    }).min(1, "Unit is required"),
+    Categories: z.array(ThresholdCategorySchema).min(1, "At least one category is required"),
+});
+
+export const VitalsThresholdsSchema = z.record(
+    z.enum(VITAL_TYPES as [string, ...string[]]),
+    VitalThresholdConfigSchema,
+).refine(
+    (data) => Object.keys(data).length > 0,
+    { message: "At least one vital type must be configured" }
+);
+
 export const TenantSettingsSchema = z.object({
     Common: CommonSettingsSchema.required(),
     Followup: FollowupSettingsSchema.required(),
@@ -431,5 +480,6 @@ export const TenantSettingsSchema = z.object({
     Forms: FormsSettingsSchema.required(),
     Consent: ConsentSettingsSchema.optional(),
     CustomSettings: CustomSettingsSchema.optional(),
+    VitalsThresholds: VitalsThresholdsSchema.optional(),
 });
 
