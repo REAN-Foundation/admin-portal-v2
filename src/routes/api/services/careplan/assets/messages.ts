@@ -14,6 +14,7 @@ export const createMessage = async (
 	tags: string[],
 	version: string,
 	tenantId: string,
+	tenantCode: string,
 	templateVariables?: { [key: string]: any }
 ) => {
 	const body = {
@@ -25,6 +26,7 @@ export const createMessage = async (
 		Url: pathUrl ? pathUrl : null,
 		Tags: tags ? tags : null,
 		TenantId: tenantId,
+		TenantCode: tenantCode,
 		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
 

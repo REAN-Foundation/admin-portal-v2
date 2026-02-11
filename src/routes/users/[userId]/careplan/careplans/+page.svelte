@@ -18,7 +18,7 @@
 
 	let debounceTimeout;
 	let isLoading = $state(false);
-	let careplans = $state(data.carePlans.Items);
+	let careplans = $state(data.carePlans.Items || []);
 	let retrivedCarePlan = $derived(careplans);
 
 	let openDeleteModal = $state(false);

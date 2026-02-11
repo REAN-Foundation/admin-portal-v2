@@ -9,6 +9,7 @@ import { createCareplan } from '$routes/api/services/careplan/careplans';
 export const POST = async (event: RequestEvent) => {
 	try {
 		const sessionId = event.cookies.get('sessionId');
+		const tenantCode = event.locals?.sessionUser?.tenantCode;
 
 		if (!sessionId) {
 			return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session.'));
@@ -41,7 +42,8 @@ export const POST = async (event: RequestEvent) => {
 			data.Tags,
 			data.Version,
 			data.OwnerUserId,
-			data.TenantId
+			data.TenantId,
+			tenantCode
 		);
 
 		return ResponseHandler.success(response);

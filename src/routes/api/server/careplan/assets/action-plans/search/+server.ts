@@ -15,6 +15,7 @@ export const GET = async (event: RequestEvent) => {
 		}
 
 		const searchFilters = createSearchFilters(event, {
+			useTenantCode: true,
 			name: event.url.searchParams.get('name') ?? undefined,
 			code: event.url.searchParams.get('code') ?? undefined,
 		});

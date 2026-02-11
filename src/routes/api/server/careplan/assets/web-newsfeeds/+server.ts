@@ -9,6 +9,7 @@ export const POST = async (event: RequestEvent) => {
 	try {
 		console.log('Inside Web-Newsfeeds server POST endpoints');
 		const sessionId = event.locals?.sessionUser?.sessionId;
+		const tenantCode = event.locals?.sessionUser?.tenantCode;
 
 		if (!sessionId) {
 			return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session.'));
@@ -40,7 +41,8 @@ export const POST = async (event: RequestEvent) => {
 			data.PathUrl,
 			data.Tags,
 			data.Version,
-            data.TenantId
+            data.TenantId,
+            tenantCode
             );
 
 		return ResponseHandler.success(response);

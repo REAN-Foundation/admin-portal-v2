@@ -8,6 +8,7 @@ export const POST = async (event: RequestEvent) => {
     try {
         console.log("Inside message POST endpoints");
         const sessionId = event.locals?.sessionUser?.sessionId;
+        const tenantCode = event.locals?.sessionUser?.tenantCode;
 
         if (!sessionId) {
             return ResponseHandler.handleError(401, null, new Error("Access denied: Invalid session."));
@@ -30,14 +31,15 @@ export const POST = async (event: RequestEvent) => {
         const response = await createMessage(
             sessionId,
             data.Name,
-            data.Description, 
-            data.MessageType, 
-            data.TemplateName,   
+            data.Description,
+            data.MessageType,
+            data.TemplateName,
             data.PathUrl,
             data.Tags,
             data.Version ?? '',
             data.TenantId,
-            data.TemplateVariables
+            data.TemplateVariables,
+            tenantCode
         );
 
         return ResponseHandler.success(response);
