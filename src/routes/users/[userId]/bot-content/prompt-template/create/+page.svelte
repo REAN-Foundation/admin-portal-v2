@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
 	import Icon from '@iconify/svelte';
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
@@ -34,6 +35,69 @@
 	let presence = $state(0);
 	let model = $state();
 	let useCaseType = $state();
+
+	let availableModels: any[] = $state([]);
+	let isLoadingModels = $state(true);
+	let modelsError = $state('');
+
+	onMount(async () => {
+		await fetchOpenAIModels();
+	});
+
+	async function fetchOpenAIModels() {
+		try {
+			isLoadingModels = true;
+			modelsError = '';
+			const res = await fetch('/api/server/prompt-template/open-ai/models', {
+				method: 'GET',
+				headers: { 'content-type': 'application/json' }
+			});
+
+			if (!res.ok) {
+				throw new Error('Failed to fetch models');
+			}
+
+			const response = await res.json();
+			
+			if (response.Status === 'success' || response.HttpCode === 200) {
+				const gptModels = response.Data.data
+					.filter((m: any) => 
+						m.id.includes('gpt') || 
+						m.id.includes('text-davinci') ||
+						m.id.includes('chat')
+					)
+					.sort((a: any, b: any) => {
+						if (a.id.includes('gpt-4') && !b.id.includes('gpt-4')) return -1;
+						if (!a.id.includes('gpt-4') && b.id.includes('gpt-4')) return 1;
+						return b.id.localeCompare(a.id);
+					});
+				
+				availableModels = gptModels;
+				
+				if (gptModels.length > 0 && !model) {
+					model = gptModels[0].id;
+				}
+			} else {
+				throw new Error(response.Message || 'Failed to load models');
+			}
+		} catch (error) {
+			console.error('Error fetching OpenAI models:', error);
+			modelsError = 'Failed to load AI models. Using fallback options.';
+			
+			availableModels = [
+				{ id: 'gpt-4o', owned_by: 'openai' },
+				{ id: 'gpt-4-turbo', owned_by: 'openai' },
+				{ id: 'gpt-4', owned_by: 'openai' },
+				{ id: 'gpt-3.5-turbo', owned_by: 'openai' }
+			];
+			
+			if (!model) {
+				model = 'gpt-4o';
+			}
+		} finally {
+			isLoadingModels = false;
+		}
+	}
 
 	const handleSubmit = async (event: Event) => {
 		try {
@@ -108,17 +172,11 @@
 
 	function updateVariablesFromPrompt(event) {
 		const promptText = event.target.value;
-
-		// Extract placeholders from prompt
 		const extractedVariables = extractPlaceholdersFromPrompt(promptText);
-
-		// Update variables array
 		variables = extractedVariables;
-
 		console.log('Extracted variables from prompt:', variables);
 	}
 
-	// Add this new function to handle when variables are manually changed via InputChips
 	function handleVariablesChanged(newVariables: string[]) {
 		variables = newVariables;
 		console.log('Variables updated via InputChips:', variables);
@@ -129,6 +187,15 @@
 		else if (val < 0.5) return '#facc15';
 		else if (val < 0.75) return '#22c55e';
 		else return '#3b82f6';
+	}
+
+	// Format model name for display
+	function formatModelName(modelId: string): string {
+		return modelId
+			.replace(/-/g, ' ')
+			.split(' ')
+			.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(' ');
 	}
 </script>
 
@@ -176,18 +243,29 @@
 					<td class="table-label">Model <span class="important-field">*</span></td>
 					<td class="table-data">
 						<div class="relative">
-
-						<select class="select" required name="model" bind:value={model}>
-							<option value="OpenAi GPT 3.5 Turbo">OpenAi GPT 3.5 Turbo</option>
-							<option value="OpenAi GPT 3.5">OpenAi GPT 3.5</option>
-							<option value="OpenAi GPT 4 Turbo">OpenAi GPT 4 Turbo</option>
-							<option value="OpenAi GPT 4">OpenAi GPT 4</option>
-							<option value="OpenAi GPT 4o">OpenAi GPT 4o</option>
-						</select>
-						<div class="select-icon-container">
-							<Icon icon="mdi:chevron-down" class="select-icon" />
+							{#if isLoadingModels}
+								<select class="select" disabled>
+									<option>Loading models...</option>
+								</select>
+							{:else}
+								<select class="select" required name="model" bind:value={model}>
+									{#each availableModels as modelOption}
+										<option value={modelOption.id}>
+											{formatModelName(modelOption.id)}
+										</option>
+									{/each}
+								</select>
+							{/if}
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
 						</div>
-					</div>
+						{#if modelsError}
+							<p class="text-yellow-600 text-xs mt-1">{modelsError}</p>
+						{/if}
+						{#if errors?.Model}
+							<p class="error-text">{errors?.Model}</p>
+						{/if}
 					</td>
 				</tr>
 
@@ -197,7 +275,7 @@
 						<textarea
 							name="prompt"
 							bind:value={prompt}
-							placeholder="Enter prompt here... Use for placeholders"
+							placeholder="Enter prompt here... Use {'{placeholder}'} for placeholders"
 							class="input"
 							oninput={updateVariablesFromPrompt}
 						>
@@ -224,17 +302,17 @@
 					<td class="table-label">Use Case Type</td>
 					<td class="table-data">
 						<div class="relative">
-						<select class="select" required name="useCaseType" bind:value={useCaseType}>
-							<option value="Chat">Chat</option>
-							<option value="Classification">Classification</option>
-							<option value="Extraction">Extraction</option>
-							<option value="Summarization">Summarization</option>
-							<option value="Generation">Generation</option>
-						</select>
-						<div class="select-icon-container">
-							<Icon icon="mdi:chevron-down" class="select-icon" />
+							<select class="select" required name="useCaseType" bind:value={useCaseType}>
+								<option value="Chat">Chat</option>
+								<option value="Classification">Classification</option>
+								<option value="Extraction">Extraction</option>
+								<option value="Summarization">Summarization</option>
+								<option value="Generation">Generation</option>
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
 						</div>
-					</div>
 					</td>
 				</tr>
 
@@ -242,18 +320,18 @@
 					<td class="table-label">Group</td>
 					<td class="table-data">
 						<div class="relative">
-						<select class="select" required name="group" bind:value={group}>
-							<option value="Chat Default">Chat Default</option>
-							<option value="Content Generation">Content Generation</option>
-							<option value="Generic">Generic</option>
-							<option value="Miscellaneous">Miscellaneous</option>
-							<option value="Evaluation and Quality">Evaluation and Quality</option>
-							<option value="Chat Custom">Chat Custom</option>
-						</select>
-						<div class="select-icon-container">
-							<Icon icon="mdi:chevron-down" class="select-icon" />
+							<select class="select" required name="group" bind:value={group}>
+								<option value="Chat Default">Chat Default</option>
+								<option value="Content Generation">Content Generation</option>
+								<option value="Generic">Generic</option>
+								<option value="Miscellaneous">Miscellaneous</option>
+								<option value="Evaluation and Quality">Evaluation and Quality</option>
+								<option value="Chat Custom">Chat Custom</option>
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
 						</div>
-					</div>
 					</td>
 				</tr>
 

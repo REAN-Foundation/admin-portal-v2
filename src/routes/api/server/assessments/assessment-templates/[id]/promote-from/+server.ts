@@ -1,6 +1,6 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { ResponseHandler } from '$lib/utils/response.handler';
-import { promotion } from '$routes/api/services/reancare/tenant.promotion';
+import { assessmentPromotion } from '$routes/api/services/reancare/assessments/assessment.promotion';
 import { getTargetEnvironment } from '$lib/utils/promotion.utils';
 
 export const POST = async (event: RequestEvent) => {
@@ -10,11 +10,11 @@ export const POST = async (event: RequestEvent) => {
 			return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session.'));
 		}
 
-		const tenantId = event.params.id;
+		const assessmentTemplateId = event.params.id;
 
 		const targetEnvironment = getTargetEnvironment();
 
-		const response = await promotion(sessionId, tenantId, targetEnvironment);
+		const response = await assessmentPromotion(sessionId, assessmentTemplateId, targetEnvironment);
 
 		return ResponseHandler.success(response);
 	} catch (error) {
