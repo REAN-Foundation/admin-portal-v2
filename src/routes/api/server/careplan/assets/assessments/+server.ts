@@ -9,6 +9,7 @@ export const POST = async (event: RequestEvent) => {
     try {
         console.log("Inside assessment POST endpoints");
         const sessionId = event.locals?.sessionUser?.sessionId;
+        const tenantCode = event.locals?.sessionUser?.tenantCode;
 
         if (!sessionId) {
             return ResponseHandler.handleError(401, null, new Error("Access denied: Invalid session."));
@@ -32,13 +33,14 @@ export const POST = async (event: RequestEvent) => {
         const response = await createAssessment(
             sessionId,
             data.Name,
-            data.Description,     
+            data.Description,
             data.Template,
             data.ReferenceTemplateCode,
-            data.Tags, 
+            data.Tags,
             data.Version ?? '',
             data.TenantId,
-            data.Metadata);
+            data.Metadata,
+            tenantCode);
 
         return ResponseHandler.success(response);
     } catch (error) {

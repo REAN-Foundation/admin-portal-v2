@@ -19,7 +19,7 @@
 
 	let debounceTimeout;
 	let isLoading = $state(false);
-	let assets = $state(data.assets.Items);
+	let assets = $state(data.assets?.Items ?? []);
 	let retrivedAssets = $derived(assets);
 	let openDeleteModal = $state(false);
 	let idToBeDeleted = $state(null);
@@ -30,7 +30,7 @@
 	const userId = page.params.userId;
 	const assetType = data.assetTypes;
 
-	let types = assetType.Data.AssetTypes;
+	let types = assetType?.Data?.AssetTypes ?? [];
 	// let selectedAssetType = $state('Action plan');
 	let selectedAssetType = $state(page.url.searchParams.get('assetType') || 'Action plan');
 
@@ -38,7 +38,7 @@
 	let nameAssetSearch = $state(undefined);
 	let codeAssetSearch = $state(undefined);
 
-	let totalAssetsCount = $state(data.assets.TotalCount);
+	let totalAssetsCount = $state(data.assets?.TotalCount ?? 0);
 	$inspect('totalAssetsCount', totalAssetsCount);
 	let isSortingName = $state(false);
 	let isSortingCode = $state(false);

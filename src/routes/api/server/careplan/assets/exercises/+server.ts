@@ -8,6 +8,7 @@ export const POST = async (event: RequestEvent) => {
     try {
         console.log("Inside exercise POST endpoints");
         const sessionId = event.locals?.sessionUser?.sessionId;
+        const tenantCode = event.locals?.sessionUser?.tenantCode;
 
         if (!sessionId) {
             return ResponseHandler.handleError(401, null, new Error("Access denied: Invalid session."));
@@ -30,13 +31,14 @@ export const POST = async (event: RequestEvent) => {
         const response = await createExercise(
             sessionId,
             data.Name,
-            data.Description ?? '',     
+            data.Description ?? '',
             data.ExerciseType,
             data.IntensityLevel,
             data.RecommendedDurationMin,
             data.Tags,
             data.Version,
-            data.TenantId
+            data.TenantId,
+            tenantCode
             );
 
         return ResponseHandler.success(response);

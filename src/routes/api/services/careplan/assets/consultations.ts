@@ -12,6 +12,7 @@ export const createConsultation = async (
 	tags: string[],
 	version: string,
 	tenantId: string,
+	tenantCode: string,
 ) => {
 	const body = {
 		Name: name,
@@ -19,6 +20,7 @@ export const createConsultation = async (
 		ConsultationType: consultationType ? consultationType : null,
 		Tags: tags ? tags : null,
 		TenantId: tenantId,
+		TenantCode: tenantCode,
 		Version: !version || version?.length === 0 ? 'V 1.0' : version
 	};
 

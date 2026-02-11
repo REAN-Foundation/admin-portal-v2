@@ -8,13 +8,15 @@ export const createCareplanCategory = async (
     sessionId: string,
     type: string,
     description: string,
-    tenantId: string
+    tenantId: string,
+    tenantCode: string
 
 ) => {
     const body = {
         Type: type,
         Description: description?description:null,
-        TenantId: tenantId
+        TenantId: tenantId,
+        TenantCode: tenantCode
     }
     const url = CAREPLAN_BACKEND_API_URL + '/careplan-categories';
     const result = await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);

@@ -10,7 +10,8 @@ export const createReflection = async (
 	description: string,
 	tags: string[],
 	version: string,
-	tenantId: string
+	tenantId: string,
+	tenantCode: string
 ) => {
 	const body = {
 		Name: name,
@@ -18,6 +19,7 @@ export const createReflection = async (
 		Tags: tags ? tags : null,
 		Version: !version || version.length === 0 ? 'V 1.0' : version,
 		TenantId: tenantId,
+		TenantCode: tenantCode,
 	};
 
 	const url = CAREPLAN_BACKEND_API_URL + '/assets/reflections';

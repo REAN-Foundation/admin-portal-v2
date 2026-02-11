@@ -8,6 +8,7 @@ export const POST = async (event: RequestEvent) => {
     try {
         console.log("Inside physiotherapy POST endpoints");
         const sessionId = event.locals?.sessionUser?.sessionId;
+        const tenantCode = event.locals?.sessionUser?.tenantCode;
 
         if (!sessionId) {
             return ResponseHandler.handleError(401, null, new Error("Access denied: Invalid session."));
@@ -30,11 +31,12 @@ export const POST = async (event: RequestEvent) => {
         const response = await createPhysiotherapy(
             sessionId,
             data.Name,
-            data.Description ?? '',  
+            data.Description ?? '',
             data.RecommendedDurationMin,
             data.Tags,
             data.Version,
-            data.TenantId
+            data.TenantId,
+            tenantCode
             );
 
         return ResponseHandler.success(response);
