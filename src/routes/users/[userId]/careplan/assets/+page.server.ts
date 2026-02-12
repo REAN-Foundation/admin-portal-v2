@@ -11,6 +11,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	event.depends('app:assets');
 
 	const searchFilters = createSearchFilters(event, {
+        useTenantCode: true,
         orderBy: "Name",
         order: "ascending",
         itemsPerPage: 10,
