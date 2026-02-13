@@ -1,5 +1,5 @@
 import { ResponseHandler } from "$lib/utils/response.handler";
-import { ChatBotSettingsSchema, CommonSettingsSchema, ConsentSettingsSchema, CustomSettingsSchema, FollowupSettingsSchema, FormsSettingsSchema, tenantSettingTypeSchema } from "$lib/validation/tenant.settings.schema";
+import { ChatBotSettingsSchema, CommonSettingsSchema, ConsentSettingsSchema, CustomSettingsSchema, FollowupSettingsSchema, FormsSettingsSchema, VitalsThresholdsSchema, tenantSettingTypeSchema } from "$lib/validation/tenant.settings.schema";
 import { getTenantSettingsByType, updateTenantSettingsByType } from "$routes/api/services/reancare/tenant-settings";
 import type { RequestEvent } from "@sveltejs/kit";
 
@@ -34,7 +34,6 @@ export const GET = async (event: RequestEvent) => {
 
 export const PUT = async (event: RequestEvent) => {
     try {
-        console.log('Inside tenants setting server PUT endpoints');
         const sessionId = event.locals?.sessionUser?.sessionId;
 
         if (!sessionId) {
@@ -46,13 +45,7 @@ export const PUT = async (event: RequestEvent) => {
         const request = event.request;
         const data = await request.json();
 
-        console.log('Wellness:', data.Wellness);
-        console.log('type:', type);
-
         const validationResult = validateRequestData(data, type);
-        console.log('Validation result:', validationResult.error);
-        console.log('Validation result:', JSON.stringify(validationResult, null, 2));
-        console.log('Data to be updated:', JSON.stringify(data, null, 2));
         if (!validationResult.success) {
             return ResponseHandler.success({
                 Status: 'failure',
@@ -82,8 +75,6 @@ export const PUT = async (event: RequestEvent) => {
 const validateRequestData = (data: any, type: string) => {
     switch (type) {
         case 'Common':
-            console.log('Validating ChatBot settings');
-            console.log('Data:', data);
             return CommonSettingsSchema.safeParse(data);
         case 'ChatBot':
             return ChatBotSettingsSchema.safeParse(data);
@@ -95,6 +86,7 @@ const validateRequestData = (data: any, type: string) => {
             return ConsentSettingsSchema.safeParse(data);
         case 'CustomSettings':
             return CustomSettingsSchema.safeParse(data);
-
+        case 'VitalsThresholds':
+            return VitalsThresholdsSchema.safeParse(data);
     }
 }

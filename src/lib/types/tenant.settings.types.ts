@@ -12,7 +12,9 @@ export enum TenantSettingsTypes {
 	Followup = 'Followup',
 	ChatBot = 'ChatBot',
 	Forms = 'Forms',
-	Consent = 'Consent'
+	Consent = 'Consent',
+	CustomSettings = 'CustomSettings',
+	VitalsThresholds = 'VitalsThresholds'
 }
 
 export enum WeekDay {
@@ -30,7 +32,9 @@ export const TenantSettingsTypesList = [
 	TenantSettingsTypes.Followup,
 	TenantSettingsTypes.ChatBot,
 	TenantSettingsTypes.Forms,
-	TenantSettingsTypes.Consent
+	TenantSettingsTypes.Consent,
+	TenantSettingsTypes.CustomSettings,
+	TenantSettingsTypes.VitalsThresholds
 ];
 
 export interface UserInterfaces {
@@ -287,6 +291,83 @@ export interface WelcomeMessage {
 	URL?: string;
 }
 
+export enum Severity {
+	Low = 'Low',
+	Normal = 'Normal',
+	Elevated = 'Elevated',
+	HypertensionStage1 = 'Hypertension Stage1',
+	HypertensionStage2 = 'Hypertension Stage2',
+	HypertensiveCrisis = 'Hypertensive Crisis',
+	High = 'High',
+	VeryHigh = 'Very High',
+	LowInvalid = 'Low Invalid',
+	HighInvalid = 'High Invalid'
+}
+
+export interface RangeDefinition {
+	Min?: number | null;
+	Max?: number | null;
+}
+
+export interface ThresholdCategory {
+	Category: string;
+	Severity: Severity | string;
+	Ranges: Record<string, RangeDefinition>;
+	AlertMessage: Record<string, string>;
+	SendAlert: boolean;
+	Priority: number;
+}
+
+export interface VitalThresholdConfig {
+	Enabled: boolean;
+	Unit: string;
+	Categories: ThresholdCategory[];
+}
+
+export type VitalType =
+	| 'BloodPressure'
+	| 'Pulse'
+	| 'BloodGlucose'
+	| 'BodyTemperature'
+	| 'BloodOxygenSaturation'
+	| 'BodyBmi'
+	| 'BodyWeight';
+
+export const VITAL_TYPES: VitalType[] = [
+	'BloodPressure',
+	'Pulse',
+	'BloodGlucose',
+	'BodyTemperature',
+	'BloodOxygenSaturation',
+	'BodyBmi',
+	'BodyWeight'
+];
+
+export const VITAL_DISPLAY_NAMES: Record<VitalType, string> = {
+	BloodPressure: 'Blood Pressure',
+	Pulse: 'Pulse',
+	BloodGlucose: 'Blood Glucose',
+	BodyTemperature: 'Body Temperature',
+	BloodOxygenSaturation: 'Blood Oxygen Saturation',
+	BodyBmi: 'Body BMI',
+	BodyWeight: 'Body Weight'
+};
+
+export const SEVERITY_OPTIONS: string[] = [
+	Severity.Low,
+	Severity.Normal,
+	Severity.Elevated,
+	Severity.High,
+	Severity.VeryHigh,
+	Severity.HypertensionStage1,
+	Severity.HypertensionStage2,
+	Severity.HypertensiveCrisis,
+	Severity.LowInvalid,
+	Severity.HighInvalid
+];
+
+export type VitalsThresholds = Partial<Record<VitalType, VitalThresholdConfig>>;
+
 export interface TenantSettingsDomainModel {
 	Common?: CommonSettings;
 	Followup?: FollowupSettings;
@@ -294,6 +375,7 @@ export interface TenantSettingsDomainModel {
 	Forms?: FormsSettings;
 	Consent?: ConsentSettings;
 	CustomSettings?: CustomSettings;
+	VitalsThresholds?: VitalsThresholds;
 }
 
 export enum CustomSettingDataType {
