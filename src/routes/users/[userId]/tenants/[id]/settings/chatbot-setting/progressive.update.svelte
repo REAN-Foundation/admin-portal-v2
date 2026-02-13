@@ -203,7 +203,7 @@
 			>
 				<option value="" disabled selected>Select language</option>
 				{#each languages as lang}
-					<option value={lang.name}>{lang.name}</option>
+					<option value={lang.code}>{lang.name}</option>
 				{/each}
 			</select>
 			{#if errors?.DefaultLanguage}
