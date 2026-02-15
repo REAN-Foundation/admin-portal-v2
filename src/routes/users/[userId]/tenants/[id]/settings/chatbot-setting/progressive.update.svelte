@@ -52,18 +52,20 @@
 			<label for="chatbotName" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 				>Name <span class="text-red-700">*</span></label
 			>
-			<input
-				type="text"
-				class="input-field w-[70%]"
-				name="chatbotName"
-				placeholder="Enter name here..."
-				disabled={!edit}
-				required
-				bind:value={chatBotSetting.ChatBot.Name}
-			/>
-			{#if errors?.Name}
-				<p class="text-error">{errors?.Name}</p>
-			{/if}
+			<div class="flex w-[70%] flex-col">
+				<input
+					type="text"
+					class="input-field w-full"
+					name="chatbotName"
+					placeholder="Enter name here..."
+					disabled={!edit}
+					required
+					bind:value={chatBotSetting.ChatBot.Name}
+				/>
+				{#if errors?.Name}
+					<p class="text-error mt-1">{errors?.Name}</p>
+				{/if}
+			</div>
 		</div>
 
 		<div class="my-4 flex flex-col md:flex-row md:items-center">
@@ -71,17 +73,19 @@
 				for="organizationName"
 				class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]">Organization Name</label
 			>
-			<input
-				type="text"
-				class="input-field w-[70%]"
-				name="organizationName"
-				placeholder="Enter organization name here..."
-				disabled={!edit}
-				bind:value={chatBotSetting.ChatBot.OrganizationName}
-			/>
-			{#if errors?.OrganiztionName}
-				<p class="text-error">{errors?.OrganiztionName}</p>
-			{/if}
+			<div class="flex w-[70%] flex-col">
+				<input
+					type="text"
+					class="input-field w-full"
+					name="organizationName"
+					placeholder="Enter organization name here..."
+					disabled={!edit}
+					bind:value={chatBotSetting.ChatBot.OrganizationName}
+				/>
+				{#if errors?.OrganiztionName}
+					<p class="text-error mt-1">{errors?.OrganiztionName}</p>
+				{/if}
+			</div>
 		</div>
 
 		<div class="my-4 flex flex-col md:flex-row md:items-center">
@@ -89,37 +93,39 @@
 				for="organizationLogo"
 				class="text mx-1 mb-2 w-[30%] pt-2 font-medium text-(--color-info)">Organization Logo</label
 			>
-			<div class="flex w-full items-start gap-4">
-				{#if logoUrl}
-					<div class="relative shrink-0 h-12 w-12 rounded-lg border border-(--color-outline) bg-white p-1 overflow-hidden">
-						<Image
-							source={logoUrl}
-							cls="h-full w-full object-contain"
-							w="48"
-							h="48"
-						/>
-					</div>
-				{/if}
-				<div class="flex flex-1 flex-col gap-2">
-					<div class="flex w-full gap-3">
-						<label class="table-btn variant-filled-secondary cursor-pointer">
-							{logoUrl ? 'Change' : 'Select File'}
-							<input type="file" class="hidden" onchange={onLogoSelected} disabled={!edit} accept="image/*" />
-						</label>
-						<input
-							type="text"
-							class="input-field flex-1"
-							name="organizationLogo"
-							placeholder={logoUrl ? 'Select new logo to replace...' : 'No File Selected...'}
-							readonly
-							disabled={!edit}
-							value={logoName}
-						/>
-					</div>
-					{#if errors?.OrganizationLogo}
-						<p class="text-error text-sm">{errors?.OrganizationLogo}</p>
+			<div class="flex w-[70%] flex-col">
+				<div class="flex w-full items-start gap-4">
+					{#if logoUrl}
+						<div class="relative shrink-0 h-12 w-12 rounded-lg border border-(--color-outline) bg-white p-1 overflow-hidden">
+							<Image
+								source={logoUrl}
+								cls="h-full w-full object-contain"
+								w="48"
+								h="48"
+							/>
+						</div>
 					{/if}
+					<div class="flex flex-1 flex-col gap-2">
+						<div class="flex w-full gap-3">
+							<label class="table-btn variant-filled-secondary cursor-pointer">
+								{logoUrl ? 'Change' : 'Select File'}
+								<input type="file" class="hidden" onchange={onLogoSelected} disabled={!edit} accept="image/*" />
+							</label>
+							<input
+								type="text"
+								class="input-field flex-1"
+								name="organizationLogo"
+								placeholder={logoUrl ? 'Select new logo to replace...' : 'No File Selected...'}
+								readonly
+								disabled={!edit}
+								value={logoName}
+							/>
+						</div>
+					</div>
 				</div>
+				{#if errors?.OrganizationLogo}
+					<p class="text-error mt-1">{errors?.OrganizationLogo}</p>
+				{/if}
 			</div>
 		</div>
 
@@ -129,53 +135,57 @@
 				class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 				>Organization Website
 			</label>
-			<input
-				type="text"
-				class="input-field w-[70%]"
-				name="organizationWebsite"
-				placeholder="Enter organization website here..."
-				disabled={!edit}
-				bind:value={chatBotSetting.ChatBot.OrganizationWebsite}
-			/>
-			{#if errors?.OrganizationWebsite}
-				<p class="text-error">{errors?.OrganizationWebsite}</p>
-			{/if}
+			<div class="flex w-[70%] flex-col">
+				<input
+					type="text"
+					class="input-field w-full"
+					name="organizationWebsite"
+					placeholder="Enter organization website here..."
+					disabled={!edit}
+					bind:value={chatBotSetting.ChatBot.OrganizationWebsite}
+				/>
+				{#if errors?.OrganizationWebsite}
+					<p class="text-error mt-1">{errors?.OrganizationWebsite}</p>
+				{/if}
+			</div>
 		</div>
 
-		<div class="my-4 flex flex-col md:flex-row md:items-start">
+		<div class="my-4 flex flex-col md:flex-row md:items-center">
 			<label for="favicon" class="text mx-1 mb-2 w-[30%] pt-2 font-medium text-(--color-info)"
 				>Favicon</label
 			>
-			<div class="flex w-full items-center gap-4">
-				{#if faviconUrl}
-					<div class="relative shrink-0 h-12 w-12 rounded-lg border border-(--color-outline) bg-white p-1 overflow-hidden">
-						<Image
-							source={faviconUrl}
-							cls="h-full w-full object-contain"
-							w="48"
-							h="48"
-						/>
-					</div>
-				{/if}
-				<div class="flex flex-1 flex-col gap-2">
-					<div class="flex w-full gap-3">
-						<label class="table-btn variant-filled-secondary cursor-pointer">
-							{faviconUrl ? 'Change' : 'Select File'}
-							<input type="file" class="hidden" onchange={onFileSelected} disabled={!edit} accept="image/*" />
-						</label>
-						<input
-							type="text"
-							class="input-field flex-1"
-							placeholder={faviconUrl ? 'Select new favicon to replace...' : 'No file selected'}
-							readonly
-							disabled={!edit}
-							value={fileName}
-						/>
-					</div>
-					{#if errors?.UploadFile}
-						<p class="text-error text-sm">{errors?.UploadFile}</p>
+			<div class="flex w-[70%] flex-col">
+				<div class="flex w-full items-center gap-4">
+					{#if faviconUrl}
+						<div class="relative shrink-0 h-12 w-12 rounded-lg border border-(--color-outline) bg-white p-1 overflow-hidden">
+							<Image
+								source={faviconUrl}
+								cls="h-full w-full object-contain"
+								w="48"
+								h="48"
+							/>
+						</div>
 					{/if}
+					<div class="flex flex-1 flex-col gap-2">
+						<div class="flex w-full gap-3">
+							<label class="table-btn variant-filled-secondary cursor-pointer">
+								{faviconUrl ? 'Change' : 'Select File'}
+								<input type="file" class="hidden" onchange={onFileSelected} disabled={!edit} accept="image/*" />
+							</label>
+							<input
+								type="text"
+								class="input-field flex-1"
+								placeholder={faviconUrl ? 'Select new favicon to replace...' : 'No file selected'}
+								readonly
+								disabled={!edit}
+								value={fileName}
+							/>
+						</div>
+					</div>
 				</div>
+				{#if errors?.UploadFile}
+					<p class="text-error mt-1">{errors?.UploadFile}</p>
+				{/if}
 			</div>
 		</div>
 
@@ -183,49 +193,59 @@
 			<label for="description" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 				>Description</label
 			>
-			<textarea
-				disabled={!edit}
-				bind:value={chatBotSetting.ChatBot.Description}
-				name="description"
-				placeholder="Enter description here..."
-				class="input-field w-[70%]"
-			></textarea>
+			<div class="flex w-[70%] flex-col">
+				<textarea
+					disabled={!edit}
+					bind:value={chatBotSetting.ChatBot.Description}
+					name="description"
+					placeholder="Enter description here..."
+					class="input-field w-full"
+				></textarea>
+			</div>
 		</div>
 
 		<div class="my- flex flex-col md:flex-row md:items-center">
 			<label for="defaultLanguage" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 				>Default Language</label
 			>
-			<select
-				bind:value={chatBotSetting.ChatBot.DefaultLanguage}
-				class="select input-field w-[100%]"
-				disabled={!edit}
-			>
-				<option value="" disabled selected>Select language</option>
-				{#each languages as lang}
-					<option value={lang.code}>{lang.name}</option>
-				{/each}
-			</select>
-			{#if errors?.DefaultLanguage}
-				<p class="text-error">{errors?.DefaultLanguage}</p>
-			{/if}
+			<div class="flex w-[70%] flex-col">
+				<select
+					bind:value={chatBotSetting.ChatBot.DefaultLanguage}
+					class="select input-field w-full"
+					disabled={!edit}
+				>
+					<option value="" disabled selected>Select language</option>
+					{#each languages as lang}
+						<option value={lang.code}>{lang.name}</option>
+					{/each}
+				</select>
+				{#if errors?.DefaultLanguage}
+					<p class="text-error mt-1">{errors?.DefaultLanguage}</p>
+				{/if}
+			</div>
 		</div>
 
 		<div class="my-4 flex flex-col md:flex-row md:items-center">
 			<label for="timezone" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 				>Timezone</label
 			>
-			<input
-				type="text"
-				class="input-field w-[70%]"
-				name="timezone"
-				placeholder="Enter timezone offset (e.g., +05:30, -05:00)..."
-				bind:value={chatBotSetting.ChatBot.Timezone}
-				disabled={!edit}
-			/>
-			{#if errors?.Timezone}
-				<p class="text-error">{errors?.Timezone}</p>
-			{/if}
+			<div class="flex w-[70%] flex-col">
+				<input
+					type="text"
+					class="input-field w-full"
+					class:input-text-error={errors?.Timezone}
+					name="timezone"
+					placeholder="Enter timezone offset (e.g., +05:30, -05:00)..."
+					bind:value={chatBotSetting.ChatBot.Timezone}
+					disabled={!edit}
+					oninput={() => {
+						if (errors?.Timezone) errors.Timezone = '';
+					}}
+				/>
+				{#if errors?.Timezone}
+					<p class="text-error mt-1">{errors.Timezone}</p>
+				{/if}
+			</div>
 		</div>
 
 		<!-- {#if chatBotSetting.ChatBot.WelcomeMessage} -->
