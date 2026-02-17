@@ -14,6 +14,7 @@
 		VITAL_DISPLAY_NAMES,
 		SEVERITY_OPTIONS,
 		VITAL_PREDEFINED_RANGES,
+		VITAL_UNITS,
 		SUPPORTED_LANGUAGE_CODES
 	} from '$lib/types/tenant.settings.types';
 	import Button from '$lib/components/button/button.svelte';
@@ -139,6 +140,28 @@
 		fieldErrors = { ...fieldErrors };
 	};
 
+	const validateMinMax = (
+		vitalType: string,
+		catIndex: number,
+		rangeName: string,
+		min: number | null | undefined,
+		max: number | null | undefined
+	): void => {
+		const key = `${vitalType}-${catIndex}-${rangeName}-minmax`;
+		if (min != null && max != null && min > max) {
+			fieldErrors = { ...fieldErrors, [key]: 'Min must be less than or equal to Max.' };
+		} else {
+			delete fieldErrors[key];
+			fieldErrors = { ...fieldErrors };
+		}
+	};
+
+	const blockInvalidKeys = (e: KeyboardEvent) => {
+		if (['e', 'E', '+', '-'].includes(e.key)) {
+			e.preventDefault();
+		}
+	};
+
 	// Derived: check if there are any validation errors
 	const hasValidationErrors = $derived(Object.keys(fieldErrors).length > 0);
 
@@ -184,7 +207,7 @@
 
 		const newConfig: VitalThresholdConfig = {
 			Enabled: false,
-			Unit: '',
+			Unit: VITAL_UNITS[newVitalType]?.[0] ?? '',
 			Categories: [
 				{
 					Category: '',
@@ -386,6 +409,7 @@
 						});
 						return;
 					}
+					validateMinMax(vitalType, i, rangeName, range.Min, range.Max);
 				}
 			}
 		}
@@ -594,14 +618,20 @@
 												>
 													Unit <span class="text-red-700">*</span>
 												</label>
-												<input
+												<select
 													id="{vitalType}-unit"
-													type="text"
-													class="input-field flex-1"
-													placeholder="e.g. bpm, mmHg, mg/dL"
+													class="select flex-1"
 													bind:value={config.Unit}
 													disabled={!isEditing}
-												/>
+												>
+													<option value="" disabled>Select unit</option>
+													{#each (VITAL_UNITS[vitalType as VitalType] ?? []) as unit}
+														<option value={unit}>{unit}</option>
+													{/each}
+													{#if config.Unit && !(VITAL_UNITS[vitalType as VitalType] ?? []).includes(config.Unit)}
+														<option value={config.Unit}>{config.Unit}</option>
+													{/if}
+												</select>
 											</div>
 										</div>
 
@@ -785,6 +815,7 @@
 																		class="flex flex-wrap items-start gap-3 rounded border border-[var(--color-outline)] bg-[var(--color-surface)] p-2"
 																	>
 																		<div class="flex flex-col gap-1">
+																			<!-- svelte-ignore a11y_label_has_associated_control -->
 																			<label class="text-xs text-[var(--color-info)] opacity-70">
 																				Name
 																			</label>
@@ -797,18 +828,23 @@
 																			/>
 																		</div>
 																		<div class="flex flex-col gap-1">
+																			<!-- svelte-ignore a11y_label_has_associated_control -->
 																			<label class="text-xs text-[var(--color-info)] opacity-70">
 																				Min
 																			</label>
 																			<input
-																				type="text"
+																				type="number"
+																				min="0"
+																				max="99999"
+																				step="1"
 																				class="input-field w-24"
-																				class:border-red-500={fieldErrors[minKey]}
+																				class:border-red-500={fieldErrors[minKey] || fieldErrors[`${vitalType}-${catIndex}-${rangeName}-minmax`]}
 																				value={range.Min === null || range.Min === undefined
 																					? ''
 																					: range.Min}
 																				placeholder="null"
 																				disabled={!isEditing}
+																				onkeydown={blockInvalidKeys}
 																				oninput={(e) => {
 																					const val = (e.target as HTMLInputElement).value;
 																					validateNumericField(minKey, val);
@@ -818,26 +854,35 @@
 																					if (validateNumericField(minKey, val)) {
 																						range.Min = parseNullableNumber(val);
 																						vitalsThresholds = { ...vitalsThresholds };
+																						validateMinMax(vitalType, catIndex, rangeName, range.Min, range.Max);
 																					}
 																				}}
 																			/>
 																			{#if fieldErrors[minKey]}
 																				<p class="max-w-24 text-xs text-red-500">{fieldErrors[minKey]}</p>
 																			{/if}
+																			{#if fieldErrors[`${vitalType}-${catIndex}-${rangeName}-minmax`]}
+																				<p class="max-w-24 text-xs text-red-500">{fieldErrors[`${vitalType}-${catIndex}-${rangeName}-minmax`]}</p>
+																			{/if}
 																		</div>
 																		<div class="flex flex-col gap-1">
+																			<!-- svelte-ignore a11y_label_has_associated_control -->
 																			<label class="text-xs text-[var(--color-info)] opacity-70">
 																				Max
 																			</label>
 																			<input
-																				type="text"
+																				type="number"
+																				min="0"
+																				max="99999"
+																				step="5"
 																				class="input-field w-24"
-																				class:border-red-500={fieldErrors[maxKey]}
+																				class:border-red-500={fieldErrors[maxKey] || fieldErrors[`${vitalType}-${catIndex}-${rangeName}-minmax`]}
 																				value={range.Max === null || range.Max === undefined
 																					? ''
 																					: range.Max}
 																				placeholder="null"
 																				disabled={!isEditing}
+																				onkeydown={blockInvalidKeys}
 																				oninput={(e) => {
 																					const val = (e.target as HTMLInputElement).value;
 																					validateNumericField(maxKey, val);
@@ -847,6 +892,7 @@
 																					if (validateNumericField(maxKey, val)) {
 																						range.Max = parseNullableNumber(val);
 																						vitalsThresholds = { ...vitalsThresholds };
+																						validateMinMax(vitalType, catIndex, rangeName, range.Min, range.Max);
 																					}
 																				}}
 																			/>
@@ -891,7 +937,7 @@
 																	>
 																		<div class="flex items-center gap-2">
 																			<label class="text-xs text-[var(--color-info)] opacity-70">
-																				Language Code
+																				Language
 																			</label>
 																			<select
 																				class="select w-28"
