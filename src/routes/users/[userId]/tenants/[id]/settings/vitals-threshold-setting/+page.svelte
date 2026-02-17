@@ -85,6 +85,11 @@
 			fieldErrors = { ...fieldErrors, [fieldKey]: 'Must be a non-negative number (up to 2 decimals).' };
 			return false;
 		}
+		const digitCount = value.replace(/[^0-9]/g, '').length;
+		if (digitCount > 5) {
+			fieldErrors = { ...fieldErrors, [fieldKey]: 'Value must not exceed 5 digits.' };
+			return false;
+		}
 		delete fieldErrors[fieldKey];
 		fieldErrors = { ...fieldErrors };
 		return true;
@@ -157,7 +162,16 @@
 	};
 
 	const blockInvalidKeys = (e: KeyboardEvent) => {
-		if (['e', 'E', '+', '-'].includes(e.key)) {
+		if (['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) {
+			return;
+		}
+		if ((e.ctrlKey || e.metaKey) && ['a', 'c', 'v', 'x', 'z'].includes(e.key.toLowerCase())) {
+			return;
+		}
+		if (e.key === '.') {
+			return;
+		}
+		if (!/^\d$/.test(e.key)) {
 			e.preventDefault();
 		}
 	};
@@ -833,10 +847,9 @@
 																				Min
 																			</label>
 																			<input
-																				type="number"
-																				min="0"
-																				max="99999"
-																				step="1"
+																				type="text"
+																				inputmode="numeric"
+																				maxlength="5"
 																				class="input-field w-24"
 																				class:border-red-500={fieldErrors[minKey] || fieldErrors[`${vitalType}-${catIndex}-${rangeName}-minmax`]}
 																				value={range.Min === null || range.Min === undefined
@@ -871,10 +884,9 @@
 																				Max
 																			</label>
 																			<input
-																				type="number"
-																				min="0"
-																				max="99999"
-																				step="5"
+																				type="text"
+																				inputmode="numeric"
+																				maxlength="5"
 																				class="input-field w-24"
 																				class:border-red-500={fieldErrors[maxKey] || fieldErrors[`${vitalType}-${catIndex}-${rangeName}-minmax`]}
 																				value={range.Max === null || range.Max === undefined
