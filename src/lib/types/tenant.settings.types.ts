@@ -366,6 +366,21 @@ export const SEVERITY_OPTIONS: string[] = [
 	Severity.HighInvalid
 ];
 
+export const VITAL_PREDEFINED_RANGES: Record<VitalType, string[]> = {
+	BloodPressure: ['Systolic', 'Diastolic'],
+	Pulse: ['Pulse'],
+	BloodGlucose: ['BloodGlucose'],
+	BodyTemperature: ['BodyTemperature'],
+	BloodOxygenSaturation: ['BloodOxygenSaturation'],
+	BodyBmi: ['BMI'],
+	BodyWeight: ['BodyWeight']
+};
+
+export const SUPPORTED_LANGUAGE_CODES: { code: string; label: string }[] = [
+	{ code: 'en-US', label: 'English' },
+	{code: 'es-ES', label:'Spanish'}
+];
+
 export type VitalsThresholds = Partial<Record<VitalType, VitalThresholdConfig>>;
 
 export interface TenantSettingsDomainModel {
