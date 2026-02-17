@@ -14,6 +14,7 @@ export const GET = async (event: RequestEvent) => {
 
 		const assetTypeRoute = event.url.searchParams.get('assetType');
 		const searchFilters = createSearchFilters(event, {
+			useTenantCode: true,
 			name: event.url.searchParams.get('name') ?? undefined,
 			assetCode: event.url.searchParams.get('code') ?? undefined,
 		});

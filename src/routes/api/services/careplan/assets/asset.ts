@@ -39,6 +39,8 @@ export const searchAssets = async (
 	}
 
 	const url = CAREPLAN_BACKEND_API_URL + `/assets/${assetTypeRoute}/search${searchString}`;
+
+	console.log('url-------',url)
 	const cacheKey = `session-${sessionId}:req-searchAssets:${assetTypeRoute}:${searchString}`;
 
 	if (await DashboardManager.has(cacheKey)) {

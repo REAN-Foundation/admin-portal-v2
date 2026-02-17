@@ -22,7 +22,8 @@ export const createCareplan = async (
 	tags: string[],
 	version: string,
 	ownerUserId: string,
-	tenantId: string
+	tenantId: string,
+	tenantCode: string
 ) => {
 	const url = CAREPLAN_BACKEND_API_URL + '/careplans';
 	const body = {
@@ -31,6 +32,7 @@ export const createCareplan = async (
 		Name: name,
 		OwnerUserId: ownerUserId,
 		TenantId: tenantId,
+		TenantCode: tenantCode,
 		Description: description ? description : null,
 		Tags: tags ? tags : null,
 		Version: !version || version?.length === 0 ? 'V 1.0' : version

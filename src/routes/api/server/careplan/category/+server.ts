@@ -10,7 +10,7 @@ export const POST = async (event: RequestEvent) => {
 	try {
 		const sessionId = event.cookies.get('sessionId');
         const tenantId = event.locals.sessionUser.tenantId;
-
+		const tenantCode = event.locals?.sessionUser?.tenantCode;
 
 		if (!sessionId) {
 			return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session.'));
@@ -34,7 +34,7 @@ export const POST = async (event: RequestEvent) => {
 			});
 		}
 
-		const response = await createCareplanCategory(sessionId, data.Type, data.Description,tenantId);
+		const response = await createCareplanCategory(sessionId, data.Type, data.Description, tenantId, tenantCode);
 
 		return ResponseHandler.success(response);
 	} catch (error) {

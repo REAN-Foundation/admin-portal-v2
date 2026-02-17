@@ -7,6 +7,7 @@
 	import Sidebar from './Sidebar.svelte';
 	import { clickOutside } from '$lib/actions/clickOutside';
 	import Button from '$lib/components/button/button.svelte';
+	import { SYSTEM_ID } from '$lib/constants';
 
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -135,7 +136,7 @@
 			/> -->
 
 
-		{#if canViewSettings}
+		{#if canViewSettings && SYSTEM_ID !== 'AHA'}
 			<a
 				href={settingRoute}
 				data-sveltekit-preload-data
