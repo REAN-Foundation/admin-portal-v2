@@ -38,8 +38,8 @@ export const POST = async (event: RequestEvent) => {
             data.Tags,
             data.Version ?? '',
             data.TenantId,
-            data.TemplateVariables,
-            tenantCode
+            tenantCode,
+            data.TemplateVariables
         );
 
         return ResponseHandler.success(response);

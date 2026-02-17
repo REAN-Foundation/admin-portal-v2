@@ -39,8 +39,8 @@ export const POST = async (event: RequestEvent) => {
             data.Tags,
             data.Version ?? '',
             data.TenantId,
-            data.Metadata,
-            tenantCode);
+            tenantCode,
+            data.Metadata);
 
         return ResponseHandler.success(response);
     } catch (error) {

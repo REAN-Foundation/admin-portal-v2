@@ -134,6 +134,18 @@
 		formData.append('filename', file.name);
 	};
 
+	const navigateToErrorSection = (errs: Record<string, string>) => {
+		const section0Fields = ['Name', 'OrganizationName', 'OrganizationLogo', 'OrganizationWebsite', 'Favicon', 'Description', 'DefaultLanguage', 'Timezone'];
+		if (Object.keys(errs).some((key) => section0Fields.includes(key))) {
+			currentSection = 0;
+			return;
+		}
+		const section1Fields = ['MessageChannels', 'SupportChannels'];
+		if (Object.keys(errs).some((key) => section1Fields.includes(key))) {
+			currentSection = 1;
+		}
+	};
+
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
 		errors = {};
@@ -249,6 +261,7 @@
 					])
 				);
 				console.log('Errors object:', errors);
+				navigateToErrorSection(errors);
 				return;
 			}
 
@@ -264,6 +277,7 @@
 				edit = false;
 			} else if (chatBotJson.Errors) {
 				errors = chatBotJson.Errors;
+				navigateToErrorSection(errors);
 				addToast({ message: 'ChatBot settings failed.', type: 'error', timeout: 3000 });
 				return;
 			}
