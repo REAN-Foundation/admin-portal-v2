@@ -4,6 +4,7 @@
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
 	import Button from '$lib/components/button/button.svelte';
+	import { toastMessage } from '$lib/components/toast/toast.store';
 
 	////////////////////////////////////////////////////////
 
@@ -38,6 +39,22 @@
 			path: viewRoute
 		}
 	];
+
+	const handlePromotion = async () => {
+		try {
+			const res = await fetch(`/api/server/careplan/${carePlanId}/promote-from`, {
+				method: 'POST',
+				body: JSON.stringify({}),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			const response = await res.json();
+			toastMessage(response);
+		} catch (error) {
+			console.error('Error promoting careplan:', error);
+			toastMessage({ HttpCode: 500, Message: error.message || 'An error occurred during promotion.' });
+		}
+	};
 
 	async function exportCareplan() {
 		const response = await fetch(`/api/server/careplan/export`, {
@@ -108,6 +125,7 @@
 	</table>
 
 	<div class="btn-container flex flex-wrap justify-end gap-2 pt-4">
+		<Button onclick={handlePromotion} text="Promote" variant="primary" />
 		<Button
 			onclick={exportCareplan}
 			text="Export"
