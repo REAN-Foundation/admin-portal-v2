@@ -9,44 +9,46 @@
 
 	let labels = ['Onboarded', 'Not Deleted ', 'Current Active'];
 
+	const stats = $derived(data.userCountStats);
+
 	const funnelChartData = $derived([
-		data.userCountStats.TotalUsers.Count,
-		data.userCountStats.NotDeletedUsers.Count,
-		data.userCountStats.UsersWithActiveSession.Count
+		stats?.TotalUsers?.Count ?? 0,
+		stats?.NotDeletedUsers?.Count ?? 0,
+		stats?.UsersWithActiveSession?.Count ?? 0
 	]);
 
 	$inspect(funnelChartData);
 
-	const deviceDetails = $derived(data.deviceDetailsByYears);
+	const deviceDetails = $derived(data.deviceDetailsByYears ?? []);
 </script>
 
 <dl class=" dashboard-cards">
 	<NumberCard
 		cardTitle="Onboarded Users"
-		cardContent={data.userCountStats.TotalUsers.Count.toFixed()}
+		cardContent={(stats?.TotalUsers?.Count ?? 0).toFixed()}
 	/>
 	<NumberCard
 		cardTitle="Not Deleted Users"
-		cardContent={data.userCountStats.NotDeletedUsers.Count.toFixed()}
-		additional={data.userCountStats.NotDeletedUsers.Ratio}
+		cardContent={(stats?.NotDeletedUsers?.Count ?? 0).toFixed()}
+		additional={stats?.NotDeletedUsers?.Ratio ?? 0}
 		prefix="%"
 	/>
 	<NumberCard
 		cardTitle="Current Active Users"
-		cardContent={data.userCountStats.UsersWithActiveSession.Count.toFixed()}
-		additional={data.userCountStats.UsersWithActiveSession.Ratio}
+		cardContent={(stats?.UsersWithActiveSession?.Count ?? 0).toFixed()}
+		additional={stats?.UsersWithActiveSession?.Ratio ?? 0}
 		prefix="%"
 	/>
 	<NumberCard
 		cardTitle="Deleted Users"
-		cardContent={data.userCountStats.DeletedUsers.Count.toFixed()}
-		additional={data.userCountStats.DeletedUsers.Ratio}
+		cardContent={(stats?.DeletedUsers?.Count ?? 0).toFixed()}
+		additional={stats?.DeletedUsers?.Ratio ?? 0}
 		prefix="%"
 	/>
 	<NumberCard
 		cardTitle="Enrolled Users"
-		cardContent={data.userCountStats.EnrolledUsers.Count.toFixed()}
-		additional={data.userCountStats.EnrolledUsers.Ratio}
+		cardContent={(stats?.EnrolledUsers?.Count ?? 0).toFixed()}
+		additional={stats?.EnrolledUsers?.Ratio ?? 0}
 		prefix="%"
 	/>
 	<!-- {#each data.DeviceDetailWiseUsers as d }
