@@ -160,7 +160,7 @@
 			const schemaResponse = await schemaRes.json();
 			if (
 				!schemaRes.ok ||
-				!(schemaResponse?.HttpCode === 200 || schemaResponse?.HttpCode === 201)
+				!(schemaResponse?.HttpCode === 200 || schemaResponse?.HttpCode === 201 || schemaResponse?.HttpCode === 409)
 			) {
 				toastMessage(schemaResponse);
 				return { ok: false, data: schemaResponse };
