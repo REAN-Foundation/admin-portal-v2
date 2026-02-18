@@ -74,9 +74,9 @@
 <BreadCrumbs crumbs={breadCrumbs} />
 
 <div class="flex w-full flex-col px-5">
-	<div class="w-full md:flex md:items-center md:space-x-4">
+	<div class="w-full md:flex md:items-center">
 		<div
-			class="grid w-full grid-cols-2 gap-2 text-center md:grid md:grid-cols-3 md:space-x-4 xl:flex xl:w-full"
+			class="grid w-full grid-cols-2 gap-2 text-center md:grid-cols-3 xl:flex  xl:w-full"
 		>
 			<!-- Row 1 -->
 			<a

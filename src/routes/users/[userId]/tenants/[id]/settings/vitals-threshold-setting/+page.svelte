@@ -12,7 +12,10 @@
 	import {
 		VITAL_TYPES,
 		VITAL_DISPLAY_NAMES,
-		SEVERITY_OPTIONS
+		SEVERITY_OPTIONS,
+		VITAL_PREDEFINED_RANGES,
+		VITAL_UNITS,
+		SUPPORTED_LANGUAGE_CODES
 	} from '$lib/types/tenant.settings.types';
 	import Button from '$lib/components/button/button.svelte';
 
@@ -21,6 +24,7 @@
 	let { data } = $props();
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
+	console.log('vitalsThresholds',data.vitalsThresholds)
 	const settingsRoute = `/users/${userId}/tenants/${tenantId}/settings`;
 
 	// Normalize: ensure every vital config has a Categories array
@@ -49,11 +53,13 @@
 		normalizeThresholds(data.vitalsThresholds)
 	);
 
-	console.log('data.vitalsThresholds', data.vitalsThresholds)
 	let isEditing = $state(false);
 	let promise = $state();
 	let expandedVitals: Record<string, boolean> = $state({});
 	let expandedCategories: Record<string, boolean> = $state({});
+
+	// Inline validation errors: keyed by field identifier
+	let fieldErrors: Record<string, string> = $state({});
 
 	// New vital form state
 	let showAddVitalForm = $state(false);
@@ -62,6 +68,116 @@
 	const availableVitalTypes = $derived(
 		VITAL_TYPES.filter((vt) => !vitalsThresholds[vt])
 	);
+
+	///////////////////////////////////////////////////////////////////////////
+	// Validation helpers
+	///////////////////////////////////////////////////////////////////////////
+
+	const NUMERIC_PATTERN = /^\d+(\.\d{1,2})?$/;
+
+	const validateNumericField = (fieldKey: string, value: string): boolean => {
+		if (value === '' || value === 'null') {
+			delete fieldErrors[fieldKey];
+			fieldErrors = { ...fieldErrors };
+			return true;
+		}
+		if (!NUMERIC_PATTERN.test(value)) {
+			fieldErrors = { ...fieldErrors, [fieldKey]: 'Must be a non-negative number (up to 2 decimals).' };
+			return false;
+		}
+		const digitCount = value.replace(/[^0-9]/g, '').length;
+		if (digitCount > 5) {
+			fieldErrors = { ...fieldErrors, [fieldKey]: 'Value must not exceed 5 digits.' };
+			return false;
+		}
+		delete fieldErrors[fieldKey];
+		fieldErrors = { ...fieldErrors };
+		return true;
+	};
+
+	const validateDuplicatePriorities = (vitalType: string, categories: ThresholdCategory[]): void => {
+		const seen = new Map<number, number[]>();
+		categories.forEach((cat, i) => {
+			const existing = seen.get(cat.Priority) || [];
+			existing.push(i);
+			seen.set(cat.Priority, existing);
+		});
+
+		categories.forEach((_, i) => {
+			const key = `${vitalType}-${i}-priority-dup`;
+			delete fieldErrors[key];
+		});
+
+		for (const [, indices] of seen) {
+			if (indices.length > 1) {
+				for (const i of indices) {
+					const key = `${vitalType}-${i}-priority-dup`;
+					fieldErrors[key] = 'Priority must be unique within this vital category.';
+				}
+			}
+		}
+		fieldErrors = { ...fieldErrors };
+	};
+
+	const validateDuplicateCategoryNames = (vitalType: string, categories: ThresholdCategory[]): void => {
+		const seen = new Map<string, number[]>();
+		categories.forEach((cat, i) => {
+			const normalized = cat.Category.trim().toLowerCase();
+			if (!normalized) return;
+			const existing = seen.get(normalized) || [];
+			existing.push(i);
+			seen.set(normalized, existing);
+		});
+
+		categories.forEach((_, i) => {
+			const key = `${vitalType}-${i}-catname-dup`;
+			delete fieldErrors[key];
+		});
+
+		for (const [, indices] of seen) {
+			if (indices.length > 1) {
+				for (const i of indices) {
+					const key = `${vitalType}-${i}-catname-dup`;
+					fieldErrors[key] = 'Category name must be unique.';
+				}
+			}
+		}
+		fieldErrors = { ...fieldErrors };
+	};
+
+	const validateMinMax = (
+		vitalType: string,
+		catIndex: number,
+		rangeName: string,
+		min: number | null | undefined,
+		max: number | null | undefined
+	): void => {
+		const key = `${vitalType}-${catIndex}-${rangeName}-minmax`;
+		if (min != null && max != null && min > max) {
+			fieldErrors = { ...fieldErrors, [key]: 'Min must be less than or equal to Max.' };
+		} else {
+			delete fieldErrors[key];
+			fieldErrors = { ...fieldErrors };
+		}
+	};
+
+	const blockInvalidKeys = (e: KeyboardEvent) => {
+		if (['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) {
+			return;
+		}
+		if ((e.ctrlKey || e.metaKey) && ['a', 'c', 'v', 'x', 'z'].includes(e.key.toLowerCase())) {
+			return;
+		}
+		if (e.key === '.') {
+			return;
+		}
+		if (!/^\d$/.test(e.key)) {
+			e.preventDefault();
+		}
+	};
+
+	// Derived: check if there are any validation errors
+	const hasValidationErrors = $derived(Object.keys(fieldErrors).length > 0);
 
 	///////////////////////////////////////////////////////////////////////////
 	// Handlers
@@ -74,6 +190,7 @@
 		} else {
 			addToast({ message: 'Edit mode disabled.', type: 'info', timeout: 3000 });
 			showAddVitalForm = false;
+			fieldErrors = {};
 			// Reset to original data
 			vitalsThresholds = normalizeThresholds(data.vitalsThresholds);
 		}
@@ -87,6 +204,15 @@
 		expandedCategories[key] = !expandedCategories[key];
 	};
 
+	const buildPredefinedRanges = (vitalType: VitalType): Record<string, RangeDefinition> => {
+		const names = VITAL_PREDEFINED_RANGES[vitalType] || ['Value'];
+		const ranges: Record<string, RangeDefinition> = {};
+		for (const name of names) {
+			ranges[name] = { Min: null, Max: null };
+		}
+		return ranges;
+	};
+
 	const handleAddVital = () => {
 		if (!newVitalType || vitalsThresholds[newVitalType]) {
 			addToast({ message: 'Vital type already exists or is invalid.', type: 'error', timeout: 3000 });
@@ -95,13 +221,13 @@
 
 		const newConfig: VitalThresholdConfig = {
 			Enabled: false,
-			Unit: '',
+			Unit: VITAL_UNITS[newVitalType]?.[0] ?? '',
 			Categories: [
 				{
 					Category: '',
 					Severity: 'Normal',
-					Ranges: {},
-					AlertMessage: { 'en-US': '' },
+					Ranges: buildPredefinedRanges(newVitalType),
+					AlertMessage: { 'en': '' },
 					SendAlert: false,
 					Priority: 1
 				}
@@ -119,6 +245,10 @@
 		const updated = { ...vitalsThresholds };
 		delete updated[vitalType];
 		vitalsThresholds = updated;
+		// Clear related validation errors
+		const keysToRemove = Object.keys(fieldErrors).filter(k => k.startsWith(vitalType));
+		for (const k of keysToRemove) delete fieldErrors[k];
+		fieldErrors = { ...fieldErrors };
 		addToast({ message: `${VITAL_DISPLAY_NAMES[vitalType]} removed.`, type: 'success', timeout: 3000 });
 	};
 
@@ -130,7 +260,7 @@
 		const newCategory: ThresholdCategory = {
 			Category: '',
 			Severity: 'Normal',
-			Ranges: {},
+			Ranges: buildPredefinedRanges(vitalType),
 			AlertMessage: { 'en-US': '' },
 			SendAlert: false,
 			Priority: maxPriority + 1
@@ -151,68 +281,9 @@
 		}
 		config.Categories = config.Categories.filter((_, i) => i !== catIndex);
 		vitalsThresholds = { ...vitalsThresholds };
-	};
-
-	const handleAddRange = (vitalType: VitalType, catIndex: number) => {
-		const config = vitalsThresholds[vitalType];
-		if (!config) return;
-		const category = config.Categories[catIndex];
-		const existingNames = Object.keys(category.Ranges);
-		const newName = `Range${existingNames.length + 1}`;
-		category.Ranges = { ...category.Ranges, [newName]: { Min: null, Max: null } };
-		vitalsThresholds = { ...vitalsThresholds };
-	};
-
-	const handleDeleteRange = (vitalType: VitalType, catIndex: number, rangeName: string) => {
-		const config = vitalsThresholds[vitalType];
-		if (!config) return;
-		const category = config.Categories[catIndex];
-		const updated = { ...category.Ranges };
-		delete updated[rangeName];
-		category.Ranges = updated;
-		vitalsThresholds = { ...vitalsThresholds };
-	};
-
-	const handleRenameRange = (
-		vitalType: VitalType,
-		catIndex: number,
-		oldName: string,
-		newName: string
-	) => {
-		if (!newName || newName === oldName) return;
-		const config = vitalsThresholds[vitalType];
-		if (!config) return;
-		const category = config.Categories[catIndex];
-		if (category.Ranges[newName]) {
-			addToast({ message: 'Range name already exists.', type: 'error', timeout: 3000 });
-			return;
-		}
-		const updatedRanges: Record<string, RangeDefinition> = {};
-		for (const [key, value] of Object.entries(category.Ranges)) {
-			if (key === oldName) {
-				updatedRanges[newName] = value;
-			} else {
-				updatedRanges[key] = value;
-			}
-		}
-		category.Ranges = updatedRanges;
-		vitalsThresholds = { ...vitalsThresholds };
-	};
-
-	const handleAddAlertLanguage = (vitalType: VitalType, catIndex: number) => {
-		const config = vitalsThresholds[vitalType];
-		if (!config) return;
-		const category = config.Categories[catIndex];
-		const existingLangs = Object.keys(category.AlertMessage);
-		if (!existingLangs.includes('en-US')) {
-			category.AlertMessage = { ...category.AlertMessage, 'en-US': '' };
-		} else if (!existingLangs.includes('es-ES')) {
-			category.AlertMessage = { ...category.AlertMessage, 'es-ES': '' };
-		} else {
-			addToast({ message: 'Add a custom language code.', type: 'info', timeout: 3000 });
-			category.AlertMessage = { ...category.AlertMessage, '': '' };
-		}
-		vitalsThresholds = { ...vitalsThresholds };
+		// Re-validate priorities and category names after deletion
+		validateDuplicatePriorities(vitalType, config.Categories);
+		validateDuplicateCategoryNames(vitalType, config.Categories);
 	};
 
 	const handleDeleteAlertLanguage = (vitalType: VitalType, catIndex: number, langCode: string) => {
@@ -225,7 +296,7 @@
 		vitalsThresholds = { ...vitalsThresholds };
 	};
 
-	const handleRenameAlertLanguage = (
+	const handleChangeAlertLanguage = (
 		vitalType: VitalType,
 		catIndex: number,
 		oldLang: string,
@@ -251,10 +322,33 @@
 		vitalsThresholds = { ...vitalsThresholds };
 	};
 
+	const handleAddAlertLanguage = (vitalType: VitalType, catIndex: number) => {
+		const config = vitalsThresholds[vitalType];
+		if (!config) return;
+		const category = config.Categories[catIndex];
+		const existingLangs = Object.keys(category.AlertMessage);
+		// Find first language code not already used
+		const available = SUPPORTED_LANGUAGE_CODES.find(lc => !existingLangs.includes(lc.code));
+		if (!available) {
+			addToast({ message: 'All supported language codes are already added.', type: 'info', timeout: 3000 });
+			return;
+		}
+		category.AlertMessage = { ...category.AlertMessage, [available.code]: '' };
+		vitalsThresholds = { ...vitalsThresholds };
+	};
+
 	const parseNullableNumber = (value: string): number | null => {
 		if (value === '' || value === 'null') return null;
 		const num = parseFloat(value);
 		return isNaN(num) ? null : num;
+	};
+
+	const handleCategoryNameChange = (vitalType: string, config: VitalThresholdConfig) => {
+		validateDuplicateCategoryNames(vitalType, config.Categories);
+	};
+
+	const handlePriorityChange = (vitalType: string, config: VitalThresholdConfig) => {
+		validateDuplicatePriorities(vitalType, config.Categories);
 	};
 
 	const handleSubmit = async (event: Event) => {
@@ -265,7 +359,7 @@
 			return;
 		}
 
-		// Basic validation
+		// Run all validations
 		for (const [vitalType, config] of Object.entries(vitalsThresholds)) {
 			if (!config) continue;
 			if (!config.Unit || config.Unit.trim().length === 0) {
@@ -276,6 +370,10 @@
 				});
 				return;
 			}
+
+			validateDuplicatePriorities(vitalType, config.Categories);
+			validateDuplicateCategoryNames(vitalType, config.Categories);
+
 			for (let i = 0; i < config.Categories.length; i++) {
 				const cat = config.Categories[i];
 				if (!cat.Category || cat.Category.trim().length === 0) {
@@ -310,7 +408,34 @@
 					});
 					return;
 				}
+
+				// Validate numeric range values
+				for (const [rangeName, range] of Object.entries(cat.Ranges)) {
+					const minKey = `${vitalType}-${i}-${rangeName}-min`;
+					const maxKey = `${vitalType}-${i}-${rangeName}-max`;
+					const minVal = range.Min === null || range.Min === undefined ? '' : String(range.Min);
+					const maxVal = range.Max === null || range.Max === undefined ? '' : String(range.Max);
+					if (!validateNumericField(minKey, minVal) || !validateNumericField(maxKey, maxVal)) {
+						addToast({
+							message: `${VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}: Invalid numeric value in range "${rangeName}" for "${cat.Category}".`,
+							type: 'error',
+							timeout: 3000
+						});
+						return;
+					}
+					validateMinMax(vitalType, i, rangeName, range.Min, range.Max);
+				}
 			}
+		}
+
+		// Check if any validation errors remain
+		if (hasValidationErrors) {
+			addToast({
+				message: 'Please fix all validation errors before submitting.',
+				type: 'error',
+				timeout: 3000
+			});
+			return;
 		}
 
 		try {
@@ -329,6 +454,7 @@
 				toastMessage(result);
 				isEditing = false;
 				showAddVitalForm = false;
+				fieldErrors = {};
 				// Update original data reference
 				data.vitalsThresholds = $state.snapshot(vitalsThresholds);
 			} else if (result.Errors) {
@@ -373,7 +499,7 @@
 				</div>
 			</div>
 
-			<div class="flex flex-col space-y-4 px-5 py-4">
+			<div class="flex flex-col space-y-3 px-5 py-4">
 				<!-- Add Vital Button -->
 				{#if isEditing && availableVitalTypes.length > 0}
 					{#if !showAddVitalForm}
@@ -433,9 +559,9 @@
 					{#each Object.entries(vitalsThresholds) as [vitalType, config]}
 						{#if config}
 							<div class="rounded-lg border border-[var(--color-outline)]">
-								<!-- Vital Header -->
+								<!-- Vital Header (Accordion) -->
 								<div
-									class="flex cursor-pointer items-center justify-between bg-[var(--color-surface)] px-4 py-3"
+									class="flex cursor-pointer items-center justify-between rounded-t-lg bg-[var(--color-surface)] px-4 py-2.5"
 									role="button"
 									tabindex="0"
 									onclick={() => toggleVitalExpanded(vitalType)}
@@ -448,20 +574,20 @@
 											icon={expandedVitals[vitalType]
 												? 'material-symbols:expand-more'
 												: 'material-symbols:chevron-right'}
-											class="h-5 w-5"
+											class="h-5 w-5 text-[var(--color-info)]"
 										/>
 										<span class="text-lg font-semibold text-[var(--color-info)]">
 											{VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}
 										</span>
 										<span
 											class="rounded-full px-2 py-0.5 text-xs {config.Enabled
-												? 'bg-green-100 text-green-800'
-												: 'bg-gray-100 text-gray-600'}"
+												? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+												: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}"
 										>
 											{config.Enabled ? 'Enabled' : 'Disabled'}
 										</span>
-										<span class="text-sm text-gray-500">
-											({config.Unit || 'No unit'}) &middot; {config.Categories?.length ?? 0} categories
+										<span class="text-sm text-[var(--color-info)] opacity-70">
+											({config.Unit || 'No unit'}) · {config.Categories?.length ?? 0} categories
 										</span>
 									</div>
 									{#if isEditing}
@@ -481,9 +607,9 @@
 
 								<!-- Vital Body (Expanded) -->
 								{#if expandedVitals[vitalType]}
-									<div class="space-y-4 border-t border-[var(--color-outline)] px-4 py-4">
+									<div class="space-y-3 border-t border-[var(--color-outline)] px-4 py-3">
 										<!-- Enabled & Unit -->
-										<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+										<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
 											<div class="flex items-center gap-3">
 												<label
 													for="{vitalType}-enabled"
@@ -506,19 +632,25 @@
 												>
 													Unit <span class="text-red-700">*</span>
 												</label>
-												<input
+												<select
 													id="{vitalType}-unit"
-													type="text"
-													class="input-field flex-1"
-													placeholder="e.g. bpm, mmHg, mg/dL"
+													class="select flex-1"
 													bind:value={config.Unit}
 													disabled={!isEditing}
-												/>
+												>
+													<option value="" disabled>Select unit</option>
+													{#each (VITAL_UNITS[vitalType as VitalType] ?? []) as unit}
+														<option value={unit}>{unit}</option>
+													{/each}
+													{#if config.Unit && !(VITAL_UNITS[vitalType as VitalType] ?? []).includes(config.Unit)}
+														<option value={config.Unit}>{config.Unit}</option>
+													{/if}
+												</select>
 											</div>
 										</div>
 
 										<!-- Categories Section -->
-										<div class="space-y-3">
+										<div class="space-y-2">
 											<div class="flex items-center justify-between">
 												<h3 class="text-base font-semibold text-[var(--color-info)]">
 													Threshold Categories
@@ -538,7 +670,7 @@
 											{#each (config.Categories ?? []) as category, catIndex}
 												{@const catKey = `${vitalType}-${catIndex}`}
 												<div
-													class="rounded border border-[var(--color-outline)] bg-white"
+													class="rounded border border-[var(--color-outline)] bg-[var(--color-accent)]"
 												>
 													<!-- Category Header -->
 													<div
@@ -556,19 +688,19 @@
 																icon={expandedCategories[catKey]
 																	? 'material-symbols:expand-more'
 																	: 'material-symbols:chevron-right'}
-																class="h-4 w-4"
+																class="h-4 w-4 text-[var(--color-info)]"
 															/>
 															<span class="font-medium text-[var(--color-info)]">
 																{category.Category || `Category ${catIndex + 1}`}
 															</span>
-															<span class="text-xs text-gray-500">
+															<span class="text-xs text-[var(--color-info)] opacity-60">
 																(Priority: {category.Priority}, Severity: {category.Severity})
 															</span>
 														</div>
 														<div class="flex items-center gap-2">
 															{#if category.SendAlert}
 																<span
-																	class="rounded-full bg-yellow-100 px-2 py-0.5 text-xs text-yellow-800"
+																	class="rounded-full bg-yellow-100 px-2 py-0.5 text-xs text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
 																>
 																	Alert
 																</span>
@@ -598,27 +730,30 @@
 													<!-- Category Body (Expanded) -->
 													{#if expandedCategories[catKey]}
 														<div
-															class="space-y-4 border-t border-[var(--color-outline)] px-4 py-3"
+															class="space-y-3 border-t border-[var(--color-outline)] px-4 py-3"
 														>
-															<!-- Category Name & Severity -->
-															<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+															<!-- Category Name & Severity - Grid -->
+															<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
 																<div class="flex flex-col gap-1">
 																	<label
 																		for="{catKey}-name"
 																		class="text text-sm font-medium text-[var(--color-info)]"
 																	>
-																		Category Name <span class="text-red-700"
-																			>*</span
-																		>
+																		Category Name <span class="text-red-700">*</span>
 																	</label>
 																	<input
 																		id="{catKey}-name"
 																		type="text"
 																		class="input-field"
+																		class:border-red-500={fieldErrors[`${vitalType}-${catIndex}-catname-dup`]}
 																		placeholder="e.g. Normal Pulse"
 																		bind:value={category.Category}
 																		disabled={!isEditing}
+																		onblur={() => handleCategoryNameChange(vitalType, config)}
 																	/>
+																	{#if fieldErrors[`${vitalType}-${catIndex}-catname-dup`]}
+																		<p class="text-xs text-red-500">{fieldErrors[`${vitalType}-${catIndex}-catname-dup`]}</p>
+																	{/if}
 																</div>
 																<div class="flex flex-col gap-1">
 																	<label
@@ -640,8 +775,8 @@
 																</div>
 															</div>
 
-															<!-- Priority & SendAlert -->
-															<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+															<!-- Priority & SendAlert - Grid -->
+															<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
 																<div class="flex flex-col gap-1">
 																	<label
 																		for="{catKey}-priority"
@@ -653,10 +788,15 @@
 																		id="{catKey}-priority"
 																		type="number"
 																		class="input-field"
+																		class:border-red-500={fieldErrors[`${vitalType}-${catIndex}-priority-dup`]}
 																		min="1"
 																		bind:value={category.Priority}
 																		disabled={!isEditing}
+																		onblur={() => handlePriorityChange(vitalType, config)}
 																	/>
+																	{#if fieldErrors[`${vitalType}-${catIndex}-priority-dup`]}
+																		<p class="text-xs text-red-500">{fieldErrors[`${vitalType}-${catIndex}-priority-dup`]}</p>
+																	{/if}
 																</div>
 																<div class="flex items-center gap-3 pt-5">
 																	<label
@@ -675,118 +815,108 @@
 																</div>
 															</div>
 
-															<!-- Ranges -->
+															<!-- Ranges (predefined, non-editable names) -->
 															<div class="space-y-2">
-																<div class="flex items-center justify-between">
-																	<span
-																		class="text text-sm font-semibold text-[var(--color-info)]"
-																	>
-																		Ranges <span class="text-red-700">*</span>
-																	</span>
-																	{#if isEditing}
-																		<button
-																			type="button"
-																			class="text-sm text-blue-600 hover:underline"
-																			onclick={() =>
-																				handleAddRange(
-																					vitalType as VitalType,
-																					catIndex
-																				)}
-																		>
-																			+ Add Range
-																		</button>
-																	{/if}
-																</div>
+																<span
+																	class="text text-sm font-semibold text-[var(--color-info)]"
+																>
+																	Ranges <span class="text-red-700">*</span>
+																</span>
 																{#each Object.entries(category.Ranges) as [rangeName, range]}
+																	{@const minKey = `${vitalType}-${catIndex}-${rangeName}-min`}
+																	{@const maxKey = `${vitalType}-${catIndex}-${rangeName}-max`}
 																	<div
-																		class="flex flex-wrap items-center gap-2 rounded border border-gray-200 bg-gray-50 p-2"
+																		class="flex flex-wrap items-start gap-3 rounded border border-[var(--color-outline)] bg-[var(--color-surface)] p-2"
 																	>
 																		<div class="flex flex-col gap-1">
-																			<label class="text-xs text-gray-500">
+																			<!-- svelte-ignore a11y_label_has_associated_control -->
+																			<label class="text-xs text-[var(--color-info)] opacity-70">
 																				Name
 																			</label>
 																			<input
 																				type="text"
-																				class="input-field w-32"
+																				class="input-field w-32 bg-gray-100 dark:bg-gray-700"
 																				value={rangeName}
-																				disabled={!isEditing}
-																				onchange={(e) =>
-																					handleRenameRange(
-																						vitalType as VitalType,
-																						catIndex,
-																						rangeName,
-																						(e.target as HTMLInputElement).value
-																					)}
+																				disabled
+																				readonly
 																			/>
 																		</div>
 																		<div class="flex flex-col gap-1">
-																			<label class="text-xs text-gray-500">
+																			<!-- svelte-ignore a11y_label_has_associated_control -->
+																			<label class="text-xs text-[var(--color-info)] opacity-70">
 																				Min
 																			</label>
 																			<input
 																				type="text"
+																				inputmode="numeric"
+																				maxlength="5"
 																				class="input-field w-24"
+																				class:border-red-500={fieldErrors[minKey] || fieldErrors[`${vitalType}-${catIndex}-${rangeName}-minmax`]}
 																				value={range.Min === null || range.Min === undefined
 																					? ''
 																					: range.Min}
 																				placeholder="null"
 																				disabled={!isEditing}
-																				onchange={(e) => {
-																					range.Min = parseNullableNumber(
-																						(e.target as HTMLInputElement).value
-																					);
-																					vitalsThresholds = {
-																						...vitalsThresholds
-																					};
+																				onkeydown={blockInvalidKeys}
+																				oninput={(e) => {
+																					const val = (e.target as HTMLInputElement).value;
+																					validateNumericField(minKey, val);
+																				}}
+																				onblur={(e) => {
+																					const val = (e.target as HTMLInputElement).value;
+																					if (validateNumericField(minKey, val)) {
+																						range.Min = parseNullableNumber(val);
+																						vitalsThresholds = { ...vitalsThresholds };
+																						validateMinMax(vitalType, catIndex, rangeName, range.Min, range.Max);
+																					}
 																				}}
 																			/>
+																			{#if fieldErrors[minKey]}
+																				<p class="max-w-24 text-xs text-red-500">{fieldErrors[minKey]}</p>
+																			{/if}
+																			{#if fieldErrors[`${vitalType}-${catIndex}-${rangeName}-minmax`]}
+																				<p class="max-w-24 text-xs text-red-500">{fieldErrors[`${vitalType}-${catIndex}-${rangeName}-minmax`]}</p>
+																			{/if}
 																		</div>
 																		<div class="flex flex-col gap-1">
-																			<label class="text-xs text-gray-500">
+																			<!-- svelte-ignore a11y_label_has_associated_control -->
+																			<label class="text-xs text-[var(--color-info)] opacity-70">
 																				Max
 																			</label>
 																			<input
 																				type="text"
+																				inputmode="numeric"
+																				maxlength="5"
 																				class="input-field w-24"
+																				class:border-red-500={fieldErrors[maxKey] || fieldErrors[`${vitalType}-${catIndex}-${rangeName}-minmax`]}
 																				value={range.Max === null || range.Max === undefined
 																					? ''
 																					: range.Max}
 																				placeholder="null"
 																				disabled={!isEditing}
-																				onchange={(e) => {
-																					range.Max = parseNullableNumber(
-																						(e.target as HTMLInputElement).value
-																					);
-																					vitalsThresholds = {
-																						...vitalsThresholds
-																					};
+																				onkeydown={blockInvalidKeys}
+																				oninput={(e) => {
+																					const val = (e.target as HTMLInputElement).value;
+																					validateNumericField(maxKey, val);
+																				}}
+																				onblur={(e) => {
+																					const val = (e.target as HTMLInputElement).value;
+																					if (validateNumericField(maxKey, val)) {
+																						range.Max = parseNullableNumber(val);
+																						vitalsThresholds = { ...vitalsThresholds };
+																						validateMinMax(vitalType, catIndex, rangeName, range.Min, range.Max);
+																					}
 																				}}
 																			/>
+																			{#if fieldErrors[maxKey]}
+																				<p class="max-w-24 text-xs text-red-500">{fieldErrors[maxKey]}</p>
+																			{/if}
 																		</div>
-																		{#if isEditing}
-																			<button
-																				type="button"
-																				class="mt-4 text-red-600 hover:text-red-800"
-																				onclick={() =>
-																					handleDeleteRange(
-																						vitalType as VitalType,
-																						catIndex,
-																						rangeName
-																					)}
-																				title="Delete range"
-																			>
-																				<Icon
-																					icon="material-symbols:close-rounded"
-																					class="h-4 w-4"
-																				/>
-																			</button>
-																		{/if}
 																	</div>
 																{/each}
 																{#if Object.keys(category.Ranges).length === 0}
-																	<p class="text-sm italic text-gray-400">
-																		No ranges defined. Click "+ Add Range" to add
-																		one.
+																	<p class="text-sm italic text-[var(--color-info)] opacity-50">
+																		No ranges defined.
 																	</p>
 																{/if}
 															</div>
@@ -797,14 +927,12 @@
 																	<span
 																		class="text text-sm font-semibold text-[var(--color-info)]"
 																	>
-																		Alert Messages <span class="text-red-700"
-																			>*</span
-																		>
+																		Alert Messages <span class="text-red-700">*</span>
 																	</span>
 																	{#if isEditing}
 																		<button
 																			type="button"
-																			class="text-sm text-blue-600 hover:underline"
+																			class="text-sm text-blue-600 hover:underline dark:text-blue-400"
 																			onclick={() =>
 																				handleAddAlertLanguage(
 																					vitalType as VitalType,
@@ -817,26 +945,32 @@
 																</div>
 																{#each Object.entries(category.AlertMessage) as [langCode, message]}
 																	<div
-																		class="flex flex-col gap-1 rounded border border-gray-200 bg-gray-50 p-2"
+																		class="flex flex-col gap-1 rounded border border-[var(--color-outline)] bg-[var(--color-surface)] p-2"
 																	>
 																		<div class="flex items-center gap-2">
-																			<label class="text-xs text-gray-500">
-																				Language Code
+																			<label class="text-xs text-[var(--color-info)] opacity-70">
+																				Language
 																			</label>
-																			<input
-																				type="text"
-																				class="input-field w-24"
+																			<select
+																				class="select w-28"
 																				value={langCode}
-																				placeholder="e.g. en-US"
 																				disabled={!isEditing}
 																				onchange={(e) =>
-																					handleRenameAlertLanguage(
+																					handleChangeAlertLanguage(
 																						vitalType as VitalType,
 																						catIndex,
 																						langCode,
-																						(e.target as HTMLInputElement).value
+																						(e.target as HTMLSelectElement).value
 																					)}
-																			/>
+																			>
+																				{#each SUPPORTED_LANGUAGE_CODES as lc}
+																					<option value={lc.code}>{lc.label}</option>
+																				{/each}
+																				<!-- Keep existing value visible if not in supported list -->
+																				{#if !SUPPORTED_LANGUAGE_CODES.some(lc => lc.code === langCode)}
+																					<option value={langCode}>{langCode}</option>
+																				{/if}
+																			</select>
 																			{#if isEditing}
 																				<button
 																					type="button"
@@ -874,7 +1008,7 @@
 																	</div>
 																{/each}
 																{#if Object.keys(category.AlertMessage).length === 0}
-																	<p class="text-sm italic text-gray-400">
+																	<p class="text-sm italic text-[var(--color-info)] opacity-50">
 																		No alert messages. Click "+ Add Language" to add
 																		one.
 																	</p>
@@ -916,7 +1050,7 @@
 						variant="primary"
 						size="md"
 						text="Submit"
-						disabled={!isEditing}
+						disabled={!isEditing || hasValidationErrors}
 					/>
 				{/await}
 			</div>

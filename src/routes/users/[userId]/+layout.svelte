@@ -63,7 +63,7 @@
 	/>
 
 	<div class="flex min-h-screen">
-		<div class="main-content ">
+		<div class="main-content min-w-0">
 			{@render children()}
 		</div>
 	</div>
