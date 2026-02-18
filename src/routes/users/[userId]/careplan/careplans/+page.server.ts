@@ -9,6 +9,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
 
 	const searchFilters = createSearchFilters(event, {
+		useTenantCode: true,
 		orderBy: 'Name',
 		order: 'ascending',
 		itemsPerPage: 10

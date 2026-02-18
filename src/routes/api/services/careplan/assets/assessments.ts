@@ -14,6 +14,7 @@ export const createAssessment = async (
     tags: string[],
     version: string,
     tenantId: string,
+    tenantCode: string,
     metadata?: Metadata,
 ) => {
     const body = {
@@ -25,6 +26,7 @@ export const createAssessment = async (
         Tags: tags ? tags : null,
         Version: !version || version?.length === 0 ? 'V 1.0' : version,
         TenantId: tenantId,
+        TenantCode: tenantCode,
         Metadata: metadata ? metadata : null
     };
 

@@ -15,6 +15,7 @@ export interface BaseSearchFilters extends SearchFilters {
 
 export interface TenantScopedSearchFilters extends BaseSearchFilters {
 	tenantId?: string;
+	tenantCode?: string;
 }
 
 export function createSearchFilters(
@@ -38,14 +39,21 @@ export function createSearchFilters(
 		...additionalFilters
 	};
 
-	const isSystemAdmin = userRole === 'System admin' || userRole === 'System user';
-	const shouldExcludeTenantId = additionalFilters.excludeTenantId || isSystemAdmin;
-	
-	if (tenantId && !shouldExcludeTenantId) {
-		filters.tenantId = tenantId;
-	}
+    const isSystemAdmin = userRole === 'System admin' || userRole === 'System user';
 
-	return filters;
+    const shouldExcludeTenantId = additionalFilters.excludeTenantId || isSystemAdmin;
+
+    if (tenantId && !shouldExcludeTenantId) {
+        filters.tenantId = tenantId;
+    }
+
+    if (additionalFilters.useTenantCode) {
+        filters.tenantCode = event.locals?.sessionUser?.tenantCode;
+        delete filters.useTenantCode;
+        delete filters.excludeTenantId;
+        delete filters.tenantId; // Ensure tenantId is not included if tenantCode is used
+    }
+    return filters;
 }
 export function extractSearchParams(
 	event: RequestEvent,

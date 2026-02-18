@@ -10,6 +10,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	// const tenantId = event.locals.sessionUser.tenantId;
 	event.depends('app:healthSystem');
 	const searchFilters = createSearchFilters(event, {
+		useTenantCode: true,
 		orderBy: 'Type',
 		order: 'ascending',
 		itemsPerPage: 10

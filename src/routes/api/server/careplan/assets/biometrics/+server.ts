@@ -8,6 +8,7 @@ export const POST = async (event: RequestEvent) => {
     try {
         console.log("Inside biometrics POST endpoints");
         const sessionId = event.locals?.sessionUser?.sessionId;
+        const tenantCode = event.locals?.sessionUser?.tenantCode;
 
         if (!sessionId) {
             return ResponseHandler.handleError(401, null, new Error("Access denied: Invalid session."));
@@ -30,12 +31,13 @@ export const POST = async (event: RequestEvent) => {
         const response = await createBiometrics(
             sessionId,
             data.Name,
-            data.Description ?? '',     
+            data.Description ?? '',
             data.BiometricsType,
             data.MeasurementUnit,
             data.Tags,
             data.Version,
-            data.TenantId
+            data.TenantId,
+            tenantCode
         )
 
         return ResponseHandler.success(response);

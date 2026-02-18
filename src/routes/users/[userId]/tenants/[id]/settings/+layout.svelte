@@ -23,7 +23,8 @@
 		'followup-setting': 'Follow-up',
 		'forms-setting': 'Forms',
 		'custom-settings': 'Custom',
-		'clickup-setting': 'ClickUp'
+		'clickup-setting': 'ClickUp',
+		'vitals-threshold-setting': 'Vitals Thresholds'
 	};
 
 	// Build breadcrumbs dynamically based on current route
@@ -66,15 +67,16 @@
 	let concentSettingsLink = `${tenantRoute}/${tenantId}/settings/consent-setting`;
 	let customSettingsLink = `${tenantRoute}/${tenantId}/settings/custom-settings`;
 	let clickUpSettingsLink = `${tenantRoute}/${tenantId}/settings/clickup-setting`;
+	let vitalsThresholdSettingsLink = `${tenantRoute}/${tenantId}/settings/vitals-threshold-setting`;
 
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
 
 <div class="flex w-full flex-col px-5">
-	<div class="w-full md:flex md:items-center md:space-x-4">
+	<div class="w-full md:flex md:items-center">
 		<div
-			class="grid w-full grid-cols-2 gap-2 text-center md:grid md:grid-cols-3 md:space-x-4 xl:flex xl:w-full"
+			class="grid w-full grid-cols-2 gap-2 text-center md:grid-cols-3 xl:flex  xl:w-full"
 		>
 			<!-- Row 1 -->
 			<a
@@ -146,6 +148,16 @@
 			>
 				<Icon icon="simple-icons:clickup" class="h-5 w-5 shrink-0" />
 				ClickUp
+			</a>
+
+			<a
+				class="btn {page.url.pathname === vitalsThresholdSettingsLink
+					? 'variant-filled-secondary'
+					: 'variant-soft-secondary'} flex items-center justify-center gap-2 whitespace-nowrap"
+				href={vitalsThresholdSettingsLink}
+			>
+				<Icon icon="mdi:heart-pulse" class="h-5 w-5 shrink-0" />
+				Alerts
 			</a>
 		</div>
 	</div>
