@@ -125,7 +125,7 @@
 	</table>
 
 	<div class="btn-container flex flex-wrap justify-end gap-2 pt-4">
-		<Button onclick={handlePromotion} text="Promote" variant="primary" />
+		<!-- <Button onclick={handlePromotion} text="Promote" variant="primary" /> -->
 		<Button
 			onclick={exportCareplan}
 			text="Export"
