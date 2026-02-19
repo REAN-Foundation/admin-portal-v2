@@ -39,22 +39,21 @@ export function createSearchFilters(
 		...additionalFilters
 	};
 
-	const isSystemAdmin = userRole === 'System admin' || userRole === 'System user';
-	const shouldExcludeTenant = additionalFilters.excludeTenantId || isSystemAdmin;
+    const isSystemAdmin = userRole === 'System admin' || userRole === 'System user';
 
-	if (!shouldExcludeTenant) {
-		if (additionalFilters.useTenantCode) {
-			const tenantCode = event.locals?.sessionUser?.tenantCode;
-			if (tenantCode) {
-				filters.tenantCode = tenantCode;
-			}
-		} else if (tenantId) {
-			filters.tenantId = tenantId;
-		}
-	}
+    const shouldExcludeTenantId = additionalFilters.excludeTenantId || isSystemAdmin;
 
-	delete filters.useTenantCode;
-	return filters;
+    if (tenantId && !shouldExcludeTenantId) {
+        filters.tenantId = tenantId;
+    }
+
+    if (additionalFilters.useTenantCode) {
+        filters.tenantCode = event.locals?.sessionUser?.tenantCode;
+        delete filters.useTenantCode;
+        delete filters.excludeTenantId;
+        delete filters.tenantId; // Ensure tenantId is not included if tenantCode is used
+    }
+    return filters;
 }
 export function extractSearchParams(
 	event: RequestEvent,
