@@ -34,6 +34,10 @@
 			path: tenantRoute
 		},
 		{
+			name: data.tenant.Name,
+			path: viewRoute
+		},
+		{
 			name: 'Edit',
 			path: editRoute
 		}
