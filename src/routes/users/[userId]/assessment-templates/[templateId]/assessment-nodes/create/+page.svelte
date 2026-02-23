@@ -176,11 +176,27 @@
 
 			const sequenceValue = sequence === '' ? undefined : sequence;
 
-			// Ensure each option has ProviderGivenCode set to its Text value
+			// Trim option text values and ensure ProviderGivenCode is set
 			const processedOptions = optionArray.map(option => ({
 				...option,
-				ProviderGivenCode: option.ProviderGivenCode || option.Text
+				Text: (option.Text ?? '').trim(),
+				ProviderGivenCode: (option.ProviderGivenCode || option.Text || '').trim()
 			}));
+
+			// Validate: no empty options after trimming
+			const hasEmptyOption = processedOptions.some(opt => opt.Text === '');
+			if (hasEmptyOption) {
+				errors = { ...errors, Options: 'Option values cannot be empty.' };
+				return;
+			}
+
+			// Validate: no duplicate options after trimming
+			const optionTexts = processedOptions.map(opt => opt.Text.toLowerCase());
+			const hasDuplicates = optionTexts.length !== new Set(optionTexts).size;
+			if (hasDuplicates) {
+				errors = { ...errors, Options: 'Duplicate option values are not allowed.' };
+				return;
+			}
 
 			const assessmentNodeCreateModel: AssessmentNodeCreateModel = {
 				NodeType: selectedNodeType,
