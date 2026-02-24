@@ -16,6 +16,7 @@ export const createOrUpdateSchema = z.object({
 		})
 		.min(1, { message: 'Hospital name cannot be empty.' })
 		.max(256, { message: 'Hospital name must be at most 256 characters long.' }),
+	HealthSystemId: z.string().optional(),
 	Tags: z.array(z.string()).optional(),
 });
 
