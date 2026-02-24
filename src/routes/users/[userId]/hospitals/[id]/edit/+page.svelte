@@ -35,16 +35,9 @@
 		return healthSystems.sort((a, b) => a.Name.localeCompare(b.Name));
 	}
 
-	let _healthSystemId = $derived(healthSystemId);
-	const r = $derived(
-		healthSystems.filter((hs) => {
-			return hs.id === healthSystemId;
-		})
-	);
-
 	function handleReset() {
 		hospitalName = data?.hospital?.Name;
-		healthSystemId = _healthSystemId;
+		healthSystemId = data?.hospital?.HealthSystemId;
 		healthSystemName = data?.hospital?.HealthSystemName;
 		keywords = data?.hospital?.Tags;
 		errors = {};
@@ -140,12 +133,10 @@
 					<td class="table-label">Health System <span class=" text-red-600">*</span></td>
 					<td class="table-data">
 						<div class="relative">
-						<select name="healthSystemId" class="select">
-							<option value={healthSystemId}>{healthSystemName}</option>
+						<select name="healthSystemId" class="select" bind:value={healthSystemId}>
+							<option value="" disabled>Select a health system</option>
 							{#each healthSystems as healthSystem}
-								{#if healthSystemId !== healthSystem.id}
-									<option value={healthSystem.id}>{healthSystem.Name}</option>
-								{/if}
+								<option value={healthSystem.id}>{healthSystem.Name}</option>
 							{/each}
 						</select>
 						<div class="select-icon-container">

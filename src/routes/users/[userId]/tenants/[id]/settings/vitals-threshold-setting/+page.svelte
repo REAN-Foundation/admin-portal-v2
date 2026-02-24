@@ -161,6 +161,28 @@
 		}
 	};
 
+	const validateAlertMessage = (
+		vitalType: string,
+		catIndex: number,
+		langCode: string,
+		message: string
+	): boolean => {
+		const key = `${vitalType}-${catIndex}-alert-${langCode}`;
+		if (!message || message.trim().length === 0) {
+			fieldErrors = { ...fieldErrors, [key]: 'Alert message is required when a language is selected.' };
+			return false;
+		}
+		delete fieldErrors[key];
+		fieldErrors = { ...fieldErrors };
+		return true;
+	};
+
+	const clearAlertMessageError = (vitalType: string, catIndex: number, langCode: string): void => {
+		const key = `${vitalType}-${catIndex}-alert-${langCode}`;
+		delete fieldErrors[key];
+		fieldErrors = { ...fieldErrors };
+	};
+
 	const blockInvalidKeys = (e: KeyboardEvent) => {
 		if (['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) {
 			return;
@@ -293,6 +315,7 @@
 		const updated = { ...category.AlertMessage };
 		delete updated[langCode];
 		category.AlertMessage = updated;
+		clearAlertMessageError(vitalType, catIndex, langCode);
 		vitalsThresholds = { ...vitalsThresholds };
 	};
 
@@ -319,6 +342,8 @@
 			}
 		}
 		category.AlertMessage = updated;
+		// Transfer validation error from old language key to new language key
+		clearAlertMessageError(vitalType, catIndex, oldLang);
 		vitalsThresholds = { ...vitalsThresholds };
 	};
 
@@ -407,6 +432,18 @@
 						timeout: 3000
 					});
 					return;
+				}
+
+				// Validate alert message text is not empty when language is selected
+				for (const [langCode, message] of Object.entries(cat.AlertMessage)) {
+					if (!validateAlertMessage(vitalType, i, langCode, message)) {
+						addToast({
+							message: `${VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}: Alert message is required for language "${langCode}" in "${cat.Category}".`,
+							type: 'error',
+							timeout: 3000
+						});
+						return;
+					}
 				}
 
 				// Validate numeric range values
@@ -944,6 +981,7 @@
 																	{/if}
 																</div>
 																{#each Object.entries(category.AlertMessage) as [langCode, message]}
+																	{@const alertKey = `${vitalType}-${catIndex}-alert-${langCode}`}
 																	<div
 																		class="flex flex-col gap-1 rounded border border-[var(--color-outline)] bg-[var(--color-surface)] p-2"
 																	>
@@ -992,19 +1030,27 @@
 																		</div>
 																		<textarea
 																			class="input-field text-sm"
+																			class:border-red-500={fieldErrors[alertKey]}
 																			rows="2"
 																			value={message}
 																			placeholder="Alert message for this language..."
 																			disabled={!isEditing}
 																			onchange={(e) => {
-																				category.AlertMessage[langCode] = (
-																					e.target as HTMLTextAreaElement
-																				).value;
+																				const val = (e.target as HTMLTextAreaElement).value;
+																				category.AlertMessage[langCode] = val;
 																				vitalsThresholds = {
 																					...vitalsThresholds
 																				};
+																				validateAlertMessage(vitalType, catIndex, langCode, val);
+																			}}
+																			onblur={(e) => {
+																				const val = (e.target as HTMLTextAreaElement).value;
+																				validateAlertMessage(vitalType, catIndex, langCode, val);
 																			}}
 																		></textarea>
+																		{#if fieldErrors[alertKey]}
+																			<p class="text-xs text-red-500">{fieldErrors[alertKey]}</p>
+																		{/if}
 																	</div>
 																{/each}
 																{#if Object.keys(category.AlertMessage).length === 0}

@@ -31,6 +31,10 @@
 			path: tenantRoute
 		},
 		{
+			name: tenant.Name,
+			path: viewRoute
+		},
+		{
 			name: 'View',
 			path: viewRoute
 		}
