@@ -42,14 +42,46 @@
 		}
 	}
 
+	// Trim option text on blur and sync ProviderGivenCode
+	function trimAndUpdateOption(index) {
+		if (optionArray[index]) {
+			optionArray[index].Text = (optionArray[index].Text ?? '').trim();
+			if (optionArray[index].Text) {
+				optionArray[index].ProviderGivenCode = optionArray[index].Text;
+			}
+		}
+	}
+
 	const saveOption = async (index, event) => {
 		event.preventDefault();
 		const option = optionArray[index];
 
+		// Trim option text before saving
+		const trimmedText = (option.Text ?? '').trim();
+		const trimmedCode = (option.ProviderGivenCode || trimmedText).trim();
+
+		if (trimmedText === '') {
+			errors = { Text: 'Option value cannot be empty.' };
+			return;
+		}
+
+		// Check for duplicate option text (case-insensitive)
+		const isDuplicate = optionArray.some(
+			(opt, i) => i !== index && (opt.Text ?? '').trim().toLowerCase() === trimmedText.toLowerCase()
+		);
+		if (isDuplicate) {
+			errors = { Text: 'Duplicate option values are not allowed.' };
+			return;
+		}
+
+		// Update the array with trimmed values
+		optionArray[index].Text = trimmedText;
+		optionArray[index].ProviderGivenCode = trimmedCode;
+
 		const optionModel: AssessmentNodeOptionUpdateModel = {
-			Text: option.Text,
+			Text: trimmedText,
 			Sequence: option.Sequence,
-			ProviderGivenCode: option.ProviderGivenCode
+			ProviderGivenCode: trimmedCode
 		};
 
 		const validationResult = createOrUpdateSchema.safeParse(optionModel);
@@ -145,7 +177,7 @@
 					bind:value={optionArray[i].Text}
 					placeholder="Add option here..."
 					disabled={!v.isEditing ? true : false}
-					onblur={() => updateProviderCode(i)}
+					onblur={() => trimAndUpdateOption(i)}
 				/>
 
 				{#if v.isEditing}

@@ -5,15 +5,17 @@
 
 	//////////////////////////////////////////////////////////////////////////////
 
-	let { children } = $props();
+	let { children, data } = $props();
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
+	const tenantName = $derived(data?.tenantName || '');
 
 	let disabled = $state(true);
 	let edit = $derived(disabled);
 
 	const viewRoute = `/users/${userId}/tenants/${tenantId}/settings`;
 	const tenantRoute = `/users/${userId}/tenants`;
+	const tenantViewRoute = `/users/${userId}/tenants/${tenantId}/view`
 
 	// Map setting route names to display names
 	const settingNameMap = {
@@ -45,8 +47,16 @@
 				name: 'Tenants',
 				path: tenantRoute
 			},
+			...(tenantName
+				? [
+						{
+							name: tenantName,
+							path: tenantViewRoute
+						}
+					]
+				: []),
 			{
-				name: 'Main Settings',
+				name: 'Settings',
 				path: viewRoute
 			},
 			...(currentSetting

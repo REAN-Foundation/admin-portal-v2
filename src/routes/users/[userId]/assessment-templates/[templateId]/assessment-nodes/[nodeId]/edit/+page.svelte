@@ -235,7 +235,9 @@
 				NodeType: selectedNodeType,
 				Title: title,
 				Description: description,
-				Sequence: sequence,
+				Sequence: (sequence === '' || sequence === null || sequence === undefined || (typeof sequence === 'number' && isNaN(sequence)))
+				? undefined
+				: Number(sequence),
 				QueryType: selectedNodeType === 'Question' ? selectedQueryType : undefined,
 				Score: resolutionScore,
 				ProviderAssessmentCode: providerAssessmentCode,
