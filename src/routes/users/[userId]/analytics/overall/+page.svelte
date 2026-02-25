@@ -6,6 +6,8 @@
 		formatMonthLabel,
 		formatDateToDDMMYYYY
 	} from '../basic/components/functions';
+	import { hasChartData } from '$lib/utils/chart.utils';
+	import EmptyState from '$lib/components/analytics/EmptyState.svelte';
 
 	////////////////////////////////////////////////////////////////////////
 
@@ -46,7 +48,7 @@
 			);
 		}
 
-		if (data.genericMetrics.RetentionRateOnSpecificDays.retention_on_specific_days) {
+		if (data.genericMetrics.RetentionRateOnSpecificDays?.retention_on_specific_days) {
 			retentionOnDaysData =
 				data.genericMetrics.RetentionRateOnSpecificDays.retention_on_specific_days.map(
 					(x: { returning_users: any }) => x.returning_users
@@ -61,7 +63,7 @@
 				);
 		}
 
-		if (data.genericMetrics.RetentionRateInSpecificIntervals.retention_in_specific_interval) {
+		if (data.genericMetrics.RetentionRateInSpecificIntervals?.retention_in_specific_interval) {
 			retentionOnIntervalData =
 				data.genericMetrics.RetentionRateInSpecificIntervals.retention_in_specific_interval.map(
 					(x: { returning_users: any }) => x.returning_users
@@ -77,8 +79,8 @@
 		}
 	}
 
-	const mostFiredEvents = data.genericMetrics.MostFiredEvents;
-	const mostFiredEventsByEventCategory = data.genericMetrics.MostFiredEventsByEventCategory;
+	const mostFiredEvents = data.genericMetrics?.MostFiredEvents ?? [];
+	const mostFiredEventsByEventCategory = data.genericMetrics?.MostFiredEventsByEventCategory ?? [];
 
 	let selectedGraph = $state('daily');
 
@@ -98,7 +100,7 @@
 	onMount(() => {
 		// Process the data
 		let monthlyData: any = {};
-		data.genericMetrics.MostCommonlyVisitedFeatures.forEach((item: any) => {
+		(data.genericMetrics?.MostCommonlyVisitedFeatures ?? []).forEach((item: any) => {
 			if (!monthlyData[item.month]) {
 				monthlyData[item.month] = { totalUsage: 0, features: {} };
 			}
@@ -132,8 +134,24 @@
 	$effect(() => {
 		filteredData = processedData.filter((item) => item.year === selectedYear);
 	});
+
+	// Check if any overall data exists across all sections
+	const hasAnyOverallData = $derived.by(() => {
+		const gm = data.genericMetrics;
+		if (!gm) return false;
+		if (hasChartData(gm.DailyActiveUsers)) return true;
+		if (hasChartData(gm.WeeklyActiveUsers)) return true;
+		if (hasChartData(gm.MonthlyActiveUsers)) return true;
+		if (hasChartData(gm.RetentionRateOnSpecificDays?.retention_on_specific_days)) return true;
+		if (hasChartData(gm.RetentionRateInSpecificIntervals?.retention_in_specific_interval)) return true;
+		if (hasChartData(gm.MostFiredEvents)) return true;
+		if (hasChartData(gm.MostFiredEventsByEventCategory)) return true;
+		if (hasChartData(gm.MostCommonlyVisitedFeatures)) return true;
+		return false;
+	});
 </script>
 
+{#if hasAnyOverallData}
 <div class=" user-graph-container">
 	<div class=" user-graph-wrapper">
 		<div class=" user-graph-card">
@@ -166,7 +184,7 @@
 						<option value="monthly">Monthly</option>
 					</select>
 				</div>
-				{#if selectedGraph === 'daily' && dailyActiveUsersData.length > 0}
+				{#if selectedGraph === 'daily' && hasChartData(dailyActiveUsersData)}
 					<GenericChart
 						type="bar"
 						data={dailyActiveUsersData}
@@ -174,11 +192,9 @@
 						title="Daily Active Users"
 					/>
 				{:else if selectedGraph === 'daily'}
-					<div class=" active-users-graph">
-						<p class=" user-data-not-available">Data Not Available</p>
-					</div>
+					<EmptyState />
 				{/if}
-				{#if selectedGraph === 'weekly' && weeklyActiveUsersData.length > 0}
+				{#if selectedGraph === 'weekly' && hasChartData(weeklyActiveUsersData)}
 					<GenericChart
 						type="bar"
 						data={weeklyActiveUsersData}
@@ -186,11 +202,9 @@
 						title="Weekly Active Users"
 					/>
 				{:else if selectedGraph === 'weekly'}
-					<div class="active-users-graph p-4">
-						<p class=" user-data-not-available">Data Not Available</p>
-					</div>
+					<EmptyState />
 				{/if}
-				{#if selectedGraph === 'monthly' && monthlyActiveUsersData.length > 0}
+				{#if selectedGraph === 'monthly' && hasChartData(monthlyActiveUsersData)}
 					<GenericChart
 						type="bar"
 						data={monthlyActiveUsersData}
@@ -198,9 +212,7 @@
 						title="Monthly Active Users"
 					/>
 				{:else if selectedGraph === 'monthly'}
-					<div class="active-users-graph p-4">
-						<p class=" user-data-not-available">Data Not Available</p>
-					</div>
+					<EmptyState />
 				{/if}
 			</div>
 		</div>
@@ -212,7 +224,7 @@
 	<div class="flex items-center gap-2 px-3 py-2 text-[var(--color-info)]">
 		<label for="year" class="text-base">Year</label>
 		<select id="year" bind:value={selectedYear} class="rounded border px-2 py-1 text-base">
-			{#each years as year}
+			{#each years ?? [] as year}
 				<option value={year}>{year}</option>
 			{/each}
 		</select>
@@ -231,7 +243,7 @@
 			</tr>
 		</thead>
 		<tbody class="">
-			{#each filteredData as row}
+			{#each filteredData ?? [] as row}
 				<tr>
 					<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
 						{formatMonthLabel(row.month)}
@@ -267,7 +279,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each mostFiredEvents.slice(0, 15) as event}
+			{#each (mostFiredEvents ?? []).slice(0, 15) as event}
 				<tr>
 					<td
 						class="border-b border-[var(--color-outline)] px-6 py-2 text-xs whitespace-nowrap md:text-sm"
@@ -296,7 +308,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each mostFiredEventsByEventCategory.slice(0, 15) as event}
+			{#each (mostFiredEventsByEventCategory ?? []).slice(0, 15) as event}
 				<tr>
 					<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm"
 						>{event.EventCategory}</td
@@ -312,3 +324,8 @@
 		</tbody>
 	</table>
 </div>
+{:else}
+	<div class="flex min-h-[60vh] items-center justify-center">
+		<EmptyState message="Data Not Available" />
+	</div>
+{/if}

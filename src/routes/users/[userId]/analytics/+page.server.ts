@@ -4,59 +4,79 @@ import {
 	getDailyStatistics,
 	getDailyTenantStatistics
 } from '../../../api/services/reancare/statistics';
-import { TimeHelper } from '$lib/utils/time.helper';
-import { DateStringFormat } from '$lib/types/time.types';
+// import { TimeHelper } from '$lib/utils/time.helper';
+// import { DateStringFormat } from '$lib/types/time.types';
 // import { getUserAnalytics } from '../../../api/services/user-analytics/user-analytics';
 
 //////////////////////////////////////////////////////////////////////////
 
+const defaultUserCountStats = {
+	TotalUsers: { Count: 0, Ratio: 0 },
+	NotDeletedUsers: { Count: 0, Ratio: 0 },
+	UsersWithActiveSession: { Count: 0, Ratio: 0 },
+	DeletedUsers: { Count: 0, Ratio: 0 },
+	EnrolledUsers: { Count: 0, Ratio: 0 }
+};
+
+const defaultData = {
+	sessionId: '',
+	userCountStats: defaultUserCountStats,
+	userCountByYears: [],
+	deviceDetailsStats: [],
+	deviceDetailsByYears: [],
+	title: 'Dashboard-Home-Overall'
+};
+
 export const load: PageServerLoad = async (event: RequestEvent) => {
 	const sessionId: any = event.cookies.get('sessionId');
-
-	let response;
 
 	if (!event.locals.sessionUser) {
 		throw error(401, 'Unauthorized Access');
 	}
+
+	const roleName = event.locals.sessionUser.roleName;
 	if (
-		event.locals.sessionUser.roleName === 'System admin' ||
-		event.locals.sessionUser.roleName === 'System user'
+		roleName !== 'System admin' &&
+		roleName !== 'System user' &&
+		roleName !== 'Tenant admin' &&
+		roleName !== 'Tenant user'
 	) {
-		response = await getDailyStatistics(sessionId);
-	} else if (
-		event.locals.sessionUser.roleName === 'Tenant admin' ||
-		event.locals.sessionUser.roleName === 'Tenant user'
-	) {
-		response = await getDailyTenantStatistics(sessionId, event.locals.sessionUser.tenantId ?? '');
-	} else {
 		throw error(401, 'Unauthorized Access');
 	}
 
-	if (!response || !response.Data.DailyStatistics.DashboardStats) {
-		throw error(404, 'Daily user statistics data not found');
-	}
-	if (response.Status === 'failure' || response.HttpCode !== 200) {
-		throw error(response.HttpCode, response.Message);
+	let response;
+	try {
+		if (roleName === 'System admin' || roleName === 'System user') {
+			response = await getDailyStatistics(sessionId);
+		} else {
+			response = await getDailyTenantStatistics(
+				sessionId,
+				event.locals.sessionUser.tenantId ?? ''
+			);
+		}
+	} catch (err) {
+		console.error('Failed to fetch daily statistics:', err);
+		return { ...defaultData, sessionId };
 	}
 
-	const userCountStats =
-		response.Data.DailyStatistics.DashboardStats.UserStatistics.UsersCountStats;
-	const deviceDetailsStats =
-		response.Data.DailyStatistics.DashboardStats.UserStatistics.DeviceDetailWiseUsers;
-	const userCountByYears =
-		response.Data.DailyStatistics.DashboardStats.UserStatistics.YearWiseUserCount;
-	const deviceDetailsByYears =
-		response.Data.DailyStatistics.DashboardStats.UserStatistics.YearWiseDeviceDetails;
-	const today = new Date();
-	const formattedDate = TimeHelper.getDateString(today, DateStringFormat.YYYY_MM_DD);
-	// await getUserAnalytics(sessionId, formattedDate);
+	if (
+		!response ||
+		response.Status === 'failure' ||
+		response.HttpCode !== 200 ||
+		!response.Data?.DailyStatistics?.DashboardStats
+	) {
+		return { ...defaultData, sessionId };
+	}
+
+	const stats = response.Data.DailyStatistics.DashboardStats;
+	const userStatistics = stats.UserStatistics;
 
 	return {
 		sessionId,
-		userCountStats,
-		userCountByYears,
-		deviceDetailsStats,
-		deviceDetailsByYears,
+		userCountStats: userStatistics?.UsersCountStats ?? defaultUserCountStats,
+		userCountByYears: userStatistics?.YearWiseUserCount ?? [],
+		deviceDetailsStats: userStatistics?.DeviceDetailWiseUsers ?? [],
+		deviceDetailsByYears: userStatistics?.YearWiseDeviceDetails ?? [],
 		title: 'Dashboard-Home-Overall'
 	};
 };

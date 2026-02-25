@@ -2,8 +2,12 @@
 	import { onMount, onDestroy } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import { getTickColorLight, getTickColorDark } from '$lib/themes/theme.selector';
+	import { hasChartData } from '$lib/utils/chart.utils';
+	import EmptyState from './EmptyState.svelte';
 
 	let { labels, dataSource, title } = $props();
+
+	let isValid = $derived(hasChartData(labels) && hasChartData(dataSource));
 
 	let chart: Chart;
 	let canvas: HTMLCanvasElement;
@@ -41,6 +45,7 @@
 	}
 
 	function createChart() {
+		if (!isValid || !canvas) return;
 		selectAxisLabel(title);
 		const { textColor, gridColor } = getThemeColor();
 
@@ -112,6 +117,7 @@
 	}
 
 	onMount(() => {
+		if (!isValid) return;
 		createChart();
 
 		const observer = new MutationObserver(() => {
@@ -134,4 +140,8 @@
 	});
 </script>
 
-<canvas class="h-auto w-full" bind:this={canvas}></canvas>
+{#if isValid}
+	<canvas class="h-auto w-full" bind:this={canvas}></canvas>
+{:else}
+	<EmptyState />
+{/if}

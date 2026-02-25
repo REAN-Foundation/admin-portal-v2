@@ -3,12 +3,16 @@
     import Chart from 'chart.js/auto';
     import { getChartColors, getTickColorLight, getTickColorDark } from '$lib/themes/theme.selector';
 	import { TextColorDark } from '$lib/themes/rean.theme';
+	import { hasChartData } from '$lib/utils/chart.utils';
+	import EmptyState from './EmptyState.svelte';
 
     const tickColorLight = getTickColorLight();
     const tickColorDark = getTickColorDark();
     const color = getChartColors();
 
     let { lables, data, title } = $props();
+
+    let isValid = $derived(hasChartData(data) && hasChartData(lables));
 
     let canvas: HTMLCanvasElement;
     let lineChart: Chart | null = null;
@@ -152,7 +156,7 @@
     // }
 
     $effect(() => {
-        if (data && data.length > 0 && lables && lables.length > 0 && isCanvasReady) {
+        if (isValid && isCanvasReady) {
             console.log('Effect triggered - updating line chart');
             initChart();
         }
@@ -169,7 +173,7 @@
 
         setTimeout(() => {
             isCanvasReady = true;
-            if (data && data.length > 0 && lables && lables.length > 0) {
+            if (isValid) {
                 initChart();
             }
         }, 100);
@@ -186,9 +190,9 @@
 </script>
 
 <div class="h-96 w-full p-2 border shadow-lg border-[var(--color-outline)]">
-    {#if data && data.length > 0}
+    {#if isValid}
         <canvas bind:this={canvas} class="w-full mx-auto h-auto"></canvas>
     {:else}
-        <p>No data available.</p>
+        <EmptyState />
     {/if}
 </div>
