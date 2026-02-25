@@ -2,10 +2,16 @@
 	import { onMount, onDestroy } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import { getTickColorLight, getTickColorDark } from '$lib/themes/theme.selector';
+	import { hasChartData } from '$lib/utils/chart.utils';
+	import EmptyState from './EmptyState.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////
 
 	let { labels, firstDataSource, secondDataSource, title } = $props();
+
+	let isValid = $derived(
+		hasChartData(labels) && hasChartData(firstDataSource) && hasChartData(secondDataSource)
+	);
 
 	let barChart: Chart;
 	let canvas: HTMLCanvasElement;
@@ -21,7 +27,8 @@
 	}
 
 	function createChart() {
-		const ctx = canvas?.getContext('2d');
+		if (!isValid || !canvas) return;
+		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
 
 		if (barChart) barChart.destroy();
@@ -140,7 +147,7 @@
 
 	// Reactive statement to update chart when data changes
 	$effect(() => {
-		if (labels && labels.length > 0 && firstDataSource && secondDataSource && canvas) {
+		if (isValid && canvas) {
 			createChart();
 		}
 	});
@@ -157,7 +164,7 @@
 		});
 
 		// Initial chart creation
-		if (labels && labels.length > 0 && firstDataSource && secondDataSource) {
+		if (isValid) {
 			createChart();
 		}
 	});
@@ -168,4 +175,8 @@
 	});
 </script>
 
-<canvas bind:this={canvas} class="h-auto w-full"></canvas>
+{#if isValid}
+	<canvas bind:this={canvas} class="h-auto w-full"></canvas>
+{:else}
+	<EmptyState />
+{/if}

@@ -1,13 +1,13 @@
 <script>
 	import BarChart from '$lib/components/analytics/BarChart.svelte';
 	import RetentionGraphs from '$lib/components/analytics/RetentionGraphs.svelte';
+	import EmptyState from '$lib/components/analytics/EmptyState.svelte';
+	import { hasChartData } from '$lib/utils/chart.utils';
 
 	let { type = 'bar', data, labels, title } = $props();
-    $inspect("data",data, "labels",labels)
 </script>
 
-
-{#if data}
+{#if hasChartData(data) && hasChartData(labels)}
 	{#if type === 'bar'}
 		<div class="h-96">
 			<BarChart dataSource={data} {labels} {title} />
@@ -18,11 +18,5 @@
 		</div>
 	{/if}
 {:else}
-	<div class="h-[400px] w-full p-4">
-		<p class="justify-left flex items-center text-2xl">
-			<!-- {title} -->
-		</p>
-		<p class="mt-28 flex items-center justify-center text-xl leading-3">Data Not Available</p>
-	</div>
+	<EmptyState />
 {/if}
-

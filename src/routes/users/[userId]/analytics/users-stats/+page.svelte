@@ -6,18 +6,16 @@
 
 	let { data }: { data: PageServerData } = $props();
 
-	let genderWiseUsers = $state(data.genderWiseUsers);
-	let ageWiseUsers = $state(data.ageWiseUsers);
-	// console.log('ageWiseUsers', ageWiseUsers);
+	let genderWiseUsers = $state(data.genderWiseUsers ?? []);
+	let ageWiseUsers = $state(data.ageWiseUsers ?? []);
 
-	let maritalStatusWiseUsers: any = $state(data.maritalStatusWiseUsers);
+	let maritalStatusWiseUsers: any = $state(data.maritalStatusWiseUsers ?? []);
 
-	// let countryWiseUsers;
 	let usersCount = data.overallUsersData;
-	let majorAilment = $state(data.majorAilment);
-	let addictionDistribution = $state(data.addictionDistribution);
-	let deviceDetailWiseUsers = data.deviceDetailWiseUsers;
-	let years = data.years;
+	let majorAilment = $state(data.majorAilment ?? []);
+	let addictionDistribution = $state(data.addictionDistribution ?? []);
+	let deviceDetailWiseUsers = data.deviceDetailWiseUsers ?? [];
+	let years = data.years ?? [];
 
 	// countryWiseUsers = data.countryWiseUsers;
 	let selectedYear: any;
@@ -26,7 +24,7 @@
 		console.log('event', e.detail);
 
 		selectedYear = e.currentTarget.value;
-		const yearWiseAgeDetails = data.yearWiseAgeDetails;
+		const yearWiseAgeDetails = data.yearWiseAgeDetails ?? [];
 		const ageDetail = yearWiseAgeDetails.filter((e: { Year: any }) => e.Year == selectedYear);
 		if (ageDetail.length > 0) {
 			ageWiseUsers = ageDetail[0].AgeDetails;
@@ -37,7 +35,7 @@
 		console.log('e', e);
 
 		selectedYear = e.currentTarget.value;
-		const yearWiseGenderDetails = data.yearWiseGenderDetails;
+		const yearWiseGenderDetails = data.yearWiseGenderDetails ?? [];
 		const genderDetail = yearWiseGenderDetails.filter((e: { Year: any }) => e.Year == selectedYear);
 		if (genderDetail.length > 0) {
 			genderWiseUsers = genderDetail[0].GenderDetails;
@@ -47,7 +45,7 @@
 	const selectMaritalSatusDistributionYearly = (e: { currentTarget: { value: any } }) => {
 		selectedYear = e.currentTarget.value;
 		console.log('selected year', selectedYear);
-		const yearWiseMaritalDetails = data.yearWiseMaritalDetails;
+		const yearWiseMaritalDetails = data.yearWiseMaritalDetails ?? [];
 		const maritalDetail = yearWiseMaritalDetails.filter(
 			(e: { Year: any }) => e.Year == selectedYear
 		);
@@ -59,7 +57,7 @@
 	const selectMajorAilmentDistributionYearly = (e: { currentTarget: { value: any } }) => {
 		selectedYear = e.currentTarget.value;
 		console.log('selected year', selectedYear);
-		const yearWiseMajorAilmentDistributionDetails = data.yearWiseMajorAilmentDistributionDetails;
+		const yearWiseMajorAilmentDistributionDetails = data.yearWiseMajorAilmentDistributionDetails ?? [];
 		const majorAilmentDistributionDetail = yearWiseMajorAilmentDistributionDetails.filter(
 			(e: { Year: any }) => e.Year == selectedYear
 		);
@@ -71,7 +69,7 @@
 	const selectAddictionDistributionYearly = (e: { currentTarget: { value: any } }) => {
 		selectedYear = e.currentTarget.value;
 		console.log('selected year', selectedYear);
-		const yearWiseAddictionDistributionDetails = data.yearWiseAddictionDistributionDetails;
+		const yearWiseAddictionDistributionDetails = data.yearWiseAddictionDistributionDetails ?? [];
 		const addictionDistributionDetail = yearWiseAddictionDistributionDetails.filter(
 			(e: { Year: any }) => e.Year == selectedYear
 		);

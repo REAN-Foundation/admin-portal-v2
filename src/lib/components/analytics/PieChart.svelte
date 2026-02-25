@@ -3,6 +3,8 @@ import { onMount, onDestroy } from 'svelte';
 import Chart from 'chart.js/auto';
 import { getDoughnutColors, getTickColorLight, getTickColorDark } from '$lib/themes/theme.selector';
 	import { TextColorDark, TextColorLight } from '$lib/themes/rean.theme';
+	import { hasChartData } from '$lib/utils/chart.utils';
+	import EmptyState from './EmptyState.svelte';
 
 let {
 	labels = [],
@@ -10,6 +12,8 @@ let {
 	title = '',
 	showLegendData = false
 } = $props();
+
+let isValid = $derived(hasChartData(data) && hasChartData(labels));
 
 let canvas: HTMLCanvasElement;
 let pieChart: Chart | null = null;
@@ -161,7 +165,7 @@ function updateChartOnThemeChange() {
 
 // Reactive statement to update chart when data or labels change
 $effect(() => {
-	if (data.length > 0 && labels.length > 0 && isCanvasReady) {
+	if (isValid && isCanvasReady) {
 		console.log('Effect triggered - updating chart');
 		initChart();
 	}
@@ -180,7 +184,7 @@ onMount(() => {
 	// Mark canvas as ready after a short delay to ensure DOM is ready
 	setTimeout(() => {
 		isCanvasReady = true;
-		if (data.length > 0 && labels.length > 0) {
+		if (isValid) {
 			initChart();
 		}
 	}, 100);
@@ -197,10 +201,10 @@ onDestroy(() => {
 </script>
 
 <div class="h-96 w-full p-2">
-	{#if data.length > 0 && labels.length > 0}
+	{#if isValid}
 		<canvas bind:this={canvas} class="w-full mx-auto h-auto"></canvas>
 	{:else}
-		<p>No data available.</p>
+		<EmptyState />
 	{/if}
 </div>
 

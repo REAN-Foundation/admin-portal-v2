@@ -1,9 +1,9 @@
 
-import { error, type RequestEvent } from '@sveltejs/kit';
+import { type RequestEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getUserAnalytics } from '../../../../api/services/user-analytics/user-analytics';
-import { redirect } from 'sveltekit-flash-message/server';
-import { errorMessage } from '$lib/utils/message.utils';
+// import { redirect } from 'sveltekit-flash-message/server';
+// import { errorMessage } from '$lib/utils/message.utils';
 import { TimeHelper } from '$lib/utils/time.helper';
 import { DateStringFormat } from '$lib/types/time.types';
 import { searchCareplan } from '$routes/api/services/careplan/careplans';
@@ -15,7 +15,7 @@ import { searchAssessmentTemplates } from '$routes/api/services/reancare/assessm
 
 export const load: PageServerLoad = async (event: RequestEvent) => {
     const sessionId = event.cookies.get('sessionId');
-    const userId = event.params.userId;
+    // const userId = event.params.userId;
     const today = new Date();
     const formattedDate = TimeHelper.getDateString(today, DateStringFormat.YYYY_MM_DD);
     const tenantCode = event.locals.sessionUser.tenantCode;
@@ -24,16 +24,32 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
     const parentData = await event.parent();
     const tenantSettings = parentData?.tenantSettings;
     
-    const response = await getUserAnalytics(sessionId, formattedDate, tenantCode)
-    if (!response) {
-        throw error(404, 'Daily user statistics data not found');
+    const defaultReturn = {
+        sessionId,
+        statistics: { FeatureMetrics: [] },
+        medicationManagementdata: {},
+        healthJourneyWiseTask: [],
+        healthJourneyWiseCompletedTask: [],
+        overallHealthJourneyTaskData: {},
+        patientTaskMetrics: {},
+        vitalMetrics: [],
+        assessmentMetrics: {},
+        tenantSettings,
+        title: 'Dashboard-Home-Feature'
+    };
+
+    let response;
+    try {
+        response = await getUserAnalytics(sessionId, formattedDate, tenantCode);
+    } catch (err) {
+        console.error('Failed to fetch feature-specific analytics:', err);
+        return defaultReturn;
     }
-    if (response.Status === 'Failure') {
-        throw redirect(303, `/users/${userId}/home`,
-            errorMessage('Latest feature statistics analytics report not available.'),
-            event
-        );
+
+    if (!response || response.Status === 'Failure' || !response.Data) {
+        return defaultReturn;
     }
+
     const data = response.Data;
     const medicationManagementdata = data.MedicationManagementMetrics?.[0] ?? {};
     const healthJourneyWiseTask = data.HealthJourneyMetrics?.CareplanSpecific?.HealthJourneyWiseTask ?? [];
@@ -61,7 +77,7 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
         vitalMetrics,
         assessmentMetrics,
         tenantSettings,
-        title:'Dashboard-Home-Feature'
+        title: 'Dashboard-Home-Feature'
     };
 };
 

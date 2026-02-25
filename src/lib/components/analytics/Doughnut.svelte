@@ -6,12 +6,16 @@
 		getTickColorLight,
 		getTickColorDark
 	} from '$lib/themes/theme.selector';
+	import { hasChartData } from '$lib/utils/chart.utils';
+	import EmptyState from './EmptyState.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////
 
 	let { updatedChartData, updatedChartLabels, title } = $props();
 	let data = updatedChartData;
 	let labels = updatedChartLabels;
+
+	let isValid = $derived(hasChartData(data) && hasChartData(labels));
 
 	let doughnutChart: Chart;
 	let canvas: HTMLCanvasElement;
@@ -41,6 +45,7 @@
 	let truncatedLabels: string[] = [];
 
 	function createChart() {
+		if (!isValid || !canvas) return;
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
 
@@ -96,6 +101,7 @@
 	}
 
 	onMount(() => {
+		if (!isValid) return;
 		createChart();
 
 		// Observe changes to data-theme
@@ -118,9 +124,9 @@
 
 <!-- Canvas for the Doughnut chart -->
 <div class=" h-auto  w-fit">
-	{#if data}
+	{#if isValid}
 		<canvas bind:this={canvas}></canvas>
 	{:else}
-		<p>No data available.</p>
+		<EmptyState />
 	{/if}
 </div>

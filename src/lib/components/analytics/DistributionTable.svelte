@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Doughnut from './Doughnut.svelte';
+	import EmptyState from './EmptyState.svelte';
 	let { title, tableHeaders, tableData, labelKey, countKey } = $props();
 	// export let chartLabels: string[] = [];
 	// export let chartData: number[] = [];
@@ -15,11 +16,13 @@
 	// Process the data: map table data to format {label, count, percentage}, limit to MAX_ENTRIES
 	let processedData: any = $state();
 	processedData = (() => {
-		const totalCount = tableData.reduce(
+		const safeData = Array.isArray(tableData) ? tableData : [];
+		if (safeData.length === 0) return [];
+		const totalCount = safeData.reduce(
 			(sum: any, item: { [x: string]: any }) => sum + (item[countKey] || 0),
 			0
 		);
-		let processed = tableData
+		let processed = safeData
 			.map((item: { [x: string]: any }) => ({
 				label: item[labelKey] || 'Unknown',
 				count: item[countKey] || 0,
@@ -39,9 +42,9 @@
 	})();
 	// Updated data for chart rendering
 	let updatedChartLabels = $derived(
-		processedData.map((item: { label: string }) => truncateLabel(item.label, 20))
+		(processedData ?? []).map((item: { label: string }) => truncateLabel(item.label, 20))
 	);
-	let updatedChartData = $derived(processedData.map((item: { count: any }) => item.count));
+	let updatedChartData = $derived((processedData ?? []).map((item: { count: any }) => item.count));
 	let hasData = $derived(processedData && processedData.length > 0);
 	$inspect('processedData', processedData);
 	$inspect('updatedChart', updatedChartData);
@@ -80,7 +83,5 @@
 		</div>
 	</div>
 {:else}
-	<div class="stats-container data-not-available-container">
-		<p class="data-not-available">Data Not Available</p>
-	</div>
+	<EmptyState />
 {/if}
