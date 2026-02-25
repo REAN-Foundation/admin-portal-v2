@@ -24,39 +24,39 @@
 	const usersData = [
 		{
 			usersDetail: 'Not Deleted Users',
-			count: usersCount.NotDeletedUsers.Count,
-			ratio: `${Math.ceil(usersCount.NotDeletedUsers.Ratio)}`
+			count: usersCount?.NotDeletedUsers?.Count ?? 0,
+			ratio: `${Math.ceil(usersCount?.NotDeletedUsers?.Ratio ?? 0)}`
 		},
 		{
 			usersDetail: 'Current Active Users',
-			count: usersCount.UsersWithActiveSession.Count,
-			ratio: `${Math.ceil(usersCount.UsersWithActiveSession.Ratio)}`
+			count: usersCount?.UsersWithActiveSession?.Count ?? 0,
+			ratio: `${Math.ceil(usersCount?.UsersWithActiveSession?.Ratio ?? 0)}`
 		},
 		{
 			usersDetail: 'Deleted Users',
-			count: usersCount.DeletedUsers.Count,
-			ratio: `${Math.ceil(usersCount.DeletedUsers.Ratio)}`
+			count: usersCount?.DeletedUsers?.Count ?? 0,
+			ratio: `${Math.ceil(usersCount?.DeletedUsers?.Ratio ?? 0)}`
 		},
 		{
 			usersDetail: 'Enrolled Users',
-			count: usersCount.EnrolledUsers.Count,
-			ratio: `${Math.ceil(usersCount.EnrolledUsers.Ratio)}`
+			count: usersCount?.EnrolledUsers?.Count ?? 0,
+			ratio: `${Math.ceil(usersCount?.EnrolledUsers?.Ratio ?? 0)}`
 		}
 	];
 
 	let genderDistributionLabels: any = $derived(
-		genderWiseUsers.length > 0 ? genderWiseUsers.map((x: { Gender: any }) => x.Gender) : ''
+		Array.isArray(genderWiseUsers) && genderWiseUsers.length > 0 ? genderWiseUsers.map((x: { Gender: any }) => x.Gender) : ''
 	);
 	let genderDistributionData: any = $derived(
-		genderWiseUsers.length > 0 ? genderWiseUsers.map((x: { Ratio: any }) => x.Ratio) : ''
+		Array.isArray(genderWiseUsers) && genderWiseUsers.length > 0 ? genderWiseUsers.map((x: { Ratio: any }) => x.Ratio) : ''
 	);
 
 	let ageDistributionLabels: any = $derived(
-		ageWiseUsers.length > 0 ? ageWiseUsers.map((x: { Status: any }) => x.Status) : ''
+		Array.isArray(ageWiseUsers) && ageWiseUsers.length > 0 ? ageWiseUsers.map((x: { Status: any }) => x.Status) : ''
 	);
 
 	let ageDistributionData: any = $derived(
-		ageWiseUsers.length > 0 ? ageWiseUsers.map((x: { Ratio: any }) => x.Ratio) : false
+		Array.isArray(ageWiseUsers) && ageWiseUsers.length > 0 ? ageWiseUsers.map((x: { Ratio: any }) => x.Ratio) : false
 	);
 
 	let ageLabels;
@@ -122,7 +122,7 @@
 						>Onboarded Users</td
 					>
 					<td class="w-1/2 border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm"
-						>{usersCount.TotalUsers.Count}</td
+						>{usersCount?.TotalUsers?.Count ?? 0}</td
 					>
 				</tr>
 				{#each usersData as data}
@@ -135,7 +135,7 @@
 						>
 					</tr>
 				{/each}
-				{#each deviceDetailWiseUsers as data}
+				{#each deviceDetailWiseUsers ?? [] as data}
 					<tr>
 						<td class="w-1/2 border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm"
 							>{data.OSType}</td

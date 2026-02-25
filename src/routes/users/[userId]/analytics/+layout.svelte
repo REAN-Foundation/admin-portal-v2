@@ -2,11 +2,14 @@
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
 	import DashboardTabs from '$lib/components/navbar/dashboard.tabs.svelte';
+	import EmptyState from '$lib/components/analytics/EmptyState.svelte';
 	import { getSystemName } from '$lib/themes/theme.selector';
 	import type { PageServerData, LayoutServerData } from './$types';
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { children, data } = $props();
+
+	let hasAnyFeatureData = $derived(data.hasAnyFeatureData ?? true);
 
 	const systemName = getSystemName();
 	let title =$state();
@@ -118,12 +121,18 @@
 	<meta name="description" content="" />
 </svelte:head>
 
-<!-- <DashboardTabs on:downloadReport={handleDownloadReportClick} {userId} /> -->
-<DashboardTabs
-	downloadAnalyticsJSONReport={handleDownloadAnalyticsReportInJSONClick}
-	downloadAnalyticsExcelReport={handleDownloadAnalyticsReportInExcelClick}
-	downloadAnalyticsPdfReport={handleDownloadAnalyticsReportInPdfClick}
-	{userId}
-	{tenantCode}
-/>
-{@render children()}
+{#if hasAnyFeatureData}
+	<!-- <DashboardTabs on:downloadReport={handleDownloadReportClick} {userId} /> -->
+	<DashboardTabs
+		downloadAnalyticsJSONReport={handleDownloadAnalyticsReportInJSONClick}
+		downloadAnalyticsExcelReport={handleDownloadAnalyticsReportInExcelClick}
+		downloadAnalyticsPdfReport={handleDownloadAnalyticsReportInPdfClick}
+		{userId}
+		{tenantCode}
+	/>
+	{@render children()}
+{:else}
+	<div class="flex min-h-[60vh] items-center justify-center">
+		<EmptyState message="Data Not Available" />
+	</div>
+{/if}

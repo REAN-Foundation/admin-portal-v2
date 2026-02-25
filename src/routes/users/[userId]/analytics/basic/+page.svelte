@@ -10,6 +10,8 @@
 		processPatientRegistrationHistory,
 		formatDate
 	} from './components/functions';
+	import { hasChartData } from '$lib/utils/chart.utils';
+	import EmptyState from '$lib/components/analytics/EmptyState.svelte';
 
 	let { data }: { data: PageServerData } = $props();
 
@@ -24,7 +26,7 @@
 		activeUsersCountAtEndOfMonthLabels: any = $state();
 
 	let dereg = processPatientDeregistrationHistory(
-		data.basicStatistics.PatientDeregistrationHistory
+		data.basicStatistics?.PatientDeregistrationHistory ?? []
 	);
 
 	if (data.basicStatistics) {
@@ -68,23 +70,23 @@
 
 	let result = $derived(
 		processPatientRegistrationHistory(
-			data.basicStatistics.PatientRegistrationHistory,
-			data.basicStatistics.PatientDeregistrationHistory
+			data.basicStatistics?.PatientRegistrationHistory ?? [],
+			data.basicStatistics?.PatientDeregistrationHistory ?? []
 		)
 	);
 
 	$inspect('this is formatted result', result);
 
-	let genderWiseUsers = $state(data.genderWiseUsers);
-	let ageWiseUsers = $state(data.ageWiseUsers);
+	let genderWiseUsers = $state(data.genderWiseUsers ?? []);
+	let ageWiseUsers = $state(data.ageWiseUsers ?? []);
 
-	let maritalStatusWiseUsers: any = $state(data.maritalStatusWiseUsers);
+	let maritalStatusWiseUsers: any = $state(data.maritalStatusWiseUsers ?? []);
 
 	let usersCount = data.overallUsersData;
-	let majorAilment = $state(data.majorAilment);
-	let addictionDistribution = $state(data.addictionDistribution);
-	let deviceDetailWiseUsers = data.deviceDetailWiseUsers;
-	let years = data.years;
+	let majorAilment = $state(data.majorAilment ?? []);
+	let addictionDistribution = $state(data.addictionDistribution ?? []);
+	let deviceDetailWiseUsers = data.deviceDetailWiseUsers ?? [];
+	let years = data.years ?? [];
 	let showLegendData = true;
 
 	let selectedYear: any;
@@ -92,7 +94,7 @@
 	const selectAgeWiseUsersDividionYearly = (e: any) => {
 
 		selectedYear = e.currentTarget.value;
-		const yearWiseAgeDetails = data.yearWiseAgeDetails;
+		const yearWiseAgeDetails = data.yearWiseAgeDetails ?? [];
 		const ageDetail = yearWiseAgeDetails.filter((e: { Year: any }) => e.Year == selectedYear);
 		if (ageDetail.length > 0) {
 			ageWiseUsers = ageDetail[0].AgeDetails;
@@ -102,7 +104,7 @@
 	const selectGenderWiseUsersDividionYearly = (e: { currentTarget: { value: any } }) => {
 
 		selectedYear = e.currentTarget.value;
-		const yearWiseGenderDetails = data.yearWiseGenderDetails;
+		const yearWiseGenderDetails = data.yearWiseGenderDetails ?? [];
 		const genderDetail = yearWiseGenderDetails.filter((e: { Year: any }) => e.Year == selectedYear);
 		if (genderDetail.length > 0) {
 			genderWiseUsers = genderDetail[0].GenderDetails;
@@ -111,7 +113,7 @@
 
 	const selectMaritalSatusDistributionYearly = (e: { currentTarget: { value: any } }) => {
 		selectedYear = e.currentTarget.value;
-		const yearWiseMaritalDetails = data.yearWiseMaritalDetails;
+		const yearWiseMaritalDetails = data.yearWiseMaritalDetails ?? [];
 		const maritalDetail = yearWiseMaritalDetails.filter(
 			(e: { Year: any }) => e.Year == selectedYear
 		);
@@ -122,7 +124,7 @@
 
 	const selectMajorAilmentDistributionYearly = (e: { currentTarget: { value: any } }) => {
 		selectedYear = e.currentTarget.value;
-		const yearWiseMajorAilmentDistributionDetails = data.yearWiseMajorAilmentDistributionDetails;
+		const yearWiseMajorAilmentDistributionDetails = data.yearWiseMajorAilmentDistributionDetails ?? [];
 		const majorAilmentDistributionDetail = yearWiseMajorAilmentDistributionDetails.filter(
 			(e: { Year: any }) => e.Year == selectedYear
 		);
@@ -133,7 +135,7 @@
 
 	const selectAddictionDistributionYearly = (e: { currentTarget: { value: any } }) => {
 		selectedYear = e.currentTarget.value;
-		const yearWiseAddictionDistributionDetails = data.yearWiseAddictionDistributionDetails;
+		const yearWiseAddictionDistributionDetails = data.yearWiseAddictionDistributionDetails ?? [];
 		const addictionDistributionDetail = yearWiseAddictionDistributionDetails.filter(
 			(e: { Year: any }) => e.Year == selectedYear
 		);
@@ -146,9 +148,9 @@
 	let labels = ['Onboarded', 'Not Deleted ', 'Current Active'];
 
 	const funnelChartData = $derived([
-		data.userCountStats.TotalUsers.Count,
-		data.userCountStats.NotDeletedUsers.Count,
-		data.userCountStats.UsersWithActiveSession.Count
+		data.userCountStats?.TotalUsers?.Count ?? 0,
+		data.userCountStats?.NotDeletedUsers?.Count ?? 0,
+		data.userCountStats?.UsersWithActiveSession?.Count ?? 0
 	]);
 	$inspect(funnelChartData);
 </script>
@@ -172,7 +174,7 @@
 					>Start Date</td
 				>
 				<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
-					{formatDate(data.basicStatistics.StartDate)}
+					{formatDate(data.basicStatistics?.StartDate)}
 				</td>
 				<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
 					Start date of the analysis period.
@@ -181,7 +183,7 @@
 			<tr>
 				<td class=" border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">End Date</td>
 				<td class=" border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
-					{formatDate(data.basicStatistics.EndDate)}
+					{formatDate(data.basicStatistics?.EndDate)}
 				</td>
 				<td class=" border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
 					End date of the analysis period.
@@ -207,7 +209,7 @@
 					>Total Users</td
 				>
 				<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
-					{data.basicStatistics.TotalUsers}
+					{data.basicStatistics?.TotalUsers ?? 0}
 				</td>
 				<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
 					Overall count of users associated with the tenant.
@@ -218,7 +220,7 @@
 					>Total Patients</td
 				>
 				<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
-					{data.basicStatistics.TotalPatients}
+					{data.basicStatistics?.TotalPatients ?? 0}
 				</td>
 				<td class="border-b border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
 					Total number of patients registered within the system.
@@ -229,7 +231,7 @@
 					Total Active Patients
 				</td>
 				<td class=" border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
-					{data.basicStatistics.TotalActivePatients}
+					{data.basicStatistics?.TotalActivePatients ?? 0}
 				</td>
 				<td class=" border-[var(--color-outline)] px-6 py-2 text-xs md:text-sm">
 					Total number of active (Not-deleted) patients.
@@ -286,7 +288,7 @@
 					<div class="centered-flex">
 						<h4 class=" users-head">Patient Registration / Deregistration History</h4>
 					</div>
-					{#if patientRegistrationHistoryData}
+					{#if hasChartData(patientRegistrationHistoryData)}
 						<div class="h-96 p-2">
 							<JointBarGraph
 								firstDataSource={result.registrationData}
@@ -296,10 +298,7 @@
 							/>
 						</div>
 					{:else}
-						<div class="h-[400px] w-full p-4">
-							<p class=" history-title">Patient Registration / Deregistration History</p>
-							<p class="not-available">Data Not Available</p>
-						</div>
+						<EmptyState />
 					{/if}
 				</div>
 			</div>
@@ -309,7 +308,7 @@
 		<!-- User Distribution By Roles Card -->
 		<div class="xl:w-1/2">
 			<h4 class="basic-stat mt-6 mb-3">User Distribution By Roles</h4>
-			{#if usersDistributionByRoleData}
+			{#if hasChartData(usersDistributionByRoleData)}
 				<div class="border shadow-lg border-[var(--color-outline)]">
 					<PieChart
 						data={usersDistributionByRoleData}
@@ -319,16 +318,14 @@
 					/>
 				</div>
 			{:else}
-				<div>
-					<p>Data Not Available</p>
-				</div>
+				<EmptyState />
 			{/if}
 		</div>
 
 		<!-- Active Users For Month Card -->
 		<div class="xl:w-1/2">
 			<h4 class="basic-stat mt-6 mb-3">Active Users For Month</h4>
-			{#if activeUsersCountAtEndOfMonthData}
+			{#if hasChartData(activeUsersCountAtEndOfMonthData)}
 				<div>
 					<Line
 						data={activeUsersCountAtEndOfMonthData}
@@ -337,9 +334,7 @@
 					/>
 				</div>
 			{:else}
-				<div>
-					<p>Data Not Available</p>
-				</div>
+				<EmptyState />
 			{/if}
 		</div>
 	</div>

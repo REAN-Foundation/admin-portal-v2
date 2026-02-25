@@ -1,18 +1,19 @@
 <script lang="ts">
 	import DistributionTable from '$lib/components/analytics/DistributionTable.svelte';
+	import EmptyState from '$lib/components/analytics/EmptyState.svelte';
+	import { hasChartData } from '$lib/utils/chart.utils';
 	///////////////////////////////////////////////////////////////////////////////////////////
 	let { data } = $props();
 
-	const ageGroup = data.basicStatistics.PatientDemographics.AgeGroups;
-	const genderGroups = data.basicStatistics.PatientDemographics.GenderGroups;
-	const locationGroups = data.basicStatistics.PatientDemographics.LocationGroups;
-	const ethinicityGroups = data.basicStatistics.PatientDemographics.EthnicityGroups;
-	const raceGroups = data.basicStatistics.PatientDemographics.RaceGroups;
-	const healthSystemsDistribution =
-		data.basicStatistics.PatientDemographics.HealthSystemDistribution;
-	const hospitalDistribution = data.basicStatistics.PatientDemographics.HospitalDistribution;
-	const survivorOrCaregiverDistribution =
-		data.basicStatistics.PatientDemographics.SurvivorOrCareGiverDistribution;
+	const demographics = data.basicStatistics?.PatientDemographics;
+	const ageGroup = demographics?.AgeGroups ?? [];
+	const genderGroups = demographics?.GenderGroups ?? [];
+	const locationGroups = demographics?.LocationGroups ?? [];
+	const ethinicityGroups = demographics?.EthnicityGroups ?? [];
+	const raceGroups = demographics?.RaceGroups ?? [];
+	const healthSystemsDistribution = demographics?.HealthSystemDistribution ?? [];
+	const hospitalDistribution = demographics?.HospitalDistribution ?? [];
+	const survivorOrCaregiverDistribution = demographics?.SurvivorOrCareGiverDistribution ?? [];
 
 	//     if (data.basicStatistics.PatientDemographics) {
 	//     if (data.basicStatistics.PatientDemographics.AgeGroups) {
@@ -121,8 +122,23 @@
 				});
 		}
 	}
+
+	// Check if any demographics distribution has data
+	const hasAnyDemographicsData = $derived.by(() => {
+		return (
+			hasChartData(ageGroup) ||
+			hasChartData(genderGroups) ||
+			hasChartData(locationGroups) ||
+			hasChartData(ethinicityGroups) ||
+			hasChartData(raceGroups) ||
+			hasChartData(healthSystemsDistribution) ||
+			hasChartData(hospitalDistribution) ||
+			hasChartData(survivorOrCaregiverDistribution)
+		);
+	});
 </script>
 
+{#if hasAnyDemographicsData}
 <p class="demographics-para">
 	Demographics provide an understanding of the user base by categorizing them into age, gender,
 	location, and other key attributes. These groupings help identify user diversity and engagement
@@ -194,3 +210,8 @@
 		countKey="count"
 	/>
 </div>
+{:else}
+	<div class="flex min-h-[60vh] items-center justify-center">
+		<EmptyState message="Data Not Available" />
+	</div>
+{/if}

@@ -11,6 +11,7 @@
 		"strict": false,
         "noImplicitAny": false,
 		"moduleResolution": "bundler",
+		"allowArbitraryExtensions": true,
 		"types": ["svelte", "vite/client"]
 	},
 	"include": [
