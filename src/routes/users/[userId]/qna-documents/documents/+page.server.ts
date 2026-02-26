@@ -7,13 +7,13 @@ import { searchDocuments } from '$routes/api/services/bot-content/documents';
 
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
-	const tenantId = event.locals?.sessionUser?.tenantId;
+	// const tenantId = event.locals?.sessionUser?.tenantId;
 	const tenantCode = event.locals?.sessionUser?.tenantCode; 
 
 	event.depends('app:documents');
 
 	const response = await searchDocuments(sessionId, {
-        tenantId,
+        // tenantId,
         tenantCode, 
 		orderBy: 'Name',
 		order: 'ascending',
