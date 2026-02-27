@@ -44,6 +44,7 @@
 	const totalSteps = 3;
 	let currentSection = $state(0);
 	let welcomeMessages = $state(data.chatbotSettings?.WelcomeMessages || []);
+	let consentMessages = $state(data.consentSettings?.Messages || []);
 	let showWelcomeMessageModal = $state(false);
 	let isEditWelcomeMessage = $state(false);
 	let editingWelcomeMessageIndex: number | null = $state(null);
@@ -135,7 +136,7 @@
 	};
 
 	const navigateToErrorSection = (errs: Record<string, string>) => {
-		const section0Fields = ['Name', 'OrganizationName', 'OrganizationLogo', 'OrganizationWebsite', 'Favicon', 'Description', 'DefaultLanguage', 'Timezone'];
+		const section0Fields = ['Name', 'OrganizationName', 'OrganizationLogo', 'OrganizationWebsite', 'Favicon', 'Description', 'DefaultLanguage', 'Timezone', 'WelcomeMessageLanguage'];
 		if (Object.keys(errs).some((key) => section0Fields.includes(key))) {
 			currentSection = 0;
 			return;
@@ -143,6 +144,11 @@
 		const section1Fields = ['MessageChannels', 'SupportChannels'];
 		if (Object.keys(errs).some((key) => section1Fields.includes(key))) {
 			currentSection = 1;
+			return;
+		}
+		const section2Fields = ['ConsentMessageLanguage'];
+		if (Object.keys(errs).some((key) => section2Fields.includes(key))) {
+			currentSection = 2;
 		}
 	};
 
@@ -261,6 +267,33 @@
 					])
 				);
 				console.log('Errors object:', errors);
+				navigateToErrorSection(errors);
+				return;
+			}
+
+			// Validate default language messages
+			const defaultLang = chatBotSetting.ChatBot.DefaultLanguage;
+			const defaultLangName = languages.find((l) => l.code === defaultLang)?.name || defaultLang;
+
+			if (chatBotSetting.ChatBot.WelcomeMessage === true) {
+				const hasWelcomeInDefaultLang = welcomeMessages.some(
+					(msg) => msg.LanguageCode === defaultLang && msg.Content?.trim()
+				);
+				if (!hasWelcomeInDefaultLang) {
+					errors.WelcomeMessageLanguage = `A welcome message is required in the default language (${defaultLangName}).`;
+				}
+			}
+
+			// if (chatBotSetting.ChatBot.Consent === true) {
+			// 	const hasConsentInDefaultLang = consentMessages.some(
+			// 		(msg) => msg.LanguageCode === defaultLang && msg.Content?.trim()
+			// 	);
+			// 	if (!hasConsentInDefaultLang) {
+			// 		errors.ConsentMessageLanguage = `A consent message is required in the default language (${defaultLangName}).`;
+			// 	}
+			// }
+
+			if (Object.keys(errors).length > 0) {
 				navigateToErrorSection(errors);
 				return;
 			}
