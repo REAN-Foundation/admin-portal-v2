@@ -288,23 +288,23 @@
 				</div>
 			</div>
 
-			<div class="overflow-x-auto">
-				<table class="table-c min-w-full">
+			<div class="overflow-hidden">
+				<table class="table-c w-full table-fixed">
 					<thead>
 						<tr>
-							<th class=" w-[5%]"></th>
-							<th class="w-[20%]">
+							<th class="w-[5%]"></th>
+							<th class="w-[16%]">
 								<button onclick={() => sortTable('FirstName')}>
 									First Name {#if isSortingName}
 										{#if sortOrder === 'ascending'}
-											<Icon icon="mdi:chevron-up" class=" inline" width="16" />
+											<Icon icon="mdi:chevron-up" class="inline" width="16" />
 										{:else}
 											<Icon icon="mdi:chevron-down" class="inline" width="16" />
 										{/if}
 									{/if}
 								</button>
 							</th>
-							<th class="w-[20%]">
+							<th class="w-[16%]">
 								<button onclick={() => sortTable('LastName')}>
 									Last Name
 									{#if isSortingCode}
@@ -316,8 +316,8 @@
 									{/if}
 								</button>
 							</th>
-							<th data-sort="Phone" class=" w-[20%]">Contact</th>
-							<th class="w-[20%]">
+							<th data-sort="Phone" class="w-[14%]">Contact</th>
+							<th class="w-[22%]">
 								<button onclick={() => sortTable('Email')}>
 									Email {#if isSortingEmail}
 										{#if sortOrder === 'ascending'}
@@ -328,14 +328,14 @@
 									{/if}
 								</button></th
 							>
-							<th class=" w-[20%]">Role</th>
-							<th class="w-[20%]"></th>
+							<th class="w-[13%]">Role</th>
+							<th class="w-[14%]"></th>
 						</tr>
 					</thead>
 					<tbody>
 						{#if retrivedUsers.length <= 0}
 							<tr class="text-center">
-								<td colspan="6">{isLoading ? 'Loading...' : 'No records found'}</td>
+								<td colspan="7">{isLoading ? 'Loading...' : 'No records found'}</td>
 							</tr>
 						{:else}
 							{#each retrivedUsers as row, index}
@@ -343,19 +343,19 @@
 									<td>
 										{paginationSettings.page * paginationSettings.limit + index + 1}
 									</td>
-									<td tabindex="0">
+									<td tabindex="0" class="truncate">
 										<Tooltip text={row.Person.FirstName || 'Not specified'}>
 											<a href={!row.IsPermitted ? null : viewRoute(row.id)}
 												>{Helper.truncateText(row.Person.FirstName, 20) || 'Not specified'}
 											</a>
 										</Tooltip>
 									</td>
-									<td tabindex="0">
+									<td tabindex="0" class="truncate">
 										{row.Person.LastName || 'Not specified'}
 									</td>
-									<td tabindex="0">{row.Person.Phone || 'Not specified'} </td>
-									<td tabindex="0">{row.Person.Email || 'Not specified'}</td>
-									<td tabindex="0">{row.RoleName || 'Not specified'}</td>
+									<td tabindex="0" class="truncate">{row.Person.Phone || 'Not specified'} </td>
+									<td tabindex="0" class="truncate">{row.Person.Email || 'Not specified'}</td>
+									<td tabindex="0" class="truncate">{row.RoleName || 'Not specified'}</td>
 
 									<td>
 										<div class="flex justify-end">
