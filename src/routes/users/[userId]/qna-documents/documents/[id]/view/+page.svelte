@@ -161,6 +161,22 @@
 		fileUrl = null;
 		fileType = null;
 	};
+
+	const handlePromotion = async () => {
+		try {
+			const res = await fetch(`/api/server/qna-documents/documents/${id}/promotion-from`, {
+				method: 'POST',
+				body: JSON.stringify({}),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			const response = await res.json();
+			toastMessage(response);
+		} catch (error) {
+			console.error('Error promoting document:', error);
+			toastMessage({ HttpCode: 500, Message: error.message || 'An error occurred during promotion.' });
+		}
+	};
 </script>
 
 <!-- Rendering breadcrumbs component -->
@@ -259,9 +275,9 @@
 		</tbody>
 	</table>
 
-	<div class=" btn-container">
-		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
-		></Button>
+	<div class="btn-container">
+		<Button onclick={handlePromotion} size="md" text="Promote" variant="primary" />
+		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md" />
 		<!-- <Button onclick = {handleSubmit} text={isPublishing ? "Publishing..." : "Publish"} variant="secondary" disabled={isPublishing}>
 		</Button> -->
 	</div>
