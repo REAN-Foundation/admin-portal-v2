@@ -6,9 +6,13 @@
 	// import toast, { Toaster } from 'svelte-french-toast';
 	import '../app.css';
 	import { addToast } from '$lib/components/toast/toast.store';
-	import Toasts from '$lib/components/toast/toasts.svelte';;
+	import Toasts from '$lib/components/toast/toasts.svelte';
 	import { page } from '$app/state';
 	import { getFlash } from 'sveltekit-flash-message';
+	import { getSystemName } from '$lib/themes/theme.selector';
+
+	const systemName = getSystemName();
+	let fullTitle = $derived(page.data.title ? `${systemName} - ${page.data.title}` : systemName);
 
 	// export let children: () => any; 
 	// const flash = initFlash(page);
@@ -48,4 +52,8 @@
 <!-- <Toaster/> -->
 <Toasts />
 
-{@render children()} 
+<svelte:head>
+	<title>{fullTitle}</title>
+</svelte:head>
+
+{@render children()}
