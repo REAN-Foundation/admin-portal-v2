@@ -143,7 +143,7 @@
 				class="btn-icon rounded mr-4"
 				title="Settings"
 			>
-				<Icon icon="heroicons:cog-6-tooth" class="!text-3xl" />
+				<Icon icon="heroicons:cog-6-tooth" class="!text-3xl text-[var(--color-info)]" />
 			</a>
 		{/if}
 			<button

@@ -7,6 +7,7 @@
 	import MessageModal from './message.modal.svelte';
 	import { page } from '$app/state';
 	import Button from '$lib/components/button/button.svelte';
+	import Tooltip from '$lib/components/tooltip.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -163,13 +164,16 @@
 			<div class="flex items-center justify-between !rounded-b-none border px-5 py-6 bg-[var(--color-primary)]">
 				<h1 class="text-xl text-[var(--color-info)]">Consent Settings</h1>
 				<div class="flex items-center gap-2 text-end">
-					<button
-						type="button"
-						class="table-btn variant-filled-secondary gap-1"
-						onclick={toggleEdit}
-					>
-						<Icon icon="material-symbols:edit-outline" />
-					</button>
+					<Tooltip text={edit ? 'Disable Editing' : 'Enable Editing'} forceShow={true}>
+						<button
+							type="button"
+							class="table-btn variant-filled-secondary gap-1"
+							aria-label={edit ? 'Disable Editing' : 'Enable Editing'}
+							onclick={toggleEdit}
+						>
+							<Icon icon="material-symbols:edit-outline" />
+						</button>
+					</Tooltip>
 					<a
 						href={settingsRoute}
 						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
