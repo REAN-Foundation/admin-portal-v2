@@ -1,33 +1,49 @@
 import { error, type RequestEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getUserAnalytics } from '../../../../api/services/user-analytics/user-analytics';
-import { redirect } from 'sveltekit-flash-message/server';
-import { errorMessage } from '$lib/utils/message.utils';
+// import { redirect } from 'sveltekit-flash-message/server';
+// import { errorMessage } from '$lib/utils/message.utils';
 import { TimeHelper } from '$lib/utils/time.helper';
 import { DateStringFormat } from '$lib/types/time.types';
 
 ////////////////////////////////////////////////////////////////////////////
 
+const defaultGenericMetrics = {
+    DailyActiveUsers: [],
+    WeeklyActiveUsers: [],
+    MonthlyActiveUsers: [],
+    RetentionRateOnSpecificDays: { retention_on_specific_days: [] },
+    RetentionRateInSpecificIntervals: { retention_in_specific_interval: [] },
+    MostFiredEvents: [],
+    MostFiredEventsByEventCategory: [],
+    MostCommonlyVisitedFeatures: []
+};
+
 export const load: PageServerLoad = async (event: RequestEvent) => {
     const sessionId = event.cookies.get('sessionId');
-    const userId = event.params.userId;
-    const today = new Date();
-    const formattedDate = TimeHelper.getDateString(today, DateStringFormat.YYYY_MM_DD);
+    // const userId = event.params.userId;
+
+    if (!event.locals.sessionUser) {
+        throw error(401, 'Unauthorized Access');
+    }
+
     const tenantCode = event.locals.sessionUser.tenantCode;
-    const response = await getUserAnalytics(sessionId??'', formattedDate, tenantCode)
-    if (!response) {
-        throw error(404, 'Daily user statistics data not found');
+
+    let genericMetrics = defaultGenericMetrics;
+    try {
+        const today = new Date();
+        const formattedDate = TimeHelper.getDateString(today, DateStringFormat.YYYY_MM_DD);
+        const response = await getUserAnalytics(sessionId ?? '', formattedDate, tenantCode);
+        if (response && response.Status !== 'Failure' && response.Data?.GenericMetrics) {
+            genericMetrics = response.Data.GenericMetrics;
+        }
+    } catch (err) {
+        console.error('Failed to fetch generic metrics:', err);
     }
-    if (response.Status === 'Failure') {
-        throw redirect(303, `/users/${userId}/home`,
-            errorMessage('Latest generic engagement analytics report not available.'),
-            event
-        );
-    }
-    const genericMetrics = response.Data.GenericMetrics;
+
     return {
         sessionId,
         genericMetrics,
-        title:'Dashboard-Home-Generic'
+        title: 'Dashboard-Home-Generic'
     };
 };

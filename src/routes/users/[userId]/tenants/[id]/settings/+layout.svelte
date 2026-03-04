@@ -5,15 +5,17 @@
 
 	//////////////////////////////////////////////////////////////////////////////
 
-	let { children } = $props();
+	let { children, data } = $props();
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
+	const tenantName = $derived(data?.tenantName || '');
 
 	let disabled = $state(true);
 	let edit = $derived(disabled);
 
 	const viewRoute = `/users/${userId}/tenants/${tenantId}/settings`;
 	const tenantRoute = `/users/${userId}/tenants`;
+	const tenantViewRoute = `/users/${userId}/tenants/${tenantId}/view`
 
 	// Map setting route names to display names
 	const settingNameMap = {
@@ -45,8 +47,16 @@
 				name: 'Tenants',
 				path: tenantRoute
 			},
+			...(tenantName
+				? [
+						{
+							name: tenantName,
+							path: tenantViewRoute
+						}
+					]
+				: []),
 			{
-				name: 'Main Settings',
+				name: 'Settings',
 				path: viewRoute
 			},
 			...(currentSetting
@@ -74,9 +84,9 @@
 <BreadCrumbs crumbs={breadCrumbs} />
 
 <div class="flex w-full flex-col px-5">
-	<div class="w-full md:flex md:items-center md:space-x-4">
+	<div class="w-full md:flex md:items-center">
 		<div
-			class="grid w-full grid-cols-2 gap-2 text-center md:grid md:grid-cols-3 md:space-x-4 xl:flex xl:w-full"
+			class="grid w-full grid-cols-2 gap-2 text-center md:grid-cols-3 xl:flex  xl:w-full"
 		>
 			<!-- Row 1 -->
 			<a

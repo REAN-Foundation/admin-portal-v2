@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { formatMonth, generateMonthSequence } from '../basic/components/functions';
 	import AssessmentMetrics from './assessment.metrics.svelte';
+	import EmptyState from '$lib/components/analytics/EmptyState.svelte';
 	// //////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data } = $props();
@@ -244,6 +245,28 @@
 
 	initializeFeatureMetrics();
 
+	// Check if any feature sub-tab has data
+	const hasAnyFeatureSpecificData = $derived.by(() => {
+		// Check if any non-assessment feature has metrics
+		const hasFeatureMetrics = Object.keys(featureMetrics).some(
+			(key) => Object.keys(featureMetrics[key] || {}).length > 0
+		);
+		if (hasFeatureMetrics) return true;
+
+		// Check feature-specific extra data
+		if (medicationManagementdata && Object.keys(medicationManagementdata).length > 0) return true;
+		if (Array.isArray(healthJourneyWiseTask) && healthJourneyWiseTask.length > 0) return true;
+		if (patientTaskMetrics && Object.keys(patientTaskMetrics).length > 0) return true;
+		if (Array.isArray(vitalMetrics) && vitalMetrics.length > 0) return true;
+
+		// Check assessment data
+		if (assessmentMetrics?.CareplanWiseAssessmentCompletionCount?.length > 0) return true;
+		if (assessmentMetrics?.CustomAssessmentCompletionCount?.length > 0) return true;
+		if (assessmentMetrics?.AssessmentQueryResponseDetails?.length > 0) return true;
+
+		return false;
+	});
+
 	function setActiveFeature(feature: string) {
 		activeFeature = feature;
 	}
@@ -251,35 +274,41 @@
 	let currentMetrics = $derived(featureMetrics[activeFeature] || {});
 </script>
 
-<!-- <div class="mt-4 mr-2 sm:mr-8 flex flex-wrap gap-2 sm:gap-4 justify-center md:justify-start"> -->
-<div class="my-6 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:flex lg:gap-6">
-	{#each features as feature}
-		<button
-			onclick={() => setActiveFeature(feature)}
-			class="tabs-btn
-					{activeFeature === feature ? 'border outline-2 ' : 'border border-transparent'} 
-					"
-			style={activeFeature === feature
-				? ' border-color: var(--color-active); outline-color: var(--color-outline);'
-				: ''}
-		>
-			{feature}
-		</button>
-	{/each}
-</div>
+{#if hasAnyFeatureSpecificData}
+	<!-- <div class="mt-4 mr-2 sm:mr-8 flex flex-wrap gap-2 sm:gap-4 justify-center md:justify-start"> -->
+	<div class="my-6 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:flex lg:gap-6">
+		{#each features as feature}
+			<button
+				onclick={() => setActiveFeature(feature)}
+				class="tabs-btn
+						{activeFeature === feature ? 'border outline-2 ' : 'border border-transparent'}
+						"
+				style={activeFeature === feature
+					? ' border-color: var(--color-active); outline-color: var(--color-outline);'
+					: ''}
+			>
+				{feature}
+			</button>
+		{/each}
+	</div>
 
-{#key activeFeature}
-	{#if activeFeature === 'Assessment'}
-		<AssessmentMetrics {assessmentMetrics} />
-	{:else if features.includes(activeFeature) && Object.keys(currentMetrics).length > 0}
-		<Graph
-			feature={activeFeature}
-			{...currentMetrics}
-			{medicationManagementdata}
-			{healthJourneyWiseTask}
-			{overallHealthJourneyTaskData}
-			{patientTaskMetrics}
-			{vitalMetrics}
-		/>
-	{/if}
-{/key}
+	{#key activeFeature}
+		{#if activeFeature === 'Assessment'}
+			<AssessmentMetrics {assessmentMetrics} />
+		{:else if features.includes(activeFeature) && Object.keys(currentMetrics).length > 0}
+			<Graph
+				feature={activeFeature}
+				{...currentMetrics}
+				{medicationManagementdata}
+				{healthJourneyWiseTask}
+				{overallHealthJourneyTaskData}
+				{patientTaskMetrics}
+				{vitalMetrics}
+			/>
+		{/if}
+	{/key}
+{:else}
+	<div class="flex min-h-[60vh] items-center justify-center">
+		<EmptyState message="Data Not Available" />
+	</div>
+{/if}

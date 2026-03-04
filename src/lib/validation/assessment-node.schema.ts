@@ -52,12 +52,13 @@ export const createOrUpdateSchema = z.object({
         message: "RawData must be a valid JSON object.",
     }),
 
-    Sequence: z
-        .number({
+    Sequence: z.preprocess(
+        (val) => (val === '' || val === null || val === undefined || (typeof val === 'number' && isNaN(val)) ? undefined : val),
+        z.number({
             required_error: "Sequence is required.",
             invalid_type_error: "Sequence must be a number."
-        })
-        .optional(),
+        }).optional()
+    ),
 
     QueryType: z
         .string({

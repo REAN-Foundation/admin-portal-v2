@@ -3,6 +3,8 @@
 	import PieChart from '$lib/components/analytics/PieChart.svelte';
 	import RetentionGraphs from '$lib/components/analytics/RetentionGraphs.svelte';
 	import { Helper } from '$lib/utils/helper';
+	import { hasChartData } from '$lib/utils/chart.utils';
+	import EmptyState from '$lib/components/analytics/EmptyState.svelte';
 
 	/////////////////////////////////////////////////
 
@@ -188,7 +190,7 @@
 							identify the popularity and utility of features among users.
 						</p>
 					</div>
-					{#if accessFrequencyData.length > 0}
+					{#if hasChartData(accessFrequencyData)}
 						<div class="h-96">
 							<BarChart
 								dataSource={accessFrequencyData}
@@ -197,14 +199,7 @@
 							/>
 						</div>
 					{:else}
-						<div class="h-[400px] w-[400px] p-4">
-							<p class="justify-left flex items-center text-2xl">
-								<!-- Access Frequency -->
-							</p>
-							<p class="mt-28 flex items-center justify-center text-xl leading-3">
-								Data Not Available
-							</p>
-						</div>
+						<EmptyState />
 					{/if}
 				</div>
 			</div>
@@ -219,7 +214,7 @@
 						total number of active users per month.
 					</p>
 				</div>
-				{#if engagementRateData.length > 0}
+				{#if hasChartData(engagementRateData)}
 					<div class="h-96">
 						<RetentionGraphs
 							dataSource={engagementRateData}
@@ -228,12 +223,7 @@
 						/>
 					</div>
 				{:else}
-					<div class="h-[400px] w-[400px] p-4">
-						<p class="justify-left flex items-center text-2xl"></p>
-						<p class="mt-28 flex items-center justify-center text-xl leading-3">
-							Data Not Available
-						</p>
-					</div>
+					<EmptyState />
 				{/if}
 			</div>
 		</div>
@@ -266,7 +256,7 @@
 						</select>
 					</div>
 				</div>
-				{#if selectedGraph === 'graph1' && retentionRateDaysData.length > 0}
+				{#if selectedGraph === 'graph1' && hasChartData(retentionRateDaysData)}
 					<div class="h-96">
 						<RetentionGraphs
 							dataSource={retentionRateDaysData}
@@ -275,11 +265,7 @@
 						/>
 					</div>
 				{:else if selectedGraph === 'graph1'}
-					<div class="h-[400px] w-[400px] p-4">
-						<p class="mt-28 flex items-center justify-center text-xl leading-3">
-							Data Not Available
-						</p>
-					</div>
+					<EmptyState />
 				{:else if selectedGraph === 'graph2'}
 					<div class="h-96">
 						<RetentionGraphs
@@ -316,7 +302,7 @@
 						</select>
 					</div>
 				</div>
-				{#if percentageGraph === 'graph1' && retentionRateIntervalsData.length > 0}
+				{#if percentageGraph === 'graph1' && hasChartData(retentionRateIntervalsData)}
 					<div class="h-96">
 						<RetentionGraphs
 							dataSource={retentionRateIntervalsData}
@@ -325,11 +311,7 @@
 						/>
 					</div>
 				{:else if percentageGraph === 'graph1'}
-					<div class="p-4">
-						<p class="mt-28 flex items-center justify-center text-xl leading-3">
-							Data Not Available
-						</p>
-					</div>
+					<EmptyState />
 				{:else if percentageGraph === 'graph2'}
 					<div class="h-96">
 						<RetentionGraphs
@@ -369,11 +351,7 @@
 									/>
 								</div>
 							{:else}
-							<div class="flex h-[400px] w-full items-center justify-center p-4">
-								<p class="text-center text-xl ">
-									Data Not Available
-								</p>
-							</div>
+							<EmptyState />
 							{/if}
 						</div>
 					</div>
@@ -392,7 +370,7 @@
 						</p>
 					</div>
 
-					{#if dropOffPointsData.length > 0 && dropOffPointsLabels.length > 0}
+					{#if hasChartData(dropOffPointsData) && hasChartData(dropOffPointsLabels)}
 						<div class="w-full overflow-x-auto px-4 py-2">
 							<table
 								class="border-secondary-100 dark:border-surface-70 mt-2 mb-10 min-w-full rounded-lg border"
@@ -414,11 +392,7 @@
 							</table>
 						</div>
 					{:else}
-					<div class="flex h-[400px] w-full items-center justify-center p-4">
-						<p class="text-center text-xl ">
-							Data Not Available
-						</p>
-					</div>
+					<EmptyState />
 					{/if}
 				</div>
 			</div>
@@ -439,7 +413,7 @@
 							</p>
 						</div>
 
-						{#if healthJourneyWiseTask?.length > 0 && planCodes?.length > 0}
+						{#if hasChartData(healthJourneyWiseTask) && hasChartData(planCodes)}
 							<div class="flex w-full justify-end px-4">
 								<select
 									class="select mb-2 border pl-2"
@@ -460,11 +434,7 @@
 								/>
 							</div>
 						{:else}
-						<div class="flex h-[400px] w-full items-center justify-center p-4">
-							<p class="text-center text-xl ">
-								Data Not Available
-							</p>
-						</div>
+						<EmptyState />
 						{/if}
 					</div>
 				</div>
@@ -482,7 +452,7 @@
 						</p>
 					</div>
 
-					{#if dropOffPointsData.length > 0 && dropOffPointsLabels.length > 0}
+					{#if hasChartData(dropOffPointsData) && hasChartData(dropOffPointsLabels)}
 						<div class="w-full overflow-x-auto px-4 py-2">
 							<table
 								class="border-secondary-100 dark:border-surface-70 mt-2 mb-10 min-w-full rounded-lg border"
@@ -504,11 +474,7 @@
 							</table>
 						</div>
 					{:else}
-					<div class="flex h-[400px] w-full items-center justify-center p-4">
-						<p class="text-center text-xl ">
-							Data Not Available
-						</p>
-					</div>
+					<EmptyState />
 					{/if}
 				</div>
 			</div>
@@ -526,7 +492,7 @@
 							This shows the completion rate of patient tasks, comparing completed tasks and created
 							tasks for both overall and individual task category.
 						</p>
-						{#if categorySpecificData?.length > 0 && taskCategories?.length > 0}
+						{#if hasChartData(categorySpecificData) && hasChartData(taskCategories)}
 							<div class="flex w-full justify-end px-4">
 								<select
 									class="select mb-2 border pl-2"
@@ -549,11 +515,7 @@
 								</div>
 							{/if}
 						{:else}
-							<div class="h-[400px] w-[400px] p-4">
-								<p class="mt-28 flex items-center justify-center text-xl leading-3">
-									Data Not Available
-								</p>
-							</div>
+							<EmptyState />
 						{/if}
 					</div>
 				</div>
@@ -569,7 +531,7 @@
 						challenges to improve feature completion rates.
 					</p>
 
-					{#if dropOffPointsData.length > 0 && dropOffPointsLabels.length > 0}
+					{#if hasChartData(dropOffPointsData) && hasChartData(dropOffPointsLabels)}
 						<div class="w-full overflow-x-auto px-4 py-2">
 							<table
 								class="border-secondary-100 dark:border-surface-70 mt-2 mb-10 min-w-full rounded-lg border"
@@ -591,11 +553,7 @@
 							</table>
 						</div>
 					{:else}
-						<div class="h-[400px] w-[400px] p-4">
-							<p class="mt-28 flex items-center justify-center text-xl leading-3">
-								Data Not Available
-							</p>
-						</div>
+						<EmptyState />
 					{/if}
 				</div>
 			</div>
@@ -633,7 +591,7 @@
 									{:else}
 										<tr>
 											<td class="py-4 text-center text-sm text-gray-500" colspan="2">
-												Data not available.
+												Data Not Available
 											</td>
 										</tr>
 									{/if}
@@ -658,7 +616,7 @@
 							each vital metric and their breakdown into manual entries and device-based entries.
 						</p>
 
-						{#if vitalMetricsData?.length > 0 && vitalNames?.length > 0}
+						{#if hasChartData(vitalMetricsData) && hasChartData(vitalNames)}
 							<div class="flex w-full justify-end px-4">
 								<select
 									class="select mb-2 border pl-2"
@@ -679,11 +637,7 @@
 								/>
 							</div>
 						{:else}
-							<div class="h-[400px] w-[400px] p-4">
-								<p class="mt-28 flex items-center justify-center text-xl leading-3">
-									Data Not Available
-								</p>
-							</div>
+							<EmptyState />
 						{/if}
 					</div>
 				</div>
@@ -699,7 +653,7 @@
 						challenges to improve feature completion rates.
 					</p>
 
-					{#if dropOffPointsData.length > 0 && dropOffPointsLabels.length > 0}
+					{#if hasChartData(dropOffPointsData) && hasChartData(dropOffPointsLabels)}
 						<div class="w-full overflow-x-auto px-4 py-2">
 							<table
 								class="border-secondary-100 dark:border-surface-70 mt-2 mb-10 min-w-full rounded-lg border"
@@ -721,11 +675,7 @@
 							</table>
 						</div>
 					{:else}
-						<div class="h-[400px] w-[400px] p-4">
-							<p class="mt-28 flex items-center justify-center text-xl leading-3">
-								Data Not Available
-							</p>
-						</div>
+						<EmptyState />
 					{/if}
 				</div>
 			</div>
@@ -745,7 +695,7 @@
 							challenges to improve feature completion rates.
 						</p>
 
-						{#if dropOffPointsData.length > 0 && dropOffPointsLabels.length > 0}
+						{#if hasChartData(dropOffPointsData) && hasChartData(dropOffPointsLabels)}
 							<div class="w-full overflow-x-auto px-4 py-2">
 								<table
 									class="border-secondary-100 dark:border-surface-70 mt-2 mb-10 min-w-full rounded-lg border"
@@ -767,11 +717,7 @@
 								</table>
 							</div>
 						{:else}
-							<div class="h-[400px] w-[400px] p-4">
-								<p class="mt-28 flex items-center justify-center text-xl leading-3">
-									Data Not Available
-								</p>
-							</div>
+							<EmptyState />
 						{/if}
 					</div>
 				</div>

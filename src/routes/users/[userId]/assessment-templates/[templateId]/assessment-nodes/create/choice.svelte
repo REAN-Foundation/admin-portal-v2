@@ -28,6 +28,16 @@
 			optionArray[index].ProviderGivenCode = optionArray[index].Text;
 		}
 	}
+
+	// Trim option text on blur and sync ProviderGivenCode
+	function trimAndUpdateOption(index) {
+		if (optionArray[index]) {
+			optionArray[index].Text = (optionArray[index].Text ?? '').trim();
+			if (optionArray[index].Text) {
+				optionArray[index].ProviderGivenCode = optionArray[index].Text;
+			}
+		}
+	}
 </script>
 
 <div class="dark:border-surface-700 my-2 flex flex-col gap-2 rounded border p-2">
@@ -39,7 +49,7 @@
 				name="options"
 				bind:value={optionArray[i].Text}
 				placeholder="Add option here..."
-				onblur={() => updateProviderCode(i)}
+				onblur={() => trimAndUpdateOption(i)}
 				oninput={() => updateProviderCode(i)}
 			/>
 

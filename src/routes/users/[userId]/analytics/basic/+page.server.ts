@@ -2,78 +2,119 @@ import { error, type RequestEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getUserAnalytics } from '../../../../api/services/user-analytics/user-analytics';
 import { getDailyStatistics, getDailyTenantStatistics } from '../../../../api/services/reancare/statistics';
-import { redirect } from 'sveltekit-flash-message/server';
-import { errorMessage } from '$lib/utils/message.utils';
+// import { redirect } from 'sveltekit-flash-message/server';
+// import { errorMessage } from '$lib/utils/message.utils';
 import { TimeHelper } from '$lib/utils/time.helper';
 import { DateStringFormat } from '$lib/types/time.types';
 
 ////////////////////////////////////////////////////////////////////////////
 
+const defaultUserCountStats = {
+    TotalUsers: { Count: 0, Ratio: 0 },
+    NotDeletedUsers: { Count: 0, Ratio: 0 },
+    UsersWithActiveSession: { Count: 0, Ratio: 0 },
+    DeletedUsers: { Count: 0, Ratio: 0 },
+    EnrolledUsers: { Count: 0, Ratio: 0 }
+};
+
+const defaultBasicStatistics = {
+    TotalUsers: 0,
+    TotalPatients: 0,
+    TotalActivePatients: 0,
+    StartDate: null,
+    EndDate: null,
+    PatientRegistrationHistory: [],
+    PatientDeregistrationHistory: [],
+    UsersDistributionByRole: [],
+    ActiveUsersCountAtEndOfMonth: []
+};
+
+const defaultData = {
+    sessionId: '',
+    basicStatistics: defaultBasicStatistics,
+    overallUsersData: defaultUserCountStats,
+    ageWiseUsers: [],
+    genderWiseUsers: [],
+    maritalStatusWiseUsers: [],
+    majorAilment: [],
+    addictionDistribution: [],
+    deviceDetailWiseUsers: [],
+    userCountStats: defaultUserCountStats,
+    yearWiseAgeDetails: [],
+    yearWiseGenderDetails: [],
+    yearWiseMaritalDetails: [],
+    yearWiseMajorAilmentDistributionDetails: [],
+    yearWiseAddictionDistributionDetails: [],
+    deviceDetailsByYears: [],
+    years: [],
+    tenantCode: '',
+    tenantName: '',
+    title: 'Dashboard-Home-Combined'
+};
+
 export const load: PageServerLoad = async (event: RequestEvent) => {
     const sessionId = event.cookies.get('sessionId');
-    const userId = event.params.userId;
-    const today = new Date();
-    const formattedDate = TimeHelper.getDateString(today, DateStringFormat.YYYY_MM_DD);
-    const tenantCode = event.locals.sessionUser.tenantCode;
-
-    // Get User Analytics
-    const response = await getUserAnalytics(sessionId ?? '', formattedDate ?? '', tenantCode);
-    if (!response) {
-        throw error(404, 'Daily user statistics data not found');
-    }
-    if (response.Status === 'Failure') {
-        throw redirect(303, `/users/${userId}/home`,
-            errorMessage('Latest basic statistics analytics report not available.'),
-            event
-        );
-    }
-
-    const basicStatistics = response.Data.BasicStatistics;
-
-    // User Stats Logic
-    let userStatsResponse;
+    // const userId = event.params.userId;
 
     if (!event.locals.sessionUser) {
         throw error(401, 'Unauthorized Access');
     }
 
-    if (event.locals.sessionUser.roleName === 'System admin' ||
-        event.locals.sessionUser.roleName === 'System user'
+    const roleName = event.locals.sessionUser.roleName;
+    if (
+        roleName !== 'System admin' &&
+        roleName !== 'System user' &&
+        roleName !== 'Tenant admin' &&
+        roleName !== 'Tenant user'
     ) {
-        userStatsResponse = await getDailyStatistics(sessionId ?? '');
-    } else if (event.locals.sessionUser.roleName === 'Tenant admin' ||
-        event.locals.sessionUser.roleName === 'Tenant user'
-    ) {
-        userStatsResponse = await getDailyTenantStatistics(sessionId ?? '', event.locals.sessionUser.tenantId ?? '');
-    } else {
         throw error(401, 'Unauthorized Access');
     }
 
-    if (!userStatsResponse) {
-        throw error(404, 'Daily user statistics data not found');
-    }
-    if (userStatsResponse.Status === 'failure' || userStatsResponse.HttpCode !== 200) {
-        throw error(userStatsResponse.HttpCode, userStatsResponse.Message);
+    const tenantCode = event.locals.sessionUser.tenantCode;
+    const tenantName = event.locals.sessionUser.tenantName;
+
+    // Get User Analytics
+    let basicStatistics = defaultBasicStatistics;
+    try {
+        const today = new Date();
+        const formattedDate = TimeHelper.getDateString(today, DateStringFormat.YYYY_MM_DD);
+        const response = await getUserAnalytics(sessionId ?? '', formattedDate ?? '', tenantCode);
+        if (response && response.Status !== 'Failure' && response.Data?.BasicStatistics) {
+            basicStatistics = response.Data.BasicStatistics;
+        }
+    } catch (err) {
+        console.error('Failed to fetch user analytics:', err);
     }
 
-    const overallUsersData = userStatsResponse.Data.DailyStatistics.DashboardStats.UserStatistics.UsersCountStats;
-    const ageWiseUsers = userStatsResponse.Data.DailyStatistics.DashboardStats.UserStatistics.AgeWiseUsers;
-    const genderWiseUsers = userStatsResponse.Data.DailyStatistics.DashboardStats.UserStatistics.GenderWiseUsers;
-    const maritalStatusWiseUsers = userStatsResponse.Data.DailyStatistics.DashboardStats.UserStatistics.MaritalStatusWiseUsers;
-    // const countryWiseUsers = userStatsResponse.Data.DailyStatistics.DashboardStats.UserStatistics.CountryWiseUsers;
-    const majorAilment = userStatsResponse.Data.DailyStatistics.DashboardStats.UserStatistics.MajorAilmentDistribution;
-    const addictionDistribution = userStatsResponse.Data.DailyStatistics.DashboardStats.UserStatistics.AddictionDistribution;
-    const deviceDetailWiseUsers = userStatsResponse.Data.DailyStatistics.DashboardStats.UserStatistics.DeviceDetailWiseUsers;
-    const userCountStats = userStatsResponse.Data.DailyStatistics.DashboardStats.UserStatistics.UsersCountStats;
-    const deviceDetailsByYears = userStatsResponse.Data.DailyStatistics.DashboardStats.UserStatistics.YearWiseDeviceDetailDistribution;
+    // User Stats Logic
+    let userStatsResponse;
+    try {
+        if (roleName === 'System admin' || roleName === 'System user') {
+            userStatsResponse = await getDailyStatistics(sessionId ?? '');
+        } else {
+            userStatsResponse = await getDailyTenantStatistics(sessionId ?? '', event.locals.sessionUser.tenantId ?? '');
+        }
+    } catch (err) {
+        console.error('Failed to fetch daily statistics:', err);
+        return { ...defaultData, sessionId, basicStatistics, tenantCode, tenantName };
+    }
 
-    const yearWiseAgeDetails = userStatsResponse.Data.DailyStatistics.DashboardStats.UserStatistics.YearWiseAgeDetails;
-    const yearWiseGenderDetails = userStatsResponse.Data.DailyStatistics.DashboardStats.UserStatistics.YearWiseGenderDetails;
-    const yearWiseMaritalDetails = userStatsResponse.Data.DailyStatistics.DashboardStats.UserStatistics.YearWiseMaritalDetails;
-    const yearWiseMajorAilmentDistributionDetails = userStatsResponse.Data.DailyStatistics.DashboardStats.UserStatistics.YearWiseMajorAilmentDistributionDetails;
-    const yearWiseAddictionDistributionDetails = userStatsResponse.Data.DailyStatistics.DashboardStats.UserStatistics.YearWiseAddictionDistributionDetails;
+    if (
+        !userStatsResponse ||
+        userStatsResponse.Status === 'failure' ||
+        userStatsResponse.HttpCode !== 200 ||
+        !userStatsResponse.Data?.DailyStatistics?.DashboardStats
+    ) {
+        return { ...defaultData, sessionId, basicStatistics, tenantCode, tenantName };
+    }
+
+    const userStatistics = userStatsResponse.Data.DailyStatistics.DashboardStats.UserStatistics;
+    if (!userStatistics) {
+        return { ...defaultData, sessionId, basicStatistics, tenantCode, tenantName };
+    }
+
     const years: any[] = [];
-    const yearWiseUserCount = userStatsResponse.Data.DailyStatistics.DashboardStats.UserStatistics.YearWiseUserCount;
+    const yearWiseUserCount = userStatistics.YearWiseUserCount ?? [];
     yearWiseUserCount.forEach((value: any) => {
         years.push({
             year: value.year
@@ -83,24 +124,23 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
     return {
         sessionId,
         basicStatistics,
-        overallUsersData,
-        ageWiseUsers,
-        genderWiseUsers,
-        maritalStatusWiseUsers,
-        // countryWiseUsers,
-        majorAilment,
-        addictionDistribution,
-        deviceDetailWiseUsers,
-        userCountStats,
-        yearWiseAgeDetails,
-        yearWiseGenderDetails,
-        yearWiseMaritalDetails,
-        yearWiseMajorAilmentDistributionDetails,
-        yearWiseAddictionDistributionDetails,
-        deviceDetailsByYears,
+        overallUsersData: userStatistics.UsersCountStats ?? defaultUserCountStats,
+        ageWiseUsers: userStatistics.AgeWiseUsers ?? [],
+        genderWiseUsers: userStatistics.GenderWiseUsers ?? [],
+        maritalStatusWiseUsers: userStatistics.MaritalStatusWiseUsers ?? [],
+        majorAilment: userStatistics.MajorAilmentDistribution ?? [],
+        addictionDistribution: userStatistics.AddictionDistribution ?? [],
+        deviceDetailWiseUsers: userStatistics.DeviceDetailWiseUsers ?? [],
+        userCountStats: userStatistics.UsersCountStats ?? defaultUserCountStats,
+        yearWiseAgeDetails: userStatistics.YearWiseAgeDetails ?? [],
+        yearWiseGenderDetails: userStatistics.YearWiseGenderDetails ?? [],
+        yearWiseMaritalDetails: userStatistics.YearWiseMaritalDetails ?? [],
+        yearWiseMajorAilmentDistributionDetails: userStatistics.YearWiseMajorAilmentDistributionDetails ?? [],
+        yearWiseAddictionDistributionDetails: userStatistics.YearWiseAddictionDistributionDetails ?? [],
+        deviceDetailsByYears: userStatistics.YearWiseDeviceDetailDistribution ?? [],
         years,
-        tenantCode: event.locals.sessionUser.tenantCode,
-        tenantName: event.locals.sessionUser.tenantName,
+        tenantCode,
+        tenantName,
         title: 'Dashboard-Home-Combined'
     };
 };

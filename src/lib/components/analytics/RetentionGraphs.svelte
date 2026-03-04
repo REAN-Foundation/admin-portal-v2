@@ -1,19 +1,22 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import {
 		getDoughnutColors,
 		getTickColorLight,
 		getTickColorDark
 	} from '$lib/themes/theme.selector';
+	import { hasChartData } from '$lib/utils/chart.utils';
+	import EmptyState from './EmptyState.svelte';
 	/////////////////////////////////////////////////////////////////////////////
 
 	let { labels, dataSource, title } = $props();
-	// export let rate;
-	console.log('this is title=============', title);
 
-	let barChart: any;
-	let ctx;
+	let isValid = $derived(hasChartData(labels) && hasChartData(dataSource));
+
+	let canvas: HTMLCanvasElement;
+	let chart: any;
+	let observer: MutationObserver | null = null;
 
 	function getThemeColor(): { textColor: string; gridColor: string } {
 		const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
@@ -64,11 +67,14 @@
 				break;
 		}
 	}
-	onMount(() => {
+	function createChart() {
+		if (!isValid || !canvas) return;
 		const { textColor, gridColor } = getThemeColor();
 		selectAxisLabel(title);
-		ctx = barChart.getContext('2d');
-		barChart = new Chart(ctx, {
+		if (chart) chart.destroy();
+		const ctx = canvas.getContext('2d');
+		if (!ctx) return;
+		chart = new Chart(ctx, {
 			type: 'bar',
 			data: {
 				labels: labels,
@@ -173,7 +179,34 @@
 				}
 			}
 		});
+	}
+
+	onMount(() => {
+		if (!isValid) return;
+		createChart();
+
+		observer = new MutationObserver(() => {
+			createChart();
+		});
+		observer.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ['data-theme']
+		});
+
+		return () => {
+			if (chart) chart.destroy();
+			if (observer) observer.disconnect();
+		};
+	});
+
+	onDestroy(() => {
+		if (chart) chart.destroy();
+		if (observer) observer.disconnect();
 	});
 </script>
 
-<canvas class="h-96" bind:this={barChart}></canvas>
+{#if isValid}
+	<canvas class="h-96" bind:this={canvas}></canvas>
+{:else}
+	<EmptyState />
+{/if}
