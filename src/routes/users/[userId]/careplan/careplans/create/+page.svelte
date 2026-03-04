@@ -24,6 +24,7 @@
 	let promise = $state();
 	let careplanCategories = $state(data.careplanCategories);
 
+
 	const userId = page.params.userId;
 	const tenantId = data.sessionUser.tenantId;
 	const createRoute = `/users/${userId}/careplan/careplans/create`;
@@ -46,7 +47,6 @@
 		try {
 			event.preventDefault();
 			errors = {};
-			console.log('keywords', keywords);
 			const payload: CarePlanCreateModel = {
 				Name: name,
 				Description: description,
@@ -80,6 +80,8 @@
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				goto(`${careplansRoute}/${response?.Data?.id}/view`);
+			} else if (response.HttpCode === 409) {
+				errors = { Code: 'CarePlan code already exists. Please enter a different code.' };
 			} else if (response.Errors) {
 				errors = response.Errors;
 			} else {
@@ -89,9 +91,11 @@
 			toastMessage();
 		}
 	};
+
 	$effect(() => {
 		keywordsStr = keywords?.join(', ');
 	});
+
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -127,7 +131,7 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {errors?.code ? 'input-text-error' : ''}"
+							class="input {errors?.Code ? 'input-text-error' : ''}"
 							name="code"
 							placeholder="Enter code here..."
 							bind:value={code}
