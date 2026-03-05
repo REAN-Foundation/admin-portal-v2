@@ -128,7 +128,7 @@
 					: 'variant-soft-secondary'} flex items-center justify-center gap-2 whitespace-nowrap"
 				href={vitalsThresholdSettingsLink}
 			>
-				<Icon icon="mdi:heart-pulse" class="h-5 w-5 shrink-0" />
+				<Icon icon="material-symbols:notifications-outline" class="h-5 w-5 shrink-0" />
 				Alerts
 			</a>
 
