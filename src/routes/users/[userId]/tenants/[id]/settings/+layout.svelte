@@ -166,7 +166,7 @@
 			</a>
 
 			<!-- 8. Form -->
-			<a
+			<!-- <a
 				class="btn {page.url.pathname === formSettingsLink
 					? 'variant-filled-secondary'
 					: 'variant-soft-secondary'} flex items-center justify-center gap-2"
@@ -174,7 +174,7 @@
 			>
 				<Icon icon="fluent-mdl2:tab" class="h-4 w-4" />
 				Forms
-			</a>
+			</a> -->
 		</div>
 	</div>
 </div>
