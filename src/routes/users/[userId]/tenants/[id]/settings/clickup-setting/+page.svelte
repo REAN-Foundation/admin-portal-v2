@@ -185,7 +185,7 @@
 		if (disabled) {
 			addToast({
 				message: 'Nothing to edit !',
-				type: 'info',
+				type: 'warning',
 				timeout: 3000
 			});
 			return;

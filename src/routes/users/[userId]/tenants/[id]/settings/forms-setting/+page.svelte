@@ -29,7 +29,7 @@
 		if (!disabled) {
 			addToast({
 				message: 'This setting is disabled. Please update it from the main settings.',
-				type: 'info',
+				type: 'warning',
 				timeout: 3000
 			});
 			return;
@@ -102,7 +102,7 @@
 			if (!edit) {
 				addToast({
 					message: 'Nothing to edit !',
-					type: 'info',
+					type: 'warning',
 					timeout: 3000
 				});
 				return;
