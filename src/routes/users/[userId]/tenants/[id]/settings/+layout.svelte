@@ -33,7 +33,7 @@
 	const breadCrumbs = $derived.by(() => {
 		const currentPath = page.url.pathname;
 		const settingsPathPrefix = `/users/${userId}/tenants/${tenantId}/settings/`;
-		
+
 		let currentSetting = null;
 		if (currentPath.startsWith(settingsPathPrefix) && currentPath !== settingsPathPrefix) {
 			const pathAfterSettings = currentPath.replace(settingsPathPrefix, '').split('/')[0];
@@ -88,7 +88,7 @@
 		<div
 			class="grid w-full grid-cols-2 gap-2 text-center md:grid-cols-3 xl:flex  xl:w-full"
 		>
-			<!-- Row 1 -->
+			<!-- 1. Common -->
 			<a
 				class="btn {page.url.pathname === basicSettingsLink
 					? 'variant-filled-secondary'
@@ -99,6 +99,7 @@
 				Common
 			</a>
 
+			<!-- 2. Chatbot -->
 			<a
 				class="btn {page.url.pathname === chatBotSettingsLink
 					? 'variant-filled-secondary'
@@ -109,7 +110,8 @@
 				Chat Bot
 			</a>
 
-            <a
+			<!-- 3. Consent -->
+			<a
 				class="btn {page.url.pathname === concentSettingsLink
 					? 'variant-filled-secondary'
 					: 'variant-soft-secondary'} flex items-center justify-center gap-2"
@@ -119,37 +121,18 @@
 				Consent
 			</a>
 
-			<!-- Row 2 -->
+			<!-- 4. Alert -->
 			<a
-				class="btn {page.url.pathname === formSettingsLink
-					? 'variant-filled-secondary'
-					: 'variant-soft-secondary'} flex items-center justify-center gap-2"
-				href={formSettingsLink}
-			>
-				<Icon icon="fluent-mdl2:tab" class="h-4 w-4" />
-				Forms
-			</a>
-
-			<a
-				class="btn {page.url.pathname === followupSettingsLink
+				class="btn {page.url.pathname === vitalsThresholdSettingsLink
 					? 'variant-filled-secondary'
 					: 'variant-soft-secondary'} flex items-center justify-center gap-2 whitespace-nowrap"
-				href={followupSettingsLink}
+				href={vitalsThresholdSettingsLink}
 			>
-				<Icon icon="material-symbols:featured-play-list-outline-rounded" class="h-5 w-5 shrink-0" />
-				Follow-up
+				<Icon icon="mdi:heart-pulse" class="h-5 w-5 shrink-0" />
+				Alerts
 			</a>
 
-			<a
-				class="btn {page.url.pathname === customSettingsLink
-					? 'variant-filled-secondary'
-					: 'variant-soft-secondary'} flex items-center justify-center gap-2 whitespace-nowrap"
-				href={customSettingsLink}
-			>
-				<Icon icon="material-symbols:settings-outline" class="h-5 w-5 shrink-0" />
-				Custom
-			</a>
-
+			<!-- 5. Clickup -->
 			<a
 				class="btn {page.url.pathname === clickUpSettingsLink
 					? 'variant-filled-secondary'
@@ -160,14 +143,37 @@
 				ClickUp
 			</a>
 
+			<!-- 6. Custom -->
 			<a
-				class="btn {page.url.pathname === vitalsThresholdSettingsLink
+				class="btn {page.url.pathname === customSettingsLink
 					? 'variant-filled-secondary'
 					: 'variant-soft-secondary'} flex items-center justify-center gap-2 whitespace-nowrap"
-				href={vitalsThresholdSettingsLink}
+				href={customSettingsLink}
 			>
-				<Icon icon="mdi:heart-pulse" class="h-5 w-5 shrink-0" />
-				Alerts
+				<Icon icon="material-symbols:settings-outline" class="h-5 w-5 shrink-0" />
+				Custom
+			</a>
+
+			<!-- 7. Followup -->
+			<a
+				class="btn {page.url.pathname === followupSettingsLink
+					? 'variant-filled-secondary'
+					: 'variant-soft-secondary'} flex items-center justify-center gap-2 whitespace-nowrap"
+				href={followupSettingsLink}
+			>
+				<Icon icon="material-symbols:featured-play-list-outline-rounded" class="h-5 w-5 shrink-0" />
+				Follow-up
+			</a>
+
+			<!-- 8. Form -->
+			<a
+				class="btn {page.url.pathname === formSettingsLink
+					? 'variant-filled-secondary'
+					: 'variant-soft-secondary'} flex items-center justify-center gap-2"
+				href={formSettingsLink}
+			>
+				<Icon icon="fluent-mdl2:tab" class="h-4 w-4" />
+				Forms
 			</a>
 		</div>
 	</div>
