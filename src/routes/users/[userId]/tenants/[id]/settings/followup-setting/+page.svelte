@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { beforeNavigate } from '$app/navigation';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store.js';
 	import type { ReminderTrigger } from '$lib/types/tenant.settings.types.js';
 	import { FollowupSettingsSchema } from '$lib/validation/tenant.settings.schema';
@@ -8,7 +9,9 @@
 	import ReminderScheduleList from './reminder-schedule-list.svelte';
 	import ReminderScheduleForm from './reminder-schedule-form.svelte';
 	import FollowUpSettings from './follow-up-settings.svelte';
-	import Tooltip from '$lib/components/tooltip.svelte';
+	import SettingsPageHeader from '$lib/components/settings/settings-page-header.svelte';
+	import SettingsSection from '$lib/components/settings/settings-section.svelte';
+	import SettingsFooter from '$lib/components/settings/settings-footer.svelte';
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -28,7 +31,6 @@
 		TimeOfDay: ''
 	});
 	let editingIndex: number | null = null;
-	let openTab: string | null = $state(null);
 	let jsonError = $state('');
 
 	let isFollowupEnabled = $state(data.isFollowupEnabled);
@@ -36,9 +38,12 @@
 	$inspect('isFollowupEnabled', isFollowupEnabled);
 
 	let edit = $state(false);
+	let isSubmitting = $state(false);
+	let originalSnapshot = $state('');
+
 	$inspect('edit', edit);
 
-	const handleEditClick = async () => {
+	const handleToggleEdit = () => {
 		if (!isFollowupEnabled) {
 			addToast({
 				message: 'This setting is disabled. Please update it from the main settings.',
@@ -47,27 +52,25 @@
 			});
 			return;
 		}
-
-		if (!edit) {
-			addToast({
-				message: 'Edit mode enabled.',
-				type: 'info',
-				timeout: 3000
-			});
-			edit = true;
-		} else {
-			addToast({
-				message: 'Edit mode disabled.',
-				type: 'info',
-				timeout: 3000
-			});
-			edit = false;
-		}
+		edit = true;
+		originalSnapshot = JSON.stringify($state.snapshot(followUpSettingUpdateModel));
+		addToast({
+			message: 'Edit mode enabled.',
+			type: 'info',
+			timeout: 3000
+		});
 	};
 
-	function toggleTab(tab: string) {
-		openTab = openTab === tab ? null : tab;
-	}
+	const handleCancelEdit = () => {
+		followUpSettingUpdateModel = JSON.parse(originalSnapshot);
+		edit = false;
+		errors = {};
+		addToast({
+			message: 'Edit mode disabled.',
+			type: 'info',
+			timeout: 3000
+		});
+	};
 
 	// function validateJSON() {
 	// 	try {
@@ -127,6 +130,18 @@
 		}
 	});
 
+	let hasUnsavedChanges = $derived(
+		edit && JSON.stringify($state.snapshot(followUpSettingUpdateModel)) !== originalSnapshot
+	);
+
+	beforeNavigate((navigation) => {
+		if (hasUnsavedChanges) {
+			if (!confirm('You have unsaved changes. Are you sure you want to leave?')) {
+				navigation.cancel();
+			}
+		}
+	});
+
 	$inspect('followUpSettingUpdateModel', followUpSettingUpdateModel);
 
 	function setNestedError(obj: any, path: (string | number)[], value: string) {
@@ -155,6 +170,7 @@
 				});
 				return;
 			}
+			isSubmitting = true;
 			errors = {};
 
 			if (followUpSettingUpdateModel.Source === 'Api') {
@@ -276,6 +292,8 @@
 		} catch (error) {
 			console.log('This is error', error);
 			toastMessage();
+		} finally {
+			isSubmitting = false;
 		}
 	};
 
@@ -345,659 +363,521 @@
 	};
 </script>
 
-<div class="px-5 py-4 ">
-	<div class="mx-auto my-6 border border-[var(--color-outline)] ">
+<div class="px-5 py-4">
+	<div class="mx-auto my-6 border border-[var(--color-outline)]">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<div class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6">
-				<h1 class=" text-xl text-[var(--color-info)]">Follow-up Settings</h1>
-				<div class="flex items-center gap-2 text-end">
-					<Tooltip text={edit ? 'Disable Editing' : 'Enable Editing'} forceShow={true}>
-						<button
-							type="button"
-							class="table-btn variant-filled-secondary gap-1"
-							aria-label={edit ? 'Disable Editing' : 'Enable Editing'}
-							onclick={handleEditClick}
-						>
-							<Icon icon="material-symbols:edit-outline" />
-						</button>
-					</Tooltip>
-					<a
-						href={settingsRoute}
-						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
-					>
-						<Icon icon="material-symbols:close-rounded" class=" h-5" />
-					</a>
-				</div>
-			</div>
-			<div class="flex flex-col space-y-4">
-				<table class="table-c">
-					<thead>
-					</thead>
-					<tbody>
-						<tr>
-							<td
-								><label for="source" class="flex items-center space-x-2 text-[var(--color-info)]">
-									<span class="text-sm ">Source</span>
-								</label></td
+			<SettingsPageHeader
+				title="Follow-up Settings"
+				description="Configure follow-up data source and reminder schedules."
+				isEditing={edit}
+				featureEnabled={isFollowupEnabled}
+				{hasUnsavedChanges}
+				closeHref={settingsRoute}
+				onToggleEdit={handleToggleEdit}
+				onCancelEdit={handleCancelEdit}
+			/>
+			<div class="flex flex-col space-y-4 px-5 py-4">
+				<SettingsSection title="Data Source" description="Select the follow-up data source.">
+					<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
+						<label for="source" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+							Source
+						</label>
+						<div class="w-full md:w-[70%]">
+							<select
+								bind:value={followUpSettingUpdateModel.Source}
+								class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+								disabled={!edit || !isFollowupEnabled}
 							>
-
-							{#if isFollowupEnabled && edit}
-								<td>
-									<select
-										bind:value={followUpSettingUpdateModel.Source}
-										class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-									>
-										<option value="None" selected>None</option>
-										<option value="File">Files</option>
-										<option value="Api">API</option>
-									</select>
-									{#if errors?.Source}
-										<p class="text-error">{errors?.Source}</p>
-									{/if}
-								</td>
-							{:else}
-								<td>
-									<select
-										bind:value={followUpSettingUpdateModel.Source}
-										class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-										disabled={!edit}
-									>
-										<option value="None" selected>None</option>
-										<option value="File">Files</option>
-										<option value="Api">API</option>
-									</select>
-									{#if errors?.Source}
-										<p class="text-error">{errors?.Source}</p>
-									{/if}
-								</td>
+								<option value="None" selected>None</option>
+								<option value="File">Files</option>
+								<option value="Api">API</option>
+							</select>
+							{#if errors?.Source}
+								<p class="text-error">{errors?.Source}</p>
 							{/if}
-						</tr>
-						{#if followUpSettingUpdateModel.Source === 'File' || followUpSettingUpdateModel.Source === 'Api'}
-							{#if followUpSettingUpdateModel.Source === 'File'}
-								<tr>
-									<td>
-										<label for="format" class="text-sm text-[var(--color-info)]"
-											>Column Format
-											<span class="text-red-700">*</span>
-										</label>
-									</td>
-									<td>
-										<textarea
-											cols="30"
-											rows="6"
-											bind:value={followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat}
-											placeholder="Column format in JSON format"
-											class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-											oninput={validateJSON}
-											disabled={!edit}
-										></textarea>
+						</div>
+					</div>
+				</SettingsSection>
 
-										{#if jsonError || errors?.FileUploadSettings?.FileColumnFormat}
-											<p class="text-error">
-												{jsonError || errors?.FileUploadSettings?.FileColumnFormat}
-											</p>
-										{/if}
-										<!-- {#if errors?.FileUploadSettings.FileColumnFormat}
-												<p class="text-error">{FileUploadSettings.FileColumnFormat}</p>
-											{/if} -->
-									</td>
-								</tr>
+				{#if followUpSettingUpdateModel.Source === 'File'}
+					<SettingsSection title="File Upload Configuration" description="Configure file-based follow-up settings.">
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-start">
+							<label for="format" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								Column Format <span class="text-red-700">*</span>
+							</label>
+							<div class="w-full md:w-[70%]">
+								<textarea
+									cols="30"
+									rows="6"
+									bind:value={followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat}
+									placeholder="Column format in JSON format"
+									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									oninput={validateJSON}
+									disabled={!edit}
+								></textarea>
+								{#if jsonError || errors?.FileUploadSettings?.FileColumnFormat}
+									<p class="text-error">
+										{jsonError || errors?.FileUploadSettings?.FileColumnFormat}
+									</p>
+								{/if}
+							</div>
+						</div>
 
-								<tr>
-									<td>
-										<label for="fileType" class="text-[var(--color-info)]"
-											>File Type <span class="text-red-700">*</span></label
-										>
-									</td>
-									<td>
-										<select
-											bind:value={followUpSettingUpdateModel.FileUploadSettings.FileType}
-											class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-											disabled={!edit}
-										>
-											<option value="" disabled selected>Select file type</option>
-											<option value="csv">CSV</option>
-											<option value="json">JSON</option>
-											<option value="xlsx">Excel</option>
-											<option value="xml">XML</option>
-											<option value="txt">Text</option>
-											<option value="pdf">PDF</option>
-										</select>
-										<!-- {#if errors?.FileUploadSettings}
-												<p class="text-error">{errors?.FileUploadSettings}</p>
-											{/if} -->
-										{#if errors?.FileUploadSettings?.FileType}
-											<p class="text-error">{errors.FileUploadSettings.FileType}</p>
-										{/if}
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<label for="Schedule" class="text-[var(--color-info)]">
-											Reminder Schedules <span class="text-red-700">*</span></label
-										>
-									</td>
-									<td>
-										<button
-											onclick={(event) => {
-												event.preventDefault();
-												showReminderModal = edit;
-											}}
-											disabled={!edit}
-											class="table-btn variant-filled-secondary gap-1 text-[var(--color-info)]"
-										>
-											Add Schedule
-										</button>
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
+							<label for="fileType" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								File Type <span class="text-red-700">*</span>
+							</label>
+							<div class="w-full md:w-[70%]">
+								<select
+									bind:value={followUpSettingUpdateModel.FileUploadSettings.FileType}
+									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									disabled={!edit}
+								>
+									<option value="" disabled selected>Select file type</option>
+									<option value="csv">CSV</option>
+									<option value="json">JSON</option>
+									<option value="xlsx">Excel</option>
+									<option value="xml">XML</option>
+									<option value="txt">Text</option>
+									<option value="pdf">PDF</option>
+								</select>
+								{#if errors?.FileUploadSettings?.FileType}
+									<p class="text-error">{errors.FileUploadSettings.FileType}</p>
+								{/if}
+							</div>
+						</div>
 
-										{#if errors?.FileUploadSettings?.ReminderSchedule}
-											<p class="text-error">{errors?.FileUploadSettings?.ReminderSchedule}</p>
-										{/if}
-									</td>
-								</tr>
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
+							<label for="Schedule" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								Reminder Schedules <span class="text-red-700">*</span>
+							</label>
+							<div class="w-full md:w-[70%]">
+								<button
+									onclick={(event) => {
+										event.preventDefault();
+										showReminderModal = edit;
+									}}
+									disabled={!edit}
+									class="table-btn variant-filled-secondary gap-1 text-[var(--color-info)]"
+								>
+									Add Schedule
+								</button>
+								{#if errors?.FileUploadSettings?.ReminderSchedule}
+									<p class="text-error">{errors?.FileUploadSettings?.ReminderSchedule}</p>
+								{/if}
+							</div>
+						</div>
 
-								<ReminderScheduleList
-									bind:reminderSchedule={
-										followUpSettingUpdateModel.FileUploadSettings.ReminderSchedule
-									}
-									{deleteSchedule}
-									{editSchedule}
-									{edit}
+						<ReminderScheduleList
+							bind:reminderSchedule={
+								followUpSettingUpdateModel.FileUploadSettings.ReminderSchedule
+							}
+							{deleteSchedule}
+							{editSchedule}
+							{edit}
+						/>
+					</SettingsSection>
+				{/if}
+
+				{#if followUpSettingUpdateModel.Source === 'Api'}
+					<SettingsSection title="Authentication Endpoint" collapsible={true} defaultOpen={false}>
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
+							<label for="method" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								API Config Method
+							</label>
+							<div class="w-full md:w-[70%]">
+								<select
+									bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Method}
+									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									disabled={!edit}
+								>
+									<option value="" disabled selected>Select Method</option>
+									<option value="GET">GET</option>
+									<option value="POST">POST</option>
+									<option value="PUT">PUT</option>
+									<option value="DELETE">DELETE</option>
+									<option value="PATCH">PATCH</option>
+								</select>
+								{#if errors?.ApiIntegrationSettings?.Auth?.Method}
+									<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.Method}</p>
+								{/if}
+							</div>
+						</div>
+
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
+							<label for="baseUrl" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								API Base URL
+							</label>
+							<div class="w-full md:w-[70%]">
+								<input
+									bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Url}
+									placeholder="Base URL"
+									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									disabled={!edit}
 								/>
-							{/if}
-
-							{#if followUpSettingUpdateModel.Source === 'Api'}
-								<tr class="bg-gray-100">
-									<td class="">
-										<label for="source" class="text-sm font-semibold text-[var(--color-info)]"
-											>Authentication Endpoint</label
-										>
-									</td>
-									<td>
-										<button
-											class="flex w-full items-center justify-between"
-											type="button"
-											onclick={() => toggleTab('auth')}
-										>
-											<span
-												class="ml-auto transition-transform duration-300"
-												class:rotate-180={openTab === 'auth'}
-											>
-												<Icon icon="icon-park-outline:down" width="16" height="16" class="h-5 w-5" />
-											</span>
-										</button>
-									</td>
-								</tr>
-
-								{#if openTab === 'auth'}
-									<tr>
-										<td>
-											<!-- <div class="space-y-2">
-										<div class="flex flex-row"> -->
-											<label for="method" class="text-[var(--color-info)]"> API Config Method </label>
-											<!-- </div> -->
-										</td>
-
-										<td>
-											<select
-												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Method}
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-												disabled={!edit}
-											>
-												<option value="" disabled selected>Select Method</option>
-												<option value="GET">GET</option>
-												<option value="POST">POST</option>
-												<option value="PUT">PUT</option>
-												<option value="DELETE">DELETE</option>
-												<option value="PATCH">PATCH</option>
-											</select>
-											{#if errors?.ApiIntegrationSettings?.Auth?.Method}
-												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.Method}</p>
-											{/if}
-										</td>
-									</tr>
-									<tr>
-										<td>
-										<label for="baseUrl" class="text-[var(--color-info)]">API Base URL </label>
-										</td>
-										<td>
-											<input
-												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Url}
-												placeholder="Base URL"
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-												disabled={!edit}
-											/>
-											{#if errors?.ApiIntegrationSettings?.Auth?.Url}
-												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.Url}</p>
-											{/if}
-										</td>
-									</tr>
-
-									<tr>
-										<td>
-											<!-- <div class="flex flex-row"> -->
-											<label for="requestBody" class="text-[var(--color-info)]"> Request Body </label>
-										</td>
-										<td>
-											<input
-												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Body}
-												placeholder="Request Body"
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-												disabled={!edit}
-											/>
-											{#if errors?.ApiIntegrationSettings?.Auth?.Body}
-												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.Body}</p>
-											{/if}
-										</td>
-										<!-- </div> -->
-									</tr>
-									<tr>
-										<td>
-											<label for="queryParams" class="text-[var(--color-info)]"
-												>Request Query Params</label
-											>
-										</td>
-										<td>
-											<FollowUpSettings
-												bind:model={
-													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams
-												}
-												disabled={!edit}
-											/>
-											{#if errors?.ApiIntegrationSettings?.Auth?.QueryParams}
-												<p class="text-error">
-													{errors?.ApiIntegrationSettings?.Auth?.QueryParams}
-												</p>
-											{/if}
-										</td>
-									</tr>
-
-									<tr>
-										<td>
-											<label for="headers" class="text-[var(--color-info)]">Auth Query Headers</label>
-										</td>
-										<td>
-											<FollowUpSettings
-												bind:model={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Headers}
-												disabled={!edit}
-											/>
-											{#if errors?.ApiIntegrationSettings?.Auth?.Headers}
-												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.Headers}</p>
-											{/if}
-										</td>
-									</tr>
-
-									<tr>
-										<td>
-											<label for="tokenPath" class="text-[var(--color-info)]">Token Path </label>
-										</td>
-										<td>
-											<input
-												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenPath}
-												placeholder="Token path (e.g. data.token)"
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-												disabled={!edit}
-											/>
-											{#if errors?.ApiIntegrationSettings?.Auth?.TokenPath}
-												<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.TokenPath}</p>
-											{/if}
-										</td>
-									</tr>
-
-									<tr>
-										<td>
-											<label for="Responsetype" class="text-[var(--color-info)]">
-												Response Type
-											</label>
-										</td>
-										<td>
-											<select
-												bind:value={
-													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.ResponseType
-												}
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-												disabled={!edit}
-											>
-												<option value="" disabled selected>Select Response type</option>
-												<option value="json">JSON</option>
-												<option value="text">Text</option>
-												<option value="form">Form</option>
-												<option value="xml">XML</option>
-											</select>
-											{#if errors?.ApiIntegrationSettings?.Auth?.ResponseType}
-												<p class="text-error">
-													{errors?.ApiIntegrationSettings?.Auth?.ResponseType}
-												</p>
-											{/if}
-										</td>
-									</tr>
+								{#if errors?.ApiIntegrationSettings?.Auth?.Url}
+									<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.Url}</p>
 								{/if}
+							</div>
+						</div>
 
-								<tr class="cursor-pointer bg-gray-100">
-									<td>
-										<label for="fetchconfig" class="text-sm font-semibold text-[var(--color-info)]"
-											>API Fetch Configuration</label
-										>
-									</td>
-									<td>
-										<button
-											class="flex w-full items-center justify-between"
-											type="button"
-											onclick={() => toggleTab('fetch')}
-										>
-											<span
-												class="ml-auto transition-transform duration-300"
-												class:rotate-180={openTab === 'fetch'}
-											>
-												<Icon icon="icon-park-outline:down" width="16" height="16" class="h-5 w-5" />
-											</span>
-										</button>
-									</td>
-								</tr>
-
-								{#if openTab === 'fetch'}
-									<tr>
-										<td>
-											<label for="method text-[var(--color-info)]" class="text-[var(--color-info)]"
-												>API Config Method <span class="text-red-700">*</span></label
-											>
-										</td>
-										<td>
-											<select
-												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Method}
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-												disabled={!edit}
-											>
-												<option value="" disabled selected>Select Fecth Method</option>
-												<option value="GET">GET</option>
-												<option value="POST">POST</option>
-												<option value="PUT">PUT</option>
-												<option value="DELETE">DELETE</option>
-												<option value="PATCH">PATCH</option>
-											</select>
-											{#if errors?.ApiIntegrationSettings?.Fetch?.Method}
-												<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.Method}</p>
-											{/if}
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label for="url" class="text-[var(--color-info)]">
-												URL <span class="text-red-700">*</span></label
-											>
-										</td>
-										<td>
-											<input
-												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Url}
-												placeholder="Base URL"
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-												disabled={!edit}
-											/>
-											{#if errors?.ApiIntegrationSettings?.Fetch?.Url}
-												<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.Url}</p>
-											{/if}
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label for="queryParams" class="text-[var(--color-info)]"
-												>Request Query Params</label
-											>
-										</td>
-										<td>
-											<FollowUpSettings
-												bind:model={
-													followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.QueryParams
-												}
-												disabled={!edit}
-											/>
-											{#if errors?.ApiIntegrationSettings?.Fetch?.QueryParams}
-												<p class="text-error">
-													{errors?.ApiIntegrationSettings?.Fetch?.QueryParams}
-												</p>
-											{/if}
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label for="body" class="text-[var(--color-info)]"> Request Body</label>
-										</td>
-										<td>
-											<input
-												bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Body}
-												placeholder="Request Body"
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-												disabled={!edit}
-											/>
-											{#if errors?.ApiIntegrationSettings?.Fetch?.Body}
-												<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.Body}</p>
-											{/if}
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label for="headers" class="text-[var(--color-info)]">Query Headers </label>
-										</td>
-										<td>
-											<FollowUpSettings
-												bind:model={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Headers}
-												disabled={!edit}
-											/>
-											{#if errors?.ApiIntegrationSettings?.Fetch?.Headers}
-												<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.Headers}</p>
-											{/if}
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label for="requestType" class="text-[var(--color-info)]"> Response Type</label>
-										</td>
-										<td>
-											<select
-												bind:value={
-													followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseType
-												}
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-												disabled={!edit}
-											>
-												<option value="" disabled selected>Select Response type</option>
-												<option value="json">JSON</option>
-												<option value="text">Text</option>
-												<option value="form">Form</option>
-												<option value="xml">XML</option>
-											</select>
-											{#if errors?.ApiIntegrationSettings?.Fetch?.ResponseType}
-												<p class="text-error">
-													{errors?.ApiIntegrationSettings?.Fetch?.ResponseType}
-												</p>
-											{/if}
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label for="responseField" class="text-[var(--color-info)]">
-												Response Field</label
-											>
-										</td>
-										<td>
-											<input
-												bind:value={
-													followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseField
-												}
-												disabled={!edit}
-												placeholder="response field"
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-											/>
-											{#if errors?.ApiIntegrationSettings?.Fetch?.ResponseField}
-												<p class="text-error">
-													{errors.ApiIntegrationSettings?.Fetch?.ResponseField}
-												</p>
-											{/if}
-										</td>
-									</tr>
-								{/if}
-
-								<tr class="cursor-pointer bg-gray-100">
-									<td class=" py-5">
-										<label for="Token" class="font-semibold text-[var(--color-info)]">
-											Token Injection</label
-										>
-									</td>
-									<td>
-										<button
-											class="flex w-full items-center justify-between"
-											type="button"
-											onclick={() => toggleTab('token')}
-										>
-											<span
-												class="ml-auto transition-transform duration-300"
-												class:rotate-180={openTab === 'token'}
-											>
-												<Icon icon="icon-park-outline:down" width="16" height="16" class="h-5 w-5" />
-											</span>
-										</button>
-									</td>
-								</tr>
-								{#if openTab === 'token'}
-									<tr>
-										<td>
-											<label for="tokenLocation" class="text-[var(--color-info)]"
-												>Location <span class="text-red-700"></span></label
-											>
-										</td>
-										<td>
-											<select
-												bind:value={
-													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection
-														.Location
-												}
-												disabled={!edit}
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-											>
-												<option value="" disabled={!edit} selected>Select Location</option>
-												<option value="header">Header</option>
-												<option value="query">Query</option>
-												<option value="body">Body</option>
-											</select>
-											<!-- {#if errors?.ApiIntegrationSettings?.Auth.TokenInjection.Location}
-													<p class="text-error">
-														{errors.ApiIntegrationSettings.Auth.TokenInjection.Location}
-													</p>
-												{/if} -->
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label for="tokenKey" class="text-[var(--color-info)]">
-												Key <span class="text-red-700"></span></label
-											>
-										</td>
-										<td>
-											<input
-												bind:value={
-													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Key
-												}
-												disabled={!edit}
-												placeholder="Token key"
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-											/>
-											{#if errors?.ApiIntegrationSettings?.Auth?.TokenInjection?.Key}
-												<p class="text-error">
-													{errors.ApiIntegrationSettings?.Auth?.TokenInjection?.Key}
-												</p>
-											{/if}
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label for="tokenPrefix" class="text-[var(--color-info)]"> Prefix </label>
-										</td>
-										<td>
-											<input
-												bind:value={
-													followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Prefix
-												}
-												disabled={!edit}
-												placeholder="Token prefix "
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-											/>
-											{#if errors?.ApiIntegrationSettings?.Auth?.TokenInjection?.Prefix}
-												<p class="text-error">
-													{errors.ApiIntegrationSettings?.Auth?.TokenInjection?.Prefix}
-												</p>
-											{/if}
-										</td>
-									</tr>
-								{/if}
-
-								<tr>
-									<td>
-										<label for="source" class="text-[var(--color-info)]"
-											>Schedule Frequency <span class="text-red-700">*</span></label
-										>
-									</td>
-									<td>
-										<div class="space-y-2">
-											<select
-												bind:value={
-													followUpSettingUpdateModel.ApiIntegrationSettings.ScheduleFrequency
-												}
-												disabled={!edit}
-												class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
-											>
-												<option value="" disabled selected>Select Schedule Frequency</option>
-												<option value="daily">Daily</option>
-												<option value="weekly">Weekly</option>
-												<option value="monthly">Monthly</option>
-											</select>
-											{#if errors?.ApiIntegrationSettings?.ScheduleFrequency}
-												<p class="text-error">{errors.ApiIntegrationSettings?.ScheduleFrequency}</p>
-											{/if}
-										</div>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<label for="schedule" class="text-[var(--color-info)]">
-											Reminder Schedules <span class="text-red-700">*</span>
-										</label>
-									</td>
-									<td>
-										<button
-											onclick={(event) => {
-												event.preventDefault();
-												showReminderModal = edit;
-											}}
-											class="table-btn variant-filled-secondary gap-1 text-[var(--color-info)]"
-										>
-											Add Schedule
-										</button>
-										{#if errors?.ApiIntegrationSettings?.ReminderSchedule}
-											<p class="text-error">{errors.ApiIntegrationSettings.ReminderSchedule}</p>
-										{/if}
-									</td>
-								</tr>
-
-								<ReminderScheduleList
-									bind:reminderSchedule={
-										followUpSettingUpdateModel.ApiIntegrationSettings.ReminderSchedule
-									}
-									{deleteSchedule}
-									{editSchedule}
-									{edit}
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
+							<label for="requestBody" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								Request Body
+							</label>
+							<div class="w-full md:w-[70%]">
+								<input
+									bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Body}
+									placeholder="Request Body"
+									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									disabled={!edit}
 								/>
-							{/if}
-						{/if}
-					</tbody>
-				</table>
+								{#if errors?.ApiIntegrationSettings?.Auth?.Body}
+									<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.Body}</p>
+								{/if}
+							</div>
+						</div>
+
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-start">
+							<label for="queryParams" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								Request Query Params
+							</label>
+							<div class="w-full md:w-[70%]">
+								<FollowUpSettings
+									bind:model={
+										followUpSettingUpdateModel.ApiIntegrationSettings.Auth.QueryParams
+									}
+									disabled={!edit}
+								/>
+								{#if errors?.ApiIntegrationSettings?.Auth?.QueryParams}
+									<p class="text-error">
+										{errors?.ApiIntegrationSettings?.Auth?.QueryParams}
+									</p>
+								{/if}
+							</div>
+						</div>
+
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-start">
+							<label for="headers" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								Auth Query Headers
+							</label>
+							<div class="w-full md:w-[70%]">
+								<FollowUpSettings
+									bind:model={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Headers}
+									disabled={!edit}
+								/>
+								{#if errors?.ApiIntegrationSettings?.Auth?.Headers}
+									<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.Headers}</p>
+								{/if}
+							</div>
+						</div>
+
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
+							<label for="tokenPath" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								Token Path
+							</label>
+							<div class="w-full md:w-[70%]">
+								<input
+									bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenPath}
+									placeholder="Token path (e.g. data.token)"
+									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									disabled={!edit}
+								/>
+								{#if errors?.ApiIntegrationSettings?.Auth?.TokenPath}
+									<p class="text-error">{errors?.ApiIntegrationSettings?.Auth?.TokenPath}</p>
+								{/if}
+							</div>
+						</div>
+
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
+							<label for="Responsetype" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								Response Type
+							</label>
+							<div class="w-full md:w-[70%]">
+								<select
+									bind:value={
+										followUpSettingUpdateModel.ApiIntegrationSettings.Auth.ResponseType
+									}
+									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									disabled={!edit}
+								>
+									<option value="" disabled selected>Select Response type</option>
+									<option value="json">JSON</option>
+									<option value="text">Text</option>
+									<option value="form">Form</option>
+									<option value="xml">XML</option>
+								</select>
+								{#if errors?.ApiIntegrationSettings?.Auth?.ResponseType}
+									<p class="text-error">
+										{errors?.ApiIntegrationSettings?.Auth?.ResponseType}
+									</p>
+								{/if}
+							</div>
+						</div>
+					</SettingsSection>
+
+					<SettingsSection title="API Fetch Configuration" collapsible={true} defaultOpen={false}>
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
+							<label for="method" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								API Config Method <span class="text-red-700">*</span>
+							</label>
+							<div class="w-full md:w-[70%]">
+								<select
+									bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Method}
+									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									disabled={!edit}
+								>
+									<option value="" disabled selected>Select Fecth Method</option>
+									<option value="GET">GET</option>
+									<option value="POST">POST</option>
+									<option value="PUT">PUT</option>
+									<option value="DELETE">DELETE</option>
+									<option value="PATCH">PATCH</option>
+								</select>
+								{#if errors?.ApiIntegrationSettings?.Fetch?.Method}
+									<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.Method}</p>
+								{/if}
+							</div>
+						</div>
+
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
+							<label for="url" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								URL <span class="text-red-700">*</span>
+							</label>
+							<div class="w-full md:w-[70%]">
+								<input
+									bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Url}
+									placeholder="Base URL"
+									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									disabled={!edit}
+								/>
+								{#if errors?.ApiIntegrationSettings?.Fetch?.Url}
+									<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.Url}</p>
+								{/if}
+							</div>
+						</div>
+
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-start">
+							<label for="queryParams" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								Request Query Params
+							</label>
+							<div class="w-full md:w-[70%]">
+								<FollowUpSettings
+									bind:model={
+										followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.QueryParams
+									}
+									disabled={!edit}
+								/>
+								{#if errors?.ApiIntegrationSettings?.Fetch?.QueryParams}
+									<p class="text-error">
+										{errors?.ApiIntegrationSettings?.Fetch?.QueryParams}
+									</p>
+								{/if}
+							</div>
+						</div>
+
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
+							<label for="body" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								Request Body
+							</label>
+							<div class="w-full md:w-[70%]">
+								<input
+									bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Body}
+									placeholder="Request Body"
+									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									disabled={!edit}
+								/>
+								{#if errors?.ApiIntegrationSettings?.Fetch?.Body}
+									<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.Body}</p>
+								{/if}
+							</div>
+						</div>
+
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-start">
+							<label for="headers" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								Query Headers
+							</label>
+							<div class="w-full md:w-[70%]">
+								<FollowUpSettings
+									bind:model={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Headers}
+									disabled={!edit}
+								/>
+								{#if errors?.ApiIntegrationSettings?.Fetch?.Headers}
+									<p class="text-error">{errors?.ApiIntegrationSettings?.Fetch?.Headers}</p>
+								{/if}
+							</div>
+						</div>
+
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
+							<label for="requestType" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								Response Type
+							</label>
+							<div class="w-full md:w-[70%]">
+								<select
+									bind:value={
+										followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseType
+									}
+									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									disabled={!edit}
+								>
+									<option value="" disabled selected>Select Response type</option>
+									<option value="json">JSON</option>
+									<option value="text">Text</option>
+									<option value="form">Form</option>
+									<option value="xml">XML</option>
+								</select>
+								{#if errors?.ApiIntegrationSettings?.Fetch?.ResponseType}
+									<p class="text-error">
+										{errors?.ApiIntegrationSettings?.Fetch?.ResponseType}
+									</p>
+								{/if}
+							</div>
+						</div>
+
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
+							<label for="responseField" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								Response Field
+							</label>
+							<div class="w-full md:w-[70%]">
+								<input
+									bind:value={
+										followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseField
+									}
+									disabled={!edit}
+									placeholder="response field"
+									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+								/>
+								{#if errors?.ApiIntegrationSettings?.Fetch?.ResponseField}
+									<p class="text-error">
+										{errors.ApiIntegrationSettings?.Fetch?.ResponseField}
+									</p>
+								{/if}
+							</div>
+						</div>
+					</SettingsSection>
+
+					<SettingsSection title="Token Injection" collapsible={true} defaultOpen={false}>
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
+							<label for="tokenLocation" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								Location
+							</label>
+							<div class="w-full md:w-[70%]">
+								<select
+									bind:value={
+										followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection
+											.Location
+									}
+									disabled={!edit}
+									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+								>
+									<option value="" disabled={!edit} selected>Select Location</option>
+									<option value="header">Header</option>
+									<option value="query">Query</option>
+									<option value="body">Body</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
+							<label for="tokenKey" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								Key
+							</label>
+							<div class="w-full md:w-[70%]">
+								<input
+									bind:value={
+										followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Key
+									}
+									disabled={!edit}
+									placeholder="Token key"
+									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+								/>
+								{#if errors?.ApiIntegrationSettings?.Auth?.TokenInjection?.Key}
+									<p class="text-error">
+										{errors.ApiIntegrationSettings?.Auth?.TokenInjection?.Key}
+									</p>
+								{/if}
+							</div>
+						</div>
+
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
+							<label for="tokenPrefix" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								Prefix
+							</label>
+							<div class="w-full md:w-[70%]">
+								<input
+									bind:value={
+										followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenInjection.Prefix
+									}
+									disabled={!edit}
+									placeholder="Token prefix "
+									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+								/>
+								{#if errors?.ApiIntegrationSettings?.Auth?.TokenInjection?.Prefix}
+									<p class="text-error">
+										{errors.ApiIntegrationSettings?.Auth?.TokenInjection?.Prefix}
+									</p>
+								{/if}
+							</div>
+						</div>
+					</SettingsSection>
+
+					<SettingsSection title="Schedule & Reminders">
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
+							<label for="source" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								Schedule Frequency <span class="text-red-700">*</span>
+							</label>
+							<div class="w-full md:w-[70%]">
+								<select
+									bind:value={
+										followUpSettingUpdateModel.ApiIntegrationSettings.ScheduleFrequency
+									}
+									disabled={!edit}
+									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+								>
+									<option value="" disabled selected>Select Schedule Frequency</option>
+									<option value="daily">Daily</option>
+									<option value="weekly">Weekly</option>
+									<option value="monthly">Monthly</option>
+								</select>
+								{#if errors?.ApiIntegrationSettings?.ScheduleFrequency}
+									<p class="text-error">{errors.ApiIntegrationSettings?.ScheduleFrequency}</p>
+								{/if}
+							</div>
+						</div>
+
+						<div class="my-4 flex flex-col gap-2 md:flex-row md:items-center">
+							<label for="schedule" class="mx-1 w-full font-medium text-[var(--color-info)] md:w-[30%]">
+								Reminder Schedules <span class="text-red-700">*</span>
+							</label>
+							<div class="w-full md:w-[70%]">
+								<button
+									onclick={(event) => {
+										event.preventDefault();
+										showReminderModal = edit;
+									}}
+									class="table-btn variant-filled-secondary gap-1 text-[var(--color-info)]"
+								>
+									Add Schedule
+								</button>
+								{#if errors?.ApiIntegrationSettings?.ReminderSchedule}
+									<p class="text-error">{errors.ApiIntegrationSettings.ReminderSchedule}</p>
+								{/if}
+							</div>
+						</div>
+
+						<ReminderScheduleList
+							bind:reminderSchedule={
+								followUpSettingUpdateModel.ApiIntegrationSettings.ReminderSchedule
+							}
+							{deleteSchedule}
+							{editSchedule}
+							{edit}
+						/>
+					</SettingsSection>
+				{/if}
 			</div>
-			<hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
-			<div class="button-container my-4">
-				{#await promise}
-					<Button type="submit" variant="primary" size="md" text="Submitting..." disabled={true} />
-				{:then data}
-					<Button type="submit" variant="primary" size="md" text="Submit" />
-				{/await}
-			</div>
+
+			<SettingsFooter isEditing={edit} {isSubmitting} onCancel={handleCancelEdit} />
 		</form>
 	</div>
 </div>

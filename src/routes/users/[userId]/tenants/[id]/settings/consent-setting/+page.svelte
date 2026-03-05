@@ -6,8 +6,11 @@
 	import { languages } from '$lib/utils/language';
 	import MessageModal from './message.modal.svelte';
 	import { page } from '$app/state';
+	import { beforeNavigate } from '$app/navigation';
 	import Button from '$lib/components/button/button.svelte';
-	import Tooltip from '$lib/components/tooltip.svelte';
+	import SettingsPageHeader from '$lib/components/settings/settings-page-header.svelte';
+	import SettingsSection from '$lib/components/settings/settings-section.svelte';
+	import SettingsFooter from '$lib/components/settings/settings-footer.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -21,7 +24,8 @@
 	let consentSetting: ConsentSettings = $state(data.consentSettings);
 	let checkConsent = $state(data.chatbotSettings);
 	let edit = $state(false);
-	let promise = $state();
+	let isSubmitting = $state(false);
+	let originalSnapshot = $state('');
 	const settingsRoute = `/users/${userId}/tenants/${tenantId}/settings`;
 	let message = $state(data.consentSettings?.Messages || []);
 	let defaultLangCode = $state('');
@@ -31,24 +35,20 @@
 	let editingMessageIndex: number | null = $state(null);
 	let modalMessage = $state({ LanguageCode: '', Content: '', WebsiteURL: '' });
 
-	const toggleEdit = async () => {
-		if (checkConsent) {
-			if (!edit) {
-				edit = true;
-				addToast({
-					message: 'Edit mode enabled.',
-					type: 'info',
-					timeout: 3000
-				});
-			} else {
-				addToast({
-					message: 'Edit mode disabled.',
-					type: 'info',
-					timeout: 3000
-				});
-				edit = false;
+	let hasUnsavedChanges = $derived(
+		edit && (JSON.stringify({ defualtLang, message: $state.snapshot(message) }) !== originalSnapshot)
+	);
+
+	beforeNavigate((navigation) => {
+		if (hasUnsavedChanges) {
+			if (!confirm('You have unsaved changes. Are you sure you want to leave?')) {
+				navigation.cancel();
 			}
-		} else if (checkConsent === false) {
+		}
+	});
+
+	const handleToggleEdit = () => {
+		if (!checkConsent) {
 			addToast({
 				message: 'This setting is disabled. Please update it from the main settings.',
 				type: 'warning',
@@ -56,6 +56,18 @@
 			});
 			return;
 		}
+		edit = true;
+		originalSnapshot = JSON.stringify({ defualtLang, message: $state.snapshot(message) });
+		addToast({ message: 'Edit mode enabled.', type: 'info', timeout: 3000 });
+	};
+
+	const handleCancelEdit = () => {
+		const snapshot = JSON.parse(originalSnapshot);
+		defualtLang = snapshot.defualtLang;
+		message = snapshot.message;
+		edit = false;
+		errors = {};
+		addToast({ message: 'Edit mode disabled.', type: 'info', timeout: 3000 });
 	};
 
 	function deleteMessage(index: number) {
@@ -86,6 +98,7 @@
 		try {
 			event.preventDefault();
 			errors = {};
+			isSubmitting = true;
 
 			const defaultLangCode = languages.find((l) => l.name === defualtLang)?.code;
 			const hasDefaultLangMessage = message.some((msg) => msg.LanguageCode === defaultLangCode);
@@ -133,6 +146,8 @@
 			});
 		} catch (error) {
 			toastMessage();
+		} finally {
+			isSubmitting = false;
 		}
 	};
 
@@ -160,87 +175,75 @@
 
 <div class="px-5 py-4">
 	<div class="mx-auto my-6 border border-[var(--color-outline)]">
-		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<div class="flex items-center justify-between !rounded-b-none border px-5 py-6 bg-[var(--color-primary)]">
-				<h1 class="text-xl text-[var(--color-info)]">Consent Settings</h1>
-				<div class="flex items-center gap-2 text-end">
-					<Tooltip text={edit ? 'Disable Editing' : 'Enable Editing'} forceShow={true}>
-						<button
-							type="button"
-							class="table-btn variant-filled-secondary gap-1"
-							aria-label={edit ? 'Disable Editing' : 'Enable Editing'}
-							onclick={toggleEdit}
-						>
-							<Icon icon="material-symbols:edit-outline" />
-						</button>
-					</Tooltip>
-					<a
-						href={settingsRoute}
-						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
-					>
-						<Icon icon="material-symbols:close-rounded" class="h-5" />
-					</a>
-				</div>
-			</div>
+		<form onsubmit={async (event) => handleSubmit(event)}>
+			<SettingsPageHeader
+				title="Consent Settings"
+				description="Configure consent messages and default language preferences."
+				isEditing={edit}
+				featureEnabled={!!checkConsent}
+				{hasUnsavedChanges}
+				closeHref={settingsRoute}
+				onToggleEdit={handleToggleEdit}
+				onCancelEdit={handleCancelEdit}
+			/>
 			<div class="flex flex-col space-y-4 px-5 py-4">
-				<div class="my-4 flex flex-col md:flex-row md:items-center">
-					<label
-						class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
-						for="tenantName">Tenant Name <span class="text-red-700">*</span></label
-					>
-					<input
-						type="text"
-						class="input-field w-[70%] {errors?.tenantName ? 'input-text-error' : ''}"
-						name="tenantName"
-						placeholder="Enter name here..."
-						bind:value={tenantName}
-						readOnly
-					/>
-					{#if errors?.Name}
-						<p class="text-error">{errors?.Name}</p>
-					{/if}
-				</div>
-				<div class="my-4 flex flex-col md:flex-row md:items-center">
-					<label
-						class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
-						for="tenantCode">Tenant Code <span class="text-red-700">*</span></label
-					>
-					<input
-						type="text"
-						class="input-field w-[70%] {errors?.tenantCode ? 'input-text-error' : ''}"
-						name="tenantCode"
-						placeholder="Enter tenant code here..."
-						bind:value={tenantCode}
-						readOnly
-					/>
-					{#if errors?.TenantCode}
-						<p class="text-error">{errors?.TenantCode}</p>
-					{/if}
-				</div>
-				<div class="my-4 flex flex-col md:flex-row md:items-center">
-					<label
-						class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
-						for="defaultLanguage">Default Language <span class="text-red-700">*</span></label
-					>
-					<select
-						class=" select w-[70%]"
-						name="defaultLanguage"
-						bind:value={defualtLang}
-						onchange={onDefaultLangChange}
-						disabled={!edit}
-					>
-						<option value="" disabled selected>Select a language</option>
-						{#each languages as lang}
-							<option value={lang.name}>{lang.name}</option>
-						{/each}
-					</select>
-					{#if errors?.DefaultLanguage}
-						<p class="text-error">{errors?.DefaultLanguage}</p>
-					{/if}
-				</div>
-				<div class="mt-4 flex flex-col md:flex-row md:items-center justify-end">
-					<!-- <div class="w-[30%]"></div> -->
-					<!-- <div class="flex w-[70%] justify-end"> -->
+				<SettingsSection title="Consent Details" description="Basic tenant consent configuration.">
+					<div class="my-4 flex flex-col md:flex-row md:items-center">
+						<label
+							class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+							for="tenantName">Tenant Name <span class="text-red-700">*</span></label
+						>
+						<input
+							type="text"
+							class="input-field w-[70%] {errors?.tenantName ? 'input-text-error' : ''}"
+							name="tenantName"
+							placeholder="Enter name here..."
+							bind:value={tenantName}
+							readOnly
+						/>
+						{#if errors?.Name}
+							<p class="text-error">{errors?.Name}</p>
+						{/if}
+					</div>
+					<div class="my-4 flex flex-col md:flex-row md:items-center">
+						<label
+							class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+							for="tenantCode">Tenant Code <span class="text-red-700">*</span></label
+						>
+						<input
+							type="text"
+							class="input-field w-[70%] {errors?.tenantCode ? 'input-text-error' : ''}"
+							name="tenantCode"
+							placeholder="Enter tenant code here..."
+							bind:value={tenantCode}
+							readOnly
+						/>
+						{#if errors?.TenantCode}
+							<p class="text-error">{errors?.TenantCode}</p>
+						{/if}
+					</div>
+					<div class="my-4 flex flex-col md:flex-row md:items-center">
+						<label
+							class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
+							for="defaultLanguage">Default Language <span class="text-red-700">*</span></label
+						>
+						<select
+							class=" select w-[70%]"
+							name="defaultLanguage"
+							bind:value={defualtLang}
+							onchange={onDefaultLangChange}
+							disabled={!edit}
+						>
+							<option value="" disabled selected>Select a language</option>
+							{#each languages as lang}
+								<option value={lang.name}>{lang.name}</option>
+							{/each}
+						</select>
+						{#if errors?.DefaultLanguage}
+							<p class="text-error">{errors?.DefaultLanguage}</p>
+						{/if}
+					</div>
+					<div class="mt-4 flex flex-col md:flex-row md:items-center justify-end">
 						<Button
 							variant="primary"
 							size="sm"
@@ -248,63 +251,60 @@
 							onclick={() => openAddMessageModal()}
 							disabled={!edit}
 						/>
-					<!-- </div> -->
-				<!-- </div> -->
+					</div>
+				</SettingsSection>
+
+				<SettingsSection title="Consent Messages" description="Manage consent messages in different languages.">
+					{#if message.length > 0}
+						<div class="health-system-table-container my-4 shadow">
+							<table class="health-system-table w-full">
+								<thead>
+									<tr>
+										<th>Language </th>
+										<th>Content</th>
+										<th>Website URL</th>
+									</tr>
+								</thead>
+								<tbody>
+									{#each message as msg, index}
+										<tr>
+											<td
+												>{languages.find((l) => l.code === msg.LanguageCode)?.name ||
+													msg.LanguageCode}</td
+											>
+											<td>{msg.Content}</td>
+											<td>{msg.WebsiteURL}</td>
+											<td>
+												<div class="flex flex-row space-x-2">
+													<Icon
+														icon="material-symbols:edit-outline"
+														class="cursor-pointer {!edit ? 'cursor-not-allowed opacity-50' : ''}"
+														onclick={() => edit && openEditMessageModal(index)}
+													/>
+													<Icon
+														icon="material-symbols:delete-outline"
+														class="cursor-pointer text-red-600 {!edit ||
+														msg.LanguageCode === languages.find((l) => l.name === defualtLang)?.code
+															? 'cursor-not-allowed opacity-50'
+															: ''}"
+														onclick={() =>
+															edit &&
+															msg.LanguageCode !==
+																languages.find((l) => l.name === defualtLang)?.code &&
+															deleteMessage(index)}
+													/>
+												</div>
+											</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						</div>
+					{/if}
+				</SettingsSection>
 			</div>
-			{#if message.length > 0}
-				<div class="health-system-table-container my-4 shadow">
-					<table class="health-system-table w-full">
-						<thead>
-							<tr>
-								<th>Language </th>
-								<th>Content</th>
-								<th>Website URL</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each message as msg, index}
-								<tr>
-									<td
-										>{languages.find((l) => l.code === msg.LanguageCode)?.name ||
-											msg.LanguageCode}</td
-									>
-									<td>{msg.Content}</td>
-									<td>{msg.WebsiteURL}</td>
-									<td>
-										<div class="flex flex-row space-x-2">
-											<Icon
-												icon="material-symbols:edit-outline"
-												class="cursor-pointer {!edit ? 'cursor-not-allowed opacity-50' : ''}"
-												onclick={() => edit && openEditMessageModal(index)}
-											/>
-											<Icon
-												icon="material-symbols:delete-outline"
-												class="cursor-pointer text-red-600 {!edit ||
-												msg.LanguageCode === languages.find((l) => l.name === defualtLang)?.code
-													? 'cursor-not-allowed opacity-50'
-													: ''}"
-												onclick={() =>
-													edit &&
-													msg.LanguageCode !==
-														languages.find((l) => l.name === defualtLang)?.code &&
-													deleteMessage(index)}
-											/>
-										</div>
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
-			{/if}
-			<hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
-			<div class="button-container my-4">
-				{#await promise}
-					<Button type="submit" variant="primary" size="md" text="Submitting..." disabled={true} />
-				{:then data}
-					<Button type="submit" variant="primary" size="md" text="Submit" disabled={!edit} />
-				{/await}
-			</div>
+
+			<SettingsFooter isEditing={edit} {isSubmitting} onCancel={handleCancelEdit} />
 		</form>
 	</div>
 </div>

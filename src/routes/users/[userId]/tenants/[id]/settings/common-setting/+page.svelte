@@ -1,13 +1,14 @@
 <script lang="ts">
 	import ExpandableSettings from './tenant-setting.svelte';
 	import Icon from '@iconify/svelte';
-	import Button from '$lib/components/button/button.svelte';
 	import type { PageServerData } from '../$types';
 	import { page } from '$app/state';
+	import { beforeNavigate } from '$app/navigation';
 	import { commonUISettings } from './common-setting.types';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import { CommonSettingsSchema } from '$lib/validation/tenant.settings.schema';
-	import Tooltip from '$lib/components/tooltip.svelte';
+	import SettingsPageHeader from '$lib/components/settings/settings-page-header.svelte';
+	import SettingsFooter from '$lib/components/settings/settings-footer.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 
@@ -18,25 +19,53 @@
 	const settingsRoute = `/users/${userId}/tenants/${tenantId}/settings`;
 
 	let commonSetting = $state(data.commonSettings);
-	let promise = $state();
 	let errors: Record<string, string> = $state({});
-    let disabled = $state(true);
-    let edit = $derived(disabled);
+
+	let isEditing = $state(false);
+	let isSubmitting = $state(false);
+	let originalSnapshot = $state('');
+
+	let hasUnsavedChanges = $derived(
+		isEditing && JSON.stringify($state.snapshot(commonSetting)) !== originalSnapshot
+	);
+
+	beforeNavigate((navigation) => {
+		if (hasUnsavedChanges) {
+			if (!confirm('You have unsaved changes. Are you sure you want to leave?')) {
+				navigation.cancel();
+			}
+		}
+	});
+
+	const handleToggleEdit = () => {
+		isEditing = true;
+		originalSnapshot = JSON.stringify($state.snapshot(commonSetting));
+		addToast({ message: 'Edit mode enabled.', type: 'info', timeout: 3000 });
+	};
+
+	const handleCancelEdit = () => {
+		commonSetting = JSON.parse(originalSnapshot);
+		isEditing = false;
+		errors = {};
+		addToast({ message: 'Edit mode disabled.', type: 'info', timeout: 3000 });
+	};
 
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
 		errors = {};
 
 		try {
-            console.log('disabled', disabled);
-            if (disabled) {
-                addToast({
-                    message: 'Nothing to edit !',
-                    type: 'warning',
-                    timeout: 3000
-                });
-                return;
-            }
+			if (!isEditing) {
+				addToast({
+					message: 'Nothing to edit !',
+					type: 'warning',
+					timeout: 3000
+				});
+				return;
+			}
+
+			isSubmitting = true;
+
 			const validationResult = CommonSettingsSchema.safeParse(commonSetting);
 
 			if (!validationResult.success) {
@@ -56,10 +85,9 @@
 			});
 
 			const response = await res.json();
-            console.log('response@@', response);
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
-				disabled = true;
+				isEditing = false;
 				return;
 			}
 			if (response.Errors) {
@@ -68,71 +96,31 @@
 				toastMessage(response);
 			}
 		} catch (error) {
-            console.log('error', error);
+			console.log('error', error);
 			toastMessage();
+		} finally {
+			isSubmitting = false;
 		}
-	};
-
-	
-	// let edit = $derived(disabled);
-
-	const handleEditClick = async () => {
-        if (disabled) {
-            addToast({
-                message: 'Edit mode enabled.',
-                type: 'info',
-                timeout: 3000
-            });
-            disabled = false;
-        } else {
-            addToast({  
-                message: 'Edit mode disabled.',
-                type: 'info',
-                timeout: 3000
-            });
-            disabled = true;
-        }
-        // disabled = !disabled;
 	};
 </script>
 
 <div class="px-5 py-4">
 	<div class=" mx-auto my-6 border border-[var(--color-outline)]">
-		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-			<div class="flex items-center justify-between !rounded-b-none border  px-5 py-6 bg-[var(--color-primary)]">
-				<h1 class=" text-xl text-[var(--color-info)]">Common Settings</h1>
-				<div class="flex items-center gap-2 text-end">
-					<Tooltip text={disabled ? 'Enable Editing' : 'Disable Editing'} forceShow={true}>
-						<button
-							type="button"
-							class="table-btn variant-filled-secondary gap-1"
-							aria-label={disabled ? 'Enable Editing' : 'Disable Editing'}
-							onclick={handleEditClick}
-						>
-							<Icon icon="material-symbols:edit-outline" />
-						</button>
-					</Tooltip>
-					<a
-						href={settingsRoute}
-						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
-					>
-						<Icon icon="material-symbols:close-rounded" class=" h-5" />
-					</a>
-				</div>
-			</div>
+		<form onsubmit={async (event) => handleSubmit(event)}>
+			<SettingsPageHeader
+				title="Common Settings"
+				description="Configure general tenant settings and feature toggles."
+				bind:isEditing
+				{hasUnsavedChanges}
+				closeHref={settingsRoute}
+				onToggleEdit={handleToggleEdit}
+				onCancelEdit={handleCancelEdit}
+			/>
 			<div class="flex flex-col space-y-4 px-4 py-4">
-				<ExpandableSettings groupedSettings={commonUISettings} bind:commonSetting edit={disabled} />
+				<ExpandableSettings groupedSettings={commonUISettings} bind:commonSetting edit={!isEditing} />
 			</div>
-			
-			<hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
 
-			<div class="button-container my-4 ">
-				{#await promise}
-					<Button type="submit" variant="primary" size="md" text="Submitting..." disabled={true} />
-				{:then data}
-					<Button type="submit" variant="primary" size="md" text="Submit" />
-				{/await}
-			</div>
+			<SettingsFooter {isEditing} {isSubmitting} onCancel={handleCancelEdit} />
 		</form>
 	</div>
 </div>
