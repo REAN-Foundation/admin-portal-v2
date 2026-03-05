@@ -8,8 +8,8 @@ export const createOrUpdateSchema = z.object({
 		})
 		.min(1, { message: 'Name cannot be empty.' })
 		.max(256, { message: 'Name must be at most 256 characters long.' }),
-	AdditionalResources:  z.array(z.string()).optional(),
-	DetailedInformation: z.string().optional(),
-	BriefInformation: z.string().optional(),
-	Tags: z.array(z.string()).optional()
+	AdditionalResources: z.array(z.string()).nullish(),
+	DetailedInformation: z.string().nullish(),
+	BriefInformation: z.string().nullish(),
+	Tags: z.array(z.string()).nullish()
 });
