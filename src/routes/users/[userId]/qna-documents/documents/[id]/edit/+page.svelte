@@ -243,10 +243,6 @@
 		}
 	};
 
-	$effect(() => {
-		keywordsStr = keywords?.join(', ');
-	});
-
 	function handleDrop(event) {
 		event.preventDefault();
 		dragging = false;
@@ -361,8 +357,7 @@
 				<tr class="tables-row">
 					<td class="table-label">Keywords <span class="text-red-700">*</span></td>
 					<td class="table-data">
-						<InputChips bind:keywords name="keywords" id="keywords" />
-						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<InputChips bind:keywords bind:value={keywordsStr} name="keywords" id="keywords" />
 						<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
 					</td>
 				</tr>

@@ -47,7 +47,7 @@
 		symptomId = page.params.id;
 		symptom = data?.symptom?.Symptom;
 		description = data?.symptom?.Description;
-		keywords = data?.symptom?.Tags;
+		keywords = [...(data?.symptom?.Tags ?? [])];
 		language = data?.symptom?.Language;
 		imageResourceId = data?.symptom?.ImageResourceId;
 		errors = {};
@@ -166,9 +166,6 @@
 		}
 	};
 
-	$effect(() => {
-		keywordsStr = keywords?.join(', ');
-	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -215,8 +212,7 @@
 				<tr class="tables-row">
 					<td class="table-label align-top">Tags</td>
 					<td class="table-data">
-						<InputChips bind:keywords name="keywords" id="keywords" />
-						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<InputChips bind:keywords bind:value={keywordsStr} name="keywords" id="keywords" />
 					</td>
 				</tr>
 				<tr class="tables-row">
