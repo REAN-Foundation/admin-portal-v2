@@ -138,6 +138,8 @@
 			});
 
 			consentSetting = validationResult.data;
+			edit = false;
+			originalSnapshot = '';
 
 			addToast({
 				message: 'Consent settings updated successfully.',
@@ -188,7 +190,7 @@
 			/>
 			<div class="flex flex-col space-y-4 px-5 py-4">
 				<SettingsSection title="Consent Details" description="Basic tenant consent configuration.">
-					<div class="my-4 flex flex-col md:flex-row md:items-center">
+					<div class="hidden">
 						<label
 							class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 							for="tenantName">Tenant Name <span class="text-red-700">*</span></label
@@ -205,7 +207,7 @@
 							<p class="text-error">{errors?.Name}</p>
 						{/if}
 					</div>
-					<div class="my-4 flex flex-col md:flex-row md:items-center">
+					<div class="hidden">
 						<label
 							class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]"
 							for="tenantCode">Tenant Code <span class="text-red-700">*</span></label
