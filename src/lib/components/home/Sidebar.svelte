@@ -1,14 +1,24 @@
 <script lang="ts">
 	import { navigating, page } from '$app/state';
+	import { onDestroy } from 'svelte';
 	import Icon from '@iconify/svelte';
 	import { sidebarMenu, type TabDefinition } from './navigation.tabs';
 	import { buildSidebarMenu } from './sidebar.menus';
 	import SidebarNavItems from './SidebarNavItems.svelte';
+	import { tenantSettingsStore } from '$lib/store/general.store';
 	let { showSidebar = $bindable(), navParent, page_, userId, tenantSettings, userRole } = $props();
 
 	let activeTab = $state('Home');
-	const navData = buildSidebarMenu(userId, tenantSettings, userRole);
+	let navData = $state(buildSidebarMenu(userId, tenantSettings, userRole));
 	console.log('Tenant Setting', navData);
+
+	// Re-build sidebar menu when tenant settings store changes
+	const unsubscribe = tenantSettingsStore.subscribe((storeSettings) => {
+		if (storeSettings) {
+			navData = buildSidebarMenu(userId, storeSettings, userRole);
+		}
+	});
+	onDestroy(unsubscribe);
 
 	const sidebarTabs: TabDefinition[] = sidebarMenu();
 	$effect(() => {

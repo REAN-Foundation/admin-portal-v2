@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { beforeNavigate } from '$app/navigation';
 	import Icon from '@iconify/svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import type { CustomSettings, CustomSetting } from '$lib/types/tenant.settings.types.js';
 	import { CustomSettingDataType } from '$lib/types/tenant.settings.types.js';
 	import Button from '$lib/components/button/button.svelte';
-	import Tooltip from '$lib/components/tooltip.svelte';
+	import SettingsPageHeader from '$lib/components/settings/settings-page-header.svelte';
+	import SettingsSection from '$lib/components/settings/settings-section.svelte';
+	import SettingsFooter from '$lib/components/settings/settings-footer.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -15,6 +18,8 @@
 	const settingsRoute = `/users/${userId}/tenants/${tenantId}/settings`;
 	let customSettings: CustomSettings = $state(data.customSettings || {});
 	let isEditing = $state(false);
+	let isSubmitting = $state(false);
+	let originalSnapshot = $state('');
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let newSettingKey = $state('');
@@ -25,6 +30,16 @@
 	let showAddForm = $state(false);
 	// Store stringified versions of array/object values for editing
 	let editValues: Record<string, string> = $state({});
+
+	let hasUnsavedChanges = $derived(isEditing && JSON.stringify(customSettings) !== originalSnapshot);
+
+	beforeNavigate((navigation) => {
+		if (hasUnsavedChanges) {
+			if (!confirm('You have unsaved changes. Are you sure you want to leave this page?')) {
+				navigation.cancel();
+			}
+		}
+	});
 
 	const dataTypeOptions = [
 		{ value: CustomSettingDataType.String, label: 'String' },
@@ -44,31 +59,26 @@
 		return '';
 	};
 
-	const handleEditClick = () => {
-		isEditing = !isEditing;
-		if (isEditing) {
-			addToast({
-					message: 'Edit mode enabled.',
-					type: 'info',
-					timeout: 3000
-				});
-			// Initialize edit values by converting arrays/objects to JSON strings
-			Object.keys(customSettings).forEach(key => {
-				const setting = customSettings[key];
-				if (setting.DataType === CustomSettingDataType.Array || setting.DataType === CustomSettingDataType.Object) {
-					editValues[key] = JSON.stringify(setting.Value ?? null, null, 2);
-				}
-			});
-		} else {
-			addToast({
-					message: 'Edit mode disabled.',
-					type: 'info',
-					timeout: 3000
-				});
-			showAddForm = false;
-			resetNewSettingForm();
-			editValues = {};
-		}
+	const handleToggleEdit = () => {
+		isEditing = true;
+		originalSnapshot = JSON.stringify($state.snapshot(customSettings));
+		editValues = {};
+		Object.keys(customSettings).forEach(key => {
+			const setting = customSettings[key];
+			if (setting.DataType === CustomSettingDataType.Array || setting.DataType === CustomSettingDataType.Object) {
+				editValues[key] = JSON.stringify(setting.Value ?? null, null, 2);
+			}
+		});
+		addToast({ message: 'Edit mode enabled.', type: 'info', timeout: 3000 });
+	};
+
+	const handleCancelEdit = () => {
+		customSettings = JSON.parse(originalSnapshot);
+		isEditing = false;
+		showAddForm = false;
+		resetNewSettingForm();
+		editValues = {};
+		addToast({ message: 'Edit mode disabled.', type: 'info', timeout: 3000 });
 	};
 
 	const resetNewSettingForm = () => {
@@ -89,7 +99,7 @@
 				case CustomSettingDataType.Number:
 					const numberValue = parseFloat(value);
 					if (isNaN(numberValue)) {
-						const errorMessage = settingKey 
+						const errorMessage = settingKey
 							? `${settingKey}: Invalid number format`
 							: 'Invalid number format';
 						addToast({
@@ -223,10 +233,11 @@
 
 	const handleSubmit = async (event: Event) => {
 		try {
+			isSubmitting = true;
 			event.preventDefault();
 			const settingsToSave = { ...customSettings };
 			parseAndValidateEditValues(settingsToSave);
-			
+
 			const response = await fetch(`/api/server/tenants/settings/${tenantId}/CustomSettings`, {
 				method: 'PUT',
 				headers: {
@@ -258,6 +269,8 @@
 				type: 'error',
 				timeout: 3000
 			});
+		} finally {
+			isSubmitting = false;
 		}
 	};
 	const getInputType = (dataType: CustomSettingDataType) => {
@@ -276,27 +289,15 @@
 	<div class="mx-auto my-6 border border-[var(--color-outline)]">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 			<!-- Heading -->
-			<div class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6">
-				<h1 class="text-xl text-[var(--color-info)]">Custom Settings</h1>
-				<div class="flex items-center gap-2 text-end">
-					<Tooltip text={isEditing ? 'Disable Editing' : 'Enable Editing'} forceShow={true}>
-						<button
-							type="button"
-							class="table-btn variant-filled-secondary gap-1"
-							aria-label={isEditing ? 'Disable Editing' : 'Enable Editing'}
-							onclick={handleEditClick}
-						>
-							<Icon icon="material-symbols:edit-outline" />
-						</button>
-					</Tooltip>
-					<a
-						href={settingsRoute}
-						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
-					>
-						<Icon icon="material-symbols:close-rounded" class="h-5" />
-					</a>
-				</div>
-			</div>
+			<SettingsPageHeader
+				title="Custom Settings"
+				description="Manage tenant-specific custom configuration values."
+				bind:isEditing
+				{hasUnsavedChanges}
+				closeHref={settingsRoute}
+				onToggleEdit={handleToggleEdit}
+				onCancelEdit={handleCancelEdit}
+			/>
 
 			<div class="flex flex-col space-y-4 px-5 py-4">
 				{#if isEditing && !showAddForm}
@@ -316,7 +317,7 @@
 
 				{#if isEditing}
 					{#if showAddForm}
-						<div class="space-y-4 border border-[var(--color-outline)] rounded-lg p-4">
+						<SettingsSection title="Add New Setting">
 							<div class="my-4 flex flex-col md:flex-row md:items-center">
 								<label for="settingKey" class="text mx-1 mb-2 w-[30%] font-medium text-[var(--color-info)]">
 									Setting Key <span class="text-red-700">*</span>
@@ -380,17 +381,15 @@
 										<option value="false">False</option>
 									</select>
 								{:else if newSettingDataType === CustomSettingDataType.Object || newSettingDataType === CustomSettingDataType.Array}
-									<!-- <div class="w-[70%]"> -->
-										<textarea
-											id="settingValue"
-											class="input-field w-[70%]"
-											rows="6"
-											placeholder={newSettingDataType === CustomSettingDataType.Array 
-												? 'Enter array in JSON format, e.g.:\n["item1", "item2", "item3"]\nor:\n[1, 2, 3]' 
-												: 'Enter object in JSON format, e.g.:\n{"key1": "value1",\n "key2": "value2"}'}
-											bind:value={newSettingValue}
-										></textarea>
-									<!-- </div> -->
+									<textarea
+										id="settingValue"
+										class="input-field w-[70%]"
+										rows="6"
+										placeholder={newSettingDataType === CustomSettingDataType.Array
+											? 'Enter array in JSON format, e.g.:\n["item1", "item2", "item3"]\nor:\n[1, 2, 3]'
+											: 'Enter object in JSON format, e.g.:\n{"key1": "value1",\n "key2": "value2"}'}
+										bind:value={newSettingValue}
+									></textarea>
 								{:else}
 									<input
 										id="settingValue"
@@ -423,110 +422,107 @@
 									/>
 								</div>
 							</div>
-						</div>
+						</SettingsSection>
 					{/if}
 				{/if}
 
 				{#if Object.keys(customSettings).length > 0}
-					<div class="health-system-table-container my-4 shadow">
-						<table class="health-system-table w-full">
-							<thead>
-								<tr>
-									<th>Key</th>
-									<th>Name</th>
-									<th>Description</th>
-									<th>Data Type</th>
-									<th>Value</th>
-									{#if isEditing}
-										<th>Actions</th>
-									{/if}
-								</tr>
-							</thead>
-							<tbody>
-								{#each Object.entries(customSettings) as [key, setting]}
+					<SettingsSection title="Configured Settings" description="View and manage existing custom settings.">
+						<div class="health-system-table-container my-4 shadow">
+							<table class="health-system-table w-full">
+								<thead>
 									<tr>
-										<td>{key}</td>
-										<td>{setting.Name}</td>
-										<td>{setting.Description || 'Not specified'}</td>
-										<td>
-										{setting.DataType}
-										</td>
-										<td>
-											{#if setting.DataType === CustomSettingDataType.Boolean}
-												<select
-													class="select"
-													bind:value={setting.Value}
-													disabled={!isEditing}
-												>
-													<option value={true}>True</option>
-													<option value={false}>False</option>
-												</select>
-											{:else if setting.DataType === CustomSettingDataType.Object || setting.DataType === CustomSettingDataType.Array}
-												{#if isEditing}
-													{@const editValue = getEditValue(key, setting)}
-													<textarea
-														class="input-field font-mono text-sm"
-														rows="6"
-														bind:value={editValues[key]}
-														placeholder={setting.DataType === CustomSettingDataType.Array 
-															? 'Enter array in JSON format, e.g.: ["item1", "item2"]' 
-															: 'Enter object in JSON format, e.g.: {"key": "value"}'}
-													></textarea>
-												{:else}
-													<textarea
-														class="input-field font-mono text-sm"
-														rows="6"
-														value={JSON.stringify(setting.Value ?? null, null, 2)}
-														disabled
-														placeholder={setting.DataType === CustomSettingDataType.Array 
-															? 'Enter array in JSON format, e.g.: ["item1", "item2"]' 
-															: 'Enter object in JSON format, e.g.: {"key": "value"}'}
-													></textarea>
-												{/if}
-											{:else}
-												<input
-													type={getInputType(setting.DataType)}
-													class="input-field"
-													bind:value={setting.Value}
-													disabled={!isEditing}
-												/>
-											{/if}
-										</td>
+										<th>Key</th>
+										<th>Name</th>
+										<th>Description</th>
+										<th>Data Type</th>
+										<th>Value</th>
 										{#if isEditing}
-											<td>
-												<div class="flex flex-row space-x-2">
-													<Icon
-														icon="material-symbols:delete-outline"
-														class="cursor-pointer text-red-600"
-														onclick={() => handleDeleteSetting(key)}
-													/>
-												</div>
-											</td>
+											<th>Actions</th>
 										{/if}
 									</tr>
-								{/each}
-							</tbody>
-						</table>
-					</div>
+								</thead>
+								<tbody>
+									{#each Object.entries(customSettings) as [key, setting]}
+										<tr>
+											<td>{key}</td>
+											<td>{setting.Name}</td>
+											<td>{setting.Description || 'Not specified'}</td>
+											<td>
+											{setting.DataType}
+											</td>
+											<td>
+												{#if setting.DataType === CustomSettingDataType.Boolean}
+													<select
+														class="select"
+														bind:value={setting.Value}
+														disabled={!isEditing}
+													>
+														<option value={true}>True</option>
+														<option value={false}>False</option>
+													</select>
+												{:else if setting.DataType === CustomSettingDataType.Object || setting.DataType === CustomSettingDataType.Array}
+													{#if isEditing}
+														{@const editValue = getEditValue(key, setting)}
+														<textarea
+															class="input-field font-mono text-sm"
+															rows="6"
+															bind:value={editValues[key]}
+															placeholder={setting.DataType === CustomSettingDataType.Array
+																? 'Enter array in JSON format, e.g.: ["item1", "item2"]'
+																: 'Enter object in JSON format, e.g.: {"key": "value"}'}
+														></textarea>
+													{:else}
+														<textarea
+															class="input-field font-mono text-sm"
+															rows="6"
+															value={JSON.stringify(setting.Value ?? null, null, 2)}
+															disabled
+															placeholder={setting.DataType === CustomSettingDataType.Array
+																? 'Enter array in JSON format, e.g.: ["item1", "item2"]'
+																: 'Enter object in JSON format, e.g.: {"key": "value"}'}
+														></textarea>
+													{/if}
+												{:else}
+													<input
+														type={getInputType(setting.DataType)}
+														class="input-field"
+														bind:value={setting.Value}
+														disabled={!isEditing}
+													/>
+												{/if}
+											</td>
+											{#if isEditing}
+												<td>
+													<div class="flex flex-row space-x-2">
+														<Icon
+															icon="material-symbols:delete-outline"
+															class="cursor-pointer text-red-600"
+															onclick={() => handleDeleteSetting(key)}
+														/>
+													</div>
+												</td>
+											{/if}
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						</div>
+					</SettingsSection>
 				{:else}
-					<div class="text-center py-8 text-[var(--color-info)]">
-						<Icon icon="material-symbols:settings-outline" class="h-12 w-12 mx-auto mb-4 opacity-50" />
-						<p>No custom settings configured yet.</p>
-						{#if isEditing}
-							<p class="text-sm opacity-75">Click "Add Setting" above to create your first custom setting.</p>
-						{/if}
-					</div>
+					<SettingsSection>
+						<div class="text-center py-8 text-[var(--color-info)]">
+							<Icon icon="material-symbols:settings-outline" class="h-12 w-12 mx-auto mb-4 opacity-50" />
+							<p>No custom settings configured yet.</p>
+							{#if isEditing}
+								<p class="text-sm opacity-75">Click "Add Setting" above to create your first custom setting.</p>
+							{/if}
+						</div>
+					</SettingsSection>
 				{/if}
 			</div>
 
-			<hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
-			<div class="button-container my-4">
-				{#await promise}
-					<Button type="submit" variant="primary" size="md" text="Submitting" disabled />
-				{:then data}
-					<Button type="submit" variant="primary" size="md" text="Submit" disabled={!isEditing} />
-				{/await}
-			</div>
+			<SettingsFooter {isEditing} {isSubmitting} onCancel={handleCancelEdit} />
 		</form>
 	</div>
 </div>

@@ -37,3 +37,6 @@ export const ageWiseUsersData = writable();
 export const tabSet = writable(0);
 export const selectedItems = writable([]);
 // export const items = writable([]);
+
+// Tenant settings store - used for reactive sidebar updates
+export const tenantSettingsStore: Writable<any> = writable(null);
