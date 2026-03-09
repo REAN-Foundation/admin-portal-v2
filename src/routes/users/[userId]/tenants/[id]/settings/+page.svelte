@@ -8,6 +8,8 @@
 	import SettingsPageHeader from '$lib/components/settings/settings-page-header.svelte';
 	import SettingsSection from '$lib/components/settings/settings-section.svelte';
 	import SettingsFooter from '$lib/components/settings/settings-footer.svelte';
+	import { tenantSettingsStore } from '$lib/store/general.store';
+	import { get } from 'svelte/store';
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -79,6 +81,11 @@
 			});
 			const response = await res.json();
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				// Update tenant settings store so sidebar reacts immediately
+				const currentSettings = get(tenantSettingsStore);
+				if (currentSettings) {
+					tenantSettingsStore.set({ ...currentSettings, Common: $state.snapshot(commonSettings) });
+				}
 				toastMessage(response);
 				isEditing = false;
 				return;

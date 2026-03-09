@@ -30,10 +30,15 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 		settings = followupSettings.Data.TenantSettings;
 	}
 
+	const commonSettings = await getTenantSettingsByType(sessionId, tenantId, 'Common');
+	const isFollowupEnabled = commonSettings?.Data?.TenantSettings?.UserInterfaces?.Followup ?? false;
+
 	return {
 		appointmentRecords,
 		sessionId,
 		settings,
+		tenantId,
+		isFollowupEnabled,
 		message: response?.Message || 'Appointment records retrieved successfully',
 		title: ''
 	};
