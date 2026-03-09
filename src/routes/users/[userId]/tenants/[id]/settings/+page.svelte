@@ -175,18 +175,15 @@
 										</div>
 									</div>
 								</div>
-							{:else if key === 'Forms'}
+							<!-- {:else if key === 'Forms'}
 								<div class=" border-hover rounded-xl border p-4 text-[var(--color-info)]">
 									<div class="flex items-center justify-between gap-3">
-										<!-- Left: App Icon -->
 										<Icon icon="mdi:form-select" class="hidden h-5 w-5 md:block" />
 
-										<!-- Middle: Name & Description -->
 										<div class="flex flex-grow flex-col">
 											<span class="text-sm font-medium">Forms</span>
 											<p class="text-sm">Digital forms for data collection and surveys.</p>
 										</div>
-										<!-- Right: Toggle + Optional Edit -->
 										<div class="flex items-center">
 											<input
 												type="checkbox"
@@ -197,7 +194,7 @@
 											/>
 										</div>
 									</div>
-								</div>
+								</div> -->
 							{:else if key === 'PatientApp'}
 								<div class=" border-hover rounded-xl border p-4 text-[var(--color-info)]">
 									<div class="flex items-center justify-between gap-3">

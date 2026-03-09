@@ -602,7 +602,7 @@
 							<div class="rounded-lg border border-[var(--color-outline)]">
 								<!-- Vital Header (Accordion) -->
 								<div
-									class="flex cursor-pointer items-center justify-between rounded-t-lg bg-[var(--color-surface)] px-4 py-2.5"
+									class="flex cursor-pointer items-center justify-between rounded-t-lg bg-[var(--color-secondary)] px-4 py-2.5"
 									role="button"
 									tabindex="0"
 									onclick={() => toggleVitalExpanded(vitalType)}
@@ -621,9 +621,7 @@
 											{VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}
 										</span>
 										<span
-											class="rounded-full px-2 py-0.5 text-xs {config.Enabled
-												? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-												: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}"
+											class="rounded-full border border-[var(--color-outline)] bg-[var(--color-accent)] px-2 py-0.5 text-xs text-[var(--color-info)]"
 										>
 											{config.Enabled ? 'Enabled' : 'Disabled'}
 										</span>
@@ -741,7 +739,7 @@
 														<div class="flex items-center gap-2">
 															{#if category.SendAlert}
 																<span
-																	class="rounded-full bg-yellow-100 px-2 py-0.5 text-xs text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+																	class="rounded-full border border-[var(--color-outline)] bg-[var(--color-accent)] px-2 py-0.5 text-xs text-[var(--color-info)]"
 																>
 																	Alert
 																</span>
@@ -867,7 +865,7 @@
 																	{@const minKey = `${vitalType}-${catIndex}-${rangeName}-min`}
 																	{@const maxKey = `${vitalType}-${catIndex}-${rangeName}-max`}
 																	<div
-																		class="flex flex-wrap items-start gap-3 rounded border border-[var(--color-outline)] bg-[var(--color-surface)] p-2"
+																		class="flex flex-wrap items-start gap-3 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 																	>
 																		<div class="flex flex-col gap-1">
 																			<!-- svelte-ignore a11y_label_has_associated_control -->
@@ -876,7 +874,7 @@
 																			</label>
 																			<input
 																				type="text"
-																				class="input-field w-32 bg-gray-100 dark:bg-gray-700"
+																				class="input-field w-32 bg-[var(--color-accent)]"
 																				value={rangeName}
 																				disabled
 																				readonly
@@ -973,7 +971,7 @@
 																	{#if isEditing}
 																		<button
 																			type="button"
-																			class="text-sm text-blue-600 hover:underline dark:text-blue-400"
+																			class="text-sm text-[var(--color-info)] hover:underline"
 																			onclick={() =>
 																				handleAddAlertLanguage(
 																					vitalType as VitalType,
@@ -987,7 +985,7 @@
 																{#each Object.entries(category.AlertMessage) as [langCode, message]}
 																	{@const alertKey = `${vitalType}-${catIndex}-alert-${langCode}`}
 																	<div
-																		class="flex flex-col gap-1 rounded border border-[var(--color-outline)] bg-[var(--color-surface)] p-2"
+																		class="flex flex-col gap-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 																	>
 																		<div class="flex items-center gap-2">
 																			<label class="text-xs text-[var(--color-info)] opacity-70">
