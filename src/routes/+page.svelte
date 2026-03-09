@@ -5,8 +5,7 @@
 	import {
 		getPublicFooterLink,
 		getPublicFooterText,
-		getPublicLogoImageSource,
-		getSystemName
+		getPublicLogoImageSource
 	} from '$lib/themes/theme.selector';
 	import type { PersonRole } from '$lib/types/domain.models.js';
 	import { LocalStorageUtils } from '$lib/utils/local.storage.utils.js';
@@ -15,20 +14,19 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
 	import { tick } from 'svelte';
-	
+
 	///////////////////////////////////////////////////////////////////////////
-	
+
 	let loginType = $state('username');
 	let showPassword = $state(false);
 	let isLoading = $state(false);
 	let errors: Record<string, string> = $state({});
 	let { data }: { data: PageServerData } = $props();
-	let roles: PersonRole[] = data.roles;	
-	
+	let roles: PersonRole[] = data.roles;
+
 	const logoImageSource = getPublicLogoImageSource();
 	const footerText = `© ${new Date().getFullYear()} ${getPublicFooterText()}`;
 	const footerLink = getPublicFooterLink();
-	const systemName = getSystemName();
 
 	personRolesStore.set(roles);
 	LocalStorageUtils.setItem('personRoles', JSON.stringify(roles));
@@ -132,11 +130,6 @@
 		handleResize();
 	}
 </script>
-
-<svelte:head>
-	<title>{systemName}</title>
-	<meta name="description" content="REAN careplans" />
-</svelte:head>
 
 <div class="form-container flex flex-col items-center justify-center">
 	<img class="ct-image mt-7 mb-7 w-36" alt="logo" src={logoImageSource} />

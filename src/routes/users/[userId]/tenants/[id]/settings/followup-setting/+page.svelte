@@ -8,6 +8,7 @@
 	import ReminderScheduleList from './reminder-schedule-list.svelte';
 	import ReminderScheduleForm from './reminder-schedule-form.svelte';
 	import FollowUpSettings from './follow-up-settings.svelte';
+	import Tooltip from '$lib/components/tooltip.svelte';
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -41,7 +42,7 @@
 		if (!isFollowupEnabled) {
 			addToast({
 				message: 'This setting is disabled. Please update it from the main settings.',
-				type: 'info',
+				type: 'warning',
 				timeout: 3000
 			});
 			return;
@@ -149,7 +150,7 @@
 			if (!edit) {
 				addToast({
 					message: 'Nothing to edit !',
-					type: 'info',
+					type: 'warning',
 					timeout: 3000
 				});
 				return;
@@ -350,14 +351,16 @@
 			<div class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6">
 				<h1 class=" text-xl text-[var(--color-info)]">Follow-up Settings</h1>
 				<div class="flex items-center gap-2 text-end">
-					<button
-						type="button"
-						class="table-btn variant-filled-secondary gap-1"
-						onclick={handleEditClick}
-					>
-						<Icon icon="material-symbols:edit-outline" />
-						<!-- <span>{edit ? 'Save' : 'Edit'}</span> -->
-					</button>
+					<Tooltip text={edit ? 'Disable Editing' : 'Enable Editing'} forceShow={true}>
+						<button
+							type="button"
+							class="table-btn variant-filled-secondary gap-1"
+							aria-label={edit ? 'Disable Editing' : 'Enable Editing'}
+							onclick={handleEditClick}
+						>
+							<Icon icon="material-symbols:edit-outline" />
+						</button>
+					</Tooltip>
 					<a
 						href={settingsRoute}
 						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"

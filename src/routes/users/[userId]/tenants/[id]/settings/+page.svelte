@@ -5,6 +5,7 @@
 	import Button from '$lib/components/button/button.svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import { UserInterfacesSchema } from '$lib/validation/tenant.settings.schema';
+	import Tooltip from '$lib/components/tooltip.svelte';
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -102,14 +103,16 @@
 						Integrations
 					</h2>
 					<div class="flex items-center gap-2 text-end">
-						<button
-							type="button"
-							class="table-btn variant-filled-secondary gap-1"
-							onclick={handleEditClick}
-						>
-							<Icon icon="material-symbols:edit-outline" />
-							<!-- <span>{disabled ? 'Edit' : 'Save'}</span> -->
-						</button>
+						<Tooltip text={disabled ? 'Enable Editing' : 'Disable Editing'} forceShow={true}>
+							<button
+								type="button"
+								class="table-btn variant-filled-secondary gap-1"
+								aria-label={disabled ? 'Enable Editing' : 'Disable Editing'}
+								onclick={handleEditClick}
+							>
+								<Icon icon="material-symbols:edit-outline" />
+							</button>
+						</Tooltip>
 						<a
 							href={tenantRoute}
 							class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
@@ -172,18 +175,15 @@
 										</div>
 									</div>
 								</div>
-							{:else if key === 'Forms'}
+							<!-- {:else if key === 'Forms'}
 								<div class=" border-hover rounded-xl border p-4 text-[var(--color-info)]">
 									<div class="flex items-center justify-between gap-3">
-										<!-- Left: App Icon -->
 										<Icon icon="mdi:form-select" class="hidden h-5 w-5 md:block" />
 
-										<!-- Middle: Name & Description -->
 										<div class="flex flex-grow flex-col">
 											<span class="text-sm font-medium">Forms</span>
 											<p class="text-sm">Digital forms for data collection and surveys.</p>
 										</div>
-										<!-- Right: Toggle + Optional Edit -->
 										<div class="flex items-center">
 											<input
 												type="checkbox"
@@ -194,7 +194,7 @@
 											/>
 										</div>
 									</div>
-								</div>
+								</div> -->
 							{:else if key === 'PatientApp'}
 								<div class=" border-hover rounded-xl border p-4 text-[var(--color-info)]">
 									<div class="flex items-center justify-between gap-3">

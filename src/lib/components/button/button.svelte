@@ -79,36 +79,39 @@
 		</div>
 	</div>
 {:else}
-	<svelte:element
-		this={href ? 'a' : 'button'}
-		class={`${baseClasses} ${variantClasses[variant]} ${variant === 'icon' ? '' : sizeClasses[size]} ${disabled ? 'pointer-events-none opacity-50' : ''} ${customClass}`}
-		{disabled}
-		aria-disabled={disabled}
-		{...href ? { href } : { type, onclick }}
-	>
-		{#if variant === 'icon' && icon}
-			<div class="group relative">
-				<Icon {icon} class={iconSizes[iconSize]} style={color ? `color: ${color}` : undefined} />
-				{#if tooltip}
-					<div
-						class="absolute bottom-full left-1/2 z-50 mb-3 -translate-x-1/2 rounded bg-gray-500 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100"
-					>
-						{tooltip}
-					</div>
-				{/if}
-			</div>
-	{:else}
-		{#if iconBefore}
-			<Icon icon={iconBefore} class={`mr-1 ${iconSizes[iconSize]}`} />
-		{/if}
-		{#if text}
-			{text}
+	<div class="relative inline-block group">
+		<svelte:element
+			this={href ? 'a' : 'button'}
+			class={`${baseClasses} ${variantClasses[variant]} ${variant === 'icon' ? '' : sizeClasses[size]} ${disabled ? 'pointer-events-none opacity-50' : ''} ${customClass}`}
+			{disabled}
+			aria-disabled={disabled}
+			title={tooltip}
+			{...href ? { href } : { type, onclick }}
+		>
+			{#if variant === 'icon' && icon}
+				<div class="relative">
+					<Icon {icon} class={iconSizes[iconSize]} style={color ? `color: ${color}` : undefined} />
+				</div>
 		{:else}
-			{@render children()}
+			{#if iconBefore}
+				<Icon icon={iconBefore} class={`mr-1 ${iconSizes[iconSize]}`} />
+			{/if}
+			{#if text}
+				{text}
+			{:else}
+				{@render children()}
+			{/if}
+			{#if iconAfter}
+				<Icon icon={iconAfter} class={`ml-1 ${iconSizes[iconSize]}`} />
+			{/if}
 		{/if}
-		{#if iconAfter}
-			<Icon icon={iconAfter} class={`ml-1 ${iconSizes[iconSize]}`} />
+		</svelte:element>
+		{#if tooltip}
+			<div
+				class="absolute bottom-full left-1/2 z-50 mb-3 -translate-x-1/2 rounded bg-gray-500 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none"
+			>
+				{tooltip}
+			</div>
 		{/if}
-	{/if}
-	</svelte:element>
+	</div>
 {/if}

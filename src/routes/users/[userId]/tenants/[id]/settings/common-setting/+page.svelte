@@ -7,6 +7,7 @@
 	import { commonUISettings } from './common-setting.types';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import { CommonSettingsSchema } from '$lib/validation/tenant.settings.schema';
+	import Tooltip from '$lib/components/tooltip.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 
@@ -31,7 +32,7 @@
             if (disabled) {
                 addToast({
                     message: 'Nothing to edit !',
-                    type: 'info',
+                    type: 'warning',
                     timeout: 3000
                 });
                 return;
@@ -101,14 +102,16 @@
 			<div class="flex items-center justify-between !rounded-b-none border  px-5 py-6 bg-[var(--color-primary)]">
 				<h1 class=" text-xl text-[var(--color-info)]">Common Settings</h1>
 				<div class="flex items-center gap-2 text-end">
-					<button
-						type="button"
-						class="table-btn variant-filled-secondary gap-1"
-						onclick={handleEditClick}
-					>
-						<Icon icon="material-symbols:edit-outline" />
-						<!-- <span>{edit ? 'Edit' : 'Save'}</span> -->
-					</button>
+					<Tooltip text={disabled ? 'Enable Editing' : 'Disable Editing'} forceShow={true}>
+						<button
+							type="button"
+							class="table-btn variant-filled-secondary gap-1"
+							aria-label={disabled ? 'Enable Editing' : 'Disable Editing'}
+							onclick={handleEditClick}
+						>
+							<Icon icon="material-symbols:edit-outline" />
+						</button>
+					</Tooltip>
 					<a
 						href={settingsRoute}
 						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"

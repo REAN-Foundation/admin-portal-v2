@@ -8,7 +8,8 @@ import { getAnalyticsReport } from '../../../services/user-analytics/user-analyt
 export const GET = async (event: RequestEvent) => {
     let response;
 	try {
-        response = await getAnalyticsReport('json');
+		const tenantCode = event.locals.sessionUser?.tenantCode;
+        response = await getAnalyticsReport('json', tenantCode);
 	} catch (error) {
 		console.error(`Error downloading analytics report: ${error}`);
         throw redirect(

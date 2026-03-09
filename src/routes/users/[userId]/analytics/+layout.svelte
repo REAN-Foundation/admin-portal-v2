@@ -3,19 +3,13 @@
 	import { page } from '$app/state';
 	import DashboardTabs from '$lib/components/navbar/dashboard.tabs.svelte';
 	import EmptyState from '$lib/components/analytics/EmptyState.svelte';
-	import { getSystemName } from '$lib/themes/theme.selector';
 	import type { PageServerData, LayoutServerData } from './$types';
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { children, data } = $props();
 
 	let hasAnyFeatureData = $derived(data.hasAnyFeatureData ?? true);
-
-	const systemName = getSystemName();
-	let title =$state();
 	console.log('data', data);
-
-	title = systemName + (page.data.title ? `- ${page.data.title}` : '');
 	const tenantCode = data.sessionUser?.tenantCode || data.sessionUser?.tenantName;
 
 	async function handleDownloadReportClick(event: any) {
@@ -115,11 +109,6 @@
 	}
 	const userId = page.params.userId;
 </script>
-
-<svelte:head>
-	<title>{title}</title>
-	<meta name="description" content="" />
-</svelte:head>
 
 {#if hasAnyFeatureData}
 	<!-- <DashboardTabs on:downloadReport={handleDownloadReportClick} {userId} /> -->

@@ -36,11 +36,11 @@
 							<span class="sidebar-text">{navParent.title}</span>
 						</div>
 					</a>
-				{:else if navParent.title === 'Appointment Follow-Up'}
+				{:else if navParent.title === 'Notifications'}
 					<a
-						href={`/users/${userId}/appointment-followup/summary-uploads`}
-						class="sidebar-item {activeTab === 'Appointment' ? 'variant-soft-secondary' : ''}"
-						onclick={() => (activeTab = 'Appointment')}
+						href={navParent.link}
+						class="sidebar-item {activeTab === 'Notifications' ? 'variant-soft-secondary' : ''}"
+						onclick={() => (activeTab = 'Notifications')}
 					>
 						<div class="flex items-center gap-1">
 							<Icon icon={navParent.icon} class=" h-6 w-6" />
@@ -76,7 +76,7 @@
 					</button>
 				{/if}
 
-				{#if openTab == navParent.title && navParent.title !== 'Analytics' && navParent.title !== 'Home'}
+				{#if openTab == navParent.title && navParent.title !== 'Analytics' && navParent.title !== 'Home' && navParent.childNav?.length > 0}
 					<div class="mx-4">
 						<nav class="space-y-1">
 							{#each navParent.childNav as navItem}
