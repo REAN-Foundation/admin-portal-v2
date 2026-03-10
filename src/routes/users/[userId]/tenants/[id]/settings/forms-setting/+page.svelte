@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { beforeNavigate } from '$app/navigation';
 	import Icon from '@iconify/svelte';
-	import Button from '$lib/components/button/button.svelte';
 	import Icons from '$lib/components/icons.svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import type { FormsSettings } from '$lib/types/tenant.settings.types';
 	import { FormsSettingsSchema } from '$lib/validation/tenant.settings.schema';
 	import { formsUISettings } from './forms-setting.types';
-	import Tooltip from '$lib/components/tooltip.svelte';
+	import SettingsPageHeader from '$lib/components/settings/settings-page-header.svelte';
+	import SettingsFooter from '$lib/components/settings/settings-footer.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 
@@ -19,60 +20,52 @@
 
 	let formSetting = $state({ Forms: data.settings });
 	let errors: Record<string, string> = $state({});
-	let promise = $state();
 	let openTab: string | null = $state(null);
 
 	let disabled = $state(data.isFormsEnabled);
 	let edit = $state(false);
+	let isSubmitting = $state(false);
+	let originalSnapshot = $state('');
 
-	const handleEditClick = async () => {
+	let hasUnsavedChanges = $derived(
+		edit && JSON.stringify($state.snapshot(formSetting)) !== originalSnapshot
+	);
+
+	beforeNavigate((navigation) => {
+		if (hasUnsavedChanges) {
+			if (!confirm('You have unsaved changes. Are you sure you want to leave?')) {
+				navigation.cancel();
+			}
+		}
+	});
+
+	const handleToggleEdit = () => {
 		if (!disabled) {
 			addToast({
 				message: 'This setting is disabled. Please update it from the main settings.',
-				type: 'info',
+				type: 'warning',
 				timeout: 3000
 			});
 			return;
 		}
-		if (!edit) {
-			addToast({
-				message: 'Edit mode enabled.',
-				type: 'info',
-				timeout: 3000
-			});
-			edit = true;
-		} else {
-			addToast({
-				message: 'Edit mode disabled.',
-				type: 'info',
-				timeout: 3000
-			});
-			edit = false;
-		}
-		// if (disabled) {
-		// 	if (edit) {
-		// 		addToast({
-		// 			message: 'Settings saved successfully',
-		// 			type: 'success',
-		// 			timeout: 3000
-		// 		});
-		// 		edit = false;
-		// 	} else {
-		// 		edit = true;
-		// 		addToast({
-		// 			message: 'Edit mode enabled',
-		// 			type: 'info',
-		// 			timeout: 3000
-		// 		});
-		// 	}
-		// } else if (disabled === false) {
-		// 	addToast({
-		// 		message: 'This setting is disabled. Please update it from the main settings.',
-		// 		type: 'warning',
-		// 		timeout: 3000
-		// 	});
-		// 	return;
-		// }
+		edit = true;
+		originalSnapshot = JSON.stringify($state.snapshot(formSetting));
+		addToast({
+			message: 'Edit mode enabled.',
+			type: 'info',
+			timeout: 3000
+		});
+	};
+
+	const handleCancelEdit = () => {
+		formSetting = JSON.parse(originalSnapshot);
+		edit = false;
+		errors = {};
+		addToast({
+			message: 'Edit mode disabled.',
+			type: 'info',
+			timeout: 3000
+		});
 	};
 
 	function toggleTab(tab: string) {
@@ -102,11 +95,12 @@
 			if (!edit) {
 				addToast({
 					message: 'Nothing to edit !',
-					type: 'info',
+					type: 'warning',
 					timeout: 3000
 				});
 				return;
 			}
+			isSubmitting = true;
 			const formSettingUpdateModel: FormsSettings = {
 				Integrations: formSetting.Forms.Integrations,
 				OfflineSupport: formSetting.Forms.OfflineSupport,
@@ -122,6 +116,7 @@
 						val?.[0] || 'This field is required'
 					])
 				);
+				isSubmitting = false;
 				return;
 			}
 
@@ -135,6 +130,7 @@
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
 				toastMessage(response);
 				edit = false;
+				isSubmitting = false;
 				return;
 			}
 			if (response.Errors) {
@@ -142,52 +138,28 @@
 			} else {
 				toastMessage(response);
 			}
+			isSubmitting = false;
 		} catch (error) {
 			toastMessage();
+			isSubmitting = false;
 		}
 	};
 </script>
 
 <div class="px-5 py-4">
-	<!-- <div class="flex flex-wrap justify-end gap-2 py-2">
-		<button
-			class="table-btn variant-filled-secondary gap-1"
-			onclick={() => {
-				disabled = !disabled;
-				edit = disabled;
-			}}
-		>
-			<Icon icon="material-symbols:edit-outline" />
-			<span>Edit</span>
-		</button>
-	</div> -->
-
 	<div class="mx-auto">
 		<div class=" mx-auto my-6 border border-[var(--color-outline)]">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<div
-					class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6"
-				>
-					<h1 class=" text-xl text-[var(--color-info)]">Forms Settings</h1>
-					<div class="flex items-center gap-2 text-end">
-						<Tooltip text={edit ? 'Disable Editing' : 'Enable Editing'} forceShow={true}>
-							<button
-								type="button"
-								class="table-btn variant-filled-secondary gap-1"
-								aria-label={edit ? 'Disable Editing' : 'Enable Editing'}
-								onclick={handleEditClick}
-							>
-								<Icon icon="material-symbols:edit-outline" />
-							</button>
-						</Tooltip>
-						<a
-							href={settingsRoute}
-							class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
-						>
-							<Icon icon="material-symbols:close-rounded" class=" h-5" />
-						</a>
-					</div>
-				</div>
+			<form onsubmit={async (event) => handleSubmit(event)}>
+				<SettingsPageHeader
+					title="Forms Settings"
+					description="Configure form integrations and features."
+					isEditing={edit}
+					featureEnabled={disabled}
+					{hasUnsavedChanges}
+					closeHref={settingsRoute}
+					onToggleEdit={handleToggleEdit}
+					onCancelEdit={handleCancelEdit}
+				/>
 
 				<div class="flex flex-col space-y-4 px-4 py-4">
 					{#each Object.entries(formSetting.Forms) as [groupName, groupItems]}
@@ -205,7 +177,7 @@
 												openTab === groupName
 													? 'rounded-b-none bg-[var(--color-primary)] text-[var(--color-info)]'
 													: `border-hover rounded bg-[var(--color-secondary)]`
-											} 
+											}
 										`}
 								>
 									<div class="flex flex-1 items-center gap-2">
@@ -224,7 +196,6 @@
 										</div>
 									</div>
 
-									<!-- <span class:rotate-180={openTab === groupName} class="transition-transform duration-300"> -->
 									<span
 										class="transition-transform duration-300"
 										class:rotate-90={openTab === groupName}
@@ -249,53 +220,24 @@
 											{#each Object.entries(groupItems) as [key, value]}
 												{@const meta = getSettingMeta(groupName, key)}
 
-												<!-- <div class="flex items-center gap-3"> -->
-												<!-- {#if edit === true && formSetting.Forms[groupName][key] === true}
-														<span class="text-green-500">✅</span>
-													{:else if edit === true && formSetting.Forms[groupName][key] !== true}
-														<span class="text-sm">❌</span>
-													{:else}
-														<label class="flex items-center gap-2">
-															<input
-																type="checkbox"
-																class="checkbox checkbox-primary"
-																disabled={edit}
-																bind:checked={formSetting.Forms[groupName][key]}
-															/>
-														</label>
-													{/if} -->
-												<!-- <Icons
-														cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 fill-none my-2"
-														h="70%"
-														w="70%"
-														iconPath={meta?.IconPath}
-													/> -->
-												<!-- <span>{meta?.Name ?? key}</span>
-												</div> -->
-
 												<div
 													class=" border-hover rounded-xl border bg-[var(--color-secondary)] p-4 text-[var(--color-info)]"
 												>
 													<div class="flex items-center justify-between gap-3">
-														<!-- Left: App Icon -->
-														<!-- <Icon icon="mdi:vector-link" class="hidden h-5 w-5 md:block" /> -->
 														<Icon
 															icon={meta.Path}
 															class="hidden h-5 w-5 text-[var(--color-info)] md:block"
 														/>
 
-														<!-- Middle: Name & Description -->
 														<div class="flex flex-grow flex-col">
 															<span class="text-sm font-medium text-[var(--color-info)]"
 																>{meta?.Name ?? key}</span
 															>
 															<p class="text-sm text-[var(--color-info)]">
-																<!-- short description for {meta?.Name ?? key}. -->
 																{meta.Description}
 															</p>
 														</div>
 
-														<!-- Right: Toggle + Optional Edit -->
 														<div class="flex items-center">
 															<input
 																type="checkbox"
@@ -317,42 +259,6 @@
 					<div class=" grid gap-4 md:grid-cols-2">
 						{#each Object.entries(formSetting.Forms) as [groupName, groupItems]}
 							{#if typeof groupItems === 'boolean'}
-								<!-- <div class="flex items-center gap-2 px-1">
-								{#if edit === true && groupItems === true}
-									<span class="text-green-500">✅</span>
-								{:else if edit === true && groupItems !== true}
-									<span>❌</span>
-								{:else}
-									<input
-										type="checkbox"
-										class="checkbox checkbox-primary"
-										disabled={!edit}
-										bind:checked={formSetting.Forms[groupName]}
-									/>
-								{/if}
-								<Icons
-									cls="stroke-slate-800 my-2 stroke-2 fill-none"
-									h="80%"
-									w="80%"
-									iconPath={iconPaths[groupName] ?? ''}
-								/>
-								<div class=" text-start">
-									<p class="text-md font-medium">{groupName}</p>
-
-									<p class=" text-sm">Settings under {groupName}</p>
-								</div>
-							</div> -->
-
-								<!-- <div class="flex items-center justify-end gap-2">
-								<InfoIcon
-									cls="stroke-slate-800 dark:!stroke-surface-100 stroke-2 cursor-pointer fill-none my-2"
-									h="80%"
-									w="80%"
-									iconPath="/tenant-setting/info.svg#icon"
-									title={`Settings under ${groupName}`}
-								/>
-							</div> -->
-
 								<div class=" border-hover my-2 rounded-xl border p-6 text-[var(--color-info)]">
 									<div class="flex items-center justify-between gap-3">
 										<!-- Left: App Icon -->
@@ -381,14 +287,7 @@
 						{/each}
 					</div>
 				</div>
-				<hr class="border-[0.5px] border-t border-[var(--color-outline)]" />
-				<div class="button-container my-4">
-					{#await promise}
-						<Button type="submit" variant="primary" size="md" text="Submitting..." disabled={true} />
-					{:then data}
-						<Button type="submit" variant="primary" size="md" text="Submit" />
-					{/await}
-				</div>
+				<SettingsFooter isEditing={edit} {isSubmitting} onCancel={handleCancelEdit} />
 			</form>
 		</div>
 	</div>

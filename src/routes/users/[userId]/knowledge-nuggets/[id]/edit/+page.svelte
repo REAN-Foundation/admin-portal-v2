@@ -16,14 +16,12 @@
 
 	let id = data.KnowledgeNugget.id;
 	let topicName = $state(data.KnowledgeNugget.TopicName);
-	let briefInformation = $state(data.KnowledgeNugget.BriefInformation);
-	let detailedInformation = $state(data.KnowledgeNugget.DetailedInformation);
-	let additionalResources = $state([...data.KnowledgeNugget.AdditionalResources]);
+	let briefInformation = $state(data.KnowledgeNugget.BriefInformation ?? '');
+	let detailedInformation = $state(data.KnowledgeNugget.DetailedInformation ?? '');
+	let additionalResources = $state([...(data.KnowledgeNugget.AdditionalResources ?? [])]);
 	let newResource = $derived(additionalResources.join(', '));
 
-	// let additionalResources = $state(additionalResources_.join(', '));
-
-	let keywords: string[] = $state(data.KnowledgeNugget.Tags);
+	let keywords: string[] = $state(data.KnowledgeNugget.Tags ?? []);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let keywordsStr: string = $state('');
@@ -33,7 +31,7 @@
 		briefInformation = data?.KnowledgeNugget?.BriefInformation;
 		detailedInformation = data?.KnowledgeNugget?.DetailedInformation;
 		additionalResources = data?.KnowledgeNugget?.AdditionalResources;
-		keywords = data?.KnowledgeNugget?.Tags;
+		keywords = [...(data?.KnowledgeNugget?.Tags ?? [])];
 		errors = {};
 	}
 
@@ -105,9 +103,6 @@
 		}
 	};
 
-	$effect(() => {
-		keywordsStr = keywords?.join(', ');
-	});
 
 	function addResource() {
 		additionalResources = newResource
@@ -198,8 +193,7 @@
 				<tr class="tables-row">
 					<td class="table-label align-top">Tags</td>
 					<td class="table-data">
-						<InputChips bind:keywords name="keywords" id="keywords" />
-						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<InputChips bind:keywords bind:value={keywordsStr} name="keywords" id="keywords" />
 						{#if form?.errors?.tags}
 							<p class="error-text">{form?.errors?.tags[0]}</p>
 						{/if}

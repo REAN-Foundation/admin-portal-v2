@@ -3,6 +3,7 @@
 	import Sidebar from '$lib/components/home/Sidebar.svelte';
 	import { page } from '$app/state';
 	import { getPublicFooterLink, getPublicFooterText } from '$lib/themes/theme.selector';
+	import { tenantSettingsStore } from '$lib/store/general.store';
 
 	//////////////////////////////////////////////////////////////////////
 
@@ -18,6 +19,9 @@
 	let imageUrl = $state(data.user.Person.ProfileImageURL);
 	let userRole = $state(data.sessionUser.roleName);
 	let tenantSettings = $state(data.tenantSettings);
+
+	// Initialize the tenant settings store so sidebar can react to changes
+	tenantSettingsStore.set(data.tenantSettings);
 	const footerText = `© ${new Date().getFullYear()} ${getPublicFooterText()}`;
 	const footerLink = getPublicFooterLink();
 

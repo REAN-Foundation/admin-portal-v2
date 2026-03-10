@@ -97,8 +97,8 @@
 		</tbody>
 	</table>
 	<div class="btn-container mb-2">
-        <Button onclick={handlePromotion} size="md" text="Promote" variant="primary" />
-		<Button href={settingsRoute} size="md" text="Setting" variant="primary" />
+        <Button onclick={handlePromotion} size="md" text="Promote" variant="outline" tooltip="Promote tenant to next environment" />
+		<Button href={settingsRoute} size="md" text="Settings" variant="outline" tooltip="Tenant settings" />
 		<Button
 			href={editRoute}
 			size="md"
@@ -106,6 +106,7 @@
 			variant="primary"
 			iconBefore="mdi:edit"
 			iconSize="md"
+			tooltip="Edit tenant"
 		/>
 	</div>
 </div>

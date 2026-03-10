@@ -165,6 +165,12 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 		}
 		return false;
 	}
+	if (menuName === 'GMU' || menuName === 'Appointment-Status-Report') {
+		if (tenantSettings.Common.UserInterfaces?.Followup) {
+			return true;
+		}
+		return false;
+	}
 
 	return true;
 };
@@ -328,6 +334,20 @@ export const buildSidebarMenu = (
 		tenantSettings,
 		options
 	);
+	sidebarNaviagation = addBotContentMenu(
+		sidebarNaviagation,
+		userId,
+		userRole,
+		tenantSettings,
+		options
+	);
+	sidebarNaviagation = addAppointmentMenu(
+		sidebarNaviagation,
+		userId,
+		userRole,
+		tenantSettings,
+		options
+	);
 	sidebarNaviagation = addEducationalMenus(
 		sidebarNaviagation,
 		userId,
@@ -335,14 +355,14 @@ export const buildSidebarMenu = (
 		tenantSettings,
 		options
 	);
-	sidebarNaviagation = addTypesMenus(sidebarNaviagation, userId, userRole, tenantSettings, options);
-	sidebarNaviagation = addMiscellaneousMenus(
-		sidebarNaviagation,
-		userId,
-		userRole,
-		tenantSettings,
-		options
-	);
+// 	sidebarNaviagation = addTypesMenus(sidebarNaviagation, userId, userRole, tenantSettings, options);
+// 	sidebarNaviagation = addMiscellaneousMenus(
+// 		sidebarNaviagation,
+// 		userId,
+// 		userRole,
+// 		tenantSettings,
+// 		options
+// 	);
 	sidebarNaviagation = addMainAnalyticsMenu(
 		sidebarNaviagation,
 		userId,
@@ -350,8 +370,7 @@ export const buildSidebarMenu = (
 		tenantSettings,
 		options
 	);
-
-	sidebarNaviagation = addBotContentMenu(
+	sidebarNaviagation = addNotificationsMenu(
 		sidebarNaviagation,
 		userId,
 		userRole,
@@ -360,15 +379,6 @@ export const buildSidebarMenu = (
 	);
 
 	sidebarNaviagation = addGamificationMenus(
-		sidebarNaviagation,
-		userId,
-		userRole,
-		tenantSettings,
-		options
-	);
-	// sidebarNaviagation = addGMUMenus(sidebarNaviagation, userId, userRole, tenantSettings, options);
-	// Add here any new menu items
-	sidebarNaviagation = addAppointmentMenu(
 		sidebarNaviagation,
 		userId,
 		userRole,
@@ -423,7 +433,7 @@ function addBotContentMenu(
 
 	const botContent: SidebarMenu = {
 		name: 'Bot-Content',
-		title: 'Bot Content',
+		title: 'Bot',
 		icon: 'mdi:robot-outline',
 		link: `/users/${userId}/bot-content`,
 		children: []
@@ -432,8 +442,8 @@ function addBotContentMenu(
 
 	const promtTemplate: SidebarMenu = {
 		name: 'Prompt-Template',
-		title: 'Prompt Template',
-		icon: 'material-symbols:frame-person-outline-rounded',
+		title: 'Prompt Templates',
+		icon: 'material-symbols:description-outline',
 		link: `/users/${userId}/bot-content/prompt-template`,
 		children: []
 	};
@@ -834,7 +844,7 @@ function addCareplanMenus(
 
 	const careplan: SidebarMenu = {
 		name: 'Careplan',
-		title: 'Careplan',
+		title: 'Careplans',
 		icon: 'material-symbols:home-health-outline-rounded',
 		link: null,
 		children: []
@@ -886,17 +896,39 @@ function addCareplanMenus(
 	};
 	menuList.push(careplanEnrollments);
 
+	const priorities: SidebarMenu = {
+		name: 'Priorities',
+		title: 'Priorities',
+		icon: 'material-symbols:priority-outline',
+		link: `/users/${userId}/priorities`,
+		children: []
+	};
+	menuList.push(priorities);
+
+	const goals: SidebarMenu = {
+		name: 'Goals',
+		title: 'Goals',
+		icon: 'material-symbols:radar',
+		link: `/users/${userId}/goals`,
+		children: []
+	};
+	menuList.push(goals);
+
 	const careplan_: SidebarMenu = getMenu(menuList, 'Careplan');
 	const careplanDashboards: SidebarMenu = getMenu(menuList, 'Careplan-Dashboard');
 	const careplanAssets_: SidebarMenu = getMenu(menuList, 'Careplan-Assets');
 	const careplanCategory_: SidebarMenu = getMenu(menuList, 'Careplan-Category');
 	const careplanPlans_: SidebarMenu = getMenu(menuList, 'Careplan-Plans');
 	const careplanEnrollments_: SidebarMenu = getMenu(menuList, 'Careplan-Enrollments');
+	const priorities_: SidebarMenu = getMenu(menuList, 'Priorities');
+	const goals_: SidebarMenu = getMenu(menuList, 'Goals');
 	careplan_?.children.push(careplanDashboards);
 	careplan_?.children.push(careplanAssets_);
 	careplan_?.children.push(careplanCategory_);
 	careplan_?.children.push(careplanPlans_);
 	careplan_?.children.push(careplanEnrollments_);
+	careplan_?.children.push(priorities_);
+	careplan_?.children.push(goals_);
 
 	const careplanNavigation: NavigationMenu | null = toNavigation(
 		careplan_,
@@ -995,29 +1027,7 @@ function addTypesMenus(
 	};
 	menuList.push(types);
 
-	const priorities: SidebarMenu = {
-		name: 'Priorities',
-		title: 'Priorities',
-		icon: 'material-symbols:priority-outline',
-		link: `/users/${userId}/priorities`,
-		children: []
-	};
-	menuList.push(priorities);
-
-	const goals: SidebarMenu = {
-		name: 'Goals',
-		title: 'Goals',
-		icon: 'material-symbols:radar',
-		link: `/users/${userId}/goals`,
-		children: []
-	};
-	menuList.push(goals);
-
 	const types_: SidebarMenu = getMenu(menuList, 'Types');
-	const priorities_: SidebarMenu = getMenu(menuList, 'Priorities');
-	const goals_: SidebarMenu = getMenu(menuList, 'Goals');
-	types_?.children.push(priorities_);
-	types_?.children.push(goals_);
 
 	const typesNavigation: NavigationMenu | null = toNavigation(
 		types_,
@@ -1264,25 +1274,69 @@ function addAppointmentMenu(
 ): NavigationMenu[] {
 	const menuList: SidebarMenu[] = [];
 
-	const gmu: SidebarMenu = {
+	const appointments: SidebarMenu = {
 		name: 'GMU',
-		title: 'Appointment Follow-Up',
+		title: 'Appointments',
 		icon: 'material-symbols:list-alt-check-outline-rounded',
 		link: null,
 		children: []
 	};
-	menuList.push(gmu);
+	menuList.push(appointments);
 
-	const gmu_: SidebarMenu = getMenu(menuList, 'GMU');
+	const followUp: SidebarMenu = {
+		name: 'Appointment-Status-Report',
+		title: 'Follow-Up',
+		icon: 'material-symbols:event-note-outline-rounded',
+		link: `/users/${userId}/appointment-followup/summary-uploads`,
+		children: []
+	};
+	menuList.push(followUp);
 
-	const gmuNavigation: NavigationMenu | null = toNavigation(
-		gmu_,
+	const appointments_: SidebarMenu = getMenu(menuList, 'GMU');
+	const followUp_: SidebarMenu = getMenu(menuList, 'Appointment-Status-Report');
+	appointments_?.children.push(followUp_);
+
+	const appointmentsNavigation: NavigationMenu | null = toNavigation(
+		appointments_,
 		userRole,
 		tenantSettings,
 		options
 	);
-	if (gmuNavigation) {
-		sidebarMenu.push(gmuNavigation);
+	if (appointmentsNavigation) {
+		sidebarMenu.push(appointmentsNavigation);
+	}
+
+	return sidebarMenu;
+}
+
+function addNotificationsMenu(
+	sidebarMenu: NavigationMenu[],
+	userId: string,
+	userRole: string,
+	tenantSettings: any,
+	options: FeatureOptions
+): NavigationMenu[] {
+	const menuList: SidebarMenu[] = [];
+
+	const notifications: SidebarMenu = {
+		name: 'Notifications',
+		title: 'Notifications',
+		icon: 'material-symbols:notifications-outline-rounded',
+		link: `/users/${userId}/notifications`,
+		children: []
+	};
+	menuList.push(notifications);
+
+	const notifications_: SidebarMenu = getMenu(menuList, 'Notifications');
+
+	const notificationsNavigation: NavigationMenu | null = toNavigation(
+		notifications_,
+		userRole,
+		tenantSettings,
+		options
+	);
+	if (notificationsNavigation) {
+		sidebarMenu.push(notificationsNavigation);
 	}
 
 	return sidebarMenu;

@@ -504,7 +504,7 @@
 				type="submit"
 				variant="primary"
 				size="md"
-				text="Submitting..."
+				text="Saving..."
 				disabled={true}
 			/>
 		{:then data}
@@ -512,7 +512,8 @@
 				type="submit"
 				variant="primary"
 				size="md"
-				text="Submit"
+				text="Save Changes"
+				disabled={!edit}
 			/>
 		{/await}
 	{/if}

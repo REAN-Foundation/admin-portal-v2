@@ -18,8 +18,7 @@ export const POST = async (event: RequestEvent) => {
 		}
 
 		const createdByUserId = event.locals?.sessionUser?.userId;
-		const tenantId = event.locals?.sessionUser?.tenantId;
-        // const tenantCode = event.locals?.sessionUser?.tenantCode;
+		const tenantCode = event.locals?.sessionUser?.tenantCode;
 
 		const request = event.request;
 		const data: PromptTemplateCreateModel = await request.json();
@@ -55,7 +54,7 @@ export const POST = async (event: RequestEvent) => {
 			data.PresencePenalty,
 			createdByUserId,
 			true,
-			tenantId
+			tenantCode
 		);
 
 		return ResponseHandler.success(response);

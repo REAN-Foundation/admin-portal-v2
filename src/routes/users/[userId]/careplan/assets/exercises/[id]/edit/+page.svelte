@@ -49,7 +49,7 @@
 		 intensityLevel = data?.exercise?.IntensityLevel,
 		 recommendedDurationMin = data?.exercise.RecommendedDurationMin,
 		 version = data?.exercise?.Version;
-		 keywords = data?.exercise?.Tags;
+		 keywords = [...(data?.exercise?.Tags ?? [])];
 		 errors = {};
 		}
 
@@ -103,9 +103,6 @@
 		}
 	};
 
-	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
 
 </script>
 
@@ -213,12 +210,7 @@
 				<tr class="tables-row">
 					<td class="table-label align-top">Tags</td>
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
-						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<InputChips bind:keywords bind:value={keywordsStr} name="keywords" id="keywords" />
 					</td>
 				</tr>
 
