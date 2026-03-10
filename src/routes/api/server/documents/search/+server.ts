@@ -8,7 +8,7 @@ import { createSearchFilters } from '$lib/utils/search.utils';
 export const GET = async (event: RequestEvent) => {
 	try {
 		const sessionId = event.locals?.sessionUser?.sessionId;
-		const tenantId = event.locals?.sessionUser?.tenantId;
+		const tenantCode = event.locals?.sessionUser?.tenantCode;
 		if (!sessionId) {
 			return ResponseHandler.handleError(401, null, new Error('Access denied: Invalid session.'));
 		}
@@ -16,8 +16,14 @@ export const GET = async (event: RequestEvent) => {
 		const searchFilters = createSearchFilters(event, {
 			name: event.url.searchParams.get('name') ?? undefined,
 			documentType: event.url.searchParams.get('documentType') ?? undefined,
-			tenantId:tenantId
+			excludeTenantId: true
 		});
+		delete searchFilters.excludeTenantId;
+
+		// Backend expects tenantCode (not UUID) to filter documents by tenant
+		if (tenantCode) {
+			searchFilters.tenantCode = tenantCode;
+		}
 
 		console.log('Search parms: ', searchFilters);
 		const response = await searchDocuments(sessionId, searchFilters);
