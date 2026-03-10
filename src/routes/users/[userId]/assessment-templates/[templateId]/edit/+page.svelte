@@ -46,7 +46,7 @@
 		providerAssessmentCode = data.assessmentTemplate.ProviderAssessmentCode;
 		serveListNodeChildrenAtOnce = data.assessmentTemplate.ServeListNodeChildrenAtOnce;
 		scoringApplicable = data.assessmentTemplate.ScoringApplicable;
-		keywords = data?.assessmentTemplate?.Tags;
+		keywords = [...(data?.assessmentTemplate?.Tags ?? [])];
 		rawData = typeof data.assessmentTemplate.RawData === 'string'
 			? data.assessmentTemplate.RawData
 			: data.assessmentTemplate.RawData
@@ -117,9 +117,6 @@
 			toastMessage();
 		}
 	};
-	$effect(() => {
-		keywordsStr = keywords?.join(', ');
-	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -281,8 +278,7 @@
 				<tr class="tables-row">
 					<td class="table-label align-top">Tags</td>
 					<td class="table-data">
-						<InputChips bind:keywords name="keywords" id="keywords" />
-						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<InputChips bind:keywords bind:value={keywordsStr} name="keywords" id="keywords" />
 					</td>
 				</tr>
 			</tbody>

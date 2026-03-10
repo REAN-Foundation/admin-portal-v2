@@ -32,6 +32,8 @@
 	let notRepiedCount = $derived(notRepiedCount_);
 	let retrivedAppointmentRecords = $derived(appointmentRecords);
 	let followupSettings = data.settings;
+	let tenantId = data.tenantId;
+	let isFollowupEnabled = data.isFollowupEnabled;
 	console.log('followupSettings', followupSettings);
 
 	let searchKeyword = $state(undefined);
@@ -190,8 +192,25 @@
 	//  }
 </script>
 
-{#if source == "None"}
-	<h3 class="text-center">Currently this feature is not enabled! To enable this feature please update settings</h3>
+{#if source === 'None' || !followupSettings}
+	<div class="flex min-h-[60vh] items-center justify-center px-6">
+		<div class="w-full max-w-lg rounded-xl border border-[var(--color-outline)] bg-[var(--color-primary)] p-8 text-center shadow-sm">
+			<div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
+				<Icon icon="material-symbols:settings-alert-outline" class="h-8 w-8 text-amber-600 dark:text-amber-400" />
+			</div>
+			<h2 class="mb-2 text-xl font-semibold text-[var(--color-info)]">Follow-up Settings Not Configured</h2>
+			<p class="mb-6 text-sm text-[var(--color-info)] opacity-70">
+				The appointment follow-up feature requires configuration before use. Please set up the follow-up settings to start managing appointment reminders and schedules.
+			</p>
+			<Button
+				href={`/users/${userId}/tenants/${tenantId}/settings/followup-setting`}
+				text="Configure Follow-up Settings"
+				size="md"
+				variant="primary"
+				className="w-full"
+			/>
+		</div>
+	</div>
 {:else}
 
 <BreadCrumbs crumbs={breadCrumbs} />

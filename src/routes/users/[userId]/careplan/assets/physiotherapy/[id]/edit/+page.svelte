@@ -45,7 +45,7 @@
 		 description = data?.physiotherapy?.Description;
 		 recommendedDurationMin = data?.physiotherapy.RecommendedDurationMin,
 		 version = data?.physiotherapy?.Version;
-		 keywords = data?.physiotherapy?.Tags;
+		 keywords = [...(data?.physiotherapy?.Tags ?? [])];
 		 errors = {};
 		}
 
@@ -97,9 +97,6 @@
 		}
 	};
 
-	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
 
 </script>
 
@@ -162,12 +159,7 @@
 				<tr class="tables-row">
 					<td class="table-label">Tags</td>
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
-						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<InputChips bind:keywords bind:value={keywordsStr} name="keywords" id="keywords" />
 					</td>
 				</tr>
 
