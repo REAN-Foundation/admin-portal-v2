@@ -44,7 +44,7 @@
 		checkupsId = page.params.id;
 		description = data?.checkups?.Description;
 		version = data?.checkups?.Version;
-		keywords = data?.checkups?.Tags;
+		keywords = [...(data?.checkups?.Tags ?? [])];
 		errors = {};
 	};
 
@@ -95,9 +95,6 @@
 		}
 	};
 
-	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
 
 </script>
 
@@ -150,12 +147,7 @@
 				<tr class="tables-row">
 					<td class="table-label">Tags</td>
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
-						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<InputChips bind:keywords bind:value={keywordsStr} name="keywords" id="keywords" />
 					</td>
 				</tr>
 

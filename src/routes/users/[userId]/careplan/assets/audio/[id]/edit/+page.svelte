@@ -46,7 +46,7 @@
 		transcript = data?.audio?.Transcript;
 		pathUrl = data?.audio?.PathUrl;
 		version = data?.audio?.Version;
-		keywords = data?.audio?.Tags;
+		keywords = [...(data?.audio?.Tags ?? [])];
 		errors = {};
 	};
 
@@ -97,9 +97,6 @@
 		}
 	};
 
-	$effect(() => {
-		keywordsStr = keywords?.join(', ');
-	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -164,8 +161,7 @@
 				<tr class="tables-row">
 					<td class="table-label">Tags</td>
 					<td class="table-data">
-						<InputChips bind:keywords name="keywords" id="keywords" />
-						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<InputChips bind:keywords bind:value={keywordsStr} name="keywords" id="keywords" />
 						<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
 					</td>
 				</tr>
