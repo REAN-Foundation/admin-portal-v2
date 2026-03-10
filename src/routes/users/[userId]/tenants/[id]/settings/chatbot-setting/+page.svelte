@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { beforeNavigate } from '$app/navigation';
 	import Icon from '@iconify/svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import { ChatBotSettingsSchema } from '$lib/validation/tenant.settings.schema.js';
@@ -14,7 +15,7 @@
 	import Progressive from './progressive.update.svelte';
 	import ExportSettingsDialog from './export-settings.dialog.svelte';
 	import WelcomeMessageModal from './welcome-message.modal.svelte';
-	import Tooltip from '$lib/components/tooltip.svelte';
+	import SettingsPageHeader from '$lib/components/settings/settings-page-header.svelte';
 
 	///////////////////////////////////////////////////////////////////////
 
@@ -50,36 +51,50 @@
 	let isEditWelcomeMessage = $state(false);
 	let editingWelcomeMessageIndex: number | null = $state(null);
 	let modalWelcomeMessage = $state({ LanguageCode: '', Content: '', URL: '' });
+	let isSubmitting = $state(false);
+	let originalSnapshot = $state('');
+
+	let hasUnsavedChanges = $derived(
+		edit && JSON.stringify({
+			chatbot: $state.snapshot(chatBotSetting),
+			welcome: $state.snapshot(welcomeMessages)
+		}) !== originalSnapshot
+	);
+
+	beforeNavigate((navigation) => {
+		if (hasUnsavedChanges) {
+			if (!confirm('You have unsaved changes. Are you sure you want to leave?')) {
+				navigation.cancel();
+			}
+		}
+	});
 
 	console.log("logoUrl",data.chatbotSettings)
 
 	console.log("faviconUrl",faviconUrl)
 
 
-	const handleEditClick = async () => {
+	const handleToggleEdit = () => {
 		if (!disabled) {
-			addToast({
-				message: 'This setting is disabled. Please update it from the main settings.',
-				type: 'info',
-				timeout: 3000
-			});
+			addToast({ message: 'This setting is disabled. Please update it from the main settings.', type: 'warning', timeout: 3000 });
 			return;
 		}
-		if (!edit) {
-			addToast({
-				message: 'Edit mode enabled.',
-				type: 'info',
-				timeout: 3000
-			});
-			edit = true;
-		} else {
-			addToast({
-				message: 'Edit mode disabled.',
-				type: 'info',
-				timeout: 3000
-			});
-			edit = false;
-		}
+		edit = true;
+		originalSnapshot = JSON.stringify({
+			chatbot: $state.snapshot(chatBotSetting),
+			welcome: $state.snapshot(welcomeMessages)
+		});
+		addToast({ message: 'Edit mode enabled.', type: 'info', timeout: 3000 });
+	};
+
+	const handleCancelEdit = () => {
+		const restored = JSON.parse(originalSnapshot);
+		chatBotSetting = restored.chatbot;
+		welcomeMessages = restored.welcome;
+		edit = false;
+		errors = {};
+		currentSection = 0;
+		addToast({ message: 'Edit mode disabled.', type: 'info', timeout: 3000 });
 	};
 
 	const onFileSelected = async (e) => {
@@ -156,6 +171,7 @@
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
 		errors = {};
+		isSubmitting = true;
 
 		let isFaviconUploaded = false;
 		let isLogoUploaded = false;
@@ -164,7 +180,7 @@
 			if (!edit) {
 				addToast({
 					message: 'Nothing to edit !',
-					type: 'info',
+					type: 'warning',
 					timeout: 3000
 				});
 				return;
@@ -319,6 +335,8 @@
 		} catch (err) {
 			console.error('Submit Error:', err);
 			addToast({ message: 'Unexpected error occurred.', type: 'error', timeout: 3000 });
+		} finally {
+			isSubmitting = false;
 		}
 	};
 
@@ -548,30 +566,16 @@
 	<div class="mx-auto my-6 border border-[var(--color-outline)]">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 			<!-- Heading -->
-
-			<div
-				class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6"
-			>
-				<h1 class="text-xl text-[var(--color-info)]">Chatbot Settings</h1>
-				<div class="flex items-center gap-2 text-end">
-					<Tooltip text={edit ? 'Disable Editing' : 'Enable Editing'} forceShow={true}>
-						<button
-							type="button"
-							class="table-btn variant-filled-secondary gap-1"
-							aria-label={edit ? 'Disable Editing' : 'Enable Editing'}
-							onclick={handleEditClick}
-						>
-							<Icon icon="material-symbols:edit-outline" />
-						</button>
-					</Tooltip>
-					<a
-						href={settingsRoute}
-						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
-					>
-						<Icon icon="material-symbols:close-rounded" class=" h-5" />
-					</a>
-				</div>
-			</div>
+			<SettingsPageHeader
+				title="Chatbot Settings"
+				description="Configure chatbot behavior, channels, and features."
+				isEditing={edit}
+				featureEnabled={disabled}
+				{hasUnsavedChanges}
+				closeHref={settingsRoute}
+				onToggleEdit={handleToggleEdit}
+				onCancelEdit={handleCancelEdit}
+			/>
 
 			<!-- content -->
 			<div class="flex flex-col space-y-4">

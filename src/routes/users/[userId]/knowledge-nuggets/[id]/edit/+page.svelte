@@ -16,14 +16,12 @@
 
 	let id = data.KnowledgeNugget.id;
 	let topicName = $state(data.KnowledgeNugget.TopicName);
-	let briefInformation = $state(data.KnowledgeNugget.BriefInformation);
-	let detailedInformation = $state(data.KnowledgeNugget.DetailedInformation);
-	let additionalResources = $state([...data.KnowledgeNugget.AdditionalResources]);
+	let briefInformation = $state(data.KnowledgeNugget.BriefInformation ?? '');
+	let detailedInformation = $state(data.KnowledgeNugget.DetailedInformation ?? '');
+	let additionalResources = $state([...(data.KnowledgeNugget.AdditionalResources ?? [])]);
 	let newResource = $derived(additionalResources.join(', '));
 
-	// let additionalResources = $state(additionalResources_.join(', '));
-
-	let keywords: string[] = $state(data.KnowledgeNugget.Tags);
+	let keywords: string[] = $state(data.KnowledgeNugget.Tags ?? []);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let keywordsStr: string = $state('');

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { beforeNavigate } from '$app/navigation';
 	import Icon from '@iconify/svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import type {
@@ -18,7 +19,7 @@
 		SUPPORTED_LANGUAGE_CODES
 	} from '$lib/types/tenant.settings.types';
 	import Button from '$lib/components/button/button.svelte';
-	import Tooltip from '$lib/components/tooltip.svelte';
+	import SettingsPageHeader from '$lib/components/settings/settings-page-header.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -55,9 +56,14 @@
 	);
 
 	let isEditing = $state(false);
-	let promise = $state();
+	let isSubmitting = $state(false);
+	let originalSnapshot = $state('');
 	let expandedVitals: Record<string, boolean> = $state({});
 	let expandedCategories: Record<string, boolean> = $state({});
+
+	let hasUnsavedChanges = $derived(
+		isEditing && JSON.stringify($state.snapshot(vitalsThresholds)) !== originalSnapshot
+	);
 
 	// Inline validation errors: keyed by field identifier
 	let fieldErrors: Record<string, string> = $state({});
@@ -69,6 +75,14 @@
 	const availableVitalTypes = $derived(
 		VITAL_TYPES.filter((vt) => !vitalsThresholds[vt])
 	);
+
+	beforeNavigate(({ cancel }) => {
+		if (hasUnsavedChanges) {
+			if (!confirm('You have unsaved changes. Are you sure you want to leave?')) {
+				cancel();
+			}
+		}
+	});
 
 	///////////////////////////////////////////////////////////////////////////
 	// Validation helpers
@@ -206,17 +220,19 @@
 	// Handlers
 	///////////////////////////////////////////////////////////////////////////
 
-	const handleEditClick = () => {
-		isEditing = !isEditing;
-		if (isEditing) {
-			addToast({ message: 'Edit mode enabled.', type: 'info', timeout: 3000 });
-		} else {
-			addToast({ message: 'Edit mode disabled.', type: 'info', timeout: 3000 });
-			showAddVitalForm = false;
-			fieldErrors = {};
-			// Reset to original data
-			vitalsThresholds = normalizeThresholds(data.vitalsThresholds);
-		}
+	const handleToggleEdit = () => {
+		isEditing = true;
+		originalSnapshot = JSON.stringify($state.snapshot(vitalsThresholds));
+		addToast({ message: 'Edit mode enabled.', type: 'info', timeout: 3000 });
+	};
+
+	const handleCancelEdit = () => {
+		isEditing = false;
+		showAddVitalForm = false;
+		fieldErrors = {};
+		// Reset to original data
+		vitalsThresholds = normalizeThresholds(data.vitalsThresholds);
+		addToast({ message: 'Edit mode disabled.', type: 'info', timeout: 3000 });
 	};
 
 	const toggleVitalExpanded = (vitalType: string) => {
@@ -379,104 +395,106 @@
 
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
+		isSubmitting = true;
 
 		if (!isEditing) {
 			addToast({ message: 'Nothing to edit!', type: 'info', timeout: 3000 });
+			isSubmitting = false;
 			return;
 		}
 
-		// Run all validations
-		for (const [vitalType, config] of Object.entries(vitalsThresholds)) {
-			if (!config) continue;
-			if (!config.Unit || config.Unit.trim().length === 0) {
+		try {
+			// Run all validations
+			for (const [vitalType, config] of Object.entries(vitalsThresholds)) {
+				if (!config) continue;
+				if (!config.Unit || config.Unit.trim().length === 0) {
+					addToast({
+						message: `${VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}: Unit is required.`,
+						type: 'error',
+						timeout: 3000
+					});
+					return;
+				}
+
+				validateDuplicatePriorities(vitalType, config.Categories);
+				validateDuplicateCategoryNames(vitalType, config.Categories);
+
+				for (let i = 0; i < config.Categories.length; i++) {
+					const cat = config.Categories[i];
+					if (!cat.Category || cat.Category.trim().length === 0) {
+						addToast({
+							message: `${VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}: Category name is required for category ${i + 1}.`,
+							type: 'error',
+							timeout: 3000
+						});
+						return;
+					}
+					if (!cat.Severity || cat.Severity.trim().length === 0) {
+						addToast({
+							message: `${VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}: Severity is required for "${cat.Category}".`,
+							type: 'error',
+							timeout: 3000
+						});
+						return;
+					}
+					if (Object.keys(cat.Ranges).length === 0) {
+						addToast({
+							message: `${VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}: At least one range is required for "${cat.Category}".`,
+							type: 'error',
+							timeout: 3000
+						});
+						return;
+					}
+					if (Object.keys(cat.AlertMessage).length === 0) {
+						addToast({
+							message: `${VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}: At least one alert message is required for "${cat.Category}".`,
+							type: 'error',
+							timeout: 3000
+						});
+						return;
+					}
+
+					// Validate alert message text is not empty when language is selected
+					for (const [langCode, message] of Object.entries(cat.AlertMessage)) {
+						if (!validateAlertMessage(vitalType, i, langCode, message)) {
+							addToast({
+								message: `${VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}: Alert message is required for language "${langCode}" in "${cat.Category}".`,
+								type: 'error',
+								timeout: 3000
+							});
+							return;
+						}
+					}
+
+					// Validate numeric range values
+					for (const [rangeName, range] of Object.entries(cat.Ranges)) {
+						const minKey = `${vitalType}-${i}-${rangeName}-min`;
+						const maxKey = `${vitalType}-${i}-${rangeName}-max`;
+						const minVal = range.Min === null || range.Min === undefined ? '' : String(range.Min);
+						const maxVal = range.Max === null || range.Max === undefined ? '' : String(range.Max);
+						if (!validateNumericField(minKey, minVal) || !validateNumericField(maxKey, maxVal)) {
+							addToast({
+								message: `${VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}: Invalid numeric value in range "${rangeName}" for "${cat.Category}".`,
+								type: 'error',
+								timeout: 3000
+							});
+							return;
+						}
+						validateMinMax(vitalType, i, rangeName, range.Min, range.Max);
+					}
+				}
+			}
+
+			// Check if any validation errors remain
+			if (hasValidationErrors) {
 				addToast({
-					message: `${VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}: Unit is required.`,
+					message: 'Please fix all validation errors before submitting.',
 					type: 'error',
 					timeout: 3000
 				});
 				return;
 			}
 
-			validateDuplicatePriorities(vitalType, config.Categories);
-			validateDuplicateCategoryNames(vitalType, config.Categories);
-
-			for (let i = 0; i < config.Categories.length; i++) {
-				const cat = config.Categories[i];
-				if (!cat.Category || cat.Category.trim().length === 0) {
-					addToast({
-						message: `${VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}: Category name is required for category ${i + 1}.`,
-						type: 'error',
-						timeout: 3000
-					});
-					return;
-				}
-				if (!cat.Severity || cat.Severity.trim().length === 0) {
-					addToast({
-						message: `${VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}: Severity is required for "${cat.Category}".`,
-						type: 'error',
-						timeout: 3000
-					});
-					return;
-				}
-				if (Object.keys(cat.Ranges).length === 0) {
-					addToast({
-						message: `${VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}: At least one range is required for "${cat.Category}".`,
-						type: 'error',
-						timeout: 3000
-					});
-					return;
-				}
-				if (Object.keys(cat.AlertMessage).length === 0) {
-					addToast({
-						message: `${VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}: At least one alert message is required for "${cat.Category}".`,
-						type: 'error',
-						timeout: 3000
-					});
-					return;
-				}
-
-				// Validate alert message text is not empty when language is selected
-				for (const [langCode, message] of Object.entries(cat.AlertMessage)) {
-					if (!validateAlertMessage(vitalType, i, langCode, message)) {
-						addToast({
-							message: `${VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}: Alert message is required for language "${langCode}" in "${cat.Category}".`,
-							type: 'error',
-							timeout: 3000
-						});
-						return;
-					}
-				}
-
-				// Validate numeric range values
-				for (const [rangeName, range] of Object.entries(cat.Ranges)) {
-					const minKey = `${vitalType}-${i}-${rangeName}-min`;
-					const maxKey = `${vitalType}-${i}-${rangeName}-max`;
-					const minVal = range.Min === null || range.Min === undefined ? '' : String(range.Min);
-					const maxVal = range.Max === null || range.Max === undefined ? '' : String(range.Max);
-					if (!validateNumericField(minKey, minVal) || !validateNumericField(maxKey, maxVal)) {
-						addToast({
-							message: `${VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}: Invalid numeric value in range "${rangeName}" for "${cat.Category}".`,
-							type: 'error',
-							timeout: 3000
-						});
-						return;
-					}
-					validateMinMax(vitalType, i, rangeName, range.Min, range.Max);
-				}
-			}
-		}
-
-		// Check if any validation errors remain
-		if (hasValidationErrors) {
-			addToast({
-				message: 'Please fix all validation errors before submitting.',
-				type: 'error',
-				timeout: 3000
-			});
-			return;
-		}
-
-		try {
 			const response = await fetch(
 				`/api/server/tenants/settings/${tenantId}/VitalsThresholds`,
 				{
@@ -508,37 +526,25 @@
 		} catch (err) {
 			console.error('Error saving vitals thresholds:', err);
 			toastMessage();
+		} finally {
+			isSubmitting = false;
 		}
 	};
 </script>
 
 <div class="px-5 py-4">
 	<div class="mx-auto my-6 border border-[var(--color-outline)]">
-		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
+		<form onsubmit={handleSubmit}>
 			<!-- Header -->
-			<div
-				class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6"
-			>
-				<h1 class="text-xl text-[var(--color-info)]">Vital Alert Settings</h1>
-				<div class="flex items-center gap-2 text-end">
-					<Tooltip text={isEditing ? 'Disable Editing' : 'Enable Editing'} forceShow={true}>
-						<button
-							type="button"
-							class="table-btn variant-filled-secondary gap-1"
-							aria-label={isEditing ? 'Disable Editing' : 'Enable Editing'}
-							onclick={handleEditClick}
-						>
-							<Icon icon="material-symbols:edit-outline" />
-						</button>
-					</Tooltip>
-					<a
-						href={settingsRoute}
-						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
-					>
-						<Icon icon="material-symbols:close-rounded" class="h-5" />
-					</a>
-				</div>
-			</div>
+			<SettingsPageHeader
+				title="Vital Alert Settings"
+				description="Configure vital sign thresholds and alert rules."
+				bind:isEditing
+				{hasUnsavedChanges}
+				closeHref={settingsRoute}
+				onToggleEdit={handleToggleEdit}
+				onCancelEdit={handleCancelEdit}
+			/>
 
 			<div class="flex flex-col space-y-3 px-5 py-4">
 				<!-- Add Vital Button -->
@@ -602,7 +608,7 @@
 							<div class="rounded-lg border border-[var(--color-outline)]">
 								<!-- Vital Header (Accordion) -->
 								<div
-									class="flex cursor-pointer items-center justify-between rounded-t-lg bg-[var(--color-surface)] px-4 py-2.5"
+									class="flex cursor-pointer items-center justify-between rounded-t-lg bg-[var(--color-secondary)] px-4 py-2.5"
 									role="button"
 									tabindex="0"
 									onclick={() => toggleVitalExpanded(vitalType)}
@@ -621,9 +627,7 @@
 											{VITAL_DISPLAY_NAMES[vitalType as VitalType] ?? vitalType}
 										</span>
 										<span
-											class="rounded-full px-2 py-0.5 text-xs {config.Enabled
-												? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-												: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}"
+											class="rounded-full border border-[var(--color-outline)] bg-[var(--color-accent)] px-2 py-0.5 text-xs text-[var(--color-info)]"
 										>
 											{config.Enabled ? 'Enabled' : 'Disabled'}
 										</span>
@@ -741,7 +745,7 @@
 														<div class="flex items-center gap-2">
 															{#if category.SendAlert}
 																<span
-																	class="rounded-full bg-yellow-100 px-2 py-0.5 text-xs text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+																	class="rounded-full border border-[var(--color-outline)] bg-[var(--color-accent)] px-2 py-0.5 text-xs text-[var(--color-info)]"
 																>
 																	Alert
 																</span>
@@ -867,7 +871,7 @@
 																	{@const minKey = `${vitalType}-${catIndex}-${rangeName}-min`}
 																	{@const maxKey = `${vitalType}-${catIndex}-${rangeName}-max`}
 																	<div
-																		class="flex flex-wrap items-start gap-3 rounded border border-[var(--color-outline)] bg-[var(--color-surface)] p-2"
+																		class="flex flex-wrap items-start gap-3 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 																	>
 																		<div class="flex flex-col gap-1">
 																			<!-- svelte-ignore a11y_label_has_associated_control -->
@@ -876,7 +880,7 @@
 																			</label>
 																			<input
 																				type="text"
-																				class="input-field w-32 bg-gray-100 dark:bg-gray-700"
+																				class="input-field w-32 bg-[var(--color-accent)]"
 																				value={rangeName}
 																				disabled
 																				readonly
@@ -973,7 +977,7 @@
 																	{#if isEditing}
 																		<button
 																			type="button"
-																			class="text-sm text-blue-600 hover:underline dark:text-blue-400"
+																			class="text-sm text-[var(--color-info)] hover:underline"
 																			onclick={() =>
 																				handleAddAlertLanguage(
 																					vitalType as VitalType,
@@ -987,7 +991,7 @@
 																{#each Object.entries(category.AlertMessage) as [langCode, message]}
 																	{@const alertKey = `${vitalType}-${catIndex}-alert-${langCode}`}
 																	<div
-																		class="flex flex-col gap-1 rounded border border-[var(--color-outline)] bg-[var(--color-surface)] p-2"
+																		class="flex flex-col gap-1 rounded border border-[var(--color-outline)] bg-[var(--color-primary)] p-2"
 																	>
 																		<div class="flex items-center gap-2">
 																			<label class="text-xs text-[var(--color-info)] opacity-70">
@@ -1091,18 +1095,15 @@
 			</div>
 
 			<hr class="border-t border-[0.5px] border-[var(--color-outline)]" />
-			<div class="button-container my-4">
-				{#await promise}
-					<Button type="submit" variant="primary" size="md" text="Submitting..." disabled />
-				{:then data}
-					<Button
-						type="submit"
-						variant="primary"
-						size="md"
-						text="Submit"
-						disabled={!isEditing || hasValidationErrors}
-					/>
-				{/await}
+			<div class="flex items-center justify-end gap-3 px-5 py-4">
+				{#if isEditing}
+					<Button type="button" variant="outline" size="md" text="Cancel" onclick={handleCancelEdit} />
+				{/if}
+				{#if isSubmitting}
+					<Button type="submit" variant="primary" size="md" text="Saving..." disabled />
+				{:else}
+					<Button type="submit" variant="primary" size="md" text="Save Changes" disabled={!isEditing || hasValidationErrors} />
+				{/if}
 			</div>
 		</form>
 	</div>

@@ -165,6 +165,12 @@ const isSettingEnabled = (menuName: string, tenantSettings: TenantSettings) => {
 		}
 		return false;
 	}
+	if (menuName === 'GMU' || menuName === 'Appointment-Status-Report') {
+		if (tenantSettings.Common.UserInterfaces?.Followup) {
+			return true;
+		}
+		return false;
+	}
 
 	return true;
 };
