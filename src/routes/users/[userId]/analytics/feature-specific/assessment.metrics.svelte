@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import { Helper } from '$lib/utils/helper';
+	import Icon from '@iconify/svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -67,17 +68,22 @@
 		plan code.
 	</p>
 </div>
-<div class="my-5 ml-auto flex items-center">
-	<select
-		id="select-Plan"
-		bind:value={selectedCode}
-		onchange={getSelectedCareplanAssessmentData}
-		class="select border-secondary-100 dark:border-surface-700 mr-8 rounded border"
-	>
-		{#each uniqueCodes as code}
-			<option value={code}>{code}</option>
-		{/each}
-	</select>
+<div class="my-5 flex items-center">
+	<div class="relative w-full">
+		<select
+			id="select-Plan"
+			bind:value={selectedCode}
+			onchange={getSelectedCareplanAssessmentData}
+			class="select border-secondary-100 dark:border-surface-700 w-full rounded border" style="padding-right: 2rem;"
+		>
+			{#each uniqueCodes as code}
+				<option value={code}>{code}</option>
+			{/each}
+		</select>
+		<div class="select-icon-container">
+			<Icon icon="mdi:chevron-down" class="select-icon" />
+		</div>
+	</div>
 </div>
 <div class="mb-6 overflow-x-auto rounded-lg border border-[var(--color-outline)] shadow-lg">
 	<table class=" w-full table-auto text-[var(--color-info)]">
@@ -129,16 +135,21 @@
 	</p>
 </div>
 <div class="my-6 flex flex-col items-center sm:flex-row">
-	<select
-		id="select-Plan"
-		bind:value={selectedAssessment}
-		onchange={getSelectedAssessmentData}
-		class="select border-secondary-100 dark:border-surface-700 w-full rounded border px-2 py-2 sm:w-1/2"
-	>
-		{#each uniqueTitles as title}
-			<option value={title}>{title}</option>
-		{/each}
-	</select>
+	<div class="relative w-full">
+		<select
+			id="select-Plan"
+			bind:value={selectedAssessment}
+			onchange={getSelectedAssessmentData}
+			class="select border-secondary-100 dark:border-surface-700 w-full rounded border px-2 py-2" style="padding-right: 2rem;"
+		>
+			{#each uniqueTitles as title}
+				<option value={title}>{title}</option>
+			{/each}
+		</select>
+		<div class="select-icon-container">
+			<Icon icon="mdi:chevron-down" class="select-icon" />
+		</div>
+	</div>
 </div>
 <div class="overflow-x-auto rounded-lg border border-[var(--color-outline)] shadow-lg">
 	<table class="min-w-full table-auto">

@@ -7,15 +7,15 @@ import { searchPromptTemplate } from '../../../../api/services/bot-content/promp
 
 export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 	const sessionId = event.cookies.get('sessionId');
-	const tenantId = event.locals?.sessionUser?.tenantId;
-	// const tenantCode = event.locals?.sessionUser?.tenantCode; 
+	// const tenantId = event.locals?.sessionUser?.tenantId;
+	const tenantCode = event.locals?.sessionUser?.tenantCode; 
 
 	// const createdByUserId = event.params.userId;
 
 	event.depends('app:prompt-template');
 
 	const response = await searchPromptTemplate(sessionId, {
-			tenantId, 
+			tenantId: tenantCode, 
 			orderBy: 'Name',
 			order: 'ascending',
 			itemsPerPage: 10

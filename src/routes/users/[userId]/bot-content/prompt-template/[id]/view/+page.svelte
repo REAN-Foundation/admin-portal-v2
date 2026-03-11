@@ -4,6 +4,7 @@
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
 	import Button from '$lib/components/button/button.svelte';
+	import { toastMessage } from '$lib/components/toast/toast.store';
 
 	////////////////////////////////////////////////////////////////////////////////////
 
@@ -41,6 +42,25 @@
 			path: viewRoute
 		}
 	];
+
+	let isPromoting = $state(false);
+
+	const handlePromotion = async () => {
+		try {
+			isPromoting = true;
+			const res = await fetch(`/api/server/prompt-template/${id}/promotion-from`, {
+				method: 'POST',
+				body: JSON.stringify({}),
+				headers: { 'content-type': 'application/json' }
+			});
+			const response = await res.json();
+			toastMessage(response);
+		} catch (error) {
+			toastMessage({ HttpCode: 500, Message: error.message || 'An error occurred during promotion.' });
+		} finally {
+			isPromoting = false;
+		}
+	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -106,8 +126,14 @@
 					</tr>
 				</tbody>
 			</table>
-				<div class=" btn-container">
-        			<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
-        			></Button>
-    			</div>
+				<div class="btn-container">
+				<Button
+					onclick={handlePromotion}
+					size="md"
+					text={isPromoting ? 'Promoting...' : 'Promote'}
+					variant="primary"
+					disabled={isPromoting}
+				/>
+				<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md" />
+			</div>
 		</div>
