@@ -131,7 +131,7 @@
 					onclick={handlePromotion}
 					size="md"
 					text={isPromoting ? 'Promoting...' : 'Promote'}
-					variant="primary"
+					variant="outline"
 					disabled={isPromoting}
 				/>
 				<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md" />

@@ -125,17 +125,17 @@
 	</table>
 
 	<div class="btn-container flex flex-wrap justify-end gap-2 pt-4">
-		<Button onclick={handlePromotion} text="Promote" variant="primary" />
+		<Button onclick={handlePromotion} text="Promote" variant="outline" />
 		<Button
 			onclick={exportCareplan}
 			text="Export"
-			variant="primary"
+			variant="outline"
 			iconBefore="material-symbols:download"
 		/>
 		<Button
 			href={schedulingRoute}
 			text="Scheduling"
-			variant="primary"
+			variant="outline"
 			iconBefore="material-symbols:schedule"
 		/>
 		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" />

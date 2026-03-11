@@ -223,7 +223,7 @@
 					<Button
 						text="Open with Document Viewer"
 						type="button"
-						variant="primary"
+						variant="outline"
 						onclick={viewDocument}
 						className="ml-2"
 						size="sm"
@@ -284,7 +284,7 @@
 	</table>
 
 	<div class="btn-container">
-		<Button onclick={handlePromotion} size="md" text="Promote" variant="primary" />
+		<Button onclick={handlePromotion} size="md" text="Promote" variant="outline" />
 		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md" />
 		<!-- <Button onclick = {handleSubmit} text={isPublishing ? "Publishing..." : "Publish"} variant="outline" disabled={isPublishing}>
 		</Button> -->

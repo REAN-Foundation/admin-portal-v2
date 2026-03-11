@@ -266,14 +266,13 @@ const handlePromotion = async () => {
 		</tbody>
 	</table>
 	<div class="btn-container">
-		<Button onclick={handlePromotion} size="md" text="Promote" variant="primary" />
+		<Button onclick={handlePromotion} size="md" text="Promote" variant="outline" />
 
-		<Button href={nodeRoute} text="Add node" variant="primary" />
 
 		<Button
 			onclick={handleExport}
 			text={isExporting ? "Exporting..." : "Export"}
-			variant="primary"
+			variant="outline"
 			iconBefore="mdi:download"
 			iconSize="md"
 			disabled={isExporting}
@@ -282,11 +281,12 @@ const handlePromotion = async () => {
 		<Button
 			onclick={handleFlowJson}
 			text={isExportingFlowJson ? "Exporting..." : "Flow JSON"}
-			variant="primary"
+			variant="outline"
 			iconBefore="mdi:download"
 			iconSize="md"
 			disabled={isExportingFlowJson}
 		></Button>
+		<Button href={nodeRoute} text="Add node" variant="primary" />
 
 		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
 		></Button>
