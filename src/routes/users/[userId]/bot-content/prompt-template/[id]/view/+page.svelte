@@ -4,6 +4,7 @@
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
 	import Button from '$lib/components/button/button.svelte';
+	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 
 	////////////////////////////////////////////////////////////////////////////////////
@@ -44,6 +45,7 @@
 	];
 
 	let isPromoting = $state(false);
+	let openPromoteModal = $state(false);
 
 	const handlePromotion = async () => {
 		try {
@@ -128,12 +130,21 @@
 			</table>
 				<div class="btn-container">
 				<Button
-					onclick={handlePromotion}
+					onclick={() => openPromoteModal = true}
 					size="md"
 					text={isPromoting ? 'Promoting...' : 'Promote'}
 					variant="outline"
 					disabled={isPromoting}
+t				tooltip="Promote template to next environment"
 				/>
 				<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md" />
 			</div>
 		</div>
+
+<Confirmation
+	bind:isOpen={openPromoteModal}
+	title="Promote Prompt Template"
+	message="Are you sure you want to promote this prompt template to the next environment?"
+	confirmText="Promote"
+	onConfirm={handlePromotion}
+/>

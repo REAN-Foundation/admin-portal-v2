@@ -7,6 +7,7 @@
 	import type { PageServerData } from './$types';
 	import TreeView from '$lib/components/tree-view.svelte';
 	import Button from '$lib/components/button/button.svelte';
+	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,6 +68,7 @@
 		{ name: 'View', path: viewRoute }
 	];
 
+	let openPromoteModal = $state(false);
 	let isExporting = $state(false);
 
 const handleExport = async () => {
@@ -266,7 +268,7 @@ const handlePromotion = async () => {
 		</tbody>
 	</table>
 	<div class="btn-container">
-		<Button onclick={handlePromotion} size="md" text="Promote" variant="outline" />
+		<Button onclick={() => openPromoteModal = true} size="md" text="Promote" variant="outline" tooltip="Promote template to next environment" />
 
 
 		<Button
@@ -291,5 +293,13 @@ const handlePromotion = async () => {
 		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
 		></Button>
 	</div>
-    
+
 </div>
+
+<Confirmation
+	bind:isOpen={openPromoteModal}
+	title="Promote Assessment Template"
+	message="Are you sure you want to promote this assessment template to the next environment?"
+	confirmText="Promote"
+	onConfirm={handlePromotion}
+/>

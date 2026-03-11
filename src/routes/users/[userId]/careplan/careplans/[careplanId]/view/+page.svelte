@@ -4,6 +4,7 @@
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
 	import Button from '$lib/components/button/button.svelte';
+	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 
 	////////////////////////////////////////////////////////
@@ -39,6 +40,8 @@
 			path: viewRoute
 		}
 	];
+
+	let openPromoteModal = $state(false);
 
 	const handlePromotion = async () => {
 		try {
@@ -125,7 +128,7 @@
 	</table>
 
 	<div class="btn-container flex flex-wrap justify-end gap-2 pt-4">
-		<Button onclick={handlePromotion} text="Promote" variant="outline" />
+		<Button onclick={() => openPromoteModal = true} text="Promote" variant="outline" tooltip="Promote careplan to next environment" />
 		<Button
 			onclick={exportCareplan}
 			text="Export"
@@ -141,3 +144,11 @@
 		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" />
 	</div>
 </div>
+
+<Confirmation
+	bind:isOpen={openPromoteModal}
+	title="Promote Careplan"
+	message="Are you sure you want to promote this careplan to the next environment?"
+	confirmText="Promote"
+	onConfirm={handlePromotion}
+/>

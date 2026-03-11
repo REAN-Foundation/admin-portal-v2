@@ -10,6 +10,7 @@
 	import { splitterOptionsByType } from '$lib/types/documents.types';
 	import FilePreviewModal from '$lib/components/modal/file.preview.modal.svelte';
 	import Button from '$lib/components/button/button.svelte';
+	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	///////////////////////////////////////////////////////////////////////////////
 	let { data }: { data: PageServerData } = $props();
 
@@ -170,6 +171,8 @@
 		fileType = null;
 	};
 
+	let openPromoteModal = $state(false);
+
 	const handlePromotion = async () => {
 		try {
 			const res = await fetch(`/api/server/qna-documents/documents/${id}/promotion-from`, {
@@ -284,10 +287,18 @@
 	</table>
 
 	<div class="btn-container">
-		<Button onclick={handlePromotion} size="md" text="Promote" variant="outline" />
+		<Button onclick={() => openPromoteModal = true} size="md" text="Promote" variant="outline" tooltip="Promote document to next environment" />
 		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md" />
 		<!-- <Button onclick = {handleSubmit} text={isPublishing ? "Publishing..." : "Publish"} variant="outline" disabled={isPublishing}>
 		</Button> -->
 	</div>
 </div>
 <FilePreviewModal {showModal} {fileUrl} {fileType} {closeModal} />
+
+<Confirmation
+	bind:isOpen={openPromoteModal}
+	title="Promote Document"
+	message="Are you sure you want to promote this document to the next environment?"
+	confirmText="Promote"
+	onConfirm={handlePromotion}
+/>
