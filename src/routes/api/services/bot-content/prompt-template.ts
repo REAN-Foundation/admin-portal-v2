@@ -149,3 +149,18 @@ export const deletePromptTemplate = async (sessionId: string, promptId: string) 
 
 	return result;
 };
+
+export const llmPromptPromotion = async (
+	sessionId: string,
+	promptId: string,
+	targetEnvironment: string,
+	tenantCode: string
+) => {
+	const body = {
+		TargetEnvironment: targetEnvironment,
+		TenantId: tenantCode
+	};
+    console.log('body', body);
+	const url = BOT_CONTENT_API_URL + `/llm-prompt-promotion/${promptId}/promotion-from`;
+	return await post(sessionId, url, body, true, API_CLIENT_INTERNAL_KEY);
+};
