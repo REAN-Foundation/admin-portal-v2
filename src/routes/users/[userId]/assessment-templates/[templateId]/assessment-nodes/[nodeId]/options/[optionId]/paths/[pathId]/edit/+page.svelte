@@ -237,7 +237,7 @@
 		<input type="hidden" id="nextNodeId" bind:value={nextNodeId} />
 
 		<div class="btn-container">
-			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
+			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="outline" />
 			<Button
 				size="md"
 				type="submit"

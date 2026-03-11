@@ -298,7 +298,7 @@
 													<Button 
 														href={`/users/${userId}/assessment-templates/${templateId}/assessment-nodes/${nodeId}/options/${option.id}/paths/${existingPath.id}/view`}
 														text="View Path" 
-														variant="secondary" 
+														variant="outline" 
 														iconBefore="mdi:eye" 
 														iconSize="sm"
 													/>
@@ -320,7 +320,7 @@
 													<Button 
 														href={createPathRoute(option.id)}
 														text="Add Path" 
-														variant="secondary" 
+														variant="outline" 
 														iconBefore="mdi:plus" 
 														iconSize="sm"
 													/>

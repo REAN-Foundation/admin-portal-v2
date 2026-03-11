@@ -286,7 +286,7 @@
 	<div class="btn-container">
 		<Button onclick={handlePromotion} size="md" text="Promote" variant="primary" />
 		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md" />
-		<!-- <Button onclick = {handleSubmit} text={isPublishing ? "Publishing..." : "Publish"} variant="secondary" disabled={isPublishing}>
+		<!-- <Button onclick = {handleSubmit} text={isPublishing ? "Publishing..." : "Publish"} variant="outline" disabled={isPublishing}>
 		</Button> -->
 	</div>
 </div>

@@ -237,7 +237,7 @@
 			</tbody>
 		</table>
 		<div class="btn-container">
-			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
+			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
 				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
 			{:then data}

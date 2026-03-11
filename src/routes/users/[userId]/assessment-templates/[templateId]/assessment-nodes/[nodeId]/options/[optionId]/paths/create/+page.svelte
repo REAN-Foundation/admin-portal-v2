@@ -282,7 +282,7 @@
 								type="button"
 								onclick={() => window.location.href = `/users/${userId}/assessment-templates/${templateId}/assessment-nodes/create?parentNodeId=${nodeId}`}
 								text="Add Node"
-								variant="secondary"
+								variant="outline"
 								size="sm"
 							/>
 						{/if}

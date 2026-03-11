@@ -180,7 +180,7 @@
 											size="xs"
 											type="button"
 											text="View"
-											variant="secondary"
+											variant="outline"
 											onclick={() => handleViewPath(path.Id)}
 										/>
 										<Button
@@ -225,7 +225,7 @@
 				size="md"
 				type="button"
 				text="Back to Option"
-				variant="secondary"
+				variant="outline"
 				onclick={handleBack}
 			/>
 			<Button

@@ -703,7 +703,7 @@
 												{#if isEditing}
 													<Button
 														type="button"
-														variant="secondary"
+														variant="outline"
 														size="sm"
 														text="+ Add Category"
 														onclick={() =>

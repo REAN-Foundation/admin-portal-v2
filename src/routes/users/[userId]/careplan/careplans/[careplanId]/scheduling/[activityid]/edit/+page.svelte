@@ -287,7 +287,7 @@
 		</table>
 
 		<div class="btn-container">
-			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			<Button type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
 				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
 			{:then data}
