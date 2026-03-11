@@ -8,6 +8,7 @@
 	} from '../basic/components/functions';
 	import { hasChartData } from '$lib/utils/chart.utils';
 	import EmptyState from '$lib/components/analytics/EmptyState.svelte';
+	import Icon from '@iconify/svelte';
 
 	////////////////////////////////////////////////////////////////////////
 
@@ -173,16 +174,21 @@
 					</p>
 				</div>
 				<div class="flex w-full justify-end">
-					<select
-						class="select my-4 w-fit border px-10"
-						onchange={(e: any) => {
-							selectedGraph = e.target.value;
-						}}
-					>
-						<option value="daily">Daily</option>
-						<option value="weekly">Weekly</option>
-						<option value="monthly">Monthly</option>
-					</select>
+					<div class="relative my-4 w-fit">
+						<select
+							class="select w-full border" style="padding-right: 2rem;"
+							onchange={(e: any) => {
+								selectedGraph = e.target.value;
+							}}
+						>
+							<option value="daily">Daily</option>
+							<option value="weekly">Weekly</option>
+							<option value="monthly">Monthly</option>
+						</select>
+						<div class="select-icon-container">
+							<Icon icon="mdi:chevron-down" class="select-icon" />
+						</div>
+					</div>
 				</div>
 				{#if selectedGraph === 'daily' && hasChartData(dailyActiveUsersData)}
 					<GenericChart
@@ -223,11 +229,16 @@
 	<h4 class="text-lg font-semibold text-[var(--color-info)]">Commonly Visited Features</h4>
 	<div class="flex items-center gap-2 px-3 py-2 text-[var(--color-info)]">
 		<label for="year" class="text-base">Year</label>
-		<select id="year" bind:value={selectedYear} class="rounded border px-2 py-1 text-base">
-			{#each years ?? [] as year}
-				<option value={year}>{year}</option>
-			{/each}
-		</select>
+		<div class="relative">
+			<select id="year" bind:value={selectedYear} class="select text-base" style="padding-right: 2rem;">
+				{#each years ?? [] as year}
+					<option value={year}>{year}</option>
+				{/each}
+			</select>
+			<div class="select-icon-container">
+				<Icon icon="mdi:chevron-down" class="select-icon" />
+			</div>
+		</div>
 	</div>
 </div>
 
