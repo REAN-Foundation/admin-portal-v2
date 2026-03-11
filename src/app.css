@@ -272,10 +272,10 @@
 }
 
 .themes-close-button {
-	@apply absolute top-2 right-2 text-[var(--color-info)];
+	@apply absolute top-2 right-2 p-1 text-lg text-[var(--color-info)] rounded-md cursor-pointer transition-all duration-150 ease-in-out hover:bg-gray-200 hover:text-[var(--color-error)] focus:outline-none focus:ring-2 focus:ring-[var(--color-info)];
 }
 .user-menu-close {
-	@apply absolute top-2 right-2 text-[var(--color-info)];
+	@apply absolute top-2 right-2 p-1 text-lg text-[var(--color-info)] rounded-md cursor-pointer transition-all duration-150 ease-in-out hover:bg-gray-200 hover:text-[var(--color-error)] focus:outline-none focus:ring-2 focus:ring-[var(--color-info)];
 }
 .para {
 	@apply my-2 text-left text-base text-[var(--color-info)];
@@ -492,7 +492,7 @@ tr {
 }
 
 .preview-close-btn {
-	@apply absolute top-2 right-2 cursor-pointer border-none bg-transparent text-2xl;
+	@apply absolute top-3 right-3 cursor-pointer border-none bg-transparent text-3xl p-1 rounded-md text-gray-600 transition-all duration-150 ease-in-out hover:bg-gray-200 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-400;
 }
 
 /* .cancel-btn {
@@ -746,7 +746,7 @@ tr {
 }
 
 .close-btn {
-	@apply absolute top-1/2 right-4 -translate-y-1/2 transform cursor-pointer border-0 bg-transparent;
+	@apply absolute top-1/2 right-4 -translate-y-1/2 transform cursor-pointer border-0 bg-transparent p-1 text-lg rounded-md text-gray-500 transition-all duration-150 ease-in-out hover:bg-gray-200 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400;
 }
 
 /* pagination */
@@ -855,11 +855,11 @@ tr {
 }
 
 .close-btn {
-	@apply absolute top-1/2 right-4 -translate-y-1/2 transform cursor-pointer border-0 bg-transparent;
+	@apply absolute top-1/2 right-4 -translate-y-1/2 transform cursor-pointer border-0 bg-transparent p-1 text-lg rounded-md text-gray-500 transition-all duration-150 ease-in-out hover:bg-gray-200 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400;
 }
 
 .cancel-btn {
-	@apply inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-2 text-center text-sm whitespace-nowrap text-[var(--color-error)] transition-all duration-150 ease-in-out hover:bg-[var(--active-soft)];
+	@apply inline-flex cursor-pointer items-center justify-center rounded-md border border-[var(--color-outline)] px-3 py-2.5 text-center text-lg whitespace-nowrap text-[var(--color-error)] transition-all duration-150 ease-in-out hover:bg-red-100 hover:border-[var(--color-error)] focus:outline-none focus:ring-2 focus:ring-[var(--color-error)] focus:ring-offset-1;
 }
 
 /* form and table specific */
@@ -871,7 +871,7 @@ tr {
 	@apply text-base font-semibold text-[var(--color-info)] sm:mb-0 sm:text-lg;
 }
 .form-cancel-btn {
-	@apply inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-2 text-center text-sm whitespace-nowrap text-[var(--color-error)] transition-all duration-150 ease-in-out hover:bg-[var(--active-soft)];
+	@apply inline-flex cursor-pointer items-center justify-center rounded-md border border-[var(--color-outline)] px-3 py-2.5 text-center text-lg whitespace-nowrap text-[var(--color-error)] transition-all duration-150 ease-in-out hover:bg-red-100 hover:border-[var(--color-error)] focus:outline-none focus:ring-2 focus:ring-[var(--color-error)] focus:ring-offset-1;
 }
 .tables-row {
 	@apply border-b border-[var(--color-outline)];
@@ -948,7 +948,7 @@ tr {
 }
 
 .preview-close-btn {
-	@apply absolute top-3 right-1 text-2xl text-gray-600 hover:text-gray-900 focus:outline-none;
+	@apply absolute top-3 right-3 cursor-pointer border-none bg-transparent text-3xl p-1 rounded-md text-gray-600 transition-all duration-150 ease-in-out hover:bg-gray-200 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-400;
 }
 
 .text-content-preview {

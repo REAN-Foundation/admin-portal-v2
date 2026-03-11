@@ -551,15 +551,16 @@
 					Step {currentSection + 1} of {totalSteps}
 				</div>
 			</div>
-			<!-- Create Secret Button -->
+			<!-- Bot Configuration Button -->
 			<button
 				type="button"
 				class="table-btn variant-filled-secondary ml-4"
 				onclick={getBotSecret}
 				disabled={isCreatingSecret}
+				title="View or set up the chatbot integration configuration, including database schema and API credentials"
 			>
-				<Icon icon="material-symbols:upload" class="mr-1" />
-				{isCreatingSecret ? 'Creating...' : 'Create Secret'}
+				<Icon icon="mdi:cog-outline" class="mr-1" />
+				{isCreatingSecret ? 'Loading...' : 'Bot Configuration'}
 			</button>
 		</div>
 	</div>

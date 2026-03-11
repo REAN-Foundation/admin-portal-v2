@@ -7,6 +7,7 @@
 	import { goto } from '$app/navigation';
 	import { createSchema } from '$lib/validation/vector.store.schema';
 	import type { VectorStoreCreateModel } from '$lib/types/vector.store.types';
+	import { splitterOptionsByType } from '$lib/types/documents.types';
 	import FilePreviewModal from '$lib/components/modal/file.preview.modal.svelte';
 	import Button from '$lib/components/button/button.svelte';
 	///////////////////////////////////////////////////////////////////////////////
@@ -29,6 +30,13 @@
 	let createdBy = data.document.CreatedBy;
 	let keywords = data.document.Keyword !== null && data.document.Keyword !== '' ? data.document.Keyword : 'Not specified';
 	let documentType = data.document.DocumentType;
+
+	// Map splitter value to its display label
+	let splitterLabel = (() => {
+		const options = splitterOptionsByType[documentType?.toLowerCase()] ?? [];
+		const match = options.find((opt) => opt.value === splitter);
+		return match?.label ?? splitter ?? 'Not specified';
+	})();
 
 	let fileUrl: string | null = $state(null);
 	let fileType: string | null = $state(null);
@@ -266,7 +274,7 @@
 			</tr>
 			<tr class="tables-row">
 				<td class="table-label">Splitter</td>
-				<td class="table-data">{splitter}</td>
+				<td class="table-data">{splitterLabel}</td>
 			</tr>
 			<!-- <tr class="tables-row">
 						<td>Last Updated</td>
@@ -278,7 +286,7 @@
 	<div class="btn-container">
 		<Button onclick={handlePromotion} size="md" text="Promote" variant="primary" />
 		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md" />
-		<!-- <Button onclick = {handleSubmit} text={isPublishing ? "Publishing..." : "Publish"} variant="secondary" disabled={isPublishing}>
+		<!-- <Button onclick = {handleSubmit} text={isPublishing ? "Publishing..." : "Publish"} variant="outline" disabled={isPublishing}>
 		</Button> -->
 	</div>
 </div>

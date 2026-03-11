@@ -7,7 +7,7 @@
 	import Icon from '@iconify/svelte';
 	import { showMessage } from '$lib/utils/message.utils.js';
 	import type { PageServerData } from './$types';
-	import type { DocumentsUpdateModel } from '$lib/types/documents.types';
+	import { splitterOptionsByType, type DocumentsUpdateModel } from '$lib/types/documents.types';
 	import { createOrUpdateSchema } from '$lib/validation/documents.schema';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
@@ -37,6 +37,10 @@
 	let keywordsRaw = $state(data.documents.Keyword);
 	let documentType = $derived(fileName ? fileName.split('.').pop() : data.documents.DocumentType);
 	let version: string = $state(data.documents.DocumentVersion.map((row) => row.Version).join(', '));
+
+	let splitterOptions = $derived(
+		documentType ? (splitterOptionsByType[documentType.toLowerCase()] ?? []) : []
+	);
 
 	let imageUrl = $state('');
 	let fileinput = $state();
@@ -511,13 +515,22 @@
 				<tr class="tables-row">
 					<td class="table-label">Splitter <span class="text-red-700">*</span></td>
 					<td class="table-data">
-						<input
-							type="text"
-							name="splitter"
-							bind:value={splitter}
-							placeholder="Enter Splitter here..."
-							class="input"
-						/>
+						<div class="relative">
+							<select
+								class="select"
+								name="splitter"
+								bind:value={splitter}
+								disabled={!documentType}
+							>
+								<option value={undefined} disabled>Select splitter...</option>
+								{#each splitterOptions as option}
+									<option value={option.value}>{option.label}</option>
+								{/each}
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
 						{#if errors?.Splitter}
 							<p class="text-error">{errors?.Splitter}</p>
 						{/if}
@@ -527,7 +540,7 @@
 		</table>
 
 		<div class="btn-container">
-			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			<Button type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
 				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
 			{:then data}
