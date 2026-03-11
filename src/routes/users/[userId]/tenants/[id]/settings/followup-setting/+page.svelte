@@ -452,16 +452,16 @@
 								Reminder Schedules <span class="text-red-700">*</span>
 							</label>
 							<div class="w-full md:w-[70%]">
-								<button
+							<Button
 									onclick={(event) => {
 										event.preventDefault();
 										showReminderModal = edit;
 									}}
 									disabled={!edit}
-									class="table-btn variant-filled-secondary gap-1 text-[var(--color-info)]"
-								>
-									Add Schedule
-								</button>
+									variant="outline"
+									size="sm"
+									text="Add Schedule"
+								/>
 								{#if errors?.FileUploadSettings?.ReminderSchedule}
 									<p class="text-error">{errors?.FileUploadSettings?.ReminderSchedule}</p>
 								{/if}
@@ -850,15 +850,15 @@
 								Reminder Schedules <span class="text-red-700">*</span>
 							</label>
 							<div class="w-full md:w-[70%]">
-								<button
+							<Button
 									onclick={(event) => {
 										event.preventDefault();
 										showReminderModal = edit;
 									}}
-									class="table-btn variant-filled-secondary gap-1 text-[var(--color-info)]"
-								>
-									Add Schedule
-								</button>
+									variant="outline"
+									size="sm"
+									text="Add Schedule"
+								/>
 								{#if errors?.ApiIntegrationSettings?.ReminderSchedule}
 									<p class="text-error">{errors.ApiIntegrationSettings.ReminderSchedule}</p>
 								{/if}

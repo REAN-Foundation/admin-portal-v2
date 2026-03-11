@@ -16,6 +16,7 @@
 	import ExportSettingsDialog from './export-settings.dialog.svelte';
 	import WelcomeMessageModal from './welcome-message.modal.svelte';
 	import SettingsPageHeader from '$lib/components/settings/settings-page-header.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////
 
@@ -552,16 +553,15 @@
 				</div>
 			</div>
 			<!-- Bot Configuration Button -->
-			<button
+			<Button
 				type="button"
-				class="table-btn variant-filled-secondary ml-4"
+				variant="outline"
 				onclick={getBotSecret}
 				disabled={isCreatingSecret}
-				title="View or set up the chatbot integration configuration, including database schema and API credentials"
-			>
-				<Icon icon="mdi:cog-outline" class="mr-1" />
-				{isCreatingSecret ? 'Loading...' : 'Bot Configuration'}
-			</button>
+				text={isCreatingSecret ? 'Loading...' : 'Bot Configuration'}
+				iconBefore="mdi:cog-outline"
+				tooltip="View or set up the chatbot integration configuration"
+			/>
 		</div>
 	</div>
 	<div class="mx-auto my-6 border border-[var(--color-outline)]">
