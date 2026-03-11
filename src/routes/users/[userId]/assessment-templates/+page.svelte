@@ -168,6 +168,46 @@
 		idToBeDeleted = id;
 	};
 
+	const handleExport = async (id) => {
+		try {
+			const response = await fetch(
+				`/api/server/assessments/assessment-templates/${id}/export`,
+				{ method: 'GET' }
+			);
+
+			if (!response.ok) {
+				throw new Error(`Export failed: ${response.status}`);
+			}
+
+			const contentDisposition = response.headers.get('Content-Disposition');
+			const match = contentDisposition?.match(/filename="?([^"]+)"?/);
+			const filename = match ? match[1] : `assessment-template-${id}.json`;
+
+			const blob = await response.blob();
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = filename;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+
+			toastMessage({
+				Status: 'success',
+				HttpCode: 200,
+				Message: 'Template exported successfully!'
+			});
+		} catch (error) {
+			console.error('Export failed:', error);
+			toastMessage({
+				Status: 'failure',
+				HttpCode: 500,
+				Message: 'Export failed. Please try again.'
+			});
+		}
+	};
+
 	const handleAssessmentTemplateDelete = async (id) => {
 		const response = await fetch(`/api/server/assessments/assessment-templates/${id}`, {
 			method: 'DELETE',
@@ -356,6 +396,13 @@
 
 									<td role="gridcell" aria-colindex={2} tabindex="0">
 										<div class="flex justify-end">
+											<Button
+												onclick={() => handleExport(row.id)}
+												variant="icon"
+												icon="material-symbols:download"
+												iconSize="sm"
+												tooltip="Export"
+											/>
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"

@@ -16,6 +16,8 @@
 
 	let { data }: { data: PageServerData } = $props();
 
+	var sessionId = $state(data.sessionId);
+
 	let debounceTimeout;
 	let isLoading = $state(false);
 	let careplans = $state(data.carePlans.Items || []);
@@ -116,6 +118,42 @@
 	const handleDeleteClick = (id: string) => {
 		openDeleteModal = true;
 		idToBeDeleted = id;
+	};
+
+	const handleExport = async (id, code) => {
+		try {
+			const response = await fetch(`/api/server/careplan/export`, {
+				method: 'POST',
+				body: JSON.stringify({ sessionId, carePlanId: id }),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			if (!response.ok) {
+				throw new Error(`Failed to export care plan: ${response.statusText}`);
+			}
+
+			const filename = `Careplan_${code || id}.json`;
+			const blob = await response.blob();
+			const a = document.createElement('a');
+			a.href = URL.createObjectURL(blob);
+			a.download = filename;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+
+			toastMessage({
+				Status: 'success',
+				HttpCode: 200,
+				Message: 'Careplan exported successfully!'
+			});
+		} catch (error) {
+			console.error('Export failed:', error);
+			toastMessage({
+				Status: 'failure',
+				HttpCode: 500,
+				Message: 'Export failed. Please try again.'
+			});
+		}
 	};
 
 	function onItemsPerPageChange() {
@@ -250,6 +288,13 @@
 
 									<td>
 										<div class="flex justify-end">
+											<Button
+												onclick={() => handleExport(row.id, row.Code)}
+												variant="icon"
+												icon="material-symbols:download"
+												iconSize="sm"
+												tooltip="Export"
+											/>
 											<Button
 												href={editRoute(row.id)}
 												variant="icon"
