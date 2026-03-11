@@ -320,7 +320,7 @@
 							</button>
 						{/if}
 					</div>
-					<Button href={importRoute} text="Import" variant="primary"></Button>
+					<Button href={importRoute} text="Import" variant="outline"></Button>
 
 					<Button href={createRoute} text="Add New" variant="primary"></Button>
 				</div>
