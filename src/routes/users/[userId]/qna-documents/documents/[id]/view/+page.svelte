@@ -287,7 +287,9 @@
 	</table>
 
 	<div class="btn-container">
+		{#if !data.isProduction}
 		<Button onclick={() => openPromoteModal = true} size="md" text="Promote" variant="outline" tooltip="Promote document to next environment" />
+		{/if}
 		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md" />
 		<!-- <Button onclick = {handleSubmit} text={isPublishing ? "Publishing..." : "Publish"} variant="outline" disabled={isPublishing}>
 		</Button> -->

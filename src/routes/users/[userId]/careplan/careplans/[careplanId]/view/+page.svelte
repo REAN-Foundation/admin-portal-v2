@@ -128,7 +128,9 @@
 	</table>
 
 	<div class="btn-container flex flex-wrap justify-end gap-2 pt-4">
+		{#if !data.isProduction}
 		<Button onclick={() => openPromoteModal = true} text="Promote" variant="outline" tooltip="Promote careplan to next environment" />
+		{/if}
 		<Button
 			onclick={exportCareplan}
 			text="Export"

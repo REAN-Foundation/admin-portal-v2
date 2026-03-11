@@ -268,7 +268,9 @@ const handlePromotion = async () => {
 		</tbody>
 	</table>
 	<div class="btn-container">
+		{#if !data.isProduction}
 		<Button onclick={() => openPromoteModal = true} size="md" text="Promote" variant="outline" tooltip="Promote template to next environment" />
+		{/if}
 
 
 		<Button

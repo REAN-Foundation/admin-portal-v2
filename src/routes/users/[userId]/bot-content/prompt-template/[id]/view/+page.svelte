@@ -129,14 +129,16 @@
 				</tbody>
 			</table>
 				<div class="btn-container">
+			{#if !data.isProduction}
 				<Button
 					onclick={() => openPromoteModal = true}
 					size="md"
 					text={isPromoting ? 'Promoting...' : 'Promote'}
 					variant="outline"
 					disabled={isPromoting}
-t				tooltip="Promote template to next environment"
+					tooltip="Promote template to next environment"
 				/>
+			{/if}
 				<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md" />
 			</div>
 		</div>

@@ -1,6 +1,7 @@
 import { error, type RequestEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getTenantById } from '../../../../../api/services/reancare/tenants';
+import { SOURCE_ENV } from '$env/static/private';
 ////////////////////////////////////////////////////////////////////////////
 
 export const load: PageServerLoad = async (event: RequestEvent) => {
@@ -15,7 +16,8 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 			location: `${id}/edit`,
 			tenant,
 			message: response?.Message || 'Tenant retrieved successfully',
-			title: 'Tenant View'
+			title: 'Tenant View',
+			isProduction: SOURCE_ENV === 'production'
 		};
 	
 };
