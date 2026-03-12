@@ -32,6 +32,21 @@
 	let imageUrl = data.symptom.ImageUrl ?? undefined;
 	let imageResourceId = $state(data.symptom.ImageResourceId ?? undefined);
 
+	const initialState = {
+		symptom: data.symptom.Symptom,
+		description: data.symptom.Description || undefined,
+		tags: [...(data.symptom.Tags ?? [])],
+		language: data.symptom.Language,
+		imageResourceId: data.symptom.ImageResourceId ?? undefined
+	};
+	let hasChanges = $derived(
+		symptom !== initialState.symptom ||
+		description !== initialState.description ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags) ||
+		language !== initialState.language ||
+		imageResourceId !== initialState.imageResourceId
+	);
+
 	var symptomId = page.params.id;
 	const userId = page.params.userId;
 	const editRoute = `/users/${userId}/symptoms/${id}/edit`;
@@ -46,10 +61,10 @@
 	function handleReset() {
 		symptomId = page.params.id;
 		symptom = data?.symptom?.Symptom;
-		description = data?.symptom?.Description;
+		description = data?.symptom?.Description || undefined;
 		keywords = [...(data?.symptom?.Tags ?? [])];
 		language = data?.symptom?.Language;
-		imageResourceId = data?.symptom?.ImageResourceId;
+		imageResourceId = data?.symptom?.ImageResourceId ?? undefined;
 		errors = {};
 	}
 
@@ -267,9 +282,9 @@
 		<div class="btn-container">
 			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
-				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button size="md" type="submit" text="Saving..." variant="primary" disabled={true} />
 			{:then data}
-				<Button size="md" type="submit" text="Submit" variant="primary" />
+				<Button size="md" type="submit" text="Save" variant="primary" disabled={!hasChanges} />
 			{/await}
 		</div>
 	</form>

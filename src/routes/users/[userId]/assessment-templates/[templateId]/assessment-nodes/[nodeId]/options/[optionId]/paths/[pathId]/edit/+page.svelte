@@ -22,7 +22,18 @@
 	console.log('data.pathData', data.pathData?.ConditionId);
 
 	let promise = $state();
-	
+
+	const initialState = {
+		messageBeforeQuestion: data.pathData?.MessageBeforeQuestion ?? undefined,
+		isExitPath: data.pathData?.IsExitPath,
+		nextNodeId: data.pathData?.NextNodeId
+	};
+	let hasChanges = $derived(
+		messageBeforeQuestion !== initialState.messageBeforeQuestion ||
+		isExitPath !== initialState.isExitPath ||
+		nextNodeId !== initialState.nextNodeId
+	);
+
 	console.log('data.pathData', data.pathData);
 	$effect(() => {
 		displayCode = data.pathData?.DisplayCode;
@@ -241,9 +252,9 @@
 			<Button
 				size="md"
 				type="submit"
-				text={isSubmitting ? 'Submitting...' : 'Submit'}
+				text={isSubmitting ? 'Saving...' : 'Save'}
 				variant="primary"
-				disabled={isSubmitting}
+				disabled={isSubmitting || !hasChanges}
 			/>
 		</div>
 	</form>

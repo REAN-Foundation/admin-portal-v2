@@ -30,7 +30,6 @@
 		message = $state(data.assessmentNode.Message ?? undefined),
 		sequence = $state(data.assessmentNode.Sequence ?? undefined),
 		serveListNodeChildrenAtOnce = $state(data.assessmentNode.ServeListNodeChildrenAtOnce ?? false),
-		tags = $state(data.assessmentNode.Tags || []),
 		correctAnswer = $state(
 			data.assessmentNode.CorrectAnswer !== null && data.assessmentNode.CorrectAnswer !== undefined
 				? String(data.assessmentNode.CorrectAnswer)
@@ -94,6 +93,51 @@
 	let promise = $state();
 	let keywordsStr: string = $state('');
 
+	const initialState = {
+		nodeType: data.assessmentNode.NodeType,
+		title: data.assessmentNode.Title,
+		description: data.assessmentNode.Description,
+		queryType: data.assessmentNode.QueryResponseType ?? undefined,
+		options: JSON.stringify(data.assessmentNode.Options ?? []),
+		message: data.assessmentNode.Message ?? undefined,
+		sequence: data.assessmentNode.Sequence ?? undefined,
+		serveListNodeChildrenAtOnce: data.assessmentNode.ServeListNodeChildrenAtOnce ?? false,
+		tags: [...(data.assessmentNode.Tags ?? [])],
+		correctAnswer: data.assessmentNode.CorrectAnswer !== null && data.assessmentNode.CorrectAnswer !== undefined
+			? String(data.assessmentNode.CorrectAnswer)
+			: null,
+		resolutionScore: data.assessmentNode.Score ?? undefined,
+		providerAssessmentCode: data.assessmentNode.ProviderAssessmentCode ?? undefined,
+		scoringApplicable: data.assessmentNode.ScoringApplicable ?? false,
+		required: data.assessmentNode.Required ?? false,
+		fieldIdentifier: data.assessmentNode.FieldIdentifier,
+		fieldIdentifierUnit: data.assessmentNode.FieldIdentifierUnit,
+		rawData: typeof data.assessmentNode.RawData === 'string'
+			? data.assessmentNode.RawData
+			: data.assessmentNode.RawData
+				? JSON.stringify(data.assessmentNode.RawData, null, 2)
+				: ''
+	};
+	let hasChanges = $derived(
+		nodeType !== initialState.nodeType ||
+		title !== initialState.title ||
+		description !== initialState.description ||
+		queryType !== initialState.queryType ||
+		JSON.stringify(options) !== initialState.options ||
+		message !== initialState.message ||
+		sequence !== initialState.sequence ||
+		serveListNodeChildrenAtOnce !== initialState.serveListNodeChildrenAtOnce ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags) ||
+		correctAnswer !== initialState.correctAnswer ||
+		resolutionScore !== initialState.resolutionScore ||
+		providerAssessmentCode !== initialState.providerAssessmentCode ||
+		scoringApplicable !== initialState.scoringApplicable ||
+		required !== initialState.required ||
+		fieldIdentifier !== initialState.fieldIdentifier ||
+		fieldIdentifierUnit !== initialState.fieldIdentifierUnit ||
+		rawData !== initialState.rawData
+	);
+
 	onMount(() => {
 		scoringApplicableCondition.set(data.templateData.ScoringApplicable);
 		console.log('scoringApplicableCondition set to:', data.templateData.ScoringApplicable);
@@ -102,21 +146,26 @@
 		nodeType = data.assessmentNode.NodeType;
 		title = data.assessmentNode.Title;
 		description = data.assessmentNode.Description;
-		queryType = data.assessmentNode.QueryResponseType;
+		queryType = data.assessmentNode.QueryResponseType ?? undefined;
 		options = data.assessmentNode.Options ?? [];
-		message = data.assessmentNode.Message ?? null;
-		sequence = data.assessmentNode.Sequence;
+		message = data.assessmentNode.Message ?? undefined;
+		sequence = data.assessmentNode.Sequence ?? undefined;
 		serveListNodeChildrenAtOnce = data.assessmentNode.ServeListNodeChildrenAtOnce ?? false;
-		tags = data.assessmentNode.Tags;
+		keywords = [...(data?.assessmentNode?.Tags ?? [])];
 		correctAnswer = data.assessmentNode.CorrectAnswer !== null && data.assessmentNode.CorrectAnswer !== undefined
 			? String(data.assessmentNode.CorrectAnswer)
 			: null;
-		resolutionScore = data.assessmentNode.Score;
-		providerAssessmentCode = data.assessmentNode.ProviderAssessmentCode;
-		scoringApplicable = data.assessmentNode.ScoringApplicable;
-		required = data.assessmentNode.Required;
+		resolutionScore = data.assessmentNode.Score ?? undefined;
+		providerAssessmentCode = data.assessmentNode.ProviderAssessmentCode ?? undefined;
+		scoringApplicable = data.assessmentNode.ScoringApplicable ?? false;
+		required = data.assessmentNode.Required ?? false;
 		fieldIdentifier = data.assessmentNode.FieldIdentifier;
 		fieldIdentifierUnit = data.assessmentNode.FieldIdentifierUnit;
+		rawData = typeof data.assessmentNode.RawData === 'string'
+			? data.assessmentNode.RawData
+			: data.assessmentNode.RawData
+				? JSON.stringify(data.assessmentNode.RawData, null, 2)
+				: '';
 		errors = {};
 	}
 
@@ -595,9 +644,9 @@
 		<div class="btn-container">
 			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
-				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button size="md" type="submit" text="Saving..." variant="primary" disabled={true} />
 			{:then data}
-				<Button size="md" type="submit" text="Submit" variant="primary" />
+				<Button size="md" type="submit" text="Save" variant="primary" disabled={!hasChanges} />
 			{/await}
 		</div>
 	</form>

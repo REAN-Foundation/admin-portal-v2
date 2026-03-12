@@ -26,11 +26,26 @@
 	let promise = $state();
 	let keywordsStr: string = $state('');
 
+	const initialState = {
+		topicName: data.KnowledgeNugget.TopicName,
+		briefInformation: data.KnowledgeNugget.BriefInformation ?? '',
+		detailedInformation: data.KnowledgeNugget.DetailedInformation ?? '',
+		additionalResources: [...(data.KnowledgeNugget.AdditionalResources ?? [])],
+		tags: [...(data.KnowledgeNugget.Tags ?? [])]
+	};
+	let hasChanges = $derived(
+		topicName !== initialState.topicName ||
+		briefInformation !== initialState.briefInformation ||
+		detailedInformation !== initialState.detailedInformation ||
+		JSON.stringify(additionalResources) !== JSON.stringify(initialState.additionalResources) ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags)
+	);
+
 	function handleReset() {
 		topicName = data?.KnowledgeNugget?.TopicName;
-		briefInformation = data?.KnowledgeNugget?.BriefInformation;
-		detailedInformation = data?.KnowledgeNugget?.DetailedInformation;
-		additionalResources = data?.KnowledgeNugget?.AdditionalResources;
+		briefInformation = data?.KnowledgeNugget?.BriefInformation ?? '';
+		detailedInformation = data?.KnowledgeNugget?.DetailedInformation ?? '';
+		additionalResources = [...(data?.KnowledgeNugget?.AdditionalResources ?? [])];
 		keywords = [...(data?.KnowledgeNugget?.Tags ?? [])];
 		errors = {};
 	}
@@ -205,9 +220,9 @@
 		<div class="btn-container">
 			<Button type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
-				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button type="submit" text="Saving..." variant="primary" disabled={true} />
 			{:then data}
-				<Button type="submit" text="Submit" variant="primary" />
+				<Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
 			{/await}
 		</div>
 	</form>

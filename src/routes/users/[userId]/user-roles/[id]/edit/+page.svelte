@@ -19,9 +19,18 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 
+	const initialState = {
+		roleName: data.personRoleType.RoleName,
+		description: data.personRoleType.Description ?? undefined
+	};
+	let hasChanges = $derived(
+		roleName !== initialState.roleName ||
+		description !== initialState.description
+	);
+
 	function handleReset() {
 		roleName = data?.personRoleType?.RoleName;
-		description = data?.personRoleType?.Description;
+		description = data?.personRoleType?.Description ?? undefined;
 		errors = {};
 	}
 
@@ -135,9 +144,9 @@
 		<div class="btn-container">
 			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
-				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button size="md" type="submit" text="Saving..." variant="primary" disabled={true} />
 			{:then data}
-				<Button size="md" type="submit" text="Submit" variant="primary" />
+				<Button size="md" type="submit" text="Save" variant="primary" disabled={!hasChanges} />
 			{/await}
 		</div>
 	</form>

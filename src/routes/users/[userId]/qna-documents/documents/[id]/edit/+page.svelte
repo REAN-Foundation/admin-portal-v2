@@ -55,6 +55,26 @@
 
 	let keywordsStr: string = $state('');
 
+	const initialState = {
+		name: data.documents.Name,
+		description: data.documents.Description,
+		chunkingStrategy: data.documents.ChunkingStrategy,
+		chunkingLength: data.documents.ChunkingLength,
+		chunkOverlap: data.documents.ChunkOverlap,
+		splitter: data.documents.Splitter,
+		tags: [...initialKeywords]
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		chunkingStrategy !== initialState.chunkingStrategy ||
+		chunkingLength !== initialState.chunkingLength ||
+		chunkOverlap !== initialState.chunkOverlap ||
+		splitter !== initialState.splitter ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags) ||
+		selectFile !== undefined
+	);
+
 	const userId = page.params.userId;
 	const editRoute = `/users/${userId}/qna-documents/documents/${id}/edit`;
 	const viewRoute = `/users/${userId}/qna-documents/documents/${id}/view`;
@@ -544,9 +564,9 @@
 		<div class="btn-container">
 			<Button type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
-				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button type="submit" text="Saving..." variant="primary" disabled={true} />
 			{:then data}
-				<Button type="submit" text="Submit" variant="primary" />
+				<Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
 			{/await}
 		</div>
 	</form>
