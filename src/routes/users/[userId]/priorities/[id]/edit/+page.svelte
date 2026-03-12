@@ -47,7 +47,7 @@
 	const handleReset = () => {
 		type = data?.priority?.Type;
 		id = page.params.id;
-		keywords = [...(data?.priority?.Keywords ?? [])];
+		keywords = [...(data?.priority?.Tags ?? [])];
 		errors = {};
 	};
 

@@ -55,8 +55,9 @@
 	const handleReset = () => {
 		name = data?.actionPlan?.Name;
 		description = data?.actionPlan?.Description;
-		tags = data?.actionPlan?.Tags;
+		keywords = [...(data?.actionPlan?.Tags ?? [])];
 		version = data?.actionPlan?.Version;
+		errors = {};
 	};
 	const handleSubmit = async (event: Event) => {
 		try {

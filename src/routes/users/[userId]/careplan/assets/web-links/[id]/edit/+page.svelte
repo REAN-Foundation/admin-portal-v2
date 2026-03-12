@@ -56,7 +56,7 @@
 		name = data?.webLink?.Name;
 		description = data?.webLink?.Description;
 		pathUrl = data?.webLink?.PathUrl;
-		tags = data?.webLink?.Tags;
+		keywords = [...(data?.webLink?.Tags ?? [])];
 		version = data?.webLink?.Version;
 	};
 

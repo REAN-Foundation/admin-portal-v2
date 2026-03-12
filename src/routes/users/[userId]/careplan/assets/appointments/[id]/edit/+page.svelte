@@ -55,7 +55,7 @@
 		name = data?.appointment?.Name;
 		description = data?.appointment?.Description;
 		appointmentType = data?.appointment?.AppointmentType;
-		tags = data?.appointment?.Tags;
+		keywords = [...(data?.appointment?.Tags ?? [])];
 		version = data?.appointment?.Version;
 	};
 

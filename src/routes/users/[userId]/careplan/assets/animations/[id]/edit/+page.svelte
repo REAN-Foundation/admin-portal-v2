@@ -54,7 +54,7 @@
 		name = data?.animation?.Name;
 		transcript = data?.animation?.Transcript;
 		pathUrl = data?.animation?.PathUrl;
-		tags = data?.animation?.Tags;
+		keywords = [...(data?.animation?.Tags ?? [])];
 		version = data?.animation?.Version;
 	};
 

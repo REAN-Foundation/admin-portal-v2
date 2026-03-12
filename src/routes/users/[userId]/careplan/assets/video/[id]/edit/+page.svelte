@@ -57,7 +57,7 @@
 		name = data?.video?.Name;
 		transcript = data?.video?.Transcript;
 		pathUrl = data?.video?.PathUrl;
-		tags = data?.video?.Tags;
+		keywords = [...(data?.video?.Tags ?? [])];
 		version = data?.video?.Version;
 	};
 

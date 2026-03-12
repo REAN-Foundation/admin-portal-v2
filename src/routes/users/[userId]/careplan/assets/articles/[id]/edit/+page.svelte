@@ -53,7 +53,7 @@
 		name = data?.article?.Name;
 		summary = data?.article?.Summary;
 		pathUrl = data?.article?.PathUrl;
-		tags = data?.article?.Tags;
+		keywords = [...(data?.article?.Tags ?? [])];
 		version = data?.article?.Version;
 	};
 	const handleSubmit = async (event: Event) => {

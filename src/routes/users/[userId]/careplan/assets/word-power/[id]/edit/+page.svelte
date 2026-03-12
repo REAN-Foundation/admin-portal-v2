@@ -56,7 +56,7 @@
 		name = data?.wordPower?.Name;
 		description = data?.wordPower?.Description;
 		additionalResources = data?.wordPower?.AdditionalResources;
-		tags = data?.wordPower?.Tags;
+		keywords = [...(data?.wordPower?.Tags ?? [])];
 		version = data?.wordPower?.Version;
 	};
 	const handleSubmit = async (event: Event) => {
