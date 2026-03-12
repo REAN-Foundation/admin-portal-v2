@@ -13,7 +13,7 @@
 
 	let messageBeforeQuestion = $state(data.pathData?.MessageBeforeQuestion ?? undefined);
 	let isExitPath = $state(data.pathData?.IsExitPath);
-	let nextNodeId = $state(data.pathData?.NextNodeId);
+	let nextNodeId = $state(data.pathData?.NextNodeId ?? '');
 	let displayCode = $state(data.pathData?.DisplayCode);
 	let errors: Record<string, string> = $state({});
 	let isSubmitting = $state(false);
@@ -26,7 +26,7 @@
 	const initialState = {
 		messageBeforeQuestion: data.pathData?.MessageBeforeQuestion ?? undefined,
 		isExitPath: data.pathData?.IsExitPath,
-		nextNodeId: data.pathData?.NextNodeId
+		nextNodeId: data.pathData?.NextNodeId ?? ''
 	};
 	let hasChanges = $derived(
 		messageBeforeQuestion !== initialState.messageBeforeQuestion ||
@@ -49,7 +49,7 @@
 	function handleReset() {
 		messageBeforeQuestion = data.pathData.MessageBeforeQuestion ?? undefined;
 		isExitPath = data.pathData.IsExitPath;
-		nextNodeId = data.pathData.NextNodeId ;
+		nextNodeId = data.pathData.NextNodeId ?? '';
 		displayCode = data.pathData.DisplayCode;
 		errors = {};
 	}

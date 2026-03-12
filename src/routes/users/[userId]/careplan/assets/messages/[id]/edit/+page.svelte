@@ -16,7 +16,7 @@
 	let promise = $state();
 	let name = $state(data.message.Name);
 	let description = $state(data.message.Description || undefined);
-	let messageType = $state(data.message.MessageType);
+	let messageType = $state(data.message.MessageType ?? undefined);
 	let templateName = $state(data.message.TemplateName);
 	let pathUrl = $state(data.message.PathUrl);
 	let version = $state(data.message.Version);
@@ -28,7 +28,7 @@
 	const initialState = {
 		name: data.message.Name,
 		description: data.message.Description || undefined,
-		messageType: data.message.MessageType,
+		messageType: data.message.MessageType ?? undefined,
 		templateName: data.message.TemplateName,
 		pathUrl: data.message.PathUrl,
 		version: data.message.Version,
@@ -72,6 +72,7 @@
 		templateVariablesText = data.message.TemplateVariables
 			? JSON.stringify(data.message.TemplateVariables, null, 2)
 			: '';
+		messageType = data?.message?.MessageType ?? undefined;
 		pathUrl = data?.message?.PathUrl;
 		version = data?.message?.Version;
 		keywords = [...(data?.message?.Tags ?? [])];
@@ -198,7 +199,7 @@
 					<td class="table-data">
 						<div class="relative">
 						<select class="select" bind:value={messageType}>
-							<option disabled value>Select message type</option>
+							<option disabled value={undefined}>Select message type</option>
 							<option>Educational</option>
 							<option>Status</option>
 							<option>Unknown</option>

@@ -159,7 +159,7 @@
 								bind:value={categoryId}
 								required
 							>
-								<option disabled selected>Select category of plan here...</option>
+								<option value={undefined} disabled>Select category of plan here...</option>
 								{#each careplanCategories as category}
 									<option value={category.id}>{category.Type}</option>
 								{/each}

@@ -319,6 +319,7 @@
 								</select>
 							{:else}
 								<select class="select" required name="model" bind:value={model}>
+									<option value={undefined} disabled>Select model...</option>
 									{#each availableModels as modelOption}
 										<option value={modelOption.id}>
 											{formatModelName(modelOption.id)}
@@ -373,6 +374,7 @@
 					<td class="table-data">
 						<div class="relative">
 							<select class="select" name="useCaseType" bind:value={useCaseType}>
+								<option value={undefined} disabled>Select use case type...</option>
 								<option value="Chat">Chat</option>
 								<option value="Classification">Classification</option>
 								<option value="Extraction">Extraction</option>
@@ -391,6 +393,7 @@
 					<td class="table-data">
 						<div class="relative">
 							<select class="select" name="group" bind:value={group}>
+								<option value={undefined} disabled>Select group...</option>
 								<option value="Chat Default">Chat Default</option>
 								<option value="Content Generation">Content Generation</option>
 								<option value="Generic">Generic</option>

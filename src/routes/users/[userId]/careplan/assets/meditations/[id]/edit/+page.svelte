@@ -16,16 +16,16 @@
 	let promise = $state();
 	let name = $state(data.meditation.Name);
 	let description = $state(data.meditation.Description || undefined) ;
-	let meditationType = $state(data.meditation.MeditationType);
-	let recommendedDurationMin = $state<number>(data.meditation.RecommendedDurationMin);
+	let meditationType = $state(data.meditation.MeditationType ?? undefined);
+	let recommendedDurationMin = $state<number>(data.meditation.RecommendedDurationMin ?? undefined);
 	let version = $state(data.meditation.Version);
 	let keywords: string[] = $state(data.meditation.Tags);
 	let keywordsStr = $state('');
 	const initialState = {
 		name: data.meditation.Name,
 		description: data.meditation.Description || undefined,
-		meditationType: data.meditation.MeditationType,
-		recommendedDurationMin: data.meditation.RecommendedDurationMin,
+		meditationType: data.meditation.MeditationType ?? undefined,
+		recommendedDurationMin: data.meditation.RecommendedDurationMin ?? undefined,
 		version: data.meditation.Version,
 		tags: [...(data.meditation.Tags ?? [])]
 	};
@@ -60,8 +60,8 @@
 		 name = data?.meditation?.Name;
 		 meditationId = page.params.id;
 		 description = data?.meditation?.Description || undefined;
-		 meditationType = data?.meditation?.MeditationType,
-		 recommendedDurationMin = data?.meditation.RecommendedDurationMin,
+		 meditationType = data?.meditation?.MeditationType ?? undefined,
+		 recommendedDurationMin = data?.meditation.RecommendedDurationMin ?? undefined,
 		 version = data?.meditation?.Version;
 		 keywords = [...(data?.meditation?.Tags ?? [])];
 		 errors = {};
@@ -166,7 +166,7 @@
           <td class="table-data">
             <div class="relative">
             <select class="select" bind:value={meditationType}>
-              <option disabled value>Select meditation type</option>
+              <option disabled value={undefined}>Select meditation type</option>
               <option>Mindfulness</option>
               <option>Spiritual</option>
               <option>Focused</option>

@@ -18,7 +18,7 @@
 	let description = $state(data.biometrics.Description || undefined);
 	let measurementUnit = $state(data.biometrics.MeasurementUnit || undefined);
 	let version = $state(data.biometrics.Version);
-	let biometricsType = $state(data.biometrics.BiometricsType);
+	let biometricsType = $state(data.biometrics.BiometricsType ?? undefined);
 	let keywordsStr: string = $state('');
 	let keywords: string[] = $state(data.biometrics.Tags);
 	const initialState = {
@@ -26,7 +26,7 @@
 		description: data.biometrics.Description || undefined,
 		measurementUnit: data.biometrics.MeasurementUnit || undefined,
 		version: data.biometrics.Version,
-		biometricsType: data.biometrics.BiometricsType,
+		biometricsType: data.biometrics.BiometricsType ?? undefined,
 		tags: [...(data.biometrics.Tags ?? [])]
 	};
 	let hasChanges = $derived(
@@ -60,7 +60,7 @@
 		description = data?.biometrics?.Description || undefined;
 		measurementUnit = data?.biometrics?.MeasurementUnit || undefined;
 		version = data?.biometrics?.Version;
-		biometricsType = data?.biometrics.BiometricsType;
+		biometricsType = data?.biometrics.BiometricsType ?? undefined;
 		keywords = [...(data?.biometrics?.Tags ?? [])];
 		errors = {};
 	};
@@ -165,7 +165,7 @@
 					<td class="table-data">
 						<div class="relative">
 						<select class="select" bind:value={biometricsType}>
-							<option disabled value>Select biometrics type</option>
+							<option disabled value={undefined}>Select biometrics type</option>
 							<option>Blood pressure</option>
 							<option>Blood glucose</option>
 							<option>Blood oxygen saturation</option>

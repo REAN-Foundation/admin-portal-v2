@@ -34,16 +34,16 @@
 	let assetId = $state(data.careplanActivitiy.AssetId);
 
 	let timeSlot = $state(data.careplanActivitiy.TimeSlot);
-	let day = $state(data.careplanActivitiy.Day);
+	let day = $state(data.careplanActivitiy.Day ?? undefined);
 	let assetType = $state(data.careplanActivitiy.AssetType);
-	let sequence = $state(data.careplanActivitiy.Sequence || '');
+	let sequence = $state(data.careplanActivitiy.Sequence ?? undefined);
 
 	function handleReset() {
 		assetType = data.careplanActivitiy.AssetType;
 		assetId = data.careplanActivitiy.AssetId;
 		timeSlot = data.careplanActivitiy.TimeSlot;
-		day = data.careplanActivitiy.Day;
-		sequence = data.careplanActivitiy.Sequence || '';
+		day = data.careplanActivitiy.Day ?? undefined;
+		sequence = data.careplanActivitiy.Sequence ?? undefined;
 		errors = {};
 	}
 
@@ -204,6 +204,7 @@
 							onchange={onSelectAssetType}
 							required
 						>
+							<option value={undefined} disabled>Select asset type...</option>
 							{#each assetTypes as val}
 								<option value={val}>{val}</option>
 							{/each}
@@ -221,6 +222,7 @@
 						<div class="relative">
 
 						<select name="assetId" class="select" bind:value={assetId}>
+							<option value={undefined} disabled>Select asset...</option>
 							{#each items as val}
 								<option value={val.value}>{val.label}</option>
 							{/each}
@@ -238,6 +240,7 @@
 						<div class="relative">
 
 						<select name="timeSlot" bind:value={timeSlot} class="select" required>
+							<option value={undefined} disabled>Select time slot...</option>
 							{#each timeSlots as val}
 								<option value={val}>{val}</option>
 							{/each}

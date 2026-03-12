@@ -18,7 +18,7 @@
 	let assetCode = data.appointment.AssetCode;
 	let name = $state(data.appointment.Name);
 	let description = $state(data.appointment.Description || undefined);
-	let appointmentType = $state(data.appointment.AppointmentType);
+	let appointmentType = $state(data.appointment.AppointmentType ?? undefined);
 	let version = $state(data.appointment.Version);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
@@ -27,7 +27,7 @@
 	const initialState = {
 		name: data.appointment.Name,
 		description: data.appointment.Description || undefined,
-		appointmentType: data.appointment.AppointmentType,
+		appointmentType: data.appointment.AppointmentType ?? undefined,
 		tags: [...(data.appointment.Tags ?? [])],
 		version: data.appointment.Version
 	};
@@ -67,7 +67,7 @@
 	const handleReset = () => {
 		name = data?.appointment?.Name;
 		description = data?.appointment?.Description || undefined;
-		appointmentType = data?.appointment?.AppointmentType;
+		appointmentType = data?.appointment?.AppointmentType ?? undefined;
 		keywords = [...(data?.appointment?.Tags ?? [])];
 		version = data?.appointment?.Version;
 		errors = {};
@@ -176,6 +176,7 @@
 					<td class="table-data">
 						<div class="relative">
 						<select name="appointmentType" bind:value={appointmentType} class="select">
+							<option disabled value={undefined}>Select appointment type</option>
 							<option>Doctor</option>
 							<option>Lab</option>
 							<option>Physiotherapy</option>

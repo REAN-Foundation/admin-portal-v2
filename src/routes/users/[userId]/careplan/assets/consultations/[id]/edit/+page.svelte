@@ -16,14 +16,14 @@
 	let promise = $state();
 	let name = $state(data.consultation.Name);
 	let description = $state(data.consultation.Description || undefined);
-	let consultationType = $state(data.consultation.ConsultationType);
+	let consultationType = $state(data.consultation.ConsultationType ?? undefined);
 	let version = $state(data.consultation.Version);
 	let keywords: string[] = $state(data.consultation.Tags);
 	let keywordsStr = $state('');
 	const initialState = {
 		name: data.consultation.Name,
 		description: data.consultation.Description || undefined,
-		consultationType: data.consultation.ConsultationType,
+		consultationType: data.consultation.ConsultationType ?? undefined,
 		version: data.consultation.Version,
 		tags: [...(data.consultation.Tags ?? [])]
 	};
@@ -58,7 +58,7 @@
 		consultationId = page.params.id;
 		description = data?.consultation?.Description || undefined;
 		version = data?.consultation?.Version;
-		consultationType = data?.consultation.ConsultationType;
+		consultationType = data?.consultation.ConsultationType ?? undefined;
 		keywords = [...(data?.consultation?.Tags ?? [])];
 		errors = {};
 	};
@@ -161,7 +161,7 @@
 					<td class="table-data">
 						<div class="relative">
 							<select class="select" bind:value={consultationType}>
-								<option disabled value>Select Consultation type</option>
+								<option disabled value={undefined}>Select Consultation type</option>
 								<option>Tele-consultation</option>
 								<option>Visit-consultation</option>
 								<option>Other</option>

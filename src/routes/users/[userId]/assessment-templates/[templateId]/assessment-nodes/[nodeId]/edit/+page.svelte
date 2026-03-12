@@ -40,8 +40,8 @@
 		providerAssessmentCode = $state(data.assessmentNode.ProviderAssessmentCode ?? undefined),
 		scoringApplicable = $state(data.assessmentNode.ScoringApplicable ?? false),
 		required = $state(data.assessmentNode.Required ?? false),
-		fieldIdentifier = $state(data.assessmentNode.FieldIdentifier),
-		fieldIdentifierUnit = $state(data.assessmentNode.FieldIdentifierUnit),
+		fieldIdentifier = $state(data.assessmentNode.FieldIdentifier ?? undefined),
+		fieldIdentifierUnit = $state(data.assessmentNode.FieldIdentifierUnit ?? undefined),
 		rawData = $state(
 			typeof data.assessmentNode.RawData === 'string'
 				? data.assessmentNode.RawData
@@ -110,8 +110,8 @@
 		providerAssessmentCode: data.assessmentNode.ProviderAssessmentCode ?? undefined,
 		scoringApplicable: data.assessmentNode.ScoringApplicable ?? false,
 		required: data.assessmentNode.Required ?? false,
-		fieldIdentifier: data.assessmentNode.FieldIdentifier,
-		fieldIdentifierUnit: data.assessmentNode.FieldIdentifierUnit,
+		fieldIdentifier: data.assessmentNode.FieldIdentifier ?? undefined,
+		fieldIdentifierUnit: data.assessmentNode.FieldIdentifierUnit ?? undefined,
 		rawData: typeof data.assessmentNode.RawData === 'string'
 			? data.assessmentNode.RawData
 			: data.assessmentNode.RawData
@@ -159,8 +159,8 @@
 		providerAssessmentCode = data.assessmentNode.ProviderAssessmentCode ?? undefined;
 		scoringApplicable = data.assessmentNode.ScoringApplicable ?? false;
 		required = data.assessmentNode.Required ?? false;
-		fieldIdentifier = data.assessmentNode.FieldIdentifier;
-		fieldIdentifierUnit = data.assessmentNode.FieldIdentifierUnit;
+		fieldIdentifier = data.assessmentNode.FieldIdentifier ?? undefined;
+		fieldIdentifierUnit = data.assessmentNode.FieldIdentifierUnit ?? undefined;
 		rawData = typeof data.assessmentNode.RawData === 'string'
 			? data.assessmentNode.RawData
 			: data.assessmentNode.RawData
@@ -458,7 +458,7 @@
 									bind:value={fieldIdentifier}
 									class="select {errors?.fieldIdentifier ? 'input-text-error' : ''}"
 								>
-									<option value={undefined}>Select field identifier here...</option>
+									<option value={undefined} disabled>Select field identifier here...</option>
 									{#each sortedIdentifiers as identifier}
 										<option value={identifier}>{toLabel(identifier)}</option>
 									{/each}
@@ -515,7 +515,7 @@
 									placeholder="Select query type here..."
 									bind:value={queryType}
 								>
-									<option value="" disabled>Select query type here...</option>
+									<option value={undefined} disabled>Select query type here...</option>
 									{#each filteredQueryResponseTypes() as responseType}
 										<option value={responseType} selected={responseType === queryType}>
 											{responseType}
@@ -548,7 +548,7 @@
 										class="grayout-input {errors?.correctAnswer ? 'input-text-error' : ''}"
 										bind:value={correctAnswer}
 									>
-										<option value="" disabled>Select correct answer</option>
+										<option value={null} disabled>Select correct answer</option>
 										{#each optionArray as option}
 											<option value={String(option.Sequence)}>
 												{option.Text}
@@ -580,7 +580,7 @@
 							<td class="table-label">Correct Answer</td>
 							<td class="table-data">
 								<select name="correctAnswer" class="input w-full" bind:value={correctAnswer}>
-									<option value="" disabled>Select correct answer</option>
+									<option value={null} disabled>Select correct answer</option>
 									<option value="true">true</option>
 									<option value="false">false</option>
 								</select>

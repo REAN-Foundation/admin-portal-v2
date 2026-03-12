@@ -28,10 +28,10 @@
 	let source = $state(data.documents.Source);
 	let parentDocument = $state(data.documents.FileResource.OriginalFileName);
 	let parentDocumentVersion = $state(data.documents.ParentDocumentVersion);
-	let chunkingStrategy = $state(data.documents.ChunkingStrategy);
-	let chunkingLength = $state(data.documents.ChunkingLength);
-	let chunkOverlap = $state(data.documents.ChunkOverlap);
-	let splitter = $state(data.documents.Splitter);
+	let chunkingStrategy = $state(data.documents.ChunkingStrategy ?? undefined);
+	let chunkingLength = $state(data.documents.ChunkingLength ?? undefined);
+	let chunkOverlap = $state(data.documents.ChunkOverlap ?? undefined);
+	let splitter = $state(data.documents.Splitter ?? undefined);
 	let active = $state(data.documents.IsActive);
 	let createdBy = $state(data.documents.CreatedBy);
 	const initialKeywords = data.documents.Keyword ? data.documents.Keyword.split(',').map((v: string) => v.trim()) : [];
@@ -58,10 +58,10 @@
 	const initialState = {
 		name: data.documents.Name,
 		description: data.documents.Description,
-		chunkingStrategy: data.documents.ChunkingStrategy,
-		chunkingLength: data.documents.ChunkingLength,
-		chunkOverlap: data.documents.ChunkOverlap,
-		splitter: data.documents.Splitter,
+		chunkingStrategy: data.documents.ChunkingStrategy ?? undefined,
+		chunkingLength: data.documents.ChunkingLength ?? undefined,
+		chunkOverlap: data.documents.ChunkOverlap ?? undefined,
+		splitter: data.documents.Splitter ?? undefined,
 		tags: [...initialKeywords]
 	};
 	let hasChanges = $derived(
@@ -91,10 +91,10 @@
 		source = data?.documents?.DocumentVersion?.DocumentSource;
 		parentDocument = data?.documents?.ParentDocument;
 		parentDocumentVersion = data?.documents?.ParentDocumentVersion;
-		chunkingStrategy = data?.documents?.ChunkingStrategy;
-		chunkingLength = data?.documents?.ChunkingLength;
-		chunkOverlap = data?.documents?.ChunkOverlap;
-		splitter = data?.documents?.Splitter;
+		chunkingStrategy = data?.documents?.ChunkingStrategy ?? undefined;
+		chunkingLength = data?.documents?.ChunkingLength ?? undefined;
+		chunkOverlap = data?.documents?.ChunkOverlap ?? undefined;
+		splitter = data?.documents?.Splitter ?? undefined;
 		active = data?.documents?.IsActive;
 		createdBy = data?.documents?.CreatedBy;
 		keywords = [...initialKeywords];
@@ -487,6 +487,7 @@
 								bind:value={chunkingStrategy}
 								placeholder="Select type here..."
 							>
+								<option value={undefined} disabled>Select chunking strategy...</option>
 								<option>Recursive Structure Aware Splitting</option>
 								<option>Structure Aware Splitting</option>
 								<option>Content Aware Splitting</option>
