@@ -56,7 +56,7 @@
 		name = data?.webNewsfeed?.Name;
 		description = data?.webNewsfeed?.Description;
 		pathUrl = data?.webNewsfeed?.PathUrl;
-		tags = data?.webNewsfeed?.Tags;
+		keywords = [...(data?.webNewsfeed?.Tags ?? [])];
 		version = data?.webNewsfeed?.Version;
 	};
 

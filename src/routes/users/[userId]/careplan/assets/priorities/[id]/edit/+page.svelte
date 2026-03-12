@@ -55,7 +55,7 @@
 	const handleReset = () => {
 		name = data?.priority?.Name;
 		description = data?.priority?.Description;
-		tags = data?.priority?.Tags;
+		keywords = [...(data?.priority?.Tags ?? [])];
 		version = data?.priority?.Version;
 	};
 	const handleSubmit = async (event: Event) => {

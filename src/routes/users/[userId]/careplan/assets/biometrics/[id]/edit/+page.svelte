@@ -46,7 +46,7 @@
 		measurementUnit = data?.biometrics?.MeasurementUnit;
 		version = data?.biometrics?.Version;
 		biometricsType = data?.biometrics.BiometricsType;
-		tags = data?.biometrics.Tags;
+		keywords = [...(data?.biometrics?.Tags ?? [])];
 		errors = {};
 	};
 

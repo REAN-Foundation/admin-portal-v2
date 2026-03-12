@@ -54,7 +54,7 @@
 	const handleReset = () => {
 		name = data?.nutrition?.Name;
 		description = data?.nutrition?.Description;
-		tags = data?.nutrition?.Tags;
+		keywords = [...(data?.nutrition?.Tags ?? [])];
 		version = data?.nutrition?.Version;
 	};
 	const handleSubmit = async (event: Event) => {

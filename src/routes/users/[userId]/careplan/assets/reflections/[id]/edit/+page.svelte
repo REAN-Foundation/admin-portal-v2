@@ -55,7 +55,7 @@
 	const handleReset = () => {
 		name = data?.reflection?.Name;
 		description = data?.reflection?.Description;
-		tags = data?.reflection?.Tags;
+		keywords = [...(data?.reflection?.Tags ?? [])];
 		version = data?.reflection?.Version;
 	};
 	const handleSubmit = async (event: Event) => {
