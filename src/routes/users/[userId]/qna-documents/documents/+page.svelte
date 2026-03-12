@@ -327,14 +327,14 @@
 					</div>
 					<Button
 						text={isRefreshing ? "Refreshing..." : "Refresh"}
-						variant="primary"
+						variant="outline"
 						iconBefore="material-symbols:refresh"
 						onclick={handleRefresh}
 						disabled={isRefreshing}
 					/>
 					<Button
 						text={isPublishing ? "Publishing..." : "Publish"}
-						variant="primary"
+						variant="outline"
 						iconBefore="material-symbols:publish"
 						onclick={handlePublish}
 						disabled={isPublishing}

@@ -405,7 +405,7 @@
 								<div class="flex w-[70%] justify-end gap-2">
 									<Button
 										type="button"
-										variant="primary"
+										variant="outline"
 										size="md"
 										text="Cancel"
 										onclick={() => {

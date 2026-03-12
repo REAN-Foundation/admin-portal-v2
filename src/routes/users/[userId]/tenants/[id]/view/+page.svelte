@@ -4,6 +4,7 @@
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
 	import Button from '$lib/components/button/button.svelte';
+	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 
 	//////////////////////////////////////////////////////////////////////////
@@ -39,6 +40,8 @@
 			path: viewRoute
 		}
 	];
+
+    let openPromoteModal = $state(false);
 
     const handlePromotion = async () => {
         try {
@@ -97,7 +100,9 @@
 		</tbody>
 	</table>
 	<div class="btn-container mb-2">
-        <Button onclick={handlePromotion} size="md" text="Promote" variant="outline" tooltip="Promote tenant to next environment" />
+        {#if !data.isProduction}
+        <Button onclick={() => openPromoteModal = true} size="md" text="Promote" variant="outline" tooltip="Promote tenant to next environment" />
+        {/if}
 		<Button href={settingsRoute} size="md" text="Settings" variant="outline" tooltip="Tenant settings" />
 		<Button
 			href={editRoute}
@@ -110,3 +115,11 @@
 		/>
 	</div>
 </div>
+
+<Confirmation
+	bind:isOpen={openPromoteModal}
+	title="Promote Tenant"
+	message="Are you sure you want to promote this tenant to the next environment?"
+	confirmText="Promote"
+	onConfirm={handlePromotion}
+/>

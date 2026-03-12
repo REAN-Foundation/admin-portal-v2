@@ -6,8 +6,8 @@
 		title,
 		description = '',
 		isEditing = $bindable(false),
-		featureEnabled = true,
-		featureDisabledMessage = 'This setting is disabled. Please update it from the main settings.',
+		// featureEnabled = true,
+		// featureDisabledMessage = 'This setting is disabled. Please update it from the main settings.',
 		hasUnsavedChanges = false,
 		closeHref = '',
 		onToggleEdit = () => {},
@@ -40,34 +40,24 @@
 		{/if}
 	</div>
 	<div class="flex items-center gap-2">
-		{#if isEditing}
+		<Tooltip text={isEditing ? 'Click to exit edit mode' : 'Enable edit mode'}>
 			<button
 				type="button"
-				class="inline-flex items-center gap-1.5 rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-3 py-1.5 text-sm font-medium text-[var(--color-info)] transition-colors hover:bg-[var(--color-active)]"
-				onclick={onCancelEdit}
+				class="flex items-center gap-2 rounded-full px-1 py-0.5 transition-colors"
+				onclick={isEditing ? onCancelEdit : onToggleEdit}
 			>
-				<Icon icon="material-symbols:close-rounded" class="h-4 w-4" />
-				Cancel
+				<span class="text-sm font-medium text-[var(--color-info)]">Edit Mode</span>
+				<span
+					class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 {isEditing ? 'bg-[var(--color-active)]' : 'bg-gray-300 dark:bg-gray-600'}"
+				>
+					<span
+						class="inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200 {isEditing ? 'translate-x-6' : 'translate-x-1'}"
+					></span>
+				</span>
 			</button>
-			<span class="inline-flex items-center gap-1.5 rounded-md bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-				<Icon icon="material-symbols:edit-outline" class="h-4 w-4" />
-				Editing
-			</span>
-		{:else}
-			<button
-				type="button"
-				class="inline-flex items-center gap-1.5 rounded-md border border-[var(--color-outline)] bg-[var(--color-secondary)] px-3 py-1.5 text-sm font-medium text-[var(--color-info)] transition-colors hover:bg-[var(--color-active)]"
-				onclick={onToggleEdit}
-			>
-				<Icon icon="material-symbols:edit-outline" class="h-4 w-4" />
-				Edit Settings
-			</button>
-		{/if}
+		</Tooltip>
 		{#if closeHref}
-			<a
-				href={closeHref}
-				class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
-			>
+			<a href={closeHref} class="form-cancel-btn">
 				<Icon icon="material-symbols:close-rounded" class="h-5" />
 			</a>
 		{/if}

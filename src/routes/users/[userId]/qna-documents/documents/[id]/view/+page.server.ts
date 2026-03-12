@@ -3,6 +3,7 @@ import { type ServerLoadEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 import { getDocumentsById } from '$routes/api/services/bot-content/documents';
+import { SOURCE_ENV } from '$env/static/private';
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -22,6 +23,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 		location: `${id}/edit`,
 		document,
 		message: response?.Message || 'Documents retrieved successfully',
-		title: 'QNA documents - Documents View'
+		title: 'QNA documents - Documents View',
+		isProduction: SOURCE_ENV === 'production'
 	};
 };

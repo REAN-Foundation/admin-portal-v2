@@ -38,7 +38,7 @@
 				{#if navParent.title === 'Analytics'}
 					<a
 						href={`/users/${userId}/analytics/basic`}
-						class="sidebar-item {activeTab === 'Analytics' ? 'variant-soft-secondary' : ''}"
+						class="sidebar-item {activeTab === 'Analytics' ? 'variant-filled-secondary' : ''}"
 						onclick={() => (activeTab = 'Analytics')}
 					>
 						<div class="flex items-center gap-1">
@@ -49,7 +49,7 @@
 				{:else if navParent.title === 'Notifications'}
 					<a
 						href={navParent.link}
-						class="sidebar-item {activeTab === 'Notifications' ? 'variant-soft-secondary' : ''}"
+						class="sidebar-item {activeTab === 'Notifications' ? 'variant-filled-secondary' : ''}"
 						onclick={() => (activeTab = 'Notifications')}
 					>
 						<div class="flex items-center gap-1">
@@ -60,7 +60,7 @@
 				{:else if navParent.title === 'Home'}
 					<a
 						href={navParent.link}
-						class="sidebar-item {activeTab === 'Home' ? 'variant-soft-secondary' : ''}"
+						class="sidebar-item {activeTab === 'Home' ? 'variant-filled-secondary' : ''}"
 						onclick={() => (activeTab = 'Home')}
 					>
 						<div class="flex items-center gap-1">

@@ -584,7 +584,7 @@
 							<div class="flex justify-end gap-2">
 								<Button
 									type="button"
-									variant="primary"
+									variant="outline"
 									size="md"
 									text="Cancel"
 									onclick={() => (showAddVitalForm = false)}
