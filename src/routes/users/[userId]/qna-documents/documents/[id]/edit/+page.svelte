@@ -34,7 +34,7 @@
 	let splitter = $state(data.documents.Splitter);
 	let active = $state(data.documents.IsActive);
 	let createdBy = $state(data.documents.CreatedBy);
-	let keywordsRaw = $state(data.documents.Keyword);
+	const initialKeywords = data.documents.Keyword ? data.documents.Keyword.split(',').map((v: string) => v.trim()) : [];
 	let documentType = $derived(fileName ? fileName.split('.').pop() : data.documents.DocumentType);
 	let version: string = $state(data.documents.DocumentVersion.map((row) => row.Version).join(', '));
 
@@ -50,7 +50,7 @@
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let keywords: string[] = $derived(keywordsRaw ? keywordsRaw.split(',').map((v) => v.trim()) : []);
+	let keywords: string[] = $state([...initialKeywords]);
 	$inspect('data', data);
 
 	let keywordsStr: string = $state('');
@@ -77,6 +77,8 @@
 		splitter = data?.documents?.Splitter;
 		active = data?.documents?.IsActive;
 		createdBy = data?.documents?.CreatedBy;
+		keywords = [...initialKeywords];
+		errors = {};
 	}
 
 	const upload = async (imgBase64, file) => {
