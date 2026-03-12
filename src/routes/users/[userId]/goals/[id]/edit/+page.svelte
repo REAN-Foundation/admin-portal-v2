@@ -40,7 +40,7 @@
 	const handleReset = () => {
 		type = data?.goal?.Type;
 		id = page.params.id;
-		keywords = [...(data?.goal?.Keywords ?? [])];
+		keywords = [...(data?.goal?.Tags ?? [])];
 		errors = {};
 	};
 
