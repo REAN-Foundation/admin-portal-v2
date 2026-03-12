@@ -22,6 +22,24 @@
 	let version = $state(data.exercise.Version);
 	let keywords: string[] = $state(data.exercise.Tags);
 	let keywordsStr = $state('');
+	const initialState = {
+		name: data.exercise.Name,
+		description: data.exercise.Description || undefined,
+		exerciseType: data.exercise.ExerciseType,
+		intensityLevel: data.exercise.IntensityLevel,
+		recommendedDurationMin: data.exercise.RecommendedDurationMin,
+		version: data.exercise.Version,
+		tags: [...(data.exercise.Tags ?? [])]
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		exerciseType !== initialState.exerciseType ||
+		intensityLevel !== initialState.intensityLevel ||
+		recommendedDurationMin !== initialState.recommendedDurationMin ||
+		version !== initialState.version ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags)
+	);
 
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
@@ -44,7 +62,7 @@
 	const handleReset =  () => {
 		 name = data?.exercise?.Name;
 		 exerciseId = page.params.id;
-		 description = data?.exercise?.Description;
+		 description = data?.exercise?.Description || undefined;
 		 exerciseType = data?.exercise?.ExerciseType,
 		 intensityLevel = data?.exercise?.IntensityLevel,
 		 recommendedDurationMin = data?.exercise.RecommendedDurationMin,
@@ -235,9 +253,9 @@
 		<div class="btn-container">
             <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+                <Button type="submit" text="Saving..." variant="primary" disabled={true} />
             {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
+                <Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
             {/await}
 		</div>
 	</form>

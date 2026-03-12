@@ -19,12 +19,25 @@
 	let name = $state(data.appointment.Name);
 	let description = $state(data.appointment.Description || undefined);
 	let appointmentType = $state(data.appointment.AppointmentType);
-	let tags = $state(data.appointment.Tags);
 	let version = $state(data.appointment.Version);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let keywordsStr: string = $state('');
 	let keywords: string[] = $state(data.appointment.Tags);
+	const initialState = {
+		name: data.appointment.Name,
+		description: data.appointment.Description || undefined,
+		appointmentType: data.appointment.AppointmentType,
+		tags: [...(data.appointment.Tags ?? [])],
+		version: data.appointment.Version
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		appointmentType !== initialState.appointmentType ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags) ||
+		version !== initialState.version
+	);
 
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
@@ -53,10 +66,11 @@
 
 	const handleReset = () => {
 		name = data?.appointment?.Name;
-		description = data?.appointment?.Description;
+		description = data?.appointment?.Description || undefined;
 		appointmentType = data?.appointment?.AppointmentType;
 		keywords = [...(data?.appointment?.Tags ?? [])];
 		version = data?.appointment?.Version;
+		errors = {};
 	};
 
 	const handleSubmit = async (event: Event) => {
@@ -202,9 +216,9 @@
 			<div class="btn-container">
             <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+                <Button type="submit" text="Saving..." variant="primary" disabled={true} />
             {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
+                <Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
             {/await}
 		</div>
 		</div>

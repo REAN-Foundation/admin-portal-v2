@@ -18,12 +18,23 @@
 	let assetCode = data.priority.AssetCode;
 	let name = $state(data.priority.Name);
 	let description = $state(data.priority.Description || undefined);
-	let tags = $state(data.priority.Tags);
 	let version = $state(data.priority.Version);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let keywordsStr: string = $state('');
 	let keywords: string[] = $state(data.priority.Tags);
+	const initialState = {
+		name: data.priority.Name,
+		description: data.priority.Description || undefined,
+		tags: [...(data.priority.Tags ?? [])],
+		version: data.priority.Version
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags) ||
+		version !== initialState.version
+	);
 
 	const userId = page.params.userId;
 	const priorityId = page.params.id;
@@ -54,9 +65,10 @@
 
 	const handleReset = () => {
 		name = data?.priority?.Name;
-		description = data?.priority?.Description;
+		description = data?.priority?.Description || undefined;
 		keywords = [...(data?.priority?.Tags ?? [])];
 		version = data?.priority?.Version;
+		errors = {};
 	};
 	const handleSubmit = async (event: Event) => {
 		try {
@@ -182,9 +194,9 @@
 		<div class="btn-container">
             <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+                <Button type="submit" text="Saving..." variant="primary" disabled={true} />
             {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
+                <Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
             {/await}
 		</div>
 	</form>

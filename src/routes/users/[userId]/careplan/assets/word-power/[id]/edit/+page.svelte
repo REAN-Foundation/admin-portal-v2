@@ -19,12 +19,25 @@
 	let name = $state(data.wordPower.Name);
 	let description = $state(data.wordPower.Description || undefined);
 	let additionalResources = $state(data.wordPower.AdditionalResources || undefined);
-	let tags = $state(data.wordPower.Tags);
 	let version = $state(data.wordPower.Version);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let keywordsStr: string = $state('');
 	let keywords: string[] = $state(data.wordPower.Tags);
+	const initialState = {
+		name: data.wordPower.Name,
+		description: data.wordPower.Description || undefined,
+		additionalResources: data.wordPower.AdditionalResources || undefined,
+		tags: [...(data.wordPower.Tags ?? [])],
+		version: data.wordPower.Version
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		additionalResources !== initialState.additionalResources ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags) ||
+		version !== initialState.version
+	);
 
 	const userId = page.params.userId;
 	const wordPowerId = page.params.id;
@@ -54,10 +67,11 @@
 	];
 	const handleReset = () => {
 		name = data?.wordPower?.Name;
-		description = data?.wordPower?.Description;
-		additionalResources = data?.wordPower?.AdditionalResources;
+		description = data?.wordPower?.Description || undefined;
+		additionalResources = data?.wordPower?.AdditionalResources || undefined;
 		keywords = [...(data?.wordPower?.Tags ?? [])];
 		version = data?.wordPower?.Version;
+		errors = {};
 	};
 	const handleSubmit = async (event: Event) => {
 		try {
@@ -194,9 +208,9 @@
 		<div class="btn-container">
             <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
+                <Button type="submit" text="Saving..." variant="primary" disabled={true} />
+            {:then}
+                <Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
             {/await}
 		</div>
 

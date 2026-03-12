@@ -19,9 +19,24 @@
 	let measurementUnit = $state(data.biometrics.MeasurementUnit || undefined);
 	let version = $state(data.biometrics.Version);
 	let biometricsType = $state(data.biometrics.BiometricsType);
-	let tags = $state(data.biometrics.Tags);
 	let keywordsStr: string = $state('');
 	let keywords: string[] = $state(data.biometrics.Tags);
+	const initialState = {
+		name: data.biometrics.Name,
+		description: data.biometrics.Description || undefined,
+		measurementUnit: data.biometrics.MeasurementUnit || undefined,
+		version: data.biometrics.Version,
+		biometricsType: data.biometrics.BiometricsType,
+		tags: [...(data.biometrics.Tags ?? [])]
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		measurementUnit !== initialState.measurementUnit ||
+		version !== initialState.version ||
+		biometricsType !== initialState.biometricsType ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags)
+	);
 
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
@@ -42,8 +57,8 @@
 	const handleReset = () => {
 		name = data?.biometrics?.Name;
 		biometricsId = page.params.id;
-		description = data?.biometrics?.Description;
-		measurementUnit = data?.biometrics?.MeasurementUnit;
+		description = data?.biometrics?.Description || undefined;
+		measurementUnit = data?.biometrics?.MeasurementUnit || undefined;
 		version = data?.biometrics?.Version;
 		biometricsType = data?.biometrics.BiometricsType;
 		keywords = [...(data?.biometrics?.Tags ?? [])];
@@ -210,9 +225,9 @@
 		<div class="btn-container">
 			<Button type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
-				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button type="submit" text="Saving..." variant="primary" disabled={true} />
 			{:then data}
-				<Button type="submit" text="Submit" variant="primary" />
+				<Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
 			{/await}
 		</div>
 	</form>

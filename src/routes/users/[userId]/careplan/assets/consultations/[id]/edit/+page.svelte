@@ -20,6 +20,20 @@
 	let version = $state(data.consultation.Version);
 	let keywords: string[] = $state(data.consultation.Tags);
 	let keywordsStr = $state('');
+	const initialState = {
+		name: data.consultation.Name,
+		description: data.consultation.Description || undefined,
+		consultationType: data.consultation.ConsultationType,
+		version: data.consultation.Version,
+		tags: [...(data.consultation.Tags ?? [])]
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		consultationType !== initialState.consultationType ||
+		version !== initialState.version ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags)
+	);
 
 	const userId = page.params.userId;
 	var consultationId = page.params.id;
@@ -42,7 +56,7 @@
 	const handleReset = () => {
 		name = data?.consultation?.Name;
 		consultationId = page.params.id;
-		description = data?.consultation?.Description;
+		description = data?.consultation?.Description || undefined;
 		version = data?.consultation?.Version;
 		consultationType = data?.consultation.ConsultationType;
 		keywords = [...(data?.consultation?.Tags ?? [])];
@@ -187,9 +201,9 @@
 		<div class="btn-container">
 			<Button type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
-				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button type="submit" text="Saving..." variant="primary" disabled={true} />
 			{:then data}
-				<Button type="submit" text="Submit" variant="primary" />
+				<Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
 			{/await}
 		</div>
 	</form>

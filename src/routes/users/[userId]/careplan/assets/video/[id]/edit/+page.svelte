@@ -19,12 +19,25 @@
 	let name = $state(data.video.Name);
 	let transcript = $state(data.video.Transcript || undefined);
 	let pathUrl = $state(data.video.Url || undefined);
-	let tags = $state(data.video.Tags);
 	let version = $state(data.video.Version);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let keywordsStr: string = $state('');
 	let keywords: string[] = $state(data.video.Tags);
+	const initialState = {
+		name: data.video.Name,
+		transcript: data.video.Transcript || undefined,
+		pathUrl: data.video.Url || undefined,
+		tags: [...(data.video.Tags ?? [])],
+		version: data.video.Version
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		transcript !== initialState.transcript ||
+		pathUrl !== initialState.pathUrl ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags) ||
+		version !== initialState.version
+	);
 
 	const userId = page.params.userId;
 	const videoId = page.params.id;
@@ -55,10 +68,11 @@
 
 	const handleReset = () => {
 		name = data?.video?.Name;
-		transcript = data?.video?.Transcript;
-		pathUrl = data?.video?.PathUrl;
+		transcript = data?.video?.Transcript || undefined;
+		pathUrl = data?.video?.PathUrl || undefined;
 		keywords = [...(data?.video?.Tags ?? [])];
 		version = data?.video?.Version;
+		errors = {};
 	};
 
 	const handleSubmit = async (event: Event) => {
@@ -198,9 +212,9 @@
 		<div class="btn-container">
             <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
+                <Button type="submit" text="Saving..." variant="primary" disabled={true} />
+            {:then}
+                <Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
             {/await}
 		</div>
 	</form>

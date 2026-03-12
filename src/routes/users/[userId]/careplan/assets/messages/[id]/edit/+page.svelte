@@ -25,6 +25,26 @@
 	let templateVariablesText = $state(
 		data.message.TemplateVariables ? JSON.stringify(data.message.TemplateVariables, null, 2) : ''
 	);
+	const initialState = {
+		name: data.message.Name,
+		description: data.message.Description || undefined,
+		messageType: data.message.MessageType,
+		templateName: data.message.TemplateName,
+		pathUrl: data.message.PathUrl,
+		version: data.message.Version,
+		tags: [...(data.message.Tags ?? [])],
+		templateVariablesText: data.message.TemplateVariables ? JSON.stringify(data.message.TemplateVariables, null, 2) : ''
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		messageType !== initialState.messageType ||
+		templateName !== initialState.templateName ||
+		pathUrl !== initialState.pathUrl ||
+		version !== initialState.version ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags) ||
+		templateVariablesText !== initialState.templateVariablesText
+	);
 
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
@@ -47,7 +67,7 @@
 	const handleReset = () => {
 		name = data?.message?.Name;
 		messageId = page.params.id;
-		description = data?.message?.Description;
+		description = data?.message?.Description || undefined;
 		templateName = data?.message?.TemplateName;
 		templateVariablesText = data.message.TemplateVariables
 			? JSON.stringify(data.message.TemplateVariables, null, 2)
@@ -264,9 +284,9 @@
 		<div class="btn-container">
             <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+                <Button type="submit" text="Saving..." variant="primary" disabled={true} />
             {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
+                <Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
             {/await}
 		</div>
 	</form>

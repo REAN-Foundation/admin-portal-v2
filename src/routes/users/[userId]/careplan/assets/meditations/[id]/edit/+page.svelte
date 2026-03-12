@@ -21,6 +21,22 @@
 	let version = $state(data.meditation.Version);
 	let keywords: string[] = $state(data.meditation.Tags);
 	let keywordsStr = $state('');
+	const initialState = {
+		name: data.meditation.Name,
+		description: data.meditation.Description || undefined,
+		meditationType: data.meditation.MeditationType,
+		recommendedDurationMin: data.meditation.RecommendedDurationMin,
+		version: data.meditation.Version,
+		tags: [...(data.meditation.Tags ?? [])]
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		meditationType !== initialState.meditationType ||
+		recommendedDurationMin !== initialState.recommendedDurationMin ||
+		version !== initialState.version ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags)
+	);
 
 	const userId = page.params.userId;
 	var meditationId = page.params.id;
@@ -43,7 +59,7 @@
 	const handleReset =  () => {
 		 name = data?.meditation?.Name;
 		 meditationId = page.params.id;
-		 description = data?.meditation?.Description;
+		 description = data?.meditation?.Description || undefined;
 		 meditationType = data?.meditation?.MeditationType,
 		 recommendedDurationMin = data?.meditation.RecommendedDurationMin,
 		 version = data?.meditation?.Version;
@@ -209,9 +225,9 @@
     <div class="btn-container">
             <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
+                <Button type="submit" text="Saving..." variant="primary" disabled={true} />
+            {:then _}
+                <Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
             {/await}
   </div>
   </form>
