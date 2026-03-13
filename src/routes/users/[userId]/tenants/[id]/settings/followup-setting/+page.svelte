@@ -385,7 +385,7 @@
 						<div class="w-full md:w-[70%]">
 							<select
 								bind:value={followUpSettingUpdateModel.Source}
-								class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+								class="input text-sm"
 								disabled={!edit || !isFollowupEnabled}
 							>
 								<option value="None" selected>None</option>
@@ -411,7 +411,7 @@
 									rows="6"
 									bind:value={followUpSettingUpdateModel.FileUploadSettings.FileColumnFormat}
 									placeholder="Column format in JSON format"
-									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									class="input text-sm"
 									oninput={validateJSON}
 									disabled={!edit}
 								></textarea>
@@ -430,7 +430,7 @@
 							<div class="w-full md:w-[70%]">
 								<select
 									bind:value={followUpSettingUpdateModel.FileUploadSettings.FileType}
-									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									class="input text-sm"
 									disabled={!edit}
 								>
 									<option value="" disabled selected>Select file type</option>
@@ -488,7 +488,7 @@
 							<div class="w-full md:w-[70%]">
 								<select
 									bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Method}
-									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									class="input text-sm"
 									disabled={!edit}
 								>
 									<option value="" disabled selected>Select Method</option>
@@ -512,7 +512,7 @@
 								<input
 									bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Url}
 									placeholder="Base URL"
-									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									class="input text-sm"
 									disabled={!edit}
 								/>
 								{#if errors?.ApiIntegrationSettings?.Auth?.Url}
@@ -529,7 +529,7 @@
 								<input
 									bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.Body}
 									placeholder="Request Body"
-									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									class="input text-sm"
 									disabled={!edit}
 								/>
 								{#if errors?.ApiIntegrationSettings?.Auth?.Body}
@@ -580,7 +580,7 @@
 								<input
 									bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Auth.TokenPath}
 									placeholder="Token path (e.g. data.token)"
-									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									class="input text-sm"
 									disabled={!edit}
 								/>
 								{#if errors?.ApiIntegrationSettings?.Auth?.TokenPath}
@@ -598,7 +598,7 @@
 									bind:value={
 										followUpSettingUpdateModel.ApiIntegrationSettings.Auth.ResponseType
 									}
-									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									class="input text-sm"
 									disabled={!edit}
 								>
 									<option value="" disabled selected>Select Response type</option>
@@ -624,7 +624,7 @@
 							<div class="w-full md:w-[70%]">
 								<select
 									bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Method}
-									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									class="input text-sm"
 									disabled={!edit}
 								>
 									<option value="" disabled selected>Select Fecth Method</option>
@@ -648,7 +648,7 @@
 								<input
 									bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Url}
 									placeholder="Base URL"
-									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									class="input text-sm"
 									disabled={!edit}
 								/>
 								{#if errors?.ApiIntegrationSettings?.Fetch?.Url}
@@ -684,7 +684,7 @@
 								<input
 									bind:value={followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.Body}
 									placeholder="Request Body"
-									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									class="input text-sm"
 									disabled={!edit}
 								/>
 								{#if errors?.ApiIntegrationSettings?.Fetch?.Body}
@@ -717,7 +717,7 @@
 									bind:value={
 										followUpSettingUpdateModel.ApiIntegrationSettings.Fetch.ResponseType
 									}
-									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									class="input text-sm"
 									disabled={!edit}
 								>
 									<option value="" disabled selected>Select Response type</option>
@@ -745,7 +745,7 @@
 									}
 									disabled={!edit}
 									placeholder="response field"
-									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									class="input text-sm"
 								/>
 								{#if errors?.ApiIntegrationSettings?.Fetch?.ResponseField}
 									<p class="text-error">
@@ -768,7 +768,7 @@
 											.Location
 									}
 									disabled={!edit}
-									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									class="input text-sm"
 								>
 									<option value="" disabled={!edit} selected>Select Location</option>
 									<option value="header">Header</option>
@@ -789,7 +789,7 @@
 									}
 									disabled={!edit}
 									placeholder="Token key"
-									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									class="input text-sm"
 								/>
 								{#if errors?.ApiIntegrationSettings?.Auth?.TokenInjection?.Key}
 									<p class="text-error">
@@ -810,7 +810,7 @@
 									}
 									disabled={!edit}
 									placeholder="Token prefix "
-									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									class="input text-sm"
 								/>
 								{#if errors?.ApiIntegrationSettings?.Auth?.TokenInjection?.Prefix}
 									<p class="text-error">
@@ -832,7 +832,7 @@
 										followUpSettingUpdateModel.ApiIntegrationSettings.ScheduleFrequency
 									}
 									disabled={!edit}
-									class="w-full rounded border p-2 text-sm text-[var(--color-info)]"
+									class="input text-sm"
 								>
 									<option value="" disabled selected>Select Schedule Frequency</option>
 									<option value="daily">Daily</option>
