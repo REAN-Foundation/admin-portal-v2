@@ -40,7 +40,7 @@
 		secondary: 'bg-gray-600 text-white hover:bg-gray-700 rounded-md',
 		ghost:
 			'bg-transparent text-white font-semibold rounded-md transition-colors duration-200 hover:bg-[var(--color-active)]',
-		outline: 'border-2 rounded-md hover:bg-gray-200 font-semibold border-gray-400',
+		outline: 'border-2 rounded-md font-semibold border-gray-400 text-[var(--color-info)] hover:bg-[var(--color-neutral)]',
 		rounded:
 			'bg-[var(--active-soft)] text-white font-semibold hover:bg-[var(--color-active)] rounded-full',
 		icon: 'bg-transparent p-2 px-3 rounded-md hover:bg-[var(--color-active)]'
