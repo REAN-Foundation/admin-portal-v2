@@ -33,6 +33,21 @@
 	let previewImage = $state(null);
 	let fileInput: HTMLInputElement;
 
+	const initialState = {
+		firstName: data.user.Person.FirstName,
+		lastName: data.user.Person.LastName,
+		phone: data.user.Person.Phone,
+		email: data.user.Person.Email,
+		imageResourceId: data.user.Person.ImageResourceId ?? undefined
+	};
+	let hasChanges = $derived(
+		firstName !== initialState.firstName ||
+		lastName !== initialState.lastName ||
+		phone !== initialState.phone ||
+		email !== initialState.email ||
+		imageResourceId !== initialState.imageResourceId
+	);
+
 	console.log('data', data);
 
 	// console.log('imageurl ==>', imageUrl);
@@ -290,9 +305,9 @@
 		<div class="btn-container">
 			<Button type="button" text="Reset" variant="outline" onclick={handleReset} />
 			{#await promise}
-				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button type="submit" text="Saving" variant="primary" disabled={true} />
 			{:then data}
-				<Button type="submit" text="Submit" variant="primary" />
+				<Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
 			{/await}
 		</div>
 	</form>
