@@ -26,8 +26,8 @@
 	let email = $state(data.user.Person.Email);
 	let roleId = $state(data.user.Role.id);
 	let roleName = $state(data.user.Role.RoleName);
-	let splitPhoneNumber = $state(phone.split('-'));
-	let [countryCode, phoneNumber] = $derived(splitPhoneNumber);
+	let countryCode = $state(phone.split('-')[0]);
+	let phoneNumber = $state(phone.split('-')[1]);
 	let imageUrl = $state(data.user.Person.ImageUrl);
 	let imageResourceId = $state(data.user.Person.ImageResourceId ?? undefined);
 	let previewImage = $state(null);
@@ -36,10 +36,14 @@
 	const initialState = {
 		firstName: data.user.Person.FirstName,
 		lastName: data.user.Person.LastName,
-		phone: data.user.Person.Phone,
+		phone: `${countryCode}-${phoneNumber}`,
 		email: data.user.Person.Email,
 		imageResourceId: data.user.Person.ImageResourceId ?? undefined
 	};
+	$effect(() => {
+		phone = `${countryCode}-${phoneNumber}`;
+	});
+
 	let hasChanges = $derived(
 		firstName !== initialState.firstName ||
 		lastName !== initialState.lastName ||
@@ -248,18 +252,20 @@
 				</tr>
 				<tr class="tables-row">
 					<td class="table-label">Contact Number <span class="text-red-600">*</span></td>
-					<td class="table-data flex gap-2 px-4 py-4">
-						<select name="countryCode" bind:value={countryCode} class="input {errors?.countryCode ? 'input-text-error' : ''}">
-							<option>+1</option>
-							<option>+91</option>
-						</select>
-						<input
-							type="text"
-							name="phone"
-							bind:value={phoneNumber}
-							placeholder="Enter contact number here..."
-							class="input {errors?.phone ? 'input-text-error' : ''}"
-						/>
+					<td class="table-data">
+						<div class="flex gap-2">
+							<select name="countryCode" bind:value={countryCode} class="input !w-20 {errors?.countryCode ? 'input-text-error' : ''}">
+								<option value="+1">+1</option>
+								<option value="+91">+91</option>
+							</select>
+							<input
+								type="text"
+								name="phone"
+								bind:value={phoneNumber}
+								placeholder="Enter contact number here..."
+								class="input {errors?.phone ? 'input-text-error' : ''}"
+							/>
+						</div>
 						{#if errors?.Phone}
 							<p class="text-error">{errors?.Phone}</p>
 						{/if}
