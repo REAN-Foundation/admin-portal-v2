@@ -521,13 +521,13 @@
 <div class="px-5 py-4">
 	<!-- Stepper above border -->
 	<div class="w-full py-4">
-		<div class="flex w-full items-start justify-between">
-			<div class="flex flex-1 flex-col items-center">
+		<div class="flex w-full flex-wrap items-start justify-between gap-4 sm:gap-6">
+			<div class="flex min-w-0 flex-1 flex-col items-center">
 				<div class="flex w-full items-center">
 					{#each Array(totalSteps) as _, index}
 						<!-- Step circle -->
 						<div
-							class={`step-number 
+							class={`step-number
 							${
 								index < currentSection
 									? 'step-completed'
@@ -553,15 +553,16 @@
 				</div>
 			</div>
 			<!-- Bot Configuration Button -->
-			<Button
-				type="button"
-				variant="outline"
-				onclick={getBotSecret}
-				disabled={isCreatingSecret}
-				text={isCreatingSecret ? 'Loading...' : 'Bot Configuration'}
-				iconBefore="mdi:cog-outline"
-				tooltip="View or set up the chatbot integration configuration"
-			/>
+			<div class="shrink-0">
+				<Button
+					type="button"
+					variant="outline"
+					onclick={getBotSecret}
+					disabled={isCreatingSecret}
+					text={isCreatingSecret ? 'Loading...' : 'Bot Configuration'}
+					tooltip="View or set up the chatbot integration configuration"
+				/>
+			</div>
 		</div>
 	</div>
 	<div class="mx-auto my-6 border border-[var(--color-outline)]">
