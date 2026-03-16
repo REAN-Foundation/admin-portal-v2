@@ -10,6 +10,7 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import Button from '$lib/components/button/button.svelte';
+	import SearchDropdown from '$lib/components/search-dropdown.svelte';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -20,6 +21,12 @@
 	let totalAssessmentTemplatesCount = $state(data.assessmentTemplate.TotalCount);
 
 	const userId = page.params.userId;
+	let isSystemAdmin = $derived(data.sessionUser?.roleName === 'System admin' || data.sessionUser?.roleName === 'System user');
+	let defaultTenantId = $derived(data.sessionUser?.tenantId);
+
+	let selectedTenantId = $state('');
+	let selectedTenantDisplay = $state('');
+
 	const assessmentRoute = `/users/${userId}/assessment-templates`;
 	const editRoute = (id) => `/users/${userId}/assessment-templates/${id}/edit`;
 	const viewRoute = (id) => `/users/${userId}/assessment-templates/${id}/view`;
@@ -51,6 +58,23 @@
 		amounts: [10, 20, 30, 50]
 	});
 
+	function getEffectiveTenantId() {
+		return selectedTenantId || defaultTenantId;
+	}
+
+	function handleTenantSelect() {
+		paginationSettings.page = 0;
+		searchAssessmentTemplate({
+			title,
+			type,
+			tags,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
 	async function searchAssessmentTemplate(model) {
 		try {
 			let url = `/api/server/assessments/assessment-templates/search?`;
@@ -62,6 +86,9 @@
 			if (model.title) url += `&title=${model.title}`;
 			if (model.type) url += `&type=${model.type}`;
 			if (model.tags) url += `&tags=${model.tags}`;
+
+			const tenantId = getEffectiveTenantId();
+			if (isSystemAdmin && tenantId) url += `&tenantId=${tenantId}`;
 
 			const res = await fetch(url, {
 				method: 'GET',
@@ -241,6 +268,20 @@
 		<div class="table-container shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
+					{#if isSystemAdmin}
+						<div class="relative w-full md:w-auto flex-1">
+							<SearchDropdown
+								placeholder="Search by tenant"
+								searchUrl="/api/server/tenants/search"
+								searchField="name"
+								displayField="Name"
+								valueField="id"
+								bind:selectedValue={selectedTenantId}
+								bind:selectedDisplay={selectedTenantDisplay}
+								onSelect={handleTenantSelect}
+							/>
+						</div>
+					{/if}
 					<div class="relative w-full md:w-auto flex-1">
 						<Icon
 							icon="heroicons:magnifying-glass"

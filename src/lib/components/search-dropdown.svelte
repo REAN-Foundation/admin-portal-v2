@@ -49,6 +49,8 @@
 				searchResults = result.Data.Careplans.Items;
 			} else if (result.Data && result.Data.Careplans) {
 				searchResults = result.Data.Careplans;
+			} else if (result.Data && result.Data.TenantRecords && result.Data.TenantRecords.Items) {
+				searchResults = result.Data.TenantRecords.Items;
 			} else if (Array.isArray(result)) {
 				searchResults = result;
 			} else if (result.Items) {
