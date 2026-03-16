@@ -129,7 +129,7 @@
 			onfocus={handleFocus}
 			onblur={handleBlur}
 			placeholder={placeholder}
-			class="input !pr-10 !pl-10 w-full"
+			class="table-input-field !pr-10 !pl-10"
 		/>
 		{#if searchTerm}
 			<button

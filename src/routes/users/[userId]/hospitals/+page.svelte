@@ -16,11 +16,13 @@
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 	import Button from '$lib/components/button/button.svelte';
+	import TenantFilter from '$lib/components/tenant-filter.svelte';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 
+	let tenantFilter: TenantFilter;
 	let debounceTimeout;
 	let isLoading = $state(false);
 	let hospitals = $state(data.hospitals.Items);
@@ -55,6 +57,18 @@
 		amounts: [10, 20, 30, 50]
 	});
 
+	function handleTenantSelect() {
+		paginationSettings.page = 0;
+		searchHospital({
+			hospitalName,
+			tags,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
 	async function searchHospital(model) {
 		try {
 			let url = `/api/server/hospitals/search?`;
@@ -65,6 +79,8 @@
 
 			if (model.hospitalName) url += `&name=${model.hospitalName}`;
 			if (model.tags) url += `&tags=${model.tags}`;
+
+			url = tenantFilter.appendTenantParam(url);
 
 			const res = await fetch(url, {
 				method: 'GET',
@@ -199,6 +215,11 @@
 		<div class="table-container z-0 shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
+					<TenantFilter
+						bind:this={tenantFilter}
+						sessionUser={data.sessionUser}
+						onSelect={handleTenantSelect}
+					/>
 					<div class="relative w-auto grow pl-1.5">
 						<Icon
 							icon="heroicons:magnifying-glass"

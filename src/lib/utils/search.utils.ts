@@ -33,27 +33,50 @@ export function createSearchFilters(
 		pageIndex: parseInt(searchParams.get('pageIndex') ?? '0')
 	};
 
-	// Add tenantId if available and not explicitly excluded
 	const filters: TenantScopedSearchFilters = {
 		...baseFilters,
 		...additionalFilters
 	};
 
-    const isSystemAdmin = userRole === 'System admin' || userRole === 'System user';
+	const isSystemAdmin = userRole === 'System admin' || userRole === 'System user';
+	const tenantCode = event.locals?.sessionUser?.tenantCode;
 
-    const shouldExcludeTenantId = additionalFilters.excludeTenantId || isSystemAdmin;
+	// Clean up control flags from output
+	delete filters.excludeTenantId;
+	delete filters.useTenantCode;
+	delete filters.useTenantCodeAsTenantId;
 
-    if (tenantId && !shouldExcludeTenantId) {
-        filters.tenantId = tenantId;
-    }
+	if (additionalFilters.useTenantCode) {
+		// Careplan service: uses tenantCode
+		delete filters.tenantId;
+		if (isSystemAdmin) {
+			const explicit = searchParams.get('tenantCode');
+			if (explicit) filters.tenantCode = explicit;
+		} else {
+			filters.tenantCode = tenantCode;
+		}
+	} else if (additionalFilters.useTenantCodeAsTenantId) {
+		// Bot Content prompt-templates: field is "tenantId" but value is tenantCode
+		if (isSystemAdmin) {
+			const explicit = searchParams.get('tenantCode') ?? searchParams.get('tenantId');
+			if (explicit) filters.tenantId = explicit;
+		} else {
+			filters.tenantId = tenantCode;
+		}
+	} else if (additionalFilters.excludeTenantId) {
+		// Explicitly excluded
+		delete filters.tenantId;
+	} else {
+		// Reancare service: uses tenantId (UUID)
+		if (isSystemAdmin) {
+			const explicit = searchParams.get('tenantId');
+			if (explicit) filters.tenantId = explicit;
+		} else if (tenantId) {
+			filters.tenantId = tenantId;
+		}
+	}
 
-    if (additionalFilters.useTenantCode) {
-        filters.tenantCode = event.locals?.sessionUser?.tenantCode;
-        delete filters.useTenantCode;
-        delete filters.excludeTenantId;
-        delete filters.tenantId; // Ensure tenantId is not included if tenantCode is used
-    }
-    return filters;
+	return filters;
 }
 export function extractSearchParams(
 	event: RequestEvent,
@@ -73,11 +96,14 @@ export function extractSearchParams(
 		}
 	}
 	
-	// Add tenantId if available and user is not a system admin
 	const isSystemAdmin = userRole === 'System admin' || userRole === 'System user';
-	if (tenantId && !isSystemAdmin) {
+	if (isSystemAdmin) {
+		// Allow system admins to explicitly filter by tenant via URL params
+		const explicit = searchParams.get('tenantId');
+		if (explicit) params.tenantId = explicit;
+	} else if (tenantId) {
 		params.tenantId = tenantId;
 	}
-	
+
 	return params;
 } 

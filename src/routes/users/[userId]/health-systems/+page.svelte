@@ -11,11 +11,13 @@
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 	import Button from '$lib/components/button/button.svelte';
+	import TenantFilter from '$lib/components/tenant-filter.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 
+	let tenantFilter: TenantFilter;
 	let debounceTimeout;
 	let isLoading = $state(false);
 	let healthSystems = $state(data.healthSystems.Items);
@@ -51,6 +53,17 @@
 
 	$inspect('retrivedHealth', healthSystems);
 
+	function handleTenantSelect() {
+		paginationSettings.page = 0;
+		searchHealthSystem({
+			healthSystemName: healthSystemName,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
 	async function searchHealthSystem(model) {
 		try {
 			let url = `/api/server/health-systems/search?`;
@@ -59,6 +72,8 @@
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
 			if (model.healthSystemName) url += `&name=${model.healthSystemName}`;
+
+			url = tenantFilter.appendTenantParam(url);
 
 			const res = await fetch(url, {
 				method: 'GET',
@@ -171,6 +186,11 @@
 		<div class="table-container shadow">
 			<div class="search-border">
 				<div class="flex flex-col gap-4 md:flex-row">
+					<TenantFilter
+						bind:this={tenantFilter}
+						sessionUser={data.sessionUser}
+						onSelect={handleTenantSelect}
+					/>
 					<div class="flex-1">
 						<div class="relative pr-1.5">
 							<Icon
