@@ -13,7 +13,7 @@
 
 	let messageBeforeQuestion = $state(data.pathData?.MessageBeforeQuestion ?? undefined);
 	let isExitPath = $state(data.pathData?.IsExitPath);
-	let nextNodeId = $state(data.pathData?.NextNodeId);
+	let nextNodeId = $state(data.pathData?.NextNodeId ?? '');
 	let displayCode = $state(data.pathData?.DisplayCode);
 	let errors: Record<string, string> = $state({});
 	let isSubmitting = $state(false);
@@ -22,7 +22,18 @@
 	console.log('data.pathData', data.pathData?.ConditionId);
 
 	let promise = $state();
-	
+
+	const initialState = {
+		messageBeforeQuestion: data.pathData?.MessageBeforeQuestion ?? undefined,
+		isExitPath: data.pathData?.IsExitPath,
+		nextNodeId: data.pathData?.NextNodeId ?? ''
+	};
+	let hasChanges = $derived(
+		messageBeforeQuestion !== initialState.messageBeforeQuestion ||
+		isExitPath !== initialState.isExitPath ||
+		nextNodeId !== initialState.nextNodeId
+	);
+
 	console.log('data.pathData', data.pathData);
 	$effect(() => {
 		displayCode = data.pathData?.DisplayCode;
@@ -38,7 +49,7 @@
 	function handleReset() {
 		messageBeforeQuestion = data.pathData.MessageBeforeQuestion ?? undefined;
 		isExitPath = data.pathData.IsExitPath;
-		nextNodeId = data.pathData.NextNodeId ;
+		nextNodeId = data.pathData.NextNodeId ?? '';
 		displayCode = data.pathData.DisplayCode;
 		errors = {};
 	}
@@ -241,9 +252,9 @@
 			<Button
 				size="md"
 				type="submit"
-				text={isSubmitting ? 'Submitting...' : 'Submit'}
+				text={isSubmitting ? 'Saving...' : 'Save'}
 				variant="primary"
-				disabled={isSubmitting}
+				disabled={isSubmitting || !hasChanges}
 			/>
 		</div>
 	</form>

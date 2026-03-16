@@ -25,6 +25,25 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 
+	const initialState = {
+		drugName: data.drug.DrugName ?? undefined,
+		genericName: data.drug.GenericName ?? undefined,
+		ingredients: data.drug.Ingredients ?? undefined,
+		strength: data.drug.Strength ?? undefined,
+		otherCommercialNames: data.drug.OtherCommercialNames ?? undefined,
+		manufacturer: data.drug.Manufacturer ?? undefined,
+		otherInformation: data.drug.OtherInformation ?? undefined
+	};
+	let hasChanges = $derived(
+		drugName !== initialState.drugName ||
+		genericName !== initialState.genericName ||
+		ingredients !== initialState.ingredients ||
+		strength !== initialState.strength ||
+		otherCommercialNames !== initialState.otherCommercialNames ||
+		manufacturer !== initialState.manufacturer ||
+		otherInformation !== initialState.otherInformation
+	);
+
 	const userId = page.params.userId;
 	const drugId = page.params.id;
 	const editRoute = `/users/${userId}/drugs/${id}/edit`;
@@ -36,13 +55,14 @@
 	];
 
 	function handleReset() {
-		drugName = data?.drug?.DrugName;
-		genericName = data?.drug?.GenericName;
-		ingredients = data?.drug?.Ingredients;
-		strength = data?.drug?.Strength;
-		otherCommercialNames = data?.drug?.OtherCommercialNames;
-		manufacturer = data?.drug?.Manufacturer;
-		otherInformation = data?.drug?.OtherInformation;
+		drugName = data?.drug?.DrugName ?? undefined;
+		genericName = data?.drug?.GenericName ?? undefined;
+		ingredients = data?.drug?.Ingredients ?? undefined;
+		strength = data?.drug?.Strength ?? undefined;
+		otherCommercialNames = data?.drug?.OtherCommercialNames ?? undefined;
+		manufacturer = data?.drug?.Manufacturer ?? undefined;
+		otherInformation = data?.drug?.OtherInformation ?? undefined;
+		errors = {};
 	}
 
 	const handleSubmit = async (event: Event) => {
@@ -159,6 +179,7 @@
 					<td class="table-data">
 						<div class="relative">
 						<select name="strength" bind:value={strength} class="select {errors?.strength ? 'input-text-error' : ''}">
+							<option value={undefined} disabled>Select strength</option>
 							<option value="High">High</option>
 							<option value="Auto">Auto</option>
 							<option value="Medium">Medium</option>
@@ -223,9 +244,9 @@
 		<div class="btn-container">
 			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
-				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button size="md" type="submit" text="Saving..." variant="primary" disabled={true} />
 			{:then data}
-				<Button size="md" type="submit" text="Submit" variant="primary" />
+				<Button size="md" type="submit" text="Save" variant="primary" disabled={!hasChanges} />
 			{/await}
 		</div>
 	</form>

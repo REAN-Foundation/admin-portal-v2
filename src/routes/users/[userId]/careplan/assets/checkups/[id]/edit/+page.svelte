@@ -20,6 +20,18 @@
 	let version = $state(data.checkups.Version);
 	let keywords: string[] = $state(data.checkups.Tags);
 	let keywordsStr = $state('');
+	const initialState = {
+		name: data.checkups.Name,
+		description: data.checkups.Description || undefined,
+		version: data.checkups.Version,
+		tags: [...(data.checkups.Tags ?? [])]
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		version !== initialState.version ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags)
+	);
 
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
@@ -42,7 +54,7 @@
 	const handleReset = () => {
 		name = data?.checkups?.Name;
 		checkupsId = page.params.id;
-		description = data?.checkups?.Description;
+		description = data?.checkups?.Description || undefined;
 		version = data?.checkups?.Version;
 		keywords = [...(data?.checkups?.Tags ?? [])];
 		errors = {};
@@ -172,9 +184,9 @@
 		<div class="btn-container">
             <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+                <Button type="submit" text="Saving..." variant="primary" disabled={true} />
             {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
+                <Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
             {/await}
 		</div>
 	</form>

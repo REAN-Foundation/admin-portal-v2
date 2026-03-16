@@ -18,6 +18,7 @@
 	let email = $state(data.user.Person.Email);
 	let imageUrl = $state(data.user.Person.ProfileImageURL);
 	let userRole = $state(data.sessionUser.roleName);
+	let tenantName = $state(data.sessionUser.tenantName);
 	let tenantSettings = $state(data.tenantSettings);
 
 	// Initialize the tenant settings store so sidebar can react to changes
@@ -62,6 +63,7 @@
 		userName={username}
 		{imageUrl}
 		{tenantSettings}
+		{tenantName}
 		{userRole}
 		{email}
 	/>

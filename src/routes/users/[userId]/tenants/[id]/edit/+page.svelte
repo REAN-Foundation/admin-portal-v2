@@ -22,6 +22,21 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 
+	const initialState = {
+		name: data.tenant.Name,
+		description: data.tenant.Description || '',
+		code: data.tenant.Code,
+		phone: data.tenant.Phone,
+		email: data.tenant.Email
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		code !== initialState.code ||
+		phone !== initialState.phone ||
+		email !== initialState.email
+	);
+
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
 	const editRoute = `/users/${userId}/tenants/${tenantId}/edit`;
@@ -45,10 +60,11 @@
 
 	const handleReset = () => {
 		name = data?.tenant?.Name;
-		description = data?.tenant?.Description;
+		description = data?.tenant?.Description || '';
 		code = data?.tenant?.Code;
 		phone = data?.tenant?.Phone;
 		email = data?.tenant?.Email;
+		errors = {};
 	};
 
 	const handleSubmit = async (event: Event) => {
@@ -198,9 +214,9 @@
 		<div class="btn-container">
 			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
-				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button size="md" type="submit" text="Saving..." variant="primary" disabled={true} />
 			{:then data}
-				<Button size="md" type="submit" text="Submit" variant="primary" />
+				<Button size="md" type="submit" text="Save" variant="primary" disabled={!hasChanges} />
 			{/await}
 		</div>
 	</form>

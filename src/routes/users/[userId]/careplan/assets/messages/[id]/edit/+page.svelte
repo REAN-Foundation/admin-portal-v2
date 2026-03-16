@@ -16,7 +16,7 @@
 	let promise = $state();
 	let name = $state(data.message.Name);
 	let description = $state(data.message.Description || undefined);
-	let messageType = $state(data.message.MessageType);
+	let messageType = $state(data.message.MessageType ?? undefined);
 	let templateName = $state(data.message.TemplateName);
 	let pathUrl = $state(data.message.PathUrl);
 	let version = $state(data.message.Version);
@@ -24,6 +24,26 @@
 	let keywordsStr = $state('');
 	let templateVariablesText = $state(
 		data.message.TemplateVariables ? JSON.stringify(data.message.TemplateVariables, null, 2) : ''
+	);
+	const initialState = {
+		name: data.message.Name,
+		description: data.message.Description || undefined,
+		messageType: data.message.MessageType ?? undefined,
+		templateName: data.message.TemplateName,
+		pathUrl: data.message.PathUrl,
+		version: data.message.Version,
+		tags: [...(data.message.Tags ?? [])],
+		templateVariablesText: data.message.TemplateVariables ? JSON.stringify(data.message.TemplateVariables, null, 2) : ''
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		messageType !== initialState.messageType ||
+		templateName !== initialState.templateName ||
+		pathUrl !== initialState.pathUrl ||
+		version !== initialState.version ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags) ||
+		templateVariablesText !== initialState.templateVariablesText
 	);
 
 	const userId = page.params.userId;
@@ -47,11 +67,12 @@
 	const handleReset = () => {
 		name = data?.message?.Name;
 		messageId = page.params.id;
-		description = data?.message?.Description;
+		description = data?.message?.Description || undefined;
 		templateName = data?.message?.TemplateName;
 		templateVariablesText = data.message.TemplateVariables
 			? JSON.stringify(data.message.TemplateVariables, null, 2)
 			: '';
+		messageType = data?.message?.MessageType ?? undefined;
 		pathUrl = data?.message?.PathUrl;
 		version = data?.message?.Version;
 		keywords = [...(data?.message?.Tags ?? [])];
@@ -178,7 +199,7 @@
 					<td class="table-data">
 						<div class="relative">
 						<select class="select" bind:value={messageType}>
-							<option disabled value>Select message type</option>
+							<option disabled value={undefined}>Select message type</option>
 							<option>Educational</option>
 							<option>Status</option>
 							<option>Unknown</option>
@@ -264,9 +285,9 @@
 		<div class="btn-container">
             <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+                <Button type="submit" text="Saving..." variant="primary" disabled={true} />
             {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
+                <Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
             {/await}
 		</div>
 	</form>

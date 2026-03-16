@@ -29,14 +29,14 @@
 	<input
 		type="text"
 		placeholder="Key"
-		class="w-1/2 rounded border p-2 text-sm text-[var(--color-info)]"
+		class="input !w-1/2 text-sm"
 		bind:value={newParamKey}
 		{disabled}
 	/>
 	<input
 		type="text"
 		placeholder="Value"
-		class="w-1/2 rounded border p-2 text-sm text-[var(--color-info)]"
+		class="input !w-1/2 text-sm"
 		bind:value={newParamValue}
 		{disabled}
 	/>

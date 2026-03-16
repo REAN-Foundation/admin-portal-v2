@@ -18,12 +18,23 @@
 	let assetCode = data.actionPlan.AssetCode;
 	let name = $state(data.actionPlan.Name);
 	let description = $state(data.actionPlan.Description || undefined);
-	let tags = $state(data.actionPlan.Tags);
 	let version = $state(data.actionPlan.Version);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let keywordsStr: string = $state('');
 	let keywords: string[] = $state(data.actionPlan.Tags);
+	const initialState = {
+		name: data.actionPlan.Name,
+		description: data.actionPlan.Description || undefined,
+		tags: [...(data.actionPlan.Tags ?? [])],
+		version: data.actionPlan.Version
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags) ||
+		version !== initialState.version
+	);
 
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
@@ -54,7 +65,7 @@
 
 	const handleReset = () => {
 		name = data?.actionPlan?.Name;
-		description = data?.actionPlan?.Description;
+		description = data?.actionPlan?.Description || undefined;
 		keywords = [...(data?.actionPlan?.Tags ?? [])];
 		version = data?.actionPlan?.Version;
 		errors = {};
@@ -185,9 +196,9 @@
 		<div class="btn-container">
             <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+                <Button type="submit" text="Saving..." variant="primary" disabled={true} />
             {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
+                <Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
             {/await}
 		</div>
 	</form>

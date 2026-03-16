@@ -19,12 +19,25 @@
 	let name = $state(data.animation.Name);
 	let transcript = $state(data.animation.Transcript || undefined);
 	let pathUrl = $state(data.animation.Url || undefined);
-	let tags = $state(data.animation.Tags);
 	let version = $state(data.animation.Version);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let keywordsStr: string = $state('');
 	let keywords: string[] = $state(data.animation.Tags);
+	const initialState = {
+		name: data.animation.Name,
+		transcript: data.animation.Transcript || undefined,
+		pathUrl: data.animation.Url || undefined,
+		tags: [...(data.animation.Tags ?? [])],
+		version: data.animation.Version
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		transcript !== initialState.transcript ||
+		pathUrl !== initialState.pathUrl ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags) ||
+		version !== initialState.version
+	);
 
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
@@ -52,10 +65,11 @@
 	];
 	const handleReset = () => {
 		name = data?.animation?.Name;
-		transcript = data?.animation?.Transcript;
-		pathUrl = data?.animation?.PathUrl;
+		transcript = data?.animation?.Transcript || undefined;
+		pathUrl = data?.animation?.PathUrl || undefined;
 		keywords = [...(data?.animation?.Tags ?? [])];
 		version = data?.animation?.Version;
+		errors = {};
 	};
 
 	const handleSubmit = async (event: Event) => {
@@ -199,9 +213,9 @@
 		<div class="btn-container">
             <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
+                <Button type="submit" text="Saving..." variant="primary" disabled={true} />
+            {:then}
+                <Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
             {/await}
 		</div>
 	</form>

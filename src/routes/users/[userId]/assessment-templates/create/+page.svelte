@@ -43,6 +43,10 @@
 			event.preventDefault();
 			errors = {};
 
+			if (!provider || provider.trim() === '') {
+				provider = 'Rean';
+			}
+
 			const assessmentTemplateCreateModel: AssessmentTemplateCreateModel = {
 				Title: title,
 				Description: description,

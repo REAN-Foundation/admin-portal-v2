@@ -20,6 +20,20 @@
 	let version = $state(data.infographics.Version);
 	let keywords: string[] = $state(data.infographics.Tags);
 	let keywordsStr = $state('');
+	const initialState = {
+		name: data.infographics.Name,
+		description: data.infographics.Description || undefined,
+		pathUrl: data.infographics.Url,
+		version: data.infographics.Version,
+		tags: [...(data.infographics.Tags ?? [])]
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		pathUrl !== initialState.pathUrl ||
+		version !== initialState.version ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags)
+	);
 
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
@@ -42,7 +56,7 @@
 	const handleReset = () => {
 		name = data?.infographics?.Name;
 		infographicsId = page.params.id;
-		description = data?.infographics?.Description;
+		description = data?.infographics?.Description || undefined;
 		pathUrl = data?.infographics?.Url;
 		version = data?.infographics?.Version;
 		keywords = [...(data?.infographics?.Tags ?? [])];
@@ -187,9 +201,9 @@
 		<div class="btn-container">
             <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+                <Button type="submit" text="Saving..." variant="primary" disabled={true} />
             {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
+                <Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
             {/await}
 		</div>
 

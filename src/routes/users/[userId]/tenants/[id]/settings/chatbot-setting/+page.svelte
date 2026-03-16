@@ -527,7 +527,7 @@
 					{#each Array(totalSteps) as _, index}
 						<!-- Step circle -->
 						<div
-							class={`step-number 
+							class={`step-number
 							${
 								index < currentSection
 									? 'step-completed'

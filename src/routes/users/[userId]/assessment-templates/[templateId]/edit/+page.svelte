@@ -37,13 +37,40 @@
 	let promise = $state();
 	let keywordsStr: string = $state('');
 
+	const initialState = {
+		title: data.assessmentTemplate.Title,
+		description: data.assessmentTemplate.Description || '',
+		assessmentType: data.assessmentTemplate.Type,
+		provider: data.assessmentTemplate.Provider || undefined,
+		providerAssessmentCode: data.assessmentTemplate.ProviderAssessmentCode || undefined,
+		serveListNodeChildrenAtOnce: data.assessmentTemplate.ServeListNodeChildrenAtOnce,
+		scoringApplicable: data.assessmentTemplate.ScoringApplicable,
+		tags: [...(data.assessmentTemplate.Tags ?? [])],
+		rawData: typeof data.assessmentTemplate.RawData === 'string'
+			? data.assessmentTemplate.RawData
+			: data.assessmentTemplate.RawData
+				? JSON.stringify(data.assessmentTemplate.RawData, null, 2)
+				: ''
+	};
+	let hasChanges = $derived(
+		title !== initialState.title ||
+		description !== initialState.description ||
+		assessmentType !== initialState.assessmentType ||
+		provider !== initialState.provider ||
+		providerAssessmentCode !== initialState.providerAssessmentCode ||
+		serveListNodeChildrenAtOnce !== initialState.serveListNodeChildrenAtOnce ||
+		scoringApplicable !== initialState.scoringApplicable ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags) ||
+		rawData !== initialState.rawData
+	);
+
 	function handleReset() {
 		title = data.assessmentTemplate.Title;
-		description = data.assessmentTemplate.Description;
+		description = data.assessmentTemplate.Description || '';
 		displayCode = data.assessmentTemplate.DisplayCode;
 		assessmentType = data.assessmentTemplate.Type;
-		provider = data.assessmentTemplate.Provider;
-		providerAssessmentCode = data.assessmentTemplate.ProviderAssessmentCode;
+		provider = data.assessmentTemplate.Provider || undefined;
+		providerAssessmentCode = data.assessmentTemplate.ProviderAssessmentCode || undefined;
 		serveListNodeChildrenAtOnce = data.assessmentTemplate.ServeListNodeChildrenAtOnce;
 		scoringApplicable = data.assessmentTemplate.ScoringApplicable;
 		keywords = [...(data?.assessmentTemplate?.Tags ?? [])];
@@ -286,9 +313,9 @@
 		<div class="btn-container">
 			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
-				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button size="md" type="submit" text="Saving..." variant="primary" disabled={true} />
 			{:then data}
-				<Button size="md" type="submit" text="Submit" variant="primary" />
+				<Button size="md" type="submit" text="Save" variant="primary" disabled={!hasChanges} />
 			{/await}
 		</div>
 	</form>

@@ -23,6 +23,24 @@
 	let keywordsStr = $state('');
 	let metaDataInput = $state(data.assessment.Metadata ? JSON.stringify(data.assessment.Metadata, null, 2): null);
 
+	const initialState = {
+		name: data.assessment.Name,
+		description: data.assessment.Description || undefined,
+		template: data.assessment.Template,
+		referenceTemplateCode: data.assessment.ReferenceTemplateCode,
+		version: data.assessment.Version,
+		tags: [...(data.assessment.Tags ?? [])],
+		metaDataInput: data.assessment.Metadata ? JSON.stringify(data.assessment.Metadata, null, 2) : null
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		template !== initialState.template ||
+		referenceTemplateCode !== initialState.referenceTemplateCode ||
+		version !== initialState.version ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags) ||
+		metaDataInput !== initialState.metaDataInput
+	);
 
 	const assessmentTemplates = data.assessmentTemplates || [];
 	const assessmentTemplate = assessmentTemplates.find(
@@ -50,7 +68,7 @@
 	const handleReset = () => {
 		name = data?.assessment?.Name;
 		assessmentId = page.params.id;
-		description = data?.assessment?.Description;
+		description = data?.assessment?.Description || undefined;
 		template = data?.assessment?.Template;
 		referenceTemplateCode = data?.assessment?.TemplateCode;
 		version = data?.assessment?.Version;
@@ -315,13 +333,13 @@
 		<div class="btn-container">
 			<Button type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
-				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button type="submit" text="Saving..." variant="primary" disabled={true} />
 			{:then data}
 				<Button
 					type="submit"
-					text="Submit"
+					text="Save"
 					variant="primary"
-					disabled={assessmentTemplates.length === 0}
+					disabled={!hasChanges || assessmentTemplates.length === 0}
 				/>
 			{/await}
 		</div>

@@ -18,9 +18,22 @@
 	let transcript = $state(data.audio.Transcript || undefined);
 	let pathUrl = $state(data.audio.Url || undefined);
 	let version = $state(data.audio.Version);
-	let tags = $state(data.audio.Tags);
 	let keywordsStr: string = $state('');
 	let keywords: string[] = $state(data.audio.Tags);
+	const initialState = {
+		name: data.audio.Name,
+		transcript: data.audio.Transcript || undefined,
+		pathUrl: data.audio.Url || undefined,
+		version: data.audio.Version,
+		tags: [...(data.audio.Tags ?? [])]
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		transcript !== initialState.transcript ||
+		pathUrl !== initialState.pathUrl ||
+		version !== initialState.version ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags)
+	);
 
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
@@ -43,8 +56,8 @@
 	const handleReset = () => {
 		name = data?.audio?.Name;
 		audioId = page.params.id;
-		transcript = data?.audio?.Transcript;
-		pathUrl = data?.audio?.PathUrl;
+		transcript = data?.audio?.Transcript || undefined;
+		pathUrl = data?.audio?.PathUrl || undefined;
 		version = data?.audio?.Version;
 		keywords = [...(data?.audio?.Tags ?? [])];
 		errors = {};
@@ -176,9 +189,9 @@
 		<div class="btn-container">
 			<Button type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
-				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button type="submit" text="Saving..." variant="primary" disabled={true} />
 			{:then data}
-				<Button type="submit" text="Submit" variant="primary" />
+				<Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
 			{/await}
 		</div>
 	</form>
