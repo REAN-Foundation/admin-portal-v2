@@ -293,9 +293,9 @@ export const getDailyStatistics = async (sessionId: string) => {
 export const getDailyTenantStatistics = async (sessionId: string, tenantId: string) => {
 	const url = BACKEND_API_URL + `/daily-stats/tenants/${tenantId}`;
 	const today = TimeHelper.getDateString(new Date(), DateStringFormat.YYYY_MM_DD);
-	const cacheKey = `session-${sessionId}:req-getDailyTenantStatistics:${today}`;
+	const cacheKey = `session-${sessionId}:req-getDailyTenantStatistics:${tenantId}:${today}`;
 	const yesterday = TimeHelper.getYesterdayDate();
-	const yesterdayCacheKey = `session-${sessionId}:req-getDailyTenantStatistics:${yesterday}`;
+	const yesterdayCacheKey = `session-${sessionId}:req-getDailyTenantStatistics:${tenantId}:${yesterday}`;
 
 	if (await DashboardManager.has(yesterdayCacheKey)) {
 		await DashboardManager._cache.delete(yesterdayCacheKey);
