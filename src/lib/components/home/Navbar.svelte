@@ -12,7 +12,7 @@
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	let { logout, userId, imageUrl, userName, tenantSettings, userRole, email } = $props();
+	let { logout, userId, imageUrl, userName, tenantSettings, tenantName, userRole, email } = $props();
 
 	let showConfirmDelete_ = false;
 	let showConfirmLogout_ = $state(false);
@@ -125,6 +125,10 @@
 	<div class="flex h-14 w-full items-center justify-between sm:px-4">
 		<div class="flex items-center">
 			<img src={logoImageSource} alt="Logo" class="px-4" width="100" height="100" />
+			{#if tenantName}
+				<span class="mx-2 text-[var(--color-info)] opacity-40">|</span>
+				<span class="text-(--color-info) text-lg font-medium">{tenantName}</span>
+			{/if}
 		</div>
 		<div class="relative ml-auto flex items-center">
 			<!-- <Button
