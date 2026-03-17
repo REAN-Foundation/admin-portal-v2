@@ -29,7 +29,7 @@
 			<a
 				href={navItem.link}
 				class="sidebar-item flex items-center"
-				class:variant-soft-secondary={activeTab === navItem.title}
+				class:variant-filled-secondary={activeTab === navItem.title}
 				onclick={() => (activeTab = navItem.title)}
 			>
 				{#if navItem.icon?.endsWith('.png')}
@@ -72,7 +72,7 @@
 	<a
 		href={navItem.link}
 		class="sidebar-item flex items-center gap-1"
-		class:variant-soft-secondary={activeTab === navItem.title}
+		class:variant-filled-secondary={activeTab === navItem.title}
 		onclick={() => (activeTab = navItem.title)}
 	>
 		{#if navItem.icon?.endsWith('.png')}

@@ -322,7 +322,7 @@
 		
 									<Button
 										text="Add Asset"
-										variant="secondary"
+										variant="outline"
 										onclick={() => goto(`/users/${userId}/careplan/assets/${assetRouteMap[assetType]}/create`)}
 									/>
 									<span class="text-warning">No assets found for this type.</span>

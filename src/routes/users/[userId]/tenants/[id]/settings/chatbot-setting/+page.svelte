@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { beforeNavigate } from '$app/navigation';
 	import Icon from '@iconify/svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import { ChatBotSettingsSchema } from '$lib/validation/tenant.settings.schema.js';
@@ -14,6 +15,8 @@
 	import Progressive from './progressive.update.svelte';
 	import ExportSettingsDialog from './export-settings.dialog.svelte';
 	import WelcomeMessageModal from './welcome-message.modal.svelte';
+	import SettingsPageHeader from '$lib/components/settings/settings-page-header.svelte';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////
 
@@ -44,40 +47,55 @@
 	const totalSteps = 3;
 	let currentSection = $state(0);
 	let welcomeMessages = $state(data.chatbotSettings?.WelcomeMessages || []);
+	let consentMessages = $state(data.consentSettings?.Messages || []);
 	let showWelcomeMessageModal = $state(false);
 	let isEditWelcomeMessage = $state(false);
 	let editingWelcomeMessageIndex: number | null = $state(null);
 	let modalWelcomeMessage = $state({ LanguageCode: '', Content: '', URL: '' });
+	let isSubmitting = $state(false);
+	let originalSnapshot = $state('');
+
+	let hasUnsavedChanges = $derived(
+		edit && JSON.stringify({
+			chatbot: $state.snapshot(chatBotSetting),
+			welcome: $state.snapshot(welcomeMessages)
+		}) !== originalSnapshot
+	);
+
+	beforeNavigate((navigation) => {
+		if (hasUnsavedChanges) {
+			if (!confirm('You have unsaved changes. Are you sure you want to leave?')) {
+				navigation.cancel();
+			}
+		}
+	});
 
 	console.log("logoUrl",data.chatbotSettings)
 
 	console.log("faviconUrl",faviconUrl)
 
 
-	const handleEditClick = async () => {
+	const handleToggleEdit = () => {
 		if (!disabled) {
-			addToast({
-				message: 'This setting is disabled. Please update it from the main settings.',
-				type: 'info',
-				timeout: 3000
-			});
+			addToast({ message: 'This setting is disabled. Please update it from the main settings.', type: 'warning', timeout: 3000 });
 			return;
 		}
-		if (!edit) {
-			addToast({
-				message: 'Edit mode enabled.',
-				type: 'info',
-				timeout: 3000
-			});
-			edit = true;
-		} else {
-			addToast({
-				message: 'Edit mode disabled.',
-				type: 'info',
-				timeout: 3000
-			});
-			edit = false;
-		}
+		edit = true;
+		originalSnapshot = JSON.stringify({
+			chatbot: $state.snapshot(chatBotSetting),
+			welcome: $state.snapshot(welcomeMessages)
+		});
+		addToast({ message: 'Edit mode enabled.', type: 'info', timeout: 3000 });
+	};
+
+	const handleCancelEdit = () => {
+		const restored = JSON.parse(originalSnapshot);
+		chatBotSetting = restored.chatbot;
+		welcomeMessages = restored.welcome;
+		edit = false;
+		errors = {};
+		currentSection = 0;
+		addToast({ message: 'Edit mode disabled.', type: 'info', timeout: 3000 });
 	};
 
 	const onFileSelected = async (e) => {
@@ -135,7 +153,7 @@
 	};
 
 	const navigateToErrorSection = (errs: Record<string, string>) => {
-		const section0Fields = ['Name', 'OrganizationName', 'OrganizationLogo', 'OrganizationWebsite', 'Favicon', 'Description', 'DefaultLanguage', 'Timezone'];
+		const section0Fields = ['Name', 'OrganizationName', 'OrganizationLogo', 'OrganizationWebsite', 'Favicon', 'Description', 'DefaultLanguage', 'Timezone', 'WelcomeMessageLanguage'];
 		if (Object.keys(errs).some((key) => section0Fields.includes(key))) {
 			currentSection = 0;
 			return;
@@ -143,12 +161,18 @@
 		const section1Fields = ['MessageChannels', 'SupportChannels'];
 		if (Object.keys(errs).some((key) => section1Fields.includes(key))) {
 			currentSection = 1;
+			return;
+		}
+		const section2Fields = ['ConsentMessageLanguage'];
+		if (Object.keys(errs).some((key) => section2Fields.includes(key))) {
+			currentSection = 2;
 		}
 	};
 
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
 		errors = {};
+		isSubmitting = true;
 
 		let isFaviconUploaded = false;
 		let isLogoUploaded = false;
@@ -157,7 +181,7 @@
 			if (!edit) {
 				addToast({
 					message: 'Nothing to edit !',
-					type: 'info',
+					type: 'warning',
 					timeout: 3000
 				});
 				return;
@@ -265,6 +289,33 @@
 				return;
 			}
 
+			// Validate default language messages
+			const defaultLang = chatBotSetting.ChatBot.DefaultLanguage;
+			const defaultLangName = languages.find((l) => l.code === defaultLang)?.name || defaultLang;
+
+			if (chatBotSetting.ChatBot.WelcomeMessage === true) {
+				const hasWelcomeInDefaultLang = welcomeMessages.some(
+					(msg) => msg.LanguageCode === defaultLang && msg.Content?.trim()
+				);
+				if (!hasWelcomeInDefaultLang) {
+					errors.WelcomeMessageLanguage = `A welcome message is required in the default language (${defaultLangName}).`;
+				}
+			}
+
+			// if (chatBotSetting.ChatBot.Consent === true) {
+			// 	const hasConsentInDefaultLang = consentMessages.some(
+			// 		(msg) => msg.LanguageCode === defaultLang && msg.Content?.trim()
+			// 	);
+			// 	if (!hasConsentInDefaultLang) {
+			// 		errors.ConsentMessageLanguage = `A consent message is required in the default language (${defaultLangName}).`;
+			// 	}
+			// }
+
+			if (Object.keys(errors).length > 0) {
+				navigateToErrorSection(errors);
+				return;
+			}
+
 			const chatBotRes = await fetch(`/api/server/tenants/settings/${tenantId}/ChatBot`, {
 				method: 'PUT',
 				body: JSON.stringify(chatbotCreateModel),
@@ -285,6 +336,8 @@
 		} catch (err) {
 			console.error('Submit Error:', err);
 			addToast({ message: 'Unexpected error occurred.', type: 'error', timeout: 3000 });
+		} finally {
+			isSubmitting = false;
 		}
 	};
 
@@ -468,8 +521,8 @@
 <div class="px-5 py-4">
 	<!-- Stepper above border -->
 	<div class="w-full py-4">
-		<div class="flex w-full items-start justify-between">
-			<div class="flex flex-1 flex-col items-center">
+		<div class="flex w-full flex-wrap items-start justify-between gap-4 sm:gap-6">
+			<div class="flex min-w-0 flex-1 flex-col items-center">
 				<div class="flex w-full items-center">
 					{#each Array(totalSteps) as _, index}
 						<!-- Step circle -->
@@ -499,43 +552,32 @@
 					Step {currentSection + 1} of {totalSteps}
 				</div>
 			</div>
-			<!-- Create Secret Button -->
-			<button
-				type="button"
-				class="table-btn variant-filled-secondary ml-4"
-				onclick={getBotSecret}
-				disabled={isCreatingSecret}
-			>
-				<Icon icon="material-symbols:upload" class="mr-1" />
-				{isCreatingSecret ? 'Creating...' : 'Create Secret'}
-			</button>
+			<!-- Bot Configuration Button -->
+			<div class="shrink-0">
+				<Button
+					type="button"
+					variant="outline"
+					onclick={getBotSecret}
+					disabled={isCreatingSecret}
+					text={isCreatingSecret ? 'Loading...' : 'Bot Configuration'}
+					tooltip="View or set up the chatbot integration configuration"
+				/>
+			</div>
 		</div>
 	</div>
 	<div class="mx-auto my-6 border border-[var(--color-outline)]">
 		<form onsubmit={async (event) => (promise = handleSubmit(event))}>
 			<!-- Heading -->
-
-			<div
-				class="flex items-center justify-between !rounded-b-none border bg-[var(--color-primary)] px-5 py-6"
-			>
-				<h1 class="text-xl text-[var(--color-info)]">Chatbot Settings</h1>
-				<div class="flex items-center gap-2 text-end">
-					<button
-						type="button"
-						class="table-btn variant-filled-secondary gap-1"
-						onclick={handleEditClick}
-					>
-						<Icon icon="material-symbols:edit-outline" />
-						<!-- <span>{edit ? 'Save' : 'Edit'}</span> -->
-					</button>
-					<a
-						href={settingsRoute}
-						class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
-					>
-						<Icon icon="material-symbols:close-rounded" class=" h-5" />
-					</a>
-				</div>
-			</div>
+			<SettingsPageHeader
+				title="Chatbot Settings"
+				description="Configure chatbot behavior, channels, and features."
+				isEditing={edit}
+				featureEnabled={disabled}
+				{hasUnsavedChanges}
+				closeHref={settingsRoute}
+				onToggleEdit={handleToggleEdit}
+				onCancelEdit={handleCancelEdit}
+			/>
 
 			<!-- content -->
 			<div class="flex flex-col space-y-4">

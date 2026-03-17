@@ -90,6 +90,7 @@
 					iconSize="sm"
 					color="red"
 					className="cancel-btn absolute top-2 right-2"
+					tooltip="Close"
 				/>
 
 				<div class="drag-input" ondrop={handleFileInput} ondragover={(e) => e.preventDefault()}>

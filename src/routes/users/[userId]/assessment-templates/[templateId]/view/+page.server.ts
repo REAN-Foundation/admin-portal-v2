@@ -3,6 +3,7 @@ import type { PageServerLoad } from './$types';
 import { searchAssessmentNodes } from '../../../../../api/services/reancare/assessments/assessment-nodes';
 import { getAssessmentTemplateById } from '../../../../../api/services/reancare/assessments/assessment-templates';
 import { MAX_ITEMS_PER_PAGE } from '$lib/components/utils/helper';
+import { SOURCE_ENV } from '$env/static/private';
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -28,7 +29,8 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
         assessmentTemplate,
         assessmentNodes,
         message: response.Message,
-        title:'Clinical-Assessments View'
+        title:'Clinical-Assessments View',
+        isProduction: SOURCE_ENV === 'production'
     };		
 
 };

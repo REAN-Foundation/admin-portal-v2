@@ -1,14 +1,24 @@
 <script lang="ts">
 	import { navigating, page } from '$app/state';
+	import { onDestroy } from 'svelte';
 	import Icon from '@iconify/svelte';
 	import { sidebarMenu, type TabDefinition } from './navigation.tabs';
 	import { buildSidebarMenu } from './sidebar.menus';
 	import SidebarNavItems from './SidebarNavItems.svelte';
+	import { tenantSettingsStore } from '$lib/store/general.store';
 	let { showSidebar = $bindable(), navParent, page_, userId, tenantSettings, userRole } = $props();
 
 	let activeTab = $state('Home');
-	const navData = buildSidebarMenu(userId, tenantSettings, userRole);
+	let navData = $state(buildSidebarMenu(userId, tenantSettings, userRole));
 	console.log('Tenant Setting', navData);
+
+	// Re-build sidebar menu when tenant settings store changes
+	const unsubscribe = tenantSettingsStore.subscribe((storeSettings) => {
+		if (storeSettings) {
+			navData = buildSidebarMenu(userId, storeSettings, userRole);
+		}
+	});
+	onDestroy(unsubscribe);
 
 	const sidebarTabs: TabDefinition[] = sidebarMenu();
 	$effect(() => {
@@ -28,7 +38,7 @@
 				{#if navParent.title === 'Analytics'}
 					<a
 						href={`/users/${userId}/analytics/basic`}
-						class="sidebar-item {activeTab === 'Analytics' ? 'variant-soft-secondary' : ''}"
+						class="sidebar-item {activeTab === 'Analytics' ? 'variant-filled-secondary' : ''}"
 						onclick={() => (activeTab = 'Analytics')}
 					>
 						<div class="flex items-center gap-1">
@@ -36,11 +46,11 @@
 							<span class="sidebar-text">{navParent.title}</span>
 						</div>
 					</a>
-				{:else if navParent.title === 'Appointment Follow-Up'}
+				{:else if navParent.title === 'Notifications'}
 					<a
-						href={`/users/${userId}/appointment-followup/summary-uploads`}
-						class="sidebar-item {activeTab === 'Appointment' ? 'variant-soft-secondary' : ''}"
-						onclick={() => (activeTab = 'Appointment')}
+						href={navParent.link}
+						class="sidebar-item {activeTab === 'Notifications' ? 'variant-filled-secondary' : ''}"
+						onclick={() => (activeTab = 'Notifications')}
 					>
 						<div class="flex items-center gap-1">
 							<Icon icon={navParent.icon} class=" h-6 w-6" />
@@ -50,7 +60,7 @@
 				{:else if navParent.title === 'Home'}
 					<a
 						href={navParent.link}
-						class="sidebar-item {activeTab === 'Home' ? 'variant-soft-secondary' : ''}"
+						class="sidebar-item {activeTab === 'Home' ? 'variant-filled-secondary' : ''}"
 						onclick={() => (activeTab = 'Home')}
 					>
 						<div class="flex items-center gap-1">
@@ -76,7 +86,7 @@
 					</button>
 				{/if}
 
-				{#if openTab == navParent.title && navParent.title !== 'Analytics' && navParent.title !== 'Home'}
+				{#if openTab == navParent.title && navParent.title !== 'Analytics' && navParent.title !== 'Home' && navParent.childNav?.length > 0}
 					<div class="mx-4">
 						<nav class="space-y-1">
 							{#each navParent.childNav as navItem}

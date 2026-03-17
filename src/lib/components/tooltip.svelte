@@ -14,6 +14,16 @@
 	function handleMouseLeave() {
 		showTooltip = false;
 	}
+
+	function handleFocus() {
+		if (shouldShowTooltip) {
+			showTooltip = true;
+		}
+	}
+
+	function handleBlur() {
+		showTooltip = false;
+	}
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -23,6 +33,8 @@
 	class="relative inline-block"
 	onmouseenter={handleMouseEnter}
 	onmouseleave={handleMouseLeave}
+	onfocusin={handleFocus}
+	onfocusout={handleBlur}
 >
 	<!-- <slot></slot> -->
 	{@render children()}

@@ -40,7 +40,7 @@
 	const handleReset = () => {
 		type = data?.goal?.Type;
 		id = page.params.id;
-		keywords = data?.goal?.Keywords;
+		keywords = [...(data?.goal?.Tags ?? [])];
 		errors = {};
 	};
 
@@ -90,9 +90,6 @@
 		}
 	};
 
-	$effect(() => {
-		keywordsStr = keywords?.join(', ');
-	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -125,14 +122,13 @@
 				<tr class="tables-row">
 					<td class="table-label align-top">Tags</td>
 					<td class="table-data">
-						<InputChips bind:keywords name="keywords" id="keywords" />
-						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<InputChips bind:keywords bind:value={keywordsStr} name="keywords" id="keywords" />
 					</td>
 				</tr>
 			</tbody>
 		</table>
 		<div class="btn-container">
-			<Button type="button" text="Reset" variant="primary" onclick={handleReset} />
+			<Button type="button" text="Reset" variant="outline" onclick={handleReset} />
 			{#await promise}
 				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
 			{:then data}

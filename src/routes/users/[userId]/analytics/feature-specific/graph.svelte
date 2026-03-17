@@ -5,6 +5,7 @@
 	import { Helper } from '$lib/utils/helper';
 	import { hasChartData } from '$lib/utils/chart.utils';
 	import EmptyState from '$lib/components/analytics/EmptyState.svelte';
+	import Icon from '@iconify/svelte';
 
 	/////////////////////////////////////////////////
 
@@ -245,15 +246,20 @@
 						</p>
 					</div>
 					<div class="flex w-full justify-end">
-						<select
-							class="select border-secondary-100 dark:border-surface-700 w-fit rounded-lg border pl-2"
-							onchange={(e: any) => {
-								selectedGraph = e.target.value;
-							}}
-						>
-							<option value="graph1">User Count</option>
-							<option value="graph2">Percentage</option>
-						</select>
+						<div class="relative w-fit">
+							<select
+								class="select border-secondary-100 dark:border-surface-700 w-full rounded-lg border pl-2" style="padding-right: 2rem;"
+								onchange={(e: any) => {
+									selectedGraph = e.target.value;
+								}}
+							>
+								<option value="graph1">User Count</option>
+								<option value="graph2">Percentage</option>
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
 					</div>
 				</div>
 				{#if selectedGraph === 'graph1' && hasChartData(retentionRateDaysData)}
@@ -291,15 +297,20 @@
 						</p>
 					</div>
 					<div class="flex w-full justify-end">
-						<select
-							class="select border-secondary-100 dark:border-surface-700 w-fit rounded-lg border pl-2"
-							onchange={(e: any) => {
-								percentageGraph = e.target.value;
-							}}
-						>
-							<option value="graph1">User Count</option>
-							<option value="graph2">Percentage</option>
-						</select>
+						<div class="relative w-fit">
+							<select
+								class="select border-secondary-100 dark:border-surface-700 w-full rounded-lg border pl-2" style="padding-right: 2rem;"
+								onchange={(e: any) => {
+									percentageGraph = e.target.value;
+								}}
+							>
+								<option value="graph1">User Count</option>
+								<option value="graph2">Percentage</option>
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
 					</div>
 				</div>
 				{#if percentageGraph === 'graph1' && hasChartData(retentionRateIntervalsData)}
@@ -415,15 +426,20 @@
 
 						{#if hasChartData(healthJourneyWiseTask) && hasChartData(planCodes)}
 							<div class="flex w-full justify-end px-4">
-								<select
-									class="select mb-2 border pl-2"
-									bind:value={selectedPlanCode}
-									onchange={updateHealthJourneyData}
-								>
-									{#each planCodes as planCode}
-										<option value={planCode}>{planCode}</option>
-									{/each}
-								</select>
+								<div class="relative mb-2 w-fit">
+									<select
+										class="select w-full border pl-2" style="padding-right: 2rem;"
+										bind:value={selectedPlanCode}
+										onchange={updateHealthJourneyData}
+									>
+										{#each planCodes as planCode}
+											<option value={planCode}>{planCode}</option>
+										{/each}
+									</select>
+									<div class="select-icon-container">
+										<Icon icon="mdi:chevron-down" class="select-icon" />
+									</div>
+								</div>
 							</div>
 							<div class="h-96 w-full">
 								<PieChart
@@ -494,15 +510,20 @@
 						</p>
 						{#if hasChartData(categorySpecificData) && hasChartData(taskCategories)}
 							<div class="flex w-full justify-end px-4">
-								<select
-									class="select mb-2 border pl-2"
-									bind:value={selectedTaskCategory}
-									onchange={updateTaskCategoryData}
-								>
-									{#each taskCategories as taskCategory}
-										<option value={taskCategory}>{taskCategory}</option>
-									{/each}
-								</select>
+								<div class="relative mb-2 w-fit">
+									<select
+										class="select w-full border pl-2" style="padding-right: 2rem;"
+										bind:value={selectedTaskCategory}
+										onchange={updateTaskCategoryData}
+									>
+										{#each taskCategories as taskCategory}
+											<option value={taskCategory}>{taskCategory}</option>
+										{/each}
+									</select>
+									<div class="select-icon-container">
+										<Icon icon="mdi:chevron-down" class="select-icon" />
+									</div>
+								</div>
 							</div>
 							{#if taskCategoriesData.length > 0}
 								<div class="h-96 w-full">
@@ -618,15 +639,20 @@
 
 						{#if hasChartData(vitalMetricsData) && hasChartData(vitalNames)}
 							<div class="flex w-full justify-end px-4">
-								<select
-									class="select mb-2 border pl-2"
-									bind:value={selectedVitalName}
-									onchange={updateVitalsData}
-								>
-									{#each standardizedVitalNames as vitalName}
-										<option value={vitalName}>{vitalName}</option>
-									{/each}
-								</select>
+								<div class="relative mb-2 w-fit">
+									<select
+										class="select w-full border pl-2" style="padding-right: 2rem;"
+										bind:value={selectedVitalName}
+										onchange={updateVitalsData}
+									>
+										{#each standardizedVitalNames as vitalName}
+											<option value={vitalName}>{vitalName}</option>
+										{/each}
+									</select>
+									<div class="select-icon-container">
+										<Icon icon="mdi:chevron-down" class="select-icon" />
+									</div>
+								</div>
 							</div>
 							<div class="h-96 w-full">
 								<PieChart

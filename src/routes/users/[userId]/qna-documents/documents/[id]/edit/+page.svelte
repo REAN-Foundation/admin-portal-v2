@@ -7,7 +7,7 @@
 	import Icon from '@iconify/svelte';
 	import { showMessage } from '$lib/utils/message.utils.js';
 	import type { PageServerData } from './$types';
-	import type { DocumentsUpdateModel } from '$lib/types/documents.types';
+	import { splitterOptionsByType, type DocumentsUpdateModel } from '$lib/types/documents.types';
 	import { createOrUpdateSchema } from '$lib/validation/documents.schema';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import { goto } from '$app/navigation';
@@ -34,9 +34,13 @@
 	let splitter = $state(data.documents.Splitter);
 	let active = $state(data.documents.IsActive);
 	let createdBy = $state(data.documents.CreatedBy);
-	let keywordsRaw = $state(data.documents.Keyword);
+	const initialKeywords = data.documents.Keyword ? data.documents.Keyword.split(',').map((v: string) => v.trim()) : [];
 	let documentType = $derived(fileName ? fileName.split('.').pop() : data.documents.DocumentType);
 	let version: string = $state(data.documents.DocumentVersion.map((row) => row.Version).join(', '));
+
+	let splitterOptions = $derived(
+		documentType ? (splitterOptionsByType[documentType.toLowerCase()] ?? []) : []
+	);
 
 	let imageUrl = $state('');
 	let fileinput = $state();
@@ -46,7 +50,7 @@
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
-	let keywords: string[] = $derived(keywordsRaw ? keywordsRaw.split(',').map((v) => v.trim()) : []);
+	let keywords: string[] = $state([...initialKeywords]);
 	$inspect('data', data);
 
 	let keywordsStr: string = $state('');
@@ -73,6 +77,8 @@
 		splitter = data?.documents?.Splitter;
 		active = data?.documents?.IsActive;
 		createdBy = data?.documents?.CreatedBy;
+		keywords = [...initialKeywords];
+		errors = {};
 	}
 
 	const upload = async (imgBase64, file) => {
@@ -243,10 +249,6 @@
 		}
 	};
 
-	$effect(() => {
-		keywordsStr = keywords?.join(', ');
-	});
-
 	function handleDrop(event) {
 		event.preventDefault();
 		dragging = false;
@@ -361,8 +363,7 @@
 				<tr class="tables-row">
 					<td class="table-label">Keywords <span class="text-red-700">*</span></td>
 					<td class="table-data">
-						<InputChips bind:keywords name="keywords" id="keywords" />
-						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<InputChips bind:keywords bind:value={keywordsStr} name="keywords" id="keywords" />
 						<!-- <InputChip chips="variant-filled-error rounded-2xl" name="tags"  /> -->
 					</td>
 				</tr>
@@ -516,13 +517,22 @@
 				<tr class="tables-row">
 					<td class="table-label">Splitter <span class="text-red-700">*</span></td>
 					<td class="table-data">
-						<input
-							type="text"
-							name="splitter"
-							bind:value={splitter}
-							placeholder="Enter Splitter here..."
-							class="input"
-						/>
+						<div class="relative">
+							<select
+								class="select"
+								name="splitter"
+								bind:value={splitter}
+								disabled={!documentType}
+							>
+								<option value={undefined} disabled>Select splitter...</option>
+								{#each splitterOptions as option}
+									<option value={option.value}>{option.label}</option>
+								{/each}
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
 						{#if errors?.Splitter}
 							<p class="text-error">{errors?.Splitter}</p>
 						{/if}
@@ -532,7 +542,7 @@
 		</table>
 
 		<div class="btn-container">
-			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			<Button type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
 				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
 			{:then data}

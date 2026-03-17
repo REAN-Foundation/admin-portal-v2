@@ -54,7 +54,7 @@
 		template = data?.assessment?.Template;
 		referenceTemplateCode = data?.assessment?.TemplateCode;
 		version = data?.assessment?.Version;
-		keywords = data?.assessment?.Tags;
+		keywords = [...(data?.assessment?.Tags ?? [])];
 		metaDataInput = data?.assessment?.Metadata ? JSON.stringify(data.assessment.Metadata, null, 2) : '';
 		errors = {};
 	};
@@ -81,10 +81,10 @@
 			if (metaDataInput && metaDataInput.trim() !== '') {
 				try {
 					metadata = JSON.parse(metaDataInput);
-					if (!metadata.Type || !metadata.TemplateName) {
+					if (!metadata.Type) {
 						errors = {
 							...errors,
-							'Metadata': 'Metadata must include Type and TemplateName fields'
+							'Metadata': 'Metadata must include Type field'
 						};
 						return;
 					}
@@ -144,9 +144,6 @@
 		}
 	};
 
-	$effect(() => {
-		keywordsStr = keywords?.join(', ');
-	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -263,7 +260,7 @@
 						<textarea
 							bind:value={metaDataInput}
 							class="input {errors?.Metadata ? 'border-error-300' : 'border-primary-200'}"
-							placeholder="Enter Metadata JSON object..."
+							placeholder={`Example:\n{\n  "Type": "template",\n  "Channels": {\n    "WhatsApp": {\n      "TemplateName": "welcome_msg",\n      "TemplateLanguage": "en",\n      "FlowToken": "abc123"\n    }\n  }\n}`}
 							name="metaDataInput"
 						></textarea>
 						{#if errors?.Metadata}
@@ -293,8 +290,7 @@
 				<tr class="tables-row">
 					<td class="table-label">Tags</td>
 					<td class="table-data">
-						<InputChips bind:keywords name="keywords" id="keywords" />
-						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<InputChips bind:keywords bind:value={keywordsStr} name="keywords" id="keywords" />
 					</td>
 				</tr>
 
@@ -317,7 +313,7 @@
 		</table>
 
 		<div class="btn-container">
-			<Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+			<Button type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
 				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
 			{:then data}

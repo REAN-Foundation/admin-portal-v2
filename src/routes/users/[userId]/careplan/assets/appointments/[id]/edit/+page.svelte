@@ -55,7 +55,7 @@
 		name = data?.appointment?.Name;
 		description = data?.appointment?.Description;
 		appointmentType = data?.appointment?.AppointmentType;
-		tags = data?.appointment?.Tags;
+		keywords = [...(data?.appointment?.Tags ?? [])];
 		version = data?.appointment?.Version;
 	};
 
@@ -109,9 +109,6 @@
 		}
 	};
 
-	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
 
 </script>
 
@@ -179,12 +176,7 @@
 				<tr class="tables-row">
 					<td class="table-label">Tags</td>
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
-						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<InputChips bind:keywords bind:value={keywordsStr} name="keywords" id="keywords" />
 					</td>
 				</tr>
 
@@ -208,7 +200,7 @@
 
 		<div class="btn-container">
 			<div class="btn-container">
-            <Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+            <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
                 <Button type="submit" text="Submitting" variant="primary" disabled={true} />
             {:then data}

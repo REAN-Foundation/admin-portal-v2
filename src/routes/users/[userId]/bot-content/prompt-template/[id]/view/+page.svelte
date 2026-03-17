@@ -4,6 +4,8 @@
 	import Icon from '@iconify/svelte';
 	import type { PageServerData } from './$types';
 	import Button from '$lib/components/button/button.svelte';
+	import Confirmation from '$lib/components/confirmation.modal.svelte';
+	import { toastMessage } from '$lib/components/toast/toast.store';
 
 	////////////////////////////////////////////////////////////////////////////////////
 
@@ -41,6 +43,26 @@
 			path: viewRoute
 		}
 	];
+
+	let isPromoting = $state(false);
+	let openPromoteModal = $state(false);
+
+	const handlePromotion = async () => {
+		try {
+			isPromoting = true;
+			const res = await fetch(`/api/server/prompt-template/${id}/promotion-from`, {
+				method: 'POST',
+				body: JSON.stringify({}),
+				headers: { 'content-type': 'application/json' }
+			});
+			const response = await res.json();
+			toastMessage(response);
+		} catch (error) {
+			toastMessage({ HttpCode: 500, Message: error.message || 'An error occurred during promotion.' });
+		} finally {
+			isPromoting = false;
+		}
+	};
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -106,8 +128,25 @@
 					</tr>
 				</tbody>
 			</table>
-				<div class=" btn-container">
-        			<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md"
-        			></Button>
-    			</div>
+				<div class="btn-container">
+			{#if !data.isProduction}
+				<Button
+					onclick={() => openPromoteModal = true}
+					size="md"
+					text={isPromoting ? 'Promoting...' : 'Promote'}
+					variant="outline"
+					disabled={isPromoting}
+					tooltip="Promote template to next environment"
+				/>
+			{/if}
+				<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md" />
+			</div>
 		</div>
+
+<Confirmation
+	bind:isOpen={openPromoteModal}
+	title="Promote Prompt Template"
+	message="Are you sure you want to promote this prompt template to the next environment?"
+	confirmText="Promote"
+	onConfirm={handlePromotion}
+/>

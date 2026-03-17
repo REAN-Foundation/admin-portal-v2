@@ -1,6 +1,7 @@
 import { error, type RequestEvent, type ServerLoadEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getPromptTemplateById } from '../../../../../../api/services/bot-content/prompt-template';
+import { SOURCE_ENV } from '$env/static/private';
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -16,6 +17,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 		location: `${id}/edit`,
 		promptTemplate,
 		message: response?.Message || 'Prompt template retrieved successfully',
-		title: 'Bot Contents -Prompt template View'
+		title: 'Bot Contents -Prompt template View',
+		isProduction: SOURCE_ENV === 'production'
 	};
 };

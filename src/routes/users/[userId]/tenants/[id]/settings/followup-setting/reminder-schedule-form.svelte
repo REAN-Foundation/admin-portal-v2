@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
 	import { fade } from 'svelte/transition';
+	import Button from '$lib/components/button/button.svelte';
 
 	let { showReminderModal = $bindable(), addSchedule, newReminder = $bindable() } = $props();
 </script>
@@ -84,16 +85,19 @@
 				</tbody>
 			</table>
 
-			<div class=" flex justify-end gap-3 p-3">
-				<button
-					class="cancel-btn rounded px-4 py-2 text-sm  border-[0.5px] border-[var(--color-outline)]"
+		<div class="flex justify-end gap-3 p-3">
+				<Button
+					variant="outline"
+					size="sm"
+					text="Cancel"
 					onclick={() => (showReminderModal = false)}
-				>
-					Cancel
-				</button>
-				<button class="table-btn variant-soft-secondary gap-1 rounded" onclick={addSchedule}>
-					Add
-				</button>
+				/>
+				<Button
+					variant="primary"
+					size="sm"
+					text="Add"
+					onclick={addSchedule}
+				/>
 			</div>
 		</div>
 	</div>

@@ -7,8 +7,10 @@
 	import { goto } from '$app/navigation';
 	import { createSchema } from '$lib/validation/vector.store.schema';
 	import type { VectorStoreCreateModel } from '$lib/types/vector.store.types';
+	import { splitterOptionsByType } from '$lib/types/documents.types';
 	import FilePreviewModal from '$lib/components/modal/file.preview.modal.svelte';
 	import Button from '$lib/components/button/button.svelte';
+	import Confirmation from '$lib/components/confirmation.modal.svelte';
 	///////////////////////////////////////////////////////////////////////////////
 	let { data }: { data: PageServerData } = $props();
 
@@ -29,6 +31,13 @@
 	let createdBy = data.document.CreatedBy;
 	let keywords = data.document.Keyword !== null && data.document.Keyword !== '' ? data.document.Keyword : 'Not specified';
 	let documentType = data.document.DocumentType;
+
+	// Map splitter value to its display label
+	let splitterLabel = (() => {
+		const options = splitterOptionsByType[documentType?.toLowerCase()] ?? [];
+		const match = options.find((opt) => opt.value === splitter);
+		return match?.label ?? splitter ?? 'Not specified';
+	})();
 
 	let fileUrl: string | null = $state(null);
 	let fileType: string | null = $state(null);
@@ -162,6 +171,8 @@
 		fileType = null;
 	};
 
+	let openPromoteModal = $state(false);
+
 	const handlePromotion = async () => {
 		try {
 			const res = await fetch(`/api/server/qna-documents/documents/${id}/promotion-from`, {
@@ -215,7 +226,7 @@
 					<Button
 						text="Open with Document Viewer"
 						type="button"
-						variant="primary"
+						variant="outline"
 						onclick={viewDocument}
 						className="ml-2"
 						size="sm"
@@ -266,7 +277,7 @@
 			</tr>
 			<tr class="tables-row">
 				<td class="table-label">Splitter</td>
-				<td class="table-data">{splitter}</td>
+				<td class="table-data">{splitterLabel}</td>
 			</tr>
 			<!-- <tr class="tables-row">
 						<td>Last Updated</td>
@@ -276,10 +287,20 @@
 	</table>
 
 	<div class="btn-container">
-		<Button onclick={handlePromotion} size="md" text="Promote" variant="primary" />
+		{#if !data.isProduction}
+		<Button onclick={() => openPromoteModal = true} size="md" text="Promote" variant="outline" tooltip="Promote document to next environment" />
+		{/if}
 		<Button href={editRoute} text="Edit" variant="primary" iconBefore="mdi:edit" iconSize="md" />
-		<!-- <Button onclick = {handleSubmit} text={isPublishing ? "Publishing..." : "Publish"} variant="secondary" disabled={isPublishing}>
+		<!-- <Button onclick = {handleSubmit} text={isPublishing ? "Publishing..." : "Publish"} variant="outline" disabled={isPublishing}>
 		</Button> -->
 	</div>
 </div>
 <FilePreviewModal {showModal} {fileUrl} {fileType} {closeModal} />
+
+<Confirmation
+	bind:isOpen={openPromoteModal}
+	title="Promote Document"
+	message="Are you sure you want to promote this document to the next environment?"
+	confirmText="Promote"
+	onConfirm={handlePromotion}
+/>

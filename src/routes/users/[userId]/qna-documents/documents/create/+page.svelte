@@ -4,7 +4,7 @@
 	import Icon from '@iconify/svelte';
 	import { showMessage } from '$lib/utils/message.utils.js';
 	import { toastMessage } from '$lib/components/toast/toast.store.js';
-	import type { DocumentsCreateModel } from '$lib/types/documents.types.js';
+	import { splitterOptionsByType, type DocumentsCreateModel } from '$lib/types/documents.types.js';
 	import { createOrUpdateSchema } from '$lib/validation/documents.schema.js';
 	import { goto } from '$app/navigation';
 	import InputChips from '$lib/components/input-chips.svelte';
@@ -42,6 +42,19 @@
 	let resourceId = $state(undefined);
 	let documentType = $derived(fileName ? fileName.split('.').pop() : '');
 	let selectFile = $state(undefined);
+
+	let splitterOptions = $derived(
+		documentType ? (splitterOptionsByType[documentType.toLowerCase()] ?? []) : []
+	);
+
+	// Reset splitter when document type changes
+	let prevDocumentType = $state('');
+	$effect(() => {
+		if (documentType !== prevDocumentType) {
+			prevDocumentType = documentType;
+			splitter = undefined;
+		}
+	});
 
 	$inspect(selectFile);
 
@@ -473,13 +486,22 @@
 				<tr class="tables-row">
 					<td class="table-label">Splitter <span class="text-red-700">*</span></td>
 					<td class="table-data">
-						<input
-							type="text"
-							name="splitter"
-							bind:value={splitter}
-							placeholder="Enter Splitter here..."
-							class="input"
-						/>
+						<div class="relative">
+							<select
+								class="select"
+								name="splitter"
+								bind:value={splitter}
+								disabled={!documentType}
+							>
+								<option value={undefined} disabled selected>Select splitter...</option>
+								{#each splitterOptions as option}
+									<option value={option.value}>{option.label}</option>
+								{/each}
+							</select>
+							<div class="select-icon-container">
+								<Icon icon="mdi:chevron-down" class="select-icon" />
+							</div>
+						</div>
 						{#if errors?.Splitter}
 							<p class="text-error">{errors?.Splitter}</p>
 						{/if}

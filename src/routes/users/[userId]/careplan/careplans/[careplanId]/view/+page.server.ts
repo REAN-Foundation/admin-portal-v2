@@ -1,6 +1,7 @@
 import type { PageServerLoad } from './$types';
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import { getCarePlanById } from '$routes/api/services/careplan/careplans';
+import { SOURCE_ENV } from '$env/static/private';
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -17,6 +18,7 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 		carePlan,
 		sessionId,
 		message: response?.Message || 'Careplan retrieved successfully',
-		title: 'Careplan View'
+		title: 'Careplan View',
+		isProduction: SOURCE_ENV === 'production'
 	};
 };

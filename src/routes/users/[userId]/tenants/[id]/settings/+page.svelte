@@ -1,10 +1,15 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
 	import { page } from '$app/state';
+	import { beforeNavigate } from '$app/navigation';
 	import Icon from '@iconify/svelte';
-	import Button from '$lib/components/button/button.svelte';
 	import { addToast, toastMessage } from '$lib/components/toast/toast.store';
 	import { UserInterfacesSchema } from '$lib/validation/tenant.settings.schema';
+	import SettingsPageHeader from '$lib/components/settings/settings-page-header.svelte';
+	import SettingsSection from '$lib/components/settings/settings-section.svelte';
+	import SettingsFooter from '$lib/components/settings/settings-footer.svelte';
+	import { tenantSettingsStore } from '$lib/store/general.store';
+	import { get } from 'svelte/store';
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -13,51 +18,51 @@
 	let commonSettings = $state(data.commonSettings);
 	let errors: Record<string, string> = $state({});
 
-	let disabled = $state(true);
-	let promise = $state();
+	let isEditing = $state(false);
+	let isSubmitting = $state(false);
+	let originalSnapshot = $state('');
 
 	const userId = page.params.userId;
 	const tenantId = page.params.id;
-	const viewRoute = `/users/${userId}/tenants/${tenantId}/view`;
 	const tenantRoute = `/users/${userId}/tenants`;
 
-	const handleEditClick = async () => {
-		disabled = !disabled;
-		// if (disabled) {
-		// if (disabled) {
-		// 	addToast({
-		// 		message: 'Edit mode enabled',
-		// 		type: 'info',
-		// 		timeout: 3000
-		// 	});
-		// 	disabled = false;
-		// } else {
-		// 	addToast({
-		// 		message: 'Settings saved successfully',
-		// 		type: 'success',
-		// 		timeout: 3000
-		// 	});
-		// 	disabled = true;
-		// }
+	let hasUnsavedChanges = $derived(
+		isEditing && JSON.stringify(commonSettings?.UserInterfaces) !== originalSnapshot
+	);
+
+	beforeNavigate((navigation) => {
+		if (hasUnsavedChanges) {
+			if (!confirm('You have unsaved changes. Are you sure you want to leave?')) {
+				navigation.cancel();
+			}
+		}
+	});
+
+	const handleToggleEdit = () => {
+		isEditing = true;
+		originalSnapshot = JSON.stringify(commonSettings?.UserInterfaces);
+		addToast({ message: 'Edit mode enabled.', type: 'info', timeout: 3000 });
+	};
+
+	const handleCancelEdit = () => {
+		commonSettings.UserInterfaces = JSON.parse(originalSnapshot);
+		isEditing = false;
+		errors = {};
+		addToast({ message: 'Edit mode disabled.', type: 'info', timeout: 3000 });
 	};
 
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
-		console.log('I am in settings page', commonSettings.Wellness);
-		try {
-			if (disabled) {
-				addToast({
-					message: 'Nothing to edit !',
-					type: 'warning',
-					timeout: 3000
-				});
-				return;
-			}
+		if (!isEditing) {
+			addToast({ message: 'Nothing to edit !', type: 'warning', timeout: 3000 });
+			return;
+		}
 
+		try {
 			errors = {};
+			isSubmitting = true;
 
 			const validationResult = UserInterfacesSchema.safeParse(commonSettings.UserInterfaces);
-			console.log(validationResult);
 
 			if (!validationResult.success) {
 				errors = Object.fromEntries(
@@ -76,8 +81,13 @@
 			});
 			const response = await res.json();
 			if (response.HttpCode === 201 || response.HttpCode === 200) {
+				// Update tenant settings store so sidebar reacts immediately
+				const currentSettings = get(tenantSettingsStore);
+				if (currentSettings) {
+					tenantSettingsStore.set({ ...currentSettings, Common: $state.snapshot(commonSettings) });
+				}
 				toastMessage(response);
-				disabled = true;
+				isEditing = false;
 				return;
 			}
 			if (response.Errors) {
@@ -87,108 +97,63 @@
 			}
 		} catch (error) {
 			toastMessage();
+		} finally {
+			isSubmitting = false;
 		}
 	};
 </script>
 
-<div class="my-8 px-5 py-2">
-	<div class="mx-auto">
-		<div class="border border-[var(--color-outline)]">
-			<form onsubmit={async (event) => (promise = handleSubmit(event))}>
-				<div
-					class="flex items-center justify-between rounded-t-lg bg-[var(--color-primary)] px-5 py-6"
-				>
-					<h2 class=" text-gray-800l text-lg font-semibold text-[var(--color-info)] ">
-						Integrations
-					</h2>
-					<div class="flex items-center gap-2 text-end">
-						<button
-							type="button"
-							class="table-btn variant-filled-secondary gap-1"
-							onclick={handleEditClick}
-						>
-							<Icon icon="material-symbols:edit-outline" />
-							<!-- <span>{disabled ? 'Edit' : 'Save'}</span> -->
-						</button>
-						<a
-							href={tenantRoute}
-							class="inline-flex items-center justify-center rounded-md border-[0.5px] border-[var(--color-outline)] px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-200"
-						>
-							<Icon icon="material-symbols:close-rounded" class=" h-5" />
-						</a>
-					</div>
-				</div>
+<div class="px-5 py-4">
+	<div class="mx-auto my-6 border border-[var(--color-outline)]">
+		<form onsubmit={handleSubmit}>
+			<SettingsPageHeader
+				title="Integrations"
+				description="Enable or disable system integrations for this tenant."
+				bind:isEditing
+				{hasUnsavedChanges}
+				closeHref={tenantRoute}
+				onToggleEdit={handleToggleEdit}
+				onCancelEdit={handleCancelEdit}
+			/>
 
-				<div
-					class="flex w-full justify-center bg-[var(--color-secondary)] px-4 py-5 sm:px-6 md:px-10 lg:px-20"
-				>
+			<div class="px-5 py-5">
+				<SettingsSection title="User Interfaces" description="Toggle which interfaces are available for this tenant.">
 					<div
 						class="grid w-full grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-6 md:gap-x-10"
 					>
 						{#each Object.entries(commonSettings.UserInterfaces) as [key, value]}
 							{#if key === 'ChatBot'}
-								<div class=" border-hover rounded-xl border p-4 text-[var(--color-info)]">
+								<div class="border-hover rounded-xl border p-4 text-[var(--color-info)]">
 									<div class="flex items-center justify-between gap-3">
-										<!-- Left: App Icon -->
 										<Icon icon="tabler:message-chatbot" class="hidden h-5 w-5 md:block" />
-
-										<!-- Middle: Name & Description -->
 										<div class="flex flex-grow flex-col">
 											<span class="text-sm font-medium">Chatbot</span>
-											<p class="text-sm">AI-powered chatbot for automated patient interaction.</p>
+											<p class="text-sm opacity-70">AI-powered chatbot for automated patient interaction.</p>
 										</div>
-										<!-- Right: Toggle + Optional Edit -->
 										<div class="flex items-center">
 											<input
 												type="checkbox"
 												name="patientApp"
 												class="checkbox checkbox-primary scale-125 cursor-pointer"
-												{disabled}
+												disabled={!isEditing}
 												bind:checked={commonSettings.UserInterfaces[key]}
 											/>
 										</div>
 									</div>
 								</div>
 							{:else if key === 'Followup'}
-								<div class=" border-hover rounded-xl border p-4 text-[var(--color-info)]">
+								<div class="border-hover rounded-xl border p-4 text-[var(--color-info)]">
 									<div class="flex items-center justify-between gap-3">
-										<!-- Left: App Icon -->
 										<Icon icon="carbon:task-tools" class="hidden h-5 w-5 md:block" />
-
-										<!-- Middle: Name & Description -->
 										<div class="flex flex-grow flex-col">
 											<span class="text-sm font-medium">Followup</span>
-											<p class="text-sm">Automated follow-up and reminder system.</p>
+											<p class="text-sm opacity-70">Automated follow-up and reminder system.</p>
 										</div>
-										<!-- Right: Toggle + Optional Edit -->
 										<div class="flex items-center">
 											<input
 												type="checkbox"
 												name="followup"
-												{disabled}
-												bind:checked={commonSettings.UserInterfaces[key]}
-												class="checkbox checkbox-primary scale-125 cursor-pointer"
-											/>
-										</div>
-									</div>
-								</div>
-							{:else if key === 'Forms'}
-								<div class=" border-hover rounded-xl border p-4 text-[var(--color-info)]">
-									<div class="flex items-center justify-between gap-3">
-										<!-- Left: App Icon -->
-										<Icon icon="mdi:form-select" class="hidden h-5 w-5 md:block" />
-
-										<!-- Middle: Name & Description -->
-										<div class="flex flex-grow flex-col">
-											<span class="text-sm font-medium">Forms</span>
-											<p class="text-sm">Digital forms for data collection and surveys.</p>
-										</div>
-										<!-- Right: Toggle + Optional Edit -->
-										<div class="flex items-center">
-											<input
-												type="checkbox"
-												name="forms"
-												{disabled}
+												disabled={!isEditing}
 												bind:checked={commonSettings.UserInterfaces[key]}
 												class="checkbox checkbox-primary scale-125 cursor-pointer"
 											/>
@@ -196,19 +161,15 @@
 									</div>
 								</div>
 							{:else if key === 'PatientApp'}
-								<div class=" border-hover rounded-xl border p-4 text-[var(--color-info)]">
+								<div class="border-hover rounded-xl border p-4 text-[var(--color-info)]">
 									<div class="flex items-center justify-between gap-3">
-										<!-- Left: App Icon -->
 										<Icon icon="fluent:phone-tablet-20-regular" class="hidden h-5 w-5 md:block" />
-
-										<!-- Middle: Name & Description -->
 										<div class="flex flex-grow flex-col">
 											<span class="text-sm font-medium">Patient App</span>
-											<p class="text-sm">
+											<p class="text-sm opacity-70">
 												Mobile application for patient self-service and health management.
 											</p>
 										</div>
-										<!-- Right: Toggle + Optional Edit -->
 										<div class="flex items-center">
 											<input
 												type="checkbox"
@@ -221,17 +182,13 @@
 									</div>
 								</div>
 							{:else if key === 'PatientPortal'}
-								<div class=" border-hover rounded-xl border p-4 text-[var(--color-info)]">
+								<div class="border-hover rounded-xl border p-4 text-[var(--color-info)]">
 									<div class="flex items-center justify-between gap-3">
-										<!-- Left: App Icon -->
 										<Icon icon="mdi:account-circle-outline" class="hidden h-5 w-5 md:block" />
-
-										<!-- Middle: Name & Description -->
 										<div class="flex flex-grow flex-col">
 											<span class="text-sm font-medium">Patient Portal</span>
-											<p class="text-sm">Web-based portal for patient access to health records.</p>
+											<p class="text-sm opacity-70">Web-based portal for patient access to health records.</p>
 										</div>
-										<!-- Right: Toggle + Optional Edit -->
 										<div class="flex items-center">
 											<input
 												type="checkbox"
@@ -246,18 +203,14 @@
 							{/if}
 						{/each}
 					</div>
-				</div>
+				</SettingsSection>
+			</div>
 
-				<hr class="border-[0.5px] border-t border-[var(--color-outline)]" />
-
-				<div class="button-container my-4">
-					{#await promise}
-						<Button type="submit" variant="primary" size="sm" text="Submitting..." disabled={true} />
-					{:then data}
-						<Button type="submit" variant="primary" size="md" text="Submit" />
-					{/await}
-				</div>
-			</form>
-		</div>
+			<SettingsFooter
+				{isEditing}
+				{isSubmitting}
+				onCancel={handleCancelEdit}
+			/>
+		</form>
 	</div>
 </div>

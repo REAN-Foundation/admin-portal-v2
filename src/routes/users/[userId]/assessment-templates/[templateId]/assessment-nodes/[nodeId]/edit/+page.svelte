@@ -290,9 +290,6 @@
 		}
 	};
 
-	$effect(() => {
-		keywordsStr = keywords?.join(', ');
-	});
 </script>
 
 <BreadCrumbs crumbs={breadCrumbs} />
@@ -399,27 +396,41 @@
 				<tr class="tables-row !border-b-secondary-100 dark:!border-b-surface-700 !border-b">
 					<td class="table-label align-top">Tags</td>
 					<td class="table-data">
-						<InputChips bind:keywords name="keywords" id="keywords" />
-						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<InputChips bind:keywords bind:value={keywordsStr} name="keywords" id="keywords" />
 					</td>
 				</tr>
 				<tr class="tables-row">
 					<td class="table-label">Field Identifier</td>
 					<td class="table-data">
-						<div class="relative">
-							<select
-								name="fieldIdentifier"
-								bind:value={fieldIdentifier}
-								class="select {errors?.fieldIdentifier ? 'input-text-error' : ''}"
-							>
-								<option value="" disabled selected>Select field identifier here...</option>
-								{#each sortedIdentifiers as identifier}
-									<option value={identifier}>{toLabel(identifier)}</option>
-								{/each}
-							</select>
-							<div class="select-icon-container">
-								<Icon icon="mdi:chevron-down" class="select-icon" />
+						<div class="flex items-center gap-2">
+							<div class="relative flex-1">
+								<select
+									name="fieldIdentifier"
+									bind:value={fieldIdentifier}
+									class="select {errors?.fieldIdentifier ? 'input-text-error' : ''}"
+								>
+									<option value={undefined}>Select field identifier here...</option>
+									{#each sortedIdentifiers as identifier}
+										<option value={identifier}>{toLabel(identifier)}</option>
+									{/each}
+								</select>
+								<div class="select-icon-container">
+									<Icon icon="mdi:chevron-down" class="select-icon" />
+								</div>
 							</div>
+							{#if fieldIdentifier}
+								<button
+									type="button"
+									class="flex items-center justify-center rounded-full p-1 text-gray-400 hover:text-red-500 transition-colors"
+									title="Clear selection"
+									onclick={() => {
+										fieldIdentifier = undefined;
+										fieldIdentifierUnit = undefined;
+									}}
+								>
+									<Icon icon="mdi:close-circle" class="h-5 w-5" />
+								</button>
+							{/if}
 						</div>
 						{#if errors?.FieldIdentifier}
 							<p class="text-error">{errors?.FieldIdentifier}</p>
@@ -582,7 +593,7 @@
 		</table>
 
 		<div class="btn-container">
-			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="primary" />
+			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
 				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
 			{:then data}

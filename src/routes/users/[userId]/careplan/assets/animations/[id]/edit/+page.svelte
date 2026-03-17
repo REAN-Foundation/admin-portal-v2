@@ -54,7 +54,7 @@
 		name = data?.animation?.Name;
 		transcript = data?.animation?.Transcript;
 		pathUrl = data?.animation?.PathUrl;
-		tags = data?.animation?.Tags;
+		keywords = [...(data?.animation?.Tags ?? [])];
 		version = data?.animation?.Version;
 	};
 
@@ -109,9 +109,6 @@
 		}
 	};
 	
-	$effect(() => {
-            keywordsStr = keywords?.join(', ');
-        });
 
 </script>
 
@@ -178,12 +175,7 @@
 				<tr class="tables-row">
 					<td class="table-label">Tags</td>
 					<td class="table-data">
-						<InputChips
-							bind:keywords
-							name="keywords"
-							id="keywords"
-							/>
-						<input type="hidden" name="keywordsStr" id="keywordsStr" bind:value={keywordsStr} />
+						<InputChips bind:keywords bind:value={keywordsStr} name="keywords" id="keywords" />
 					</td>
 				</tr>
 
@@ -205,7 +197,7 @@
 			</tbody>
 		</table>
 		<div class="btn-container">
-            <Button type="button" onclick={handleReset} text="Reset" variant="primary" />
+            <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
                 <Button type="submit" text="Submitting" variant="primary" disabled={true} />
             {:then data}

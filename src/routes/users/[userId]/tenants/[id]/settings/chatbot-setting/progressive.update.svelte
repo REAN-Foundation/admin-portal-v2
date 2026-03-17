@@ -317,6 +317,9 @@
 						No welcome messages configured. Click "Add Message" to create one.
 					</p>
 				{/if}
+				{#if errors?.WelcomeMessageLanguage}
+					<p class="text-error mt-1">{errors.WelcomeMessageLanguage}</p>
+				{/if}
 			</div>
 		<!-- {/if} -->
 	{:else if currentSection === 1}
@@ -468,6 +471,9 @@
 				</div>
 			{/each}
 		</div>
+		{#if errors?.ConsentMessageLanguage}
+			<p class="text-error mt-1">{errors.ConsentMessageLanguage}</p>
+		{/if}
 	{/if}
 </div>
 
@@ -498,7 +504,7 @@
 				type="submit"
 				variant="primary"
 				size="md"
-				text="Submitting..."
+				text="Saving..."
 				disabled={true}
 			/>
 		{:then data}
@@ -506,7 +512,8 @@
 				type="submit"
 				variant="primary"
 				size="md"
-				text="Submit"
+				text="Save Changes"
+				disabled={!edit}
 			/>
 		{/await}
 	{/if}
