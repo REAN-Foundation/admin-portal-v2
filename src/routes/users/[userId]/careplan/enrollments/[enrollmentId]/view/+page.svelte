@@ -5,6 +5,7 @@
 	import BreadCrumbs from '$lib/components/breadcrumbs/breadcrums.svelte';
 	import Icon from '@iconify/svelte';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
+	import Button from '$lib/components/button/button.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -49,11 +50,8 @@
 <BreadCrumbs crumbs={breadCrumbs} />
 
 <div class="mx-auto w-full px-6 py-4">
-	<div class="flex flex-wrap justify-end gap-2 py-4">
-		<a href={viewTaskRoute} class="edit-btn variant-filled-secondary hover:!variant-soft-secondary">
-			<Icon icon="icon-park-outline:preview-open" />
-			<span>Enrollment Tasks</span>
-		</a>
+	<div class="btn-container">
+		<Button href={viewTaskRoute} text="Enrollment Tasks" variant="primary" iconBefore="icon-park-outline:preview-open" iconSize="md" />
 	</div>
 
 	<div class="mx-auto w-full px-6 py-4">
