@@ -9,11 +9,13 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import Button from '$lib/components/button/button.svelte';
+	import TenantFilter from '$lib/components/tenant-filter.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 
+	let tenantFilter: TenantFilter;
 	let debounceTimeout;
 	let isLoading = $state(false);
 	let categories = $state(data.careplanCategories);
@@ -42,6 +44,17 @@
 		amounts: [10, 20, 30, 50]
 	});
 
+	function handleTenantSelect() {
+		paginationSettings.page = 0;
+		SearchCategory({
+			categoryType: categoryType,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
 	async function SearchCategory(model) {
 		try {
 			let url = `/api/server/careplan/category/search?`;
@@ -50,6 +63,8 @@
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
 			if (model.categoryType) url += `&type=${model.categoryType}`;
+
+			url = tenantFilter.appendTenantParam(url);
 
 			const res = await fetch(url, {
 				method: 'GET',
@@ -158,8 +173,14 @@
 	<div class="mx-auto">
 		<div class="table-container shadow">
 			<div class="search-border">
-				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="relative w-auto grow">
+				<div class="flex flex-col gap-4 md:flex-row md:items-center">
+					<TenantFilter
+						bind:this={tenantFilter}
+						sessionUser={data.sessionUser}
+						tenantParam="tenantCode"
+						onSelect={handleTenantSelect}
+					/>
+					<div class="relative w-full md:flex-1">
 						<input
 							type="text"
 							name="categoryType"

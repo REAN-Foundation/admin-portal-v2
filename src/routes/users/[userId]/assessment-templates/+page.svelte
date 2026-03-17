@@ -259,13 +259,13 @@
 	<div class="mx-auto">
 		<div class="table-container shadow">
 			<div class="search-border">
-				<div class="flex flex-col gap-4 md:flex-row">
+				<div class="flex flex-col gap-4 md:flex-row md:items-center">
 					<TenantFilter
 						bind:this={tenantFilter}
 						sessionUser={data.sessionUser}
 						onSelect={handleTenantSelect}
 					/>
-					<div class="relative w-full md:w-auto flex-1">
+					<div class="relative w-full md:flex-1">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
@@ -292,7 +292,7 @@
 						{/if}
 					</div>
 
-					<div class="relative w-full md:w-auto flex-1">
+					<div class="relative w-full md:flex-1">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
@@ -318,7 +318,7 @@
 							</button>
 						{/if}
 					</div>
-					<div class="relative w-full md:w-auto flex-1">
+					<div class="relative w-full md:flex-1">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
