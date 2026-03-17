@@ -10,11 +10,13 @@
 	import type { PaginationSettings } from '$lib/types/common.types';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Button from '$lib/components/button/button.svelte';
+	import TenantFilter from '$lib/components/tenant-filter.svelte';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 
+	let tenantFilter: TenantFilter;
 	let debounceTimeout;
 	let isLoading = $state(false);
 	let prompts = $state(data.prompts?.Items || []);
@@ -49,6 +51,17 @@
 		amounts: [10, 20, 30, 50]
 	});
 
+	function handleTenantSelect() {
+		paginationSettings.page = 0;
+		searchPrompts({
+			promptName: searchKeyword,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
 	async function searchPrompts(model) {
 		try {
 			let url = `/api/server/prompt-template/search?`;
@@ -58,8 +71,8 @@
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
 
 			if (model.promptName) url += `&name=${model.promptName}`;
-			console.log('prompts name**', model.promptName);
-			console.log(url);
+
+			url = tenantFilter.appendTenantParam(url);
 
 			const res = await fetch(url, {
 				method: 'GET',
@@ -184,34 +197,38 @@
 	<div class="mx-auto">
 		<div class="table-container shadow">
 			<div class="search-border">
-				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="flex-1">
-						<div class="relative pr-1.5">
-							<Icon
-								icon="heroicons:magnifying-glass"
-								class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
-							/>
-							<input
-								type="text"
-								name="promptName"
-								oninput={(event) => onSearchInput(event)}
-								bind:value={promptName}
-								placeholder="Search by name"
-								class="table-input-field !pr-4 !pl-10"
-							/>
-							{#if promptName}
-								<button
-									type="button"
-									onclick={() => {
-										promptName = '';
-										onSearchInput({ target: { name: 'name', value: '' } });
-									}}
-									class="close-btn"
-								>
-									<Icon icon="material-symbols:close" />
-								</button>
-							{/if}
-						</div>
+				<div class="flex flex-col gap-4 md:flex-row md:items-center">
+					<TenantFilter
+						bind:this={tenantFilter}
+						sessionUser={data.sessionUser}
+						tenantParam="tenantCode"
+						onSelect={handleTenantSelect}
+					/>
+					<div class="relative w-full md:flex-1">
+						<Icon
+							icon="heroicons:magnifying-glass"
+							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+						/>
+						<input
+							type="text"
+							name="promptName"
+							oninput={(event) => onSearchInput(event)}
+							bind:value={promptName}
+							placeholder="Search by name"
+							class="table-input-field !pr-4 !pl-10"
+						/>
+						{#if promptName}
+							<button
+								type="button"
+								onclick={() => {
+									promptName = '';
+									onSearchInput({ target: { name: 'name', value: '' } });
+								}}
+								class="close-btn"
+							>
+								<Icon icon="material-symbols:close" />
+							</button>
+						{/if}
 					</div>
 
 					<Button href={createRoute} text="Add New" variant="primary" />

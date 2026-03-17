@@ -51,7 +51,7 @@ export function createSearchFilters(
 		delete filters.tenantId;
 		if (isSystemAdmin) {
 			const explicit = searchParams.get('tenantCode');
-			if (explicit) filters.tenantCode = explicit;
+			filters.tenantCode = explicit || tenantCode;
 		} else {
 			filters.tenantCode = tenantCode;
 		}
@@ -59,7 +59,7 @@ export function createSearchFilters(
 		// Bot Content prompt-templates: field is "tenantId" but value is tenantCode
 		if (isSystemAdmin) {
 			const explicit = searchParams.get('tenantCode') ?? searchParams.get('tenantId');
-			if (explicit) filters.tenantId = explicit;
+			filters.tenantId = explicit || tenantCode;
 		} else {
 			filters.tenantId = tenantCode;
 		}
