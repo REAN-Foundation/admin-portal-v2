@@ -226,7 +226,7 @@
 	</table>
 </div>
 
-<UsersStats
+<!-- <UsersStats
 	{years}
 	bind:ageWiseUsers
 	{genderWiseUsers}
@@ -248,14 +248,14 @@
 	selectAddictionDistributionYearly={async (e: any) => {
 		selectAddictionDistributionYearly(e.detail.year);
 	}}
-/>
+/> -->
 
-<FunnelCard
+<!-- <FunnelCard
 	{labels}
 	dataSource={funnelChartData}
 	{genderWiseUsers}
 	{selectGenderWiseUsersDividionYearly}
-/>
+/> -->
 
 <div class=" my-6">
 	<p class="history-head">Registration / Deregistration History</p>
