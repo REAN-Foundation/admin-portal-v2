@@ -39,31 +39,34 @@ export const load: LayoutServerLoad = async (event: RequestEvent) => {
 		? explicitTenantId
 		: event.locals.sessionUser.tenantId;
 
-	// Fetch user analytics data (covers basic, demographics, overall, feature-specific tabs)
+	const tenantName = event.locals.sessionUser.tenantName;
+
+	// Fetch both APIs in parallel - single source of truth for all sub-pages
+	const today = new Date();
+	const formattedDate = TimeHelper.getDateString(today, DateStringFormat.YYYY_MM_DD);
+
+	const [analyticsResult, dailyStatsResult] = await Promise.allSettled([
+		getUserAnalytics(sessionId ?? '', formattedDate ?? '', effectiveTenantCode),
+		isSystemAdmin && !explicitTenantId
+			? getDailyStatistics(sessionId ?? '')
+			: getDailyTenantStatistics(sessionId ?? '', effectiveTenantId ?? '')
+	]);
+
+	// Process analytics data (used by basic, demographics, overall, feature-specific)
 	let analyticsData: any = null;
-	try {
-		const today = new Date();
-		const formattedDate = TimeHelper.getDateString(today, DateStringFormat.YYYY_MM_DD);
-		const response = await getUserAnalytics(sessionId ?? '', formattedDate ?? '', effectiveTenantCode);
+	if (analyticsResult.status === 'fulfilled') {
+		const response = analyticsResult.value;
 		if (response && response.Status !== 'Failure' && response.Data) {
 			analyticsData = response.Data;
 		}
-	} catch (err) {
-		console.error('Failed to fetch user analytics for data availability check:', err);
+	} else {
+		console.error('Failed to fetch user analytics:', analyticsResult.reason);
 	}
 
-	// Fetch daily statistics data (covers basic and users-stats tabs)
+	// Process daily statistics (used by basic, users-stats)
 	let dailyStatsData: any = null;
-	try {
-		let response;
-		if (isSystemAdmin && !explicitTenantId) {
-			response = await getDailyStatistics(sessionId ?? '');
-		} else {
-			response = await getDailyTenantStatistics(
-				sessionId ?? '',
-				effectiveTenantId ?? ''
-			);
-		}
+	if (dailyStatsResult.status === 'fulfilled') {
+		const response = dailyStatsResult.value;
 		if (
 			response &&
 			response.Status !== 'failure' &&
@@ -72,8 +75,8 @@ export const load: LayoutServerLoad = async (event: RequestEvent) => {
 		) {
 			dailyStatsData = response.Data.DailyStatistics.DashboardStats.UserStatistics;
 		}
-	} catch (err) {
-		console.error('Failed to fetch daily statistics for data availability check:', err);
+	} else {
+		console.error('Failed to fetch daily statistics:', dailyStatsResult.reason);
 	}
 
 	const hasAnyFeatureData = hasAnyAnalyticsData(analyticsData, dailyStatsData);
@@ -81,6 +84,11 @@ export const load: LayoutServerLoad = async (event: RequestEvent) => {
 	return {
 		hasAnyFeatureData,
 		effectiveTenantCode,
-		effectiveTenantId
+		effectiveTenantId,
+		tenantName,
+		sessionId,
+		// Shared data for sub-pages
+		analyticsData,
+		dailyStatsData
 	};
 };
