@@ -47,12 +47,16 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
         throw error(401, 'Unauthorized Access');
     }
 
+    const isSystemAdmin = roleName === 'System admin' || roleName === 'System user';
+    const explicitTenantId = event.url.searchParams.get('tenantId');
+    const effectiveTenantId = (isSystemAdmin && explicitTenantId) ? explicitTenantId : event.locals.sessionUser.tenantId;
+
     let response;
     try {
-        if (roleName === 'System admin' || roleName === 'System user') {
+        if (isSystemAdmin && !explicitTenantId) {
             response = await getDailyStatistics(sessionId ?? '');
         } else {
-            response = await getDailyTenantStatistics(sessionId ?? '', event.locals.sessionUser.tenantId ?? '');
+            response = await getDailyTenantStatistics(sessionId ?? '', effectiveTenantId ?? '');
         }
     } catch (err) {
         console.error('Failed to fetch daily statistics:', err);

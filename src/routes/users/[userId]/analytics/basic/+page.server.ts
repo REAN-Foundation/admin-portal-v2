@@ -70,8 +70,15 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
         throw error(401, 'Unauthorized Access');
     }
 
-    const tenantCode = event.locals.sessionUser.tenantCode;
+    const isSystemAdmin = roleName === 'System admin' || roleName === 'System user';
+
+    // Use tenant from URL params (system admin) or session
+    const explicitTenantCode = event.url.searchParams.get('tenantCode');
+    const explicitTenantId = event.url.searchParams.get('tenantId');
+
+    const tenantCode = (isSystemAdmin && explicitTenantCode) ? explicitTenantCode : event.locals.sessionUser.tenantCode;
     const tenantName = event.locals.sessionUser.tenantName;
+    const effectiveTenantId = (isSystemAdmin && explicitTenantId) ? explicitTenantId : event.locals.sessionUser.tenantId;
 
     // Get User Analytics
     let basicStatistics = defaultBasicStatistics;
@@ -89,10 +96,10 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
     // User Stats Logic
     let userStatsResponse;
     try {
-        if (roleName === 'System admin' || roleName === 'System user') {
+        if (isSystemAdmin && !explicitTenantId) {
             userStatsResponse = await getDailyStatistics(sessionId ?? '');
         } else {
-            userStatsResponse = await getDailyTenantStatistics(sessionId ?? '', event.locals.sessionUser.tenantId ?? '');
+            userStatsResponse = await getDailyTenantStatistics(sessionId ?? '', effectiveTenantId ?? '');
         }
     } catch (err) {
         console.error('Failed to fetch daily statistics:', err);

@@ -18,8 +18,11 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
     // const userId = event.params.userId;
     const today = new Date();
     const formattedDate = TimeHelper.getDateString(today, DateStringFormat.YYYY_MM_DD);
-    const tenantCode = event.locals.sessionUser.tenantCode;
-    
+    const roleName = event.locals.sessionUser.roleName;
+    const isSystemAdmin = roleName === 'System admin' || roleName === 'System user';
+    const explicitTenantCode = event.url.searchParams.get('tenantCode');
+    const tenantCode = (isSystemAdmin && explicitTenantCode) ? explicitTenantCode : event.locals.sessionUser.tenantCode;
+
     // Get tenantSettings from parent layout
     const parentData = await event.parent();
     const tenantSettings = parentData?.tenantSettings;

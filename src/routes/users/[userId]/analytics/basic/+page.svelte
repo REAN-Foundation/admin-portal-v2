@@ -15,58 +15,35 @@
 
 	let { data }: { data: PageServerData } = $props();
 
-	console.log('analytics  data==>', data);
-
-	let patientRegistrationHistoryData: any = $state(),
-		patientRegistrationHistoryLabels: any = $state();
-	let patientDeRegistrationHistoryData: any = $state();
-	let usersDistributionByRoleData: any = $state(),
-		usersDistributionByRoleLabels: any = $state();
-	let activeUsersCountAtEndOfMonthData: any = $state(),
-		activeUsersCountAtEndOfMonthLabels: any = $state();
-
-	let dereg = processPatientDeregistrationHistory(
+	// Derived chart data - reactive to tenant changes
+	let dereg = $derived(processPatientDeregistrationHistory(
 		data.basicStatistics?.PatientDeregistrationHistory ?? []
+	));
+
+	let patientRegistrationHistoryData: any = $derived(
+		data.basicStatistics?.PatientRegistrationHistory?.map((x: { user_count: any }) => x.user_count) ?? []
 	);
-
-	if (data.basicStatistics) {
-		if (data.basicStatistics.PatientRegistrationHistory) {
-			patientRegistrationHistoryData = data.basicStatistics.PatientRegistrationHistory.map(
-				(x: { user_count: any }) => x.user_count
-			);
-			patientRegistrationHistoryLabels = data.basicStatistics.PatientRegistrationHistory.map(
-				(x: { month: string }) => {
-					const label = formatLabelOfMonth(x.month);
-					return label ? label : 'Unknown';
-				}
-			);
-		}
-
-		if (data.basicStatistics.PatientDeregistrationHistory) {
-			patientDeRegistrationHistoryData = data.basicStatistics.PatientDeregistrationHistory.map(
-				(x: { user_count: any }) => x.user_count
-			);
-		}
-		if (data.basicStatistics.UsersDistributionByRole) {
-			usersDistributionByRoleData = data.basicStatistics.UsersDistributionByRole.map(
-				(x: { registration_count: any }) => x.registration_count
-			);
-			usersDistributionByRoleLabels = data.basicStatistics.UsersDistributionByRole.map(
-				(x: { role_name: any }) => x.role_name
-			);
-		}
-
-		if (data.basicStatistics.ActiveUsersCountAtEndOfMonth) {
-			activeUsersCountAtEndOfMonthData = data.basicStatistics.ActiveUsersCountAtEndOfMonth.map(
-				(x: { active_user_count: any }) => x.active_user_count
-			);
-			activeUsersCountAtEndOfMonthLabels = data.basicStatistics.ActiveUsersCountAtEndOfMonth.map(
-				(x: { month_end: any }) => x.month_end
-			);
-		}
-	}
-	$inspect('usersDistributionByRoleData', usersDistributionByRoleData);
-	$inspect('usersDistributionByRoleLabels', usersDistributionByRoleLabels);
+	let patientRegistrationHistoryLabels: any = $derived(
+		data.basicStatistics?.PatientRegistrationHistory?.map((x: { month: string }) => {
+			const label = formatLabelOfMonth(x.month);
+			return label ? label : 'Unknown';
+		}) ?? []
+	);
+	let patientDeRegistrationHistoryData: any = $derived(
+		data.basicStatistics?.PatientDeregistrationHistory?.map((x: { user_count: any }) => x.user_count) ?? []
+	);
+	let usersDistributionByRoleData: any = $derived(
+		data.basicStatistics?.UsersDistributionByRole?.map((x: { registration_count: any }) => x.registration_count) ?? []
+	);
+	let usersDistributionByRoleLabels: any = $derived(
+		data.basicStatistics?.UsersDistributionByRole?.map((x: { role_name: any }) => x.role_name) ?? []
+	);
+	let activeUsersCountAtEndOfMonthData: any = $derived(
+		data.basicStatistics?.ActiveUsersCountAtEndOfMonth?.map((x: { active_user_count: any }) => x.active_user_count) ?? []
+	);
+	let activeUsersCountAtEndOfMonthLabels: any = $derived(
+		data.basicStatistics?.ActiveUsersCountAtEndOfMonth?.map((x: { month_end: any }) => x.month_end) ?? []
+	);
 
 	let result = $derived(
 		processPatientRegistrationHistory(
@@ -75,18 +52,26 @@
 		)
 	);
 
-	$inspect('this is formatted result', result);
-
+	// Mutable state vars (can be changed by year selectors) - reset on data change
 	let genderWiseUsers = $state(data.genderWiseUsers ?? []);
 	let ageWiseUsers = $state(data.ageWiseUsers ?? []);
-
 	let maritalStatusWiseUsers: any = $state(data.maritalStatusWiseUsers ?? []);
-
-	let usersCount = data.overallUsersData;
 	let majorAilment = $state(data.majorAilment ?? []);
 	let addictionDistribution = $state(data.addictionDistribution ?? []);
-	let deviceDetailWiseUsers = data.deviceDetailWiseUsers ?? [];
-	let years = data.years ?? [];
+
+	// Reset mutable state when data changes (tenant switch)
+	$effect(() => {
+		genderWiseUsers = data.genderWiseUsers ?? [];
+		ageWiseUsers = data.ageWiseUsers ?? [];
+		maritalStatusWiseUsers = data.maritalStatusWiseUsers ?? [];
+		majorAilment = data.majorAilment ?? [];
+		addictionDistribution = data.addictionDistribution ?? [];
+	});
+
+	// Derived read-only values
+	let usersCount = $derived(data.overallUsersData);
+	let deviceDetailWiseUsers = $derived(data.deviceDetailWiseUsers ?? []);
+	let years = $derived(data.years ?? []);
 	let showLegendData = true;
 
 	let selectedYear: any;

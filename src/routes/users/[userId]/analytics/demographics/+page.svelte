@@ -5,123 +5,38 @@
 	///////////////////////////////////////////////////////////////////////////////////////////
 	let { data } = $props();
 
-	const demographics = data.basicStatistics?.PatientDemographics;
-	const ageGroup = demographics?.AgeGroups ?? [];
-	const genderGroups = demographics?.GenderGroups ?? [];
-	const locationGroups = demographics?.LocationGroups ?? [];
-	const ethinicityGroups = demographics?.EthnicityGroups ?? [];
-	const raceGroups = demographics?.RaceGroups ?? [];
-	const healthSystemsDistribution = demographics?.HealthSystemDistribution ?? [];
-	const hospitalDistribution = demographics?.HospitalDistribution ?? [];
-	const survivorOrCaregiverDistribution = demographics?.SurvivorOrCareGiverDistribution ?? [];
+	// All derived - reactive to tenant changes
+	let demographics = $derived(data.basicStatistics?.PatientDemographics);
+	let ageGroup = $derived(demographics?.AgeGroups ?? []);
+	let genderGroups = $derived(demographics?.GenderGroups ?? []);
+	let locationGroups = $derived(demographics?.LocationGroups ?? []);
+	let ethinicityGroups = $derived(demographics?.EthnicityGroups ?? []);
+	let raceGroups = $derived(demographics?.RaceGroups ?? []);
+	let healthSystemsDistribution = $derived(demographics?.HealthSystemDistribution ?? []);
+	let hospitalDistribution = $derived(demographics?.HospitalDistribution ?? []);
+	let survivorOrCaregiverDistribution = $derived(demographics?.SurvivorOrCareGiverDistribution ?? []);
 
-	//     if (data.basicStatistics.PatientDemographics) {
-	//     if (data.basicStatistics.PatientDemographics.AgeGroups) {
-	//         ageGroup = data.basicStatistics.PatientDemographics.AgeGroups.map((x:any) => x.count);
-	//     }
-	// }
-	let ageGroupData, ageGroupLabels;
-	let genderGroupData, genderGroupLabels;
-	let locationGroupData, locationGroupLabels;
-	let ethnicityGroupData, ethnicityGroupLabels;
-	let raceGroupData, raceGroupLabels;
-	let healthSystemGroupData, healthSystemGroupLabels;
-	let hospitalGroupData, hospitalGroupLabels;
-	let survivorCareGiverGroupData, survivorCareGiverGroupLabels;
-
-	if (data.basicStatistics.PatientDemographics) {
-		if (data.basicStatistics.PatientDemographics.AgeGroups) {
-			ageGroupData = data.basicStatistics.PatientDemographics.AgeGroups.map((x: any) => x.count);
-			ageGroupLabels = data.basicStatistics.PatientDemographics.AgeGroups.map((x: any) => {
-				const label = x.age_group;
-				return label ? label : 'Unknown';
-			});
-		}
-
-		if (data.basicStatistics.PatientDemographics.GenderGroups) {
-			genderGroupData = data.basicStatistics.PatientDemographics.GenderGroups.map(
-				(x: any) => x.count
-			);
-			genderGroupLabels = data.basicStatistics.PatientDemographics.GenderGroups.map((x: any) => {
-				const label = x.gender;
-				return label ? label : 'Unknown';
-			});
-		}
-
-		if (data.basicStatistics.PatientDemographics.LocationGroups) {
-			locationGroupData = data.basicStatistics.PatientDemographics.LocationGroups.map(
-				(x: any) => x.count
-			);
-			locationGroupLabels = data.basicStatistics.PatientDemographics.LocationGroups.map(
-				(x: any) => {
-					const label = x.location;
-					return label ? label : 'Unknown';
-				}
-			);
-		}
-
-		if (data.basicStatistics.PatientDemographics.EthnicityGroups) {
-			ethnicityGroupData = data.basicStatistics.PatientDemographics.EthnicityGroups.map(
-				(x: any) => x.count
-			);
-			ethnicityGroupLabels = data.basicStatistics.PatientDemographics.EthnicityGroups.map(
-				(x: any) => {
-					const label = x.ethnicity;
-					return label ? label : 'Unknown';
-				}
-			);
-		}
-
-		if (data.basicStatistics.PatientDemographics.RaceGroups) {
-			raceGroupData = data.basicStatistics.PatientDemographics.RaceGroups.map((x: any) => x.count);
-			raceGroupLabels = data.basicStatistics.PatientDemographics.RaceGroups.map((x: any) => {
-				const label = x.race;
-				return label ? label : 'Unknown';
-			});
-		}
-
-		if (data.basicStatistics.PatientDemographics.HealthSystemDistribution) {
-			healthSystemGroupData = data.basicStatistics.PatientDemographics.HealthSystemDistribution.map(
-				(x: any) => x.count
-			);
-			healthSystemGroupLabels =
-				data.basicStatistics.PatientDemographics.HealthSystemDistribution.map((x: any) => {
-					const label = x.health_system;
-					return label ? label : 'Unknown';
-				});
-		}
-
-		if (data.basicStatistics.PatientDemographics.HospitalDistribution) {
-			hospitalGroupData = data.basicStatistics.PatientDemographics.HospitalDistribution.map(
-				(x: any) => x.count
-			);
-			hospitalGroupLabels = data.basicStatistics.PatientDemographics.HospitalDistribution.map(
-				(x: any) => {
-					const label = x.hospital;
-					return label ? label : 'Unknown';
-				}
-			);
-		}
-
-		if (data.basicStatistics.PatientDemographics.SurvivorOrCareGiverDistribution) {
-			survivorCareGiverGroupData =
-				data.basicStatistics.PatientDemographics.SurvivorOrCareGiverDistribution.map(
-					(x: any) => x.count
-				);
-			survivorCareGiverGroupLabels =
-				data.basicStatistics.PatientDemographics.SurvivorOrCareGiverDistribution.map((x: any) => {
-					const label = x.caregiver_status;
-					// Check if the label is "Yes" or "No", and assign accordingly
-					if (label === 'No') {
-						return 'Caregiver';
-					} else if (label === 'Yes') {
-						return 'Survivor';
-					} else {
-						return label ? label : 'Unknown';
-					}
-				});
-		}
-	}
+	let ageGroupData = $derived(ageGroup.map((x: any) => x.count));
+	let ageGroupLabels = $derived(ageGroup.map((x: any) => x.age_group || 'Unknown'));
+	let genderGroupData = $derived(genderGroups.map((x: any) => x.count));
+	let genderGroupLabels = $derived(genderGroups.map((x: any) => x.gender || 'Unknown'));
+	let locationGroupData = $derived(locationGroups.map((x: any) => x.count));
+	let locationGroupLabels = $derived(locationGroups.map((x: any) => x.location || 'Unknown'));
+	let ethnicityGroupData = $derived(ethinicityGroups.map((x: any) => x.count));
+	let ethnicityGroupLabels = $derived(ethinicityGroups.map((x: any) => x.ethnicity || 'Unknown'));
+	let raceGroupData = $derived(raceGroups.map((x: any) => x.count));
+	let raceGroupLabels = $derived(raceGroups.map((x: any) => x.race || 'Unknown'));
+	let healthSystemGroupData = $derived(healthSystemsDistribution.map((x: any) => x.count));
+	let healthSystemGroupLabels = $derived(healthSystemsDistribution.map((x: any) => x.health_system || 'Unknown'));
+	let hospitalGroupData = $derived(hospitalDistribution.map((x: any) => x.count));
+	let hospitalGroupLabels = $derived(hospitalDistribution.map((x: any) => x.hospital || 'Unknown'));
+	let survivorCareGiverGroupData = $derived(survivorOrCaregiverDistribution.map((x: any) => x.count));
+	let survivorCareGiverGroupLabels = $derived(survivorOrCaregiverDistribution.map((x: any) => {
+		const label = x.caregiver_status;
+		if (label === 'No') return 'Caregiver';
+		if (label === 'Yes') return 'Survivor';
+		return label || 'Unknown';
+	}));
 
 	// Check if any demographics distribution has data
 	const hasAnyDemographicsData = $derived.by(() => {

@@ -10,12 +10,24 @@
 		downloadAnalyticsPdfReport
 	} = $props();
 
-	let homeLink = `/users/${userId}/home`;
-	let usersLink = `/users/${userId}/analytics/users-stats`;
-	let basicStatsLink = `/users/${userId}/analytics/basic`;
-	let demographicsLink = `/users/${userId}/analytics/demographics`;
-	let genericLink = `/users/${userId}/analytics/overall`;
-	let featureLink = `/users/${userId}/analytics/feature-specific`;
+	// Preserve tenant query params when navigating between tabs
+	let queryString = $derived(() => {
+		const params = new URLSearchParams($page.url.searchParams);
+		const qs = params.toString();
+		return qs ? `?${qs}` : '';
+	});
+
+	// Path-only constants for active tab detection
+	const basicStatsPath = `/users/${userId}/analytics/basic`;
+	const demographicsPath = `/users/${userId}/analytics/demographics`;
+	const genericPath = `/users/${userId}/analytics/overall`;
+	const featurePath = `/users/${userId}/analytics/feature-specific`;
+
+	// Full links with query params preserved for navigation
+	let basicStatsLink = $derived(`${basicStatsPath}${queryString()}`);
+	let demographicsLink = $derived(`${demographicsPath}${queryString()}`);
+	let genericLink = $derived(`${genericPath}${queryString()}`);
+	let featureLink = $derived(`${featurePath}${queryString()}`);
 
 	let isOpen = $state(false);
 	let buttonLabel = $state('Download');
@@ -67,7 +79,7 @@
 	>
 		<!-- Row 1 -->
 		<a
-			class="btn {$page.url.pathname === basicStatsLink
+			class="btn {$page.url.pathname === basicStatsPath
 				? 'variant-filled-secondary'
 				: 'variant-soft-secondary'} flex items-center justify-center gap-2"
 			href={basicStatsLink}
@@ -77,7 +89,7 @@
 		</a>
 
 		<a
-			class="btn {$page.url.pathname === demographicsLink
+			class="btn {$page.url.pathname === demographicsPath
 				? 'variant-filled-secondary'
 				: 'variant-soft-secondary'} flex items-center justify-center gap-2"
 			href={demographicsLink}
@@ -88,7 +100,7 @@
 
 		<!-- Row 2 -->
 		<a
-			class="btn {$page.url.pathname === genericLink
+			class="btn {$page.url.pathname === genericPath
 				? 'variant-filled-secondary'
 				: 'variant-soft-secondary'} flex items-center justify-center gap-2"
 			href={genericLink}
@@ -98,7 +110,7 @@
 		</a>
 
 		<a
-			class="btn {$page.url.pathname === featureLink
+			class="btn {$page.url.pathname === featurePath
 				? 'variant-filled-secondary'
 				: 'variant-soft-secondary'} flex items-center justify-center gap-2 whitespace-nowrap"
 			href={featureLink}

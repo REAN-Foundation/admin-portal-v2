@@ -26,14 +26,25 @@ export const load: LayoutServerLoad = async (event: RequestEvent) => {
 		throw error(401, 'Unauthorized Access');
 	}
 
-	const tenantCode = event.locals.sessionUser.tenantCode;
+	const isSystemAdmin = roleName === 'System admin' || roleName === 'System user';
+
+	// Determine effective tenant based on URL params (for system admin) or session
+	const explicitTenantCode = event.url.searchParams.get('tenantCode');
+	const explicitTenantId = event.url.searchParams.get('tenantId');
+
+	const effectiveTenantCode = (isSystemAdmin && explicitTenantCode)
+		? explicitTenantCode
+		: event.locals.sessionUser.tenantCode;
+	const effectiveTenantId = (isSystemAdmin && explicitTenantId)
+		? explicitTenantId
+		: event.locals.sessionUser.tenantId;
 
 	// Fetch user analytics data (covers basic, demographics, overall, feature-specific tabs)
 	let analyticsData: any = null;
 	try {
 		const today = new Date();
 		const formattedDate = TimeHelper.getDateString(today, DateStringFormat.YYYY_MM_DD);
-		const response = await getUserAnalytics(sessionId ?? '', formattedDate ?? '', tenantCode);
+		const response = await getUserAnalytics(sessionId ?? '', formattedDate ?? '', effectiveTenantCode);
 		if (response && response.Status !== 'Failure' && response.Data) {
 			analyticsData = response.Data;
 		}
@@ -45,12 +56,12 @@ export const load: LayoutServerLoad = async (event: RequestEvent) => {
 	let dailyStatsData: any = null;
 	try {
 		let response;
-		if (roleName === 'System admin' || roleName === 'System user') {
+		if (isSystemAdmin && !explicitTenantId) {
 			response = await getDailyStatistics(sessionId ?? '');
 		} else {
 			response = await getDailyTenantStatistics(
 				sessionId ?? '',
-				event.locals.sessionUser.tenantId ?? ''
+				effectiveTenantId ?? ''
 			);
 		}
 		if (
@@ -68,6 +79,8 @@ export const load: LayoutServerLoad = async (event: RequestEvent) => {
 	const hasAnyFeatureData = hasAnyAnalyticsData(analyticsData, dailyStatsData);
 
 	return {
-		hasAnyFeatureData
+		hasAnyFeatureData,
+		effectiveTenantCode,
+		effectiveTenantId
 	};
 };

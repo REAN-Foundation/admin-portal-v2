@@ -29,7 +29,10 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
         throw error(401, 'Unauthorized Access');
     }
 
-    const tenantCode = event.locals.sessionUser.tenantCode;
+    const roleName = event.locals.sessionUser.roleName;
+    const isSystemAdmin = roleName === 'System admin' || roleName === 'System user';
+    const explicitTenantCode = event.url.searchParams.get('tenantCode');
+    const tenantCode = (isSystemAdmin && explicitTenantCode) ? explicitTenantCode : event.locals.sessionUser.tenantCode;
 
     let basicStatistics = defaultBasicStatistics;
     try {
