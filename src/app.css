@@ -914,6 +914,22 @@ tr {
 	@apply rounded-md bg-[var(--active-soft)] font-semibold text-white transition-colors duration-200 hover:bg-[var(--color-active)];
 }
 
+.secondary-button {
+	@apply rounded-md border border-[var(--active-soft)] bg-transparent font-semibold text-[var(--active-soft)] transition-colors duration-200 hover:bg-[var(--color-active)];
+}
+
+.ghost-button {
+	@apply rounded-md bg-transparent font-semibold text-[var(--color-info)] transition-colors duration-200 hover:bg-[var(--color-active)];
+}
+
+.outline-button {
+	@apply rounded-md border border-[var(--active-soft)] bg-transparent font-semibold text-[var(--color-info)] transition-colors duration-200 hover:bg-[var(--color-neutral)];
+}
+
+.rounded-button {
+	@apply rounded-full bg-[var(--active-soft)] font-semibold text-white transition-colors duration-200 hover:bg-[var(--color-active)];
+}
+
 /* chatbot settings classes */
 .border-hover {
 	@apply hover:ring-[0.5px] hover:ring-[var(--color-active)];
