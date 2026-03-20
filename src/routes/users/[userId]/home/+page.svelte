@@ -31,7 +31,7 @@
 	<div class="px-6 pt-4">
 		<div class="w-full md:w-64">
 			<SearchDropdown
-				placeholder="Search tenant..."
+				placeholder="Search by tenant"
 				searchUrl="/api/server/tenants/search"
 				searchField="name"
 				displayField="Name"
