@@ -11,6 +11,7 @@
 	import { onMount } from 'svelte';
 	import Button from '$lib/components/button/button.svelte';
 	import { MAX_ITEMS_PER_PAGE } from '$lib/components/utils/helper';
+	import SearchDropdown from '$lib/components/search-dropdown.svelte';
 	//////////////////////////////////////////////////////////////////////////
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
@@ -41,10 +42,13 @@
 	function handleReset() {
 		assetType = data.careplanActivitiy.AssetType;
 		assetId = data.careplanActivitiy.AssetId;
+		selectedAssetType = data.careplanActivitiy.AssetType;
+		initialAssetName = data.careplanActivitiy.Asset?.Name ?? '';
 		timeSlot = data.careplanActivitiy.TimeSlot;
 		day = data.careplanActivitiy.Day ?? undefined;
 		sequence = data.careplanActivitiy.Sequence ?? undefined;
 		errors = {};
+		assetDropdownKey++;
 	}
 
 	const breadCrumbs = [
@@ -90,14 +94,16 @@
 	};
 
 	let selectedAssetType = $state(assetType);
+	let assetDropdownKey = $state(0);
+	let initialAssetName = $state(data.careplanActivitiy.Asset?.Name ?? '');
+	let assetSearchUrl = $derived(`/api/server/careplan/assets/search?assetType=${assetRouteMap[selectedAssetType]}`);
 
 	const onSelectAssetType = async (e) => {
 		const newAssetType = e.currentTarget.value;
 		selectedAssetType = newAssetType;
-		await searchAssets({
-			sessionId: data.sessionId,
-			selectedAssetType: newAssetType
-		});
+		assetId = undefined;
+		initialAssetName = '';
+		assetDropdownKey++;
 	};
 
 	async function searchAssets(model) {
@@ -219,18 +225,18 @@
 				<tr class="tables-row">
 					<td class="table-label">Asset <span class="important-field">*</span></td>
 					<td class="table-data">
-						<div class="relative">
-
-						<select name="assetId" class="select" bind:value={assetId}>
-							<option value={undefined} disabled>Select asset...</option>
-							{#each items as val}
-								<option value={val.value}>{val.label}</option>
-							{/each}
-						</select>
-						<div class="select-icon-container">
-							<Icon icon="mdi:chevron-down" class="select-icon" />
-						</div>
-					</div>
+						{#key assetDropdownKey}
+							<SearchDropdown
+								placeholder="Search asset..."
+								searchUrl={assetSearchUrl}
+								searchField="name"
+								displayField="Name"
+								valueField="id"
+								dataPath="Data.Items"
+								initialDisplayValue={initialAssetName}
+								bind:selectedValue={assetId}
+							/>
+						{/key}
 					</td>
 				</tr>
 

@@ -35,11 +35,8 @@
 
 		try {
 			isLoading = true;
-			let url = `${searchUrl}?${searchField}=${encodeURIComponent(term)}&itemsPerPage=10&pageIndex=0`;
-			
-			if (searchUrl.includes('/careplan/search') && searchField === 'code') {
-				url = `${searchUrl}?code=${encodeURIComponent(term)}&itemsPerPage=10&pageIndex=0`;
-			}
+			const separator = searchUrl.includes('?') ? '&' : '?';
+			let url = `${searchUrl}${separator}${searchField}=${encodeURIComponent(term)}&itemsPerPage=10&pageIndex=0`;
 			
 			const response = await fetch(url, {
 				method: 'GET',
