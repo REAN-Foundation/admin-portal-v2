@@ -10,11 +10,13 @@
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Button from '$lib/components/button/button.svelte';
+	import TenantFilter from '$lib/components/tenant-filter.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 
+	let tenantFilter: TenantFilter;
 	let documents = $state(data.documents?.Items || []);
 	let errors: Record<string, string> = $state({});
 
@@ -54,6 +56,18 @@
 		amounts: [10, 20, 30, 50]
 	});
 
+	function handleTenantSelect() {
+		paginationSettings.page = 0;
+		searchDocuments({
+			name,
+			documentType,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
 	async function searchDocuments(model) {
 		try {
 			let url = `/api/server/documents/search?`;
@@ -64,6 +78,8 @@
 
 			if (model.name) url += `&name=${model.name}`;
 			if (model.documentType) url += `&documentType=${model.documentType}`;
+
+			url = tenantFilter.appendTenantParam(url);
 
 			const res = await fetch(url, {
 				method: 'GET',
@@ -270,9 +286,15 @@
 <div class="px-6 py-4">
 	<div class="mx-auto">
 		<div class="table-container shadow">
-			<div class="search-border p-4">
-				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="relative w-auto grow">
+			<div class="search-border">
+				<div class="flex flex-col gap-4 md:flex-row md:items-center">
+					<TenantFilter
+						bind:this={tenantFilter}
+						sessionUser={data.sessionUser}
+						tenantParam="tenantCode"
+						onSelect={handleTenantSelect}
+					/>
+					<div class="relative w-full md:flex-1">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
@@ -299,7 +321,7 @@
 							</button>
 						{/if}
 					</div>
-					<div class="relative w-auto grow">
+					<div class="relative w-full md:flex-1">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"

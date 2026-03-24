@@ -12,11 +12,13 @@
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import Button from '$lib/components/button/button.svelte';
 	import { goto } from '$app/navigation';
+	import TenantFilter from '$lib/components/tenant-filter.svelte';
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 
+	let tenantFilter: TenantFilter;
 	let debounceTimeout;
 	let isLoading = $state(false);
 	let assets = $state(data.assets?.Items ?? []);
@@ -112,6 +114,18 @@
 
 	const breadCrumbs = [{ name: 'Assets', path: assetRoute }];
 
+	function handleTenantSelect() {
+		paginationSettings.page = 0;
+		searchAssets({
+			nameAssetSearch,
+			codeAssetSearch,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
 	async function searchAssets(model) {
 		try {
 			const selectedAssetRoute = assetRouteMap[selectedAssetType];
@@ -122,6 +136,8 @@
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
 			if (model.nameAssetSearch) url += `&name=${model.nameAssetSearch}`;
 			if (model.codeAssetSearch) url += `&code=${model.codeAssetSearch}`;
+
+			url = tenantFilter.appendTenantParam(url);
 
 			const res = await fetch(url, {
 				method: 'GET',
@@ -290,8 +306,14 @@
 
 		<div class="table-container mt-6 shadow">
 			<div class="search-border">
-				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="relative w-auto grow">
+				<div class="flex flex-col gap-4 md:flex-row md:items-center">
+					<TenantFilter
+						bind:this={tenantFilter}
+						sessionUser={data.sessionUser}
+						tenantParam="tenantCode"
+						onSelect={handleTenantSelect}
+					/>
+					<div class="relative w-full md:flex-1">
 						<input
 							type="text"
 							name="name"
@@ -317,7 +339,7 @@
 							</button>
 						{/if}
 					</div>
-					<div class="relative w-auto grow">
+					<div class="relative w-full md:flex-1">
 						<input
 							type="text"
 							name="code"

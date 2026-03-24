@@ -13,11 +13,13 @@
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Button from '$lib/components/button/button.svelte';
+	import TenantFilter from '$lib/components/tenant-filter.svelte';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 
+	let tenantFilter: TenantFilter;
 	let debounceTimeout;
 	let isLoading = $state(false);
 	let users = $state(data.users.Items);
@@ -73,6 +75,16 @@
 		return 'Not Specified';
 	}
 
+	function handleTenantSelect() {
+		paginationSettings.page = 0;
+		searchUser({
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
 	async function searchUser(model) {
 		try {
 			console.log(model);
@@ -85,6 +97,8 @@
 
 			if (phone) url += `&phone=${phone}`;
 			if (email) url += `&email=${email}`;
+
+			url = tenantFilter.appendTenantParam(url);
 
 			const res = await fetch(url, {
 				method: 'GET',
@@ -231,8 +245,13 @@
 	<div class="mx-auto">
 		<div class="table-container shadow">
 			<div class="search-border">
-				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="relative w-auto grow">
+				<div class="flex flex-col gap-4 md:flex-row md:items-center">
+					<TenantFilter
+						bind:this={tenantFilter}
+						sessionUser={data.sessionUser}
+						onSelect={handleTenantSelect}
+					/>
+					<div class="relative w-full md:flex-1">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
@@ -258,7 +277,7 @@
 							</button>
 						{/if}
 					</div>
-					<div class="relative w-auto grow">
+					<div class="relative w-full md:flex-1">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"

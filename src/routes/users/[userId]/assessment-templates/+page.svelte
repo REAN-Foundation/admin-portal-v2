@@ -10,6 +10,7 @@
 	import { toastMessage } from '$lib/components/toast/toast.store';
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import Button from '$lib/components/button/button.svelte';
+	import TenantFilter from '$lib/components/tenant-filter.svelte';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -20,6 +21,9 @@
 	let totalAssessmentTemplatesCount = $state(data.assessmentTemplate.TotalCount);
 
 	const userId = page.params.userId;
+
+	let tenantFilter: TenantFilter;
+
 	const assessmentRoute = `/users/${userId}/assessment-templates`;
 	const editRoute = (id) => `/users/${userId}/assessment-templates/${id}/edit`;
 	const viewRoute = (id) => `/users/${userId}/assessment-templates/${id}/view`;
@@ -51,6 +55,19 @@
 		amounts: [10, 20, 30, 50]
 	});
 
+	function handleTenantSelect() {
+		paginationSettings.page = 0;
+		searchAssessmentTemplate({
+			title,
+			type,
+			tags,
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
 	async function searchAssessmentTemplate(model) {
 		try {
 			let url = `/api/server/assessments/assessment-templates/search?`;
@@ -62,6 +79,8 @@
 			if (model.title) url += `&title=${model.title}`;
 			if (model.type) url += `&type=${model.type}`;
 			if (model.tags) url += `&tags=${model.tags}`;
+
+			url = tenantFilter.appendTenantParam(url);
 
 			const res = await fetch(url, {
 				method: 'GET',
@@ -240,8 +259,13 @@
 	<div class="mx-auto">
 		<div class="table-container shadow">
 			<div class="search-border">
-				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="relative w-full md:w-auto flex-1">
+				<div class="flex flex-col gap-4 md:flex-row md:items-center">
+					<TenantFilter
+						bind:this={tenantFilter}
+						sessionUser={data.sessionUser}
+						onSelect={handleTenantSelect}
+					/>
+					<div class="relative w-full md:flex-1">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
@@ -268,7 +292,7 @@
 						{/if}
 					</div>
 
-					<div class="relative w-full md:w-auto flex-1">
+					<div class="relative w-full md:flex-1">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
@@ -294,7 +318,7 @@
 							</button>
 						{/if}
 					</div>
-					<div class="relative w-full md:w-auto flex-1">
+					<div class="relative w-full md:flex-1">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
