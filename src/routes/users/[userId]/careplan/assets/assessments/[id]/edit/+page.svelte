@@ -9,6 +9,7 @@
 	import { createOrUpdateSchema } from '$lib/validation/assessments.schema';
 	import type { AssessmentUpdateModel } from '$lib/types/assessments.type';
 	import Button from '$lib/components/button/button.svelte';
+	import SearchDropdown from '$lib/components/search-dropdown.svelte';
 
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
@@ -43,9 +44,14 @@
 	);
 
 	const assessmentTemplates = data.assessmentTemplates || [];
-	const assessmentTemplate = assessmentTemplates.find(
-		(template) => template.DisplayCode === referenceTemplateCode
-	);
+
+	console.log('DEBUG edit page:', {
+		referenceTemplateCode,
+		assessmentTemplatesCount: assessmentTemplates.length,
+		templateDisplayCodes: assessmentTemplates.map(t => t.DisplayCode),
+		matchedTemplate: assessmentTemplates.find(t => t.DisplayCode === referenceTemplateCode),
+		assessmentData: data.assessment
+	});
 
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
@@ -249,22 +255,16 @@
 								<div class="text-gray-500 italic">No assessment available</div>
 							</div>
 						{:else}
-							<div class="relative">
-								<select
-									bind:value={referenceTemplateCode}
-									class="select {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
-								>
-									<option value="" disabled selected> Select a assessment </option>
-									{#each assessmentTemplates as template}
-										<option value={template.DisplayCode}>
-											{template.Title}
-										</option>
-									{/each}
-								</select>
-								<div class="select-icon-container">
-									<Icon icon="mdi:chevron-down" class="select-icon" />
-								</div>
-							</div>
+							<SearchDropdown
+								placeholder="Search reference assessment..."
+								searchUrl="/api/server/assessments/assessment-templates/search"
+								searchField="title"
+								displayField="Title"
+								valueField="DisplayCode"
+								dataPath="Data.AssessmentTemplateRecords.Items"
+								initialDisplayValue={assessmentTemplates.find(t => t.DisplayCode === referenceTemplateCode)?.Title ?? ''}
+								bind:selectedValue={referenceTemplateCode}
+							/>
 							{#if errors?.ReferenceTemplateCode}
 								<p class="error-text">{errors?.ReferenceTemplateCode}</p>
 							{/if}

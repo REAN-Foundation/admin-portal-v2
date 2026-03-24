@@ -3,18 +3,25 @@
 
 	///////////////////////////////////////////////////////////////////////////
 
-	let { 
-		placeholder = 'Search...', 
-		searchUrl = '', 
+	let {
+		placeholder = 'Search...',
+		searchUrl = '',
 		searchField = 'name',
 		displayField = 'name',
 		valueField = 'id',
+		dataPath = '',
+		initialDisplayValue = '',
 		selectedValue = $bindable(),
 		selectedDisplay = $bindable(),
 		onSelect = $bindable()
 	} = $props();
 
-	let searchTerm = $state('');
+	const extractByPath = (obj: any, path: string): any[] => {
+		const result = path.split('.').reduce((o: any, key: string) => o?.[key], obj);
+		return Array.isArray(result) ? result : [];
+	};
+
+	let searchTerm = $state(initialDisplayValue);
 	let searchResults = $state([]);
 	let isOpen = $state(false);
 	let isLoading = $state(false);
@@ -41,20 +48,10 @@
 
 			const result = await response.json();
 			
-			if (result.Data && result.Data.Items) {
-				searchResults = result.Data.Items;
-			} else if (result.Data && result.Data.Patients && result.Data.Patients.Items) {
-				searchResults = result.Data.Patients.Items;
-			} else if (result.Data && result.Data.Careplans && result.Data.Careplans.Items) {
-				searchResults = result.Data.Careplans.Items;
-			} else if (result.Data && result.Data.Careplans) {
-				searchResults = result.Data.Careplans;
-			} else if (result.Data && result.Data.TenantRecords && result.Data.TenantRecords.Items) {
-				searchResults = result.Data.TenantRecords.Items;
+			if (dataPath) {
+				searchResults = extractByPath(result, dataPath);
 			} else if (Array.isArray(result)) {
 				searchResults = result;
-			} else if (result.Items) {
-				searchResults = result.Items;
 			} else {
 				searchResults = [];
 			}
