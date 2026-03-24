@@ -14,6 +14,7 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 
 	try {
 		const searchFilters = createSearchFilters(event, {
+			// useTenantCode: true,
 			itemsPerPage: 10
 		});
 		

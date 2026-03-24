@@ -1,26 +1,22 @@
 import { ResponseHandler } from '$lib/utils/response.handler';
+import { createSearchFilters } from '$lib/utils/search.utils';
 import { searchCareplanCategories } from '$routes/api/services/careplan/careplan.category';
 import type { RequestEvent } from '@sveltejs/kit';
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const GET = async (event: RequestEvent) => {
-	
+
 	try {
         const sessionId = event.locals?.sessionUser?.sessionId;
         if (!sessionId) {
             return ResponseHandler.handleError(401, null, new Error("Access denied: Invalid session."));
         }
 
-        const searchParams: URLSearchParams = event.url.searchParams;
-
-        const searchFilters = {
-            type: searchParams.get("type") ?? undefined,
-            orderBy: searchParams.get("sortBy") ?? "CreatedAt",
-            order: searchParams.get("sortOrder") ?? "ascending",
-            itemsPerPage: parseInt(searchParams.get("itemsPerPage") ?? "10"),
-            pageIndex: parseInt(searchParams.get("pageIndex") ?? "0"),
-        };
+        const searchFilters = createSearchFilters(event, {
+            useTenantCode: true,
+            type: event.url.searchParams.get("type") ?? undefined,
+        });
 
         const response = await searchCareplanCategories(sessionId, searchFilters);
         return ResponseHandler.success(response);

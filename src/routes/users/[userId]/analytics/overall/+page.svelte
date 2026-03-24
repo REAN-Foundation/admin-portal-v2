@@ -1,6 +1,5 @@
 <script lang="ts">
 	import GenericChart from './GenericChart.svelte';
-	import { onMount } from 'svelte';
 	import {
 		formatMonth,
 		formatMonthLabel,
@@ -14,92 +13,53 @@
 
 	let { data } = $props();
 
-	let dailyActiveUsersData: any,
-		dailyActiveUsersLabels: any = $state();
-	let monthlyActiveUsersData: any, monthlyActiveUsersLabels: any;
-	let weeklyActiveUsersData: any, weeklyActiveUsersLabels: any;
-	let retentionOnDaysData, retentionOnDaysLabels, retentionOnDaysRate;
-	let retentionOnIntervalData, retentionOnIntervalLabels, retentionOnIntervalRate;
+	// Derived chart data - reactive to tenant changes
+	let dailyActiveUsersData: any = $derived(
+		data.genericMetrics?.DailyActiveUsers?.map((x: { daily_active_users: any }) => x.daily_active_users) ?? []
+	);
+	let dailyActiveUsersLabels: any = $derived(
+		data.genericMetrics?.DailyActiveUsers?.map((x: { activity_date: string | number | Date }) => formatDateToDDMMYYYY(x.activity_date)) ?? []
+	);
+	let weeklyActiveUsersData: any = $derived(
+		data.genericMetrics?.WeeklyActiveUsers?.map((x: { weekly_active_users: any }) => x.weekly_active_users) ?? []
+	);
+	let weeklyActiveUsersLabels: any = $derived(
+		data.genericMetrics?.WeeklyActiveUsers?.map((x: { week_start_date: string | number | Date }) => `${formatDateToDDMMYYYY(x.week_start_date)}`) ?? []
+	);
+	let monthlyActiveUsersData: any = $derived(
+		data.genericMetrics?.MonthlyActiveUsers?.map((x: { monthly_active_users: any }) => x.monthly_active_users) ?? []
+	);
+	let monthlyActiveUsersLabels: any = $derived(
+		data.genericMetrics?.MonthlyActiveUsers?.map((x: { activity_month: string }) => formatMonth(x.activity_month)) ?? []
+	);
+	let retentionOnDaysData = $derived(
+		data.genericMetrics?.RetentionRateOnSpecificDays?.retention_on_specific_days?.map((x: { returning_users: any }) => x.returning_users) ?? []
+	);
+	let retentionOnDaysLabels = $derived(
+		data.genericMetrics?.RetentionRateOnSpecificDays?.retention_on_specific_days?.map((x: { day: any }) => `${x.day}`) ?? []
+	);
+	let retentionOnDaysRate = $derived(
+		data.genericMetrics?.RetentionRateOnSpecificDays?.retention_on_specific_days?.map((x: { retention_rate: any }) => x.retention_rate) ?? []
+	);
+	let retentionOnIntervalData = $derived(
+		data.genericMetrics?.RetentionRateInSpecificIntervals?.retention_in_specific_interval?.map((x: { returning_users: any }) => x.returning_users) ?? []
+	);
+	let retentionOnIntervalLabels = $derived(
+		data.genericMetrics?.RetentionRateInSpecificIntervals?.retention_in_specific_interval?.map((x: { interval: any }) => x.interval) ?? []
+	);
+	let retentionOnIntervalRate = $derived(
+		data.genericMetrics?.RetentionRateInSpecificIntervals?.retention_in_specific_interval?.map((x: { retention_rate: any }) => x.retention_rate) ?? []
+	);
 
-	if (data.genericMetrics) {
-		if (data.genericMetrics.DailyActiveUsers) {
-			dailyActiveUsersData = data.genericMetrics.DailyActiveUsers.map(
-				(x: { daily_active_users: any }) => x.daily_active_users
-			);
-			dailyActiveUsersLabels = data.genericMetrics.DailyActiveUsers.map(
-				(x: { activity_date: string | number | Date }) => formatDateToDDMMYYYY(x.activity_date)
-			);
-		}
-
-		if (data.genericMetrics.WeeklyActiveUsers) {
-			weeklyActiveUsersData = data.genericMetrics.WeeklyActiveUsers.map(
-				(x: { weekly_active_users: any }) => x.weekly_active_users
-			);
-			weeklyActiveUsersLabels = data.genericMetrics.WeeklyActiveUsers.map(
-				(x: { week_start_date: string | number | Date }) =>
-					`${formatDateToDDMMYYYY(x.week_start_date)}`
-			);
-		}
-		if (data.genericMetrics.MonthlyActiveUsers) {
-			monthlyActiveUsersData = data.genericMetrics.MonthlyActiveUsers.map(
-				(x: { monthly_active_users: any }) => x.monthly_active_users
-			);
-			monthlyActiveUsersLabels = data.genericMetrics.MonthlyActiveUsers.map(
-				(x: { activity_month: string }) => formatMonth(x.activity_month)
-			);
-		}
-
-		if (data.genericMetrics.RetentionRateOnSpecificDays?.retention_on_specific_days) {
-			retentionOnDaysData =
-				data.genericMetrics.RetentionRateOnSpecificDays.retention_on_specific_days.map(
-					(x: { returning_users: any }) => x.returning_users
-				);
-			retentionOnDaysLabels =
-				data.genericMetrics.RetentionRateOnSpecificDays.retention_on_specific_days.map(
-					(x: { day: any }) => `${x.day}`
-				);
-			retentionOnDaysRate =
-				data.genericMetrics.RetentionRateOnSpecificDays.retention_on_specific_days.map(
-					(x: { retention_rate: any }) => x.retention_rate
-				);
-		}
-
-		if (data.genericMetrics.RetentionRateInSpecificIntervals?.retention_in_specific_interval) {
-			retentionOnIntervalData =
-				data.genericMetrics.RetentionRateInSpecificIntervals.retention_in_specific_interval.map(
-					(x: { returning_users: any }) => x.returning_users
-				);
-			retentionOnIntervalLabels =
-				data.genericMetrics.RetentionRateInSpecificIntervals.retention_in_specific_interval.map(
-					(x: { interval: any }) => x.interval
-				);
-			retentionOnIntervalRate =
-				data.genericMetrics.RetentionRateInSpecificIntervals.retention_in_specific_interval.map(
-					(x: { retention_rate: any }) => x.retention_rate
-				);
-		}
-	}
-
-	const mostFiredEvents = data.genericMetrics?.MostFiredEvents ?? [];
-	const mostFiredEventsByEventCategory = data.genericMetrics?.MostFiredEventsByEventCategory ?? [];
+	let mostFiredEvents = $derived(data.genericMetrics?.MostFiredEvents ?? []);
+	let mostFiredEventsByEventCategory = $derived(data.genericMetrics?.MostFiredEventsByEventCategory ?? []);
 
 	let selectedGraph = $state('daily');
 
-	let processedData: {
-		month: string;
-		mostUsedFeature: string;
-		usageCount: unknown;
-		totalUsage: any;
-		percentage: string;
-		year: string; // Extract the year
-	}[] = $state([]);
-	let filteredData: any = $state();
-	let years: any = $state();
-	let selectedYear: any = $state();
 	const tableHeaders = ['Month', 'Most Used Feature', 'Usage Count', 'Total Usage', 'Percentage'];
 
-	onMount(() => {
-		// Process the data
+	// Process most commonly visited features - reactive to data changes
+	let processedData = $derived.by(() => {
 		let monthlyData: any = {};
 		(data.genericMetrics?.MostCommonlyVisitedFeatures ?? []).forEach((item: any) => {
 			if (!monthlyData[item.month]) {
@@ -109,32 +69,37 @@
 			monthlyData[item.month].features[item.feature] = item.feature_usage_count;
 		});
 
-		processedData = Object.entries(monthlyData).map(([month, data]: any) => {
-			let mostUsedFeature: any = Object.entries(data.features).reduce((a: any, b: any) =>
+		const result = Object.entries(monthlyData).map(([month, d]: any) => {
+			let mostUsedFeature: any = Object.entries(d.features).reduce((a: any, b: any) =>
 				b[1] > a[1] ? b : a
 			);
 			return {
 				month,
 				mostUsedFeature: mostUsedFeature[0],
 				usageCount: mostUsedFeature[1],
-				totalUsage: data.totalUsage,
-				percentage: ((mostUsedFeature[1] / data.totalUsage) * 100).toFixed(2) + '%',
-				year: month.split('-')[0] // Extract the year
+				totalUsage: d.totalUsage,
+				percentage: ((mostUsedFeature[1] / d.totalUsage) * 100).toFixed(2) + '%',
+				year: month.split('-')[0]
 			};
 		});
 
-		processedData.sort((a: any, b: any) => new Date(a.month) - new Date(b.month));
-
-		years = [...new Set(processedData.map((data) => data.year))];
-
-		selectedYear = years[0];
-
-		console.log('years ==>', years, selectedYear);
+		result.sort((a: any, b: any) => new Date(a.month) - new Date(b.month));
+		return result;
 	});
 
+	let years: any = $derived([...new Set(processedData.map((d) => d.year))]);
+	let selectedYear: any = $state();
+
+	// Reset selected year when data changes
 	$effect(() => {
-		filteredData = processedData.filter((item) => item.year === selectedYear);
+		if (years?.length > 0) {
+			selectedYear = years[0];
+		}
 	});
+
+	let filteredData: any = $derived(
+		processedData.filter((item) => item.year === selectedYear)
+	);
 
 	// Check if any overall data exists across all sections
 	const hasAnyOverallData = $derived.by(() => {

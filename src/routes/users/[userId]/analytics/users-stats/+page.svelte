@@ -6,18 +6,27 @@
 
 	let { data }: { data: PageServerData } = $props();
 
+	// Mutable state vars (can be changed by year selectors) - reset on data change
 	let genderWiseUsers = $state(data.genderWiseUsers ?? []);
 	let ageWiseUsers = $state(data.ageWiseUsers ?? []);
-
 	let maritalStatusWiseUsers: any = $state(data.maritalStatusWiseUsers ?? []);
-
-	let usersCount = data.overallUsersData;
 	let majorAilment = $state(data.majorAilment ?? []);
 	let addictionDistribution = $state(data.addictionDistribution ?? []);
-	let deviceDetailWiseUsers = data.deviceDetailWiseUsers ?? [];
-	let years = data.years ?? [];
 
-	// countryWiseUsers = data.countryWiseUsers;
+	// Reset mutable state when data changes (tenant switch)
+	$effect(() => {
+		genderWiseUsers = data.genderWiseUsers ?? [];
+		ageWiseUsers = data.ageWiseUsers ?? [];
+		maritalStatusWiseUsers = data.maritalStatusWiseUsers ?? [];
+		majorAilment = data.majorAilment ?? [];
+		addictionDistribution = data.addictionDistribution ?? [];
+	});
+
+	// Derived read-only values
+	let usersCount = $derived(data.overallUsersData);
+	let deviceDetailWiseUsers = $derived(data.deviceDetailWiseUsers ?? []);
+	let years = $derived(data.years ?? []);
+
 	let selectedYear: any;
 
 	const selectAgeWiseUsersDividionYearly = (e: any) => {
