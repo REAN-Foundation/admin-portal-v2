@@ -261,14 +261,14 @@
 												iconSize="sm"
 												tooltip="View"
 											/>
-											<Button
+											<!-- <Button
 												onclick={() => handleDeleteClick(row.id)}
 												variant="icon"
 												icon="material-symbols:delete-outline-rounded"
 												iconSize="sm"
 												color="red"
 												tooltip="Delete"
-											/>
+											/> -->
 										</div>
 									</td>
 								</tr>
