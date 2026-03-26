@@ -187,7 +187,7 @@
 		idToBeDeleted = id;
 	};
 
-	const handleExport = async (id) => {
+	const handleExport = async (id, displayCode) => {
 		try {
 			const response = await fetch(
 				`/api/server/assessments/assessment-templates/${id}/export`,
@@ -198,9 +198,8 @@
 				throw new Error(`Export failed: ${response.status}`);
 			}
 
-			const contentDisposition = response.headers.get('Content-Disposition');
-			const match = contentDisposition?.match(/filename="?([^"]+)"?/);
-			const filename = match ? match[1] : `assessment-template-${id}.json`;
+			const date = new Date().toISOString().split('T')[0];
+			const filename = `${displayCode}-assessment-export-${date}.json`;
 
 			const blob = await response.blob();
 			const url = URL.createObjectURL(blob);
@@ -421,7 +420,7 @@
 									<td role="gridcell" aria-colindex={2} tabindex="0">
 										<div class="flex justify-end">
 											<Button
-												onclick={() => handleExport(row.id)}
+												onclick={() => handleExport(row.id, row.DisplayCode)}
 												variant="icon"
 												icon="material-symbols:download"
 												iconSize="sm"
