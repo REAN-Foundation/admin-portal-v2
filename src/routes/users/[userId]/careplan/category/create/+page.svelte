@@ -14,7 +14,7 @@
 
 	let errors: Record<string, string> = $state({});
 	let categoryType = $state(undefined);
-	let categoryDescription = $state(undefined);
+	let categoryDescription = $state('');
 	let promise = $state();
 	data.title = 'Careplan Categories-Category Create';
 	const userId = page.params.userId;
@@ -101,7 +101,7 @@
 					</td>
 				</tr>
 				<tr class="tables-row">
-					<td class="table-label">Description</td>
+					<td class="table-label">Description <span class="important-field">*</span></td>
 					<td class="table-data">
 						<textarea
 							class="input"

@@ -14,7 +14,7 @@
 	let { data, form }: { data: PageServerData; form: any } = $props();
 
 	let categoryType = $state(data.careplanCategory.Type);
-	let categoryDescription = $state(data.careplanCategory.Description || undefined);
+	let categoryDescription = $state(data.careplanCategory.Description || '');
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	const userId = page.params.userId;
@@ -108,7 +108,7 @@
 					</td>
 				</tr>
 				<tr class="tables-row">
-					<td class="table-label">Description</td>
+					<td class="table-label">Description <span class="important-field">*</span></td>
 					<td class="table-data">
 						<textarea
 							class="input"

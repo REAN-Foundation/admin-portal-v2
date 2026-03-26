@@ -86,10 +86,8 @@ const handleExport = async () => {
 			throw new Error(`Export failed: ${response.status}`);
 		}
 
-		// get the filename from headers if available
-		const contentDisposition = response.headers.get('Content-Disposition');
-		const match = contentDisposition?.match(/filename="?([^"]+)"?/);
-		const filename = match ? match[1] : `assessment-template-${templateId}.json`;
+		const date = new Date().toISOString().split('T')[0];
+		const filename = `${displayCode}-assessment-export-${date}.json`;
 
 		// convert response into a blob
 		const blob = await response.blob();
@@ -138,10 +136,8 @@ const handleFlowJson = async () => {
 			throw new Error(`Export failed: ${response.status}`);
 		}
 
-		// get the filename from headers if available
-		const contentDisposition = response.headers.get('Content-Disposition');
-		const match = contentDisposition?.match(/filename="?([^"]+)"?/);
-		const filename = match ? match[1] : `assessment-template-${templateId}.json`;
+		const date = new Date().toISOString().split('T')[0];
+		const filename = `${displayCode}-flow-json-${date}.json`;
 
 		// convert response into a blob
 		const blob = await response.blob();

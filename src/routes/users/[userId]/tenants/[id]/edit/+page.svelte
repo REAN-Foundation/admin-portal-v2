@@ -167,7 +167,7 @@
 							type="text"
 							name="code"
 							placeholder="Enter code here..."
-							class="input text-gray-500 {errors?.code ? 'input-text-error' : ''}"
+							class="grayout-input {errors?.code ? 'input-text-error' : ''}"
 							bind:value={code}
 							disabled
 						/>
@@ -201,8 +201,9 @@
 							type="email"
 							name="email"
 							placeholder="Enter email here..."
-							class="input {errors?.email ? 'input-text-error' : ''}"
+							class="grayout-input {errors?.email ? 'input-text-error' : ''}"
 							bind:value={email}
+							disabled
 						/>
 						{#if errors?.Email}
 							<p class="text-error">{errors?.Email}</p>

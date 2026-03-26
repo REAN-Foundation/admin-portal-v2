@@ -36,6 +36,7 @@
 				searchField="name"
 				displayField="Name"
 				valueField="Code"
+				dataPath="Data.TenantRecords.Items"
 				bind:selectedValue={selectedTenantCode}
 				bind:selectedDisplay={selectedTenantDisplay}
 				onSelect={handleTenantSelect}

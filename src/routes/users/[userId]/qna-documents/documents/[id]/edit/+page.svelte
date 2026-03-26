@@ -42,6 +42,15 @@
 		documentType ? (splitterOptionsByType[documentType.toLowerCase()] ?? []) : []
 	);
 
+	// Reset splitter when document type changes (e.g., user uploads a different file type)
+	let prevDocumentType = $state(documentType ?? '');
+	$effect(() => {
+		if (documentType !== prevDocumentType) {
+			prevDocumentType = documentType;
+			splitter = undefined;
+		}
+	});
+
 	let imageUrl = $state('');
 	let fileinput = $state();
 	let resourceId = $state(data.documents.ResourceId);

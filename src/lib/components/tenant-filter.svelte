@@ -52,6 +52,7 @@
 			searchField="name"
 			displayField="Name"
 			valueField={tenantParam === 'tenantCode' ? 'Code' : 'id'}
+			dataPath="Data.TenantRecords.Items"
 			bind:selectedValue
 			bind:selectedDisplay
 			onSelect={handleTenantSelect}

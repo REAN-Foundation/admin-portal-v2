@@ -8,6 +8,7 @@
 	import type { AssessmentCreateModel } from '$lib/types/assessments.type.js';
 	import { createOrUpdateSchema } from '$lib/validation/assessments.schema.js';
 	import Button from '$lib/components/button/button.svelte';
+	import SearchDropdown from '$lib/components/search-dropdown.svelte';
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
@@ -207,20 +208,15 @@
 				<div class="error-text">No assessment available</div>
 			</div>
 		{:else}
-		<div class="relative">
-			<select
-				bind:value={referenceTemplateCode}
-				class="select {errors?.ReferenceTemplateCode ? 'input-text-error' : ''}"
-			>
-				<!-- <option disabled selected value="">Select reference assessment here...</option> -->
-				{#each assessmentTemplates as template}
-					<option value={template.DisplayCode}>{template.Title}</option>
-				{/each}
-			</select>
-			<div class="select-icon-container">
-				<Icon icon="mdi:chevron-down" class="select-icon" />
-			</div>
-		</div>
+			<SearchDropdown
+				placeholder="Search reference assessment..."
+				searchUrl="/api/server/assessments/assessment-templates/search"
+				searchField="title"
+				displayField="Title"
+				valueField="DisplayCode"
+				dataPath="Data.AssessmentTemplateRecords.Items"
+				bind:selectedValue={referenceTemplateCode}
+			/>
 			{#if errors?.ReferenceTemplateCode}
 				<p class="error-text">{errors?.ReferenceTemplateCode}</p>
 			{/if}
