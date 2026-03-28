@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt Templates - REAN Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.25rem;
+    }
+    
+    .template-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+    
+    .template-card:hover {
+      border-color: var(--color-primary-500);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    
+    .template-card-header {
+      padding: 1.25rem;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    
+    .template-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .template-icon.chat { background: rgba(51, 89, 255, 0.1); color: var(--color-primary-500); }
+    .template-icon.welcome { background: rgba(16, 185, 129, 0.1); color: var(--color-success-500); }
+    .template-icon.reminder { background: rgba(245, 158, 11, 0.1); color: var(--color-warning-500); }
+    .template-icon.assessment { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+    .template-icon.support { background: rgba(236, 72, 153, 0.1); color: #ec4899; }
+    .template-icon.health { background: rgba(20, 184, 166, 0.1); color: #14b8a6; }
+    
+    .template-card-body {
+      padding: 1.25rem;
+    }
+    
+    .template-preview {
+      background: var(--color-surface-alt);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      font-size: 0.8125rem;
+      color: var(--color-text-secondary);
+      font-family: 'Monaco', 'Menlo', monospace;
+      max-height: 80px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .template-preview::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 30px;
+      background: linear-gradient(transparent, var(--color-surface-alt));
+    }
+    
+    .template-card-footer {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--color-surface-alt);
+    }
+    
+    .template-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+    }
+    
+    .template-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    
+    .category-badge {
+      padding: 0.25rem 0.625rem;
+      border-radius: var(--radius-full);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    
+    .category-badge.chatbot { background: rgba(51, 89, 255, 0.1); color: var(--color-primary-500); }
+    .category-badge.notification { background: rgba(245, 158, 11, 0.1); color: var(--color-warning-500); }
+    .category-badge.assessment { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+    .category-badge.support { background: rgba(236, 72, 153, 0.1); color: #ec4899; }
+    
+    .filter-bar {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    
+    .filter-chip {
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-full);
+      font-size: 0.875rem;
+      font-weight: 500;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    
+    .filter-chip:hover {
+      border-color: var(--color-primary-500);
+    }
+    
+    .filter-chip.active {
+      background: var(--color-primary-500);
+      border-color: var(--color-primary-500);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="navbar" id="navbar"></header>
+      
+      <div class="page-container">
+        <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h1 class="page-title">Prompt Templates</h1>
+            <p class="page-subtitle">Manage AI conversation templates and message patterns</p>
+          </div>
+          <button class="btn btn-primary" onclick="openCreateModal()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Create Template
+          </button>
+        </div>
+        
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <button class="filter-chip active" onclick="filterByCategory('all', this)">All Templates</button>
+          <button class="filter-chip" onclick="filterByCategory('chatbot', this)">Chatbot</button>
+          <button class="filter-chip" onclick="filterByCategory('notification', this)">Notifications</button>
+          <button class="filter-chip" onclick="filterByCategory('assessment', this)">Assessments</button>
+          <button class="filter-chip" onclick="filterByCategory('support', this)">Support</button>
+        </div>
+        
+        <!-- Search -->
+        <div style="margin-bottom: 1.5rem;">
+          <div class="table-search" style="max-width: 400px;">
+            <span class="table-search-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="M21 21l-4.35-4.35"/>
+              </svg>
+            </span>
+            <input type="text" placeholder="Search templates..." id="searchInput" oninput="searchTemplates()">
+          </div>
+        </div>
+        
+        <!-- Template Grid -->
+        <div class="template-grid" id="templateGrid">
+          <!-- Welcome Message Template -->
+          <div class="template-card" data-category="chatbot">
+            <div class="template-card-header">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div class="template-icon welcome">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem;">Welcome Message</h3>
+                  <span class="category-badge chatbot">Chatbot</span>
+                </div>
+              </div>
+              <button class="btn btn-icon btn-ghost sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+                </svg>
+              </button>
+            </div>
+            <div class="template-card-body">
+              <p style="font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: 1rem;">Initial greeting message for new users joining the platform.</p>
+              <div class="template-preview">
+Hello {{user_name}}! 👋
+
+Welcome to REAN Health. I'm here to help you manage your health journey. You can:
+• Track your medications
+• Log your symptoms
+• Schedule appointments
+              </div>
+            </div>
+            <div class="template-card-footer">
+              <div class="template-meta">
+                <span class="template-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20V10M18 20V4M6 20v-4"/>
+                  </svg>
+                  1.2k uses
+                </span>
+                <span class="template-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  2 days ago
+                </span>
+              </div>
+              <div style="display: flex; gap: 0.25rem;">
+                <button class="btn btn-ghost btn-sm" onclick="editTemplate('welcome')">Edit</button>
+                <button class="btn btn-primary btn-sm" onclick="previewTemplate('welcome')">Preview</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Medication Reminder Template -->
+          <div class="template-card" data-category="notification">
+            <div class="template-card-header">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div class="template-icon reminder">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 01-3.46 0"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem;">Medication Reminder</h3>
+                  <span class="category-badge notification">Notification</span>
+                </div>
+              </div>
+              <button class="btn btn-icon btn-ghost sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+                </svg>
+              </button>
+            </div>
+            <div class="template-card-body">
+              <p style="font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: 1rem;">Automated reminder for medication schedules.</p>
+              <div class="template-preview">
+⏰ Medication Reminder
+
+Hi {{user_name}}, it's time to take your {{medication_name}}.
+
+Dosage: {{dosage}}
+Time: {{scheduled_time}}
+
+Reply "TAKEN" to confirm.
+              </div>
+            </div>
+            <div class="template-card-footer">
+              <div class="template-meta">
+                <span class="template-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20V10M18 20V4M6 20v-4"/>
+                  </svg>
+                  4.8k uses
+                </span>
+                <span class="template-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  1 week ago
+                </span>
+              </div>
+              <div style="display: flex; gap: 0.25rem;">
+                <button class="btn btn-ghost btn-sm" onclick="editTemplate('medication')">Edit</button>
+                <button class="btn btn-primary btn-sm" onclick="previewTemplate('medication')">Preview</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Assessment Introduction Template -->
+          <div class="template-card" data-category="assessment">
+            <div class="template-card-header">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div class="template-icon assessment">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem;">Assessment Intro</h3>
+                  <span class="category-badge assessment">Assessment</span>
+                </div>
+              </div>
+              <button class="btn btn-icon btn-ghost sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+                </svg>
+              </button>
+            </div>
+            <div class="template-card-body">
+              <p style="font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: 1rem;">Introduction message before starting health assessments.</p>
+              <div class="template-preview">
+📋 Health Assessment
+
+Hi {{user_name}}, I'd like to ask you a few questions about {{assessment_topic}}.
+
+This will take about {{estimated_time}} minutes. Your answers help us provide better care.
+
+Ready to begin? Reply YES to start.
+              </div>
+            </div>
+            <div class="template-card-footer">
+              <div class="template-meta">
+                <span class="template-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20V10M18 20V4M6 20v-4"/>
+                  </svg>
+                  892 uses
+                </span>
+                <span class="template-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  3 days ago
+                </span>
+              </div>
+              <div style="display: flex; gap: 0.25rem;">
+                <button class="btn btn-ghost btn-sm" onclick="editTemplate('assessment')">Edit</button>
+                <button class="btn btn-primary btn-sm" onclick="previewTemplate('assessment')">Preview</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Support Request Template -->
+          <div class="template-card" data-category="support">
+            <div class="template-card-header">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div class="template-icon support">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem;">Support Escalation</h3>
+                  <span class="category-badge support">Support</span>
+                </div>
+              </div>
+              <button class="btn btn-icon btn-ghost sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+                </svg>
+              </button>
+            </div>
+            <div class="template-card-body">
+              <p style="font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: 1rem;">Template for escalating user support requests to human agents.</p>
+              <div class="template-preview">
+🆘 Support Request Received
+
+Hi {{user_name}}, I understand you need additional help.
+
+I'm connecting you with a support specialist who will assist you shortly.
+
+Ticket #{{ticket_id}}
+Priority: {{priority_level}}
+              </div>
+            </div>
+            <div class="template-card-footer">
+              <div class="template-meta">
+                <span class="template-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20V10M18 20V4M6 20v-4"/>
+                  </svg>
+                  567 uses
+                </span>
+                <span class="template-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  5 days ago
+                </span>
+              </div>
+              <div style="display: flex; gap: 0.25rem;">
+                <button class="btn btn-ghost btn-sm" onclick="editTemplate('support')">Edit</button>
+                <button class="btn btn-primary btn-sm" onclick="previewTemplate('support')">Preview</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Appointment Confirmation Template -->
+          <div class="template-card" data-category="notification">
+            <div class="template-card-header">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div class="template-icon chat">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem;">Appointment Confirm</h3>
+                  <span class="category-badge notification">Notification</span>
+                </div>
+              </div>
+              <button class="btn btn-icon btn-ghost sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+                </svg>
+              </button>
+            </div>
+            <div class="template-card-body">
+              <p style="font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: 1rem;">Confirmation message for scheduled appointments.</p>
+              <div class="template-preview">
+✅ Appointment Confirmed
+
+Dear {{user_name}},
+
+Your appointment has been confirmed:
+📅 Date: {{appointment_date}}
+🕐 Time: {{appointment_time}}
+👨‍⚕️ Doctor: {{doctor_name}}
+              </div>
+            </div>
+            <div class="template-card-footer">
+              <div class="template-meta">
+                <span class="template-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20V10M18 20V4M6 20v-4"/>
+                  </svg>
+                  2.3k uses
+                </span>
+                <span class="template-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  1 day ago
+                </span>
+              </div>
+              <div style="display: flex; gap: 0.25rem;">
+                <button class="btn btn-ghost btn-sm" onclick="editTemplate('appointment')">Edit</button>
+                <button class="btn btn-primary btn-sm" onclick="previewTemplate('appointment')">Preview</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Health Tips Template -->
+          <div class="template-card" data-category="chatbot">
+            <div class="template-card-header">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div class="template-icon health">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem;">Daily Health Tips</h3>
+                  <span class="category-badge chatbot">Chatbot</span>
+                </div>
+              </div>
+              <button class="btn btn-icon btn-ghost sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+                </svg>
+              </button>
+            </div>
+            <div class="template-card-body">
+              <p style="font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: 1rem;">Daily wellness tips and health advice delivery.</p>
+              <div class="template-preview">
+💡 Health Tip of the Day
+
+{{tip_title}}
+
+{{tip_content}}
+
+#HealthyLiving #WellnessJourney
+
+Want more tips? Reply SUBSCRIBE
+              </div>
+            </div>
+            <div class="template-card-footer">
+              <div class="template-meta">
+                <span class="template-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20V10M18 20V4M6 20v-4"/>
+                  </svg>
+                  3.1k uses
+                </span>
+                <span class="template-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  Today
+                </span>
+              </div>
+              <div style="display: flex; gap: 0.25rem;">
+                <button class="btn btn-ghost btn-sm" onclick="editTemplate('healthtips')">Edit</button>
+                <button class="btn btn-primary btn-sm" onclick="previewTemplate('healthtips')">Preview</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Create/Edit Template Modal -->
+  <div class="modal-overlay" id="templateModal">
+    <div class="modal" style="max-width: 700px;">
+      <div class="modal-header">
+        <h3 class="modal-title" id="templateModalTitle">Create Prompt Template</h3>
+        <button class="modal-close" onclick="closeTemplateModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="templateForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Template Name <span class="required">*</span></label>
+              <input type="text" class="form-input" placeholder="e.g., Welcome Message">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category <span class="required">*</span></label>
+              <select class="form-input form-select">
+                <option value="">Select category</option>
+                <option value="chatbot">Chatbot</option>
+                <option value="notification">Notification</option>
+                <option value="assessment">Assessment</option>
+                <option value="support">Support</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <input type="text" class="form-input" placeholder="Brief description of this template">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Template Content <span class="required">*</span></label>
+            <textarea class="form-input" rows="8" placeholder="Enter your template content here. Use {{variable_name}} for dynamic content."></textarea>
+            <p class="form-hint">Available variables: {{user_name}}, {{date}}, {{time}}, {{custom_field}}</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tags</label>
+            <input type="text" class="form-input" placeholder="Enter tags separated by commas">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeTemplateModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveTemplate()">Save Template</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeLayout({
+        currentPage: 'prompt-templates.html',
+        breadcrumbs: [
+          { name: 'Content', href: '#' },
+          { name: 'Prompt Templates', href: 'prompt-templates.html' }
+        ],
+        user: currentUser
+      });
+    });
+    
+    function filterByCategory(category, btn) {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      
+      const cards = document.querySelectorAll('.template-card');
+      cards.forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+    
+    function searchTemplates() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.template-card');
+      
+      cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(query) ? '' : 'none';
+      });
+    }
+    
+    function openCreateModal() {
+      document.getElementById('templateModalTitle').textContent = 'Create Prompt Template';
+      document.getElementById('templateModal').classList.add('active');
+    }
+    
+    function closeTemplateModal() {
+      document.getElementById('templateModal').classList.remove('active');
+    }
+    
+    function editTemplate(id) {
+      document.getElementById('templateModalTitle').textContent = 'Edit Prompt Template';
+      document.getElementById('templateModal').classList.add('active');
+    }
+    
+    function previewTemplate(id) {
+      Toast.info('Preview opened for template: ' + id);
+    }
+    
+    function saveTemplate() {
+      Toast.success('Template saved successfully');
+      closeTemplateModal();
+    }
+  </script>
+</body>
+</html>
