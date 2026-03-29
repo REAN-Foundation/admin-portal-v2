@@ -25,6 +25,6 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
         goalTypes,
         sessionId,
         message: response.Message,
-        title: 'Types-Goals'
+        title: 'Careplan-Goals'
     };
 };

@@ -22,7 +22,7 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
         location: `${id}/edit`,
         priority,
         message: response.Message,
-        title: 'Types-Priorities Edit'
+        title: 'Careplan-Priorities Edit'
     };
 };
 

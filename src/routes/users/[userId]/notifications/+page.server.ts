@@ -23,6 +23,12 @@ import type { PageServerLoad } from './$types';
 // 	}
 // };
 
+export const load: PageServerLoad = async () => {
+	return {
+		title: 'Add-ons-Notifications'
+	};
+};
+
 import { redirect } from 'sveltekit-flash-message/server';
 import { z } from 'zod';
 import { zfd } from 'zod-form-data';

@@ -24,7 +24,7 @@ const defaultData = {
 	userCountByYears: [],
 	deviceDetailsStats: [],
 	deviceDetailsByYears: [],
-	title: 'Dashboard-Home-Overall'
+	title: 'Dashboard-Analytics'
 };
 
 export const load: PageServerLoad = async (event: RequestEvent) => {
@@ -77,6 +77,6 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 		userCountByYears: userStatistics?.YearWiseUserCount ?? [],
 		deviceDetailsStats: userStatistics?.DeviceDetailWiseUsers ?? [],
 		deviceDetailsByYears: userStatistics?.YearWiseDeviceDetails ?? [],
-		title: 'Dashboard-Home-Overall'
+		title: 'Dashboard-Analytics'
 	};
 };

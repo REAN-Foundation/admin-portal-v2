@@ -23,6 +23,6 @@ export const load: PageServerLoad = async (event: ServerLoadEvent) => {
 		priorityTypes,
 		sessionId,
 		message: response?.Message || 'Priority Types retrieved successfully',
-		title: 'Types-Priorities'
+		title: 'Careplan-Priorities'
 	};
 };

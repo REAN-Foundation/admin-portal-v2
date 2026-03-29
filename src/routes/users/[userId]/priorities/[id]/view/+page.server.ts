@@ -17,6 +17,6 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
         location: `${id}/edit`,
         priority,
         message: response.Message,
-        title: 'Types-Priorities View'
+        title: 'Careplan-Priorities View'
     };
 };
