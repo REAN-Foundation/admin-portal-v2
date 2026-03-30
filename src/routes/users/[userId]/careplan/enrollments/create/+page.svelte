@@ -171,7 +171,7 @@
 							searchField="code"
 							displayField="Name"
 							valueField="id"
-							dataPath="Data.Careplans.Items"
+							dataPath="Data.Items"
 							bind:selectedValue={selectedCareplanId}
 							bind:selectedDisplay={selectedCareplanName}
 							onSelect={handleCareplanSelect}
