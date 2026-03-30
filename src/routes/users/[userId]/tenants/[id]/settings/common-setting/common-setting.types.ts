@@ -3,11 +3,6 @@ export const commonUISettings= {
 		Name: 'Clinical',
 		Path: 'mdi:stethoscope',
 		Description: 'Manage clinical care and medical services.',
-		Vitals: {
-			Name: 'Vitals',
-			Path: 'mdi:heart-pulse',
-			Description: 'Monitor and track patient vital signs.'
-		},
 		LabRecords: {
 			Name: 'Lab Records',
 			Path: 'mdi:test-tube',
@@ -23,11 +18,6 @@ export const commonUISettings= {
 			Path: 'mdi:pill',
 			Description: 'Manage drug inventory and prescriptions.'
 		},
-		Medications: {
-			Name: 'Medications',
-			Path: 'mdi:medication-outline',
-			Description: 'Track patient medication schedules.'
-		},
 		Careplans: {
 			Name: 'Careplans',
 			Path: 'mdi:clipboard-list-outline',
@@ -38,41 +28,11 @@ export const commonUISettings= {
 			Path: 'mdi:clipboard-check-outline',
 			Description: 'Conduct patient health assessments.'
 		},
-		SymptomAssessments: {
-			Name: 'Symptom Assessments',
-			Path: 'mdi:clipboard-pulse-outline',
-			Description: 'Specialized symptom evaluation assessments.'
-		},
-		DailyAssessments: {
-			Name: 'Daily Assessments',
-			Path: 'mdi:calendar-check-outline',
-			Description: 'Daily patient health monitoring.'
-		},
 		Appointments: {
 			Name: 'Appointments',
 			Path: 'mdi:calendar-clock-outline',
 			Description: 'Schedule and manage patient appointments.'
 		},
-		Visits: {
-			Name: 'Visits',
-			Path: 'mdi:hospital',
-			Description: 'Track patient visits and encounters.'
-		},
-		Orders: {
-			Name: 'Orders',
-			Path: 'mdi:file-document-outline',
-			Description: 'Manage medical orders and requisitions.'
-		},
-		Documents: {
-			Name: 'Documents',
-			Path: 'mdi:file-document-outline',
-			Description: 'Store and manage medical documents.'
-		},
-		PatientHealthReports: {
-			Name: 'Documents Management',
-			Path: 'mdi:chart-line',
-			Description: 'Generate and manage health reports.'
-		}
 	},
 	Wellness: {
 		Name: 'Wellness',
