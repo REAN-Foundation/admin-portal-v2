@@ -38,21 +38,21 @@ export const commonUISettings= {
 		Name: 'Wellness',
 		Path: 'mdi:leaf',
 		Description: 'Promote health and wellness activities.',
-		Exercise: {
-			Name: 'Exercise',
-			Path: 'mdi:dumbbell',
-			Description: 'Track fitness activities and exercise programs.'
-		},
-		Nutrition: {
-			Name: 'Nutrition',
-			Path: 'mdi:food-apple-outline',
-			Description: 'Monitor dietary intake and nutrition.'
-		},
-		Meditation: {
-			Name: 'Meditation',
-			Path: 'mdi:meditation',
-			Description: 'Mindfulness and meditation tracking.'
-		},
+		// Exercise: {
+		// 	Name: 'Exercise',
+		// 	Path: 'mdi:dumbbell',
+		// 	Description: 'Track fitness activities and exercise programs.'
+		// },
+		// Nutrition: {
+		// 	Name: 'Nutrition',
+		// 	Path: 'mdi:food-apple-outline',
+		// 	Description: 'Monitor dietary intake and nutrition.'
+		// },
+		// Meditation: {
+		// 	Name: 'Meditation',
+		// 	Path: 'mdi:meditation',
+		// 	Description: 'Mindfulness and meditation tracking.'
+		// },
 		Priorities: {
 			Name: 'Priorities',
 			Path: 'mdi:star-outline',
@@ -63,11 +63,11 @@ export const commonUISettings= {
 			Path: 'mdi:target',
 			Description: 'Define and track health goals.'
 		},
-		DeviceIntegration: {
-			Name: 'Device Integration',
-			Path: 'mdi:devices',
-			Description: 'Connect wearable devices and monitors.'
-		}
+		// DeviceIntegration: {
+		// 	Name: 'Device Integration',
+		// 	Path: 'mdi:devices',
+		// 	Description: 'Connect wearable devices and monitors.'
+		// }
 	},
 	EHR: {
 		Name: 'EHR',
@@ -108,26 +108,26 @@ export const commonUISettings= {
 		Name: 'Miscellaneous',
 		Path: 'mdi:dots-grid',
 		Description: 'Additional features and miscellaneous settings.',
-		Gamification: {
-			Name: 'Gamification',
-			Path: 'mdi:trophy-outline',
-			Description: 'Enable gamification features and rewards.'
-		},
+		// Gamification: {
+		// 	Name: 'Gamification',
+		// 	Path: 'mdi:trophy-outline',
+		// 	Description: 'Enable gamification features and rewards.'
+		// },
 		Notifications: {
 			Name: 'Notifications',
 			Path: 'mdi:bell-outline',
 			Description: 'Configure notification settings.'
 		},
-		Newsfeeds: {
-			Name: 'Newsfeeds',
-			Path: 'mdi:newspaper-variant-outline',
-			Description: 'Manage news feeds and updates.'
-		},
-		Notices: {
-			Name: 'Notices',
-			Path: 'mdi:bulletin-board',
-			Description: 'Create and manage notices.'
-		}
+		// Newsfeeds: {
+		// 	Name: 'Newsfeeds',
+		// 	Path: 'mdi:newspaper-variant-outline',
+		// 	Description: 'Manage news feeds and updates.'
+		// },
+		// Notices: {
+		// 	Name: 'Notices',
+		// 	Path: 'mdi:bulletin-board',
+		// 	Description: 'Create and manage notices.'
+		// }
 	},
 	Community: {
 		Name: 'Community',
