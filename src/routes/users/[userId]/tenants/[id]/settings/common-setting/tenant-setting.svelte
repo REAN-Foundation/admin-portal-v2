@@ -39,7 +39,7 @@
 </script>
 
 {#each Object.entries(commonSetting) as [groupName, groupItems]}
-	{#if groupName !== 'UserInterfaces' && groupName !== 'General'}
+	{#if groupName !== 'UserInterfaces' && groupName !== 'General' && groupedSettings?.[groupName]}
 		<div
 			class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${
 				openTab === groupName ? 'border-hover ' : ''

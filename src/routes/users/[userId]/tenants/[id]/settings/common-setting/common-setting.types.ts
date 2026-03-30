@@ -69,26 +69,26 @@ export const commonUISettings= {
 		// 	Description: 'Connect wearable devices and monitors.'
 		// }
 	},
-	EHR: {
-		Name: 'EHR',
-		Path: 'mdi:database-outline',
-		Description: 'Electronic Health Record management and integration.',
-		FHIRStorage: {
-			Name: 'FHIR Storage',
-			Path: 'mdi:database-outline',
-			Description: 'FHIR-compliant health data storage.'
-		},
-		EHRIntegration: {
-			Name: 'EHR Integration',
-			Path: 'mdi:connection',
-			Description: 'Integrate with Electronic Health Records.'
-		},
-		ABDM: {
-			Name: 'ABDM',
-			Path: 'mdi:shield-account-outline',
-			Description: 'Ayushman Bharat Digital Mission integration.'
-		}
-	},
+	// EHR: {
+	// 	Name: 'EHR',
+	// 	Path: 'mdi:database-outline',
+	// 	Description: 'Electronic Health Record management and integration.',
+	// 	FHIRStorage: {
+	// 		Name: 'FHIR Storage',
+	// 		Path: 'mdi:database-outline',
+	// 		Description: 'FHIR-compliant health data storage.'
+	// 	},
+	// 	EHRIntegration: {
+	// 		Name: 'EHR Integration',
+	// 		Path: 'mdi:connection',
+	// 		Description: 'Integrate with Electronic Health Records.'
+	// 	},
+	// 	ABDM: {
+	// 		Name: 'ABDM',
+	// 		Path: 'mdi:shield-account-outline',
+	// 		Description: 'Ayushman Bharat Digital Mission integration.'
+	// 	}
+	// },
 	Affiliations: {
 		Name: 'Affiliations',
 		Path: 'mdi:handshake-outline',
@@ -129,31 +129,31 @@ export const commonUISettings= {
 		// 	Description: 'Create and manage notices.'
 		// }
 	},
-	Community: {
-		Name: 'Community',
-		Path: 'mdi:account-group-outline',
-		Description: 'Foster community engagement and communication.',
-		UserGroups: {
-			Name: 'Community',
-			Path: 'mdi:account-group-outline',
-			Description: 'Manage community user groups.'
-		},
-		Chat: {
-			Name: 'Chat',
-			Path: 'mdi:chat-outline',
-			Description: 'Enable chat and messaging features.'
-		}
-	},
-	Research: {
-		Name: 'Research',
-		Path: 'mdi:flask-outline',
-		Description: 'Support research activities and studies.',
-		Cohorts: {
-			Name: 'Cohorts',
-			Path: 'mdi:account-multiple-outline',
-			Description: 'Manage research cohorts and studies.'
-		}
-	},
+	// Community: {
+	// 	Name: 'Community',
+	// 	Path: 'mdi:account-group-outline',
+	// 	Description: 'Foster community engagement and communication.',
+	// 	UserGroups: {
+	// 		Name: 'Community',
+	// 		Path: 'mdi:account-group-outline',
+	// 		Description: 'Manage community user groups.'
+	// 	},
+	// 	Chat: {
+	// 		Name: 'Chat',
+	// 		Path: 'mdi:chat-outline',
+	// 		Description: 'Enable chat and messaging features.'
+	// 	}
+	// },
+	// Research: {
+	// 	Name: 'Research',
+	// 	Path: 'mdi:flask-outline',
+	// 	Description: 'Support research activities and studies.',
+	// 	Cohorts: {
+	// 		Name: 'Cohorts',
+	// 		Path: 'mdi:account-multiple-outline',
+	// 		Description: 'Manage research cohorts and studies.'
+	// 	}
+	// },
 	Educational: {
 		Name: 'Educational',
 		Path: 'mdi:school-outline',
@@ -174,19 +174,19 @@ export const commonUISettings= {
 			Description: 'Share knowledge snippets and tips.'
 		}
 	},
-	Analysis: {
-		Name: 'Analysis',
-		Path: 'mdi:chart-line',
-		Description: 'Advanced analytics and data visualization.',
-		CustomQueries: {
-			Name: 'Custom Queries',
-			Path: 'mdi:database-search-outline',
-			Description: 'Create custom data queries and reports.'
-		},
-		Quicksight: {
-			Name: 'QuickSight',
-			Path: 'mdi:chart-timeline-variant',
-			Description: 'Advanced analytics and visualization.'
-		}
-	}
+	// Analysis: {
+	// 	Name: 'Analysis',
+	// 	Path: 'mdi:chart-line',
+	// 	Description: 'Advanced analytics and data visualization.',
+	// 	CustomQueries: {
+	// 		Name: 'Custom Queries',
+	// 		Path: 'mdi:database-search-outline',
+	// 		Description: 'Create custom data queries and reports.'
+	// 	},
+	// 	Quicksight: {
+	// 		Name: 'QuickSight',
+	// 		Path: 'mdi:chart-timeline-variant',
+	// 		Description: 'Advanced analytics and visualization.'
+	// 	}
+	// }
 };
