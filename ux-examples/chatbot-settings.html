@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot Settings - REAN Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .wizard-container {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+    }
+    
+    .wizard-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .wizard-title h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    
+    .wizard-title p {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+    }
+    
+    .wizard-stepper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .wizard-step {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .wizard-step-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      border: 2px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      transition: all var(--transition-fast);
+    }
+    
+    .wizard-step.active .wizard-step-circle {
+      border-color: var(--color-primary-500);
+      color: var(--color-primary-600);
+      box-shadow: 0 0 0 3px rgba(51, 89, 255, 0.1);
+    }
+    
+    .wizard-step.completed .wizard-step-circle {
+      background: var(--color-primary-600);
+      border-color: var(--color-primary-600);
+      color: #fff;
+    }
+    
+    .wizard-step-label {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--color-text-muted);
+    }
+    
+    .wizard-step.active .wizard-step-label,
+    .wizard-step.completed .wizard-step-label {
+      color: var(--color-text-primary);
+    }
+    
+    .wizard-step-line {
+      width: 40px;
+      height: 2px;
+      background: var(--color-border);
+    }
+    
+    .wizard-step.completed + .wizard-step-line {
+      background: var(--color-primary-500);
+    }
+    
+    .wizard-body {
+      padding: 2rem;
+      min-height: 400px;
+    }
+    
+    .wizard-section {
+      display: none;
+    }
+    
+    .wizard-section.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .wizard-footer {
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      background: var(--color-bg-secondary);
+    }
+    
+    .settings-group {
+      margin-bottom: 2rem;
+    }
+    
+    .settings-group:last-child {
+      margin-bottom: 0;
+    }
+    
+    .settings-group-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .settings-group-title svg {
+      width: 20px;
+      height: 20px;
+      color: var(--color-primary-500);
+    }
+    
+    .settings-group-subtitle {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      margin-bottom: 1rem;
+    }
+    
+    .toggle-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 0.75rem;
+    }
+    
+    .toggle-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      transition: all var(--transition-fast);
+    }
+    
+    .toggle-item:hover {
+      border-color: var(--color-primary-400);
+    }
+    
+    .toggle-item-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .toggle-item-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      background: var(--color-bg-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-secondary);
+    }
+    
+    .toggle-item-text h4 {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    
+    .toggle-item-text p {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+    }
+    
+    .welcome-messages-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    
+    .welcome-message-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+    }
+    
+    .welcome-message-item .badge {
+      flex-shrink: 0;
+    }
+    
+    .welcome-message-content {
+      flex: 1;
+    }
+    
+    .welcome-message-content p {
+      font-size: 0.9375rem;
+      line-height: 1.5;
+    }
+    
+    .welcome-message-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .upload-area {
+      border: 2px dashed var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    
+    .upload-area:hover {
+      border-color: var(--color-primary-400);
+      background: var(--color-bg-secondary);
+    }
+    
+    .upload-area svg {
+      width: 48px;
+      height: 48px;
+      color: var(--color-neutral-400);
+      margin-bottom: 1rem;
+    }
+    
+    .upload-area p {
+      color: var(--color-text-muted);
+      margin-bottom: 0.5rem;
+    }
+    
+    .upload-area span {
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+    }
+    
+    .preview-images {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    
+    .preview-image {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .preview-image-box {
+      width: 80px;
+      height: 80px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-bg-secondary);
+      color: var(--color-neutral-400);
+    }
+    
+    .preview-image-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: var(--radius-lg);
+    }
+    
+    .preview-image span {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar"></aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Navbar -->
+      <header class="navbar" id="navbar"></header>
+      
+      <!-- Page Content -->
+      <div class="page-container">
+        <!-- Wizard Container -->
+        <div class="wizard-container">
+          <!-- Wizard Header -->
+          <div class="wizard-header">
+            <div class="wizard-title">
+              <h2>Chatbot Configuration</h2>
+              <p>Configure your AI-powered chatbot settings</p>
+            </div>
+            <div class="wizard-stepper">
+              <div class="wizard-step active" data-step="1">
+                <div class="wizard-step-circle">1</div>
+                <span class="wizard-step-label">Basic Info</span>
+              </div>
+              <div class="wizard-step-line"></div>
+              <div class="wizard-step" data-step="2">
+                <div class="wizard-step-circle">2</div>
+                <span class="wizard-step-label">Channels</span>
+              </div>
+              <div class="wizard-step-line"></div>
+              <div class="wizard-step" data-step="3">
+                <div class="wizard-step-circle">3</div>
+                <span class="wizard-step-label">Features</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Wizard Body -->
+          <div class="wizard-body">
+            <!-- Step 1: Basic Info -->
+            <div class="wizard-section active" data-section="1">
+              <div class="settings-group">
+                <h3 class="settings-group-title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                  </svg>
+                  Bot Identity
+                </h3>
+                <p class="settings-group-subtitle">Configure basic chatbot identification</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                  <div class="form-group">
+                    <label class="form-label">Bot Name <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="botName" value="REAN HealthBot" placeholder="Enter bot name">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Default Language</label>
+                    <select class="form-input form-select" id="defaultLanguage">
+                      <option value="en" selected>English</option>
+                      <option value="es">Spanish</option>
+                      <option value="hi">Hindi</option>
+                      <option value="fr">French</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label class="form-label">Description</label>
+                  <textarea class="form-input" rows="3" id="botDescription" placeholder="Brief description of the chatbot">Your personal health assistant powered by AI</textarea>
+                </div>
+                
+                <div class="form-group">
+                  <label class="form-label">Timezone</label>
+                  <select class="form-input form-select" id="timezone">
+                    <option value="-08:00">(UTC-08:00) Pacific Time</option>
+                    <option value="-05:00">(UTC-05:00) Eastern Time</option>
+                    <option value="+00:00">(UTC+00:00) London</option>
+                    <option value="+05:30" selected>(UTC+05:30) India</option>
+                    <option value="+08:00">(UTC+08:00) Singapore</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="settings-group">
+                <h3 class="settings-group-title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="4" y="2" width="16" height="20" rx="2" ry="2"/>
+                    <path d="M9 22v-4h6v4"/>
+                    <path d="M8 6h.01M16 6h.01M12 6h.01"/>
+                  </svg>
+                  Organization Details
+                </h3>
+                <p class="settings-group-subtitle">Configure organization branding</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                  <div class="form-group">
+                    <label class="form-label">Organization Name</label>
+                    <input type="text" class="form-input" id="orgName" value="REAN Foundation" placeholder="Enter organization name">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Website</label>
+                    <input type="url" class="form-input" id="orgWebsite" value="https://reanfoundation.org" placeholder="https://example.com">
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label class="form-label">Upload Branding Assets</label>
+                  <div class="upload-area" onclick="document.getElementById('brandingUpload').click()">
+                    <input type="file" id="brandingUpload" hidden accept="image/*">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                      <polyline points="17 8 12 3 7 8"/>
+                      <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    <p>Click to upload or drag and drop</p>
+                    <span>PNG, JPG up to 2MB</span>
+                  </div>
+                  <div class="preview-images">
+                    <div class="preview-image">
+                      <div class="preview-image-box">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                          <circle cx="8.5" cy="8.5" r="1.5"/>
+                          <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                      </div>
+                      <span>Logo</span>
+                    </div>
+                    <div class="preview-image">
+                      <div class="preview-image-box">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                          <circle cx="8.5" cy="8.5" r="1.5"/>
+                          <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                      </div>
+                      <span>Favicon</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Step 2: Channels -->
+            <div class="wizard-section" data-section="2">
+              <div class="settings-group">
+                <h3 class="settings-group-title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>
+                  </svg>
+                  Message Channels
+                </h3>
+                <p class="settings-group-subtitle">Configure messaging platform integrations</p>
+                
+                <div class="toggle-grid">
+                  <div class="toggle-item">
+                    <div class="toggle-item-info">
+                      <div class="toggle-item-icon" style="background: #25D366; color: white;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
+                      </div>
+                      <div class="toggle-item-text">
+                        <h4>WhatsApp</h4>
+                        <p>Connect via WhatsApp Business</p>
+                      </div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                  
+                  <div class="toggle-item">
+                    <div class="toggle-item-info">
+                      <div class="toggle-item-icon" style="background: #0088cc; color: white;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                        </svg>
+                      </div>
+                      <div class="toggle-item-text">
+                        <h4>Telegram</h4>
+                        <p>Connect via Telegram Bot</p>
+                      </div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="settings-group">
+                <h3 class="settings-group-title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                  Support Channels
+                </h3>
+                <p class="settings-group-subtitle">Configure support and ticketing integrations</p>
+                
+                <div class="toggle-grid">
+                  <div class="toggle-item">
+                    <div class="toggle-item-info">
+                      <div class="toggle-item-icon" style="background: #7B68EE; color: white;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M19.5 12.5c0-1.58-.84-2.95-2.1-3.71l2.1-6.79h-15l2.1 6.79C5.34 9.55 4.5 10.92 4.5 12.5c0 2.49 2.01 4.5 4.5 4.5h6c2.49 0 4.5-2.01 4.5-4.5zM9 19h6v2H9v-2z"/>
+                        </svg>
+                      </div>
+                      <div class="toggle-item-text">
+                        <h4>ClickUp</h4>
+                        <p>Create support tickets in ClickUp</p>
+                      </div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                  
+                  <div class="toggle-item">
+                    <div class="toggle-item-info">
+                      <div class="toggle-item-icon" style="background: #4A154B; color: white;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M5.042 15.165a2.528 2.528 0 01-2.52 2.523A2.528 2.528 0 010 15.165a2.527 2.527 0 012.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 012.521-2.52 2.527 2.527 0 012.521 2.52v6.313A2.528 2.528 0 018.834 24a2.528 2.528 0 01-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 01-2.521-2.52A2.528 2.528 0 018.834 0a2.528 2.528 0 012.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 012.521 2.521 2.528 2.528 0 01-2.521 2.521H2.522A2.528 2.528 0 010 8.834a2.528 2.528 0 012.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 012.522-2.521A2.528 2.528 0 0124 8.834a2.528 2.528 0 01-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 01-2.523 2.521 2.527 2.527 0 01-2.52-2.521V2.522A2.527 2.527 0 0115.165 0a2.528 2.528 0 012.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 012.523 2.522A2.528 2.528 0 0115.165 24a2.527 2.527 0 01-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 01-2.52-2.523 2.526 2.526 0 012.52-2.52h6.313A2.527 2.527 0 0124 15.165a2.528 2.528 0 01-2.522 2.523h-6.313z"/>
+                        </svg>
+                      </div>
+                      <div class="toggle-item-text">
+                        <h4>Slack</h4>
+                        <p>Send notifications to Slack</p>
+                      </div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                  
+                  <div class="toggle-item">
+                    <div class="toggle-item-info">
+                      <div class="toggle-item-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                          <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                      </div>
+                      <div class="toggle-item-text">
+                        <h4>Email</h4>
+                        <p>Send notifications via email</p>
+                      </div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Step 3: Features -->
+            <div class="wizard-section" data-section="3">
+              <div class="settings-group">
+                <h3 class="settings-group-title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                    <polyline points="2 17 12 22 22 17"/>
+                    <polyline points="2 12 12 17 22 12"/>
+                  </svg>
+                  Chatbot Features
+                </h3>
+                <p class="settings-group-subtitle">Enable or disable chatbot capabilities</p>
+                
+                <div class="toggle-grid">
+                  <div class="toggle-item">
+                    <div class="toggle-item-info">
+                      <div class="toggle-item-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                          <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                      </div>
+                      <div class="toggle-item-text">
+                        <h4>Personalization</h4>
+                        <p>Personalized responses</p>
+                      </div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                  
+                  <div class="toggle-item">
+                    <div class="toggle-item-info">
+                      <div class="toggle-item-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="12" r="10"/>
+                          <line x1="2" y1="12" x2="22" y2="12"/>
+                          <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+                        </svg>
+                      </div>
+                      <div class="toggle-item-text">
+                        <h4>Localization</h4>
+                        <p>Multi-language support</p>
+                      </div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                  
+                  <div class="toggle-item">
+                    <div class="toggle-item-info">
+                      <div class="toggle-item-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M10.5 20.5L3.5 13.5a4.95 4.95 0 117 -7l7 7a4.95 4.95 0 11-7 7z"/>
+                          <path d="M8.5 8.5l7 7"/>
+                        </svg>
+                      </div>
+                      <div class="toggle-item-text">
+                        <h4>Medication Reminders</h4>
+                        <p>Send medication alerts</p>
+                      </div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                  
+                  <div class="toggle-item">
+                    <div class="toggle-item-info">
+                      <div class="toggle-item-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                          <line x1="16" y1="2" x2="16" y2="6"/>
+                          <line x1="8" y1="2" x2="8" y2="6"/>
+                          <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                      </div>
+                      <div class="toggle-item-text">
+                        <h4>Appointment Reminders</h4>
+                        <p>Send appointment alerts</p>
+                      </div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                  
+                  <div class="toggle-item">
+                    <div class="toggle-item-info">
+                      <div class="toggle-item-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="12" r="10"/>
+                          <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
+                          <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                      </div>
+                      <div class="toggle-item-text">
+                        <h4>Q&A</h4>
+                        <p>Question & answer support</p>
+                      </div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                  
+                  <div class="toggle-item">
+                    <div class="toggle-item-info">
+                      <div class="toggle-item-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                      </div>
+                      <div class="toggle-item-text">
+                        <h4>Consent</h4>
+                        <p>User consent collection</p>
+                      </div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                  
+                  <div class="toggle-item">
+                    <div class="toggle-item-info">
+                      <div class="toggle-item-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                      </div>
+                      <div class="toggle-item-text">
+                        <h4>Conversation History</h4>
+                        <p>Store chat history</p>
+                      </div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                  
+                  <div class="toggle-item">
+                    <div class="toggle-item-info">
+                      <div class="toggle-item-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="12" r="10"/>
+                          <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                          <line x1="9" y1="9" x2="9.01" y2="9"/>
+                          <line x1="15" y1="9" x2="15.01" y2="9"/>
+                        </svg>
+                      </div>
+                      <div class="toggle-item-text">
+                        <h4>Emojis</h4>
+                        <p>Use emojis in responses</p>
+                      </div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="settings-group">
+                <h3 class="settings-group-title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 01-3.46 0"/>
+                  </svg>
+                  Welcome Messages
+                </h3>
+                <p class="settings-group-subtitle">Configure greeting messages for different languages</p>
+                
+                <div class="welcome-messages-list">
+                  <div class="welcome-message-item">
+                    <span class="badge badge-primary">EN</span>
+                    <div class="welcome-message-content">
+                      <p>Hello! I am REAN HealthBot. How can I help you today?</p>
+                    </div>
+                    <div class="welcome-message-actions">
+                      <button class="btn btn-icon btn-ghost sm" onclick="editWelcomeMessage('en')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div class="welcome-message-item">
+                    <span class="badge badge-info">ES</span>
+                    <div class="welcome-message-content">
+                      <p>¡Hola! Soy REAN HealthBot. ¿Cómo puedo ayudarte hoy?</p>
+                    </div>
+                    <div class="welcome-message-actions">
+                      <button class="btn btn-icon btn-ghost sm" onclick="editWelcomeMessage('es')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div class="welcome-message-item">
+                    <span class="badge badge-warning">HI</span>
+                    <div class="welcome-message-content">
+                      <p>नमस्ते! मैं REAN HealthBot हूं। आज मैं आपकी कैसे मदद कर सकता हूं?</p>
+                    </div>
+                    <div class="welcome-message-actions">
+                      <button class="btn btn-icon btn-ghost sm" onclick="editWelcomeMessage('hi')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <button class="btn btn-secondary" style="margin-top: 1rem;" onclick="addWelcomeMessage()">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                  Add Welcome Message
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Wizard Footer -->
+          <div class="wizard-footer">
+            <div>
+              <a href="tenant-settings.html" class="btn btn-ghost">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 12H5"/>
+                  <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Back to Settings
+              </a>
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+              <button class="btn btn-secondary" id="prevBtn" onclick="prevStep()" style="display: none;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15 18 9 12 15 6"/>
+                </svg>
+                Previous
+              </button>
+              <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">
+                Next
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Welcome Message Modal -->
+  <div class="modal-overlay" id="welcomeModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Welcome Message</h3>
+        <button class="modal-close" onclick="closeWelcomeModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Language</label>
+          <select class="form-input form-select" id="welcomeLang">
+            <option value="en">English</option>
+            <option value="es">Spanish</option>
+            <option value="hi">Hindi</option>
+            <option value="fr">French</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message Content</label>
+          <textarea class="form-input" rows="4" id="welcomeContent" placeholder="Enter welcome message"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Media URL (Optional)</label>
+          <input type="url" class="form-input" id="welcomeUrl" placeholder="https://example.com/image.jpg">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeWelcomeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveWelcomeMessage()">Save Message</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    let currentStep = 1;
+    const totalSteps = 3;
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeLayout({
+        currentPage: 'chatbot-settings.html',
+        breadcrumbs: [
+          { name: 'Administration', href: '#' },
+          { name: 'Tenants', href: 'tenants.html' },
+          { name: 'Settings', href: 'tenant-settings.html' },
+          { name: 'Chatbot', href: 'chatbot-settings.html' }
+        ],
+        user: currentUser
+      });
+    });
+    
+    function updateStepUI() {
+      // Update stepper
+      document.querySelectorAll('.wizard-step').forEach((step, index) => {
+        const stepNum = index + 1;
+        step.classList.remove('active', 'completed');
+        
+        if (stepNum < currentStep) {
+          step.classList.add('completed');
+        } else if (stepNum === currentStep) {
+          step.classList.add('active');
+        }
+      });
+      
+      // Update sections
+      document.querySelectorAll('.wizard-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.querySelector(`[data-section="${currentStep}"]`).classList.add('active');
+      
+      // Update buttons
+      document.getElementById('prevBtn').style.display = currentStep === 1 ? 'none' : 'flex';
+      
+      if (currentStep === totalSteps) {
+        document.getElementById('nextBtn').innerHTML = `
+          Save Settings
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/>
+            <polyline points="7 3 7 8 15 8"/>
+          </svg>
+        `;
+      } else {
+        document.getElementById('nextBtn').innerHTML = `
+          Next
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        `;
+      }
+    }
+    
+    function nextStep() {
+      if (currentStep < totalSteps) {
+        currentStep++;
+        updateStepUI();
+      } else {
+        // Save settings
+        Toast.success('Chatbot settings saved successfully!');
+        setTimeout(() => {
+          window.location.href = 'tenant-settings.html';
+        }, 1500);
+      }
+    }
+    
+    function prevStep() {
+      if (currentStep > 1) {
+        currentStep--;
+        updateStepUI();
+      }
+    }
+    
+    function editWelcomeMessage(lang) {
+      document.getElementById('welcomeLang').value = lang;
+      const messages = {
+        en: 'Hello! I am REAN HealthBot. How can I help you today?',
+        es: '¡Hola! Soy REAN HealthBot. ¿Cómo puedo ayudarte hoy?',
+        hi: 'नमस्ते! मैं REAN HealthBot हूं। आज मैं आपकी कैसे मदद कर सकता हूं?'
+      };
+      document.getElementById('welcomeContent').value = messages[lang] || '';
+      document.getElementById('welcomeModal').classList.add('active');
+    }
+    
+    function addWelcomeMessage() {
+      document.getElementById('welcomeLang').value = 'en';
+      document.getElementById('welcomeContent').value = '';
+      document.getElementById('welcomeUrl').value = '';
+      document.getElementById('welcomeModal').classList.add('active');
+    }
+    
+    function closeWelcomeModal() {
+      document.getElementById('welcomeModal').classList.remove('active');
+    }
+    
+    function saveWelcomeMessage() {
+      Toast.success('Welcome message saved');
+      closeWelcomeModal();
+    }
+  </script>
+</body>
+</html>
