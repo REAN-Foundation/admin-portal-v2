@@ -1,11 +1,4 @@
-import { error, type RequestEvent } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getUserAnalytics } from '../../../../api/services/user-analytics/user-analytics';
-import { getDailyStatistics, getDailyTenantStatistics } from '../../../../api/services/reancare/statistics';
-// import { redirect } from 'sveltekit-flash-message/server';
-// import { errorMessage } from '$lib/utils/message.utils';
-import { TimeHelper } from '$lib/utils/time.helper';
-import { DateStringFormat } from '$lib/types/time.types';
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -52,65 +45,15 @@ const defaultData = {
     title: 'Dashboard-Home-Combined'
 };
 
-export const load: PageServerLoad = async (event: RequestEvent) => {
-    const sessionId = event.cookies.get('sessionId');
-    // const userId = event.params.userId;
+export const load: PageServerLoad = async (event) => {
+    const parentData = await event.parent();
+    const { sessionId, analyticsData, dailyStatsData, effectiveTenantCode, tenantName } = parentData;
 
-    if (!event.locals.sessionUser) {
-        throw error(401, 'Unauthorized Access');
-    }
+    const basicStatistics = analyticsData?.BasicStatistics ?? defaultBasicStatistics;
+    const userStatistics = dailyStatsData;
 
-    const roleName = event.locals.sessionUser.roleName;
-    if (
-        roleName !== 'System admin' &&
-        roleName !== 'System user' &&
-        roleName !== 'Tenant admin' &&
-        roleName !== 'Tenant user'
-    ) {
-        throw error(401, 'Unauthorized Access');
-    }
-
-    const tenantCode = event.locals.sessionUser.tenantCode;
-    const tenantName = event.locals.sessionUser.tenantName;
-
-    // Get User Analytics
-    let basicStatistics = defaultBasicStatistics;
-    try {
-        const today = new Date();
-        const formattedDate = TimeHelper.getDateString(today, DateStringFormat.YYYY_MM_DD);
-        const response = await getUserAnalytics(sessionId ?? '', formattedDate ?? '', tenantCode);
-        if (response && response.Status !== 'Failure' && response.Data?.BasicStatistics) {
-            basicStatistics = response.Data.BasicStatistics;
-        }
-    } catch (err) {
-        console.error('Failed to fetch user analytics:', err);
-    }
-
-    // User Stats Logic
-    let userStatsResponse;
-    try {
-        if (roleName === 'System admin' || roleName === 'System user') {
-            userStatsResponse = await getDailyStatistics(sessionId ?? '');
-        } else {
-            userStatsResponse = await getDailyTenantStatistics(sessionId ?? '', event.locals.sessionUser.tenantId ?? '');
-        }
-    } catch (err) {
-        console.error('Failed to fetch daily statistics:', err);
-        return { ...defaultData, sessionId, basicStatistics, tenantCode, tenantName };
-    }
-
-    if (
-        !userStatsResponse ||
-        userStatsResponse.Status === 'failure' ||
-        userStatsResponse.HttpCode !== 200 ||
-        !userStatsResponse.Data?.DailyStatistics?.DashboardStats
-    ) {
-        return { ...defaultData, sessionId, basicStatistics, tenantCode, tenantName };
-    }
-
-    const userStatistics = userStatsResponse.Data.DailyStatistics.DashboardStats.UserStatistics;
     if (!userStatistics) {
-        return { ...defaultData, sessionId, basicStatistics, tenantCode, tenantName };
+        return { ...defaultData, sessionId, basicStatistics, tenantCode: effectiveTenantCode, tenantName };
     }
 
     const years: any[] = [];
@@ -139,7 +82,7 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
         yearWiseAddictionDistributionDetails: userStatistics.YearWiseAddictionDistributionDetails ?? [],
         deviceDetailsByYears: userStatistics.YearWiseDeviceDetailDistribution ?? [],
         years,
-        tenantCode,
+        tenantCode: effectiveTenantCode,
         tenantName,
         title: 'Dashboard-Home-Combined'
     };

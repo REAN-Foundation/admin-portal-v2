@@ -635,7 +635,7 @@
 											({config.Unit || 'No unit'}) · {config.Categories?.length ?? 0} categories
 										</span>
 									</div>
-									{#if isEditing}
+									<!-- {#if isEditing}
 										<button
 											type="button"
 											class="text-red-600 hover:text-red-800"
@@ -647,7 +647,7 @@
 										>
 											<Icon icon="material-symbols:delete-outline" class="h-5 w-5" />
 										</button>
-									{/if}
+									{/if} -->
 								</div>
 
 								<!-- Vital Body (Expanded) -->

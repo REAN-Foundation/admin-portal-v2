@@ -9,10 +9,13 @@
 	import Pagination from '$lib/components/pagination/pagination.svelte';
 	import { LocaleIdentifier, TimeHelper } from '$lib/utils/time.helper';
 	import type { PageServerData } from './$types';
+	import TenantFilter from '$lib/components/tenant-filter.svelte';
 
 	///////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
+
+	let tenantFilter: TenantFilter;
 
 	console.log('data', data);
 	let debounceTimeout;
@@ -58,6 +61,16 @@
 		return guidRegex.test(value);
 	}
 
+	function handleTenantSelect() {
+		paginationSettings.page = 0;
+		searchEnrollments({
+			itemsPerPage: paginationSettings.limit,
+			pageIndex: 0,
+			sortBy,
+			sortOrder
+		});
+	}
+
 	async function searchEnrollments(model) {
 		try {
 			let url = `/api/server/careplan/enrollments/search?`;
@@ -65,6 +78,8 @@
 			url += `&sortBy=${model.sortBy ?? sortBy}`;
 			url += `&itemsPerPage=${model.itemsPerPage ?? paginationSettings.limit}`;
 			url += `&pageIndex=${model.pageIndex ?? paginationSettings.page}`;
+
+			url = tenantFilter.appendTenantParam(url);
 
 			const carePlanName = model.carePlan ?? carePlan;
 			if (carePlanName) {
@@ -204,8 +219,14 @@
 	<div class="mx-auto">
 		<div class="table-container shadow">
 			<div class="search-border">
-				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="relative w-auto grow">
+				<div class="flex flex-col gap-4 md:flex-row md:items-center">
+					<TenantFilter
+						bind:this={tenantFilter}
+						sessionUser={data.sessionUser}
+						tenantParam="tenantId"
+						onSelect={handleTenantSelect}
+					/>
+					<div class="relative w-full md:flex-1">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
@@ -233,7 +254,7 @@
 						{/if}
 					</div>
 
-					<div class="relative w-auto grow">
+					<div class="relative w-full md:flex-1">
 						<Icon
 							icon="heroicons:magnifying-glass"
 							class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
@@ -260,7 +281,7 @@
 						{/if}
 					</div>
 
-					<div class="relative w-auto grow">
+					<div class="relative w-full md:flex-1">
 						<input
 							type="date"
 							name="startDate"
@@ -283,7 +304,7 @@
 						{/if}
 					</div>
 
-					<div class="relative w-auto grow">
+					<div class="relative w-full md:flex-1">
 						<input
 							type="date"
 							name="endDate"

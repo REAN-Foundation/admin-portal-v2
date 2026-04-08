@@ -19,6 +19,18 @@
 	let version = $state(data.reminder.Version);
 	let keywords: string[] = $state(data.reminder.Tags);
 	let keywordsStr = $state('');
+	const initialState = {
+		name: data.reminder.Name,
+		description: data.reminder.Description || undefined,
+		version: data.reminder.Version,
+		tags: [...(data.reminder.Tags ?? [])]
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		version !== initialState.version ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags)
+	);
 
 	const userId = page.params.userId;
 	var reminderId = page.params.id;
@@ -41,7 +53,7 @@
 	const handleReset = () => {
 		name = data?.reminder?.Name;
 		reminderId = page.params.id;
-		description = data?.reminder?.Description;
+		description = data?.reminder?.Description || undefined;
 		version = data?.reminder?.Version;
 		keywords = [...(data?.reminder?.Tags ?? [])];
 		errors = {};
@@ -168,9 +180,9 @@
 		<div class="btn-container">
             <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+                <Button type="submit" text="Saving..." variant="primary" disabled={true} />
             {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
+                <Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
             {/await}
 		</div>
 	</form>

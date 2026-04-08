@@ -45,9 +45,14 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 		throw error(401, 'Unauthorized Access');
 	}
 
+	const isSystemAdmin = roleName === 'System admin' || roleName === 'System user';
+	const tenantIdParam = event.url.searchParams.get('tenantId');
+
 	let response;
 	try {
-		if (roleName === 'System admin' || roleName === 'System user') {
+		if (isSystemAdmin && tenantIdParam) {
+			response = await getDailyTenantStatistics(sessionId, tenantIdParam);
+		} else if (isSystemAdmin) {
 			response = await getDailyStatistics(sessionId);
 		} else {
 			response = await getDailyTenantStatistics(

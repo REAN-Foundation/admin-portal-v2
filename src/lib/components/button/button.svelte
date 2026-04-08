@@ -37,12 +37,10 @@
 	const baseClasses = 'inline-flex items-center justify-center cursor-pointer';
 	const variantClasses = {
 		primary: 'button',
-		secondary: 'bg-gray-600 text-white hover:bg-gray-700 rounded-md',
-		ghost:
-			'bg-transparent text-white font-semibold rounded-md transition-colors duration-200 hover:bg-[var(--color-active)]',
-		outline: 'border-2 rounded-md hover:bg-gray-200 font-semibold border-gray-400',
-		rounded:
-			'bg-[var(--active-soft)] text-white font-semibold hover:bg-[var(--color-active)] rounded-full',
+		secondary: 'secondary-button',
+		ghost: 'ghost-button',
+		outline: 'outline-button',
+		rounded: 'rounded-button',
 		icon: 'bg-transparent p-2 px-3 rounded-md hover:bg-[var(--color-active)]'
 	};
 	const sizeClasses = {

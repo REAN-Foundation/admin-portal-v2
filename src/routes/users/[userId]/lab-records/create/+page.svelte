@@ -36,6 +36,10 @@
 			event.preventDefault();
 			errors = {};
 
+			if (!displayName || displayName.trim() === '') {
+				displayName = typeName;
+			}
+
 			const labRecordCreateModel: LabRecordCreateModel = {
 				TypeName: typeName,
 				DisplayName: displayName,

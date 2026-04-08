@@ -171,6 +171,7 @@
 							searchField="code"
 							displayField="Name"
 							valueField="id"
+							dataPath="Data.Items"
 							bind:selectedValue={selectedCareplanId}
 							bind:selectedDisplay={selectedCareplanName}
 							onSelect={handleCareplanSelect}
@@ -233,6 +234,7 @@
 							searchField={userSearchConfig.searchField}
 							displayField={userSearchConfig.displayField}
 							valueField={userSearchConfig.valueField}
+							dataPath="Data.Patients.Items"
 							bind:selectedValue={selectedPatientUserId}
 							bind:selectedDisplay={selectedPatientDisplay}
 							onSelect={handlePatientSelect}

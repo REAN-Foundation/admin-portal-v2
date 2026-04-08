@@ -18,12 +18,25 @@
 	let name = $state(data.article.Name);
 	let summary = $state(data.article.Summary || undefined);
 	let pathUrl = $state(data.article.PathUrl || undefined);
-	let tags = $state(data.article.Tags);
 	let version = $state(data.article.Version);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let keywordsStr: string = $state('');
 	let keywords: string[] = $state(data.article.Tags);
+	const initialState = {
+		name: data.article.Name,
+		summary: data.article.Summary || undefined,
+		pathUrl: data.article.PathUrl || undefined,
+		tags: [...(data.article.Tags ?? [])],
+		version: data.article.Version
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		summary !== initialState.summary ||
+		pathUrl !== initialState.pathUrl ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags) ||
+		version !== initialState.version
+	);
 
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
@@ -51,10 +64,11 @@
 	];
 	const handleReset = () => {
 		name = data?.article?.Name;
-		summary = data?.article?.Summary;
-		pathUrl = data?.article?.PathUrl;
+		summary = data?.article?.Summary || undefined;
+		pathUrl = data?.article?.PathUrl || undefined;
 		keywords = [...(data?.article?.Tags ?? [])];
 		version = data?.article?.Version;
+		errors = {};
 	};
 	const handleSubmit = async (event: Event) => {
 		try {
@@ -196,9 +210,9 @@
 		<div class="btn-container">
             <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
+                <Button type="submit" text="Saving..." variant="primary" disabled={true} />
+            {:then}
+                <Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
             {/await}
 		</div>
 	</form>

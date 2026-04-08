@@ -25,12 +25,26 @@
 	let splitPhoneNumber = $derived(phone.includes('-') ? phone.split('-') : ['', phone]);
 	let selectedUserRoleId = $state(data.user.Role.id);
 
+	const initialState = {
+		firstName: data.user.Person.FirstName,
+		lastName: data.user.Person.LastName,
+		phone: data.user.Person.Phone,
+		email: data.user.Person.Email
+	};
+	let hasChanges = $derived(
+		firstName !== initialState.firstName ||
+		lastName !== initialState.lastName ||
+		phone !== initialState.phone ||
+		email !== initialState.email
+	);
+
 	function handleReset() {
 		firstName = data?.user?.Person?.FirstName;
 		lastName = data?.user?.Person?.LastName;
 		role = data?.user?.Role?.RoleName;
 		phone = data?.user?.Person?.Phone;
 		email = data?.user?.Person?.Email;
+		errors = {};
 	}
 
 	const userId = page.params.userId;
@@ -239,9 +253,9 @@
 		<div class="btn-container">
 			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
-				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button size="md" type="submit" text="Saving..." variant="primary" disabled={true} />
 			{:then data}
-				<Button size="md" type="submit" text="Submit" variant="primary" />
+				<Button size="md" type="submit" text="Save" variant="primary" disabled={!hasChanges} />
 			{/await}
 		</div>
 	</form>

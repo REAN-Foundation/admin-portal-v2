@@ -12,6 +12,7 @@
 	import { createOrUpdatSchedulingeSchema } from '$lib/validation/careplan.scheduling.schema';
 	import Button from '$lib/components/button/button.svelte';
 	import { MAX_ITEMS_PER_PAGE } from '$lib/components/utils/helper';
+	import SearchDropdown from '$lib/components/search-dropdown.svelte';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -50,6 +51,7 @@
 	$inspect('items', items);
 	let show = $state(false);
 	let selectedAssetType = $state('Action plan');
+	let assetDropdownKey = $state(0);
 
 	function hideForm() {
 		show = false;
@@ -122,8 +124,12 @@
 		'Word power': 'word-power'
 	};
 
+	let assetSearchUrl = $derived(`/api/server/careplan/assets/search?assetType=${assetRouteMap[selectedAssetType]}`);
+
 	const onSelectAssetType = async (e) => {
 		selectedAssetType = e.currentTarget.value;
+		assetId = undefined;
+		assetDropdownKey++;
 		await searchAssets({
 			sessionId: data.sessionId,
 			selectedAssetType
@@ -317,35 +323,19 @@
 					<tr class="tables-row">
 						<td class="table-label align-top">Asset <span class="important-field">*</span></td>
 						<td class="table-data">
-							{#if items.length === 0}
-								<div class="flex items-center gap-2 mt-2">
-		
-									<Button
-										text="Add Asset"
-										variant="outline"
-										onclick={() => goto(`/users/${userId}/careplan/assets/${assetRouteMap[assetType]}/create`)}
-									/>
-									<span class="text-warning">No assets found for this type.</span>
-								</div>
-							{:else}
-							<div class="relative">
-
-								<select
-									name="assetId"
-									class="select {errors?.assetId ? 'input-text-error' : ''}"
-									bind:value={assetId}
-								>
-									{#each items as val}
-										<option value={val.value}>{val.label}</option>
-									{/each}
-								</select>
-								<div class="select-icon-container">
-									<Icon icon="mdi:chevron-down" class="select-icon" />
-								</div>
-							</div>
-								{#if errors?.AssetId}
-									<p class="error-text">{errors?.AssetId}</p>
-								{/if}
+							{#key assetDropdownKey}
+								<SearchDropdown
+									placeholder="Search asset..."
+									searchUrl={assetSearchUrl}
+									searchField="name"
+									displayField="Name"
+									valueField="id"
+									dataPath="Data.Items"
+									bind:selectedValue={assetId}
+								/>
+							{/key}
+							{#if errors?.AssetId}
+								<p class="error-text">{errors?.AssetId}</p>
 							{/if}
 						</td>
 					</tr>

@@ -16,12 +16,30 @@
 	let promise = $state();
 	let name = $state(data.exercise.Name);
 	let description = $state(data.exercise.Description || undefined);
-	let exerciseType = $state(data.exercise.ExerciseType);
-	let intensityLevel = $state(data.exercise.IntensityLevel);
-	let recommendedDurationMin = $state<number>(data.exercise.RecommendedDurationMin);
+	let exerciseType = $state(data.exercise.ExerciseType ?? undefined);
+	let intensityLevel = $state(data.exercise.IntensityLevel ?? undefined);
+	let recommendedDurationMin = $state<number>(data.exercise.RecommendedDurationMin ?? undefined);
 	let version = $state(data.exercise.Version);
 	let keywords: string[] = $state(data.exercise.Tags);
 	let keywordsStr = $state('');
+	const initialState = {
+		name: data.exercise.Name,
+		description: data.exercise.Description || undefined,
+		exerciseType: data.exercise.ExerciseType ?? undefined,
+		intensityLevel: data.exercise.IntensityLevel ?? undefined,
+		recommendedDurationMin: data.exercise.RecommendedDurationMin ?? undefined,
+		version: data.exercise.Version,
+		tags: [...(data.exercise.Tags ?? [])]
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		exerciseType !== initialState.exerciseType ||
+		intensityLevel !== initialState.intensityLevel ||
+		recommendedDurationMin !== initialState.recommendedDurationMin ||
+		version !== initialState.version ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags)
+	);
 
 	const userId = page.params.userId;
 	const tenantId = data.tenantId;
@@ -44,10 +62,10 @@
 	const handleReset =  () => {
 		 name = data?.exercise?.Name;
 		 exerciseId = page.params.id;
-		 description = data?.exercise?.Description;
-		 exerciseType = data?.exercise?.ExerciseType,
-		 intensityLevel = data?.exercise?.IntensityLevel,
-		 recommendedDurationMin = data?.exercise.RecommendedDurationMin,
+		 description = data?.exercise?.Description || undefined;
+		 exerciseType = data?.exercise?.ExerciseType ?? undefined,
+		 intensityLevel = data?.exercise?.IntensityLevel ?? undefined,
+		 recommendedDurationMin = data?.exercise.RecommendedDurationMin ?? undefined,
 		 version = data?.exercise?.Version;
 		 keywords = [...(data?.exercise?.Tags ?? [])];
 		 errors = {};
@@ -152,7 +170,7 @@
 					<td class="table-data">
 						<div class="relative">
 						<select class="select" bind:value={exerciseType}>
-							<!-- <option disabled value>Select exercise type</option> -->
+							<option disabled value={undefined}>Select exercise type</option>
 							<option>Strength</option>
 							<option>Aerobic</option>
 							<option>Balance</option>
@@ -174,7 +192,7 @@
 					<td class="table-data">
 						<div class="relative">
 						<select class="select" bind:value={intensityLevel}>
-							<!-- <option disabled value>Select Intensity Level</option> -->
+							<option disabled value={undefined}>Select Intensity Level</option>
 							<option>None</option>
 							<option>Minimal</option>
 							<option>Moderate</option>
@@ -235,9 +253,9 @@
 		<div class="btn-container">
             <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+                <Button type="submit" text="Saving..." variant="primary" disabled={true} />
             {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
+                <Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
             {/await}
 		</div>
 	</form>

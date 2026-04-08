@@ -3,18 +3,25 @@
 
 	///////////////////////////////////////////////////////////////////////////
 
-	let { 
-		placeholder = 'Search...', 
-		searchUrl = '', 
+	let {
+		placeholder = 'Search...',
+		searchUrl = '',
 		searchField = 'name',
 		displayField = 'name',
 		valueField = 'id',
+		dataPath = '',
+		initialDisplayValue = '',
 		selectedValue = $bindable(),
 		selectedDisplay = $bindable(),
 		onSelect = $bindable()
 	} = $props();
 
-	let searchTerm = $state('');
+	const extractByPath = (obj: any, path: string): any[] => {
+		const result = path.split('.').reduce((o: any, key: string) => o?.[key], obj);
+		return Array.isArray(result) ? result : [];
+	};
+
+	let searchTerm = $state(initialDisplayValue);
 	let searchResults = $state([]);
 	let isOpen = $state(false);
 	let isLoading = $state(false);
@@ -28,11 +35,8 @@
 
 		try {
 			isLoading = true;
-			let url = `${searchUrl}?${searchField}=${encodeURIComponent(term)}&itemsPerPage=10&pageIndex=0`;
-			
-			if (searchUrl.includes('/careplan/search') && searchField === 'code') {
-				url = `${searchUrl}?code=${encodeURIComponent(term)}&itemsPerPage=10&pageIndex=0`;
-			}
+			const separator = searchUrl.includes('?') ? '&' : '?';
+			let url = `${searchUrl}${separator}${searchField}=${encodeURIComponent(term)}&itemsPerPage=10&pageIndex=0`;
 			
 			const response = await fetch(url, {
 				method: 'GET',
@@ -41,18 +45,10 @@
 
 			const result = await response.json();
 			
-			if (result.Data && result.Data.Items) {
-				searchResults = result.Data.Items;
-			} else if (result.Data && result.Data.Patients && result.Data.Patients.Items) {
-				searchResults = result.Data.Patients.Items;
-			} else if (result.Data && result.Data.Careplans && result.Data.Careplans.Items) {
-				searchResults = result.Data.Careplans.Items;
-			} else if (result.Data && result.Data.Careplans) {
-				searchResults = result.Data.Careplans;
+			if (dataPath) {
+				searchResults = extractByPath(result, dataPath);
 			} else if (Array.isArray(result)) {
 				searchResults = result;
-			} else if (result.Items) {
-				searchResults = result.Items;
 			} else {
 				searchResults = [];
 			}
@@ -127,7 +123,7 @@
 			onfocus={handleFocus}
 			onblur={handleBlur}
 			placeholder={placeholder}
-			class="input !pr-10 !pl-10 w-full"
+			class="table-input-field !pr-10 !pl-10"
 		/>
 		{#if searchTerm}
 			<button

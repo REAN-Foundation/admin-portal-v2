@@ -8,7 +8,10 @@ import { getAnalyticsReport } from '../../../services/user-analytics/user-analyt
 export const GET = async (event: RequestEvent) => {
     let response;
 	try {
-		const tenantCode = event.locals.sessionUser?.tenantCode;
+		const explicitTenantCode = event.url.searchParams.get('tenantCode');
+		const roleName = event.locals.sessionUser?.roleName;
+		const isSystemAdmin = roleName === 'System admin' || roleName === 'System user';
+		const tenantCode = (isSystemAdmin && explicitTenantCode) ? explicitTenantCode : event.locals.sessionUser?.tenantCode;
         response = await getAnalyticsReport('json', tenantCode);
 	} catch (error) {
 		console.error(`Error downloading analytics report: ${error}`);

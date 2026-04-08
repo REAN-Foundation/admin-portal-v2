@@ -19,12 +19,25 @@
 	let name = $state(data.webNewsfeed.Name);
 	let description = $state(data.webNewsfeed.Description ?? undefined);
 	let pathUrl = $state(data.webNewsfeed.Url || undefined);
-	let tags = $state(data.webNewsfeed.Tags);
 	let version = $state(data.webNewsfeed.Version);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let keywordsStr: string = $state('');
 	let keywords: string[] = $state(data.webNewsfeed.Tags);
+	const initialState = {
+		name: data.webNewsfeed.Name,
+		description: data.webNewsfeed.Description ?? undefined,
+		pathUrl: data.webNewsfeed.Url || undefined,
+		tags: [...(data.webNewsfeed.Tags ?? [])],
+		version: data.webNewsfeed.Version
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		pathUrl !== initialState.pathUrl ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags) ||
+		version !== initialState.version
+	);
 
 	const userId = page.params.userId;
 	const webNewsfeedId = page.params.id;
@@ -54,10 +67,11 @@
 	];
 	const handleReset = () => {
 		name = data?.webNewsfeed?.Name;
-		description = data?.webNewsfeed?.Description;
-		pathUrl = data?.webNewsfeed?.PathUrl;
+		description = data?.webNewsfeed?.Description ?? undefined;
+		pathUrl = data?.webNewsfeed?.PathUrl || undefined;
 		keywords = [...(data?.webNewsfeed?.Tags ?? [])];
 		version = data?.webNewsfeed?.Version;
+		errors = {};
 	};
 
 	const handleSubmit = async (event: Event) => {
@@ -200,9 +214,9 @@
 		<div class="btn-container">
             <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
+                <Button type="submit" text="Saving..." variant="primary" disabled={true} />
             {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
+                <Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
             {/await}
 		</div>
 	</form>

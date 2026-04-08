@@ -19,12 +19,25 @@
 	let name = $state(data.webLink.Name);
 	let description = $state(data.webLink.Description || undefined);
 	let pathUrl = $state(data.webLink.Url || undefined);
-	let tags = $state(data.webLink.Tags);
 	let version = $state(data.webLink.Version);
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 	let keywordsStr: string = $state('');
 	let keywords: string[] = $state(data.webLink.Tags);
+	const initialState = {
+		name: data.webLink.Name,
+		description: data.webLink.Description || undefined,
+		pathUrl: data.webLink.Url || undefined,
+		tags: [...(data.webLink.Tags ?? [])],
+		version: data.webLink.Version
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		pathUrl !== initialState.pathUrl ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags) ||
+		version !== initialState.version
+	);
 
 	const userId = page.params.userId;
 	const webLinkId = page.params.id;
@@ -54,10 +67,11 @@
 	];
 	const handleReset = () => {
 		name = data?.webLink?.Name;
-		description = data?.webLink?.Description;
-		pathUrl = data?.webLink?.PathUrl;
+		description = data?.webLink?.Description || undefined;
+		pathUrl = data?.webLink?.PathUrl || undefined;
 		keywords = [...(data?.webLink?.Tags ?? [])];
 		version = data?.webLink?.Version;
+		errors = {};
 	};
 
 	const handleSubmit = async (event: Event) => {
@@ -201,9 +215,9 @@
 		<div class="btn-container">
             <Button type="button" onclick={handleReset} text="Reset" variant="outline" />
             {#await promise}
-                <Button type="submit" text="Submitting" variant="primary" disabled={true} />
-            {:then data}
-                <Button type="submit" text="Submit" variant="primary" />
+                <Button type="submit" text="Saving..." variant="primary" disabled={true} />
+            {:then}
+                <Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
             {/await}
 		</div>
 	</form>

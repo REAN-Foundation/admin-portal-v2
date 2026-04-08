@@ -25,6 +25,17 @@
 	let promise = $state();
 	let keywordsStr: string = $state('');
 
+	const initialState = {
+		hospitalName: data.hospital.Name,
+		healthSystemId: data.hospital.HealthSystemId,
+		tags: [...(data.hospital.Tags ?? [])]
+	};
+	let hasChanges = $derived(
+		hospitalName !== initialState.hospitalName ||
+		healthSystemId !== initialState.healthSystemId ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags)
+	);
+
 	const userId = page.params.userId;
 	const hospitalId = page.params.id;
 	const editRoute = `/users/${userId}/hospitals/${hospitalId}/edit`;
@@ -157,9 +168,9 @@
 		<div class="btn-container">
 			<Button type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
-				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button type="submit" text="Saving..." variant="primary" disabled={true} />
 			{:then data}
-				<Button type="submit" text="Submit" variant="primary" />
+				<Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
 			{/await}
 		</div>
 	</form>

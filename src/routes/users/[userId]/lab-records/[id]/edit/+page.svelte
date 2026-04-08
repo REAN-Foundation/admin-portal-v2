@@ -18,14 +18,33 @@
 		displayName = $state(data.labRecordType.DisplayName || undefined),
 		snowmedCode = $state(data.labRecordType.SnowmedCode || undefined),
 		loincCode = $state(data.labRecordType.LoincCode || undefined),
-		normalRangeMin = $state(data.labRecordType.NormalRangeMin ),
-		normalRangeMax = $state(data.labRecordType.NormalRangeMax ),
+		normalRangeMin = $state(data.labRecordType.NormalRangeMin ?? undefined),
+		normalRangeMax = $state(data.labRecordType.NormalRangeMax ?? undefined),
 		unit = $state(data.labRecordType.Unit || undefined);
 
 		console.log("normalRangeMin",normalRangeMax)
 
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
+
+	const initialState = {
+		typeName: data.labRecordType.TypeName,
+		displayName: data.labRecordType.DisplayName || undefined,
+		snowmedCode: data.labRecordType.SnowmedCode || undefined,
+		loincCode: data.labRecordType.LoincCode || undefined,
+		normalRangeMin: data.labRecordType.NormalRangeMin ?? undefined,
+		normalRangeMax: data.labRecordType.NormalRangeMax ?? undefined,
+		unit: data.labRecordType.Unit || undefined
+	};
+	let hasChanges = $derived(
+		typeName !== initialState.typeName ||
+		displayName !== initialState.displayName ||
+		snowmedCode !== initialState.snowmedCode ||
+		loincCode !== initialState.loincCode ||
+		normalRangeMin !== initialState.normalRangeMin ||
+		normalRangeMax !== initialState.normalRangeMax ||
+		unit !== initialState.unit
+	);
 
 	const userId = page.params.userId;
 	var labRecordId = page.params.id;
@@ -45,12 +64,12 @@
 	];
 	function handleReset() {
 		typeName = data?.labRecordType?.TypeName;
-		displayName = data?.labRecordType?.DisplayName;
-		snowmedCode = data?.labRecordType?.SnowmedCode;
-		loincCode = data?.labRecordType?.LoincCode;
-		normalRangeMin = data?.labRecordType?.NormalRangeMin;
-		normalRangeMax = data?.labRecordType?.NormalRangeMax;
-		unit = data?.labRecordType?.Unit;
+		displayName = data?.labRecordType?.DisplayName || undefined;
+		snowmedCode = data?.labRecordType?.SnowmedCode || undefined;
+		loincCode = data?.labRecordType?.LoincCode || undefined;
+		normalRangeMin = data?.labRecordType?.NormalRangeMin ?? undefined;
+		normalRangeMax = data?.labRecordType?.NormalRangeMax ?? undefined;
+		unit = data?.labRecordType?.Unit || undefined;
 		errors = {};
 	}
 
@@ -230,9 +249,9 @@
 		<div class="btn-container">
 			<Button size="md" type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
-				<Button size="md" type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button size="md" type="submit" text="Saving..." variant="primary" disabled={true} />
 			{:then data}
-				<Button size="md" type="submit" text="Submit" variant="primary" />
+				<Button size="md" type="submit" text="Save" variant="primary" disabled={!hasChanges} />
 			{/await}
 		</div>
 	</form>

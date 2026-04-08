@@ -136,10 +136,11 @@
 					<td class="table-data">
 						<input
 							type="text"
-							class="input {form?.errors?.code ? 'input-text-error' : ''}"
+							class="grayout-input {form?.errors?.code ? 'input-text-error' : ''}"
 							name="code"
 							placeholder="Enter code here..."
 							bind:value={code}
+							disabled
 						/>
 						{#if errors?.Code}
 							<p class="error-text">{errors?.Code}</p>
@@ -159,7 +160,7 @@
 								bind:value={categoryId}
 								required
 							>
-								<option disabled selected>Select category of plan here...</option>
+								<option value={undefined} disabled>Select category of plan here...</option>
 								{#each careplanCategories as category}
 									<option value={category.id}>{category.Type}</option>
 								{/each}

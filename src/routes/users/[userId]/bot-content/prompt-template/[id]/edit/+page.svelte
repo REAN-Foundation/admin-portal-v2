@@ -37,6 +37,37 @@
 	let errors: Record<string, string> = $state({});
 	let promise = $state();
 
+	const initialState = {
+		name: data.prompts.Name,
+		description: data.prompts.Description || undefined,
+		prompt: data.prompts.Prompt,
+		model: data.prompts.Model,
+		content: data.prompts.Content,
+		group: data.prompts.Group,
+		useCaseType: data.prompts.UseCaseType,
+		category: data.prompts.Category,
+		temperature: data.prompts.Temperature,
+		topP: data.prompts.TopP,
+		frequencyPenalty: data.prompts.FrequencyPenalty,
+		presencePenalty: data.prompts.PresencePenalty,
+		version: data.prompts.Version
+	};
+	let hasChanges = $derived(
+		name !== initialState.name ||
+		description !== initialState.description ||
+		prompt !== initialState.prompt ||
+		model !== initialState.model ||
+		content !== initialState.content ||
+		group !== initialState.group ||
+		useCaseType !== initialState.useCaseType ||
+		category !== initialState.category ||
+		temperature !== initialState.temperature ||
+		topP !== initialState.topP ||
+		frequencyPenalty !== initialState.frequencyPenalty ||
+		presencePenalty !== initialState.presencePenalty ||
+		version !== initialState.version
+	);
+
 	// OpenAI Models state
 	let availableModels: any[] = $state([]);
 	let isLoadingModels = $state(true);
@@ -156,7 +187,7 @@
 
 	const handleReset = () => {
 		name = data?.prompts?.Name;
-		description = data?.prompts?.Description;
+		description = data?.prompts?.Description || undefined;
 		prompt = data?.prompts?.Prompt;
 		model = data?.prompts?.Model;
 		content = data?.prompts?.Content;
@@ -288,6 +319,7 @@
 								</select>
 							{:else}
 								<select class="select" required name="model" bind:value={model}>
+									<option value={undefined} disabled>Select model...</option>
 									{#each availableModels as modelOption}
 										<option value={modelOption.id}>
 											{formatModelName(modelOption.id)}
@@ -342,6 +374,7 @@
 					<td class="table-data">
 						<div class="relative">
 							<select class="select" name="useCaseType" bind:value={useCaseType}>
+								<option value={undefined} disabled>Select use case type...</option>
 								<option value="Chat">Chat</option>
 								<option value="Classification">Classification</option>
 								<option value="Extraction">Extraction</option>
@@ -360,6 +393,7 @@
 					<td class="table-data">
 						<div class="relative">
 							<select class="select" name="group" bind:value={group}>
+								<option value={undefined} disabled>Select group...</option>
 								<option value="Chat Default">Chat Default</option>
 								<option value="Content Generation">Content Generation</option>
 								<option value="Generic">Generic</option>
@@ -458,9 +492,9 @@
 		<div class="btn-container">
 			<Button type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
-				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button type="submit" text="Saving..." variant="primary" disabled={true} />
 			{:then data}
-				<Button type="submit" text="Submit" variant="primary" />
+				<Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
 			{/await}
 		</div>
 	</form>

@@ -21,6 +21,12 @@
 	let promise = $state();
 	let keywordsStr: string = $state('');
 
+	const initialState = { type: data.priority.Type, tags: [...(data.priority.Tags ?? [])] };
+	let hasChanges = $derived(
+		type !== initialState.type ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags)
+	);
+
 	const userId = page.params.userId;
 	const editRoute = `/users/${userId}/priorities/${id}/edit`;
 	const viewRoute = `/users/${userId}/priorities/${id}/view`;
@@ -37,13 +43,6 @@
 		}
 	];
 
-	// let _type = type;
-	// let _tags = tags;
-
-	// function handleReset() {
-	// 	type = _type;
-	// 	tags = _tags;
-	// }
 	const handleReset = () => {
 		type = data?.priority?.Type;
 		id = page.params.id;
@@ -137,9 +136,9 @@
 		<div class="btn-container">
 			<Button type="button" text="Reset" variant="outline" onclick={handleReset} />
 			{#await promise}
-				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button type="submit" text="Saving..." variant="primary" disabled={true} />
 			{:then data}
-				<Button type="submit" text="Submit" variant="primary" />
+				<Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
 			{/await}
 		</div>
 	</form>

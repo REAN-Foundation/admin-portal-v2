@@ -21,6 +21,15 @@
 	// let keywords: string[] = $state([]);
 	let keywordsStr: string = $state('');
 
+	const initialState = {
+		healthSystemName: data.healthSystem.Name,
+		tags: [...(data.healthSystem.Tags ?? [])]
+	};
+	let hasChanges = $derived(
+		healthSystemName !== initialState.healthSystemName ||
+		JSON.stringify(keywords) !== JSON.stringify(initialState.tags)
+	);
+
 	const userId = page.params.userId;
 	var healthSystemId = page.params.id;
 
@@ -126,9 +135,9 @@
 		<div class="btn-container">
 			<Button type="button" onclick={handleReset} text="Reset" variant="outline" />
 			{#await promise}
-				<Button type="submit" text="Submitting" variant="primary" disabled={true} />
+				<Button type="submit" text="Saving..." variant="primary" disabled={true} />
 			{:then data}
-				<Button type="submit" text="Submit" variant="primary" />
+				<Button type="submit" text="Save" variant="primary" disabled={!hasChanges} />
 			{/await}
 		</div>
 	</form>

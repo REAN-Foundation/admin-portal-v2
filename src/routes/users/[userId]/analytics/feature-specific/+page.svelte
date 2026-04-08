@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Graph from './graph.svelte';
-	import { onMount } from 'svelte';
 	import { formatMonth, generateMonthSequence } from '../basic/components/functions';
 	import AssessmentMetrics from './assessment.metrics.svelte';
 	import EmptyState from '$lib/components/analytics/EmptyState.svelte';
@@ -8,33 +7,37 @@
 
 	let { data } = $props();
 
-	let medicationManagementdata = data.medicationManagementdata ?? {};
-	let healthJourneyWiseTask = $state(data.healthJourneyWiseTask ?? []);
-	let healthJourneyWiseCompletedTask = data.healthJourneyWiseCompletedTask ?? [];
-	let overallHealthJourneyTaskData = data.overallHealthJourneyTaskData ?? {};
-	let patientTaskMetrics = data.patientTaskMetrics ?? {};
-	let vitalMetrics = data.vitalMetrics ?? [];
-	let assessmentMetrics = data.assessmentMetrics ?? {};
-	const tenantSettings = data.tenantSettings;
+	// Derived values - reactive to tenant changes
+	let medicationManagementdata = $derived(data.medicationManagementdata ?? {});
+	let overallHealthJourneyTaskData = $derived(data.overallHealthJourneyTaskData ?? {});
+	let patientTaskMetrics = $derived(data.patientTaskMetrics ?? {});
+	let vitalMetrics = $derived(data.vitalMetrics ?? []);
+	let assessmentMetrics = $derived(data.assessmentMetrics ?? {});
+	let tenantSettings = $derived(data.tenantSettings);
 
-	healthJourneyWiseTask = (healthJourneyWiseTask ?? []).map(
+	let healthJourneyWiseTask = $derived.by(() => {
+		const tasks = data.healthJourneyWiseTask ?? [];
+		const completedTasks = data.healthJourneyWiseCompletedTask ?? [];
+		return tasks.map(
 		(task: {
 			PlanCode: any;
 			careplan_task_count: number;
 			careplan_completed_task_count: any;
 			careplan_not_completed_task_count: number;
 		}) => {
-			const completedTask = (healthJourneyWiseCompletedTask ?? []).find(
+			const completedTask = completedTasks.find(
 				(completed: { careplan_code: any }) => completed?.careplan_code === task?.PlanCode
 			);
 			const completedCount = completedTask?.careplan_completed_task_count ?? 0;
 			const totalTaskCount = task?.careplan_task_count ?? 0;
 			const notCompletedCount = Math.max(totalTaskCount - completedCount, 0);
-			task.careplan_completed_task_count = completedCount;
-			task.careplan_not_completed_task_count = notCompletedCount;
-			return task;
-		}
-	);
+			return {
+				...task,
+				careplan_completed_task_count: completedCount,
+				careplan_not_completed_task_count: notCompletedCount
+			};
+		});
+	});
 
 	// Helper function to check if a feature is enabled in tenant settings
 	function isFeatureEnabled(featureName: string): boolean {
@@ -106,9 +109,7 @@
 		'DropOffPoints'
 	];
 
-	let featureMetrics: any = {};
-
-	function processAccessFrequency(feature: string, metricData: any[]) {
+	function processAccessFrequency(metrics: any, feature: string, metricData: any[]) {
 		if (!metricData || !Array.isArray(metricData) || metricData.length === 0) {
 			return;
 		}
@@ -126,11 +127,11 @@
 
 		const accessFrequencyData = allMonths.map((month) => accessFrequencyDataMap[month] || 0);
 
-		featureMetrics[feature].accessFrequencyLabels = allMonths;
-		featureMetrics[feature].accessFrequencyData = accessFrequencyData;
+		metrics[feature].accessFrequencyLabels = allMonths;
+		metrics[feature].accessFrequencyData = accessFrequencyData;
 	}
 
-	function processEngagementRate(feature: string, metricData: any[]) {
+	function processEngagementRate(metrics: any, feature: string, metricData: any[]) {
 		if (!metricData || !Array.isArray(metricData) || metricData.length === 0) {
 			return;
 		}
@@ -148,14 +149,15 @@
 
 		const accessFrequencyData = allMonths.map((month) => accessFrequencyDataMap[month] || 0);
 
-		featureMetrics[feature].engagementRateLabels = allMonths;
-		featureMetrics[feature].engagementRateData = accessFrequencyData;
+		metrics[feature].engagementRateLabels = allMonths;
+		metrics[feature].engagementRateData = accessFrequencyData;
 	}
 
-	function initializeFeatureMetrics() {
+	function buildFeatureMetrics() {
+		const metrics: any = {};
 		// Check if statistics data exists
 		if (!data.statistics || !data.statistics.FeatureMetrics || !Array.isArray(data.statistics.FeatureMetrics)) {
-			return;
+			return metrics;
 		}
 
 		// Map of feature keys (from API) to feature display names
@@ -182,32 +184,32 @@
 			// Only process features that are enabled in tenant settings
 			if (data.statistics.FeatureMetrics[index] && isFeatureEnabled(featureName)) {
 				const feature = featureName;
-				featureMetrics[feature] = {};
+				metrics[feature] = {};
 				metricTypes.forEach((metricType) => {
 					const metricData = data.statistics.FeatureMetrics[index]?.[metricType];
 					if (!metricData) return;
-					
+
 					switch (metricType) {
 						case 'AccessFrequency':
 							if (Array.isArray(metricData)) {
-								processAccessFrequency(feature, metricData);
+								processAccessFrequency(metrics, feature, metricData);
 							}
 							break;
 						case 'EngagementRate':
 							if (Array.isArray(metricData)) {
-								processEngagementRate(feature, metricData);
+								processEngagementRate(metrics, feature, metricData);
 							}
 							break;
 						case 'RetentionRateOnSpecificDays': {
 							const retentionDays = metricData?.retention_on_specific_days;
 							if (retentionDays && Array.isArray(retentionDays) && retentionDays.length > 0) {
-								featureMetrics[feature].retentionRateDaysData = retentionDays.map(
+								metrics[feature].retentionRateDaysData = retentionDays.map(
 									(x: { returning_users: any }) => x.returning_users
 								);
-								featureMetrics[feature].retentionRateDaysLabels = retentionDays.map(
+								metrics[feature].retentionRateDaysLabels = retentionDays.map(
 									(x: { day: any }) => x.day
 								);
-								featureMetrics[feature].retentionRateDaysRate = retentionDays.map(
+								metrics[feature].retentionRateDaysRate = retentionDays.map(
 									(x: { retention_rate: any }) => x.retention_rate
 								);
 							}
@@ -216,13 +218,13 @@
 						case 'RetentionRateInSpecificIntervals': {
 							const retentionIntervals = metricData?.retention_in_specific_interval;
 							if (retentionIntervals && Array.isArray(retentionIntervals) && retentionIntervals.length > 0) {
-								featureMetrics[feature].retentionRateIntervalsData = retentionIntervals.map(
+								metrics[feature].retentionRateIntervalsData = retentionIntervals.map(
 									(x: { returning_users: any }) => x.returning_users
 								);
-								featureMetrics[feature].retentionRateIntervalsLabels = retentionIntervals.map(
+								metrics[feature].retentionRateIntervalsLabels = retentionIntervals.map(
 									(x: { interval: any }) => x.interval
 								);
-								featureMetrics[feature].retentionRateIntervalsRate = retentionIntervals.map(
+								metrics[feature].retentionRateIntervalsRate = retentionIntervals.map(
 									(x: { retention_rate: any }) => x.retention_rate
 								);
 							}
@@ -230,9 +232,9 @@
 						}
 						case 'DropOffPoints': {
 							if (Array.isArray(metricData) && metricData.length > 0) {
-								featureMetrics[feature].dropOffPointsData =
+								metrics[feature].dropOffPointsData =
 									metricData.map((x: { dropoff_count: any }) => x.dropoff_count) ?? [];
-								featureMetrics[feature].dropOffPointsLabels =
+								metrics[feature].dropOffPointsLabels =
 									metricData.map((x: { event_name: any }) => x.event_name) ?? [];
 							}
 							break;
@@ -241,9 +243,11 @@
 				});
 			}
 		});
+
+		return metrics;
 	}
 
-	initializeFeatureMetrics();
+	let featureMetrics = $derived(buildFeatureMetrics());
 
 	// Check if any feature sub-tab has data
 	const hasAnyFeatureSpecificData = $derived.by(() => {
