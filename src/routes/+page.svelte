@@ -41,32 +41,34 @@
 	// Handle form submission
 	const handleSubmit = async (event: Event) => {
 		try {
-		event.preventDefault();
-		isLoading = true;
-		errors = {};
+			event.preventDefault();
+			isLoading = true;
+			errors = {};
 
-		const formData = new FormData(event.target as HTMLFormElement);
-		const loginData = {
-			username: formData.get('username') as string || undefined,
-			password: formData.get('password') as string,
-			email: formData.get('email') as string || undefined,
-			phone: formData.get('phone') as string || undefined,
-			countryCode: formData.get('countryCode') as string || undefined,
-			loginType: loginType
-		};
+			const formData = new FormData(event.target as HTMLFormElement);
+			const loginData = {
+				username: formData.get('username') as string || undefined,
+				password: formData.get('password') as string,
+				email: formData.get('email') as string || undefined,
+				phone: formData.get('phone') as string || undefined,
+				countryCode: formData.get('countryCode') as string || undefined,
+				loginType: loginType
+			};
 
-		// Validate the form data
-		const validationResult = loginSchema.safeParse(loginData);
-		if (!validationResult.success) {
-			const validationErrors: Record<string, string> = {};
-			validationResult.error.errors.forEach((error) => {
-				const field = error.path[0] as string;
-				validationErrors[field] = error.message;
-			});
-			errors = validationErrors;
-			isLoading = false;
-			return;
-		}
+			// Validate the form data
+			const validationResult = loginSchema.safeParse(loginData);
+			if (!validationResult.success) {
+				const validationErrors: Record<string, string> = {};
+				validationResult.error.errors.forEach((error) => {
+					const field = error.path[0] as string;
+					validationErrors[field] = error.message;
+				});
+				errors = validationErrors;
+				isLoading = false;
+
+				return;
+			}
+
 			const response = await fetch('/api/server/login', {
 				method: 'POST',
 				headers: {
@@ -78,21 +80,22 @@
 			const result = await response.json();
 
 			if (result.success) {
-				await goto(result.data.redirectUrl);
-				await tick();
 				toastMessage({
 					Message: result.message,
 					HttpCode: 200,
 					Status: 'success'
 				});
-	
+				
+				// Redirect to dashboard
+				await goto(result.data.redirectUrl);
 			} else {
 				toastMessage({
-					Message: result.message,
+					Message: result.message || 'Login failed. Please check your credentials.',
 					HttpCode: response.status,
 					Status: 'failure'
 				});
-				isLoading = false
+				isLoading = false;
+				
 				// Handle validation errors
 				if (result.errors) {
 					const validationErrors: Record<string, string> = {};
@@ -102,9 +105,14 @@
 					errors = validationErrors;
 				}
 			}
-		
 		} catch (error) {
-			toastMessage();
+			console.error('Login error:', error);
+			isLoading = false;
+			toastMessage({
+				Message: 'An error occurred during login. Please try again.',
+				HttpCode: 500,
+				Status: 'failure'
+			});
 		}
 	};
 	
