@@ -1,5 +1,4 @@
 import type { Session } from '../session';
-import { CACHE_TYPE } from '$env/static/private';
 import { InMemorySessionCache } from './session.inmemory.cache'
 import { RedisSessionCache } from './session.redis.cache';
 import { building } from '$app/environment';
@@ -10,6 +9,7 @@ import type { ICache } from '../cache.interface';
 const getCache = () => {
     //code should not be executed during the build step.
     if (!building) {
+        const CACHE_TYPE = process.env.CACHE_TYPE || 'in-memory';
         if (CACHE_TYPE === 'in-memory') {
             return new InMemorySessionCache();
         }

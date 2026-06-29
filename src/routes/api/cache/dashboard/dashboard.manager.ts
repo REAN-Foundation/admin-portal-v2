@@ -1,6 +1,5 @@
 import { InMemoryDashboardCache } from './dashboard.inmemory.cache'
 import { RedisDashboardCache } from './dashboard.redis.cache';
-import { CACHE_TYPE } from '$env/static/private';
 import { building } from '$app/environment';
 import type { ICache } from '../cache.interface';
 
@@ -9,6 +8,7 @@ import type { ICache } from '../cache.interface';
 const getCache = () => {
     //code should not be executed during the build step.
     if (!building) {
+        const CACHE_TYPE = process.env.CACHE_TYPE || 'in-memory';
         if (CACHE_TYPE === 'in-memory') {
             return new InMemoryDashboardCache();
         }

@@ -1,10 +1,12 @@
 import chalk from 'chalk';
 import { error } from '@sveltejs/kit';
-import { API_CLIENT_INTERNAL_KEY, BACKEND_API_URL } from '$env/static/private';
 import { SessionManager } from '../cache/session/session.manager';
 
 /////////////////////////////////////////////////////////////////////////////
 //Base URL
+const API_CLIENT_INTERNAL_KEY = process.env.API_CLIENT_INTERNAL_KEY || 'fallback-key';
+const BACKEND_API_URL = process.env.BACKEND_API_URL || 'http://localhost:5000';
+
 export const post_ = async (
 	url: string,
 	bodyObj: string | any,

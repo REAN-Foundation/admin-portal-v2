@@ -1,5 +1,4 @@
 import { createClient, type RedisClientType } from 'redis';
-import { CACHE_HOST, CACHE_PASSWORD } from "$env/static/private";
 import type { Session } from '../session';
 import type { ICache } from '../cache.interface';
 
@@ -13,8 +12,11 @@ export class RedisSessionCache implements ICache<Session> {
     private _expiry = 60 * 60 * 24; // 24 hours
 
     constructor() {
+        const CACHE_HOST = process.env.CACHE_HOST || 'localhost:6379';
+        const CACHE_PASSWORD = process.env.CACHE_PASSWORD;
+        
         this._client = createClient({
-            url: CACHE_HOST,
+            url: `redis://${CACHE_HOST}`,
             password: CACHE_PASSWORD
         });
     
