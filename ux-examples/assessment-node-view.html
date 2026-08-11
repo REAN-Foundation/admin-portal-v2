@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Assessment Node - REAN Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .detail-table {
+      width: 100%;
+    }
+    
+    .detail-table tr {
+      border-bottom: 1px solid var(--color-border);
+    }
+    
+    .detail-table tr:last-child {
+      border-bottom: none;
+    }
+    
+    .detail-label {
+      padding: 1rem 0;
+      font-weight: 500;
+      color: var(--color-text-muted);
+      width: 200px;
+      vertical-align: top;
+    }
+    
+    .detail-value {
+      padding: 1rem 0;
+    }
+    
+    .tag {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: var(--color-surface-alt);
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--color-text-muted);
+    }
+    
+    .option-card {
+      background: var(--color-surface-alt);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      transition: all 0.2s ease;
+    }
+    
+    .option-card:hover {
+      border-color: var(--color-primary-500);
+    }
+    
+    .option-card.has-path {
+      border-left: 3px solid var(--color-success-500);
+    }
+    
+    .option-card.no-path {
+      border-left: 3px solid var(--color-border);
+    }
+    
+    .path-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.625rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    
+    .path-indicator.exists {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--color-success-500);
+    }
+    
+    .path-indicator.missing {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--color-warning-500);
+    }
+    
+    .option-number {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-full);
+      background: rgba(51, 89, 255, 0.1);
+      color: var(--color-primary-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar"></aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Navbar -->
+      <header class="navbar" id="navbar"></header>
+      
+      <!-- Page Content -->
+      <div class="page-container">
+        <div class="card">
+          <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 class="card-title" style="margin: 0;">View Assessment Node</h2>
+            <a href="assessment-nodes.html" class="btn btn-icon btn-ghost" style="color: var(--color-error-500);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </a>
+          </div>
+          
+          <div class="card-body">
+            <table class="detail-table">
+              <tbody>
+                <tr>
+                  <td class="detail-label">Node Type</td>
+                  <td class="detail-value">
+                    <span style="display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.75rem; background: rgba(51, 89, 255, 0.1); color: var(--color-primary-500); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 500;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                      </svg>
+                      Question
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="detail-label">Parent Node</td>
+                  <td class="detail-value">
+                    <code style="background: var(--color-surface-alt); padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.875rem;">PHQ9-ROOT-001</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="detail-label">Title</td>
+                  <td class="detail-value" style="font-weight: 500;">Little interest or pleasure in doing things?</td>
+                </tr>
+                <tr>
+                  <td class="detail-label">Required</td>
+                  <td class="detail-value">
+                    <span style="display: inline-flex; align-items: center; gap: 0.25rem; color: var(--color-success-500);">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                      </svg>
+                      Yes
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="detail-label">Description</td>
+                  <td class="detail-value">This question assesses anhedonia, a core symptom of depression characterized by loss of interest or pleasure in activities.</td>
+                </tr>
+                <tr>
+                  <td class="detail-label">Raw Data</td>
+                  <td class="detail-value" style="color: var(--color-text-muted);">Not specified</td>
+                </tr>
+                <tr>
+                  <td class="detail-label">Sequence</td>
+                  <td class="detail-value">
+                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: rgba(51, 89, 255, 0.1); color: var(--color-primary-500); border-radius: var(--radius-full); font-weight: 700;">1</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="detail-label">Tags</td>
+                  <td class="detail-value">
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                      <span class="tag">interest</span>
+                      <span class="tag">pleasure</span>
+                      <span class="tag">anhedonia</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="detail-label">Field Identifier</td>
+                  <td class="detail-value" style="color: var(--color-text-muted);">Not specified</td>
+                </tr>
+                <tr>
+                  <td class="detail-label">Field Identifier Unit</td>
+                  <td class="detail-value" style="color: var(--color-text-muted);">Not specified</td>
+                </tr>
+                <tr>
+                  <td class="detail-label">Query Response Type</td>
+                  <td class="detail-value">
+                    <span style="padding: 0.25rem 0.75rem; background: rgba(139, 92, 246, 0.1); color: #8b5cf6; border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 500;">Single Choice Selection</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="detail-label">Options</td>
+                  <td class="detail-value">
+                    <!-- Option 1 - Has Path -->
+                    <div class="option-card has-path">
+                      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                          <span class="option-number">1</span>
+                          <span style="font-weight: 500;">Not at all</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                          <span class="path-indicator exists">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Path configured
+                          </span>
+                          <div style="display: flex; gap: 0.25rem;">
+                            <button class="btn btn-ghost btn-sm">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                              </svg>
+                              View
+                            </button>
+                            <button class="btn btn-ghost btn-sm">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                              </svg>
+                              Edit
+                            </button>
+                            <button class="btn btn-ghost btn-sm" style="color: var(--color-error-500);" onclick="openDeletePathModal(1)">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                              </svg>
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Option 2 - Has Path -->
+                    <div class="option-card has-path">
+                      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                          <span class="option-number">2</span>
+                          <span style="font-weight: 500;">Several days</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                          <span class="path-indicator exists">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Path configured
+                          </span>
+                          <div style="display: flex; gap: 0.25rem;">
+                            <button class="btn btn-ghost btn-sm">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                              </svg>
+                              View
+                            </button>
+                            <button class="btn btn-ghost btn-sm">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                              </svg>
+                              Edit
+                            </button>
+                            <button class="btn btn-ghost btn-sm" style="color: var(--color-error-500);" onclick="openDeletePathModal(2)">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                              </svg>
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Option 3 - No Path -->
+                    <div class="option-card no-path">
+                      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                          <span class="option-number">3</span>
+                          <span style="font-weight: 500;">More than half the days</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                          <span class="path-indicator missing">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                              <line x1="12" y1="9" x2="12" y2="13"/>
+                              <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                            No path
+                          </span>
+                          <button class="btn btn-primary btn-sm">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <line x1="12" y1="5" x2="12" y2="19"/>
+                              <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Add Path
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Option 4 - No Path -->
+                    <div class="option-card no-path">
+                      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                          <span class="option-number">4</span>
+                          <span style="font-weight: 500;">Nearly every day</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                          <span class="path-indicator missing">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                              <line x1="12" y1="9" x2="12" y2="13"/>
+                              <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                            No path
+                          </span>
+                          <button class="btn btn-primary btn-sm">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <line x1="12" y1="5" x2="12" y2="19"/>
+                              <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Add Path
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="detail-label">Correct Answer</td>
+                  <td class="detail-value" style="color: var(--color-text-muted);">Not specified</td>
+                </tr>
+                <tr>
+                  <td class="detail-label">Score</td>
+                  <td class="detail-value">
+                    <span style="display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.75rem; background: rgba(16, 185, 129, 0.1); color: var(--color-success-500); border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 500;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                      </svg>
+                      0-3 points (based on selection)
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            
+            <!-- Action Buttons -->
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; padding-top: 1.5rem; margin-top: 1.5rem; border-top: 1px solid var(--color-border);">
+              <button class="btn btn-primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                Edit
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Delete Path Modal -->
+  <div class="modal-overlay" id="deletePathModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Delete Path</h3>
+        <button class="modal-close" onclick="closeDeletePathModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" style="text-align: center;">
+        <div style="width: 64px; height: 64px; background: rgba(239, 68, 68, 0.1); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-error-500)" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="15" y1="9" x2="9" y2="15"/>
+            <line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+        </div>
+        <p>Are you sure you want to delete the path for option <strong id="deleteOptionNum"></strong>?</p>
+        <p style="font-size: 0.875rem; color: var(--color-text-muted);">This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeDeletePathModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="confirmDeletePath()">Delete Path</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    let deleteOptionNum = null;
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeLayout({
+        currentPage: 'assessment-node-view.html',
+        breadcrumbs: [
+          { name: 'Assessments', href: 'assessment-templates.html' },
+          { name: 'PHQ-9', href: 'assessment-template-view.html' },
+          { name: 'Nodes', href: 'assessment-nodes.html' },
+          { name: 'View', href: '#' }
+        ],
+        user: currentUser
+      });
+    });
+    
+    function openDeletePathModal(optionNum) {
+      deleteOptionNum = optionNum;
+      document.getElementById('deleteOptionNum').textContent = optionNum;
+      document.getElementById('deletePathModal').classList.add('active');
+    }
+    
+    function closeDeletePathModal() {
+      document.getElementById('deletePathModal').classList.remove('active');
+      deleteOptionNum = null;
+    }
+    
+    function confirmDeletePath() {
+      Toast.success('Path deleted successfully');
+      closeDeletePathModal();
+    }
+  </script>
+</body>
+</html>

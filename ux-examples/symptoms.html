@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Symptoms - REAN Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .symptoms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+    
+    .symptom-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: 1.25rem;
+      transition: all 0.2s;
+    }
+    
+    .symptom-card:hover {
+      border-color: var(--color-primary-500);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .symptom-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.875rem;
+      margin-bottom: 1rem;
+    }
+    
+    .symptom-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .symptom-icon.pain { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+    .symptom-icon.respiratory { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+    .symptom-icon.digestive { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+    .symptom-icon.neurological { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+    .symptom-icon.cardiovascular { background: rgba(236, 72, 153, 0.1); color: #ec4899; }
+    .symptom-icon.general { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+    
+    .symptom-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    
+    .symptom-code {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      font-family: monospace;
+    }
+    
+    .symptom-description {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+    
+    .symptom-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+      margin-bottom: 1rem;
+    }
+    
+    .symptom-tag {
+      padding: 0.25rem 0.5rem;
+      background: var(--color-surface-alt);
+      border-radius: var(--radius-sm);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      color: var(--color-text-muted);
+    }
+    
+    .symptom-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1rem;
+      border-top: 1px solid var(--color-border);
+    }
+    
+    .severity-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .severity-dots {
+      display: flex;
+      gap: 0.25rem;
+    }
+    
+    .severity-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-surface-alt);
+    }
+    
+    .severity-dot.active.low { background: #10b981; }
+    .severity-dot.active.medium { background: #f59e0b; }
+    .severity-dot.active.high { background: #ef4444; }
+    
+    .severity-label {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+    }
+    
+    .body-system-filters {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    
+    .body-system-filter {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.5rem 0.875rem;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    
+    .body-system-filter:hover {
+      border-color: var(--color-primary-500);
+    }
+    
+    .body-system-filter.active {
+      background: var(--color-primary-500);
+      border-color: var(--color-primary-500);
+      color: white;
+    }
+    
+    .stats-banner {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      padding: 1.25rem;
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      border-radius: var(--radius-xl);
+      margin-bottom: 1.5rem;
+      color: white;
+    }
+    
+    .stats-banner .stat-item {
+      text-align: center;
+    }
+    
+    .stats-banner .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    
+    .stats-banner .stat-label {
+      font-size: 0.8125rem;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="navbar" id="navbar"></header>
+      
+      <div class="page-container">
+        <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h1 class="page-title">Symptoms</h1>
+            <p class="page-subtitle">Manage symptom definitions, severity levels, and body system mappings</p>
+          </div>
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn btn-secondary" onclick="importSymptoms()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              Import
+            </button>
+            <button class="btn btn-primary" onclick="openCreateModal()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              Add Symptom
+            </button>
+          </div>
+        </div>
+        
+        <!-- Stats Banner -->
+        <div class="stats-banner">
+          <div class="stat-item">
+            <div class="stat-value">248</div>
+            <div class="stat-label">Total Symptoms</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">12</div>
+            <div class="stat-label">Body Systems</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">86</div>
+            <div class="stat-label">High Severity</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">45</div>
+            <div class="stat-label">Commonly Reported</div>
+          </div>
+        </div>
+        
+        <!-- Body System Filters -->
+        <div class="body-system-filters">
+          <button class="body-system-filter active" onclick="filterBySystem('all', this)">All Systems</button>
+          <button class="body-system-filter" onclick="filterBySystem('respiratory', this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 19v-2.5c0-3 2-4.5 6-4.5s6 1.5 6 4.5V19"/>
+              <circle cx="12" cy="6" r="4"/>
+            </svg>
+            Respiratory
+          </button>
+          <button class="body-system-filter" onclick="filterBySystem('cardiovascular', this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+            </svg>
+            Cardiovascular
+          </button>
+          <button class="body-system-filter" onclick="filterBySystem('digestive', this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+            </svg>
+            Digestive
+          </button>
+          <button class="body-system-filter" onclick="filterBySystem('neurological', this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+            </svg>
+            Neurological
+          </button>
+          <button class="body-system-filter" onclick="filterBySystem('musculoskeletal', this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="5" r="3"/>
+              <line x1="12" y1="22" x2="12" y2="8"/>
+            </svg>
+            Musculoskeletal
+          </button>
+        </div>
+        
+        <!-- Search -->
+        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+          <div class="table-search" style="flex: 1; max-width: 350px;">
+            <span class="table-search-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+              </svg>
+            </span>
+            <input type="text" placeholder="Search symptoms..." id="searchInput">
+          </div>
+          <select class="form-input form-select" style="width: 160px; height: 42px;">
+            <option value="">All Severity</option>
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+          </select>
+          <select class="form-input form-select" style="width: 150px; height: 42px;">
+            <option>Sort: A-Z</option>
+            <option>Sort: Severity</option>
+            <option>Sort: Newest</option>
+          </select>
+        </div>
+        
+        <!-- Symptoms Grid -->
+        <div class="symptoms-grid">
+          <!-- Headache -->
+          <div class="symptom-card" data-system="neurological">
+            <div class="symptom-header">
+              <div class="symptom-icon neurological">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M8 15s1.5 2 4 2 4-2 4-2"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="symptom-title">Headache</h3>
+                <span class="symptom-code">SYM-NEURO-001</span>
+              </div>
+            </div>
+            <p class="symptom-description">Pain or discomfort in the head, scalp, or neck. Can range from mild to severe and may be acute or chronic.</p>
+            <div class="symptom-tags">
+              <span class="symptom-tag">neurological</span>
+              <span class="symptom-tag">pain</span>
+              <span class="symptom-tag">common</span>
+            </div>
+            <div class="symptom-footer">
+              <div class="severity-indicator">
+                <div class="severity-dots">
+                  <div class="severity-dot active medium"></div>
+                  <div class="severity-dot active medium"></div>
+                  <div class="severity-dot"></div>
+                </div>
+                <span class="severity-label">Medium</span>
+              </div>
+              <div style="display: flex; gap: 0.25rem;">
+                <button class="btn btn-ghost btn-sm">Edit</button>
+                <button class="btn btn-icon btn-ghost sm">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Chest Pain -->
+          <div class="symptom-card" data-system="cardiovascular">
+            <div class="symptom-header">
+              <div class="symptom-icon cardiovascular">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="symptom-title">Chest Pain</h3>
+                <span class="symptom-code">SYM-CARD-001</span>
+              </div>
+            </div>
+            <p class="symptom-description">Discomfort or pain in the chest area. Requires immediate evaluation to rule out cardiac causes.</p>
+            <div class="symptom-tags">
+              <span class="symptom-tag">cardiovascular</span>
+              <span class="symptom-tag">urgent</span>
+              <span class="symptom-tag">pain</span>
+            </div>
+            <div class="symptom-footer">
+              <div class="severity-indicator">
+                <div class="severity-dots">
+                  <div class="severity-dot active high"></div>
+                  <div class="severity-dot active high"></div>
+                  <div class="severity-dot active high"></div>
+                </div>
+                <span class="severity-label">High</span>
+              </div>
+              <div style="display: flex; gap: 0.25rem;">
+                <button class="btn btn-ghost btn-sm">Edit</button>
+                <button class="btn btn-icon btn-ghost sm">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Shortness of Breath -->
+          <div class="symptom-card" data-system="respiratory">
+            <div class="symptom-header">
+              <div class="symptom-icon respiratory">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 19v-2.5c0-3 2-4.5 6-4.5s6 1.5 6 4.5V19"/>
+                  <circle cx="12" cy="6" r="4"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="symptom-title">Shortness of Breath</h3>
+                <span class="symptom-code">SYM-RESP-001</span>
+              </div>
+            </div>
+            <p class="symptom-description">Difficulty breathing or feeling of not getting enough air. Can indicate respiratory or cardiac issues.</p>
+            <div class="symptom-tags">
+              <span class="symptom-tag">respiratory</span>
+              <span class="symptom-tag">urgent</span>
+            </div>
+            <div class="symptom-footer">
+              <div class="severity-indicator">
+                <div class="severity-dots">
+                  <div class="severity-dot active high"></div>
+                  <div class="severity-dot active high"></div>
+                  <div class="severity-dot active high"></div>
+                </div>
+                <span class="severity-label">High</span>
+              </div>
+              <div style="display: flex; gap: 0.25rem;">
+                <button class="btn btn-ghost btn-sm">Edit</button>
+                <button class="btn btn-icon btn-ghost sm">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Nausea -->
+          <div class="symptom-card" data-system="digestive">
+            <div class="symptom-header">
+              <div class="symptom-icon digestive">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M16 16s-1.5-2-4-2-4 2-4 2"/>
+                  <line x1="9" y1="9" x2="9.01" y2="9"/>
+                  <line x1="15" y1="9" x2="15.01" y2="9"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="symptom-title">Nausea</h3>
+                <span class="symptom-code">SYM-DIGE-001</span>
+              </div>
+            </div>
+            <p class="symptom-description">Feeling of unease and discomfort in the stomach with an urge to vomit. Common symptom of many conditions.</p>
+            <div class="symptom-tags">
+              <span class="symptom-tag">digestive</span>
+              <span class="symptom-tag">common</span>
+            </div>
+            <div class="symptom-footer">
+              <div class="severity-indicator">
+                <div class="severity-dots">
+                  <div class="severity-dot active low"></div>
+                  <div class="severity-dot"></div>
+                  <div class="severity-dot"></div>
+                </div>
+                <span class="severity-label">Low</span>
+              </div>
+              <div style="display: flex; gap: 0.25rem;">
+                <button class="btn btn-ghost btn-sm">Edit</button>
+                <button class="btn btn-icon btn-ghost sm">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Fatigue -->
+          <div class="symptom-card" data-system="general">
+            <div class="symptom-header">
+              <div class="symptom-icon general">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="symptom-title">Fatigue</h3>
+                <span class="symptom-code">SYM-GENL-001</span>
+              </div>
+            </div>
+            <p class="symptom-description">Persistent tiredness and lack of energy that doesn't improve with rest. Can be a symptom of various conditions.</p>
+            <div class="symptom-tags">
+              <span class="symptom-tag">general</span>
+              <span class="symptom-tag">common</span>
+              <span class="symptom-tag">chronic</span>
+            </div>
+            <div class="symptom-footer">
+              <div class="severity-indicator">
+                <div class="severity-dots">
+                  <div class="severity-dot active medium"></div>
+                  <div class="severity-dot active medium"></div>
+                  <div class="severity-dot"></div>
+                </div>
+                <span class="severity-label">Medium</span>
+              </div>
+              <div style="display: flex; gap: 0.25rem;">
+                <button class="btn btn-ghost btn-sm">Edit</button>
+                <button class="btn btn-icon btn-ghost sm">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Joint Pain -->
+          <div class="symptom-card" data-system="musculoskeletal">
+            <div class="symptom-header">
+              <div class="symptom-icon pain">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="5" r="3"/>
+                  <line x1="12" y1="22" x2="12" y2="8"/>
+                  <path d="M5 12H2a10 10 0 0020 0h-3"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="symptom-title">Joint Pain</h3>
+                <span class="symptom-code">SYM-MUSK-001</span>
+              </div>
+            </div>
+            <p class="symptom-description">Pain, discomfort, or inflammation in any of the body's joints. Common in arthritis and injuries.</p>
+            <div class="symptom-tags">
+              <span class="symptom-tag">musculoskeletal</span>
+              <span class="symptom-tag">pain</span>
+              <span class="symptom-tag">chronic</span>
+            </div>
+            <div class="symptom-footer">
+              <div class="severity-indicator">
+                <div class="severity-dots">
+                  <div class="severity-dot active medium"></div>
+                  <div class="severity-dot active medium"></div>
+                  <div class="severity-dot"></div>
+                </div>
+                <span class="severity-label">Medium</span>
+              </div>
+              <div style="display: flex; gap: 0.25rem;">
+                <button class="btn btn-ghost btn-sm">Edit</button>
+                <button class="btn btn-icon btn-ghost sm">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div style="display: flex; justify-content: center; margin-top: 2rem;">
+          <div class="pagination">
+            <button class="pagination-btn" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+            <button class="pagination-btn active">1</button>
+            <button class="pagination-btn">2</button>
+            <button class="pagination-btn">3</button>
+            <span style="padding: 0 0.5rem;">...</span>
+            <button class="pagination-btn">42</button>
+            <button class="pagination-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeLayout({
+        currentPage: 'symptoms.html',
+        breadcrumbs: [
+          { name: 'Clinical', href: '#' },
+          { name: 'Symptoms', href: 'symptoms.html' }
+        ],
+        user: currentUser
+      });
+    });
+    
+    function filterBySystem(system, btn) {
+      document.querySelectorAll('.body-system-filter').forEach(f => f.classList.remove('active'));
+      btn.classList.add('active');
+      
+      const cards = document.querySelectorAll('.symptom-card');
+      cards.forEach(card => {
+        if (system === 'all' || card.dataset.system === system) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+    
+    function openCreateModal() {
+      Toast.info('Opening symptom form...');
+    }
+    
+    function importSymptoms() {
+      Toast.info('Opening import dialog...');
+    }
+  </script>
+</body>
+</html>

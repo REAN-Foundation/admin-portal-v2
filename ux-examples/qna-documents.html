@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Q&A Documents - REAN Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .content-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 1.5rem;
+      min-height: calc(100vh - 200px);
+    }
+    
+    @media (max-width: 1024px) {
+      .content-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .categories-panel {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: 1.25rem;
+      position: sticky;
+      top: 1.5rem;
+      height: fit-content;
+    }
+    
+    .categories-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .categories-header h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+    }
+    
+    .category-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    
+    .category-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 0.875rem;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.15s;
+      color: var(--color-text-secondary);
+    }
+    
+    .category-item:hover {
+      background: var(--color-surface-alt);
+    }
+    
+    .category-item.active {
+      background: var(--color-primary-50);
+      color: var(--color-primary-600);
+    }
+    
+    .category-item-left {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+    }
+    
+    .category-item-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-surface-alt);
+    }
+    
+    .category-item.active .category-item-icon {
+      background: var(--color-primary-100);
+    }
+    
+    .category-count {
+      font-size: 0.75rem;
+      padding: 0.125rem 0.5rem;
+      border-radius: var(--radius-full);
+      background: var(--color-surface-alt);
+    }
+    
+    .category-item.active .category-count {
+      background: var(--color-primary-100);
+    }
+    
+    .documents-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    
+    .documents-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .documents-toolbar {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    
+    .view-toggle {
+      display: flex;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    
+    .view-toggle-btn {
+      padding: 0.5rem 0.75rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--color-text-muted);
+      transition: all 0.15s;
+    }
+    
+    .view-toggle-btn:hover {
+      color: var(--color-text-primary);
+    }
+    
+    .view-toggle-btn.active {
+      background: var(--color-primary-500);
+      color: white;
+    }
+    
+    .document-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+    
+    .document-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      transition: all 0.2s;
+    }
+    
+    .document-card:hover {
+      border-color: var(--color-primary-500);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .document-card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.875rem;
+      margin-bottom: 1rem;
+    }
+    
+    .document-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .document-icon.pdf { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+    .document-icon.doc { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+    .document-icon.link { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+    
+    .document-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: var(--color-text-primary);
+    }
+    
+    .document-meta {
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+    }
+    
+    .document-excerpt {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .document-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+      margin-top: 1rem;
+    }
+    
+    .document-tag {
+      padding: 0.25rem 0.5rem;
+      background: var(--color-surface-alt);
+      border-radius: var(--radius-sm);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      color: var(--color-text-muted);
+    }
+    
+    .document-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--color-border);
+    }
+    
+    .qa-count {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+    }
+    
+    .stats-banner {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      padding: 1.25rem;
+      background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
+      border-radius: var(--radius-xl);
+      margin-bottom: 1.5rem;
+    }
+    
+    .stats-banner .stat-item {
+      text-align: center;
+      color: white;
+    }
+    
+    .stats-banner .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+    
+    .stats-banner .stat-label {
+      font-size: 0.8125rem;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="navbar" id="navbar"></header>
+      
+      <div class="page-container">
+        <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h1 class="page-title">Q&A Documents</h1>
+            <p class="page-subtitle">Knowledge base documents for AI-powered question answering</p>
+          </div>
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn btn-secondary" onclick="syncDocuments()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0118.8-4.3M22 12.5a10 10 0 01-18.8 4.2"/>
+              </svg>
+              Sync All
+            </button>
+            <button class="btn btn-primary" onclick="openUploadModal()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              Upload Document
+            </button>
+          </div>
+        </div>
+        
+        <!-- Stats Banner -->
+        <div class="stats-banner">
+          <div class="stat-item">
+            <div class="stat-value">247</div>
+            <div class="stat-label">Total Documents</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">1,842</div>
+            <div class="stat-label">Q&A Pairs</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">12.4k</div>
+            <div class="stat-label">Queries Answered</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">94%</div>
+            <div class="stat-label">Answer Accuracy</div>
+          </div>
+        </div>
+        
+        <div class="content-layout">
+          <!-- Categories Panel -->
+          <div class="categories-panel">
+            <div class="categories-header">
+              <h3>Categories</h3>
+              <button class="btn btn-icon btn-ghost sm" onclick="addCategory()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </button>
+            </div>
+            <div class="category-list">
+              <div class="category-item active" onclick="selectCategory('all', this)">
+                <div class="category-item-left">
+                  <div class="category-item-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    </svg>
+                  </div>
+                  <span>All Documents</span>
+                </div>
+                <span class="category-count">247</span>
+              </div>
+              <div class="category-item" onclick="selectCategory('health', this)">
+                <div class="category-item-left">
+                  <div class="category-item-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
+                  </div>
+                  <span>Health Education</span>
+                </div>
+                <span class="category-count">68</span>
+              </div>
+              <div class="category-item" onclick="selectCategory('medication', this)">
+                <div class="category-item-left">
+                  <div class="category-item-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M10.5 20.5L3.5 13.5a4.95 4.95 0 117-7l7 7a4.95 4.95 0 11-7 7z"/>
+                    </svg>
+                  </div>
+                  <span>Medication Info</span>
+                </div>
+                <span class="category-count">45</span>
+              </div>
+              <div class="category-item" onclick="selectCategory('procedures', this)">
+                <div class="category-item-left">
+                  <div class="category-item-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                  </div>
+                  <span>Procedures</span>
+                </div>
+                <span class="category-count">32</span>
+              </div>
+              <div class="category-item" onclick="selectCategory('nutrition', this)">
+                <div class="category-item-left">
+                  <div class="category-item-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 8h1a4 4 0 010 8h-1"/>
+                      <path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/>
+                      <line x1="6" y1="1" x2="6" y2="4"/>
+                      <line x1="10" y1="1" x2="10" y2="4"/>
+                      <line x1="14" y1="1" x2="14" y2="4"/>
+                    </svg>
+                  </div>
+                  <span>Nutrition</span>
+                </div>
+                <span class="category-count">54</span>
+              </div>
+              <div class="category-item" onclick="selectCategory('faq', this)">
+                <div class="category-item-left">
+                  <div class="category-item-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
+                      <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                  </div>
+                  <span>General FAQ</span>
+                </div>
+                <span class="category-count">48</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Documents Panel -->
+          <div class="documents-panel">
+            <div class="documents-header">
+              <div class="table-search" style="max-width: 320px;">
+                <span class="table-search-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                  </svg>
+                </span>
+                <input type="text" placeholder="Search documents..." id="searchInput" oninput="searchDocuments()">
+              </div>
+              <div class="documents-toolbar">
+                <select class="form-input form-select" style="width: 160px; height: 38px;">
+                  <option>Sort: Latest</option>
+                  <option>Sort: A-Z</option>
+                  <option>Sort: Most Q&As</option>
+                </select>
+                <div class="view-toggle">
+                  <button class="view-toggle-btn active" onclick="setView('grid', this)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                      <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                    </svg>
+                  </button>
+                  <button class="view-toggle-btn" onclick="setView('list', this)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
+                      <line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/>
+                      <line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="document-grid" id="documentGrid">
+              <!-- Document Card 1 -->
+              <div class="document-card" data-category="health">
+                <div class="document-card-header">
+                  <div class="document-icon pdf">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="document-title">Diabetes Management Guide</h4>
+                    <div class="document-meta">
+                      <span>PDF • 2.4 MB</span>
+                      <span>Updated 3 days ago</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="document-excerpt">Comprehensive guide covering blood sugar monitoring, medication management, dietary recommendations, and lifestyle modifications for diabetes patients.</p>
+                <div class="document-tags">
+                  <span class="document-tag">diabetes</span>
+                  <span class="document-tag">chronic care</span>
+                  <span class="document-tag">lifestyle</span>
+                </div>
+                <div class="document-card-footer">
+                  <div class="qa-count">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                    </svg>
+                    <span>86 Q&A pairs</span>
+                  </div>
+                  <div style="display: flex; gap: 0.25rem;">
+                    <button class="btn btn-ghost btn-sm" onclick="editDocument(1)">Edit</button>
+                    <button class="btn btn-primary btn-sm" onclick="viewDocument(1)">View</button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Document Card 2 -->
+              <div class="document-card" data-category="medication">
+                <div class="document-card-header">
+                  <div class="document-icon doc">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="document-title">Medication Side Effects Database</h4>
+                    <div class="document-meta">
+                      <span>DOCX • 1.8 MB</span>
+                      <span>Updated 1 week ago</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="document-excerpt">Database of common medications and their potential side effects, drug interactions, and precautions for patient counseling.</p>
+                <div class="document-tags">
+                  <span class="document-tag">medications</span>
+                  <span class="document-tag">side effects</span>
+                  <span class="document-tag">pharmacology</span>
+                </div>
+                <div class="document-card-footer">
+                  <div class="qa-count">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                    </svg>
+                    <span>142 Q&A pairs</span>
+                  </div>
+                  <div style="display: flex; gap: 0.25rem;">
+                    <button class="btn btn-ghost btn-sm" onclick="editDocument(2)">Edit</button>
+                    <button class="btn btn-primary btn-sm" onclick="viewDocument(2)">View</button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Document Card 3 -->
+              <div class="document-card" data-category="nutrition">
+                <div class="document-card-header">
+                  <div class="document-icon link">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+                      <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="document-title">Nutrition Guidelines 2024</h4>
+                    <div class="document-meta">
+                      <span>Web Link</span>
+                      <span>Updated 2 days ago</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="document-excerpt">Latest dietary guidelines and nutritional recommendations from WHO and national health organizations for various health conditions.</p>
+                <div class="document-tags">
+                  <span class="document-tag">nutrition</span>
+                  <span class="document-tag">diet</span>
+                  <span class="document-tag">guidelines</span>
+                </div>
+                <div class="document-card-footer">
+                  <div class="qa-count">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                    </svg>
+                    <span>64 Q&A pairs</span>
+                  </div>
+                  <div style="display: flex; gap: 0.25rem;">
+                    <button class="btn btn-ghost btn-sm" onclick="editDocument(3)">Edit</button>
+                    <button class="btn btn-primary btn-sm" onclick="viewDocument(3)">View</button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Document Card 4 -->
+              <div class="document-card" data-category="faq">
+                <div class="document-card-header">
+                  <div class="document-icon pdf">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="document-title">COVID-19 FAQ Document</h4>
+                    <div class="document-meta">
+                      <span>PDF • 856 KB</span>
+                      <span>Updated 5 days ago</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="document-excerpt">Frequently asked questions about COVID-19 symptoms, prevention, vaccination, and treatment protocols for patient education.</p>
+                <div class="document-tags">
+                  <span class="document-tag">covid-19</span>
+                  <span class="document-tag">vaccination</span>
+                  <span class="document-tag">prevention</span>
+                </div>
+                <div class="document-card-footer">
+                  <div class="qa-count">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                    </svg>
+                    <span>92 Q&A pairs</span>
+                  </div>
+                  <div style="display: flex; gap: 0.25rem;">
+                    <button class="btn btn-ghost btn-sm" onclick="editDocument(4)">Edit</button>
+                    <button class="btn btn-primary btn-sm" onclick="viewDocument(4)">View</button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Document Card 5 -->
+              <div class="document-card" data-category="procedures">
+                <div class="document-card-header">
+                  <div class="document-icon doc">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="document-title">Pre-Surgery Instructions</h4>
+                    <div class="document-meta">
+                      <span>DOCX • 420 KB</span>
+                      <span>Updated 1 week ago</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="document-excerpt">Detailed pre-operative instructions for patients undergoing various surgical procedures including fasting requirements and medication adjustments.</p>
+                <div class="document-tags">
+                  <span class="document-tag">surgery</span>
+                  <span class="document-tag">pre-op</span>
+                  <span class="document-tag">instructions</span>
+                </div>
+                <div class="document-card-footer">
+                  <div class="qa-count">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                    </svg>
+                    <span>38 Q&A pairs</span>
+                  </div>
+                  <div style="display: flex; gap: 0.25rem;">
+                    <button class="btn btn-ghost btn-sm" onclick="editDocument(5)">Edit</button>
+                    <button class="btn btn-primary btn-sm" onclick="viewDocument(5)">View</button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Document Card 6 -->
+              <div class="document-card" data-category="health">
+                <div class="document-card-header">
+                  <div class="document-icon pdf">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="document-title">Heart Health Handbook</h4>
+                    <div class="document-meta">
+                      <span>PDF • 3.1 MB</span>
+                      <span>Updated 4 days ago</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="document-excerpt">Complete guide to cardiovascular health including prevention strategies, warning signs, lifestyle modifications, and rehabilitation protocols.</p>
+                <div class="document-tags">
+                  <span class="document-tag">cardiology</span>
+                  <span class="document-tag">heart health</span>
+                  <span class="document-tag">prevention</span>
+                </div>
+                <div class="document-card-footer">
+                  <div class="qa-count">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                    </svg>
+                    <span>104 Q&A pairs</span>
+                  </div>
+                  <div style="display: flex; gap: 0.25rem;">
+                    <button class="btn btn-ghost btn-sm" onclick="editDocument(6)">Edit</button>
+                    <button class="btn btn-primary btn-sm" onclick="viewDocument(6)">View</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Upload Document Modal -->
+  <div class="modal-overlay" id="uploadModal">
+    <div class="modal" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Upload Document</h3>
+        <button class="modal-close" onclick="closeUploadModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="upload-zone" style="border: 2px dashed var(--color-border); border-radius: var(--radius-lg); padding: 3rem; text-align: center; background: var(--color-surface-alt);">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="1.5" style="margin-bottom: 1rem;">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <p style="font-weight: 500; margin-bottom: 0.5rem;">Drop files here or click to upload</p>
+          <p style="font-size: 0.875rem; color: var(--color-text-muted);">PDF, DOCX, TXT up to 10MB</p>
+        </div>
+        <div class="form-group" style="margin-top: 1.5rem;">
+          <label class="form-label">Document Title</label>
+          <input type="text" class="form-input" placeholder="Enter document title">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-input form-select">
+            <option value="">Select category</option>
+            <option>Health Education</option>
+            <option>Medication Info</option>
+            <option>Procedures</option>
+            <option>Nutrition</option>
+            <option>General FAQ</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tags</label>
+          <input type="text" class="form-input" placeholder="Enter tags separated by commas">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeUploadModal()">Cancel</button>
+        <button class="btn btn-primary">Upload & Process</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeLayout({
+        currentPage: 'qna-documents.html',
+        breadcrumbs: [
+          { name: 'Content', href: '#' },
+          { name: 'Q&A Documents', href: 'qna-documents.html' }
+        ],
+        user: currentUser
+      });
+    });
+    
+    function selectCategory(category, element) {
+      document.querySelectorAll('.category-item').forEach(item => item.classList.remove('active'));
+      element.classList.add('active');
+      
+      const cards = document.querySelectorAll('.document-card');
+      cards.forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+    
+    function searchDocuments() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.document-card');
+      
+      cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(query) ? '' : 'none';
+      });
+    }
+    
+    function setView(view, btn) {
+      document.querySelectorAll('.view-toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      const grid = document.getElementById('documentGrid');
+      if (view === 'list') {
+        grid.style.gridTemplateColumns = '1fr';
+      } else {
+        grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
+      }
+    }
+    
+    function openUploadModal() {
+      document.getElementById('uploadModal').classList.add('active');
+    }
+    
+    function closeUploadModal() {
+      document.getElementById('uploadModal').classList.remove('active');
+    }
+    
+    function syncDocuments() {
+      Toast.info('Syncing all documents...');
+    }
+    
+    function addCategory() {
+      Toast.info('Add category dialog');
+    }
+    
+    function editDocument(id) {
+      Toast.info('Editing document #' + id);
+    }
+    
+    function viewDocument(id) {
+      Toast.info('Viewing document #' + id);
+    }
+  </script>
+</body>
+</html>
