@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import {
 		getChartColors,
@@ -16,12 +16,22 @@
 	export let labels: string[] = [];
 	export let dataSource: number[] = [];
 	export let title;
-	let barChart;
-	let ctx;
+	export let truncateLabelsAt = 25;
 
-	onMount(() => {
-		ctx = barChart.getContext('2d');
-		barChart = new Chart(ctx, {
+	let canvasEl: HTMLCanvasElement;
+	let chart;
+
+	const truncateLabel = (label: string) => {
+		if (typeof label !== 'string' || label.length <= truncateLabelsAt) return label;
+		return label.slice(0, truncateLabelsAt) + '…';
+	};
+
+	function createChart() {
+		if (!canvasEl) return;
+		if (chart) chart.destroy();
+
+		const ctx = canvasEl.getContext('2d');
+		chart = new Chart(ctx, {
 			type: 'bar',
 			data: {
 				labels: labels,
@@ -53,7 +63,12 @@
 							display: false
 						},
 						ticks: {
-							color: document.documentElement.classList.contains('dark') ? tickColorDark : tickColorLight // set y-axis label color here
+							color: document.documentElement.classList.contains('dark') ? tickColorDark : tickColorLight, // set y-axis label color here
+							autoSkip: false,
+							// Truncate the on-axis label; the tooltip below still shows the full text on hover.
+							callback: function (value) {
+								return truncateLabel(this.getLabelForValue(value as number));
+							}
 						}
 					}
 				},
@@ -83,11 +98,27 @@
 							weight: 'normal',
 							lineHeight: 1.2
 						}
+					},
+					tooltip: {
+						callbacks: {
+							title: (items) => items.map((item) => item.label)
+						}
 					}
 				}
 			}
 		});
+	}
+
+	onDestroy(() => {
+		if (chart) chart.destroy();
 	});
+
+	// Re-create the chart whenever the underlying data changes (e.g. a date-range
+	// or tenant filter reload), not just on first mount.
+	$: if (canvasEl) {
+		labels, dataSource;
+		createChart();
+	}
 </script>
 
-<canvas id="myChart" bind:this={barChart} />
+<canvas bind:this={canvasEl} />

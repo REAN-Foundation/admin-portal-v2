@@ -9,10 +9,11 @@ export const post_ = async (
 	url: string,
 	bodyObj: string | any,
 	authorizeUser: boolean,
-	sessionId?: string
+	sessionId?: string,
+	apiKey?: string
 ) => {
 	try {
-		const headers = await setHeaders(authorizeUser, sessionId);
+		const headers = await setHeaders(authorizeUser, sessionId, false, apiKey);
 
 		const body = JSON.stringify(bodyObj);
 		console.log('body==>', body);
@@ -44,9 +45,14 @@ export const post_ = async (
 	}
 };
 
-export const get_ = async (url: string, authorizeUser: boolean = false, sessionId?: string) => {
+export const get_ = async (
+	url: string,
+	authorizeUser: boolean = false,
+	sessionId?: string,
+	apiKey?: string
+) => {
 	try {
-		const headers = await setHeaders(authorizeUser, sessionId);
+		const headers = await setHeaders(authorizeUser, sessionId, false, apiKey);
 
 		const res = await fetch(url, {
 			method: 'GET',
@@ -78,10 +84,11 @@ export const put_ = async (
 	url: string,
 	bodyObj: unknown,
 	authorizeUser: boolean = false,
-	sessionId?: string
+	sessionId?: string,
+	apiKey?: string
 ) => {
 	try {
-		const headers = await setHeaders(authorizeUser, sessionId);
+		const headers = await setHeaders(authorizeUser, sessionId, false, apiKey);
 
 		const body = JSON.stringify(bodyObj);
 		console.log('Pre API call');
@@ -113,9 +120,14 @@ export const put_ = async (
 	}
 };
 
-export const delete_ = async (url: string, authorizeUser: boolean = false, sessionId?: string) => {
+export const delete_ = async (
+	url: string,
+	authorizeUser: boolean = false,
+	sessionId?: string,
+	apiKey?: string
+) => {
 	try {
-		const headers = await setHeaders(authorizeUser, sessionId);
+		const headers = await setHeaders(authorizeUser, sessionId, false, apiKey);
 
 		const res = await fetch(url, {
 			method: 'DELETE',
@@ -142,10 +154,15 @@ export const delete_ = async (url: string, authorizeUser: boolean = false, sessi
 	}
 };
 
-const setHeaders = async (authorizeUser: boolean, sessionId?: string, isFormData = false) => {
+const setHeaders = async (
+	authorizeUser: boolean,
+	sessionId?: string,
+	isFormData = false,
+	apiKey?: string
+) => {
 	try {
 		const headers = {
-			'x-api-key': API_CLIENT_INTERNAL_KEY
+			'x-api-key': apiKey ?? API_CLIENT_INTERNAL_KEY
 		};
 
 		headers['Content-Type'] = 'application/json';
