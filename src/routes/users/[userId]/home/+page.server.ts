@@ -1,31 +1,26 @@
-import type { PageServerLoad } from '../home/$types';
+import type { PageServerLoad } from './$types';
 import { error, type RequestEvent } from '@sveltejs/kit';
 import {
-	getDailyStatistics,
-	getDailyTenantStatistics
-} from '../../../api/services/reancare/statistics';
-// import { TimeHelper } from '$lib/utils/time.helper';
-// import { DateStringFormat } from '$lib/types/time.types';
-// import { getUserAnalytics } from '../../../api/services/user-analytics/user-analytics';
+	getDailySeries,
+	getContentFrequency,
+	getLifetimeStats
+} from '../../../api/services/bot-wrapper/chat.stats';
 
 //////////////////////////////////////////////////////////////////////////
 
-const defaultUserCountStats = {
-	TotalUsers: { Count: 0, Ratio: 0 },
-	NotDeletedUsers: { Count: 0, Ratio: 0 },
-	UsersWithActiveSession: { Count: 0, Ratio: 0 },
-	DeletedUsers: { Count: 0, Ratio: 0 },
-	EnrolledUsers: { Count: 0, Ratio: 0 }
-};
+const DEFAULT_RANGE = 'yearToDate';
 
 const defaultData = {
-	sessionId: '',
-	userCountStats: defaultUserCountStats,
-	userCountByYears: [],
-	deviceDetailsStats: [],
-	deviceDetailsByYears: [],
-	hasData: false,
-	title: 'Dashboard-Home-Overall'
+	tenantSelected: false,
+	tenantCode: '',
+	range: DEFAULT_RANGE,
+	startDate: '',
+	endDate: '',
+	series: [],
+	uniqueContentCount: 0,
+	topContent: [],
+	lifetimeInteractions: 0,
+	lifetimeUniqueUsers: 0
 };
 
 export const load: PageServerLoad = async (event: RequestEvent) => {
@@ -46,44 +41,62 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 	}
 
 	const isSystemAdmin = roleName === 'System admin' || roleName === 'System user';
-	const tenantIdParam = event.url.searchParams.get('tenantId');
+	const explicitTenantCode = event.url.searchParams.get('tenantCode');
+	const tenantCode = isSystemAdmin
+		? (explicitTenantCode ?? '')
+		: (event.locals.sessionUser.tenantCode ?? '');
 
-	let response;
-	try {
-		if (isSystemAdmin && tenantIdParam) {
-			response = await getDailyTenantStatistics(sessionId, tenantIdParam);
-		} else if (isSystemAdmin) {
-			response = await getDailyStatistics(sessionId);
-		} else {
-			response = await getDailyTenantStatistics(
-				sessionId,
-				event.locals.sessionUser.tenantId ?? ''
-			);
-		}
-	} catch (err) {
-		console.error('Failed to fetch daily statistics:', err);
-		return { ...defaultData, sessionId };
+	const range = event.url.searchParams.get('range') || DEFAULT_RANGE;
+	const startDate = event.url.searchParams.get('startDate') ?? '';
+	const endDate = event.url.searchParams.get('endDate') ?? '';
+
+	// Bot-wrapper's stats API has no all-tenants aggregate - a tenant Code is required
+	// for every call, unlike the REANCARE person-stats APIs used by platform-overview.
+	if (!tenantCode) {
+		return { ...defaultData, range, startDate, endDate };
 	}
 
-	if (
-		!response ||
-		response.Status === 'failure' ||
-		response.HttpCode !== 200 ||
-		!response.Data?.DailyStatistics?.DashboardStats
-	) {
-		return { ...defaultData, sessionId };
+	const [seriesResult, contentResult, lifetimeResult] = await Promise.allSettled([
+		getDailySeries(sessionId, tenantCode, range, startDate, endDate),
+		getContentFrequency(sessionId, tenantCode, range, startDate, endDate),
+		getLifetimeStats(sessionId, tenantCode)
+	]);
+
+	let series = [];
+	if (seriesResult.status === 'fulfilled' && seriesResult.value?.success) {
+		series = seriesResult.value.data?.series ?? [];
+	} else if (seriesResult.status === 'rejected') {
+		console.error('Failed to fetch chat daily series:', seriesResult.reason);
 	}
 
-	const stats = response.Data.DailyStatistics.DashboardStats;
-	const userStatistics = stats.UserStatistics;
+	let uniqueContentCount = 0;
+	let topContent = [];
+	if (contentResult.status === 'fulfilled' && contentResult.value?.success) {
+		uniqueContentCount = contentResult.value.data?.uniqueContentCount ?? 0;
+		topContent = contentResult.value.data?.topContent ?? [];
+	} else if (contentResult.status === 'rejected') {
+		console.error('Failed to fetch chat content frequency:', contentResult.reason);
+	}
+
+	let lifetimeInteractions = 0;
+	let lifetimeUniqueUsers = 0;
+	if (lifetimeResult.status === 'fulfilled' && lifetimeResult.value?.success) {
+		lifetimeInteractions = lifetimeResult.value.data?.lifetimeInteractions ?? 0;
+		lifetimeUniqueUsers = lifetimeResult.value.data?.lifetimeUniqueUsers ?? 0;
+	} else if (lifetimeResult.status === 'rejected') {
+		console.error('Failed to fetch lifetime chat stats:', lifetimeResult.reason);
+	}
 
 	return {
-		sessionId,
-		userCountStats: userStatistics?.UsersCountStats ?? defaultUserCountStats,
-		userCountByYears: userStatistics?.YearWiseUserCount ?? [],
-		deviceDetailsStats: userStatistics?.DeviceDetailWiseUsers ?? [],
-		deviceDetailsByYears: userStatistics?.YearWiseDeviceDetails ?? [],
-		hasData: true,
-		title: 'Dashboard-Home-Overall'
+		tenantSelected: true,
+		tenantCode,
+		range,
+		startDate,
+		endDate,
+		series,
+		uniqueContentCount,
+		topContent,
+		lifetimeInteractions,
+		lifetimeUniqueUsers
 	};
 };
