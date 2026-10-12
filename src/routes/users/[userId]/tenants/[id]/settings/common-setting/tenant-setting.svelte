@@ -39,7 +39,7 @@
 </script>
 
 {#each Object.entries(commonSetting) as [groupName, groupItems]}
-	{#if groupName !== 'UserInterfaces' && groupName !== 'General'}
+	{#if groupName !== 'UserInterfaces' && groupName !== 'General' && groupedSettings?.[groupName]}
 		<div
 			class={`my-2 flex w-full flex-col rounded-md border border-[var(--color-outline)] bg-[var(--color-primary)] !p-0 py-2 transition-colors duration-200 ${
 				openTab === groupName ? 'border-hover ' : ''
@@ -86,7 +86,7 @@
 					<div
 						class="grid w-full grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-6 md:gap-x-10"
 					>
-						{#each Object.entries(groupItems) as [key, value]}
+						{#each Object.entries(groupItems).filter(([key]) => groupedSettings?.[groupName]?.[key]) as [key, value]}
 							{@const meta = getSettingMeta(groupName, key)}
 							<!-- <div class="flex items-center md:gap-3">
 								{#if edit === true && value.Enabled === true}
