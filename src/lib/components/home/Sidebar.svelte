@@ -68,6 +68,17 @@
 							<span class="sidebar-text">{navParent.title}</span>
 						</div>
 					</a>
+				{:else if navParent.title === 'Platform Overview'}
+					<a
+						href={navParent.link}
+						class="sidebar-item {activeTab === 'Platform Overview' ? 'variant-filled-secondary' : ''}"
+						onclick={() => (activeTab = 'Platform Overview')}
+					>
+						<div class="flex items-center gap-1">
+							<Icon icon={navParent.icon} class=" h-6 w-6" />
+							<span class="sidebar-text">{navParent.title}</span>
+						</div>
+					</a>
 				{:else}
 					<button
 						class="sidebar-item flex w-full items-center justify-between"
@@ -86,7 +97,7 @@
 					</button>
 				{/if}
 
-				{#if openTab == navParent.title && navParent.title !== 'Analytics' && navParent.title !== 'Home' && navParent.childNav?.length > 0}
+				{#if openTab == navParent.title && navParent.title !== 'Analytics' && navParent.title !== 'Home' && navParent.title !== 'Platform Overview' && navParent.childNav?.length > 0}
 					<div class="mx-4">
 						<nav class="space-y-1">
 							{#each navParent.childNav as navItem}
