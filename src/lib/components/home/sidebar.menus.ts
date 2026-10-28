@@ -292,6 +292,14 @@ export const buildSidebarMenu = (
 		options
 	);
 
+	sidebarNaviagation = addPlatformOverviewMenu(
+		sidebarNaviagation,
+		userId,
+		userRole,
+		tenantSettings,
+		options
+	);
+
 	sidebarNaviagation = addAdministrationMenus(
 		sidebarNaviagation,
 		userId,
@@ -510,6 +518,38 @@ function addMainDashboardMenu(
 
 	const navigationItem: NavigationMenu | null = toNavigation(
 		homeMenu,
+		userRole,
+		tenantSettings,
+		options
+	);
+
+	if (navigationItem) {
+		sidebarNaviagation.push(navigationItem);
+	}
+
+	return sidebarNaviagation;
+}
+
+function addPlatformOverviewMenu(
+	sidebarNaviagation: NavigationMenu[],
+	userId: string,
+	userRole: string,
+	tenantSettings: any,
+	options: FeatureOptions
+): NavigationMenu[] {
+	const menuList: SidebarMenu[] = [];
+
+	const platformOverviewMenu: SidebarMenu = {
+		name: 'Main-Platform-Overview',
+		title: 'Platform Overview',
+		icon: 'material-symbols:groups-outline-rounded',
+		link: `/users/${userId}/home/platform-overview`,
+		children: []
+	};
+	menuList.push(platformOverviewMenu);
+
+	const navigationItem: NavigationMenu | null = toNavigation(
+		platformOverviewMenu,
 		userRole,
 		tenantSettings,
 		options
