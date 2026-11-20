@@ -9,13 +9,27 @@
 	import HorizontalBarChart from '$lib/components/users-stats/charts/horizontal-bar-chart.svelte';
 	import EmptyState from '$lib/components/analytics/EmptyState.svelte';
 	import { hasChartData } from '$lib/utils/chart.utils';
+	import CustomStatsDashboard from '$lib/components/custom-stats/custom-stats-dashboard.svelte';
+	import type { CustomUsersQuery } from '$lib/types/custom.stats.types';
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	let { data }: { data: PageServerData } = $props();
 
+	// Custom stats user table: paging/sorting params. Reset when the tenant or date range changes.
+	const CUSTOM_USERS_PARAMS = ['usersPage', 'usersSortBy', 'usersOrder'];
+
+	function handleUsersQuery(query: CustomUsersQuery) {
+		const url = new URL(window.location.href);
+		url.searchParams.set('usersPage', String(query.page));
+		url.searchParams.set('usersSortBy', query.sortBy);
+		url.searchParams.set('usersOrder', query.order);
+		goto(url.pathname + url.search, { invalidateAll: true, noScroll: true });
+	}
+
 	function handleTenantSelect(tenant: { tenantId: string; tenantCode: string } | null) {
 		const url = new URL(window.location.href);
+		CUSTOM_USERS_PARAMS.forEach((param) => url.searchParams.delete(param));
 		if (tenant) {
 			url.searchParams.set('tenantId', tenant.tenantId);
 			url.searchParams.set('tenantCode', tenant.tenantCode);
@@ -28,6 +42,7 @@
 
 	function handleRangeSelect(value: { range: string; startDate: string; endDate: string }) {
 		const url = new URL(window.location.href);
+		url.searchParams.delete('usersPage');
 		url.searchParams.set('range', value.range);
 		if (value.range === 'custom') {
 			url.searchParams.set('startDate', value.startDate);
@@ -107,6 +122,14 @@
 	<div class="flex min-h-[40vh] items-center justify-center">
 		<EmptyState message="Select a tenant to view chatbot analytics" />
 	</div>
+{:else if data.isCustomTenant}
+	<CustomStatsDashboard
+		summary={data.customSummary}
+		users={data.customUsers}
+		usersSortBy={data.usersSortBy}
+		usersOrder={data.usersOrder}
+		onUsersQuery={handleUsersQuery}
+	/>
 {:else}
 	<dl class="dashboard-cards">
 		<NumberCard cardTitle="Number of Unique Users" cardContent={totalNewUsers.toFixed()} />

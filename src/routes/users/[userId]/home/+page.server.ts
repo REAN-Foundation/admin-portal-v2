@@ -5,10 +5,23 @@ import {
 	getContentFrequency,
 	getLifetimeStats
 } from '../../../api/services/bot-wrapper/chat.stats';
+import {
+	getCustomStatsSummary,
+	getCustomStatsUsers,
+	isCustomStatsTenant
+} from '../../../api/services/bot-wrapper/custom.stats';
+import type {
+	CustomStatsSummary,
+	CustomStatsUsersPage,
+	CustomUsersOrder,
+	CustomUsersSortBy
+} from '$lib/types/custom.stats.types';
 
 //////////////////////////////////////////////////////////////////////////
 
 const DEFAULT_RANGE = 'yearToDate';
+
+const CUSTOM_USERS_PAGE_SIZE = 20;
 
 const defaultData = {
 	tenantSelected: false,
@@ -20,7 +33,78 @@ const defaultData = {
 	uniqueContentCount: 0,
 	topContent: [],
 	lifetimeInteractions: 0,
-	lifetimeUniqueUsers: 0
+	lifetimeUniqueUsers: 0,
+	// Custom stats (only for tenants in CUSTOM_STATS_TENANTS)
+	isCustomTenant: false,
+	customSummary: null as CustomStatsSummary | null,
+	customUsers: null as CustomStatsUsersPage | null,
+	usersSortBy: 'interactions' as CustomUsersSortBy,
+	usersOrder: 'desc' as CustomUsersOrder
+};
+
+// Custom dashboard for tenants listed in CUSTOM_STATS_TENANTS (replaces the common cards/charts).
+const loadCustomStats = async (
+	event: RequestEvent,
+	sessionId: string,
+	tenantCode: string,
+	range: string,
+	startDate: string,
+	endDate: string
+) => {
+	const params = event.url.searchParams;
+	const usersPage = Math.max(1, parseInt(params.get('usersPage') ?? '1', 10) || 1);
+	const usersSortBy: CustomUsersSortBy =
+		params.get('usersSortBy') === 'firstMessageOn' ? 'firstMessageOn' : 'interactions';
+	const usersOrder: CustomUsersOrder = params.get('usersOrder') === 'asc' ? 'asc' : 'desc';
+
+	const [summaryResult, usersResult] = await Promise.allSettled([
+		getCustomStatsSummary(sessionId, tenantCode, range, startDate, endDate),
+		getCustomStatsUsers(
+			sessionId,
+			tenantCode,
+			range,
+			startDate,
+			endDate,
+			usersPage,
+			CUSTOM_USERS_PAGE_SIZE,
+			usersSortBy,
+			usersOrder
+		)
+	]);
+
+	let customSummary: CustomStatsSummary | null = null;
+	if (summaryResult.status === 'fulfilled' && summaryResult.value?.success) {
+		customSummary = summaryResult.value.data ?? null;
+	} else {
+		console.error(
+			'Failed to fetch custom stats summary:',
+			summaryResult.status === 'rejected' ? summaryResult.reason : summaryResult.value?.message
+		);
+	}
+
+	let customUsers: CustomStatsUsersPage | null = null;
+	if (usersResult.status === 'fulfilled' && usersResult.value?.success) {
+		customUsers = usersResult.value.data ?? null;
+	} else {
+		console.error(
+			'Failed to fetch custom stats users:',
+			usersResult.status === 'rejected' ? usersResult.reason : usersResult.value?.message
+		);
+	}
+
+	return {
+		...defaultData,
+		tenantSelected: true,
+		tenantCode,
+		range,
+		startDate,
+		endDate,
+		isCustomTenant: true,
+		customSummary,
+		customUsers,
+		usersSortBy,
+		usersOrder
+	};
 };
 
 export const load: PageServerLoad = async (event: RequestEvent) => {
@@ -56,6 +140,10 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 		return { ...defaultData, range, startDate, endDate };
 	}
 
+	if (isCustomStatsTenant(tenantCode)) {
+		return await loadCustomStats(event, sessionId, tenantCode, range, startDate, endDate);
+	}
+
 	const [seriesResult, contentResult, lifetimeResult] = await Promise.allSettled([
 		getDailySeries(sessionId, tenantCode, range, startDate, endDate),
 		getContentFrequency(sessionId, tenantCode, range, startDate, endDate),
@@ -88,6 +176,7 @@ export const load: PageServerLoad = async (event: RequestEvent) => {
 	}
 
 	return {
+		...defaultData,
 		tenantSelected: true,
 		tenantCode,
 		range,
