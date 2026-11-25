@@ -13,6 +13,10 @@ export const Options: FeatureOptions[] = [
 		Name: 'Main-Home',
 		Enabled: true
 	},
+	{
+		Name: 'Main-Platform-Overview',
+		Enabled: false
+	},
 	//..............................
 	{
 		Name: 'Administration',

@@ -117,9 +117,6 @@
 	}
 
 	onMount(() => {
-		if (!isValid) return;
-		createChart();
-
 		const observer = new MutationObserver(() => {
 			createChart();
 		});
@@ -130,9 +127,16 @@
 		});
 
 		return () => {
-			if (chart) chart.destroy();
 			observer.disconnect();
 		};
+	});
+
+	// Re-create the chart whenever the underlying data changes (e.g. a date-range
+	// or tenant filter reload), not just on first mount or a theme change.
+	$effect(() => {
+		labels;
+		dataSource;
+		createChart();
 	});
 
 	onDestroy(() => {
